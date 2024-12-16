@@ -680,7 +680,7 @@
   justify-content: center;
   padding: 5px;
   position: absolute;
-  bottom: -75px;
+  top: 15px;
   left: -171px;
   transform: translateX(-10px);
   border-radius: 10px;

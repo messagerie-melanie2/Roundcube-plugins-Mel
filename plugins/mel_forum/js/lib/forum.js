@@ -269,39 +269,39 @@ export class Forum extends MelObject {
         let triggerButton = $('#trigger-' + post_uid); // Bouton more_vert
 
         // Vérifier si le conteneur du menu existe
-    if (selectContainer.length) {
-        // Basculer l'affichage du conteneur
-        selectContainer.toggleClass('hidden');
-  
-        // Si le menu est visible, ajouter un écouteur pour détecter les clics extérieurs
-        if (!selectContainer.hasClass('hidden')) {
-          // Ajouter un écouteur de clic sur tout le document après un léger délai
-          setTimeout(() => {
-            $(document).on('click.menuOutside', function(event) {
-              // Vérifier si le clic est en dehors du menu et du bouton trigger
-              if (!$(event.target).closest(selectContainer).length && !$(event.target).closest(triggerButton).length) {
-                selectContainer.addClass('hidden');  // Masquer le menu
-                $(document).off('click.menuOutside'); // Retirer l'écouteur après fermeture
-              }
+        if (selectContainer.length) {
+            // Basculer l'affichage du conteneur
+            selectContainer.toggleClass('hidden');
+    
+            // Si le menu est visible, ajouter un écouteur pour détecter les clics extérieurs
+            if (!selectContainer.hasClass('hidden')) {
+            // Ajouter un écouteur de clic sur tout le document après un léger délai
+            setTimeout(() => {
+                $(document).on('click.menuOutside', function(event) {
+                    // Vérifier si le clic est en dehors du menu et du bouton trigger
+                    if (!$(event.target).closest(selectContainer).length && !$(event.target).closest(triggerButton).length) {
+                        selectContainer.addClass('hidden');  // Masquer le menu
+                        $(document).off('click.menuOutside'); // Retirer l'écouteur après fermeture
+                    }
+                });
+    
+                // Ajouter un écouteur d'événements pour chaque bouton du menu
+                selectContainer.find('.post-options-button').on('click', function() {
+                    selectContainer.addClass('hidden'); // Fermer le menu
+                    $(document).off('click.menuOutside'); // Retirer l'écouteur après fermeture
+                });
+            }, 0);  // Délai de 0 pour que l'événement de clic sur le bouton soit géré en premier
+    
+            // Empêcher la propagation du clic sur le bouton trigger pour éviter la fermeture immédiate
+            triggerButton.off('click').on('click', function(event) {
+                event.stopPropagation(); // Empêche la propagation du clic vers l'écouteur du document
             });
-  
-            // Ajouter un écouteur d'événements pour chaque bouton du menu
-            selectContainer.find('.post-options-button').on('click', function() {
-              selectContainer.addClass('hidden'); // Fermer le menu
-              $(document).off('click.menuOutside'); // Retirer l'écouteur après fermeture
-            });
-          }, 0);  // Délai de 0 pour que l'événement de clic sur le bouton soit géré en premier
-  
-          // Empêcher la propagation du clic sur le bouton trigger pour éviter la fermeture immédiate
-          triggerButton.off('click').on('click', function(event) {
-            event.stopPropagation(); // Empêche la propagation du clic vers l'écouteur du document
-          });
-  
-        } else {
-          // Si le menu est caché, retirer l'écouteur du document
-          $(document).off('click.menuOutside');
+    
+            } else {
+                // Si le menu est caché, retirer l'écouteur du document
+                $(document).off('click.menuOutside');
+            }
         }
-      }
     }
 
     /**

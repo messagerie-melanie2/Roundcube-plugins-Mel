@@ -1838,6 +1838,10 @@ class FrameManager {
     return this.get_window()._current_frame;
   }
 
+  get currentTask() {
+    return this.get_window()?._current_frame?.task;
+  }
+
   /**
    *
    * @param {Event} e

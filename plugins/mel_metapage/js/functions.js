@@ -3346,12 +3346,16 @@ async function m_mp_ToggleGroupOptionsUser(opener) {
 
     await mel_metapage.Functions.get(
       mel_metapage.Functions.url('mel_settings', 'load'),
-      { _option: rcmail.env.current_frame_name },
+      { _option: await PageManager.Instance.currentTask },
       (data) => {
         data = JSON.parse(data);
         $('.options-custom').html(data.html);
+        data.html = null;
         for (const [key, value] of Object.entries(data.settings)) {
           $input = $(`[name="${key}"]`);
+
+          if (!$input.length) continue;
+
           switch ($input[0].nodeName) {
             case 'INPUT':
               switch ($input.attr('type')) {
@@ -3376,7 +3380,8 @@ async function m_mp_ToggleGroupOptionsUser(opener) {
               break;
 
             default:
-              throw 'error';
+              break;
+            //throw 'error';
           }
         }
       },
@@ -3385,7 +3390,7 @@ async function m_mp_ToggleGroupOptionsUser(opener) {
 
   rcmail.triggerEvent('toggle-quick-options.after', {
     hidden: state,
-    frame: rcmail.env.current_frame_name,
+    frame: await PageManager.Instance.currentTask, //rcmail.env.current_frame_name,
   });
 
   $goupoptions_user = null;

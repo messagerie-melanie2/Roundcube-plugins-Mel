@@ -40,7 +40,7 @@ export class create_or_edit_post extends MelObject {
             this.addImageDialog();
         };
         $("#edit-title").val(post.title);
-        $('#enable_comment').prop('checked', post.settings.comments);
+        $('#enable_comment').prop('checked', post.settings?.comments || false);
         this.post_uid = post.uid;
         this.tags = post.tags || [];
         this.displayTags();

@@ -1048,7 +1048,7 @@
       overflow-x: hidden !important;
     }
     .post {
-      margin-top: 12px;
+      margin-top: 10px;
       padding-bottom: 10px;
       box-shadow: none;
       box-shadow: none;
@@ -1102,6 +1102,15 @@
               font-size: 20px !important;
             }
           }
+        }
+      }
+      .post-content {
+        .post-title {
+          white-space: nowrap;       /* Pas de retour à la ligne */
+          overflow: hidden;          /* Cache le contenu débordant */
+          text-overflow: ellipsis;   /* Ajoute "..." pour le texte tronqué */
+          display: block;            /* Affichage en bloc */
+          max-width: 100%;           /* S'adapte à la largeur du parent */
         }
       }
     }

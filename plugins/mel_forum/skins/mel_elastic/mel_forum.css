@@ -883,7 +883,7 @@
   overflow-x: hidden !important;
 }
 .task-forum .new_posts .post {
-  margin-top: 12px;
+  margin-top: 10px;
   padding-bottom: 10px;
   box-shadow: none;
   border-bottom: solid 1px var(--scrollbar-background-color);
@@ -930,4 +930,16 @@
 }
 .task-forum .new_posts .post .post-footer .post-reaction .post-reaction-info i {
   font-size: 20px !important;
+}
+.task-forum .new_posts .post .post-content .post-title {
+  white-space: nowrap;
+  /* Pas de retour à la ligne */
+  overflow: hidden;
+  /* Cache le contenu débordant */
+  text-overflow: ellipsis;
+  /* Ajoute "..." pour le texte tronqué */
+  display: block;
+  /* Affichage en bloc */
+  max-width: 100%;
+  /* S'adapte à la largeur du parent */
 }

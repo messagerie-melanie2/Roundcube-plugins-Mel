@@ -2512,6 +2512,7 @@ $(document).ready(() => {
         } while (reloop);
 
         if (task !== null) {
+          event.preventDefault();
           // top.mel_metapage.Functions.change_page(
           //   task,
           //   action,
@@ -2543,7 +2544,6 @@ $(document).ready(() => {
             othersParams,
             update,
           });
-          event.preventDefault();
         }
       }
     } catch (error) {

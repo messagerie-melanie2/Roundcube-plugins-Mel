@@ -361,6 +361,26 @@
     justify-content: center;
     align-items: center;
 
+    #clear-button {
+      position: absolute;
+      top: 50%;
+      right: 40px;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--main-text-color);
+      font-size: 18px;
+      cursor: pointer;
+      padding: 0;
+      z-index: 4;
+      width: 30px;
+      height: 100%;
+
+      &:hover {
+        color: var(--hover-close-color);
+      }
+    }
+
     .title {
       font-size: 28px;
       font-weight: bold;

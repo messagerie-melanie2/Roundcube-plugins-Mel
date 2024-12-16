@@ -31,9 +31,11 @@ export class Forum extends MelObject {
      * Initialise les actions de la page
      */
     initButtons() {
+        //bouton d'ajout d'article
         $('#forum-button-add').click(() => {
             window.location.href = this.url('forum', {action:'create_or_edit_post', params:{'_workspace_uid':this.workspace}});
         });
+        //affichage des boutons favoris
         $('.favorite').click(() => {
             event.stopPropagation();
             if ($(this).text() === 'star_border') {
@@ -44,6 +46,7 @@ export class Forum extends MelObject {
                 $(this).text('star_border');
             }
         });
+        //bouton voir les favoris
         $('#display-fav-only').on('change', () => {
             this.offset = 0;
             if ($('#display-fav-only').is(':checked')) {
@@ -55,16 +58,40 @@ export class Forum extends MelObject {
             $('#post-area').empty();
             this.loadPosts();
         });
-
+        //gestion du scroll sur la page
         document.querySelector('.content').addEventListener("scroll", this.handleScroll);
+        //gestion de la recherche
         $('#post-search-input').on("keydown", (event) => {
             if(event.keyCode === 13) {
                 this.searchPosts();
             }
         });
+        //bouton recherche
         $('#post-search-button').on('click',() => {
             this.searchPosts();
         });
+        //gestion du boutons de suprression de texte de la barre de recherche
+        const searchInput = $('#post-search-input');
+        const clearButton = $('#clear-button');
+        
+        searchInput.on('input change', this.toggleClearButton);
+
+        clearButton.click(() => {
+            searchInput.val(''); // Vide la recherche
+            clearButton.hide(); // Cache le bouton
+            searchInput.focus();
+            this.searchPosts();
+        });
+    }
+
+    toggleClearButton() {
+        const searchInput = $('#post-search-input');
+        const clearButton = $('#clear-button');
+        if (searchInput.val()) {
+            clearButton.show();
+        } else {
+            clearButton.hide();
+        }
     }
 
     /**
@@ -426,7 +453,7 @@ export class Forum extends MelObject {
         $('#post-area').empty();
         this.updateSort();
         this.loadPosts();
-        $('#post-search-input').val('#' + tag_name);
+        $('#post-search-input').val('#' + tag_name).change();
     }
 
     /**

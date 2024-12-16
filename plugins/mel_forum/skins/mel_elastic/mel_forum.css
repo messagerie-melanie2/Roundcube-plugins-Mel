@@ -715,6 +715,9 @@
   font-weight: 600;
   font-size: 20px;
   margin-top: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .task-forum .post .post-content .post-summary {
   margin-top: 5px;

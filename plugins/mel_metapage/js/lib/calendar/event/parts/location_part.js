@@ -773,7 +773,18 @@ class IntegratedVisio extends AVisio {
   /**
    * Désactiver le bouton "Sauvegarder" lors de l'input.
    */
-  _on_room_input() {
+  _on_room_input(event) {
+    event = $(event.currentTarget);
+    //Si il y a une url dans le champs, on récupère la clé contenue dans l'url
+    {
+      const detected =
+        mel_metapage.Functions.webconf_url(event.val().toLowerCase()) || false;
+      if (detected && detected !== event.val()) {
+        event.val(detected).change();
+        return;
+      }
+    }
+
     let dialog = EventView.INSTANCE.get_dialog();
 
     if (EventView.INSTANCE.is_jquery_dialog()) {
@@ -803,6 +814,17 @@ class IntegratedVisio extends AVisio {
 
     this._last_room = this._room;
     this.location = event.val();
+
+    // //Si il y a une url dans le champs, on récupère la clé contenue dans l'url
+    // {
+    //   const detected =
+    //     mel_metapage.Functions.webconf_url(this.location.toLowerCase()) ||
+    //     false;
+    //   if (detected) {
+    //     this.location = detected;
+    //     event.val(detected);
+    //   }
+    // }
 
     if (this._room !== '') {
       this.get_phone();

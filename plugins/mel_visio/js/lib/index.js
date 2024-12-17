@@ -93,7 +93,16 @@ class VisioCreator extends MelObject {
   }
 
   _check_validity() {
-    const val = this.view.$room.val();
+    let val = this.view.$room.val();
+
+    //Si il y a une url dans le champs, on récupère la clé contenue dans l'url
+    {
+      const detected = mel_metapage.Functions.webconf_url(val) || false;
+      if (detected) {
+        val = detected;
+        this.view.$room.val(val);
+      }
+    }
 
     if (VisioFunctions.CheckKeyIsValid(val)) {
       $('.webconf-error-text').css('display', 'none');

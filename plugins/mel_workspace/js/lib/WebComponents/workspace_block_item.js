@@ -305,7 +305,7 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
     pict.classList.add('workspace-block-item-picture');
 
     let element;
-    if (this._picture) {
+    if (this._picture && this._picture !== 'false') {
       element = document.createElement('img');
       element.addEventListener(
         'error',

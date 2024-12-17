@@ -27,15 +27,15 @@
     <div class="row forum-content">
       <div class="col-8 mt-4">
         <div class="row">
-          <div class="border-bottom-input-icon">
+          <div class="form-floating border-bottom-input-icon">
             <input
               type="text"
-              placeholder="Ajoutez un titre"
               class="form-control input-mel border-bottom-input large-input"
               name="title"
               id="edit-title"
               required="true"
             />
+            <label for="edit-title">Ajoutez un titre</label>
             <button
               id="reset-title-button"
               class="border-bottom-input-button close-button btn btn-secondary"
@@ -47,12 +47,32 @@
         </div>
         <div class="row my-4">
           <div class="tag-list">
-
+            <!-- Liste des tags ici -->
           </div>
-          <input type="text" placeholder="+ Ajouter un tag" name="add-tag" id="add-tag">
+          <div class="col-2">
+            <label for="edit-title">Ajouter un tag</label>
+            <div class="border-bottom-input-icon position-relative">
+              <span class="material-symbols-outlined add-circle-icon">add_circle</span>
+              <input
+                type="text"
+                placeholder="Ajouter un tag"
+                class="form-control input-mel border-bottom-input"
+                name="add-tag"
+                id="add-tag"
+              />
+              <button
+                id="reset-tag-button"
+                class="border-bottom-input-button close-button btn btn-secondary"
+                type="button"
+              >
+              </button>
+            </div>
+          </div>
+          
         </div>
         <div class="row mt-4 ">
-          <div id="forum-content" class="forum-content mce_editor"></div>
+          <label for="edit-title">Ajouter du contenu</label>
+          <div id="forum-content" class="forum-content mce_editor" placeholder="Ajouter du contenu"></div>
           <!-- <textarea id="MyID"></textarea> -->
         </div>
         <!-- <div class="row my-2">

@@ -685,11 +685,24 @@
       }
     }
   }
+  /* Icône dans l'input */
+  .add-circle-icon {
+    position: absolute;
+    left: 10px; /* Positionne l'icône à gauche dans l'input */
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px; /* Taille de l'icône */
+    color: var(--forum-tag-text-color); /* Couleur de l'icône */
+    pointer-events: none; /* L'icône ne bloque pas le focus sur l'input */
+  }
+
+  /* Style de l'input */
   #add-tag {
     background-color: var(--forum-tag-background-color);
     color: var(--forum-tag-text-color);
     border-radius: 5px;
     padding: 2px 8px;
+    padding-left: 40px;  /* Crée de l'espace à gauche pour l'icône */
     margin-right: 5px;
     font-size: 14px;
   }

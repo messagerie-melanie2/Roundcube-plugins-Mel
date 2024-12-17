@@ -82,6 +82,7 @@ export class New_posts extends MelObject {
         POST_COMMENTS: post.comment_count.toString(),
         POST_IS_LIKED: post.isliked ? 'filled' : '',
         POST_IS_DISLIKED: post.isdisliked ? 'filled' : '',
+        COMMENTS_ENABLED: post.settings?.comments ? "" : "hidden",
       };
 
       let template = new MelTemplate()

@@ -373,7 +373,7 @@ class mel_forum extends bnum_plugin
                 $post->uid = $this->generateRandomString(24);
                 $post->modified = date('Y-m-d H:i:s');
                 $post->creator = driver_mel::gi()->getUser()->uid;
-                $post->settings = '';
+                $post->settings = json_encode(['extwin' => true, 'comments' => true]);
                 $post->workspace = $this->get_input('_workspace_uid');
 
                 // Sauvegarde initiale du nouvel article
@@ -1638,6 +1638,7 @@ class mel_forum extends bnum_plugin
                 'post_link' => $post_link,
                 'image_url' => $image_url,
                 'has_owner_rights' => $this->_has_owner_rights($post, $workspace_uid),
+                'settings' => $post->settings,
             ];
         }
         return $posts_data;

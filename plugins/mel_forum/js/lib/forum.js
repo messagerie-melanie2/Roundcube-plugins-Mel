@@ -203,7 +203,7 @@ export class Forum extends MelObject {
      * Affiche les posts correspondant au champ recherche
      */
     searchPosts() {
-        this.searchString = $('#post-search-input').val();
+        this.searchString = urlencode($('#post-search-input').val());
         this.offset = 0;
         $('#post-area').empty();
         this.updateSort();
@@ -595,6 +595,7 @@ export class Forum extends MelObject {
                 POST_IS_LIKED: post.isliked ? "filled" : "",
                 POST_IS_DISLIKED: post.isdisliked ? "filled" : "",
                 HAS_OWNER_RIGHTS: post.has_owner_rights ? "" : "hidden",
+                COMMENTS_ENABLED: post.settings?.comments ? "" : "hidden",
                 };
 
             let template = new MelTemplate()

@@ -191,11 +191,21 @@
       flex: 1;
 
       &[aria-pressed='true'] {
-        border-color: var(--mel-button-active-background-color);
-        --wsp-nav-button-background-color: var(
-          --mel-button-active-background-color
+        border-color: var(
+          --wsp-nav-button-border-color-invisible-active,
+          var(--mel-button-active-background-color)
         );
-        --wsp-nav-button-text-color: var(--mel-button-active-text-color);
+        --wsp-nav-button-background-color: var(
+          --wsp-nav-button-background-color-invisible-active,
+          var(--mel-button-active-background-color)
+        );
+        --wsp-nav-button-text-color: var(
+          --wsp-nav-color-invisible-active,
+          var(--mel-button-active-text-color)
+        );
+
+        pointer-events: none;
+        opacity: 0.6;
 
         + bnum-pressed-button {
           &:hover {

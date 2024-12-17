@@ -659,7 +659,7 @@
   /* Couleur par défaut */
 }
 .task-forum .post .post-header .post-actions .icon.favorite.filled {
-  color: #FFDD67;
+  color: #ffdd67;
   /* Couleur jaune pour l'état filled */
 }
 .task-forum .post .post-header .post-actions .more_action {
@@ -909,11 +909,11 @@
   box-shadow: none;
   border-bottom: solid 1px var(--scrollbar-background-color);
   border-radius: 0;
+  border-radius: 5px;
   transition: var(--transition-all, none);
 }
 .task-forum .new_posts .post:hover {
   box-shadow: 0px 0px 5px black;
-  border-radius: 5px;
 }
 .task-forum .new_posts .post:last-child {
   border-bottom: none;

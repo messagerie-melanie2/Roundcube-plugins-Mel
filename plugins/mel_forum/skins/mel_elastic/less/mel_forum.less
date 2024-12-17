@@ -739,7 +739,7 @@
           display: flex;
           align-items: center;
           margin-left: 5px;
-          font-size: 13px;         
+          font-size: 13px;
           i {
             font-size: 17px !important;
           }
@@ -777,9 +777,9 @@
         .icon.favorite {
           color: var(--main-text-color); /* Couleur par défaut */
         }
-      
+
         .icon.favorite.filled {
-          color: #FFDD67; /* Couleur jaune pour l'état filled */
+          color: #ffdd67; /* Couleur jaune pour l'état filled */
         }
 
         .more_action {
@@ -842,7 +842,9 @@
             align-items: center;
             border: none;
             outline: none;
-            background-color: var(--bureau-card-background-color); // même couleur de fond
+            background-color: var(
+              --bureau-card-background-color
+            ); // même couleur de fond
             cursor: pointer;
             color: inherit; // conserver la couleur du texte du parent
             border-radius: 5px;
@@ -867,7 +869,6 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-
       }
 
       .post-summary {
@@ -1078,11 +1079,11 @@
       box-shadow: none;
       border-bottom: solid 1px var(--scrollbar-background-color);
       border-radius: 0;
+      border-radius: 5px;
       transition: var(--transition-all, none);
 
       &:hover {
         box-shadow: 0px 0px 5px black;
-        border-radius: 5px;
       }
 
       &:last-child {
@@ -1130,11 +1131,11 @@
       }
       .post-content {
         .post-title {
-          white-space: nowrap;       /* Pas de retour à la ligne */
-          overflow: hidden;          /* Cache le contenu débordant */
-          text-overflow: ellipsis;   /* Ajoute "..." pour le texte tronqué */
-          display: block;            /* Affichage en bloc */
-          max-width: 100%;           /* S'adapte à la largeur du parent */
+          white-space: nowrap; /* Pas de retour à la ligne */
+          overflow: hidden; /* Cache le contenu débordant */
+          text-overflow: ellipsis; /* Ajoute "..." pour le texte tronqué */
+          display: block; /* Affichage en bloc */
+          max-width: 100%; /* S'adapte à la largeur du parent */
         }
       }
     }

@@ -203,7 +203,7 @@ export class ModuleForum extends WorkspaceObject {
       args: {
         _workspace_uid: this.workspace.uid,
       },
-    });
+    }).style.borderRadius = '8px';
 
     this.loadModule();
   }

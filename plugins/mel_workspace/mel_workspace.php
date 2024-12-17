@@ -265,6 +265,7 @@ class mel_workspace extends bnum_plugin
     
             $this->rc()->plugins->get_plugin('calendar')->include_script('lib/js/fullcalendar.js');
             $this->rc()->plugins->get_plugin('calendar')->include_script('lib/js/scheduler.js');
+            $this->rc()->plugins->get_plugin('calendar')->include_script('lib/js/moment.js');
             $this->rc()->plugins->get_plugin('calendar')->include_script('lib/js/moment_fr.js');
             $this->rc()->plugins->get_plugin('calendar')->include_stylesheet('lib/js/scheduler.css');
             $this->rc()->output->set_env("wsp_shares",             $workspace->users_mail(true));

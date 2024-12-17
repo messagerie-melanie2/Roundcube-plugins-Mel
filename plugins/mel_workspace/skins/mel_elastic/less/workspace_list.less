@@ -207,6 +207,43 @@
       }
     }
   }
+
+  bnum-favorite-button {
+    bnum-icon {
+      color: var(
+        --workspace-favorite-button-text-color,
+        var(--secondary-mel-button-text-color, var(--main-text-color, black))
+      );
+
+      &:hover {
+        color: var(
+          --workspace-favorite-button-hover-text-color,
+          var(
+            --workspace-favorite-button-text-color,
+            var(
+              --secondary-mel-button-text-color,
+              var(--main-text-color, black)
+            )
+          )
+        );
+      }
+    }
+
+    &[aria-pressed='true'] {
+      bnum-icon {
+        color: var(
+          --workspace-favorite-button-pressed-text-color,
+          var(
+            --workspace-favorite-button-text-color,
+            var(
+              --secondary-mel-button-text-color,
+              var(--main-text-color, black)
+            )
+          )
+        );
+      }
+    }
+  }
 }
 
 [data-pannel-namespace='archived'],

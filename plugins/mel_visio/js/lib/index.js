@@ -82,6 +82,30 @@ class VisioCreator extends MelObject {
         defaultFrame: 'bureau',
       });
     });
+
+    this.view.$room.on('input change', this._check_validity.bind(this));
+
+    if (this.view.$room.val() === EMPTY_STRING) {
+      $(SELECTOR_BUTTON_START)
+        .addClass('disabled')
+        .attr('disabled', 'disabled');
+    } else this._check_validity();
+  }
+
+  _check_validity() {
+    const val = this.view.$room.val();
+
+    if (VisioFunctions.CheckKeyIsValid(val)) {
+      $('.webconf-error-text').css('display', 'none');
+      $(SELECTOR_BUTTON_START).removeClass('disabled').removeAttr('disabled');
+    } else {
+      $(SELECTOR_BUTTON_START)
+        .addClass('disabled')
+        .attr('disabled', 'disabled');
+
+      if (val === EMPTY_STRING) $('.webconf-error-text').css('display', 'none');
+      else $('.webconf-error-text').css('display', EMPTY_STRING);
+    }
   }
 
   /**

@@ -598,7 +598,7 @@ class mel_forum extends bnum_plugin
     {
         //récupérer les infos de chargement d'articles si aucune n'est fournie on met des valeurs par defaut
         $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET) ?? $workspace_uid;
-        $search = ($this->get_input('_offset', rcube_utils::INPUT_GET) !== null) ? ($this->get_input('_search', rcube_utils::INPUT_GET) === 'null' ? null : $this->get_input('_search', rcube_utils::INPUT_GET)) : null;
+        $search = ($this->get_input('_offset', rcube_utils::INPUT_GET) !== null) ? ($this->get_input('_search', rcube_utils::INPUT_GET) === 'null' ? null : urldecode($this->get_input('_search', rcube_utils::INPUT_GET))) : null;
         $offset = ($this->get_input('_offset', rcube_utils::INPUT_GET) !== null) ? intval($this->get_input('_offset', rcube_utils::INPUT_GET)) : 0;
         // valeur possible: created, comments, reactions
         $orderby = ($this->get_input('_order', rcube_utils::INPUT_GET) !== null) ? $this->get_input('_order', rcube_utils::INPUT_GET) : self::DEFAULTSORTBY;

@@ -144,7 +144,7 @@ export class Forum extends MelObject {
                     _offset: this.offset,
                     _order: this.sortBy,
                     _asc: this.asc,
-                    _search: this.searchString,
+                    _search: encodeURIComponent(this.searchString),
                     _tags: this.tags,
                     _fav_only: this.display_fav,
                 },

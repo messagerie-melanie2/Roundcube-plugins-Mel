@@ -702,7 +702,7 @@
     color: var(--forum-tag-text-color);
     border-radius: 5px;
     padding: 2px 8px;
-    padding-left: 40px;  /* Crée de l'espace à gauche pour l'icône */
+    padding-left: 40px; /* Crée de l'espace à gauche pour l'icône */
     margin-right: 5px;
     font-size: 14px;
   }
@@ -1089,14 +1089,19 @@
       margin-top: 10px;
       padding-bottom: 10px;
       box-shadow: none;
-      box-shadow: none;
+      // box-shadow: none;
       border-bottom: solid 1px var(--scrollbar-background-color);
-      border-radius: 0;
-      border-radius: 5px;
+      border-radius: 0px;
       transition: var(--transition-all, none);
+
+      .dark-mode &,
+      .dark-mode-custom & {
+        border-radius: 5px;
+      }
 
       &:hover {
         box-shadow: 0px 0px 5px black;
+        border-radius: 5px;
       }
 
       &:last-child {

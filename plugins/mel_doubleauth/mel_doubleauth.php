@@ -632,7 +632,7 @@ class mel_doubleauth extends bnum_plugin {
         mel_helper::include_mail_body();
         $otp = rand(100000, 999999) + '';
         $expire = $this->rc->config->get('code_expiration', 30*60);
-        $cid = 'bnumlogo';
+        // $cid = 'bnumlogo';
         driver_mel::gi()->getUser()->token_otp = $otp;
         driver_mel::gi()->getUser()->token_otp_expire = time() + $expire;
         driver_mel::gi()->getUser()->double_authentification_adresse_valide = false;
@@ -646,11 +646,9 @@ class mel_doubleauth extends bnum_plugin {
             'logobnum' => __DIR__.'/skins/mel_elastic/pictures/logobnum.png'//MailBody::load_image(__DIR__.'/skins/elastic/pictures/logobnum.png', 'png')
         ]);
 
-        $subject = $bodymail->subject();
-        $message = $bodymail->body();
-
-        $is_html = true;
-        $sent = mel_helper::send_mail($subject, $message, driver_mel::gi()->getUser()->email, ['email' => $mail, 'name' => driver_mel::gi()->getUser()->name], $is_html, [['path' => __DIR__.'/skins/mel_elastic/pictures/logobnum.png', 'id' => $cid, 'type' => 'image/png']]);
+       // $sent = mel_helper::send_mail($subject, $message, driver_mel::gi()->getUser()->email, ['email' => $mail, 'name' => driver_mel::gi()->getUser()->name], $is_html, [['path' => __DIR__.'/skins/mel_elastic/pictures/logobnum.png', 'id' => $cid, 'type' => 'image/png']]);
+        
+        $sent = \LibMelanie\Mail\Mail::Send('bnum', driver_mel::gi()->getUser()->email, $bodymail->subject(), $bodymail->body());
         
         echo json_encode(isset($mail) ? $sent : -1);
         exit;

@@ -19,6 +19,8 @@ class HTMLButtonGroup extends HtmlCustomDataTag {
         new ButtonGroupEvent(id, index, event, button, caller),
       );
     });
+
+    this.onloaded = new BnumEvent();
   }
 
   /**
@@ -88,6 +90,8 @@ class HTMLButtonGroup extends HtmlCustomDataTag {
       this.appendChild(generated);
       generated = null;
     }
+
+    this.onloaded.call(this);
   }
 
   /**
@@ -119,10 +123,12 @@ class HTMLButtonGroup extends HtmlCustomDataTag {
   ) {
     let node = document.createElement(this.TAG);
 
-    node.setAttribute(
-      'data-buttons',
-      Array.isArray(buttons) ? buttons.join(', ') : buttons,
-    );
+    if (buttons?.length) {
+      node.setAttribute(
+        'data-buttons',
+        Array.isArray(buttons) ? buttons.join(', ') : buttons,
+      );
+    }
 
     if (texts && texts.length)
       node.setAttribute(

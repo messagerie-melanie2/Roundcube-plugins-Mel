@@ -1,4 +1,5 @@
 import {
+  BnumHtmlIcon,
   EWebComponentMode,
   HtmlCustomDataTag,
 } from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/js_html_base_web_elements.js';
@@ -15,6 +16,8 @@ import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { NavBarManager } from '../../../mel_workspace/js/lib/navbar.generator.js';
 import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager.js';
 import { BnumMessage } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
+import { HTMLMelButton } from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/HTMLMelButton.js';
+import { HTMLButtonGroup } from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/HTMLButtonGroup.js';
 
 class NextcloudModule extends WorkspaceObject {
   constructor() {
@@ -192,6 +195,10 @@ class NextcloudModule extends WorkspaceObject {
     node.setItemFileData(element);
 
     return node;
+  }
+
+  static get EmptyWorkspaceObject() {
+    return new WorkspaceObject();
   }
 
   static Workspace() {
@@ -375,6 +382,11 @@ class FolderTag extends ABaseNextcloudTag {
   _p_main() {
     super._p_main();
 
+    this.mainContainer.setAttribute(
+      'title',
+      `Ouvrir le dossier "${this.filename}"`,
+    );
+
     let icon = document.createElement('bnum-icon');
     icon.setAttribute('data-icon', 'chevron_right');
     icon.setAttribute('id', `folder-right-icon-${this.tagId}`);
@@ -435,6 +447,7 @@ border: none;
         caller.style.color = 'var(--main-text-color)';
         caller.style.border = 'none';
         this.disable({ node: caller });
+        this.removeAttribute('title');
         return null;
       }
     } else this._on_pressed_loaded();
@@ -529,9 +542,17 @@ border: none;
     if (this.isOpen) {
       this.#container.style.display = 'none';
       this.#state = FolderTag.EState.close;
+      this.mainContainer.setAttribute(
+        'title',
+        `Ouvrir le dossier "${this.filename}"`,
+      );
     } else {
       this.#container.style.display = EMPTY_STRING;
       this.#state = FolderTag.EState.open;
+      this.mainContainer.setAttribute(
+        'title',
+        `Fermer le dossier "${this.filename}"`,
+      );
     }
   }
 }
@@ -549,6 +570,40 @@ FolderTag.EState = {
 class FileTag extends AActionNextcloudTag {
   constructor() {
     super();
+  }
+
+  _p_create_container() {
+    /**
+     * @type {PressedButton}
+     */
+    let container = HTMLMelButton.CreateNode();
+    container.setAttribute('title', `Ouvrir le fichier "${this.filename}"`);
+    container.classList.add(
+      'mel-button',
+      'no-margin-button',
+      'no-button-margin',
+      'bckg',
+      'true',
+    );
+
+    container.onclick = () => {
+      NextcloudModule.EmptyWorkspaceObject.switch_workspace_page('stockage', {
+        newArgs: {
+          _params: `/apps/files?dir=/dossiers-${NextcloudModule.Workspace().uid}&openfile=${this.itemData.data.uid}`,
+        },
+      });
+    };
+
+    return container;
+  }
+
+  _p_append_to_container(...args) {
+    let container = document.createElement('div');
+    container.append(...super._p_append_to_container(...args));
+
+    container.classList.add('nc-left-container');
+
+    return [container];
   }
 
   _p_create_button(button) {
@@ -583,7 +638,30 @@ class FileTag extends AActionNextcloudTag {
 
     button.style.borderRadius = '5px';
 
-    return button;
+    /**
+     * @type {HTMLButtonElement}
+     */
+    let other = button.cloneNode();
+    other.textContent = EMPTY_STRING;
+    other.appendChild(BnumHtmlIcon.Create({ icon: 'account_tree' }));
+    other.setAttribute('title', "Ouvrir dans l'arborescence");
+    other.onclick = () => {
+      NextcloudModule.EmptyWorkspaceObject.switch_workspace_page('stockage', {
+        newArgs: {
+          _params: `/apps/files?dir=/dossiers-${NextcloudModule.Workspace().uid}&fileid=${this.itemData.data.uid}`,
+        },
+      });
+    };
+
+    let group = HTMLButtonGroup.CreateNode([]);
+    group.navigator.append(other, button);
+
+    group.onloaded.push((caller) => {
+      caller.removeClass('btn-group-vertical').addClass('btn-group');
+      caller.onloaded.clear();
+    });
+
+    return group;
   }
 }
 

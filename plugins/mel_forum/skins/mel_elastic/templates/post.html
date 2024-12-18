@@ -11,6 +11,24 @@
         <i class="material-symbols-outlined">arrow_back</i>
         <span class="ml-2"><roundcube:label name="mel_forum.articles" /></span>
       </div>
+      <div class=" more_actions_area">
+        <span class="more_action icon" id="more-action" data-icon="more_vert" tabindex="0" role="button" title="Plus d'options" aria-label="Options supplémentaires" aria-haspopup="true" aria-expanded="false"></span>
+        <div id="post-context-menu" class="forum-post-context-menu hidden" role="menu" aria-hidden="true">
+          <h3 id="aria-label-groupoptions-smallmenu" class="voice">Menu du post</h3>
+          <button id="copy-post" class="post-options-button copy-post" tabindex="0" role="menuitem" data-action="copy_post_link" title="<roundcube:label name="mel_forum.copy_article" />" >
+            <span class="icon material-symbols-outlined post-options-icon" data-icon="content_copy"></span>
+            <span class="post-options-text" style="margin-left: 8px;"><roundcube:label name="mel_forum.copy_article" /></span>
+          </button>
+          <button id="edit-post" class="post-options-button edit-post %%HAS_OWNER_RIGHTS%%" tabindex="0" role="menuitem"  data-action="modify_post" title="<roundcube:label name="mel_forum.edit_article" />" >
+            <span class="icon material-symbols-outlined post-options-icon" data-icon="border_color"></span>
+            <span class="post-options-text" style="margin-left: 8px;"><roundcube:label name="mel_forum.edit_article" /></span>
+          </button>
+          <button id="delete-post" class="post-options-button delete-post %%HAS_OWNER_RIGHTS%%" tabindex="0" role="menuitem" data-action="delete_post" title="<roundcube:label name="mel_forum.delete_article" />" >
+            <span class="icon material-symbols-outlined post-options-icon" data-icon="delete"></span>
+            <span class="post-options-text" style="margin-left: 8px;"><roundcube:label name="mel_forum.delete_article" /></span>
+          </button>
+        </div>
+      </div>
     </div>
     <div class="row forum-header">
       <div class="col-12">

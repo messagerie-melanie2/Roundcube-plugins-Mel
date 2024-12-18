@@ -317,6 +317,9 @@
   font-size: 28px;
   font-weight: bold;
 }
+.task-forum .return-header {
+  justify-content: space-between;
+}
 .task-forum .return-header .return {
   display: flex;
   align-items: center;
@@ -329,6 +332,89 @@
 }
 .task-forum .return-header .return:hover {
   background-color: var(--hover-background-color);
+}
+.task-forum .return-header .icon {
+  color: var(--main-text-color);
+}
+.task-forum .return-header .icon::before {
+  font-family: 'Material Symbols Outlined';
+  content: attr(data-icon);
+  font-size: 24px;
+  font-variation-settings: 'wght' 300;
+  display: inline-block;
+  vertical-align: middle;
+  color: inherit;
+}
+.task-forum .return-header .more_actions_area {
+  position: relative;
+  margin: 10px 50px 0 0;
+}
+.task-forum .return-header .more_action {
+  display: flex;
+  align-items: center;
+  /* Centre l'icône verticalement */
+  justify-content: center;
+  /* Centre l'icône horizontalement */
+  width: 35px;
+  /* Taille fixe pour le carré */
+  height: 35px;
+  /* Hauteur fixe pour le carré */
+  padding: 0;
+  /* Évitez le padding qui pourrait décaler l'icône */
+  border-radius: 5px;
+  /* Coins arrondis */
+  transition: background-color 0.3s ease, color 0.3s ease;
+  margin-right: 3px;
+}
+.task-forum .return-header .more_action .icon {
+  font-size: 24px;
+  /* Ajustez la taille de l'icône si nécessaire */
+  line-height: 1;
+  /* Empêche les décalages verticaux */
+  color: inherit;
+  /* Assure que la couleur s’adapte */
+}
+.task-forum .return-header .more_action:hover {
+  background-color: var(--hover-background-color);
+  cursor: pointer;
+}
+.task-forum .return-header .more_action:hover .icon::before {
+  font-variation-settings: 'wght' 400, 'FILL' 1;
+  color: var(--forum-hover-text-color);
+}
+.task-forum .return-header .more_action.active .icon::before {
+  font-variation-settings: 'FILL' 1;
+}
+.task-forum .return-header .forum-post-context-menu {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 5px;
+  position: absolute;
+  top: 40px;
+  left: -180px;
+  transform: translateX(-10px);
+  border-radius: 10px;
+  background-color: var(--bureau-card-background-color);
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.5);
+  color: var(--main-text-color);
+  z-index: 200;
+}
+.task-forum .return-header .forum-post-context-menu .post-options-button {
+  display: flex;
+  align-items: center;
+  border: none;
+  outline: none;
+  background-color: var(--bureau-card-background-color);
+  cursor: pointer;
+  color: inherit;
+  border-radius: 5px;
+}
+.task-forum .return-header .forum-post-context-menu .post-options-button:hover {
+  background-color: var(--hover-background-color);
+}
+.task-forum .return-header .forum-post-context-menu .post-options-button .post-options-icon {
+  font-size: 17px !important;
 }
 .task-forum .forum-sort {
   display: flex;

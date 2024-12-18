@@ -1,4 +1,4 @@
-import { BnumMessage } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
+import { BnumMessage, eMessageType } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { PostComment, PostCommentView } from './comments.js';
@@ -30,6 +30,9 @@ export class Manager extends MelObject {
    */
   main() {
     super.main();
+
+    // Gestion du bouton d'action du post
+    this.initButtons();
 
     // Charger l'ordre de tri depuis le LocalStorage, sinon utiliser 'date_desc' par défaut
     const savedSortOrder =
@@ -326,5 +329,148 @@ export class Manager extends MelObject {
         $(`#responses-${parent_comment_id}`).prepend(commentHtml);
       }
     }
+  }
+
+  /**
+   * Initialise les actions des boutons de la page
+   */
+  initButtons() {
+    const more_action = $("#more-action");
+    const context_menu = $("#post-context-menu");
+    const button_copy = $("#copy-post");
+    const button_edit = $("#edit-post");
+    const button_delete = $("#delete-post");
+
+    //Ne pas afficher les boutons d'édition et supression si l'utilisateur n'a pas les droits suffisant
+    if(!rcmail.env.has_owner_rights){
+      button_delete.toggleClass('hidden');
+      button_edit.toggleClass('hidden');
+    }
+    
+  //TODO gérer les actions clavier
+    more_action.click(()=>
+    {
+      context_menu.toggleClass('hidden');
+      // Si le menu est visible, ajouter un écouteur pour détecter les clics extérieurs
+      if (!context_menu.hasClass('hidden')) {
+        // Ajouter un écouteur de clic sur tout le document après un léger délai
+        setTimeout(() => {
+          $(document).on('click.menuOutside', function(event) {
+              // Vérifier si le clic est en dehors du menu et du bouton trigger
+              if (!$(event.target).closest(context_menu).length && !$(event.target).closest(more_action).length) {
+                  context_menu.addClass('hidden');  // Masquer le menu
+                  $(document).off('click.menuOutside'); // Retirer l'écouteur après fermeture
+              }
+          });
+
+          // Ajouter un écouteur d'événements pour chaque bouton du menu
+          context_menu.find('.post-options-button').on('click', function() {
+              context_menu.addClass('hidden'); // Fermer le menu
+              $(document).off('click.menuOutside'); // Retirer l'écouteur après fermeture
+          });
+        }, 0);  // Délai de 0 pour que l'événement de clic sur le bouton soit géré en premier
+
+      } else {
+        // Si le menu est caché, retirer l'écouteur du document
+        $(document).off('click.menuOutside');
+      }
+    });
+    //Gestion du clavier
+    more_action.on("keydown", (event) => {
+      if(event.keyCode === 13) {
+        more_action.click();
+      }
+    });
+
+    button_copy.click(() =>{
+      this.copyPostLink();
+    });
+    button_edit.click(() =>{
+      this.editPost();
+    });
+    button_delete.click(() =>{
+      this.deletePost();
+    });
+  }
+
+  /**
+     * copie dans le presse papier l'url de la page
+     */
+  copyPostLink(){
+    let url = window.location.href.replaceAll("&_is_from=iframe", "&_force_bnum=1");
+    navigator.clipboard.writeText(url).then(() => {
+        BnumMessage.DisplayMessage(
+            rcmail.gettext('mel_forum.link_copied'),
+            eMessageType.Confirmation,
+        );
+    });
+  }
+
+  /**
+     * Permet d'éditer un post.
+     *
+     * - Construit l'URL d'édition en utilisant l'uid du post et du workspace.
+     * @returns {void}
+     */
+  editPost() {
+    // Rediriger vers la page d'édition avec l'UID du post
+    window.location.href = this.url('forum', { action: 'create_or_edit_post', params:{'_uid': rcmail.env.post_uid, '_workspace_uid': rcmail.env.workspace_uid}});
+  }
+
+  /**
+   * Supprime un post spécifique après confirmation de l'utilisateur.
+   *
+   * - Empêche les comportements par défaut et la propagation de l'événement.
+   * - Affiche une boîte de dialogue de confirmation avant de procéder.
+   * - Envoie une requête HTTP pour supprimer le post.
+   * - Gère les retours de succès ou d'erreur et met à jour l'affichage en conséquence.
+   * @returns {void}
+   */
+  deletePost() {
+
+    // Demander confirmation à l'utilisateur avant de supprimer
+    const confirmation = confirm(rcmail.gettext('mel_forum.delete_post_confirm'));
+    if (!confirmation) return; // Arrêter la fonction si l'utilisateur annule
+
+    // Envoi d'une requête HTTP pour supprimer le post
+    this.http_internal_post({
+        task: 'forum',
+        action: 'delete_post',
+        params: {
+            _uid: rcmail.env.post_uid,
+        },
+        processData: false,
+        contentType: false,
+        on_success: (response) => {
+            const parsedResponse = JSON.parse(response);
+
+            if (parsedResponse.status === 'success') {
+                // Affichage du message de succès
+                BnumMessage.DisplayMessage(
+                    parsedResponse.message || rcmail.gettext('mel_forum.delete_post_success'),
+                    eMessageType.Confirmation
+                );
+
+                //retourner à la page d'accueil
+                window.location.href = this.url('forum', {
+                  action: 'index',
+                  params: { _workspace_uid: this.get_env('workspace_uid') },
+                });
+            } else {
+                // Affichage du message d'erreur en cas d'échec
+                BnumMessage.DisplayMessage(
+                      parsedResponse.message || rcmail.gettext('mel_forum.delete_post_failure'),
+                      eMessageType.Error
+                );
+            }
+        },
+        on_error: (err) => {
+            // Affichage du message d'erreur en cas de problème avec la requête
+            BnumMessage.DisplayMessage(
+                  rcmail.gettext('mel_forum.delete_post_failure'),
+                  eMessageType.Error
+            );
+        }
+    });
   }
 }

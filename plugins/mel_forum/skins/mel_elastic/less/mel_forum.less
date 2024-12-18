@@ -386,8 +386,9 @@
       font-weight: bold;
     }
   }
-
+ //todo
   .return-header {
+    justify-content: space-between;
     .return {
       display: flex;
       align-items: center;
@@ -403,6 +404,100 @@
 
       &:hover {
         background-color: var(--hover-background-color);
+      }
+    }
+
+    .icon {
+      color: var(--main-text-color);
+
+      &::before {
+        font-family: 'Material Symbols Outlined';
+        content: attr(data-icon);
+        font-size: 24px;
+        font-variation-settings: 'wght' 300;
+        display: inline-block;
+        vertical-align: middle;
+        color: inherit;
+      }
+    }
+    .more_actions_area{
+      position: relative;
+      margin: 10px 50px 0 0;
+    }
+    .more_action {
+      display: flex;
+      align-items: center; /* Centre l'icône verticalement */
+      justify-content: center; /* Centre l'icône horizontalement */
+      width: 35px; /* Taille fixe pour le carré */
+      height: 35px; /* Hauteur fixe pour le carré */
+      padding: 0; /* Évitez le padding qui pourrait décaler l'icône */
+      border-radius: 5px; /* Coins arrondis */
+      transition:
+        background-color 0.3s ease,
+        color 0.3s ease;
+      margin-right: 3px;
+    }
+
+    .more_action .icon {
+      font-size: 24px; /* Ajustez la taille de l'icône si nécessaire */
+      line-height: 1; /* Empêche les décalages verticaux */
+      color: inherit; /* Assure que la couleur s’adapte */
+    }
+
+    .more_action:hover {
+      background-color: var(--hover-background-color);
+      cursor: pointer;
+    }
+
+    .more_action:hover .icon::before {
+      font-variation-settings:
+        'wght' 400,
+        'FILL' 1;
+      color: var(--forum-hover-text-color);
+    }
+
+    .more_action.active .icon::before {
+      font-variation-settings: 'FILL' 1;
+    }
+
+    .forum-post-context-menu {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 5px;
+      position: absolute;
+      top: 40px;
+      left: -180px; // Ajustement de la position vers la gauche
+      transform: translateX(
+        -10px
+      ); // Ajustement supplémentaire vers la gauche
+      // width: 198px;
+      // height: 100px;
+      border-radius: 10px;
+      background-color: var(--bureau-card-background-color);
+      box-shadow: 0 10px 10px rgba(0, 0, 0, 0.5);
+      color: var(--main-text-color);
+      z-index: 200;
+
+      .post-options-button {
+        display: flex;
+        align-items: center;
+        border: none;
+        outline: none;
+        background-color: var(
+          --bureau-card-background-color
+        ); // même couleur de fond
+        cursor: pointer;
+        color: inherit; // conserver la couleur du texte du parent
+        border-radius: 5px;
+        &:hover {
+          background-color: var(
+            --hover-background-color
+          ); // légère modification au survol
+        }
+        .post-options-icon {
+          font-size: 17px !important;
+        }
       }
     }
   }

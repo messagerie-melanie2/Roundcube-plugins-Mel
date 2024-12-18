@@ -201,6 +201,7 @@ class mel_forum extends bnum_plugin
             $this->rc()->output->set_env('post_id', $this->current_post->id);
             $this->rc()->output->set_env('workspace_uid', $workspace_uid);
             $this->rc()->output->set_env('show_comments', $this->current_post->settings["comments"]);
+            $this->rc()->output->set_env('has_owner_rights', $this->_has_owner_rights($this->current_post, $workspace_uid));
 
             $this->rc()->output->send('mel_forum.post');
         } else {
@@ -333,7 +334,6 @@ class mel_forum extends bnum_plugin
         $uid = $this->get_input('_uid', rcube_utils::INPUT_GET);
         // Récupérer l'utilisateur
         $user = driver_mel::gi()->getUser();
-        $current_user_uid = $user->uid;
 
         //vérification des droits d'accès
         if ($user->isWorkspaceMember($this->get_input('_workspace_uid'))) {
@@ -351,9 +351,9 @@ class mel_forum extends bnum_plugin
                     $is_editing = true;
 
                     // Vérifier si l'utilisateur connecté est bien le créateur de l'article
-                    if ($post->creator !== $current_user_uid) {
-                        //TODO afficher une page d'erreur
-                        echo json_encode(['status' => 'error', 'message' => $this->gettext("creator_edit_only", "mel_forum")]);
+                    if (!$this->_has_owner_rights($post, $this->get_input('_workspace_uid'))) {
+                        //afficher une page d'erreur
+                        $this->_display_error_page();
                         exit; // Arrêter l'exécution si l'utilisateur n'est pas le créateur
                     }
 

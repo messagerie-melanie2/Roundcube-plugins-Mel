@@ -1,3 +1,4 @@
+/* eslint-disable vars-on-top */
 const enable_custom_uid = true;
 jQuery.fn.swap = function (b) {
   b = jQuery(b)[0];
@@ -1739,82 +1740,81 @@ function m_mp_autocoplete(element, action_after = null, append = true) {
   let val = $(element).val();
 
   if (val.includes(',')) {
-    val = val.replace(',', '');
-    let html = '<li class="recipient workspace-recipient">';
-    if (val.includes('<') && val.includes('>')) {
-      let _enum = Enumerable.from(val);
-      let index1 = val.indexOf('<');
-      let index2 = val.indexOf('>');
-      //console.log(val, _enum);
-      //.where((x, i) => i > index2).toArray().splice(1).join("").replace(",", "")
-      html +=
-        '<span class="email">' +
-        _enum
-          .where((x, i) => index1 < i && i < index2)
-          .toArray()
-          .join('') +
-        '</span>'; //.join("")
-      html +=
-        '<span class="name">' +
-        _enum
-          .where((x, i) => i < index1)
-          .toArray()
-          .join('')
-          .replace(',', '') +
-        '</span>';
-    } else {
-      html += '<span class="name">' + val + '</span>';
-      html += '<span class="email">' + val + '</span>';
-    }
-    html += '<a class="button icon remove" onclick=m_mp_remove_li(this)></a>';
-    html += '</li>';
+    const splited = val.replaceAll(' ', '').split(',');
+    for (val of splited) {
+      var html = '<li class="recipient workspace-recipient">';
+      if (val.includes('<') && val.includes('>')) {
+        var _enum = Enumerable.from(val);
+        var index1 = val.indexOf('<');
+        var index2 = val.indexOf('>');
+        //console.log(val, _enum);
+        //.where((x, i) => i > index2).toArray().splice(1).join("").replace(",", "")
+        html +=
+          '<span class="email">' +
+          _enum
+            .where((x, i) => index1 < i && i < index2)
+            .toArray()
+            .join('') +
+          '</span>'; //.join("")
+        html +=
+          '<span class="name">' +
+          _enum
+            .where((x, i) => i < index1)
+            .toArray()
+            .join('')
+            .replace(',', '') +
+          '</span>';
+      } else {
+        html += '<span class="name">' + val + '</span>';
+        html += '<span class="email">' + val + '</span>';
+      }
+      html += '<a class="button icon remove" onclick=m_mp_remove_li(this)></a>';
+      html += '</li>';
 
-    if (append === true) {
-      $('#wspf').append(html);
-      $(element).val('');
-      //console.log("html", $($("#wspf").children()[$("#wspf").children().length-1])[0].outerHTML,     $(element).parent()[0].outerHTML);
-      html = $(element).parent()[0].outerHTML;
-      console.log($(element).parent());
-      //$(element).parent().remove();
-      rcmail.init_address_input_events($(element));
-      $(element).focus();
-    }
+      if (append === true) {
+        $('#wspf').append(html);
+        $(element).val('');
+        //console.log("html", $($("#wspf").children()[$("#wspf").children().length-1])[0].outerHTML,     $(element).parent()[0].outerHTML);
+        html = $(element).parent()[0].outerHTML;
+        console.log($(element).parent());
+        //$(element).parent().remove();
+        rcmail.init_address_input_events($(element));
+        $(element).focus();
+      }
 
-    //console.log("auto", $(element).val(), html, append, element);
-    if (append === true) {
-      $('#wspf').append(html);
-      $(element).val('');
+      //console.log("auto", $(element).val(), html, append, element);
+      if (append === true) {
+        $('#wspf').append(html);
+        $(element).val('');
 
-      html = $(element).parent()[0].outerHTML;
+        html = $(element).parent()[0].outerHTML;
 
-      $(element).parent().remove();
-      rcmail.init_address_input_events($(element));
-      $(element).focus();
-    }
+        $(element).parent().remove();
+        rcmail.init_address_input_events($(element));
+        $(element).focus();
+      }
 
-    if (action_after !== null) {
-      action_after({
-        $element: $(element),
-        val,
-      });
+      if (action_after !== null) {
+        action_after({
+          $element: $(element),
+          val,
+        });
+      }
     }
   }
 }
 
-function m_mp_add_users() {
+function m_mp_add_users(args = null) {
   let users = [];
   $('#wspf .workspace-recipient').each((i, e) => {
     users.push($(e).find('.email').html());
   });
 
-  let input = $('#_workspace-user-list');
+  let input = args?.$element ?? $('#_workspace-user-list');
+  const val = args?.val ?? input.val();
 
-  if (input.val().length > 0)
-    users.push(
-      input.val().includes('<')
-        ? input.val().split('<')[1].split('>')[0]
-        : input.val(),
-    );
+  if (val.length > 0)
+    users.push(val.includes('<') ? val.split('<')[1].split('>')[0] : val);
 
   input.val('');
 

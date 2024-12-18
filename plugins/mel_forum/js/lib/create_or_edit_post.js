@@ -23,7 +23,7 @@ export class create_or_edit_post extends MelObject {
             $("#edit-title").val('');
         });
         $('#go-back-to-articles').click(() => {
-            window.location.href = this.url('forum',{action:'index', params:{'workspace_uid': this.workspace}});
+            window.location.href = this.url('forum',{action:'index', params:{'_workspace_uid': this.workspace}});
         });
  
         let config = rcmail.env.editor_config;

@@ -184,6 +184,7 @@ $labels['like_cancelled_dislike_registered'] = 'Like annulé, dislike enregistr�
 $labels['dislike_cancelled'] = 'Dislike annulé avec succès.';
 $labels['dislike_cancelled_like_registered'] = 'Dislike annulé, like enregistré avec succès.';
 $labels['like_dislike_save_failure'] = 'Erreur lors de l\'enregistrement du like/dislike.';
+$labels['reaction_saved'] = 'Réaction enregistrée.';
 
 #region IMAGES
 

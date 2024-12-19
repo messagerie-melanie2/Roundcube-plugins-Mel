@@ -188,6 +188,7 @@ class mel_forum extends bnum_plugin
             $this->load_script_module('manager');
 
             $this->current_post = $this->get_post($uid);
+            $reactions = $this->current_post->listReactions();
 
 
             $this->rc()->output->add_handlers(array('show_post_title' => array($this, 'show_post_title')));
@@ -196,12 +197,16 @@ class mel_forum extends bnum_plugin
             $this->rc()->output->add_handlers(array('show_post_creator_email' => array($this, 'show_post_creator_email')));
             $this->rc()->output->add_handlers(array('show_post_date' => array($this, 'show_post_date')));
             $this->rc()->output->add_handlers(array('show_post_content' => array($this, 'show_post_content')));
+            $this->rc()->output->add_handlers(array('show_post_like' => array($this, 'show_post_like')));
+            $this->rc()->output->add_handlers(array('show_post_dislike' => array($this, 'show_post_dislike')));
 
             $this->rc()->output->set_env('post_uid', $this->current_post->uid);
             $this->rc()->output->set_env('post_id', $this->current_post->id);
             $this->rc()->output->set_env('workspace_uid', $workspace_uid);
             $this->rc()->output->set_env('show_comments', $this->current_post->settings["comments"]);
             $this->rc()->output->set_env('has_owner_rights', $this->_has_owner_rights($this->current_post, $workspace_uid));
+            $this->rc()->output->set_env('has_liked', $this->_has_Reacted('like', $reactions));
+            $this->rc()->output->set_env('has_disliked', $this->_has_Reacted('dislike', $reactions));
 
             $this->rc()->output->send('mel_forum.post');
         } else {
@@ -209,6 +214,7 @@ class mel_forum extends bnum_plugin
         }
     }
 
+    #region AFFICHAGE POST
     /**
      * Affiche le titre de la publication actuelle.
      *
@@ -309,13 +315,30 @@ class mel_forum extends bnum_plugin
      *
      * @return string Le contenu de la publication actuelle.
      */
-
     public function show_post_content()
     {
         $content = $this->current_post->content;
 
         return $content;
     }
+
+    /**
+     * Affiche le nombre de like de la publication actuelle
+     * @return string le nombre de like de la publication actuelle
+     */
+    public function show_post_like()
+    {
+        return strval($this->current_post->likes);
+    }
+    /**
+     * Affiche le nombre de dislike de la publication actuelle
+     * @return string le nombre de dislike de la publication actuelle
+     */
+    public function show_post_dislike()
+    {
+        return strval($this->current_post->dislikes);
+    }
+    #endregion
 
     /**
      * Gère la création ou la modification d'un article.
@@ -569,9 +592,9 @@ class mel_forum extends bnum_plugin
     }
 
     /**
-     * Récupère un article en fonction de son UID et renvoie les données en format JSON.
+     * Récupère un article en fonction de son UID.
      *
-     * @return void Cette méthode ne retourne rien mais affiche directement une réponse JSON.
+     * @return LibMelanie\Api\Defaut\Posts\Post objet post.
      */
     public function get_post($uid)
     {
@@ -580,7 +603,6 @@ class mel_forum extends bnum_plugin
 
         $ret = $post->load();
         if (!is_null($ret)) {
-
             return $post;
         } else {
             return null;
@@ -1771,6 +1793,26 @@ class mel_forum extends bnum_plugin
         $reaction->creator = $user_uid;
         $reaction->type = $type;
         return $reaction->load();
+    }
+    /**
+     * Vérifie si l'utilisateur courant à mit la réaction passée en paramètre au post passé en paramètre
+     * @param string $type type de la reaction
+     * @param Reaction[] $reactions uid de l'article
+     * 
+     * @return boolean 
+     */
+    protected function _has_Reacted($type, $reactions)
+    {
+        // Récupérer l'utilisateur
+        $user = driver_mel::gi()->getUser();
+        $user_uid = $user->uid;
+
+        foreach ($reactions as $reaction) {
+            if ($reaction->user_uid === $user_uid && $reaction->type === $type) {
+                return true;
+            }
+        }
+        return false;
     }
 
     #endregion

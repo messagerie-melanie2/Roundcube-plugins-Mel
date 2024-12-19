@@ -335,11 +335,13 @@ export class Manager extends MelObject {
    * Initialise les actions des boutons de la page
    */
   initButtons() {
-    const more_action = $("#more-action");
-    const context_menu = $("#post-context-menu");
-    const button_copy = $("#copy-post");
-    const button_edit = $("#edit-post");
-    const button_delete = $("#delete-post");
+    const more_action = $('#more-action');
+    const context_menu = $('#post-context-menu');
+    const button_copy = $('#copy-post');
+    const button_edit = $('#edit-post');
+    const button_delete = $('#delete-post');
+    const button_add_like = $('#add_like');
+    const button_add_dislike = $('#add_dislike');
 
     //Ne pas afficher les boutons d'édition et supression si l'utilisateur n'a pas les droits suffisant
     if(!rcmail.env.has_owner_rights){
@@ -390,6 +392,21 @@ export class Manager extends MelObject {
     });
     button_delete.click(() =>{
       this.deletePost();
+    });
+
+    // Initialisation de l'affichage boutons like et dislike en fonction de l'utilisateur.
+    if (rcmail.env.has_liked) {
+      button_add_like.addClass('filled');
+    }
+    if (rcmail.env.has_disliked) {
+      button_add_dislike.addClass('filled');
+    }
+
+    button_add_like.click(()=> {
+      this.addLikeOrDislike('like');
+    });
+    button_add_dislike.click(()=> {
+      this.addLikeOrDislike('dislike');
     });
   }
 
@@ -472,5 +489,76 @@ export class Manager extends MelObject {
             );
         }
     });
+  }
+
+  /**
+     * Gestion des likes et dislike des posts
+     * @param {*} type type de la reaction
+     */
+  addLikeOrDislike(type){
+    this.http_internal_post({
+        task: 'forum',
+        action: 'manage_reaction',
+        params: {
+            _post_id: rcmail.env.post_id,
+            _type: type,
+        },
+        processData:false,
+        contentType:false,
+        on_success: () => {
+            BnumMessage.DisplayMessage(
+              rcmail.gettext('mel_forum.reaction_saved'),
+                eMessageType.Confirmation,
+            );
+            let like_div = $('#add_like');
+            let like_counter = like_div.find('span.ml-2');
+            let dislike_div = $('#add_dislike');
+            let dislike_counter = dislike_div.find('span.ml-2');
+
+            if (type ==='like'){
+                if (like_div.hasClass('filled')){
+                    like_div.removeClass('filled');
+                    this.updateCounter(like_counter, -1);
+                }else{
+                    like_div.addClass('filled');
+                    this.updateCounter(like_counter, 1);
+
+                    if(dislike_div.hasClass('filled')) {
+                        dislike_div.removeClass('filled');
+                        this.updateCounter(dislike_counter, -1);
+                    }
+                }
+            } else if (type === 'dislike'){
+                if (dislike_div.hasClass('filled')){
+                    dislike_div.removeClass('filled');
+                    this.updateCounter(dislike_counter, -1);
+                }else{
+                    dislike_div.addClass('filled');
+                    this.updateCounter(dislike_counter, 1);
+
+                    if(like_div.hasClass('filled')){
+                        like_div.removeClass('filled');
+                        this.updateCounter(like_counter, -1);
+                    }
+                }
+            }
+        },
+        on_error: (err) => {
+            BnumMessage.DisplayMessage(
+                rcmail.gettext('mel_forum.error_editing'),
+                eMessageType.Error,
+            );
+        },
+    });
+  }
+  /**
+     * Met à jour le compteur de like , si on est à 0 n'affiche rien
+     * @param {*} span élément html à mettre à jour
+     * @param {*} value modification apportée au compteur
+     */
+  updateCounter(span, value) {
+    let currentValue = parseInt(span.text()) || 0; // Récupérer la valeur actuelle
+    let newValue = currentValue + value;
+    span.text(newValue); // Sinon, on met à jour la valeur
   }
 }

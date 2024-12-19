@@ -29,13 +29,18 @@ ini_set("error_log", LOG_FILE);
 $rcmail_config = [];
 if (APPLICATION_LOCALE) {
   include_once __DIR__ . '/config.inc.php';
-} else {
-  require_once '../lib/utils.php';
+}
+else {
   require_once __DIR__ . '/../config.inc.php';
-
+  
   // PAMELA - Application name configuration for ORM Mél
   define('CONFIGURATION_APP_LIBM2', 'roundcube');
-  $dir = utils::getDirPath('signature');
+  if ($config['DOCKER']) {
+    $dir = __DIR__ . '/../../bnum';
+  }
+  else {
+    $dir = __DIR__ . '/../..';
+  }
 
   @include_once 'includes/libm2.php';
   include_once $dir . '/vendor/autoload.php';

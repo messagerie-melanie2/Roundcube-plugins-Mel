@@ -78,6 +78,8 @@ $labels['edit_comment'] = 'Modifier le commentaire';
 $labels['delete_comment'] = 'Supprimer le commentaire';
 $labels['more_options'] = 'Plus d\'options';
 $labels['no_post'] = 'Cet espace ne contient aucun article pour le moment.';
+$labels['add_title'] = 'Ajouter un titre :';
+$labels['add_content'] = 'Ajouter du contenu :';
 
 #region Message
 

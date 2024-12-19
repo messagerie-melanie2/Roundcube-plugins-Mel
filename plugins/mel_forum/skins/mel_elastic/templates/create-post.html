@@ -27,7 +27,7 @@
     <div class="row forum-content">
       <div class="col-8">
         <div class="row">
-          <div class="form-floating border-bottom-input-icon">
+          <div class="form-floating border-bottom-input-icon title-input">
             <input
               type="text"
               class="form-control input-mel border-bottom-input large-input"
@@ -35,7 +35,7 @@
               id="edit-title"
               required="true"
             />
-            <label for="edit-title">Ajoutez un titre</label>
+            <label for="edit-title"><roundcube:label name="mel_forum.add_title" /></label>
             <button
               id="reset-title-button"
               class="border-bottom-input-button close-button btn btn-secondary"
@@ -72,7 +72,7 @@
           
         </div>
         <div class="row mt-4 ">
-          <label for="edit-title">Ajouter du contenu</label>
+          <label for="edit-title"><roundcube:label name="mel_forum.add_content" /></label>
           <div id="forum-content" class="forum-content mce_editor" placeholder="Ajouter votre contenu"></div>
           <!-- <textarea id="MyID"></textarea> -->
         </div>

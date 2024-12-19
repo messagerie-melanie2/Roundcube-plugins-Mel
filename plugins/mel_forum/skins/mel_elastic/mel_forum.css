@@ -630,6 +630,9 @@
 .task-forum .forum-content .tox-tinymce {
   width: 100%;
 }
+.task-forum .title-input {
+  height: 50px;
+}
 .task-forum .tag-clickable:hover,
 .task-forum .tag-clickable:focus {
   text-decoration: underline;

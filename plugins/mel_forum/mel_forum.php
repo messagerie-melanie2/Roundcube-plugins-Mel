@@ -1388,6 +1388,14 @@ class mel_forum extends bnum_plugin
             }
         }
 
+        // Nouvelle regex pour trouver les images avec _image_uid=
+        preg_match_all('/<img[^>]+src="[^"]*?_image_uid=([^"&]+)[^"]*"[^>]*>/i', $content, $matches);
+
+        foreach ($matches[1] as $uid) {
+            // Collecter les UIDs des images déjà présentes
+            $usedImageUids[] = $uid;
+        }
+
         // Identifier les images obsolètes (non utilisées dans le contenu)
         $obsoleteImageUids = array_diff($existingImageUids, $usedImageUids);
 

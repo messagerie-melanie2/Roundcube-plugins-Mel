@@ -192,7 +192,6 @@ class WspNavBar extends HtmlCustomTag {
   _p_main() {
     // this.attachInternals().states.add('can-be-busy');
     this.classList.add('can-be-busy');
-    this.style.display = 'none';
     this.data('shadow', true);
 
     let shadow = this._p_start_construct();
@@ -202,6 +201,7 @@ class WspNavBar extends HtmlCustomTag {
     let div = document.createElement('div');
     div.classList.add('nav', 'melv2-card');
     div.setAttribute('id', this.id);
+    div.style.display = 'none';
 
     shadow.append(div);
 
@@ -234,13 +234,10 @@ class WspNavBar extends HtmlCustomTag {
 
     this._generate_hashtag()._generate_minify_button();
 
+    div.style.display = null;
     div = null;
     //style = null;
     shadow = null;
-
-    setTimeout(() => {
-      this.style.display = EMPTY_STRING;
-    }, 10);
   }
 
   _generate_back_button() {

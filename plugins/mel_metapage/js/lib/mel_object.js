@@ -602,13 +602,28 @@ class MelObject {
   }
 
   /**
-   * Copy un texte dans le press(papier)
-   * @param {!string} text Texte à mettre dans le presse papier
-   * @returns {MelObject} Chaînage
+   * Copie un texte dans le press(papier)
+   * @param {string} elementToCopy Texte à mettre dans le presse papier
+   * @param {Object} [options={}]
+   * @param {?string} [options.text=null] Texte à afficher lorsque la copie a été effectuée
    * @protected
    */
-  copy_to_clipboard(text) {
-    mel_metapage.Functions.copy(text);
+  copy_to_clipboard(elementToCopy, { text = null } = {}) {
+    function copyOnClick(val) {
+      var tempInput = document.createElement('input');
+      tempInput.value = val;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+    }
+
+    copyOnClick(elementToCopy);
+    rcmail.display_message(
+      text || `${elementToCopy} copier dans le presse-papier.`,
+      'confirmation',
+    );
+
     return this;
   }
 
@@ -1148,13 +1163,16 @@ class EmptyMelObject extends MelObject {
   }
 
   /**
-   * Copy un texte dans le press(papier)
-   * @param {!string} text Texte à mettre dans le presse papier
-   * @returns {MelObject} Chaînage
+   * Copie un texte dans le press(papier)
+   * @param {string} elementToCopy Texte à mettre dans le presse papier
+   * @param {Object} [options={}]
+   * @param {?string} [options.text=null] Texte à afficher lorsque la copie a été effectuée
+   * @returns {EmptyMelObject} Chaînage
    * @public
+   * @override
    */
-  copy_to_clipboard(text) {
-    return super.copy_to_clipboard(text);
+  copy_to_clipboard(elementToCopy, { text = null } = {}) {
+    return super.copy_to_clipboard(elementToCopy, { text });
   }
 
   /**

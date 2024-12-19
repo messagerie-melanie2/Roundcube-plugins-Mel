@@ -406,6 +406,7 @@ class WspNavBar extends HtmlCustomTag {
           _uid: this.workspace.uid,
         },
       }).replace('&_is_from=iframe', EMPTY_STRING),
+      { text: "L'url de l'espace a bien été copié !" },
     );
 
     let icon = new BnumHtmlIcon('content_copy');

@@ -629,6 +629,7 @@ class FileTag extends AActionNextcloudTag {
         },
         removeIsFromIframe: true,
       }),
+      { text: "L'url a été copié dans le presse papier !" },
     );
 
     let icon = document.createElement('bnum-icon');

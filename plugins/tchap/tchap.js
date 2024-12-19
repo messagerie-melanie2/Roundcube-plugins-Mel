@@ -79,7 +79,10 @@ class tchap_manager extends MelObject {
         try {
           this.change_theme();
         } catch (error) {
-          console.warn('/!\\[tchapmanager]Il y a une erreur lors du changement de thème', error):
+          console.warn(
+            '/!\\[tchapmanager]Il y a une erreur lors du changement de thème',
+            error,
+          );
         }
       }
     }

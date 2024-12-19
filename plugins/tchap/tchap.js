@@ -25,6 +25,7 @@ const LEFT_PANEL = 'mx_SpacePanel';
 const CONTEXTUAL_MENU = 'mx_ContextualMenu';
 const THEME_BUTTON = 'mx_UserMenu_contextMenu_themeButton';
 const CURRENT_THEME_BODY_CLASS = 'cpd-theme-light';
+const CONTEXTUAL_MENU_BACKGROUND = 'mx_ContextualMenu_background';
 
 /**
  * @class
@@ -80,7 +81,7 @@ class tchap_manager extends MelObject {
           this.change_theme();
         } catch (error) {
           console.warn(
-            '/!\\[tchapmanager]Il y a une erreur lors du changement de thème',
+            '/!\\[tchamanager]Erreur lors du premier changement de thème',
             error,
           );
         }
@@ -243,6 +244,14 @@ class tchap_manager extends MelObject {
    * @type {HTMLElement}
    * @readonly
    */
+  get contextualMenuBackground() {
+    return this.tchapContext.querySelector(`.${CONTEXTUAL_MENU_BACKGROUND}`);
+  }
+
+  /**
+   * @type {HTMLElement}
+   * @readonly
+   */
   get themeButton() {
     this.settingMenuButton.click();
     return this.tchapContext.querySelector(`.${THEME_BUTTON}`);
@@ -261,7 +270,11 @@ class tchap_manager extends MelObject {
       ? 'light'
       : 'dark';
 
-    if (color !== tchap_color) this.themeButton.click();
+    if (color !== tchap_color) {
+      this.themeButton.click();
+
+      if (this.contextualMenuBackground) this.contextualMenuBackground.click();
+    }
   }
 
   /**

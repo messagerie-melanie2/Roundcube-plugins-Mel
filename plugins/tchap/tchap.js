@@ -76,7 +76,11 @@ class tchap_manager extends MelObject {
       );
 
       if (this.tchapContext.querySelector(CONNECTED_SELECTOR) !== null) {
-        this.change_theme();
+        try {
+          this.change_theme();
+        } catch (error) {
+          console.warn('/!\\[tchapmanager]Il y a une erreur lors du changement de thème', error):
+        }
       }
     }
 

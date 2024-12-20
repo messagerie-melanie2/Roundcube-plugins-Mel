@@ -5,12 +5,15 @@
  */
 
 export { MelObject, WrapperObject };
-import { Mel_Ajax } from '../../../mel_metapage/js/lib/mel_promise.js';
+import {
+  Mel_Ajax,
+  Mel_Promise,
+} from '../../../mel_metapage/js/lib/mel_promise.js';
 import { BaseStorage } from './classes/base_storage.js';
 import { Cookie } from './classes/cookies.js';
 import { FramesManager } from './classes/frame_manager.js';
 import { EMPTY_STRING } from './constants/constants.js';
-import { isNullOrUndefined } from './mel.js';
+import { isAsync, isNullOrUndefined } from './mel.js';
 import { Top } from './top.js';
 
 /**
@@ -705,6 +708,43 @@ class MelObject {
   }
 
   /**
+   * (async) Créer une promesse "Mel" qui contient des fonctionnalités en plus
+   * @param {import('../../../mel_metapage/js/lib/mel_promise.js').MelPromiseCallback} callback Peut être asynchrone. Fonction qui sera appelé.
+   * @param  {...any} args Arguments du callback
+   * @returns {Mel_Promise}
+   * @async
+   */
+  create_promise(callback, ...args) {
+    return new Mel_Promise(callback, ...args);
+  }
+
+  /**
+   * (async) Attend qu'une condtion soit valide
+   * @param {import('../../../mel_metapage/js/lib/mel_promise.js').WaitCallback | import('../../../mel_metapage/js/lib/mel_promise.js').WaitCallbackAsync} callback Function qui est appelé à chaque tick. Lorsque "true" est renvoyé, la boucle s'arrête
+   * @param {Object} [options={}]
+   * @param {number} [options.timeout=5] Au bout de combien de secondes la boucle s'arrête
+   * @returns {WaitSomething | WaitSomethingAsync}
+   * @async
+   */
+  wait_something(callback, { timeout = 5 } = {}) {
+    let promise;
+    if (isAsync(callback)) promise = Mel_Promise.wait_async(callback, timeout);
+    else promise = Mel_Promise.wait(callback, timeout);
+
+    return promise;
+  }
+
+  /**
+   * (async) Attend x millisecondes
+   * @param {number} ms Temps en millisecondes
+   * @returns {Mel_Promise}
+   * @async
+   */
+  sleep(ms) {
+    return Mel_Promise.Sleep(ms);
+  }
+
+  /**
    * Envoie un MelObject vide.
    * @returns {EmptyMelObject}
    * @static
@@ -1247,5 +1287,38 @@ class EmptyMelObject extends MelObject {
 
   get_class_name() {
     return this.constructor.name;
+  }
+
+  /**
+   * (async) Créer une promesse "Mel" qui contient des fonctionnalités en plus
+   * @param {import('../../../mel_metapage/js/lib/mel_promise.js').MelPromiseCallback} callback Peut être asynchrone. Fonction qui sera appelé.
+   * @param  {...any} args Arguments du callback
+   * @returns {Mel_Promise}
+   * @async
+   */
+  create_promise(callback, ...args) {
+    return super.create_promise(callback, ...args);
+  }
+
+  /**
+   * (async) Attend qu'une condtion soit valide
+   * @param {import('../../../mel_metapage/js/lib/mel_promise.js').WaitCallback | import('../../../mel_metapage/js/lib/mel_promise.js').WaitCallbackAsync} callback Function qui est appelé à chaque tick. Lorsque "true" est renvoyé, la boucle s'arrête
+   * @param {Object} [options={}]
+   * @param {number} [options.timeout=5] Au bout de combien de secondes la boucle s'arrête
+   * @returns {WaitSomething | WaitSomethingAsync}
+   * @async
+   */
+  wait_something(callback, { timeout = 5 } = {}) {
+    return super.wait_something(callback, { timeout });
+  }
+
+  /**
+   * (async) Attend x millisecondes
+   * @param {number} ms Temps en millisecondes
+   * @returns {Mel_Promise}
+   * @async
+   */
+  sleep(ms) {
+    return super.sleep(ms);
   }
 }

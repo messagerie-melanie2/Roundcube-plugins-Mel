@@ -51,6 +51,7 @@ class WorkspaceAgenda extends WorkspaceObject {
 
   _main() {
     this.loadModule();
+    console.log('workspace', this.workspace);
     let planning = Planning.CreateNode();
     $('#module-agenda .module-block-content').html(planning);
 

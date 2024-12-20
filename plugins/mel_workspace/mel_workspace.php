@@ -248,6 +248,7 @@ class mel_workspace extends bnum_plugin
             if (!$workspace->isAdmin()) $this->include_module('page.user.js');
     
             $this->rc()->output->set_env('current_workspace_uid', $uid);
+            $this->rc()->output->set_env('current_workspace_title', $workspace->title());
             $this->rc()->output->set_env('current_workspace_services_actives', $workspace->services());
             $this->rc()->output->set_env('current_workspace_users', $workspace->users(true)->select(function ($k, $v) {
                 return ['email' => $v->email, 'name' => $v->name, 'fullname' => $v->fullname, 'is_external' => $v->is_external];

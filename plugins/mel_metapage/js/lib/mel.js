@@ -10,6 +10,7 @@ export {
   isDecimal,
   capitalize,
   getRelativePos,
+  isAsync,
 };
 
 /**
@@ -127,4 +128,8 @@ function getRelativePos(elm) {
     (pos.left = cPos.left - pPos.left);
 
   return pos;
+}
+
+function isAsync(func) {
+  return func.constructor.name === 'AsyncFunction';
 }

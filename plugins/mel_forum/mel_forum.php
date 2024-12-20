@@ -1632,8 +1632,9 @@ class mel_forum extends bnum_plugin
             // Récupérer le nombre de réaction pas pris en compte dans la v1
             //$reaction_count = $this->count_reactions($post->uid);
             // Récupérer le nombre de likes
-            $isliked = $this->hasReaction('like', $post->id);
-            $isdisliked = $this->hasReaction('dislike', $post->id);
+            $reactions = $post->listReactions();
+            $isliked = $this->_has_Reacted('like', $reactions);
+            $isdisliked = $this->_has_Reacted('dislike', $reactions);
             // Récupérer le nombre de commentaire
             $comment_count = $post->countComments();
             $is_fav = $this->is_fav($post->uid, $workspace_uid);
@@ -1775,25 +1776,6 @@ class mel_forum extends bnum_plugin
         exit;
     }
 
-    /**
-     * Vérifie si l'utilisateur courant à mit la réaction passée en paramètre au post passé en paramètre
-     * @param string $type type de la reaction
-     * @param string $post_id uid de l'article
-     * 
-     * @return boolean 
-     */
-    protected function hasReaction($type, $post_id)
-    {
-        // Récupérer l'utilisateur
-        $user = driver_mel::gi()->getUser();
-        $user_uid = $user->uid;
-
-        $reaction = new LibMelanie\Api\Defaut\Posts\Reaction();
-        $reaction->post = $post_id;
-        $reaction->creator = $user_uid;
-        $reaction->type = $type;
-        return $reaction->load();
-    }
     /**
      * Vérifie si l'utilisateur courant à mit la réaction passée en paramètre au post passé en paramètre
      * @param string $type type de la reaction

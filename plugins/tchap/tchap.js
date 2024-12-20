@@ -15,7 +15,6 @@ import {
   TCHAT_UNREAD,
 } from '../mel_metapage/js/lib/constants/constants.js';
 import { MelObject } from '../mel_metapage/js/lib/mel_object.js';
-import { Mel_Promise } from '../mel_metapage/js/lib/mel_promise.js';
 export { tchap_manager };
 
 const SETTING_BUTTON = 'mx_UserMenu_contextMenuButton';
@@ -26,6 +25,8 @@ const CONTEXTUAL_MENU = 'mx_ContextualMenu';
 const THEME_BUTTON = 'mx_UserMenu_contextMenu_themeButton';
 const CURRENT_THEME_BODY_CLASS = 'cpd-theme-light';
 const CONTEXTUAL_MENU_BACKGROUND = 'mx_ContextualMenu_background';
+const SLEEP_ON_TASK = 2500;
+const SLEEP_OUTSIDE = 30000;
 
 /**
  * @class
@@ -36,6 +37,104 @@ class tchap_manager extends MelObject {
   constructor() {
     super();
   }
+
+  // #region ReadOnlyVar
+  /**
+   * Document de la frame de tchap
+   * @type {Document}
+   * @readonly
+   */
+  get tchapContext() {
+    return this.tchap_frame()[0].contentWindow.document;
+  }
+
+  /**
+   * Badge qui contient si il y a des messages non-lu
+   * @type {HTMLElement}
+   * @readonly
+   */
+  get badge() {
+    return this.tchapContext.querySelector(
+      '.mx_SpaceButton_home .mx_SpacePanel_badgeContainer .mx_NotificationBadge_count',
+    );
+  }
+
+  /**
+   * Bouton qui ouvre le menu des paramètres
+   * @type {HTMLElement}
+   * @readonly
+   */
+  get settingMenuButton() {
+    return this.tchapContext.querySelector(`.${SETTING_BUTTON}`);
+  }
+
+  /**
+   * Ouvre le menu des paramètres puis récupère le bouton qui ouvre les paramètres.
+   * @type {HTMLElement}
+   * @readonly
+   */
+  get settingButton() {
+    this.settingMenuButton.click();
+    //On récupère l'icône puis l'élément parent, car l'icône est pour le moment, le seul moyen de retrouver le bouton dans la liste
+    return this.tchapContext.querySelector(
+      `.${CONTEXTUAL_MENU}  .${PARAMS_BUTTON}`,
+    ).parentElement;
+  }
+
+  /**
+   * Ouvre le menu des paramètres puis récupère le bouton de déconnexion.
+   * @type {HTMLElement}
+   * @readonly
+   */
+  get disconnectButton() {
+    this.settingMenuButton.click();
+    //On récupère l'icône puis l'élément parent, car l'icône est pour le moment, le seul moyen de retrouver le bouton dans la liste
+    return this.tchapContext.querySelector(
+      `.${CONTEXTUAL_MENU}  .${DISCONNECT_BUTTON}`,
+    ).parentElement;
+  }
+
+  /**
+   * Panneau de gauche
+   * @type {HTMLElement}
+   * @readonly
+   */
+  get leftPanel() {
+    return this.tchapContext.querySelector(`.${LEFT_PANEL}`);
+  }
+
+  /**
+   * Div en arrière plan lorsque le menu des paramètres est ouvert.
+   * @type {HTMLElement}
+   * @readonly
+   */
+  get contextualMenuBackground() {
+    return this.tchapContext.querySelector(`.${CONTEXTUAL_MENU_BACKGROUND}`);
+  }
+
+  /**
+   * Ouvre le menu des paramètres puis récupère le bouton de thème.
+   * @type {HTMLElement}
+   * @readonly
+   */
+  get themeButton() {
+    this.settingMenuButton.click();
+    return this.tchapContext.querySelector(`.${THEME_BUTTON}`);
+  }
+
+  /**
+   * Messages non-lu
+   * @type {string | number}
+   * @readonly
+   */
+  get unread() {
+    if (!this.badge) return null;
+
+    const val = +(this.badge.textContent || 'user_defined_unread');
+
+    return isNaN(val) ? TCHAT_UNREAD : val;
+  }
+  // #endregion
 
   /**
    * @async
@@ -71,7 +170,7 @@ class tchap_manager extends MelObject {
 
     {
       const CONNECTED_SELECTOR = `.${SETTING_BUTTON}`;
-      await Mel_Promise.wait(
+      await this.wait_something(
         () => this.tchapContext.querySelector(CONNECTED_SELECTOR) !== null,
         60,
       );
@@ -132,19 +231,21 @@ class tchap_manager extends MelObject {
     });
   }
 
+  // #region private
   /**
    * Gestion des notifications sur la barre de gauche
    * @private
    * @return {Promise<void>}
    */
   async _notificationhandler() {
-    this.update_badge();
-
     while (true) {
-      if (FramesManager.Instance.currentTask === 'tchap') await delay(2500);
-      else await delay(30000);
-
       this._update_badge();
+
+      await this.sleep(
+        FramesManager.Instance.currentTask === 'tchap'
+          ? SLEEP_ON_TASK
+          : SLEEP_OUTSIDE,
+      );
     }
   }
 
@@ -160,6 +261,8 @@ class tchap_manager extends MelObject {
       MainNav.update_badge(0, 'tchap_badge');
     }
   }
+  // #endregion
+  // #region publics
 
   /**
    * Met à jour le badge de notification du bouton lié à ce plugin de la barre de navigation principale.
@@ -178,83 +281,6 @@ class tchap_manager extends MelObject {
    */
   tchap_frame() {
     return $('#tchap_frame');
-  }
-
-  /**
-   * @type {Document}
-   * @readonly
-   */
-  get tchapContext() {
-    return this.tchap_frame()[0].contentWindow.document;
-  }
-
-  get badge() {
-    return this.tchapContext.querySelector(
-      '.mx_SpaceButton_home .mx_SpacePanel_badgeContainer .mx_NotificationBadge_count',
-    );
-  }
-
-  get unread() {
-    if (!this.badge) return null;
-
-    const val = +(this.badge.textContent || 'user_defined_unread');
-
-    return isNaN(val) ? TCHAT_UNREAD : val;
-  }
-
-  /**
-   * @type {HTMLElement}
-   * @readonly
-   */
-  get settingMenuButton() {
-    return this.tchapContext.querySelector(`.${SETTING_BUTTON}`);
-  }
-
-  /**
-   * @type {HTMLElement}
-   * @readonly
-   */
-  get settingButton() {
-    this.settingMenuButton.click();
-    return this.tchapContext.querySelector(
-      `.${CONTEXTUAL_MENU}  .${PARAMS_BUTTON}`,
-    ).parentElement;
-  }
-
-  /**
-   * @type {HTMLElement}
-   * @readonly
-   */
-  get disconnectButton() {
-    this.settingMenuButton.click();
-    return this.tchapContext.querySelector(
-      `.${CONTEXTUAL_MENU}  .${DISCONNECT_BUTTON}`,
-    ).parentElement;
-  }
-
-  /**
-   * @type {HTMLElement}
-   * @readonly
-   */
-  get leftPanel() {
-    return this.tchapContext.querySelector(`.${LEFT_PANEL}`);
-  }
-
-  /**
-   * @type {HTMLElement}
-   * @readonly
-   */
-  get contextualMenuBackground() {
-    return this.tchapContext.querySelector(`.${CONTEXTUAL_MENU_BACKGROUND}`);
-  }
-
-  /**
-   * @type {HTMLElement}
-   * @readonly
-   */
-  get themeButton() {
-    this.settingMenuButton.click();
-    return this.tchapContext.querySelector(`.${THEME_BUTTON}`);
   }
 
   /**
@@ -312,4 +338,6 @@ class tchap_manager extends MelObject {
     this.disconnectButton.click();
     top.m_mp_ToggleGroupOptionsUser();
   }
+
+  // #endregion
 }

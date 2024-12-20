@@ -45,7 +45,7 @@ else {
   $password = rcube_utils::get_input_string("horde_pass", rcube_utils::INPUT_GPC);
 
   // Positionner le path de la session
-  session_save_path(SESSION_PATH);
+  // session_save_path(SESSION_PATH);
 
   // Démarrage de session
   session_start();

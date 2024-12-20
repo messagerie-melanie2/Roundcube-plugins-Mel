@@ -321,18 +321,26 @@ class ResourceBaseFunctions {
       }
     }
 
-    callback(
-      MelEnumerable.from(this._p_events)
-        .aggregate({
-          title: 'Moi',
-          start: this.start,
-          end: this.end,
-          allDay: this.all_day,
-          resourceId: this.selected_resource?.email,
-          color: 'green',
-        })
-        .toArray(),
-    );
+    let rcs = MelEnumerable.from(this._p_events)
+      .aggregate({
+        title: 'Moi',
+        start: this.start,
+        end: this.end,
+        allDay: this.all_day,
+        resourceId: this.selected_resource?.email,
+        color: 'green',
+      })
+      .toArray();
+
+    callback(rcs);
+
+    if (!this.itemloaded && this._p_events.length) {
+      this.itemloaded = true;
+
+      setTimeout(() => {
+        this._$calendar.fullCalendar('refetchEvents');
+      }, 100);
+    }
   }
 
   /**

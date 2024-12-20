@@ -52,7 +52,7 @@ if (!is_internal()) {
 }
 else {
   // Positionner le path de la sesion
-  session_save_path(SESSION_PATH);
+  // session_save_path(SESSION_PATH);
 
   // Démarrage de session
   session_start();

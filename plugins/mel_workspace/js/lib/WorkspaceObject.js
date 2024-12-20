@@ -1,3 +1,4 @@
+import { WrapperObject } from '../../../mel_metapage/js/lib/BaseObjects/WrapperObject.js';
 import {
   BnumMessage,
   eMessageType,
@@ -7,10 +8,7 @@ import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manage
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { isNullOrUndefined } from '../../../mel_metapage/js/lib/mel.js';
 import { BnumEvent } from '../../../mel_metapage/js/lib/mel_events.js';
-import {
-  MelObject,
-  WrapperObject,
-} from '../../../mel_metapage/js/lib/mel_object.js';
+import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { NavBarManager } from './navbar.generator.js';
 import { WorkspaceModuleBlock } from './WebComponents/workspace_module_block.js';
 

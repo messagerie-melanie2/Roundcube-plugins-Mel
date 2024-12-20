@@ -1,4 +1,5 @@
-import { MelObject, WrapperObject } from '../mel_object.js';
+import { WrapperObject } from '../BaseObjects/WrapperObject.js';
+import { MelObject } from '../mel_object.js';
 import { Mel_Promise } from '../mel_promise.js';
 
 class File {}

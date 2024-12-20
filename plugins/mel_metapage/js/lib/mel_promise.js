@@ -362,25 +362,22 @@ class WaitSomething extends Mel_Promise {
    * @param {number} timeout en secondes
    */
   constructor(whatIWait, timeout = 5) {
-    let promise = new Mel_Promise((current) => {
+    let promise = new Mel_Promise(async (current) => {
       current.start_resolving();
       let it = 0;
-      const interval = setInterval(() => {
-        if (whatIWait()) {
-          it = null;
-          clearInterval(interval);
-          current.resolve({ resolved: true });
-        } else if (it >= timeout * 10) {
-          it = null;
-          clearInterval(interval);
-          current.resolve({
-            resolved: false,
-            msg: `timeout : ${timeout * 10}ms`,
-          });
-        }
-
+      while (!whatIWait() && it < timeout * 100) {
+        await Mel_Promise.Sleep(100);
         ++it;
-      }, 100);
+      }
+
+      it = null;
+
+      if (it >= timeout * 100)
+        current.resolve({
+          resolved: false,
+          msg: `timeout : ${timeout * 10}ms`,
+        });
+      else current.resolve({ resolved: true });
     });
 
     super(promise);

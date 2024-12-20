@@ -1,8 +1,6 @@
+import { WrapperObject } from '../../mel_metapage/js/lib/BaseObjects/WrapperObject.js';
 import { FramesManager } from '../../mel_metapage/js/lib/classes/frame_manager.js';
-import {
-  MelObject,
-  WrapperObject,
-} from '../../mel_metapage/js/lib/mel_object.js';
+import { MelObject } from '../../mel_metapage/js/lib/mel_object.js';
 import { VisioFunctions } from './lib/helpers.js';
 
 class BnumVisio extends MelObject {
@@ -164,6 +162,9 @@ class BnumVisio extends MelObject {
   }
 }
 
+/**
+ * @type {WrapperObject<BnumVisio>}
+ */
 export const VisioHelper = new WrapperObject(BnumVisio);
 
 VisioHelper.Instance.startInstance();

@@ -4,7 +4,7 @@
  * @property {MelObject} MelObject
  */
 
-export { MelObject, WrapperObject };
+export { MelObject };
 import {
   Mel_Ajax,
   Mel_Promise,
@@ -770,52 +770,6 @@ class MelObject {
     { action = EMPTY_STRING, params = null, removeIsFromIframe = false } = {},
   ) {
     return this.Empty().url(task, { action, params, removeIsFromIframe });
-  }
-}
-
-/**
- * @class
- * @classdesc Contient une instance d'un objet, utile pour la création d'un singleton.
- * @template {!Tt} T
- */
-class WrapperObject {
-  /**
-   * Constructeur de la classe
-   * @param {typeof T} TypeOfItem Classe
-   * @param  {...any} args Argument pour instancier la classe
-   */
-  constructor(TypeOfItem, ...args) {
-    /**
-     * Instance de la classe
-     * @private
-     * @type {?T}
-     */
-    let _instance = null;
-    /**
-     * Renvoie un instance de classe
-     * @type {T}
-     * @member
-     */
-    this.Instance = null;
-
-    Object.defineProperty(this, 'Instance', {
-      get() {
-        if (!_instance) _instance = new TypeOfItem(...args);
-
-        return _instance;
-      },
-    });
-  }
-
-  /**
-   * Contient une instance d'un objet, utile pour la création d'un singleton.
-   * @static
-   * @param {typeof T} typeofitem
-   * @param  {...any} args
-   * @returns {WrapperObject<T>}
-   */
-  static Create(typeofitem, ...args) {
-    return new WrapperObject(typeofitem, ...args);
   }
 }
 

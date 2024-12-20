@@ -136,6 +136,7 @@ class tchap_manager extends MelObject {
   }
   // #endregion
 
+  // #region Main
   /**
    * @async
    * @package
@@ -230,7 +231,7 @@ class tchap_manager extends MelObject {
       if (eClass === 'tchap') this.update_badge();
     });
   }
-
+  //#endregion
   // #region private
   /**
    * Gestion des notifications sur la barre de gauche

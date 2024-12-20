@@ -1362,18 +1362,24 @@ class mel_forum extends bnum_plugin
     #region Images
 
     /**
-     * Traite les images encodées en base64 dans le contenu, les enregistre, 
-     * et remplace les données base64 par les URL correspondantes.
+     * Traite les balises <img> dans un contenu HTML pour convertir les images en base64 
+     * et gérer leur association avec un post.
      *
-     * Cette fonction parcourt le contenu fourni pour détecter les images 
-     * intégrées sous forme de données base64, les enregistre à un emplacement 
-     * associé à l'ID du post donné, et remplace les balises `<img>` contenant 
-     * des données base64 par des balises `<img>` avec les URLs des images sauvegardées.
+     * Cette fonction analyse le contenu HTML pour identifier les balises <img>, vérifie si les images 
+     * sont déjà encodées en base64 ou doivent être converties. Les images sont ensuite sauvegardées 
+     * dans la base de données, associées à un post, et les URLs sont mises à jour dans le contenu.
+     * Les images obsolètes non utilisées sont supprimées.
      *
-     * @param string $content Le contenu HTML contenant des images encodées en base64.
-     * @param int    $post_id L'ID du post auquel associer les images sauvegardées.
+     * @param string $content Le contenu HTML à analyser et à modifier.
+     * @param int $post_id L'ID du post auquel les images doivent être associées.
      * 
-     * @return string Le contenu mis à jour avec les images base64 remplacées par des URLs.
+     * @return string Le contenu HTML modifié avec les images mises à jour.
+     *
+     * @throws Exception Peut générer des erreurs si des opérations sur les images ou la base de données échouent.
+     *
+     * @example
+     * $updatedContent = $this->process_base64_images('<p><img src="https://example.com/image.jpg" /></p>', 123);
+     * echo $updatedContent;
      */
     protected function process_base64_images($content, $post_id)
     {
@@ -1384,38 +1390,47 @@ class mel_forum extends bnum_plugin
         $usedImageUrls = [];
         $usedImageUids = []; // Collecter les UIDs des images utilisées
 
-        // Expression régulière pour trouver toutes les balises <img src="data:image/">
-        preg_match_all('/<img src="data:image\/([^;]+);base64,([^"]+)"[^>]*>/i', $content, $matches, PREG_SET_ORDER);
+        // Expression régulière pour détecter les balises <img>
+        preg_match_all('/<img[^>]+src="([^"]+)"[^>]*>/i', $content, $matches, PREG_SET_ORDER);
 
         foreach ($matches as $img) {
-            $imageType = $img[1]; // Type de l'image (jpeg, png, etc.)
-            $base64Data = $img[2]; // Données en base64
+            $src = $img[1]; // Source de l'image (base64 ou URL)
 
-            // Reconstruire le préfixe de l'image
-            $fullBase64Data = "data:image/{$imageType};base64,{$base64Data}";
+            if (strpos($src, 'data:image/') === 0) {
+                // C'est déjà une image en base64, on vérifie sa validité
+                if (!$this->is_valid_base64_image($src)) {
+                    error_log("Invalid base64 image, skipping.");
+                    continue;
+                }
+            } else {
+                // C'est une URL, on la télécharge et la convertit en base64
+                $src = $this->convert_url_to_base64($src);
+                if ($src === false) {
+                    error_log("Failed to convert URL to base64, skipping image.");
+                    continue;
+                }
+            }
 
             // Enregistrer l'image dans la base de données
-            $imageSaved = $this->save_image($post_id, $fullBase64Data); // Passer les données complètes à la fonction
+            $imageUid = $this->save_image($post_id, $src);
 
-            if ($imageSaved) {
-                // Utiliser la fonction get_image_url pour générer l'URL de l'image
-                $imageUrl = $this->get_image_url($imageSaved);
+            if ($imageUid) {
+                // Générer l'URL contenant l'UID de l'image
+                $imageUrl = $this->get_image_url($imageUid);
 
                 // Collecter les URLs et les UIDs des images utilisées
                 $usedImageUrls[] = $imageUrl;
-                $usedImageUids[] = $imageSaved->uid; // Supposons que save_image retourne un objet avec un UID
+                $usedImageUids[] = $imageUid;
 
-                // Remplacer la balise <img> par la version avec URL
-                $content = str_replace($img[0], '<img src="' . $imageUrl . '"', $content);
+                // Remplacer la balise <img> par celle avec l'URL
+                $content = str_replace($img[0], '<img src="' . $imageUrl . '" />', $content);
             }
         }
 
-        // Nouvelle regex pour trouver les images avec _image_uid=
-        preg_match_all('/<img[^>]+src="[^"]*?_image_uid=([^"&]+)[^"]*"[^>]*>/i', $content, $matches);
-
-        foreach ($matches[1] as $uid) {
-            // Collecter les UIDs des images déjà présentes
-            $usedImageUids[] = $uid;
+        foreach ($existingImageUids as $existingImageUid) {
+            if (strpos($content, $existingImageUid) !== false) {
+                $usedImageUids[] = $existingImageUid;
+            }
         }
 
         // Identifier les images obsolètes (non utilisées dans le contenu)
@@ -1429,6 +1444,87 @@ class mel_forum extends bnum_plugin
         return $content;
     }
 
+    /**
+     * Convertit une URL d'image en une chaîne Base64 encodée avec le type MIME.
+     *
+     * Cette fonction télécharge le contenu d'une image à partir d'une URL donnée,
+     * détecte son type MIME, et retourne une chaîne encodée en Base64 incluant le type MIME.
+     * Si l'URL ne peut pas être téléchargée, ou si le type MIME de l'image n'est pas supporté,
+     * la fonction retourne `false`.
+     *
+     * @param string $url L'URL de l'image à convertir.
+     * 
+     * @return string|false Une chaîne encodée en Base64 incluant le type MIME si l'opération réussit,
+     *                      ou `false` en cas d'échec (par exemple, si l'URL est invalide ou si le type MIME n'est pas supporté).
+     *
+     * @throws Exception Peut déclencher des erreurs si des fonctions système comme `file_get_contents`
+     *                   ou `finfo_*` rencontrent un problème.
+     *
+     * @example
+     * $base64Image = $this->convert_url_to_base64('https://example.com/image.jpg');
+     * if ($base64Image !== false) {
+     *     echo $base64Image;
+     * } else {
+     *     echo "Conversion échouée.";
+     * }
+     */
+    protected function convert_url_to_base64($url)
+    {
+        // Téléchargez le contenu de l'image
+        $imageData = @file_get_contents($url);
+        if ($imageData === false) {
+            return false; // Impossible de télécharger l'image
+        }
+
+        // Détectez le type MIME de l'image
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeType = finfo_buffer($finfo, $imageData);
+        finfo_close($finfo);
+
+        if (!in_array($mimeType, ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/bmp'])) {
+            error_log("Unsupported image MIME type: {$mimeType}");
+            return false; // Type MIME non supporté
+        }
+
+        // Encodez l'image en base64
+        $base64Data = base64_encode($imageData);
+        return "data:{$mimeType};base64,{$base64Data}";
+    }
+
+    /**
+     * Vérifie si une chaîne Base64 représente une image valide.
+     *
+     * Cette fonction analyse la chaîne pour s'assurer qu'elle suit le format attendu 
+     * (`data:image/<type>;base64,<data>`), puis tente de décoder la partie Base64 pour confirmer 
+     * qu'elle contient des données valides.
+     *
+     * @param string $base64 La chaîne Base64 à valider.
+     * 
+     * @return bool Retourne `true` si la chaîne est une image Base64 valide, sinon `false`.
+     *
+     * @throws Exception Peut générer une erreur si la chaîne n'est pas correctement formatée.
+     *
+     * @example
+     * $isValid = $this->is_valid_base64_image('data:image/png;base64,iVBORw...');
+     * if ($isValid) {
+     *     echo "L'image est valide.";
+     * } else {
+     *     echo "L'image n'est pas valide.";
+     * }
+     */
+    protected function is_valid_base64_image($base64)
+    {
+        // Vérifiez si le format correspond à data:image/<type>;base64,<data>
+        if (!preg_match('/^data:image\/[a-zA-Z]+;base64,/', $base64)) {
+            return false;
+        }
+
+        // Extraire la partie base64 et la décoder
+        $data = explode(',', $base64)[1] ?? '';
+        $decodedData = base64_decode($data, true);
+
+        return $decodedData !== false; // Retourne true si les données sont décodables
+    }
 
     /**
      * Enregistre une image associée à un post, avec ses données encodées.

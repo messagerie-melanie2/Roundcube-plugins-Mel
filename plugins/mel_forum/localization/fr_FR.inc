@@ -1,19 +1,24 @@
 <?php
 $labels = array();
-$labels['my_news'] = "M'informer";
-$labels['news'] = "Informations";
-$labels['my_strings_of_news'] = "Mes fils d'informations";
-$labels['modified'] = "Modifié le";
 $labels['created'] = "Publié le";
-$labels['no_news'] = "Pas d'information pour le moment.";
 $labels['information'] = "Information";
-$labels['Sunday'] = 'Dimanche';
+$labels['modified'] = "Modifié le";
+$labels['my_news'] = "M'informer";
+$labels['my_strings_of_news'] = "Mes fils d'informations";
+$labels['news'] = "Informations";
+$labels['no_news'] = "Pas d'information pour le moment.";
+
+#region Jour
+
 $labels['Monday'] = 'Lundi';
 $labels['Tuesday'] = 'Mardi';
 $labels['Wednesday'] = 'Mercredi';
 $labels['Thursday'] = 'Jeudi';
 $labels['Friday'] = 'Vendredi';
 $labels['Saturday'] = 'Samedi';
+$labels['Sunday'] = 'Dimanche';
+
+#region Mois
 
 $labels['January'] = 'Janvier';
 $labels['February'] = 'Février';
@@ -30,160 +35,161 @@ $labels['December'] = 'Décembre';
 
 $labels['date_asc'] = "Ancien au plus récent";
 $labels['date_desc'] = "Récent au plus ancien";
-$labels['site'] = "Site";
-$labels['source'] = "Source";
-
-$labels['tout'] = "A la suite";
-$labels['un'] = "Vignette";
+$labels["large"] = "Grand format";
 $labels['news_mode'] = "Mode des news";
 $labels['news_start_nb_rows'] = "Lignes d'informations par défaut";
-
-$labels["small"] = "Petit format";
-$labels["large"] = "Grand format";
-
-$labels["right_q"] = "Administrateur et publieur";
 $labels["right_a"] = "Administrateur";
 $labels["right_p"] = "Publieur";
-
-$labels['create_new_comment'] = 'Création d\'un nouveau commentaire';
+$labels["right_q"] = "Administrateur et publieur";
+$labels['site'] = "Site";
+$labels["small"] = "Petit format";
+$labels['source'] = "Source";
+$labels['tout'] = "A la suite";
+$labels['un'] = "Vignette";
 
 #region FORUM LABELS
 
-$labels['workspace_news'] = 'Derniers articles';
-$labels['edit_article'] = 'Modifier l\'article';
-$labels['delete_article'] = 'Supprimer l\'article';
-$labels['copy_article'] = 'Copier le lien de l\'article';
 $labels['articles'] = 'Articles';
+$labels['copy_article'] = 'Copier le lien de l\'article';
 $labels['create_article'] = 'Rédiger un nouvel article';
+$labels['delete_article'] = 'Supprimer l\'article';
+$labels['edit_article'] = 'Modifier l\'article';
+
+#region Droits
+
 $labels['admin_edit_only'] = 'Autoriser uniquement les administrateurs de l\'espace à modifier l\'article';
 $labels['enable_comments'] = 'Autoriser la publication de commentaires';
-$labels['cancel'] = 'Annuler';
-$labels['save'] = 'Sauvegarder';
+
+#region Bouton et Action
+
 $labels['add'] = 'Ajouter';
-$labels['respond'] = 'Répondre';
-$labels['sort_by'] = 'Trier par : ';
-$labels['newest'] = 'Plus récents';
-$labels['oldest'] = 'Plus anciens';
-$labels['more_comments'] = 'Plus de commentaires';
-$labels['less_comments'] = 'Moins de commentaires';
-$labels['more_reactions'] = 'Plus de réactions';
-$labels['less_reactions'] = 'Moins de réactions';
-$labels['more_responses'] = 'Plus de réponses';
-$labels['display_fav_only'] = 'Afficher uniquement les favoris';
-$labels['article_image'] = 'Image de l\'article';
-$labels['like_action'] = 'J\'aime';
-$labels['dislike_action'] = 'Je n\'aime pas';
-$labels['comment_menu'] = 'Menu du commentaire';
-$labels['edit_comment'] = 'Modifier le commentaire';
-$labels['delete_comment'] = 'Supprimer le commentaire';
-$labels['more_options'] = 'Plus d\'options';
-$labels['no_post'] = 'Cet espace ne contient aucun article pour le moment.';
-$labels['add_title'] = 'Ajouter un titre :';
 $labels['add_content'] = 'Ajouter du contenu :';
-$labels['tags'] = 'Tags :';
+$labels['add_title'] = 'Ajouter un titre :';
+$labels['article_image'] = 'Image de l\'article';
+$labels['cancel'] = 'Annuler';
+$labels['comment_menu'] = 'Menu du commentaire';
+$labels['delete_comment'] = 'Supprimer le commentaire';
+$labels['dislike_action'] = 'Je n\'aime pas';
+$labels['display_fav_only'] = 'Afficher uniquement les favoris';
+$labels['edit_comment'] = 'Modifier le commentaire';
+$labels['has_been_deleted'] = ' a été supprimé avec succès.';
+$labels['hide_items'] = 'Masquer les';
+$labels['hide_reply'] = 'Masquer la réponse';
+$labels['less_comments'] = 'Moins de commentaires';
+$labels['less_reactions'] = 'Moins de réactions';
+$labels['like_action'] = 'J\'aime';
+$labels['link_copied'] = 'Lien copié !';
+$labels['more_comments'] = 'Plus de commentaires';
+$labels['more_options'] = 'Plus d\'options';
+$labels['more_reactions'] = 'Plus de réactions';
+$labels['more_responses'] = 'Plus de réponses';
+$labels['newest'] = 'Plus récents';
+$labels['no_post'] = 'Cet espace ne contient aucun article pour le moment.';
+$labels['oldest'] = 'Plus anciens';
+$labels['respond'] = 'Répondre';
+$labels['save'] = 'Sauvegarder';
+$labels['see_response_singular'] = 'Voir la réponse';
+$labels['see_the'] = 'Voir les';
+$labels['sort_by'] = 'Trier par : ';
+$labels['workspace_news'] = 'Derniers articles';
 
 #region Message
 
-$labels['fav_updated'] = 'Vos articles favoris ont été mis à jour';
-$labels['error_editing'] = 'Erreur lors de la modification';
-$labels['delete_comment_confirm'] = 'Êtes-vous sûr de vouloir supprimer ce commentaire ?';
-$labels['delete_post_confirm'] = 'Êtes-vous sûr de vouloir supprimer cet article ?';
-$labels['delete_post_success'] = 'Le post a été supprimé avec succès.';
-$labels['delete_post_failure'] = 'Erreur lors de la suppression du post.';
-$labels['creator_edit_only'] = 'Seul le créateur de cet article peut le modifier.';
-$labels['creator_delete_only'] = 'Seul le créateur de cet article peut le supprimer.';
-$labels['every_field_required'] = 'Tous les champs sont requis.';
 $labels['article_created'] = 'Article créé avec succès.';
 $labels['article_created_image_error'] = 'Article créé, mais échec de l\'enregistrement de certaines images.';
+$labels['article_created_success'] = 'Article créé avec succès !';
 $labels['article_creation_error'] = 'Échec de création de l\'article.';
+$labels['article_id_required'] = 'L\'identifiant de l\'article est requis.';
+$labels['article_save_error'] = 'Erreur lors de l\'enregistrement de l\'article. Veuillez réessayer.';
 $labels['article_unfindable'] = 'Article introuvable.';
+$labels['article_updated'] = 'Article mis à jour avec succès.';
+$labels['article_updated_error'] = 'Échec de mise à jour de l\'article.';
+$labels['article_updated_image_error'] = 'Article mis à jour, mais échec de l\'enregistrement de certaines images.';
+$labels['comment_content_empty'] = 'Le contenu du commentaire ne peut pas être vide.';
+$labels['creator_delete_only'] = 'Seul le créateur de cet article peut le supprimer.';
+$labels['creator_edit_only'] = 'Seul le créateur de cet article peut le modifier.';
+$labels['delete_comment_confirm'] = 'Êtes-vous sûr de vouloir supprimer ce commentaire ?';
+$labels['delete_post_confirm'] = 'Êtes-vous sûr de vouloir supprimer cet article ?';
+$labels['delete_post_failure'] = 'Erreur lors de la suppression du post.';
+$labels['delete_post_success'] = 'Le post a été supprimé avec succès.';
+$labels['dislike_to_like'] = 'Dislike annulé, like enregistré avec succès.';
+$labels['edit_saved_success'] = 'Modification enregistrée avec succès !';
+$labels['error_editing'] = 'Erreur lors de la modification';
+$labels['every_field_required'] = 'Tous les champs sont requis.';
+$labels['fav_updated'] = 'Vos articles favoris ont été mis à jour';
+$labels['failed_to_save...'] = 'Échec de l\'enregistrement du ';
 $labels['image_delete_failure'] = 'Echec de suppression de l\'image existante.';
 $labels['image_save_failure'] = 'Echec de l\'enregistrement de l\'image: ';
-$labels['article_updated'] = 'Article mis à jour avec succès.';
-$labels['article_updated_image_error'] = 'Article mis à jour, mais échec de l\'enregistrement de certaines images.';
-$labels['article_updated_error'] = 'Échec de mise à jour de l\'article.';
-$labels['article_id_required'] = 'L\'identifiant de l\'article est requis.';
-$labels['the_article'] = 'L\'article ';
-$labels['has_been_deleted'] = ' a été supprimé avec succès.';
-$labels['link_copied'] = 'Lien copié !';
-$labels['success'] = 'success';
-$labels['unexpected_error'] = 'Une erreur inattendue est survenue.';
-$labels['reaction_save_error'] = 'Une erreur est survenue lors de l\'enregistrement de votre réaction.';
-$labels['like_dislike_save_error'] = 'Erreur lors de l\'enregistrement du like/dislike.';
-$labels['reply_save_error'] = 'Une erreur est survenue lors de la sauvegarde de la réponse.';
-$labels['reply_save_failure'] = 'Erreur lors de la sauvegarde de la réponse.';
-$labels['comment_content_empty'] = 'Le contenu du commentaire ne peut pas être vide.';
+$labels['invalid_date'] = 'Date non valide :';
 $labels['invalid_date_format'] = 'Format de date non valide :';
 $labels['invalid_date_month'] = 'Mois non valide dans la date :';
-$labels['invalid_date'] = 'Date non valide :';
 $labels['invalid_date_simple'] = 'Date non valide';
+$labels['like_dislike_save_error'] = 'Erreur lors de l\'enregistrement du like/dislike.';
+$labels['reaction_save_error'] = 'Une erreur est survenue lors de l\'enregistrement de votre réaction.';
+$labels['reply_save_error'] = 'Une erreur est survenue lors de la sauvegarde de la réponse.';
+$labels['reply_save_failure'] = 'Erreur lors de la sauvegarde de la réponse.';
+$labels['...saved'] = ' enregistré avec succès.';
+$labels['the_article'] = 'L\'article ';
 $labels['today_at'] = 'Aujourd\'hui à';
+$labels['toggle_replies_error'] = 'Erreur lors du basculement des réponses.';
+$labels['undislike'] = 'Dislike annulé avec succès.';
+$labels['unexpected_error'] = 'Une erreur inattendue est survenue.';
+$labels['unlike'] = 'Like annulé avec succès.';
 $labels['yesterday_at'] = 'Hier à';
-$labels['edit_saved_success'] = 'Modification enregistrée avec succès !';
-$labels['article_created_success'] = 'Article créé avec succès !';
-$labels['article_save_error'] = 'Erreur lors de l\'enregistrement de l\'article. Veuillez réessayer.';
 
 #region TAG
 
+$labels['no_tag_found'] = 'Aucun tag trouvé.';
+$labels['tag_associated_failure'] = 'Echec de l\'association du tag avec le post.';
+$labels['tag_associated_success'] = 'Tag associé au post avec succès.';
 $labels['tag_created'] = 'Tag créé avec succès.';
 $labels['tag_creation_failure'] = 'Echec de création du tag.';
-$labels['no_tag_found'] = 'Aucun tag trouvé.';
-$labels['tag_name_required'] = 'Le nom du tag est requis.';
-$labels['tag_unfindable'] = 'Tag introuvable.';
 $labels['tag_delete_error'] = 'Echec de suppression du tag ';
-$labels['the_tag'] = 'Le tag ';
-$labels['tag_associated_success'] = 'Tag associé au post avec succès.';
-$labels['tag_associated_failure'] = 'Echec de l\'association du tag avec le post.';
-$labels['tag_unassociated'] = 'Tag dissocié du post avec succès.';
 $labels['tag_delete_failure'] = 'Echec de la suppression du tag lié au post.';
+$labels['tag_name_required'] = 'Le nom du tag est requis.';
+$labels['tag_unassociated'] = 'Tag dissocié du post avec succès.';
+$labels['tag_unfindable'] = 'Tag introuvable.';
+$labels['tags'] = 'Tags :';
+$labels['the_tag'] = 'Le tag ';
 
 #region COMMENTS
 
-$labels['comment_field_required'] = 'Le champ commentaire est requis.';
+$labels['cannot_delete_comment'] = 'Vous n\'êtes pas autorisé à supprimer ce commentaire.';
+$labels['comment_deleted'] = 'Le commentaire a été supprimé avec succès.';
+$labels['cannot_edit_comment'] = 'Vous n\'êtes pas autorisé à modifier ce commentaire.';
 $labels['comment_creation_failed'] = 'Echec de création du commentaire.';
 $labels['comment_creation'] = 'Commentaire créé avec succès.';
-$labels['response_creation'] = 'Réponse créée avec succès.';
-$labels['response_creation_failed'] = 'Echec de création de la réponse.';
-$labels['comment_unfindable'] = 'Commentaire introuvable.';
-$labels['cannot_edit_comment'] = 'Vous n\'êtes pas autorisé à modifier ce commentaire.';
-$labels['cannot_delete_comment'] = 'Vous n\'êtes pas autorisé à supprimer ce commentaire.';
 $labels['comment_delete_error'] = 'Une erreur est survenue lors de la suppression du commentaire.';
 $labels['comment_delete_failure'] = 'Echec de suppression du commentaire.';
-$labels['comments_fetch_error'] = 'Erreur lors de la récupération des commentaires :';
-$labels['comment_updated'] = 'Commentaire mis à jour avec succès.';
-$labels['comment_update_error'] = 'Une erreur est survenue lors de la mise à jour du commentaire.';
-$labels['comment_updated_failure'] = 'Echec de mise à jour du commentaire.';
-$labels['comment_uid_required'] = 'L\'uid du commentaire est requis.';
-$labels['comment_deleted'] = 'Le commentaire a été supprimé avec succès.';
+$labels['comment_field_required'] = 'Le champ commentaire est requis.';
 $labels['comment_save_error'] = 'Une erreur est survenue lors de la sauvegarde du commentaire.';
 $labels['comment_save_failure'] = 'Erreur lors de la sauvegarde du commentaire :';
-$labels['react_to_own_comment'] = 'Vous ne pouvez pas réagir à votre propre commentaire.';
-$labels['unlike'] = 'Like annulé avec succès.';
+$labels['comment_uid_required'] = 'L\'uid du commentaire est requis.';
+$labels['comment_unfindable'] = 'Commentaire introuvable.';
+$labels['comment_update_error'] = 'Une erreur est survenue lors de la mise à jour du commentaire.';
+$labels['comment_updated'] = 'Commentaire mis à jour avec succès.';
+$labels['comment_updated_failure'] = 'Echec de mise à jour du commentaire.';
+$labels['comments_fetch_error'] = 'Erreur lors de la récupération des commentaires :';
+$labels['create_new_comment'] = 'Création d\'un nouveau commentaire';
 $labels['like_to_dislike'] = 'Like annulé, dislike enregistré avec succès.';
-$labels['failed_to_save...'] = 'Échec de l\'enregistrement du ';
-$labels['...saved'] = ' enregistré avec succès.';
-$labels['undislike'] = 'Dislike annulé avec succès.';
-$labels['dislike_to_like'] = 'Dislike annulé, like enregistré avec succès.';
-$labels['response_singular'] = 'réponse';
+$labels['react_to_own_comment'] = 'Vous ne pouvez pas réagir à votre propre commentaire.';
+$labels['response_creation'] = 'Réponse créée avec succès.';
+$labels['response_creation_failed'] = 'Echec de création de la réponse.';
 $labels['response_plural'] = 'réponses';
-$labels['see_the'] = 'Voir les';
-$labels['see_response_singular'] = 'Voir la réponse';
-$labels['hide_items'] = 'Masquer les';
-$labels['hide_reply'] = 'Masquer la réponse';
-$labels['toggle_replies_error'] = 'Erreur lors du basculement des réponses.';
+$labels['response_singular'] = 'réponse';
 
 #region REACTIONS
 
+$labels['dislike_cancelled'] = 'Dislike annulé avec succès.';
+$labels['dislike_cancelled_like_registered'] = 'Dislike annulé, like enregistré avec succès.';
+$labels['like_cancelled'] = 'Like annulé avec succès.';
+$labels['like_cancelled_dislike_registered'] = 'Like annulé, dislike enregistré avec succès.';
+$labels['like_dislike_save_failure'] = 'Erreur lors de l\'enregistrement du like/dislike.';
+$labels['no_reaction_found'] = 'Aucune réaction trouvée.';
 $labels['reaction_creation'] = 'Réaction créée avec succès.';
 $labels['reaction_creation_failure'] = 'Echec de création de la réaction.';
 $labels['reaction_deleted'] = 'La réaction a été supprimée avec succès.';
 $labels['reaction_deleted_failure'] = 'Echec de suppression de la réaction.';
-$labels['no_reaction_found'] = 'Aucune réaction trouvée.';
-$labels['like_cancelled'] = 'Like annulé avec succès.';
-$labels['like_cancelled_dislike_registered'] = 'Like annulé, dislike enregistré avec succès.';
-$labels['dislike_cancelled'] = 'Dislike annulé avec succès.';
-$labels['dislike_cancelled_like_registered'] = 'Dislike annulé, like enregistré avec succès.';
-$labels['like_dislike_save_failure'] = 'Erreur lors de l\'enregistrement du like/dislike.';
 $labels['reaction_saved'] = 'Réaction enregistrée.';
 
 #region IMAGES

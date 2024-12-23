@@ -73,6 +73,9 @@ export class Forum extends MelObject {
         //gestion du boutons de suprression de texte de la barre de recherche
         const searchInput = $('#post-search-input');
         const clearButton = $('#clear-button');
+        if(searchInput.val() !== ""){
+            this.toggleClearButton();
+        }
         
         searchInput.on('input change', this.toggleClearButton);
 

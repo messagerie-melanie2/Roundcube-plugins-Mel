@@ -128,12 +128,26 @@ export class New_posts extends MelObject {
         };
         let tag_template = new MelTemplate()
           .setTemplateSelector('#new_tag_template')
-          .setData(tag_data);
+          .setData(tag_data)
+          .addEvent('.tag-' + post.tags[tag].id, 'click', this.searchTag.bind(this, post.tags[tag].name));
 
         $('#new-tag-area-' + post.uid).append(...tag_template.render());
       }
       this.offset++;
     }
+  }
+
+  /**
+     * Affiche les posts le tag sur lequel on a cliqué
+     * @param {*} tag_name 
+     * @param {*} event 
+     */
+  searchTag(tag_name, event) {
+    event.preventDefault();
+    event.stopPropagation();
+    WorkspaceObject.SendToParent('tagClicked', {
+      _tag_name: urlencode('#' + tag_name),
+    });
   }
 
   /**

@@ -158,6 +158,7 @@ class mel_forum extends bnum_plugin
             $this->load_script_module('forum');
             $this->show_posts();
             $this->rc()->output->set_env('workspace_uid', $workspace_uid);
+            $this->rc()->output->add_handlers(array('post_search' => array($this, 'show_search')));
             $this->rc()->output->send('mel_forum.forum');
         } else {
             $this->_display_error_page();
@@ -212,6 +213,20 @@ class mel_forum extends bnum_plugin
         } else {
             $this->_display_error_page();
         }
+    }
+
+    /**
+     * Affiche la recherche dans la barre de recherche .
+     *
+     * @return string La recherche.
+     */
+    public function show_search()
+    {
+        $search = '""';
+        if ($this->get_input('_from_other_frame', rcube_utils::INPUT_GET)) {
+            $search = urldecode($this->get_input('_search', rcube_utils::INPUT_GET));
+        }
+        return $search;
     }
 
     #region AFFICHAGE POST

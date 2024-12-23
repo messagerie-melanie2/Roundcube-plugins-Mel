@@ -122,7 +122,17 @@ export class ModuleForum extends WorkspaceObject {
             },
           });
           break;
-
+        case 'tagClicked':
+          this.switch_workspace_page('forum', {
+            action: 'index',
+            newArgs: {
+              _search: received.data._tag_name,
+              _offset: 0,
+              _workspace_uid: this.workspace.uid,
+              _from_other_frame: true,
+            },
+          });
+          break;
         case 'loaded':
           this._remove_loader();
           if (this.hasPosts) {

@@ -1006,6 +1006,9 @@
   /* Pas de couleur de fond par défaut */
   transition: background-color 0.3s ease, color 0.3s ease;
 }
+.task-forum .no-image-padding {
+  padding-right: 89px;
+}
 .task-forum .error-message {
   display: flex;
   flex-direction: column;
@@ -1035,7 +1038,7 @@
   border-radius: 5px;
 }
 .task-forum .new_posts .post:hover {
-  box-shadow: 0px 0px 5px black;
+  background-color: var(--secondary-border-color);
   border-radius: 5px;
 }
 .task-forum .new_posts .post:last-child {

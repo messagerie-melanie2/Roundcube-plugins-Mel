@@ -580,15 +580,25 @@ export class Forum extends MelObject {
         let data;
         for (let postId in posts) {
             post = posts[postId];
+
+            // Vérifiez si une image est présente
+            const hasImage = post.image_url && post.image_url.trim() !== '';
+
             data = {
                 POST_LINK: post.post_link,
                 POST_CREATOR: post.post_creator,
                 CREATOR_EMAIL: post.creator_email,
                 POST_DATE: post.creation_date,
                 UID: post.uid,
+                POST_CONTENT_CLASS: hasImage ? 'col-md-8 col-xl-10' : 'col-12 no-image-padding',
                 POST_TITLE: post.title,
                 POST_SUMMARY: post.summary,
                 POST_IMAGE: post.image_url,
+                POST_IMAGE_SECTION: hasImage
+                ? `<div class="col-12 col-md-4 col-xl-2">
+                     <img src="${post.image_url}" alt="" class="post-image">
+                   </div>`
+                : '', // Vide si aucune image n'est présente
                 //POST_COUNT_REACTION: post.reaction,
                 POST_THUMB_UP: post.like_count.toString(),
                 POST_THUMB_DOWN: post.dislike_count.toString(),

@@ -260,8 +260,18 @@ class mel_forum extends bnum_plugin
 
         // Création des éléments HTML pour les tags
         $tags_html = '';
+
+        $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
         foreach ($tags as $tag) {
-            $tags_html .= '<span class="tag" tabindex="0" role="button">#' . htmlspecialchars($tag) . '</span>';
+            $url = $this->rc()->url(array(
+                "_task" => "forum",
+                "_action" => "index",
+                "workspace_uid" => $workspace_uid,
+                "_search" => urlencode('#' . $tag),
+                "_offset" => 0,
+                "_from_other_frame" => true,
+            ), false, false, true);
+            $tags_html .= '<a href= "' . $url . '" class="tag" tabindex="0" role="button">#' . htmlspecialchars($tag) . '</a>';
         }
 
         return $tags_html;

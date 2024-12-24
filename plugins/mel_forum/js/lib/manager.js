@@ -408,6 +408,24 @@ export class Manager extends MelObject {
     button_add_dislike.click(()=> {
       this.addLikeOrDislike('dislike');
     });
+
+    //gestion du scroll sur la page
+    document.querySelector('.content').addEventListener("scroll", () => {
+      const scrollPos = document.querySelector('.content').scrollTop;
+      if(scrollPos === 0){
+        $('#backToTop').addClass('hidden');
+      } else {
+        $('#backToTop').removeClass('hidden');
+      }
+    });
+
+    //action backToTop
+    $('#backToTop').click(() => {
+      document.querySelector('.content').scrollTo({
+        top:0,
+        behavior:"smooth",
+      });
+    });
   }
 
   /**

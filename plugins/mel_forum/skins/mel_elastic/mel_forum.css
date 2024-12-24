@@ -564,6 +564,12 @@
 .task-forum .forum-comment .comment .forum-comment-reactions .reaction-item.response span {
   color: var(--main-text-color);
 }
+.task-forum .forum-comment #submit-comment {
+  margin-right: 50px;
+}
+.task-forum .forum-comment #submit-comment .save-comment-button {
+  margin-left: 15px;
+}
 .task-forum .forum-content-author {
   font-weight: bold;
 }
@@ -1089,4 +1095,16 @@
   /* Affichage en bloc */
   max-width: 100%;
   /* S'adapte à la largeur du parent */
+}
+.task-forum #backToTop {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 5px 5px;
+  font-size: 25px;
+  background-color: var(--layout-content-background-color);
+  color: var(--main-text-color);
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }

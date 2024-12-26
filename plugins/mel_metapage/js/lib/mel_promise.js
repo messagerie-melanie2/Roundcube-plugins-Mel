@@ -22,11 +22,12 @@ export { Mel_Promise, Mel_Ajax, WaitSomething };
  * Ajoute des fonctionnalités aux promesses déjà existantes.
  * Pour que les fonctions asynchrones soient complètement compatible, le premier argument doit être la promesse elle même.
  * Ca sera utile pour arrêter la fonction si la fonction 'Abort' est appelé.
+ * @template T
  */
 class Mel_Promise {
   /**
    *
-   * @param {MelPromiseCallback} callback Fonction qui sera appelé
+   * @param {(current_promise: Mel_Promise<T>, ...args: any[]) => T | Promise<T> | Mel_Promise<T>} callback Fonction qui sera appelé
    * @param  {...any} args Arguments de la fonction
    */
   constructor(callback, ...args) {

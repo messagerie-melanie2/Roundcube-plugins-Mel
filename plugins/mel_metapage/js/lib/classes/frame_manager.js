@@ -1,6 +1,21 @@
 /**
- * Contient toute la logique et la gestion des frames
+ * Contient toute la logique et la gestion des frames.<br/><br />
+ *
+ * Changer de tâche : FramesManager.Instance.switch_frame(task); <br/><br/>
+ *
+ * Obtenir la tâche en cours : FramesManager.Instance.currentTask <br/>
+ *
  * @module Frames
+ * @local OnFrameCreatedCallback
+ * @local OnLoadCallback
+ * @local FrameData
+ * @local HistoryManager
+ * @local FrameDataEssential
+ * @local Window
+ * @local FrameManager
+ * @local FrameManagerWrapperHelper
+ * @local FrameManagerWrapper
+ * @local FramesManager
  */
 
 import { EMPTY_STRING } from '../constants/constants.js';
@@ -35,6 +50,8 @@ export {
  * @param {?Object<string, string>}  [options.args=null] Les autres arguments pour le changement d'url.
  * @param {FrameData} frame Référence vers la frame créatrice
  * @return {____JsHtml}
+ * @frommoduleparam JsHtml jFrame
+ * @frommodulereturn {JsHtml}
  */
 
 /**
@@ -99,6 +116,7 @@ class FrameData {
      * Nom de la frame
      * @type {string}
      * @readonly
+     * @deprecated
      */
     this.name = EMPTY_STRING;
 
@@ -125,18 +143,24 @@ class FrameData {
     /**
      * Actions à faire lorsque la frame est créée
      * @type {BnumEvent<OnFrameCreatedCallback>}
+     * @frommodule Frames {@linkto OnFrameCreatedCallback}
+     * @event
      */
     this.onframecreated = new BnumEvent();
 
     /**
      * Actions à faire après que la frame est créée
      * @type {BnumEvent<OnFrameCreatedCallback>}
+     * @frommodule Frames {@linkto OnFrameCreatedCallback}
+     * @event
      */
     this.onframecreatedafter = new BnumEvent();
 
     /**
      * Actions à faire lorsque la page est chargée
      * @type {BnumEvent<OnLoadCallback>}
+     * @frommodule Frames {@linkto OnLoadCallback}
+     * @event
      */
     this.onload = new BnumEvent();
     Object.defineProperties(this, {
@@ -168,17 +192,30 @@ class FrameData {
    * @param {Object} param0
    * @param {boolean} [param0.changepage=true] Si la frame doit être chargée en arrière plan ou non.
    * @param {?Object<string, string>}  [param0.args=null] Les autres arguments pour le changement d'url.
-   * @param {Array<any>} [param0.actions=[]] Ne pas utiliser
+   * @param {Array<any>} [param0.actions=[]] Mots clé à utiliser qui pourront être utiliser lors de différents callbacks
    * @returns {____JsHtml}
+   * @frommodulereturn {JsHtml}
    */
   create({ changepage = true, args = null, actions = [] }) {
-    //Si on ferme la balise iframe par défaut ou non
+    /**
+     * Si on ferme les balises iframes ou non
+     * @type {boolean}
+     * @default false
+     * @package
+     * @readonly
+     */
     const close = false;
-    const frameArg = {
+    /**
+     * Dictionnaires des arguments en url pour dire si la page est en mode iframe ou non
+     * @type {Readonly<{complete:string, key:string, value:string}>}
+     * @package
+     * @readonly
+     */
+    const frameArg = Object.freeze({
       complete: '_is_from=iframe',
       key: '_is_from',
       value: 'iframe',
-    };
+    });
 
     //Passer en mode iframe
     args[frameArg.key] = frameArg.value;
@@ -205,6 +242,7 @@ class FrameData {
         'padding-left': 0,
       });
 
+    //Si on charge en arrière plan, on affiche pas la frame
     if (!changepage) jFrame.css('display', 'none');
 
     jFrame =
@@ -226,13 +264,12 @@ class FrameData {
    * Est appelé au chargement de la frame.
    *
    * Appele `this.onload`.
-   * @param {*} param0
-   * @param {boolean} [param0.changepage=true] Si la frame doit être chargée en arrière plan ou non.
-   * @param {Array<any>} [param0.actions=[]] Ne pas utiliser
+   * @param {Object} [options={}]
+   * @param {boolean} [options.changepage=true] Si la frame doit être chargée en arrière plan ou non.
+   * @param {Array<string>} [options.actions=[]] Mots clé à utiliser qui pourront être utiliser lors de différents callbacks
    * @package
-   * @event
    */
-  _onload({ changepage = true, actions = [] }) {
+  _onload({ changepage = true, actions = [] } = {}) {
     this.onload.call({ changepage, actions });
   }
 
@@ -284,9 +321,26 @@ class FrameData {
   }
 }
 
+/**
+ * @class
+ * @classdesc Gestion de l'historique de la fenêtre
+ * @package
+ */
 class HistoryManager {
+  /**
+   * Si rcmail.env.menu_last_frame_enabled ne vaut pas vrai, alors l'historique ne sera pas activé.
+   */
   constructor() {
+    /**
+     * Anciennes frames
+     * @type {Array<string>}
+     * @package
+     */
     this._history = [];
+    /**
+     * Bouton de retour
+     * @type {external:jQuery}
+     */
     this.$back = null;
     Object.defineProperties(this, {
       $back: {
@@ -299,6 +353,11 @@ class HistoryManager {
     });
   }
 
+  /**
+   * Ajoute une tâche à l'historique
+   * @param {string} task Tâche à ajouter
+   * @returns {HistoryManager} Chaînage
+   */
   add(task) {
     this.update_button_back(task)._history.push(task);
 
@@ -307,6 +366,11 @@ class HistoryManager {
     return this;
   }
 
+  /**
+   * Met à jours le bouton "Revenir a", change son texte et son icône.
+   * @param {string} last_task Tâche à afficher
+   * @returns {HistoryManager} Chaînage
+   */
   update_button_back(last_task) {
     if (this.back_enabled()) {
       let $back = this.$back;
@@ -386,18 +450,33 @@ class HistoryManager {
     return this;
   }
 
+  /**
+   * Affiche la page d'historique.
+   *
+   * Affiche un volet à gauche avec les anciennes frames.
+   * @returns {void}
+   */
   show_history() {
+    /**
+     * Quitte l'historique
+     * @type {Function}
+     * @package
+     * @readonly
+     */
     const quit = () => {
       $('#frame-mel-history').remove();
       $('#black-frame-mel-history').remove();
       $('#layout-menu').css('left', '0');
     };
 
+    //Si un historique est déjà ouvert pour une raison X ou Y, on le supprime pour éviter les conflits
     if ($('#frame-mel-history').length > 0) {
       $('#frame-mel-history').remove();
       $('#black-frame-mel-history').remove();
     }
 
+    //Création de la page
+    //TODO: Template ou jshtml
     let $history = $(
       '<div id="frame-mel-history"><div style="margin-top:5px"><center><h3>Historique</h3></center></div></div>',
     );
@@ -430,14 +509,23 @@ class HistoryManager {
       );
 
     $('#layout-menu').css('left', '120px');
-
-    return false;
   }
 
+  /**
+   * Si l'historique est activé ou non
+   * @returns {boolean}
+   */
   back_enabled() {
     return !!this.$back;
   }
 
+  /**
+   * Revien en arrière dans l'historique
+   * @param {Object} [options={}]
+   * @param {?string} [options.defaultFrame=null] fallback, si l'historique est vide, sur quel frame on revient ?
+   * @returns {Promise<*>}
+   * @async
+   */
   back({ defaultFrame = null } = {}) {
     return FramesManager.Helper.current.switch_frame(
       this._history?.[this._history.length - 1] ?? defaultFrame,
@@ -447,8 +535,17 @@ class HistoryManager {
 }
 
 /**
+ * Contient seulement les données d'une frame data, sans les fonctions
+ * @typedef FrameDataEssential
+ * @property {string | number} id
+ * @property {string} task
+ * @property {Window} parent
+ *
+ */
+
+/**
  * @class
- * @classdesc Gère plusieurs frames
+ * @classdesc Fenêtre qui gère plusieurs frames
  * @package
  */
 class Window {
@@ -458,6 +555,29 @@ class Window {
    */
   constructor(uid) {
     this._init()._setup(uid);
+  }
+
+  /**
+   * Données de la frame en cours
+   * @type {Readonly<FrameDataEssential>}
+   * @readonly
+   * @frommodule Frames {@linkto FrameDataEssential}
+   */
+  get currentFrameData() {
+    return Object.freeze({
+      id: this._current_frame.id,
+      task: this.currentTask,
+      parent: this._current_frame.parent,
+    });
+  }
+
+  /**
+   * Page en cours
+   * @type {string}
+   * @readonly
+   */
+  get currentTask() {
+    return this._current_frame.task;
   }
 
   /**
@@ -475,6 +595,8 @@ class Window {
     /**
      * Liste des frames ouvertes
      * @type {BaseStorage<FrameData>}
+     * @frommodule BaseStorage
+     * @frommodule2 Frames {@linkto FrameData}
      * @package
      */
     this._frames = new BaseStorage();
@@ -513,14 +635,16 @@ class Window {
   /**
    * Créer une frame
    * @param {string} task Tâche à afficher
-   * @param {Object} param1
-   * @param {boolean} [param1.changepage=true] Si on charge la frame en arrière plan ou non
-   * @param {?Object<string, string>} [param1.args=null] Arguments - sauf la tâche - de la l'url à ajouter à la source de la frame
-   * @returns {Mel_Promise}
+   * @param {Object} [options={}]
+   * @param {boolean} [options.changepage=true] Si on charge la frame en arrière plan ou non
+   * @param {?Object<string, string>} [options.args=null] Arguments - sauf la tâche - de la l'url à ajouter à la source de la frame
+   * @param {string[]} [options.actions=[]] Mots clés qui pourront être utiliser dans différents callbacks
+   * @returns {Mel_Promise<Window>}
    * @package
    * @async
+   * @frommodulereturn Frames {@linkto Window}
    */
-  _create_frame(task, { changepage = true, args = null, actions = [] }) {
+  _create_frame(task, { changepage = true, args = null, actions = [] } = {}) {
     return new Mel_Promise((promise) => {
       promise.start_resolving();
 
@@ -677,11 +801,13 @@ class Window {
   /**
    * Ouvre une frame déjà ouverte.
    * @param {string} task Frame à ouvrir
-   * @param {Object} param1
-   * @param {?Object<string, string>} [param1.new_args=null] Nouveau arguments à ajouter à la frame. Si ils éxistent, force le rechargement de la frame.
+   * @param {Object}  [options={}]
+   * @param {?Object<string, string>} [options.new_args=null] Nouveau arguments à ajouter à la frame. Si ils éxistent, force le rechargement de la frame.
    * @returns {Promise<Window>}
+   * @async
+   * @frommodulereturn Frames {@linkto Window}
    */
-  async _open_frame(task, { new_args = null }) {
+  async _open_frame(task, { new_args = null } = {}) {
     //Ajoute à l'historique et cache l'ancienne frame
     this._history.add(this._current_frame.task);
     this._current_frame.hide();
@@ -716,19 +842,21 @@ class Window {
 
   /**
    * Premier chargement d'une frame. Est supprimé après la fin de l'éxécution de la fonction
-   * @param {Mel_Promise} promise Promesse en cour d'éxécution
+   * @param {Mel_Promise<Window>} promise Promesse en cour d'éxécution
    * @param {string} frame_id Id de la frame en cours
    * @param {string} task Tâche en cours
    * @param {boolean} changepage Si on charge la frame seulement ou si on l'affiche aussi
    * @param {?Object<string, string>} args Arguments à ajouter en plus à l'url
-   * @param {Array} actions Ne pas utiliser
+   * @param {Array[string]} actions Mot clé pouvent être utiliser dans les différents callbacks
    * @package
-   * @event
+   * @frommoduleparam Frames promise {@linkto Window}
    */
   _first_load(promise, frame_id, task, changepage, args, actions) {
     let current = this._frames.get(task);
 
+    //On supprime le premier chargement de la liste des évènements, il ne servira plus
     current.onload.remove('resolve');
+
     if (changepage) $('#layout-frames').css('display', EMPTY_STRING);
 
     this._trigger_event('frame.loaded', {
@@ -761,6 +889,7 @@ class Window {
    * Génère la fenêtre en jshtml
    * @package
    * @returns {____JsHtml}
+   * @frommodulereturn JsHtml
    */
   _generate_window() {
     return MelHtml.start.mel_window(this._id).end();
@@ -770,14 +899,10 @@ class Window {
    * Génère la div qui contiendra les fenêtre en jshtml
    * @package
    * @returns {____JsHtml}
+   * @frommodulereturn JsHtml
    */
   _generate_layout_frames() {
-    return (
-      MelHtml.start
-        .div({ id: 'layout-frames' })
-        //.css('display', 'none')
-        .end()
-    );
+    return MelHtml.start.div({ id: 'layout-frames' }).end();
   }
 
   /**
@@ -798,17 +923,21 @@ class Window {
    *
    * Si la frame n'existe pas la créer, sinon l'ouvre.
    * @param {string} task Tâche à ouvrir
-   * @param {Object} param1
-   * @param {boolean} [param1.changepage=true] Si on charge la frame en arrière plan ou non
-   * @param {?Object<string, string>} [param1.args=null] Arguments - sauf la tâche - de la l'url à ajouter à la source de la frame
+   * @param {Object} [options={}]
+   * @param {boolean} [options.changepage=true] Si on charge la frame en arrière plan ou non
+   * @param {?Object<string, string>} [options.args=null] Arguments - sauf la tâche - de la l'url à ajouter à la source de la frame
+   * @param {Array<string>} [options.actions=[]] Mot clés pouvant être utiliser lors des différents callbacks
    * @return {Promise}
    * @async
    */
   async switch_frame(task, { changepage = true, args = null, actions = [] }) {
+    //Si la fenêtre est cachée et qu'on change de page, on l'affiche
     if (changepage && this.is_hidden()) this.show();
 
+    //On Séléctionne la page en cours
     if (changepage) MainNav.select(task);
 
+    //Ne prend pas en compte le changement de titre si l'attache "before_url" renvoie "break"
     const break_next =
       FramesManager.Instance.call_attach('before_url') === 'break';
 
@@ -817,6 +946,7 @@ class Window {
       Window.UpdateDocumentTitle(Window.GetTaskTitle(task));
     }
 
+    //Appelle les ataches lié à l'url
     FramesManager.Instance.call_attach('url');
 
     if (this._frames.has(task)) {
@@ -1005,6 +1135,15 @@ class Window {
     return this;
   }
 
+  /**
+   * Simule un "f5" sur la frame en cours <br/>
+   *
+   * Evènements trigger : <br/>
+   *
+   * - frame.refresh.manual {stop:string, caller:Window} <br/>
+   * @returns {Promise<Window>} Chaînage
+   * @frommodulereturn Frames {@linkto Window}
+   */
   async refresh() {
     const plugin = rcmail.triggerEvent('frame.refresh.manual', {
       stop: false,
@@ -1181,6 +1320,7 @@ class Window {
 /**
  * @class
  * @classdesc Classe principale qui gère la gestion des frames. Contient une liste de fenêtres.
+ * @package
  */
 class FrameManager {
   constructor() {
@@ -1196,6 +1336,8 @@ class FrameManager {
      * Liste des fenêtres
      * @package
      * @type {BaseStorage<Window>}
+     * @frommodule BaseStorage
+     * @frommodule2 Frames {@linkto Window}
      */
     this._windows = new BaseStorage();
     /**
@@ -1310,33 +1452,6 @@ class FrameManager {
     );
 
     return node;
-    // return MelHtml.start
-    //   .div({
-    //     class: 'btn-group-vertical',
-    //     role: 'group',
-    //     'aria-label': 'Actions supplémentaires',
-    //   })
-    //   .button({ class: 'btn btn-secondary' })
-    //   .attr(
-    //     'onclick',
-    //     function onclick(task_to_open) {
-    //       open(FrameManager.Helper.url(task_to_open, {}));
-    //     }.bind(this, task),
-    //   )
-    //   .text('Ouvrir dans un nouvel onglet')
-    //   .end()
-    //   .button({ class: 'btn btn-secondary' })
-    //   .attr('onclick', this.open_another_window.bind(this, task))
-    //   .addClass(button_disabled ? 'disabled' : 'not-disabled')
-    //   .attr(
-    //     button_disabled ? 'disabled' : 'not-disabled',
-    //     button_disabled ? 'disabled' : true,
-    //   )
-    //   .text('Ouvrir dans une nouvelle colonne')
-    //   .end()
-    //   .end()
-    //   .generate()
-    //   .get(0);
   }
 
   /**
@@ -1366,11 +1481,22 @@ class FrameManager {
   /**
    * Change de frame.
    *
-   * Soit une fenêtre précise soit celle en cour.
+   * Soit une fenêtre précise soit celle en cours.
+   *
+   * Liste des attaches :
+   *
+   * - switch_frame (task:string, changepage:boolean, args:?Object<string, string>, actions:string[], wind:?number) => ?string
+   *
+   * Liste des triggers :
+   *
+   * - switch_frame ({task:string, changepage:boolean, args:?Object<string, string>, actions:string[], wind:?number}) => ?boolean
+   *
+   * - switch_frame.after ({task:string, changepage:boolean, args:?Object<string, string>, actions:string[], wind:?number}) => void
    * @param {string} task Tâche à afficher
-   * @param {Object} param1
+   * @param {Object} [param1={}]
    * @param {boolean} [param1.changepage=true] Si on charge la frame en arrière plan ou non
    * @param {?Object<string, string>} [param1.args=null] Arguments - sauf la tâche - de la l'url à ajouter à la source de la frame
+   * @param {string[]} [param1.actions=[]] Mot clé pouvant être utiliser dans les différents callbacks
    * @param {?number} [param1.wind=null] Id de la fenêtre à changer. Si null, celle en cours.
    * @returns {Promise}
    */
@@ -1567,7 +1693,7 @@ class FrameManager {
       this._selected_window = tmp_window;
     }
 
-    const task = this._selected_window._current_frame.task;
+    const task = this.currentTask;
 
     MainNav.select(task);
     Window.UpdateNavUrl(Window.UrlFromTask(task));
@@ -1634,7 +1760,7 @@ class FrameManager {
   /**
    * Créer une fenêtre
    * @param {string | number} uid Id de la fenêtre
-   * @param {?external:jQuery} $parent Element parent
+   * @param {?external:jQuery} [$parent=null] Element parent
    * @returns {{win:external:jQuery, $parent:external:jQuery}}
    */
   create_window(uid, $parent = null) {
@@ -1656,7 +1782,7 @@ class FrameManager {
    * Ouvre une nouvelle fenêtre
    * @param {string} task
    * @param {?Object<string, string>} [args=null]
-   * @returns {Promise}
+   * @returns {Promise<void>}
    */
   async open_another_window(task, args = null) {
     if (this._windows.length >= MAX_FRAME) {
@@ -1838,8 +1964,13 @@ class FrameManager {
     return this.get_window()._current_frame;
   }
 
+  /**
+   * Tâche en cours
+   * @type {string}
+   * @readonly
+   */
   get currentTask() {
-    return this.get_window()?._current_frame?.task;
+    return this.get_window()?.currentTask;
   }
 
   /**
@@ -1899,6 +2030,7 @@ class FrameManagerWrapper {
     /**
      * Contient divers fonction d'aide
      * @type {FrameManagerWrapperHelper}
+     * @readonly
      */
     this.Helper = null;
     let _helper = {};
@@ -1936,7 +2068,15 @@ class FrameManagerWrapper {
 }
 
 /**
- * Gère les différentes frames du Bnum
+ * Gère les différentes frames du Bnum. <br/><br/>
+ *
+ * Changer de tâche : <br/>
+ *
+ * FramesManager.Instance.switch_frame(task); <br/><br/>
+ *
+ * Obtenir la tâche en cours : <br/>
+ *
+ * FramesManager.Instance.currentTask <br/>
  * @type {FrameManagerWrapper}
  */
 const FramesManager =

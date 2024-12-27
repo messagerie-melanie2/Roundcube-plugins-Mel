@@ -8,21 +8,34 @@ import { EMPTY_STRING } from '../../../../../mel_metapage/js/lib/constants/const
 import { MelHtml } from '../../../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { isNullOrUndefined } from '../../../../../mel_metapage/js/lib/mel.js';
 import { Mel_Promise } from '../../../../../mel_metapage/js/lib/mel_promise.js';
-import { Visio } from '../../visio.js';
 import { MelAudioManager, MelAudioTester } from './audioManager.js';
 import { ToolbarPopup } from './toolbar_popup.js';
 import { MelVideoManager } from './videoManager.js';
 
-export { ToolbarFunctions };
+export { ToolbarFunctions, VisioToolbar };
 
+/**
+ * Contient les classes lié à la toolbar de la visio
+ * @module Visio/Toolbar
+ * @local ToolbarFunctions
+ * @local VisioToolbar
+ *
+ */
+
+/**
+ * @class
+ * @classdesc Contient les différentes fonctions des différents boutons de la toolbar
+ * @hideconstructor
+ */
 class ToolbarFunctions {
   constructor() {
     throw new Error('Cannot be initialized !');
   }
 
   /**
-   *
+   * Arrête la visioconférence
    * @param {Visio} visio
+   * @static
    */
   static Hangup(visio) {
     FramesManager.Instance.detach('url');
@@ -66,24 +79,29 @@ class ToolbarFunctions {
   }
 
   /**
-   *
+   * Affiche ou ferme le tchat
    * @param {Visio} visio
+   * @static
    */
   static Chat(visio) {
     visio.jitsii.toggle_chat();
   }
 
   /**
-   *
+   *Change d'état le micro
    * @param {Visio} visio
+   * @static
    */
   static Mic(visio) {
     visio.jitsii.toggle_micro();
   }
 
   /**
-   *
+   * Affiche la popup de visualisation et de séléction des audios
    * @param {Visio} visio
+   * @return {Promise<void>}
+   * @async
+   * @static
    */
   static async Mic_0(visio) {
     if (!this._popup) {
@@ -104,11 +122,14 @@ class ToolbarFunctions {
   }
 
   /**
-   *
+   * Action au click d'un bouton de la popup des devices
    * @param {Visio} visio
-   * @param {*} id
-   * @param {*} type
-   * @param {*} label
+   * @param {string} id
+   * @param {string} type
+   * @param {string} label
+   * @return {Promise<void>}
+   * @async
+   * @static
    */
   static async Mic_0_Click(visio, id, type, label) {
     const initial = this._popup.$content
@@ -175,9 +196,12 @@ class ToolbarFunctions {
 
   /**
    * Met à jour la liste des périphériques afficher sur la popup
-   * @param {Array<*>} devices Liste des devices envoyé par jitsii
+   * @param {Array<DeviceEx>} devices Liste des devices envoyé par jitsi
    * @param {function} click Action à faire lorsque l'on clique sur un device
-   * @returns Chaîne
+   * @returns {Promise<this>} Chaînage
+   * @static
+   * @async
+   * @frommoduleparam Visio/Jitsi devices {@linkto DeviceEx}
    */
   static async UpdatePopupDevices(devices, click) {
     const _$ = top.$;
@@ -314,16 +338,20 @@ class ToolbarFunctions {
   }
 
   /**
-   *
+   * Affiche ou non la caméra
    * @param {Visio} visio
+   * @static
    */
   static Camera(visio) {
     visio.jitsii.toggle_video();
   }
 
   /**
-   *
+   * Affiche ou cache la popup de séléction d'une caméra
    * @param {Visio} visio
+   * @return {Promise<void>}
+   * @static
+   * @async
    */
   static async Camera_0(visio) {
     if (!this._popup) {
@@ -344,33 +372,43 @@ class ToolbarFunctions {
   }
 
   /**
-   *
+   *Lève ou baisse la main
    * @param {Visio} visio
+   * @static
    */
   static Handup(visio) {
     visio.jitsii.toggle_hand();
   }
 
   /**
-   *
+   * Partage l'écran ou stop le partage.
    * @param {Visio} visio
+   * @static
    */
   static Share_screen(visio) {
     visio.jitsii.share_screen();
   }
 
   /**
-   *
+   * Active ou désactive la mosaïque
    * @param {Visio} visio
+   * @static
    */
   static Moz(visio) {
-    visio.jitsii.toggle_film_strip();
+    visio.jitsii.toggle_tile_view();
   }
 
+  /**
+   * Switch de frame sur le documents lié à l'espace de cette visio
+   * @param {Visio} visio
+   * @return {Promise<void>}
+   * @static
+   * @async
+   */
   static Documents(visio) {
     const url = `/apps/files?dir=/dossiers-${visio.data.wsp}`;
 
-    FramesManager.Instance.switch_frame('stockage', {
+    return FramesManager.Instance.switch_frame('stockage', {
       changepage: true,
       args: {
         _params: url,
@@ -379,8 +417,11 @@ class ToolbarFunctions {
   }
 
   /**
-   *
+   * Affiche la poupu de plus d'options
    * @param {Visio} visio
+   * @return {Promise<void>}
+   * @static
+   * @async
    */
   static async More(visio) {
     if (!visio.popover.onhide.has('focus')) {
@@ -393,8 +434,9 @@ class ToolbarFunctions {
   }
 
   /**
-   *
+   * Copie l'url public de la visio
    * @param {Visio} visio
+   * @static
    */
   static Action_Url(visio) {
     let config = {
@@ -409,8 +451,11 @@ class ToolbarFunctions {
   }
 
   /**
-   *
+   * Copie le numéro de téléphone et le code pin de la visio
    * @param {Visio} visio
+   * @returns {Promise<void>}
+   * @static
+   * @async
    */
   static async Action_Phone(visio) {
     const data = visio.get_call_data();
@@ -420,8 +465,11 @@ class ToolbarFunctions {
   }
 
   /**
-   *
+   * Affiche les participants
    * @param {Visio} visio
+   * @returns {Promise<void>}
+   * @static
+   * @async
    */
   static async Action_Users(visio) {
     visio.jitsii.toggle_participants_pane();
@@ -429,8 +477,11 @@ class ToolbarFunctions {
   }
 
   /**
-   *
+   * Ouvre l'arrière plan virtuel
    * @param {Visio} visio
+   * @returns {Promise<void>}
+   * @static
+   * @async
    */
   static async Action_Background(visio) {
     visio.jitsii.open_virtual_background();
@@ -438,8 +489,11 @@ class ToolbarFunctions {
   }
 
   /**
-   *
+   * Ouvre la poupup de mot de passe
    * @param {Visio} visio
+   * @returns {Promise<void>}
+   * @static
+   * @async
    */
   static async Action_Security(visio) {
     visio.popover.hide();
@@ -492,12 +546,24 @@ class ToolbarFunctions {
     }
   }
 
+  /**
+   * Est appelé lorsque le mot de passe de l'input a changé
+   * @static
+   */
   static _Action_Security_OnCheckChanged() {
     if ($('#security-hav-password')[0].checked)
       $('#security-pass').parent().show();
     else $('#security-pass').parent().hide();
   }
 
+  /**
+   * Est appelé lorsque l'on sauvegarde le mot de passe
+   * @param {Visio} visio
+   * @param {Function} callback
+   * @returns {Promise<void>}
+   * @static
+   * @async
+   */
   static async _Action_Security_On_Save(visio, callback) {
     const val = $('#security-hav-password')[0].checked
       ? $('#security-pass').val() || null
@@ -547,14 +613,32 @@ class ToolbarFunctions {
 
 /**
  * @type {ToolbarPopup}
+ * @static
+ * @package
  */
 ToolbarFunctions._popup = null;
 
-export class VisioToolbar extends Toolbar {
+/**
+ * @class
+ * @classdesc Toolbar de la visioconférence
+ * @extends Toolbar
+ */
+class VisioToolbar extends Toolbar {
+  /**
+   *
+   * @param {string} id Id de la toolbar
+   */
   constructor(id) {
     super(id);
   }
 
+  /**
+   * Met à jour l'état de la toolbar
+   * @param {boolean} state Etat de la toolbar
+   * @param {string} id id du bouton
+   * @param {?string} [sub_id=null] Id du bouton enfant
+   * @returns {VisioToolbar} Chaînage
+   */
   updateToolbarState(state, id, sub_id = null) {
     let button = this.get_button(id);
 
@@ -563,6 +647,12 @@ export class VisioToolbar extends Toolbar {
     return this.updateToolbarStateFromButton(state, button);
   }
 
+  /**
+   * Met à jours l'éat d'un bouton
+   * @param {boolean} state Nouvel état
+   * @param {ToolbarItem} button Boutton à modifier
+   * @returns {VisioToolbar} Chaînage
+   */
   updateToolbarStateFromButton(state, button) {
     switch (state) {
       case true:

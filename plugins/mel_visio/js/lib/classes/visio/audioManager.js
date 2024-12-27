@@ -9,15 +9,41 @@ export {
 };
 
 /**
- * Gère la visualisation de l'audio
+ * Contient les classes utiles à la visualisation des micros
+ * @module Visio/Audio
+ * @local MelAudioStruct
+ * @local AudioVisualizer
+ * @local MelAudioManager
+ * @local MelAudioTester
+ * @local MelAudioTesterManager
+ * @local ProcessFrameCallback
+ * @local ConnectStreamCallback
+ */
+
+/**
+ * @callback ProcessFrameCallback
+ * @param {Uint8Array<ArrayBuffer>} buffer
+ * @param {Array<external:jQuery>} elements Barres de visualisation
+ * @return {void}
+ */
+
+/**
+ * @callback ConnectStreamCallback
+ * @param {MediaStream} stream
+ * @return {void}
+ */
+
+/**
+ * @class
+ * @classdesc Gère la visualisation de l'audio
  */
 class AudioVisualizer {
   /**
    * Constructeur de la classe
    * @param {MediaDeviceInfo} device Micro que l'on souhaite écouter
    * @param {MelAudioStruct} audioStruct Données audios
-   * @param {AudioContext} audioContext
-   * @param {Function} processFrame Action à faire lors d'une frame
+   * @param {AudioContext} audioContext "An audio-processing graph built from audio modules linked together, each represented by an AudioNode"
+   * @param {ProcessFrameCallback} processFrame Action à faire lors d'une frame
    * @param {Function} processError Action à faire lors d'une erreur
    */
   constructor(device, audioStruct, audioContext, processFrame, processError) {
@@ -27,7 +53,7 @@ class AudioVisualizer {
     this.audioContext = audioContext;
     /**
      * Action à faire lors d'une frame
-     * @type {Function}
+     * @type {ProcessFrameCallback}
      */
     this.processFrame = processFrame;
     /**
@@ -35,6 +61,11 @@ class AudioVisualizer {
      * @type {MediaDeviceInfo}
      */
     this.linkedDevice = device;
+
+    /**
+     * Callback pour connecter un stream au visuel
+     * @type {ConnectStreamCallback}
+     */
     this.connectStream = this.connectStream.bind(this);
 
     /**
@@ -42,11 +73,17 @@ class AudioVisualizer {
      * @type {MelAudioStruct}
      */
     this.audioDatas = audioStruct;
+
+    /**
+     * Si la classe a libéré ses données ou non.
+     * @type {boolean}
+     */
+    this.disposed = false;
   }
 
   /**
    * Démarrer la visualisation
-   * @param {Array<MediaDeviceInfo> | null} devices
+   * @param {Array<MediaDeviceInfo> | null} [devices=null]
    * @returns {AudioVisualizer} Chaîne
    */
   async start(devices = null) {
@@ -82,6 +119,10 @@ class AudioVisualizer {
     return this;
   }
 
+  /**
+   * Connecte un stream au visuel
+   * @param {MediaStream} stream
+   */
   connectStream(stream) {
     this.analyser = this.audioContext.createAnalyser();
     const source = this.audioContext.createMediaStreamSource(stream);
@@ -92,6 +133,9 @@ class AudioVisualizer {
     this.initRenderLoop(this.analyser);
   }
 
+  /**
+   * Lance la loop d'animation
+   */
   initRenderLoop() {
     const frequencyData = new Uint8Array(this.analyser.frequencyBinCount);
     const processFrame = this.processFrame || (() => {});
@@ -123,7 +167,8 @@ class AudioVisualizer {
 }
 
 /**
- * Données de l'audio
+ * @class
+ * @classdesc Données de l'audio
  */
 class MelAudioStruct {
   /**
@@ -152,13 +197,21 @@ class MelAudioStruct {
      */
     this.$main = null;
     /**
-     * @type {Array<external:jQuery>} Les "barres" de visualisations
+     * Les "barres" de visualisations
+     * @type {Array<external:jQuery>}
      */
     this.elements = [];
     /**
+     * Gère la visualisation de l'audio
      * @type {AudioVisualizer}
      */
     this.visualizer = null;
+
+    /**
+     * Si la classe a libéré ses données ou non.
+     * @type {boolean}
+     */
+    this.disposed = false;
 
     return this;
   }
@@ -210,24 +263,55 @@ class MelAudioStruct {
 }
 
 /**
- * Gère les visualisations audio
+ * @class
+ * @classdesc Gère les visualisations audio
  */
 class MelAudioManager {
+  /**
+   * Initialise la classe
+   */
   constructor() {
     this._init();
   }
 
+  /**
+   * @private
+   * @returns {this}
+   */
   _init() {
     /**
+     * Eléments visuels
      * @type {Object<string, MelAudioStruct>}
+     * @frommodule Visio/Audio {@linkto MelAudioStruct}
      */
     this.visualElements = {};
+    /**
+     * Si l'écoute des médias à commencer ou non
+     * @type {boolean}
+     */
     this.started = false;
+    /**
+     * Liste des devices
+     * @type {?Array<MediaDeviceInfo>}
+     */
     this.devices = null;
+    /**
+     * Si la classe a libéré ses données ou non.
+     * @type {boolean}
+     */
+    this.disposed = false;
 
     return this;
   }
 
+  /**
+   * Commence la visualisation d'un stream audio
+   * @param {external:jQuery} $main Div parente
+   * @param {?MediaDeviceInfo[]} [alreadyExistingDevices=null] Devices sauvegardés en mémoire
+   * @returns {Promise<MelAudioManager>} Chaînage
+   * @async
+   * @frommodulereturn Visio/Audio {@linkto MelAudioManager}
+   */
   async start($main, alreadyExistingDevices = null) {
     const devices =
       alreadyExistingDevices ||
@@ -264,10 +348,12 @@ class MelAudioManager {
   }
 
   /**
-   *
-   * @param {*} dvc
-   * @param {*} $button
+   * AJoute un élément de visualisation
+   * @param {MediaDeviceInfo} dvc Device
+   * @param {external:jQuery} $button Bouton lié à l'élément
    * @returns {Promise<MelAudioStruct>}
+   * @async
+   * @frommodulereturn Visio/Audio {@linkto MelAudioStruct}
    */
   async addElement(dvc, $button) {
     if (!this.devices) {
@@ -300,11 +386,23 @@ class MelAudioManager {
     return this.visualElements[dvc.deviceId];
   }
 
+  /**
+   * Ajoute un bouton
+   * @param {external:jQuery} $button
+   * @param {string} id
+   * @returns {MelAudioManager} Chaînage
+   */
   addButton($button, id) {
     this.visualElements[id].$main.find('.text').html($button);
     return this;
   }
 
+  /**
+   * Affiche les barres de visualisations
+   * @param {Uint8Array<ArrayBuffer>} data
+   * @param {Array<external:jQuery>} visualElements
+   * @static
+   */
   static processFrame(data, visualElements) {
     const dataMap = {
       0: 15,
@@ -339,6 +437,9 @@ class MelAudioManager {
       'Please allow access to your microphone in order to see this demo.\nNothing bad is going to happen... hopefully :P';
   }
 
+  /**
+   * Libère les données en mémoire
+   */
   dispose() {
     if (!this.disposed) {
       this.disposed = true;

@@ -3,11 +3,29 @@ import { FramesManager } from '../../mel_metapage/js/lib/classes/frame_manager.j
 import { MelObject } from '../../mel_metapage/js/lib/mel_object.js';
 import { VisioFunctions } from './lib/helpers.js';
 
+/**
+ * Contient les classes d'aide pour utiliser ou lancer la visioconférence correctement.
+ * @module Visio/Helper
+ * @local BnumVisio
+ * @local VisioHelper
+ */
+
+/**
+ * @class
+ * @classdesc Classe d'aide de la visioconférence. Donne des fonctions utile pour appeler ou utiliser la visio
+ */
 class BnumVisio extends MelObject {
+  /**
+   * Contient les fonctions qui permettent de récupérer les codes voxify ou de lancer une visio.
+   */
   constructor() {
     super();
   }
 
+  /**
+   *Cette fonction est appelé dans le constructeur.
+   * @override
+   */
   main() {
     super.main();
 
@@ -18,7 +36,13 @@ class BnumVisio extends MelObject {
     });
   }
 
+  /**
+   * Récupère l'url de voxify
+   * @returns {Promise<string>}
+   * @async
+   */
   async voxify_url() {
+    //Si on récupère déjà l'url, ça ne sert à rien de le redemander, on attend la résolution précédente.
     if (this.voxify_url.waiting) {
       let it = 0;
       await new Promise((ok, nok) => {
@@ -63,6 +87,12 @@ class BnumVisio extends MelObject {
     return navigator.voxify_url;
   }
 
+  /**
+   * Récupère le numéro de téléphone lié à la visioconférence
+   * @param {string} webconf Room de la visio
+   * @returns {Promise<string>}
+   * @async
+   */
   async getWebconfPhoneNumber(webconf) {
     const url = `${await this.voxify_url()}/api/v1/conn/jitsi/phoneNumbers?conference=${webconf}@conference.webconf.numerique.gouv.fr`;
     let phoneNumber = null;
@@ -88,13 +118,19 @@ class BnumVisio extends MelObject {
     return phoneNumber;
   }
 
+  /**
+   * Récupère le code pin lié à la visio
+   * @param {string} webconf Room de la visio
+   * @returns {Promise<?string>}
+   * @async
+   */
   async getWebconfPhonePin(webconf) {
     const url = `${await this.voxify_url()}/api/v1/conn/jitsi/conference/code?conference=${webconf}@conference.webconf.numerique.gouv.fr`;
     let phoneNumber = null;
     window.disable_x_roundcube = true;
-    await mel_metapage.Functions.get(url, {}, (datas) => {
-      if (!!datas && !!datas.id) phoneNumber = datas.id;
-    });
+    // await mel_metapage.Functions.get(url, {}, (datas) => {
+    //   if (!!datas && !!datas.id) phoneNumber = datas.id;
+    // });
     await this.http_call({
       url,
       on_success: (data) => {
@@ -157,13 +193,20 @@ class BnumVisio extends MelObject {
     );
   }
 
+  /**
+   * Initialise l'helper
+   * @returns {BnumVisio} Chaînage
+   */
   startInstance() {
     return this;
   }
 }
 
 /**
+ * Donne des fonctions utile pour appeler ou utiliser la visio
  * @type {WrapperObject<BnumVisio>}
+ * @constant
+ * @frommodule Visio/Helper {@linkto BnumVisio}
  */
 export const VisioHelper = new WrapperObject(BnumVisio);
 

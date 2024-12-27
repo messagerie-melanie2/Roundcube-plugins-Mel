@@ -1,3 +1,8 @@
+/**
+ * Données constantes de la visio
+ * @module Visio/Constants
+ */
+
 // Selectors
 export const SELECTOR_BUTTON_START = '#webconf-enter';
 export const SELECTOR_BUTTON_QUIT = '#quit-modal';

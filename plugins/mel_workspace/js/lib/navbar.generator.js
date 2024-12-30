@@ -86,7 +86,7 @@ export class NavBarManager {
       navbar.startingStates = rcmail.env['workspace_modules_visibility'] ?? {};
       navbar.setAttribute('id', `navbar-${workspace.uid}`);
       navbar.style.marginTop = '60px';
-      navbar.style.marginLeft = '60px';
+      navbar.style.marginLeft = 'var(--navbar-margin-left, 60px)';
       navbar.style.marginRight = '5px';
       navbar.onquitbuttonclick.push(() => {
         // this.currentNavBar.remove();

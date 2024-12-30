@@ -1,6 +1,7 @@
 @import 'variables/index.less';
+@import '../../../../../skins/mel_elastic/styles/less/variables/screen_size.less';
 
-:root {
+root {
   --workspace-panel-overflow-system-display: @root-overflow-system-display;
   --workspace-panel-overflow-system: @root-overflow-sytem;
 }
@@ -14,6 +15,17 @@
     --workspace-page-index-body-padding-right,
     @body-padding[RIGHT]
   );
+
+  html@{touch} & {
+    --workspace-page-index-body-padding-left: var(
+      --workspace-page-index-body-mobile-padding-left,
+      0
+    );
+    --workspace-page-index-body-padding-right: var(
+      --workspace-page-index-body-mobile-padding-right,
+      0
+    );
+  }
 }
 
 .header-pannel {

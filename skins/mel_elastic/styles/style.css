@@ -4561,6 +4561,10 @@ body #layout-frames {
   width: calc(100% - 60px);
   height: calc(100% - 60px);
 }
+html.touch body #layout-frames {
+  margin-left: 0px;
+  width: calc(100% - 60px);
+}
 iframe.mm-frame {
   padding-top: 0 !important;
 }
@@ -4776,4 +4780,7 @@ html.app-busy .not-busy-only {
   pointer-events: none;
   cursor: default;
   opacity: 0.6;
+}
+html.touch:root {
+  --navbar-margin-left: var(--navbar-margin-left-mobile, 0);
 }

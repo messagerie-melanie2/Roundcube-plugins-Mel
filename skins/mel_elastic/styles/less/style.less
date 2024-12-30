@@ -6218,6 +6218,11 @@ html.dark-mode-custom {
     margin-left: 60px;
     width: calc(100% - 60px);
     height: calc(100% - 60px);
+
+    html@{touch} & {
+      margin-left: 0px;
+      width: calc(100% - 60px);
+    }
   }
 }
 
@@ -6545,5 +6550,11 @@ html {
       cursor: default;
       opacity: 0.6;
     }
+  }
+}
+
+html@{touch} {
+  &:root {
+    --navbar-margin-left: var(--navbar-margin-left-mobile, 0);
   }
 }

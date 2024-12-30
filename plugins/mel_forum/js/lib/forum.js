@@ -665,6 +665,8 @@ export class Forum extends MelObject {
             });
 
             for (let tag in post.tags) {
+                let tagName = post.tags[tag].name;
+                tagName = tagName.charAt(0).toUpperCase() + tagName.slice(1);
                 let tag_data = {
                     TAG_NAME: '#' + post.tags[tag].name,
                     TAG_ID: post.tags[tag].id,

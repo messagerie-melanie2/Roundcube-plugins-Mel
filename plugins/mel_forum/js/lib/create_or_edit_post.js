@@ -80,16 +80,21 @@ export class create_or_edit_post extends MelObject {
      */
     addTag() {
         $('#add-tag').on("keydown", (event) => {
-            if(event.keyCode === 13) {
-                let tagname = $('#add-tag').val();
-                // vérifie si le tag éxiste déjà
-                if (!this.tags.includes(tagname)) {
-                    let html = JsHtml.start
-                    .span({class: 'tag', tabindex: 0}).text(`#${tagname}`).span({class: 'icon-remove-tag'}).end().end();
-                    $('.tag-list').append(html.generate());
-                    this.tags.push(tagname);
-                    $('#add-tag').val('');
-                    this.removeTag();
+            if (event.keyCode === 13) { // Touche "Entrée"
+                let tagname = $('#add-tag').val().trim();
+                if (tagname) {
+                    // Forcer la première lettre en majuscule
+                    tagname = tagname.charAt(0).toUpperCase() + tagname.slice(1);
+    
+                    // Vérifie si le tag existe déjà
+                    if (!this.tags.includes(tagname)) {
+                        let html = JsHtml.start
+                            .span({class: 'tag', tabindex: 0}).text(`#${tagname}`).span({class: 'icon-remove-tag'}).end().end();
+                        $('.tag-list').append(html.generate());
+                        this.tags.push(tagname);
+                        $('#add-tag').val(''); // Réinitialise le champ de saisie
+                        this.removeTag(); // Ajoute l'événement de suppression au tag
+                    }
                 }
             }
         });

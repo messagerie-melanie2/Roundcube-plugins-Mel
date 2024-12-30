@@ -790,7 +790,7 @@ class mel_forum extends bnum_plugin
         $tag = new LibMelanie\Api\Defaut\Posts\Tag();
 
         //Définition des propriétés du tag
-        $tag->name = str_replace(' ', '', $name);
+        $tag->name = ucfirst(str_replace(' ', '', $name));
         $tag->workspace = $workspace_uid;
 
         // Sauvegarde du tag

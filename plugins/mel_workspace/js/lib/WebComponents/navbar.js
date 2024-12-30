@@ -195,7 +195,6 @@ class WspNavBar extends HtmlCustomTag {
     this.data('shadow', true);
 
     let shadow = this._p_start_construct();
-
     this.#_setup_styles().#_setup_scripts().#_setup_modules();
 
     let div = document.createElement('div');
@@ -742,7 +741,12 @@ class WspNavBar extends HtmlCustomTag {
   }
 
   #_setup_styles() {
-    return this.#_setup_files_type(EFileType.style);
+    let style = document.createElement('style');
+    style.appendChild(this.createText(this.data('css')));
+    this.navigator.appendChild(style);
+    style = null;
+    this.removeAttribute('data-css');
+    return this;
   }
 
   hide() {

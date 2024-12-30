@@ -143,14 +143,16 @@ class NavBar {
 
   public function add_css($file)
   {
-    $file = $this->file_mod($file);
+    // $file = $this->file_mod($file);
 
-    if (!isset($this->css)) {
-      $this->css = rtrim($file);
-    }
-    else {
-        $this->css .= "," . rtrim($file);
-    }
+    // if (!isset($this->css)) {
+    //   $this->css = rtrim($file);
+    // }
+    // else {
+    //     $this->css .= "," . rtrim($file);
+    // }
+    $this->css ??= [];
+    $this->css[] = file_get_contents($file);
   }
 
   public function get() {
@@ -162,7 +164,9 @@ class NavBar {
     $serialize = str_replace('"', "¤'¤'", $workspace->serialize());
     $raw = str_replace('"', "¤'¤'", json_encode($this->settings));
     $settings = isset($this->settings) ? "data-apps-settings=\"$raw\"" : '';
-    return "<bnum-wsp-nav data-workspace=\"$serialize\" $settings data-modules=\"$this->modules\" data-scripts=\"$this->scripts\" data-css=\"$this->css\"></bnum-wsp-nav>";
+    $this->css ??= [];
+    $css = implode("\r\n", $this->css);
+    return "<bnum-wsp-nav data-workspace=\"$serialize\" $settings data-modules=\"$this->modules\" data-scripts=\"$this->scripts\" data-css=\"$css\"></bnum-wsp-nav>";
   }
 
 }

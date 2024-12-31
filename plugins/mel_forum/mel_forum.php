@@ -962,59 +962,70 @@ class mel_forum extends bnum_plugin
         // Récupérer l'utilisateur
         $user = driver_mel::gi()->getUser();
 
-        // Récupérer le contenu du commentaire et le post ID
+        // Récupérer les données d'entrée
         $content = $this->get_input('_content', rcube_utils::INPUT_POST);
         $post = $this->get_input('_post_id', rcube_utils::INPUT_POST);
-
-        // Récupérer l'ID du commentaire parent s'il s'agit d'une réponse
         $parent = $this->get_input('_parent', rcube_utils::INPUT_POST, true);
 
-        // Validation des données saisies
+        // Validation des données
         if (empty($content)) {
             header('Content-Type: application/json');
             echo json_encode(['status' => 'error', 'message' => $this->gettext("comment_field_required", "mel_forum")]);
             exit;
         }
 
-        // Créer un nouveau commentaire
+        // Création du commentaire
         $comment = new LibMelanie\Api\Defaut\Posts\Comment();
         $comment->content = $content;
         $comment->uid = $this->generateRandomString(24);
         $comment->created = date('Y-m-d H:i:s');
         $comment->modified = date('Y-m-d H:i:s');
-        $comment->creator = $user->uid; // ID de l'utilisateur
+        $comment->creator = $user->uid;
         $comment->post = $post;
 
-        // Si c'est une réponse, on associe le commentaire parent
+        // Associer le parent si fourni
         if (!empty($parent)) {
             $comment->parent = $parent;
         }
 
         // Sauvegarde du commentaire
-        $ret = $comment->save();
-        if (!is_null($ret)) {
-            // Préparer les données du commentaire avec le nom d'utilisateur
-            $commentData = [
-                'uid' => $comment->uid,
-                'content' => $comment->content,
-                'created' => $comment->created,
-                'creator' => $comment->creator,
-                'post' => $comment->post,
-                'parent' => !empty($comment->parent) ? $comment->parent : null,
-                'user_name' => $user->name // Récupération du nom d'utilisateur
-            ];
-
-            // Réponse JSON avec les informations du commentaire
-            header('Content-Type: application/json');
-            echo json_encode([
-                'status' => 'success',
-                'message' => $this->gettext("comment_creation", "mel_forum"),
-                'comment' => $commentData
-            ]);
+        $ret = $comment->save(); // Appel à la méthode de sauvegarde
+        if ($ret) {
+            // Charger les données du commentaire pour récupérer l'ID
+            if ($comment->load(['uid' => $comment->uid])) {
+                $id = $comment->id; // Récupérer l'ID après le chargement
+            } else {
+                // Gestion si le chargement échoue
+                header('Content-Type: application/json');
+                echo json_encode(['status' => 'error', 'message' => $this->gettext("comment_creation_failed", "mel_forum")]);
+                exit;
+            }
         } else {
+            // Gestion d'une erreur de sauvegarde
             header('Content-Type: application/json');
             echo json_encode(['status' => 'error', 'message' => $this->gettext("comment_creation_failed", "mel_forum")]);
+            exit;
         }
+
+        // Préparer les données du commentaire pour la réponse JSON
+        $commentData = [
+            'id' => $id, // Inclure l'ID récupéré
+            'uid' => $comment->uid,
+            'content' => $comment->content,
+            'created' => $comment->created,
+            'creator' => $comment->creator,
+            'post' => $comment->post,
+            'parent' => !empty($comment->parent) ? $comment->parent : null,
+            'user_name' => $user->name
+        ];
+
+        // Réponse JSON avec succès
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status' => 'success',
+            'message' => $this->gettext("comment_creation", "mel_forum"),
+            'comment' => $commentData
+        ]);
 
         exit;
     }

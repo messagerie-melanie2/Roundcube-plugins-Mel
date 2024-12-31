@@ -392,133 +392,142 @@ class PostComment {
 
     this.children_number = $('#comment-id-' + this.uid).data('number-children');
 
+    // Récupération initiale de post_id
+    this.post_id = rcmail.env.post_id;
+
     if (replyContent && replyContent.trim() !== '') {
-      // Vérifier si le commentaire n'est pas vide
+        // Vérifier si le commentaire n'est pas vide
 
-      submitButton.prop('disabled', true); // Désactiver le bouton de validation pour éviter les clics multiples
+        submitButton.prop('disabled', true); // Désactiver le bouton de validation pour éviter les clics multiples
 
-      BnumMessage.SetBusyLoading();
+        BnumMessage.SetBusyLoading();
 
-      try {
-        const response = await MelObject.Empty().http_internal_post({
-          task: 'forum',
-          action: 'create_comment',
-          params: {
-            _post_id: this.post_id, // L'ID du post
-            _content: replyContent, // Le contenu de la réponse
-            _parent: this.parent, // ID du commentaire parent
-          },
-        });
+        try {
+            const response = await MelObject.Empty().http_internal_post({
+                task: 'forum',
+                action: 'create_comment',
+                params: {
+                    _post_id: this.post_id, // L'ID du post
+                    _content: replyContent, // Le contenu de la réponse
+                    _parent: this.parent, // ID du commentaire parent
+                },
+            });
 
-        if (response.status === 'success') {
-          rcmail.display_message(response.message, 'confirmation');
+            if (response.status === 'success') {
+                rcmail.display_message(response.message, 'confirmation');
 
-          // Vider le textarea
-          $textarea.val('');
+                // Récupérer l'ID du commentaire créé
+                const newCommentId = response.comment.id; // Assurez-vous que l'ID est inclus dans `response.comment`
 
-          // Fermer le formulaire en ajoutant la classe 'hidden'
-          $('#reply-form-' + this.uid).addClass('hidden');
+                console.log('Nouveau commentaire ID :', newCommentId);
 
-          const parent_comment_id = this.parent; // ID du commentaire parent
-          let $responseContainer = $(
-            `#toggle-response-container-${parent_comment_id}`,
-          );
+                // Vider le textarea
+                $textarea.val('');
 
-          // Vérifier si le conteneur existe
-          if (!$responseContainer.length) {
-            // Si le conteneur n'existe pas, le créer avec MelHtml
-            this.children_number = 0;
-            const reponseText = 'réponse';
-            const newContainerHtml = MelHtml.start
-              .div({
-                id: 'toggle-response-container-' + parent_comment_id,
-                class: 'forum-comment-response',
-                'data-comment-id': parent_comment_id,
-                tabindex: '0',
-                role: 'button',
-                title:
-                  this.children_number === 1
-                    ? rcmail.gettext('mel_forum.see_response_singular')
-                    : `${rcmail.gettext('mel_forum.see_the')} ${this.children_number} ${rcmail.gettext('mel_forum.response_plural')}`,
-              })
-              .span({
-                id: 'toggle-icon-' + parent_comment_id,
-                class: 'icon',
-                'data-icon': 'arrow_drop_down',
-              })
-              .end('span')
-              .span({ class: 'ml-2' })
-              .text(this.children_number + ' ' + reponseText)
-              .end('span')
-              .end('div')
-              .div({
-                id: 'responses-' + parent_comment_id,
-                class: 'responses ml-4 hidden',
-              })
-              .end('div')
-              .generate_html(true);
+                // Fermer le formulaire en ajoutant la classe 'hidden'
+                $('#reply-form-' + this.uid).addClass('hidden');
 
-            // Localiser la section où insérer le conteneur
-            const $responseSection = $(`#comment-id-${this.uid}`).find(
-              '.forum-comment-responses',
+                const parent_comment_id = this.parent; // ID du commentaire parent
+                let $responseContainer = $(
+                    `#toggle-response-container-${parent_comment_id}`
+                );
+
+                // Vérifier si le conteneur existe
+                if (!$responseContainer.length) {
+                    // Si le conteneur n'existe pas, le créer avec MelHtml
+                    this.children_number = 0;
+                    const reponseText = 'réponse';
+                    const newContainerHtml = MelHtml.start
+                        .div({
+                            id: 'toggle-response-container-' + parent_comment_id,
+                            class: 'forum-comment-response',
+                            'data-comment-id': parent_comment_id,
+                            tabindex: '0',
+                            role: 'button',
+                            title:
+                                this.children_number === 1
+                                    ? rcmail.gettext('mel_forum.see_response_singular')
+                                    : `${rcmail.gettext('mel_forum.see_the')} ${this.children_number} ${rcmail.gettext('mel_forum.response_plural')}`,
+                        })
+                        .span({
+                            id: 'toggle-icon-' + parent_comment_id,
+                            class: 'icon',
+                            'data-icon': 'arrow_drop_down',
+                        })
+                        .end('span')
+                        .span({ class: 'ml-2' })
+                        .text(this.children_number + ' ' + reponseText)
+                        .end('span')
+                        .end('div')
+                        .div({
+                            id: 'responses-' + parent_comment_id,
+                            class: 'responses ml-4 hidden',
+                        })
+                        .end('div')
+                        .generate_html(true);
+
+                    // Localiser la section où insérer le conteneur
+                    const $responseSection = $(`#comment-id-${this.uid}`).find(
+                        '.forum-comment-responses'
+                    );
+                    $responseSection.html(newContainerHtml);
+
+                    // Re-sélectionner le conteneur après sa création
+                    $responseContainer = $(
+                        `#toggle-response-container-${parent_comment_id}`
+                    );
+                }
+
+                // Insérer la nouvelle réponse dans le conteneur
+                await Manager.displaySingleComment(response.comment);
+
+                // Mettre à jour le nombre de réponses dans l'interface
+                const currentChildrenNumber = parseInt(this.children_number) + 1; // Incrémenter le nombre de réponses
+                this.children_number = currentChildrenNumber; // Mettre à jour localement le nombre de réponses
+                $('#comment-id-' + this.uid).data(
+                    'number-children',
+                    this.children_number
+                );
+
+                // Mettre à jour le texte du nombre de réponses
+                const reponseText =
+                    currentChildrenNumber === 1
+                        ? rcmail.gettext('mel_forum.response_singular')
+                        : rcmail.gettext('mel_forum.response_plural');
+                $responseContainer
+                    .find('span.ml-2')
+                    .text(currentChildrenNumber + ' ' + reponseText);
+
+                // Mettre à jour l'attribut `title`
+                $responseContainer.attr(
+                    'title',
+                    currentChildrenNumber === 1
+                        ? rcmail.gettext('mel_forum.see_response_singular')
+                        : `${rcmail.gettext('mel_forum.see_the')} ${currentChildrenNumber} ${rcmail.gettext('mel_forum.response_plural')}`
+                );
+            } else {
+                rcmail.display_message(response.message, 'error');
+            }
+        } catch (error) {
+            rcmail.display_message(
+                rcmail.gettext('mel_forum.reply_save_error'),
+                'error'
             );
-            $responseSection.html(newContainerHtml);
+            console.error(rcmail.gettext('mel_forum.reply_save_failure'), error);
+        } finally {
+            BnumMessage.StopBusyLoading();
 
-            // Re-sélectionner le conteneur après sa création
-            $responseContainer = $(
-              `#toggle-response-container-${parent_comment_id}`,
-            );
-          }
-
-          // Insérer la nouvelle réponse dans le conteneur
-          await Manager.displaySingleComment(response.comment);
-
-          // Mettre à jour le nombre de réponses dans l'interface
-          const currentChildrenNumber = parseInt(this.children_number) + 1; // Incrémenter le nombre de réponses
-          this.children_number = currentChildrenNumber; // Mettre à jour localement le nombre de réponses
-          $('#comment-id-' + this.uid).data(
-            'number-children',
-            this.children_number,
-          );
-
-          // Mettre à jour le texte du nombre de réponses
-          const reponseText =
-            currentChildrenNumber === 1
-              ? rcmail.gettext('response_singular')
-              : rcmail.gettext('response_plural');
-          $responseContainer
-            .find('span.ml-2')
-            .text(currentChildrenNumber + ' ' + reponseText);
-
-          // Mettre à jour l'attribut `title`
-          $responseContainer.attr(
-            'title',
-            currentChildrenNumber === 1
-              ? rcmail.gettext('mel_forum.see_response_singular')
-              : `${rcmail.gettext('mel_forum.see_the')} ${currentChildrenNumber} ${rcmail.gettext('mel_forum.response_plural')}`,
-          );
-        } else {
-          rcmail.display_message(response.message, 'error');
+            // Réactiver le bouton de validation une fois la requête terminée
+            submitButton.prop('disabled', false);
         }
-      } catch (error) {
-        rcmail.display_message(
-          rcmail.gettext('mel_forum.reply_save_error'),
-          'error',
-        );
-        console.error(rcmail.gettext('mel_forum.reply_save_failure'), error);
-      } finally {
-        BnumMessage.StopBusyLoading();
-
-        // Réactiver le bouton de validation une fois la requête terminée
-        submitButton.prop('disabled', false);
-      }
     } else {
-      rcmail.display_message(
-        rcmail.gettext('mel_forum.comment_content_empty'),
-        'error',
-      );
+        rcmail.display_message(
+            rcmail.gettext('mel_forum.comment_content_empty'),
+            'error'
+        );
     }
-  }
+}
+
 
   /**
    * Bascule l'affichage d'un menu contextuel et applique des actions spécifiques lorsque le menu devient visible.

@@ -4805,4 +4805,6 @@ html.touch:root {
   --wsp-nav-bnum-separate-margin: 15px 0 5px 0;
   --wsp-nav-button-options-align-items: center;
   --wsp-nav-bnum-separate-width: 100%;
+  --wsp-nav-hashtag-display: none;
+  --wsp-nav-me-display: none;
 }

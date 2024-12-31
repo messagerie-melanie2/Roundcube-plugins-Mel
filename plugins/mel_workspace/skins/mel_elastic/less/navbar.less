@@ -196,7 +196,8 @@
         --navigation-border-radius-base
       );
 
-      padding: 5px;
+      // padding: 5px;
+      --wsp-nav-button-padding: var(--wsp-nav-button-padding-navigation, 5px);
       border-top-left-radius: var(
         --navigation-border-radius-top-left
       ) !important;
@@ -264,6 +265,7 @@
 
       --wsp-nav-button-width: var(--wsp-nav-button-option-width);
       --wsp-nav-button-height: var(--wsp-nav-button-option-height);
+      --wsp-nav-button-padding: var(--wsp-nav-button-padding-option, 5px);
 
       span {
         display: var(--wsp-navbar-button-text-display);
@@ -300,6 +302,7 @@
     position: absolute;
     bottom: 77px;
     right: 15px;
+    display: var(--wsp-nav-me-display, block);
   }
 
   .maximised-hidden {
@@ -313,6 +316,7 @@
     background-color: var(--bureau-card-background-color);
     padding: 5px;
     border-radius: 5px;
+    display: var(--wsp-nav-hashtag-display, block);
   }
 
   bnum-wsp-navigation-button {
@@ -328,7 +332,7 @@
       }
 
       &.visibility-icon {
-        display: var(--wsp-navbar-button-text-display);
+        display: var(--wsp-navbar-button-text-display, flex);
       }
 
       span {
@@ -356,6 +360,7 @@
 }
 
 :host(.minified) {
+  --wsp-nav-button-justify-content: center;
   max-width: 90px;
 
   .quit-wsp-button {

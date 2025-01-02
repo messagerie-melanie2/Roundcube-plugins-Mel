@@ -1275,6 +1275,8 @@ class mel_metapage extends bnum_plugin
      */
     function setup_env_js_vars()
     {
+        if ($this->get_current_action() === 'edit-prefs' && $this->get_current_task() === 'settings') return;
+
         include_once "program/search/search.php";
         include_once "program/search/search_config.php";
         $tmp = [];

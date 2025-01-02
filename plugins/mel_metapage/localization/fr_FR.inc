@@ -13,6 +13,7 @@ $labels["last_frame_opened"] = "Revenir à";
 $labels["nothing"] = "Aucun";
 $labels["empty_nothing"] = "Rien";
 $labels['tchap'] = 'Tchap';
+$labels['avatar_error_color'] = 'Couleur d\'arrière plan de l\'avatar si non défini';
 
 $labels["nextcloud_connection_error"] = "Impossible de récupérer les documents, l'authentification a échoué ou le plugin n'est pas bien configuré.";
 $labels["a_worspace"] = "Un espace de travail";

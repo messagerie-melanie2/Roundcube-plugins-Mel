@@ -262,7 +262,7 @@ if (rcmail && window.mel_metapage) {
             : rcmail.env['bnum.init_task'];
         //mel_metapage.Functions.change_frame(task, true, true, urls);
         FramesHelper.switch_frame(task, {
-          args: urls,
+          args: Object.keys(urls).length === 1 && !!urls._task ? null : urls,
         });
       } catch (error) {
         FramesHelper.switch_frame('bureau', {});

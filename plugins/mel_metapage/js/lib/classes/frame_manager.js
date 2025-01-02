@@ -1941,8 +1941,8 @@ class FrameManager {
    * Récupère la fenêtre courante
    * @returns {Window}
    */
-  get_window() {
-    return this._selected_window;
+  get_window({ uid = null } = {}) {
+    return this._windows.get(uid, this._selected_window);
   }
 
   /**

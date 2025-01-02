@@ -62,9 +62,10 @@ export class WorkspacePage extends WorkspaceObject {
         return {
           source: this.workspace.uid,
         };
-      }
-      else if (task === 'tasks') {
-        FramesManager.Instance.get_frame('tasks', { jquery:false })?.contentWindow?.rcmail?.triggerEvent?.('wsp.on.task.showed');
+      } else if (task === 'tasks') {
+        FramesManager.Instance.get_frame('tasks', {
+          jquery: false,
+        })?.contentWindow?.rcmail?.triggerEvent?.('wsp.on.task.showed');
       }
     }, 'tasks');
 
@@ -106,10 +107,8 @@ export class WorkspacePage extends WorkspaceObject {
 
     top.rcmail.add_event_listener_ex('visio.back', 'workspace', () => {
       if (NavBarManager.currentNavBar) {
-        NavBarManager.Hide()
-          .nav.$('#layout-frames')
-          .css('margin-left', '60px');
-          
+        NavBarManager.Hide().nav.$('#layout-frames').css('margin-left', '60px');
+
         NavBarManager.nav.$('html').removeClass('mwsp');
       }
     });
@@ -143,7 +142,7 @@ export class WorkspacePage extends WorkspaceObject {
             NavBarManager.currentNavBar.select(
               NavBarManager.currentNavBar.mainDiv
                 .querySelector(
-                  'bnum-wsp-navigation bnum-pressed-button[aria-pressed="true"]',
+                  'bnum-wsp-navigation bnum-pressed-button.left-button[aria-pressed="true"]',
                 )
                 .parentElement.getAttribute('data-task'),
               { background: false },

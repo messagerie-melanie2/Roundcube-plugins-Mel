@@ -109,8 +109,12 @@ function get_dn_label($dn)
  */
 function image_data($uri)
 {
+  global $config;
+
   // Format the image SRC: data:{mime};base64,{data};
-  if (APPLICATION_LOCALE) {
+  if ($config['DOCKER']) {
+    $dir = __DIR__ . '/../../bnum/plugins/mel_signatures';
+  } else if (APPLICATION_LOCALE) {
     $dir = __DIR__;
   } else {
     $dir = __DIR__ . '/../../plugins/mel_signatures';

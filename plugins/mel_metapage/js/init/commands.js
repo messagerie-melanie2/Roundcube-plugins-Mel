@@ -142,14 +142,20 @@ if (rcmail) {
           config[rcmail.env.mel_metapage_const.key] =
             rcmail.env.mel_metapage_const.value;
 
-        change_frame('settings', {
-          args: {
-            _action: 'folders',
-          },
-          action_args: [
-            mel_metapage.Functions.url('settings', 'folders', config),
-          ],
+        config._action = 'folders';
+
+        PageManager.SwitchFrame('settings', {
+          args: config
         });
+
+        // change_frame('settings', {
+        //   args: {
+        //     _action: 'folders',
+        //   },
+        //   action_args: [
+        //     mel_metapage.Functions.url('settings', 'folders', config),
+        //   ],
+        // });
       },
       true,
     );

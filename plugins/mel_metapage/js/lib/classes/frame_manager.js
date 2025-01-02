@@ -1590,10 +1590,11 @@ class FrameManager {
       $it = $(iterator);
 
       $it
-        .addClass('not-busy-only')
         .attr('data-task', $it.attr('href').split('=')[1])
         .attr('href', '#')
-        .attr('onclick', EMPTY_STRING);
+        .attr('onclick', EMPTY_STRING)
+        .parent()
+        .addClass('not-busy-only');
 
       if ($it.hasClass('menu-last-frame'))
         $it

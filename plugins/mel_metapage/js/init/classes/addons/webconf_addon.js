@@ -15,7 +15,7 @@
     pass = null,
     extra = null,
   ) {
-    rcmail.triggerEvent('visio.start', {
+    (top ?? parent ?? window).rcmail.triggerEvent('visio.start', {
       room: key,
       workspace: wsp,
       locks,

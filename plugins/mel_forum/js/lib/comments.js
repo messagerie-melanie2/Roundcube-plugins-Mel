@@ -478,6 +478,11 @@ class PostComment {
                     );
                 }
 
+                // Attacher directement l'événement de clic à cet élément
+                $responseContainer.on('click', () => {
+                  this.toggleResponses(parent_comment_id); // Appel de la méthode toggleResponses
+                });
+
                 // Insérer la nouvelle réponse dans le conteneur
                 await Manager.displaySingleComment(response.comment);
 

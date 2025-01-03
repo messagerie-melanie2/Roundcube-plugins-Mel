@@ -2,36 +2,99 @@ import { BnumEvent } from '../../../../../mel_metapage/js/lib/mel_events.js';
 
 export { MelVideo, MelVideoManager, generate_canvas };
 
+/**
+ * @typedef Size
+ * @property {number} height
+ * @property {number} width
+ */
+
+/**
+ * @callback OnClickCallback
+ * @param {Event} clickedEvent
+ * @param {MediaDeviceInfo} device
+ * @param {Size} size
+ * @return {void}
+ */
+
+/**
+ * @callback OnBeforeCallback
+ * @param {MelVideo} caller
+ * @return {Promise<void>}
+ * @async
+ */
+
+/**
+ * @class
+ * @classdesc Représentation et affichage d'une caméra
+ */
 class MelVideo {
+  /**
+   * Initialise et assigne les variables membres
+   * @param {MediaDeviceInfo} device Element qui sera affiché et gérer
+   * @param {external:jQuery} $main Element parent
+   * @param {number} [width=300] Largeur
+   * @param {number} [height=200] Hauteur
+   */
   constructor(device, $main, width = 300, height = 200) {
     /**
+     * Informations du device qui doit être affiché
      * @type {MediaDeviceInfo}
      */
     this.device = device;
+    /**
+     * Element html qui affiche la vidéo
+     * @type {HTMLVideoElement}
+     */
     this.video = null;
+    /**
+     * Element parent
+     * @type {external:jQuery}
+     */
     this.$parent = $main;
+    /**
+     * Si la vidéo à démaré ou non
+     * @type {boolean}
+     */
     this.started = false;
     /**
+     * Liste des devices
      * @type {MediaDeviceInfo[]}
+     * @package
      */
     this._all_devices = null;
     /**
-     * @type {{width:number, height:number}}
+     * Taille de l'élément
+     * @type {Size}
+     * @readonly
      */
     this.size = {
       width,
       height,
     };
 
+    /**
+     * Est appelé lorsque l'on clicuqe sur la vidéo
+     * @type {BnumEvent<OnClickCallback>}
+     * @event
+     */
     this.onclick = new BnumEvent();
     /**
-     * @type {BnumEvent}
+     * Liste de callback appelé avant la création de l'élément
+     * @type {BnumEvent<OnBeforeCallback>}
+     * @event
      */
     this.onbeforecreate = new BnumEvent();
     this.oncreate = new BnumEvent();
     this.ondispose = new BnumEvent();
   }
 
+  /**
+   *
+   * @param {*} devices
+   * @fires MelVideo.onbeforecreate | MelVideo.onclick
+   * @returns {Promise<MelVideo>}
+   * @async
+   */
   async create(devices = null) {
     if (!this.video) {
       if (!this._all_devices)

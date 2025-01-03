@@ -586,6 +586,8 @@ class FileTag extends AActionNextcloudTag {
       'true',
     );
 
+    container.style.borderRadius = '5px';
+
     container.onclick = () => {
       NextcloudModule.EmptyWorkspaceObject.switch_workspace_page('stockage', {
         newArgs: {
@@ -602,6 +604,8 @@ class FileTag extends AActionNextcloudTag {
     container.append(...super._p_append_to_container(...args));
 
     container.classList.add('nc-left-container');
+    container.style.display = 'flex';
+    container.style.alignItems = 'center';
 
     return [container];
   }

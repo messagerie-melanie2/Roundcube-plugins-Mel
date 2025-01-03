@@ -63,12 +63,12 @@ class WorkspacePageRow {
     $this->row = [];
   }
 
-  public function append($sizeMin, $html) {
-    $this->row[] = ['size' => $sizeMin, 'html' => $html];
+  public function append($sizeLG, $html, $sizeMD = null, $sizeSD = null) {
+    $this->row[] = ['size' => $sizeLG, 'html' => $html, 'md' => ($sizeMD ?? $sizeLG), 'sd' => ($sizeSD ?? $sizeMD ?? $sizeLG)];
   }
 
-  public function prepend($sizeMin, $html) {
-    array_unshift($this->row, ['size' => $sizeMin, 'html' => $html]);
+  public function prepend($sizeLG, $html, $sizeMD = null, $sizeSD = null) {
+    array_unshift($this->row, ['size' => $sizeLG, 'html' => $html, 'md' => ($sizeMD ?? $sizeLG), 'sd' => ($sizeSD ?? $sizeMD ?? $sizeLG)]);
   }
 
   public function count() {
@@ -85,7 +85,7 @@ class WorkspacePageRow {
 
       if ($i+1 >= $len && ($sizeTotal - $currentRowSize) > 0) $size += ($sizeTotal - $currentRowSize);
 
-      $html .= html::div(['class' => "col-md-$size"], $this->row[$i]['html']);
+      $html .= html::div(['class' => "col-lg-$size".' '.($this->row[$i]['md'] === null ? '' : 'col-md-'.$this->row[$i]['md']).' '.($this->row[$i]['sd'] === null ? '' : 'col-sd-'.$this->row[$i]['sd'])], $this->row[$i]['html']);
     }
 
     return $html;

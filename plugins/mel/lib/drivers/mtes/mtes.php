@@ -202,6 +202,18 @@ class mtes_driver_mel extends mce_driver_mel
   }
 
   /**
+   * Récupération de la cible de restauration en fonction de la boite
+   * 
+   * @param string $mbox Identifiant de la boite concernée par la restauration
+   * 
+   * @return string Cible de restauration
+   */
+  protected function get_restoration_target($mbox) {
+    $target = $this->get_restoration_host($mbox);
+    return explode('.', $target, 2)[0];
+  }
+
+  /**
    * Positionne des headers pour un message avant de l'envoyer
    * 
    * @param array $headers Liste des headers a fournir au message

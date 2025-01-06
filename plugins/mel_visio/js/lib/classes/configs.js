@@ -16,12 +16,14 @@ const VisioConfigs = {
    * Url de la visioconférence
    * @type {string}
    * @member
+   * @readonly
    */
   url: null,
   /**
    * Configuration de Voxify
    * @type {VoxifyConfig}
    * @member
+   * @readonly
    */
   voxify: null,
 };
@@ -35,12 +37,14 @@ const VoxifyConfig = {
   /**
    * Url de voxify
    * @type {string}
+   * @readonly
    * @member
    */
   url: null,
   /**
    * Indicatif de voxify
    * @type {string}
+   * @readonly
    * @member
    */
   indicatif: null,

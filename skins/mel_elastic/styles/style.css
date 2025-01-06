@@ -4576,7 +4576,7 @@ iframe.mm-frame {
   margin-bottom: 2.5px;
   display: flex;
   justify-content: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 .mel-nav-toolbar ul .toolbar-button {
   background-color: transparent;

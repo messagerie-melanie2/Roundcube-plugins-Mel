@@ -5,10 +5,18 @@ import { PasswordPart } from './password_part.js';
 export { VisioView };
 
 /**
+ * Contient la classe utile à la gestion de la vue de création d'une visio
+ * @module Visio/View
+ */
+
+/**
  * @class
  * @classdesc Gestion de la vue de la création d'une visio
  */
 class VisioView {
+  /**
+   * Initialise la classe
+   */
   constructor() {
     this._init()._setup();
   }
@@ -27,11 +35,13 @@ class VisioView {
     /**
      * @type {ChannelPart}
      * @member
+     * @frommodule Visio/Parts/Channel
      */
     this.linked_to = new ChannelPart();
     /**
      * @type {PasswordPart}
      * @member
+     * @frommodule Visio/Parts/PasswordPart
      */
     this.password = new PasswordPart();
 

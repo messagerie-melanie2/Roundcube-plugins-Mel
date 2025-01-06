@@ -20,6 +20,10 @@ import { VisioConnectors } from './connectors.js';
 import { VisioFunctions } from './helpers.js';
 export { Visio };
 
+/**
+ * @module Visio/Core
+ */
+
 class Visio extends MelObject {
   constructor() {
     super();

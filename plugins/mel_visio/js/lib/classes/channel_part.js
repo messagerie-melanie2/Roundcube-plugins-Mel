@@ -8,9 +8,16 @@ import { ACheckBox } from './abstract/ACheckBox.js';
 export { ChannelPart };
 
 /**
+ * Classes lié au choix des canaux lié à la visio si un plugin compatible existe
+ * @module Visio/Parts/Channel
+ * @local ChannelPart
+ */
+
+/**
  * @class
  * @classdesc Récupère le champs qui correspond à l'état de la checkbox
  * @extends ACheckBox
+ * @frommodule Visio/Abstract/Checkbox
  */
 class ChannelPart extends ACheckBox {
   constructor() {
@@ -124,7 +131,6 @@ class ChannelPart extends ACheckBox {
   /**
    * Récupère la valeur du champ
    * @override
-   * @overload
    * @returns {string}
    */
   value() {

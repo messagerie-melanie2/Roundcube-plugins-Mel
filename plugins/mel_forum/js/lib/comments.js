@@ -36,6 +36,7 @@ class PostComment {
       children_number,
       current_user_reacted,
     );
+    this.isProcessing = false;  // Ajout de l'état de traitement
   }
 
   /**
@@ -135,6 +136,13 @@ class PostComment {
    */
   async saveLikeOrDislike(type, uid) {
     try {
+      // Vérification si une requête est déjà en cours
+      if (this.isProcessing) {
+        return; // Empêche les actions multiples simultanées
+      }
+  
+      this.isProcessing = true; // Indique qu'une action est en cours
+  
       // Fonction pour envoyer la requête
       const sendRequest = async (reactionType) =>
         await MelObject.Empty().http_internal_post({
@@ -146,106 +154,76 @@ class PostComment {
             _type: reactionType,
           },
         });
-
+  
+      // Désactiver les boutons pour éviter les clics simultanés
+      let likeActionElement = $('[data-like-uid="' + uid + '"]');
+      let dislikeActionElement = $('[data-dislike-uid="' + uid + '"]');
+      likeActionElement.prop('disabled', true);
+      dislikeActionElement.prop('disabled', true);
+  
       // Envoie la requête avec le type de réaction (like ou dislike)
       let response = await sendRequest(type);
-
-      // Vérifier si la réponse contient bien un message
+  
+      // Réactiver les boutons après la réponse
+      likeActionElement.prop('disabled', false);
+      dislikeActionElement.prop('disabled', false);
+  
+      // Vérifier si la réponse contient un message
       if (response && response.message) {
-        // Afficher les autres messages spécifiques
-        if (response.message === rcmail.gettext('mel_forum.like_cancelled')) {
-          rcmail.display_message(response.message, 'confirmation');
-        }
-
-        if (
-          response.message ===
-          rcmail.gettext('mel_forum.like_cancelled_dislike_registered')
-        ) {
-          rcmail.display_message(response.message, 'confirmation');
-        }
-
-        if (
-          response.message === rcmail.gettext('mel_forum.dislike_cancelled')
-        ) {
-          rcmail.display_message(response.message, 'confirmation');
-        }
-
-        if (
-          response.message ===
-          rcmail.gettext('mel_forum.dislike_cancelled_like_registered')
-        ) {
-          rcmail.display_message(response.message, 'confirmation');
-        }
-
-        // Mise à jour de l'UI en fonction de la réaction (like ou dislike)
-        let likeCounterElement = $('[data-like-uid="' + uid + '"]').siblings(
-          'span.ml-2',
-        );
-        let dislikeCounterElement = $(
-          '[data-dislike-uid="' + uid + '"]',
-        ).siblings('span.ml-2');
-        let likeActionElement = $('[data-like-uid="' + uid + '"]');
-        let dislikeActionElement = $('[data-dislike-uid="' + uid + '"]');
-
+        let likeCounterElement = $('[data-like-uid="' + uid + '"]').siblings('span.ml-2');
+        let dislikeCounterElement = $('[data-dislike-uid="' + uid + '"]').siblings('span.ml-2');
+  
         // Gestion de l'annulation d'une réaction
         if (response.message.includes('annulé')) {
           if (type === 'like') {
-            likeCounterElement.text(
-              Math.max(0, parseInt(likeCounterElement.text()) - 1),
-            );
+            likeCounterElement.text(Math.max(0, parseInt(likeCounterElement.text()) - 1));
             likeActionElement.parent().removeClass('active');
-            this.current_user_reacted = '';
+            this.current_user_reacted = ''; // Réinitialiser la réaction
           } else if (type === 'dislike') {
-            dislikeCounterElement.text(
-              Math.max(0, parseInt(dislikeCounterElement.text()) - 1),
-            );
+            // Réinitialiser l'état de `dislike`
+            dislikeCounterElement.text(Math.max(0, parseInt(dislikeCounterElement.text()) - 1));
             dislikeActionElement.parent().removeClass('active');
-            this.current_user_reacted = '';
+            this.current_user_reacted = ''; // Réinitialiser la réaction
           }
         } else {
-          // Gestion de l'ajout ou du changement de réaction
+          // Ajout ou modification de la réaction
           if (type === 'like') {
-            likeCounterElement.text(parseInt(likeCounterElement.text()) + 1);
-            likeActionElement.parent().addClass('active');
-            this.current_user_reacted = 'like';
+            // Si un dislike est activé, on le retire
             if (dislikeActionElement.parent().hasClass('active')) {
-              dislikeCounterElement.text(
-                Math.max(0, parseInt(dislikeCounterElement.text()) - 1),
-              );
+              dislikeCounterElement.text(Math.max(0, parseInt(dislikeCounterElement.text()) - 1));
               dislikeActionElement.parent().removeClass('active');
             }
+  
+            // Si un like n'est pas déjà activé, on l'ajoute
+            if (!likeActionElement.parent().hasClass('active')) {
+              likeCounterElement.text(parseInt(likeCounterElement.text()) + 1);
+              likeActionElement.parent().addClass('active');
+            }
+  
+            this.current_user_reacted = 'like';
           } else if (type === 'dislike') {
-            dislikeCounterElement.text(
-              parseInt(dislikeCounterElement.text()) + 1,
-            );
-            dislikeActionElement.parent().addClass('active');
-            this.current_user_reacted = 'dislike';
+            // Si un like est activé, on le retire
             if (likeActionElement.parent().hasClass('active')) {
-              likeCounterElement.text(
-                Math.max(0, parseInt(likeCounterElement.text()) - 1),
-              );
+              likeCounterElement.text(Math.max(0, parseInt(likeCounterElement.text()) - 1));
               likeActionElement.parent().removeClass('active');
             }
+  
+            // Si un dislike n'est pas déjà activé, on l'ajoute
+            if (!dislikeActionElement.parent().hasClass('active')) {
+              dislikeCounterElement.text(parseInt(dislikeCounterElement.text()) + 1);
+              dislikeActionElement.parent().addClass('active');
+            }
+  
+            this.current_user_reacted = 'dislike';
           }
         }
-
-        // Affichage des messages de succès ou d'erreur selon le statut général
-        if (response.status === 'success') {
-          rcmail.display_message(response.message, 'confirmation'); // message de succès
-        } else {
-          rcmail.display_message(response.message, 'error'); // message d'erreur
-        }
+  
       } else {
-        // Si la réponse ne contient pas de message, afficher une erreur par défaut
-        rcmail.display_message(
-          rcmail.gettext('mel_forum.unexpected_error'),
-          'error',
-        );
+        // Pas de message à afficher, aucune action supplémentaire ici
       }
-
-      return response;
+  
     } catch (error) {
-      // En cas d'erreur lors de la requête
+      // Gestion des erreurs de requêtes
       rcmail.display_message(
         rcmail.gettext('mel_forum.reaction_save_error'),
         'error',
@@ -254,8 +232,14 @@ class PostComment {
         rcmail.gettext('mel_forum.like_dislike_save_failure'),
         error,
       );
+    } finally {
+      // Réinitialisation de l'état de traitement après un délai
+      setTimeout(() => {
+        this.isProcessing = false;
+      }, 1000); // Augmentation du délai pour limiter les clics rapides
     }
   }
+  
 
   /**
    * Bascule l'affichage des réponses d'un commentaire et met à jour l'icône de basculement.

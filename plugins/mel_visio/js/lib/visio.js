@@ -21,19 +21,38 @@ import { VisioFunctions } from './helpers.js';
 export { Visio };
 
 /**
+ * Gère la visio
  * @module Visio/Core
+ * @local CallData
+ * @local Visio
  */
 
+/**
+ * @typedef CallData
+ * @property {string} pin Code pin pour rejoindre de la visio
+ * @property {string} number Numéro de téléphone de la visio
+ */
+
+/**
+ * @class
+ * @classdesc Créer la visio, et gère chaque fonctionnalités
+ * @hideconstructor
+ */
 class Visio extends MelObject {
   constructor() {
     super();
   }
 
+  /**
+   * Ajoute les listeners, initialise les variables et assigne les variables
+   * @override
+   */
   main() {
     super.main();
 
     (top ?? parent ?? window).$('html').addClass('fullscreen-visio');
 
+    //Modifie l'url lors du switch de frames
     FramesManager.Instance.attach('url', () => {
       const use_top = true;
       FramesManager.Helper.window_object.UpdateNavUrl(
@@ -47,10 +66,12 @@ class Visio extends MelObject {
       );
     });
 
+    //Ignore le changement de titre par défaut
     FramesManager.Instance.attach('before_url', () => {
       return 'break';
     });
 
+    //Actions à faire lors du changement de frame
     FramesManager.Instance.attach('switch_frame', (task) => {
       if (task === 'webconf') {
         top
@@ -63,12 +84,6 @@ class Visio extends MelObject {
         );
 
         FramesManager.Instance.get_window().hide();
-        // FramesManager.Instance.get_window().hide()._current_frame =
-        //   MelEnumerable.from(FramesManager.Instance.get_window()._frames)
-        //     .where((x) => x.key === 'webconf')
-        //     .firstOrDefault(
-        //       FramesManager.Instance.get_window()._current_frame,
-        //     ).value;
 
         this.toolbar.toolbar().find('button').first().focus();
 
@@ -94,23 +109,46 @@ class Visio extends MelObject {
    */
   _init() {
     /**
+     * Données de la visio
      * @type {VisioData}
      * @readonly
+     * @frommodule Visio/Pages/Index
      */
     this.data = null;
 
+    /**
+     * Loader de la visio
+     * @type {VisioLoader}
+     * @frommodule Visio/Loader
+     */
     this.loader = null;
 
     /**
+     * Lien avec Jitsi
      * @type {JitsiAdaptor}
+     * @frommodule Visio/Jitsi
      */
     this.jitsii = null;
     /**
+     * Toolbar de la visio
      * @type {VisioToolbar}
+     * @frommodule Visio/Toolbar
      */
     this.toolbar = null;
 
+    /**
+     * Token jwt
+     * @type {Promise<{datas: ?any, has_error: boolean, error: ?any}>}
+     * @package
+     */
     this._token = null;
+
+    /**
+     * Données pour rejoindre la visio via téléphone
+     * @type {Promise<CallData>}
+     * @package
+     */
+    this._call_datas = null;
 
     return this;
   }
@@ -142,21 +180,24 @@ class Visio extends MelObject {
     return this;
   }
 
+  /**
+   * Récupère les données d'appels
+   * @returns {Promise<CallData>}
+   * @async
+   */
   async get_call_data() {
     return await this._call_datas;
   }
 
+  /**
+   * Démarre la visio
+   * @returns {Promise<void>}
+   * @async
+   */
   async start() {
     if (!VisioFunctions.CheckKeyIsValid(this.data.room)) {
       FramesManager.Instance.start_mode('reinit_visio');
     } else {
-      // if (this.data.wsp) {
-      //   this._pad_promise = Drive.Instance.get(
-      //     'pad',
-      //     `/dossiers-${this.data.wsp}`,
-      //   );
-      // }
-
       const domain = rcmail.env['webconf.base_url']
         .replace('http://', '')
         .replace('https://', '');
@@ -273,6 +314,10 @@ class Visio extends MelObject {
     }
   }
 
+  /**
+   * Récupère l'url de la visio
+   * @returns {string}
+   */
   get_visio_url() {
     const params = {
       _key: this.data.room,
@@ -285,6 +330,12 @@ class Visio extends MelObject {
     }).replace('&_is_from=iframe', EMPTY_STRING);
   }
 
+  /**
+   * Récupère le token jwt
+   * @returns {Promise<Promise<{datas: ?any, has_error: boolean, error: ?any}>>}
+   * @async
+   * @package
+   */
   async _get_jwt() {
     let params = VisioConnectors.jwt.needed;
     params._room = this.data.room;
@@ -293,6 +344,8 @@ class Visio extends MelObject {
 
   /**
    * Affiche un message si l'utilisateur est sous FF
+   * @return {Promise<void>}
+   * @async
    */
   async navigatorWarning() {
     if (InternetNavigator.IsFirefox()) {
@@ -390,6 +443,11 @@ class Visio extends MelObject {
     } //Fin si firefox
   }
 
+  /**
+   * Créer la toolbar de la visio
+   * @returns {Toolbar}
+   * @package
+   */
   _create_toolbar() {
     let toolbar = Toolbar.FromConfig(
       JSON.parse(this.get_env('visio.toolbar')),

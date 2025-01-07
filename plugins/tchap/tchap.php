@@ -182,6 +182,8 @@ class tchap extends bnum_plugin
             $services = $args['services'];
             $default_values= $args['default_values'];
 
+            if ($default_values === '') $default_values = null;
+
             $users = mel_helper::Enumerable($workspace->users())->select(function ($k, $v) {
                 return $v->user;
             })->toArray();

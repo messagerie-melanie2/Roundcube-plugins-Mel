@@ -585,6 +585,24 @@ export class Forum extends MelObject {
      * @param {*} posts 
      */
     displayPost(posts) {
+        // Vider la zone d'affichage des posts
+        $('#post-area').empty();
+
+        // Vérifier si l'utilisateur souhaite afficher uniquement les favoris
+        if (this.display_fav) {
+            // Filtrer les posts pour ne garder que les favoris
+            const favoritePosts = Object.values(posts).filter(post => post.favorite);
+
+            if (favoritePosts.length === 0) {
+                // Si aucun favori, afficher un message
+                this.displayNoFavorite();
+                return; // Arrêter l'exécution ici
+            }
+
+            // Afficher uniquement les posts favoris
+            posts = favoritePosts;
+        }
+
         let post;
         let data;
         for (let postId in posts) {
@@ -680,5 +698,15 @@ export class Forum extends MelObject {
         $('#post-area').append(noPostDiv.generate());
     }
 
+    /**
+     * Affiche un message indiquant qu'il n'y a aucun favori
+     */
+    displayNoFavorite() {
+        let noFavoriteDiv = MelHtml.start
+            .span({class: 'ml-2'})
+            .text(rcmail.gettext('mel_forum.no_favorites'))
+            .end();
+        $('#post-area').append(noFavoriteDiv.generate());
+    }
     
 }

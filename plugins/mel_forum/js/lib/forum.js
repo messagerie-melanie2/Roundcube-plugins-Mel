@@ -485,12 +485,7 @@ export class Forum extends MelObject {
     updateCounter(span, value) {
         let currentValue = parseInt(span.text()) || 0; // Récupérer la valeur actuelle
         let newValue = currentValue + value;
-
-        if (newValue <= 0) {
-            span.text(''); // Si la valeur est 0 ou moins, on masque le compteur
-        } else {
-            span.text(newValue); // Sinon, on met à jour la valeur
-        }
+        span.text(newValue);
     }
 
     /**
@@ -525,10 +520,6 @@ export class Forum extends MelObject {
             processData:false,
             contentType:false,
             on_success: (response) => {
-                BnumMessage.DisplayMessage(
-                    response.status,
-                    eMessageType.Confirmation,
-                );
                 let like_div = $('#add_like-'+post_uid);
                 let like_counter = like_div.find('span.ml-2');
                 let dislike_div = $('#add_dislike-'+post_uid);

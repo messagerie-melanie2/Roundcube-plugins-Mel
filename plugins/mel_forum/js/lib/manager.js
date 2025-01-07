@@ -524,10 +524,6 @@ export class Manager extends MelObject {
         processData:false,
         contentType:false,
         on_success: () => {
-            BnumMessage.DisplayMessage(
-              rcmail.gettext('mel_forum.reaction_saved'),
-                eMessageType.Confirmation,
-            );
             let like_div = $('#add_like');
             let like_counter = like_div.find('span.ml-2');
             let dislike_div = $('#add_dislike');
@@ -577,6 +573,6 @@ export class Manager extends MelObject {
   updateCounter(span, value) {
     let currentValue = parseInt(span.text()) || 0; // Récupérer la valeur actuelle
     let newValue = currentValue + value;
-    span.text(newValue); // Sinon, on met à jour la valeur
+    span.text(newValue);
   }
 }

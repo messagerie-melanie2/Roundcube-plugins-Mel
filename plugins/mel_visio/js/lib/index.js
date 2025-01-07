@@ -1,5 +1,5 @@
 /**
- * @module VisioView
+ * @module Visio/Pages/Index
  * @local VisioData
  * @local VisioCreator
  */

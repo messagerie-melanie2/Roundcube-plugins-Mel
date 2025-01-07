@@ -1,12 +1,21 @@
 import { MelEnumerable } from '../../../mel_metapage/js/lib/classes/enum.js';
-import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager.js';
+// import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import {
   REG_ALPHANUM,
   REG_NUMBER,
 } from '../../../mel_metapage/js/lib/constants/regexp.js';
 
-export class VisioFunctions {
+export { VisioFunctions };
+
+/**
+ * @class
+ * @classdesc Classe statique qui contient les fonctions d'aides de la visio
+ * @abstract
+ * @hideconstructor
+ * @memberof module:Visio/Helper
+ */
+class VisioFunctions {
   /**
    * Mélange un tableau
    * @private

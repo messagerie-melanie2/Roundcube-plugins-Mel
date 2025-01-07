@@ -643,7 +643,7 @@ class mel_workspace extends bnum_plugin
             $echoed = $wsp->save();
         }
     
-        $this->sendExit($echoed);
+        $this->sendExit(!!$echoed);
         //exit;
     }
 

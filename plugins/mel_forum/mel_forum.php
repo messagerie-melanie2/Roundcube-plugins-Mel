@@ -791,6 +791,9 @@ class mel_forum extends bnum_plugin
 
         //Définition des propriétés du tag
         $tag->name = ucfirst(str_replace(' ', '', $name));
+        mel_helper::load_helper($this->rc())->include_utilities();
+        $tag->name = mel_utils::remove_accents($tag->name);
+
         $tag->workspace = $workspace_uid;
 
         // Sauvegarde du tag

@@ -85,6 +85,8 @@ export class create_or_edit_post extends MelObject {
                 if (tagname) {
                     // Forcer la première lettre en majuscule
                     tagname = tagname.charAt(0).toUpperCase() + tagname.slice(1);
+                    tagname = mel_metapage.Functions.remove_accents(tagname);
+                    tagname = tagname.split(' ').join('_');
     
                     // Vérifie si le tag existe déjà
                     if (!this.tags.includes(tagname)) {

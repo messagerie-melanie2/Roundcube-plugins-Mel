@@ -186,7 +186,7 @@ class tchap extends bnum_plugin
                 return $v->user;
             })->toArray();
 
-            if ($workspace->objects()->get(self::KEY_FOR_WORKSPACE) && array_search(self::KEY_FOR_WORKSPACE, $services) !== false) {
+            if (!$workspace->objects()->get(self::KEY_FOR_WORKSPACE) && array_search(self::KEY_FOR_WORKSPACE, $services) !== false) {
                 $default_values_key = "tchap-channel";
                 if (!isset($default_values)) $default_values = [$default_values_key => ['mode' => 'default']];
                 else if (!isset($default_values[$default_values_key])) $default_values[$default_values_key] = ['mode' => 'default'];
@@ -232,6 +232,9 @@ class tchap extends bnum_plugin
                 unset($services[self::KEY_FOR_WORKSPACE]);
 
                 $args['services'] = $services;
+            }
+            else if ($workspace->objects()->get(self::KEY_FOR_WORKSPACE) && array_search(self::KEY_FOR_WORKSPACE, $services) !== false) {
+                self::invite_tchap_user($workspace->objects()->get(self::KEY_FOR_WORKSPACE)->id, $users);
             }
         }
 

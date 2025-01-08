@@ -331,7 +331,9 @@ class tchap extends bnum_plugin
             $email = strtolower(driver_mel::gi()->getUser($user)->email);
 
             if (isset($email) && is_string($email) && strpos($email, '@') !== false) {
-                $mail_user[] = $email;
+                $id = self::get_user_tchap_id($email);
+                
+                if (!$id || !self::is_member($room_id, $id)) $mail_user[] = $email;
             }
         }
         $config = ['token' => $token, 'room_id' => $room_id, 'users_list' => $mail_user];

@@ -81,6 +81,21 @@
     span {
       display: var(--wsp-nav-quit-button-text-display, block);
     }
+
+    &:hover {
+      background-color: var(
+        --wsp-nav-option-button-hover-background-color,
+        var(--wsp-nav-button-hover-background-color)
+      ) !important;
+      color: var(
+        --wsp-nav-option-button-hover-text-color,
+        var(--wsp-nav-button-hover-text-color)
+      ) !important;
+      border: var(
+        --wsp-nav-option-button-hover-border,
+        var(--wsp-nav-button-hover-border)
+      ) !important;
+    }
   }
 
   .picture-container {

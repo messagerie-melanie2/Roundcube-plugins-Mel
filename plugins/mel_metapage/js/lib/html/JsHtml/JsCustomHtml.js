@@ -1,5 +1,9 @@
 import { BootstrapLoader } from './CustomAttributes/bootstrap-loader.js';
 import {
+  MelWindow,
+  MelWindowFrame,
+} from './CustomAttributes/frames_web_elements.js';
+import {
   BnumHtmlCenteredFlexContainer,
   BnumHtmlFlexContainer,
   BnumHtmlIcon,
@@ -7,11 +11,8 @@ import {
   BnumHtmlSrOnly,
   HtmlCustomTag,
 } from './CustomAttributes/js_html_base_web_elements.js';
-import {
-  MelWindow,
-  MelWindowFrame,
-} from './CustomAttributes/frames_web_elements.js';
 import { JsHtml } from './JsHtml.js';
+
 export { JsHtml };
 
 JsHtml.create_custom_tag = function (

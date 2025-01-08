@@ -19,6 +19,7 @@
  */
 
 import { EMPTY_STRING } from '../constants/constants.js';
+import { MelWindow } from '../html/JsHtml/CustomAttributes/frames_web_elements.js';
 import { HTMLButtonGroup } from '../html/JsHtml/CustomAttributes/HTMLButtonGroup.js';
 import { MelHtml } from '../html/JsHtml/MelHtml.js';
 import { isNullOrUndefined } from '../mel.js';
@@ -669,13 +670,11 @@ class Window {
 
       //Création de la frame qui contient les layouts si elle n'existe pas
       if (!$('#layout-frames').length)
-        $('#layout').append(
-          this._generate_layout_frames().generate_html({ joli_html: false }),
-        );
+        $('#layout').append(this._generate_layout_frames());
 
       //Création de la fenêtre si elle n'éxiste pas
       if (!this.get_window().length)
-        $('#layout-frames').append(this._generate_window().generate());
+        $('#layout-frames').append(this._generate_window());
 
       /**
        * Id du loader
@@ -887,22 +886,23 @@ class Window {
 
   /**
    * Génère la fenêtre en jshtml
+   * @returns {MelWindow}
    * @package
-   * @returns {____JsHtml}
-   * @frommodulereturn JsHtml
    */
   _generate_window() {
-    return MelHtml.start.mel_window(this._id).end();
+    return MelWindow.CreateNode(this._id); //MelHtml.start.mel_window(this._id).end();
   }
 
   /**
-   * Génère la div qui contiendra les fenêtre en jshtml
+   * Génère la div qui contiendra les fenêtre
+   * @returns {HTMLDivElement}
    * @package
-   * @returns {____JsHtml}
-   * @frommodulereturn JsHtml
    */
   _generate_layout_frames() {
-    return MelHtml.start.div({ id: 'layout-frames' }).end();
+    let frames = document.createElement('div');
+    frames.setAttribute('id', 'layout-frames');
+
+    return frames;
   }
 
   /**
@@ -1771,7 +1771,7 @@ class FrameManager {
       $parent = $('<div>').class('fixed-window').appendTo($('#layout'));
     }
 
-    win._generate_window().generate().appendTo($parent);
+    $parent.append(win._generate_window());
 
     return {
       win,

@@ -1957,7 +1957,7 @@ class mel_workspace extends bnum_plugin
             }, true)->take($limit ? (($limit - $otherArr->count()) - 1) : PHP_INT_MAX));
         }
 
-        return $arr;
+        return $limit ? $arr->take($limit - 1) : $arr;
     }
 
     public static function GetWorkspace($uid)

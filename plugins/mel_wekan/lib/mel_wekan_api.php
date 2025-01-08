@@ -426,7 +426,7 @@ class mel_wekan_api extends amel_lib
         if (gettype($username) !== "string")
             return $username;
 
-        $key = str_replace("{board}", $board, self::CALL_GET_BOARD);      
+        $key = str_replace("{board}", isset($board->id) ? $board->id : $board , self::CALL_GET_BOARD);      
 
         $board = $this->get($key, null, ['Authorization: Bearer '.$_SESSION[self::KEY_SESSION_AUTH]["token"]]);
 

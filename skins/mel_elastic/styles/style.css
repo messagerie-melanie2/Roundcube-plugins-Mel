@@ -4563,7 +4563,7 @@ body #layout-frames {
 }
 html.touch body #layout-frames {
   margin-left: 0px;
-  width: calc(100% - 60px);
+  width: 100%;
 }
 iframe.mm-frame {
   padding-top: 0 !important;

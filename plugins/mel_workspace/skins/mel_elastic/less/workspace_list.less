@@ -8,7 +8,7 @@
 .workspace-list {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-evenly;
+  justify-content: space-between;
 
   .mode-list & {
     justify-content: initial;
@@ -179,7 +179,7 @@
           .no-picture);
 
         background-color: var(--roundbadge-default-bckg-color);
-        border: solid var(--wsp-round-border-size);
+        border: solid 2px var(--bureau-card-background-color);
       }
 
       bnum-avatar {
@@ -188,7 +188,7 @@
         border-radius: 100%;
         background-size: cover;
         background-position: center;
-        border: solid var(--wsp-round-border-size);
+        border: solid 2px var(--bureau-card-background-color);
         filter: blur(0em);
         transition: filter 0.5s;
         object-fit: cover;
@@ -256,7 +256,8 @@
 bnum-workspace-block-item {
   &.hoverable {
     &:hover {
-      box-shadow: 0 0 0 0.2rem var(--windows-like-popup-button-focus);
+      // box-shadow: 0 0 0 0.2rem var(--windows-like-popup-button-focus);
+      background-color: var(--bureau-card-content-hover-background-color);
     }
   }
 }

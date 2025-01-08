@@ -408,7 +408,7 @@ class WspNavBar extends HtmlCustomTag {
     let icon = new BnumHtmlIcon('content_copy');
     button.append(icon);
 
-    span.append(button);
+    // span.append(button);
 
     div.append(span);
 
@@ -605,7 +605,7 @@ class WspNavBar extends HtmlCustomTag {
     ) {
       let button = new WspButton(this, {
         style: WspButton.Style.white,
-        text: 'Commencer une visioconférence',
+        text: 'Visioconférence',
         icon: 'videocam',
       });
 

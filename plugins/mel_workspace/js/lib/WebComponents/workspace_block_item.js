@@ -405,7 +405,7 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
       this._description,
       'description',
       'workspace-block-item-description',
-      'three-lines',
+      'two-lines',
     );
   }
   //#endregion
@@ -479,7 +479,6 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
       if (!Number.isNaN(+url)) {
         img = document.createElement('span');
         img.classList.add('workspace-block-item-user-number');
-        img.style.borderColor = this._color;
         span = document.createElement('span');
         span.appendChild(document.createTextNode(`+${url}`));
         span.classList.add('absolute-center');

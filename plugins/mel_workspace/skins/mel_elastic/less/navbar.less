@@ -271,6 +271,21 @@
       span {
         display: var(--wsp-navbar-button-text-display);
       }
+
+      &:hover {
+        background-color: var(
+          --wsp-nav-option-button-hover-background-color,
+          var(--wsp-nav-button-hover-background-color)
+        );
+        color: var(
+          --wsp-nav-option-button-hover-text-color,
+          var(--wsp-nav-button-hover-text-color)
+        );
+        border: var(
+          --wsp-nav-option-button-hover-border,
+          var(--wsp-nav-button-hover-border)
+        );
+      }
     }
   }
 
@@ -327,6 +342,21 @@
       --wsp-nav-button-justify-content: var(
         --wsp-nav-navigation-button-justify-content
       );
+
+      &:hover {
+        background-color: var(
+          --wsp-nav-apps-button-hover-background-color,
+          var(--wsp-nav-button-hover-background-color)
+        );
+        color: var(
+          --wsp-nav-apps-button-hover-text-color,
+          var(--wsp-nav-button-hover-text-color)
+        );
+        border: var(
+          --wsp-nav-apps-button-hover-border,
+          var(--wsp-nav-button-hover-border)
+        );
+      }
 
       &::before {
         display: var(--wsp-navbar-button-text-display);

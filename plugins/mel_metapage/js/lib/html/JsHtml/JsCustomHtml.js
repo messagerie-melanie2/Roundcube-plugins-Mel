@@ -1,8 +1,8 @@
 import { BootstrapLoader } from './CustomAttributes/bootstrap-loader.js';
-import {
-  MelWindow,
-  MelWindowFrame,
-} from './CustomAttributes/frames_web_elements.js';
+// import {
+//   MelWindow,
+//   MelWindowFrame,
+// } from './CustomAttributes/frames_web_elements.js';
 import {
   BnumHtmlCenteredFlexContainer,
   BnumHtmlFlexContainer,
@@ -100,21 +100,21 @@ JsHtml.create_custom_tag('centered-flex-container', {
 
 JsHtml.create_custom_tag('placeholder', {});
 
-JsHtml.create_custom_tag('mel-window', {
-  already_existing_class: MelWindow,
-});
+// JsHtml.create_custom_tag('mel-window', {
+//   already_existing_class: MelWindow,
+// });
 
-JsHtml.update('mel_window', function (self, old, id, attribs = {}) {
-  attribs['data-window-id'] = id;
+// JsHtml.update('mel_window', function (self, old, id, attribs = {}) {
+//   attribs['data-window-id'] = id;
 
-  let html = old.call(self, attribs);
+//   let html = old.call(self, attribs);
 
-  return html;
-});
+//   return html;
+// });
 
-JsHtml.create_custom_tag('mel-window-frame', {
-  already_existing_class: MelWindowFrame,
-});
+// JsHtml.create_custom_tag('mel-window-frame', {
+//   already_existing_class: MelWindowFrame,
+// });
 
 JsHtml.create_custom_tag('loader', {
   prefix_tag: 'bootstrap',

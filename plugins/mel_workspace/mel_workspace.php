@@ -523,7 +523,7 @@ class mel_workspace extends bnum_plugin
             {
                 if (class_exists("mel_notification"))
                 {
-                    mel_notification::notify('workspace', driver_mel::gi()->getUser()->name.' vient de rejoindre l\'espace "'.$workspace->title().'" !','',null,$admin);
+                    mel_notification::notify('workspace', driver_mel::gi()->getUser()->name.' vient de rejoindre l\'espace "'.$workspace->title().'" !','',null,$admin->uid);
                 }
             }
             //récupérer tout les admins du workspaces

@@ -12,6 +12,7 @@ import { InternetNavigator } from '../../../mel_metapage/js/lib/helpers/Internet
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { capitalize } from '../../../mel_metapage/js/lib/mel.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
+import { VisioHelper } from '../helper.js';
 //import { Drive } from '../../../mel_metapage/js/lib/nextcloud/drive.js';
 import { JitsiAdaptor } from './classes/visio/jitsii.js';
 import { VisioLoader } from './classes/visio/loader.js';
@@ -173,7 +174,7 @@ class Visio extends MelObject {
 
     this.loader = new VisioLoader('#mm-webconf .loading-visio-text');
     this.jitsii = null;
-    this._call_datas = webconf_helper.phone.getAll(this.data.wsp);
+    this._call_datas = VisioHelper.Instance.getWebconfPhone(this.data.room); //webconf_helper.phone.getAll(this.data.wsp);
     this._token = this._get_jwt();
     this._toolbar = null;
 

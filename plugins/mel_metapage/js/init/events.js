@@ -2521,20 +2521,22 @@ $(document).ready(() => {
           // ).then(() => {
           //   if (after !== null) after();
           // });
-          const { FramesManager } = await loadJsModule(
-            'mel_metapage',
-            'frame_manager',
-            '/js/lib/classes/',
-          );
+          // const { FramesManager } = await loadJsModule(
+          //   'mel_metapage',
+          //   'frame_manager',
+          //   '/js/lib/classes/',
+          // );
 
           if (!!action && !othersParams?._action) {
             othersParams ??= {};
             othersParams._action = action;
           }
 
-          await FramesManager.Instance.switch_frame(task, {
-            args: othersParams,
-          });
+          // await FramesManager.Instance.switch_frame(task, {
+          //   args: othersParams,
+          // });
+
+          await PageManager.SwitchFrame(task, { args: othersParams });
 
           if (after !== null) after();
 
@@ -2547,7 +2549,7 @@ $(document).ready(() => {
         }
       }
     } catch (error) {
-      //console.error("###[DEBUG][ONCLICK]", error);
+      console.error('###[DEBUG][ONCLICK]', error);
     }
   }
 

@@ -35,6 +35,9 @@
 var PageManager =
   PageManager ||
   (() => {
+    var loadJsModule =
+      window.loadJsModule ?? parent.loadJsModule ?? top.loadJsModule;
+
     const MODULE = 'FrameManager';
     let manager = {
       Instance: null,

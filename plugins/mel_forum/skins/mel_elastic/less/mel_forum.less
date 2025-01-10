@@ -798,7 +798,6 @@
     }
 
     .icon-remove-tag {
-      display: none;
       &::before {
         font-family: 'Material Symbols Outlined';
         content: '\e5cd';
@@ -813,12 +812,11 @@
   /* Icône dans l'input */
   .add-circle-icon {
     position: absolute;
-    left: 10px; /* Positionne l'icône à gauche dans l'input */
+    left: 10px;
     top: 50%;
     transform: translateY(-50%);
     font-size: 20px; /* Taille de l'icône */
     color: var(--forum-tag-text-color); /* Couleur de l'icône */
-    pointer-events: none; /* L'icône ne bloque pas le focus sur l'input */
   }
 
   /* Style de l'input */

@@ -44,7 +44,7 @@ export class create_or_edit_post extends MelObject {
         this.post_uid = post.uid;
         this.tags = post.tags || [];
         this.displayTags();
-        this.addTag();
+        this.addTagListenner();
         this.removeTag();
         this.saveButton();
         this.cancelButton();
@@ -78,28 +78,36 @@ export class create_or_edit_post extends MelObject {
      *
      * @returns {void}
      */
-    addTag() {
+    addTagListenner() {
         $('#add-tag').on("keydown", (event) => {
             if (event.keyCode === 13) { // Touche "Entrée"
-                let tagname = $('#add-tag').val().trim();
-                if (tagname) {
-                    // Forcer la première lettre en majuscule
-                    tagname = tagname.charAt(0).toUpperCase() + tagname.slice(1);
-                    tagname = mel_metapage.Functions.remove_accents(tagname);
-                    tagname = tagname.split(' ').join('_');
-    
-                    // Vérifie si le tag existe déjà
-                    if (!this.tags.includes(tagname)) {
-                        let html = JsHtml.start
-                            .span({class: 'tag', tabindex: 0}).text(`#${tagname}`).span({class: 'icon-remove-tag'}).end().end();
-                        $('.tag-list').append(html.generate());
-                        this.tags.push(tagname);
-                        $('#add-tag').val(''); // Réinitialise le champ de saisie
-                        this.removeTag(); // Ajoute l'événement de suppression au tag
-                    }
-                }
+               this._addTag(); 
             }
         });
+        $('#add-tag-button').on("click",(event) => {
+            debugger;
+            this._addTag();
+        });
+    }
+
+    _addTag() {
+        let tagname = $('#add-tag').val().trim();
+        if (tagname) {
+            // Forcer la première lettre en majuscule
+            tagname = tagname.charAt(0).toUpperCase() + tagname.slice(1);
+            tagname = mel_metapage.Functions.remove_accents(tagname);
+            tagname = tagname.split(' ').join('_');
+
+            // Vérifie si le tag existe déjà
+            if (!this.tags.includes(tagname)) {
+                let html = JsHtml.start
+                    .span({class: 'tag', tabindex: 0}).text(`#${tagname}`).span({class: 'icon-remove-tag'}).end().end();
+                $('.tag-list').append(html.generate());
+                this.tags.push(tagname);
+                $('#add-tag').val(''); // Réinitialise le champ de saisie
+                this.removeTag(); // Ajoute l'événement de suppression au tag
+            }
+        }
     }
 
     /**

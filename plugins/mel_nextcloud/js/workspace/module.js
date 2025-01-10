@@ -129,7 +129,7 @@ class NextcloudModule extends WorkspaceObject {
     this.moduleContainer.disableRefreshButton();
     this.moduleContainer.style.display = EMPTY_STRING;
     this.moduleContainer.addEventListener('event:custom:refresh', async () => {
-      const id = BnumMessage.DisplayMessage(this.gettext('loading'), 'loading');
+      const id = BnumMessage.DisplayLoadingMessage();
       await this._on_refresh();
       BnumMessage.ClearMessage(id);
     });

@@ -22,6 +22,11 @@ import { WorkspaceModuleBlock } from './WebComponents/workspace_module_block.js'
  * @returns {void}
  */
 
+/**
+ * @callback MethodCallback
+ * @return {void}
+ */
+
 export class WorkspaceObject extends MelObject {
   constructor() {
     super();
@@ -252,6 +257,17 @@ export class WorkspaceObject extends MelObject {
       }
     }
 
+    return this;
+  }
+
+  /**
+   * Ajoute un callback lors du refresh de la frame
+   * @param {MethodCallback} callback
+   * @return {this} Chaînage
+   * @override
+   */
+  on_refresh(callback) {
+    this.rcmail().addEventListener('mel_metapage_refresh', callback);
     return this;
   }
 

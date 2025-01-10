@@ -516,7 +516,7 @@ class mel_workspace extends bnum_plugin
         if ($workspace->isPublic() === 1)
         {
             $workspace->add_users(driver_mel::gi()->getUser()->uid);
-            $this->_add_users($workspace);
+            $this->_add_users($workspace, [driver_mel::gi()->getUser()]);
             $workspace->save();
             $admins = $workspace->getAdmins();//self::get_admins($workspace);
             foreach($admins as $admin)
@@ -701,7 +701,9 @@ class mel_workspace extends bnum_plugin
         else {
             //get workspace
             if ($workspace->isAdmin($this->_CurrentUser()->uid)) {
-                $this->_add_users($workspace, null, $noNotifUsers);
+                $this->_add_users($workspace, mel_helper::Enumerable($users['existing_users'])->select(function ($k, $v) {
+                    return driver_mel::gi()->getUser($v['user']);
+                })->toArray(), null, $noNotifUsers);
                 //self::edit_modified_date($workspace, false);
                 //save
                 $workspace->save();
@@ -724,7 +726,7 @@ class mel_workspace extends bnum_plugin
      * 
      * @return void
      */
-    function _add_users(&$workspace, $noNotif = false, $noNotifUsers = [])
+    function _add_users(&$workspace, $added, $noNotif = false, $noNotifUsers = [])
     {
         $plugin = $this->exec_hook('wsp.services.user.add', [
             'workspace' => $workspace,
@@ -735,7 +737,7 @@ class mel_workspace extends bnum_plugin
 
         $workspace = $plugin['workspace'] ?? $workspace;
 
-        $this->_set_services($workspace, $workspace->services(true, true), null);
+        $this->_set_services($workspace, $workspace->services(true, true), null, $added);
     }
 
     function update_user_rights()
@@ -1682,8 +1684,8 @@ class mel_workspace extends bnum_plugin
         #endregion
 
         #region private/services
-        private function _set_services(&$workspace, $services, $default_value = null) {
-            $plugins = $this->rc()->plugins->exec_hook('workspace.services.set', ['workspace' => $workspace, 'services' => $services, 'default_values' => $default_value]);
+        private function _set_services(&$workspace, $services, $default_value = null, $new_users = null) {
+            $plugins = $this->rc()->plugins->exec_hook('workspace.services.set', ['workspace' => $workspace, 'services' => $services, 'default_values' => $default_value, "new_users" => $new_users]);
 
             if (isset($plugins) && isset($plugins['workspace'])) $workspace = $plugins['workspace']; 
 

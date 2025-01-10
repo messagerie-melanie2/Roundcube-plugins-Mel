@@ -236,6 +236,12 @@ class tchap extends bnum_plugin
                 $args['services'] = $services;
             }
             else if ($workspace->objects()->get(self::KEY_FOR_WORKSPACE) && array_search(self::KEY_FOR_WORKSPACE, $services) !== false) {
+                $new_users= $args['new_users'];
+                
+                if ($new_users && count($new_users) > 0) $users = mel_helper::Enumerable($new_users)->select(function ($k, $v) {
+                    return $v->uid;
+                })->toArray();
+
                 self::invite_tchap_user($workspace->objects()->get(self::KEY_FOR_WORKSPACE)->id, $users);
             }
         }
@@ -331,9 +337,7 @@ class tchap extends bnum_plugin
             $email = strtolower(driver_mel::gi()->getUser($user)->email);
 
             if (isset($email) && is_string($email) && strpos($email, '@') !== false) {
-                $id = self::get_user_tchap_id($email);
-                
-                if (!$id || !self::is_member($room_id, $id)) $mail_user[] = $email;
+                $mail_user[] = $email;
             }
         }
         $config = ['token' => $token, 'room_id' => $room_id, 'users_list' => $mail_user];

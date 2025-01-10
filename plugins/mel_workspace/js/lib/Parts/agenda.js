@@ -21,7 +21,7 @@ class WorkspaceAgenda extends WorkspaceObject {
       this.moduleContainer.style.display = EMPTY_STRING;
       this._main();
     } else if (this.isDisabled('calendar')) {
-      this.moduleContainer.style.display = 'none';
+      this.hideBlock(this.moduleContainer);
     }
 
     // eslint-disable-next-line no-unused-vars

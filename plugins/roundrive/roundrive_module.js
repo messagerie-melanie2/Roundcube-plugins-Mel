@@ -299,6 +299,14 @@ export class RoundriveFolder extends Roundrive {
   get data() {
     return this.#data;
   }
+
+  /**
+   * @type {boolean}
+   * @readonly
+   */
+  get isDirectory() {
+    return true;
+  }
 }
 
 export class RoundriveFile {
@@ -310,5 +318,13 @@ export class RoundriveFile {
   /**@type {FileData} */
   get data() {
     return this.#data;
+  }
+
+  /**
+   * @type {boolean}
+   * @readonly
+   */
+  get isDirectory() {
+    return false;
   }
 }

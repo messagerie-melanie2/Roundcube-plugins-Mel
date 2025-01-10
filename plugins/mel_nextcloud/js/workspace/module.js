@@ -40,7 +40,9 @@ class NextcloudModule extends WorkspaceObject {
       );
 
       loader = null;
-    } else this.moduleContainer.style.display = 'none';
+    } else {
+      this.hideBlock(this.moduleContainer);
+    }
   }
 
   get moduleContainer() {
@@ -88,6 +90,7 @@ class NextcloudModule extends WorkspaceObject {
             );
             contents.style.position = 'relative';
             contents = null;
+            //this.showBlock(this.moduleContainer);
             await this._main();
           }
         }
@@ -112,7 +115,6 @@ class NextcloudModule extends WorkspaceObject {
     }
 
     loader = BootstrapLoader.Create({ mode: 'block', center: true });
-
     const folder = `/dossiers-${this.workspace.uid}`;
     let roundrive = new Roundrive(folder);
     let contents = this.moduleContainer.querySelector('.module-block-content');
@@ -121,6 +123,11 @@ class NextcloudModule extends WorkspaceObject {
     contents.appendChild(loader);
 
     this.moduleContainer.style.display = EMPTY_STRING;
+
+    this.rcmail().addEventListener(
+      'mel_metapage_refresh',
+      this._on_refresh.bind(this),
+    );
 
     try {
       await roundrive.load();
@@ -177,6 +184,43 @@ class NextcloudModule extends WorkspaceObject {
     super.load();
 
     this._main();
+  }
+
+  async _on_refresh() {
+    const folder = `/dossiers-${this.workspace.uid}`;
+    let drive = new Roundrive(folder);
+
+    try {
+      await drive.load();
+
+      let documents = document.createElement('div');
+      /**
+       * @type {RoundriveFile | RoundriveFolder}
+       */
+      for (const element of drive) {
+        if (
+          element.data.name.filename !== EMPTY_STRING &&
+          element.data.name.filename[0] !== '.'
+        ) {
+          documents.appendChild(NextcloudModule.CreateRoundriveTag(element));
+        }
+      }
+
+      let contents = this.moduleContainer.querySelector(
+        '.module-block-content',
+      );
+      $(contents).html($(documents).children());
+
+      documents.remove();
+
+      contents = null;
+      documents = null;
+    } catch (error) {
+      contents.innerHTML = EMPTY_STRING;
+      contents.appendChild(
+        $('<p>Impossible de charger les documents pour le moment...</p>')[0],
+      );
+    }
   }
 
   static CreateRoundriveTag(element) {
@@ -296,6 +340,8 @@ class ABaseNextcloudTag extends HtmlCustomDataTag {
 
   _p_main() {
     super._p_main();
+
+    this.setAttribute('nextcloud', this.itemData.data.uid);
 
     let icon = document.createElement('bnum-icon');
     icon.setAttribute('data-icon', this.icon);

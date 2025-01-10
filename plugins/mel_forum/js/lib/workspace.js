@@ -64,7 +64,8 @@ export class ModuleForum extends WorkspaceObject {
     if (!this.loaded && !this.isDisabled('forum')) {
       this._start();
     } else if (this.isDisabled('forum')) {
-      this.block.style.display = 'none';
+      //this.block.style.display = 'none';
+      this.hideBlock(this.block);
     }
 
     // Ajout de l'écouteur via addListener()

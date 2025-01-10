@@ -169,7 +169,8 @@ export class WorkspaceObject extends MelObject {
   }
 
   async switchState(task, state, container) {
-    container.style.display = state ? 'none' : EMPTY_STRING;
+    if (state) this.hideBlock(container);
+    else this.showBlock(container);
 
     await this.http_workspace_post('update_module_visibility', {
       _key: task,
@@ -186,6 +187,72 @@ export class WorkspaceObject extends MelObject {
     return [true, 'true'].includes(
       this.get_env('workspace_modules_visibility')?.[task],
     );
+  }
+
+  /**
+   * Cache le block et aggrandit les autres
+   * @param {WorkspaceModuleBlock} module
+   * @returns {this} Chaînage
+   */
+  hideBlock(module) {
+    module.parentElement.style.display = 'none';
+    const children = MelEnumerable.from(
+      module.parentElement.parentElement.children,
+    ).where((x) => x.style.display !== 'none');
+
+    for (const element of children) {
+      element.setAttribute(
+        'data-initial-classes',
+        element.getAttribute('class'),
+      );
+      element.classList.remove(...element.classList.values());
+
+      element.classList.add(`col-${12 / children.count()}`);
+    }
+
+    return this;
+  }
+
+  /**
+   * Affiche un block et affiche correctement les autres blocks
+   * @param {WorkspaceModuleBlock} module
+   * @returns {this} Chaînage
+   */
+  showBlock(module) {
+    module.parentElement.style.display = EMPTY_STRING;
+    const children = MelEnumerable.from(
+      module.parentElement.parentElement.children,
+    ).where((x) => x.style.display !== 'none');
+
+    //Il n'y a pas d'éléments cachés
+    if (
+      children.count() === module.parentElement.parentElement.children.length
+    ) {
+      for (const element of children.where((x) =>
+        x.hasAttribute('data-initial-classes'),
+      )) {
+        element.setAttribute(
+          'class',
+          element.getAttribute('data-initial-classes'),
+        );
+        element.removeAttribute('data-initial-classes');
+      }
+    } else {
+      //Il reste des éléments cachés
+      for (const element of children) {
+        if (!element.hasAttribute('data-initial-classes')) {
+          element.setAttribute(
+            'data-initial-classes',
+            element.getAttribute('class'),
+          );
+        }
+        element.classList.remove(...element.classList.values());
+
+        element.classList.add(`col-${12 / children.count()}`);
+      }
+    }
+
+    return this;
   }
 
   static GetWorkspaceData() {

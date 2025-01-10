@@ -27,6 +27,7 @@ class mel_forum extends bnum_plugin
 
     const DEFAULTSORTBY = 'created';
     const DEFAULTASC = false;
+    const POST_DEFAULT_LIMIT = 20;
 
     public $current_post;
 
@@ -1739,16 +1740,17 @@ class mel_forum extends bnum_plugin
      */
     public function get_posts_data()
     {
-        echo json_encode($this->post_object_to_JSON());
+        $limit = $this->get_input('_limit', rcube_utils::INPUT_GET);
+        echo json_encode($this->post_object_to_JSON(null, $limit ?? self::POST_DEFAULT_LIMIT));
         exit;
     }
 
     /**
      * Prend en paramètre un tableau d'objet post et retourne un tableau au format JSON
      */
-    protected function post_object_to_JSON($workspace_uid = null, $limit = 20)
+    protected function post_object_to_JSON($workspace_uid = null, $limit = self::POST_DEFAULT_LIMIT)
     {
-        $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
+        $workspace_uid = $workspace_uid ?? $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
         $posts = $this->get_posts_byworkspace($workspace_uid, $limit);
 
         // Définir la locale en français pour le formatage de la date
@@ -1949,6 +1951,7 @@ class mel_forum extends bnum_plugin
             $this->include_web_component()->Avatar();
             $this->load_script_module('new_posts');
             $this->show_new_posts();
+            $this->rc()->output->set_env('workspace_uid', $workspace_uid);
             // Envoyer le template approprié
             $this->rc()->output->send('mel_forum.new-posts');
         } else {

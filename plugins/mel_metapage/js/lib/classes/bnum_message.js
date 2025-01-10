@@ -27,6 +27,16 @@ class BnumMessage {
   }
 
   /**
+   * Supprime un message dur le bnum à partir de son id.
+   * @param {string} id Id du message
+   * @returns {void}
+   * @static
+   */
+  static ClearMessage(id) {
+    return rcmail.hide_message(id);
+  }
+
+  /**
    * Passe le bnum en mode "occupé" et affiche un message de chargement
    * @static
    */

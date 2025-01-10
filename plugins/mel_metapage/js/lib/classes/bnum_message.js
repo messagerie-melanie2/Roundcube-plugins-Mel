@@ -1,4 +1,5 @@
 import { EMPTY_STRING } from '../constants/constants.js';
+import { MelObject } from '../mel_object.js';
 
 export { BnumMessage, eMessageType };
 
@@ -16,6 +17,14 @@ class BnumMessage {
   }
 
   /**
+   * @type {rcube_webmail}
+   * @readonly
+   */
+  static get Rcmail() {
+    return MelObject.Empty().rcmail();
+  }
+
+  /**
    * Affiche un message sur le bnum
    * @param {string} message Message à afficher
    * @param {eMessageType} type Couleur ou icône lié au message
@@ -23,17 +32,36 @@ class BnumMessage {
    * @static
    */
   static DisplayMessage(message, type = eMessageType.Information) {
-    return rcmail.display_message(message, type);
+    return this.Rcmail.display_message(message, type);
   }
 
   /**
-   * Supprime un message dur le bnum à partir de son id.
+   * Affiche un message de chargement sur le Bnum
+   * @returns {string} Id du message
+   */
+  static DisplayLoadingMessage() {
+    return this.DisplayMessage('loading', 'loading');
+  }
+
+  /**
+   * Supprime les messages du bnum
+   * @returns {typeof BnumMessage} Chaînage
+   * @static
+   */
+  static ClearMessages() {
+    this.Rcmail.clear_messages();
+    return this;
+  }
+
+  /**
+   * Supprime un message sur le bnum à partir de son id.
    * @param {string} id Id du message
-   * @returns {void}
+   * @returns {typeof BnumMessage} Chaînage
    * @static
    */
   static ClearMessage(id) {
-    return rcmail.hide_message(id);
+    this.Rcmail.hide_message(id);
+    return this;
   }
 
   /**
@@ -45,7 +73,7 @@ class BnumMessage {
       /**
        * @type {?string}
        */
-      this.busy = rcmail.set_busy(true, 'loading');
+      this.busy = this.Rcmail.set_busy(true, 'loading');
     }
   }
 
@@ -55,7 +83,7 @@ class BnumMessage {
    */
   static StopBusyLoading() {
     if (this.busy) {
-      rcmail.set_busy(false, 'loading', this.busy);
+      this.Rcmail.set_busy(false, 'loading', this.busy);
       this.busy = null;
     }
   }

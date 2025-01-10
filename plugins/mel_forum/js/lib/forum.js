@@ -585,9 +585,7 @@ export class Forum extends MelObject {
      * @param {*} posts 
      */
     displayPost(posts) {
-        // Vider la zone d'affichage des posts
-        $('#post-area').empty();
-
+        
         // Vérifier si l'utilisateur souhaite afficher uniquement les favoris
         if (this.display_fav) {
             // Filtrer les posts pour ne garder que les favoris

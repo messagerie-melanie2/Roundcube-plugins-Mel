@@ -142,6 +142,7 @@
   .description {
     overflow: hidden;
     margin-bottom: 10px;
+    text-align: center;
 
     &.threelines {
       ._multiple-lines();
@@ -359,7 +360,7 @@
       --wsp-nav-button-justify-content: var(
         --wsp-nav-navigation-button-justify-content
       );
-      max-width: 150px;
+      max-width: calc(100% - 38px);
 
       &:hover {
         background-color: var(
@@ -477,6 +478,7 @@
 
     bnum-pressed-button {
       justify-content: center !important;
+      max-width: 100%;
 
       &::before {
         display: none;

@@ -1096,7 +1096,10 @@ class mel_workspace extends bnum_plugin
             }
         }
 
-        $html .= "</div></div>";
+        $html .= "</div>";
+        $html .= '<button onclick="rcmail.command(`workspace.leave`)" class="btn btn-danger mel-button no-button-margin" title="Quitter l\'espace de travail" style="margin-top:5px;margin-right:10px;display: flex; align-items: center;gap:15px">Quitter l\'espace de travail<span class="material-symbols-outlined">logout</span></button>';
+        $html .= "</div>";
+
 
         return $html;
 
@@ -1135,10 +1138,12 @@ class mel_workspace extends bnum_plugin
         }
         else $html->current_hashtag = '';
 
-        if ($user_rights === Share::RIGHT_OWNER) $html->set_other_variable('button-delete', '<button onclick="rcmail.command(`workspace.delete`)" class="btn btn-danger mel-button no-button-margin" style="margin-top:5px;margin-bottom:15px">Supprimer l\'espace de travail</button>');
+        if ($user_rights === Share::RIGHT_OWNER) $html->set_other_variable('button-leave', '<button onclick="rcmail.command(`workspace.leave`)" class="btn btn-secondary mel-button no-button-margin" style="margin-top:5px;margin-right:10px;display: flex; align-items: center;gap:15px">Quitter l\'espace de travail<span class="material-symbols-outlined">logout</span></button>');
+
+        if ($user_rights === Share::RIGHT_OWNER) $html->set_other_variable('button-delete', '<button onclick="rcmail.command(`workspace.delete`)" class="btn btn-danger mel-button no-button-margin" style="margin-top:5px;margin-bottom:15px;display: flex; align-items: center;gap:15px">Supprimer l\'espace de travail<span class="material-symbols-outlined">delete</span></button>');
         else $html->set_other_variable('button-delete', '<button onclick="rcmail.command(`workspace.leave`)" class="btn btn-danger mel-button no-button-margin" style="margin-top:5px;margin-bottom:15px">Quitter l\'espace de travail</button>');
         
-        if (!$workspace->isArchived())  $html->set_other_variable('button-archive', '<button class="btn btn-danger mel-button no-button-margin" style="margin-top: 5px;margin-bottom: 15px;margin-left:10px;"onclick="rcmail.command(`workspace.archive`)">Archiver</button>');
+        if (!$workspace->isArchived())  $html->set_other_variable('button-archive', '<button class="btn btn-danger mel-button no-button-margin" style="margin-top: 5px;margin-bottom: 15px;margin-left:10px;display: flex; align-items: center;gap:15px"onclick="rcmail.command(`workspace.archive`)">Archiver<span class="material-symbols-outlined">archive</span></button>');
         else $html->set_other_variable('button-archive', '<button class="btn btn-success mel-button no-button-margin" style="margin-top: 5px;margin-bottom: 15px;margin-left:10px;"onclick="rcmail.command(`workspace.unarchive`)">Désarchiver</button>');
         
         if ($user_rights === Share::RIGHT_OWNER)

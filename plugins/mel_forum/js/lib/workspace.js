@@ -64,7 +64,6 @@ export class ModuleForum extends WorkspaceObject {
     if (!this.loaded && !this.isDisabled('forum')) {
       this._start();
     } else if (this.isDisabled('forum')) {
-      //this.block.style.display = 'none';
       this.hideBlock(this.block);
     }
 
@@ -112,6 +111,7 @@ export class ModuleForum extends WorkspaceObject {
       this.rcmail().hide_message(loading);
     });
 
+    //Lorsque une donnée est reçu de la part de la frame enfante
     this.onactionreceived.push((received) => {
       switch (received.key) {
         case 'postClicked':
@@ -143,6 +143,7 @@ export class ModuleForum extends WorkspaceObject {
       }
     });
 
+    //Avant le switch de frame
     NavBarManager.AddEventListener().OnBeforeSwitch((args) => {
       if (
         args.task === 'forum' &&

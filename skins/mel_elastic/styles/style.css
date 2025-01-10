@@ -2377,6 +2377,9 @@ html.mwsp .task-workspace.action-workspace {
 html.mwsp.moved .task-workspace.action-workspace {
   margin-bottom: 15px;
 }
+.mwsp #layout {
+  background-color: var(--bureau-background-color);
+}
 .task-workspace.action-workspace #layout-content.mwsp {
   margin-bottom: 75px;
   transition: all 0.1s ease-in;

@@ -1442,28 +1442,20 @@ class mel_forum extends bnum_plugin
                     error_log("Invalid base64 image, skipping.");
                     continue;
                 }
-            } else {
-                // C'est une URL, on la télécharge et la convertit en base64
-                $src = $this->convert_url_to_base64($src);
-                if ($src === false) {
-                    error_log("Failed to convert URL to base64, skipping image.");
-                    continue;
+
+                $imageUid = $this->save_image($post_id, $src);
+
+                if ($imageUid) {
+                    // Générer l'URL contenant l'UID de l'image
+                    $imageUrl = $this->get_image_url($imageUid);
+
+                    // Collecter les URLs et les UIDs des images utilisées
+                    $usedImageUrls[] = $imageUrl;
+                    $usedImageUids[] = $imageUid;
+
+                    // Remplacer la balise <img> par celle avec l'URL
+                    $content = str_replace($img[0], '<img src="' . $imageUrl . '" />', $content);
                 }
-            }
-
-            // Enregistrer l'image dans la base de données
-            $imageUid = $this->save_image($post_id, $src);
-
-            if ($imageUid) {
-                // Générer l'URL contenant l'UID de l'image
-                $imageUrl = $this->get_image_url($imageUid);
-
-                // Collecter les URLs et les UIDs des images utilisées
-                $usedImageUrls[] = $imageUrl;
-                $usedImageUids[] = $imageUid;
-
-                // Remplacer la balise <img> par celle avec l'URL
-                $content = str_replace($img[0], '<img src="' . $imageUrl . '" />', $content);
             }
         }
 
@@ -1511,7 +1503,7 @@ class mel_forum extends bnum_plugin
     protected function convert_url_to_base64($url)
     {
         // Téléchargez le contenu de l'image
-        $imageData = @file_get_contents($url);
+        $imageData = file_get_contents($url);
         if ($imageData === false) {
             return false; // Impossible de télécharger l'image
         }

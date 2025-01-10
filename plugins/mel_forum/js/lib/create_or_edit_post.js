@@ -85,7 +85,6 @@ export class create_or_edit_post extends MelObject {
             }
         });
         $('#add-tag-button').on("click",(event) => {
-            debugger;
             this._addTag();
         });
     }

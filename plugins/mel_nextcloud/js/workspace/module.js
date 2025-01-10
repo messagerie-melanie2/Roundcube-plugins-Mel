@@ -124,10 +124,7 @@ class NextcloudModule extends WorkspaceObject {
 
     this.moduleContainer.style.display = EMPTY_STRING;
 
-    this.rcmail().addEventListener(
-      'mel_metapage_refresh',
-      this._on_refresh.bind(this),
-    );
+    this.on_refresh(this._on_refresh.bind(this));
 
     try {
       await roundrive.load();

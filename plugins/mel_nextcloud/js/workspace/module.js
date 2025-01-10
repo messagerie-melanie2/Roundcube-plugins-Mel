@@ -18,6 +18,7 @@ import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manage
 import { BnumMessage } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
 import { HTMLMelButton } from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/HTMLMelButton.js';
 import { HTMLButtonGroup } from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/HTMLButtonGroup.js';
+import { WorkspaceModuleBlock } from '../../../mel_workspace/js/lib/WebComponents/workspace_module_block.js';
 
 class NextcloudModule extends WorkspaceObject {
   constructor() {
@@ -45,6 +46,10 @@ class NextcloudModule extends WorkspaceObject {
     }
   }
 
+  /**
+   * @type {WorkspaceModuleBlock}
+   * @readonly
+   */
   get moduleContainer() {
     return document.querySelector('#module-nc');
   }
@@ -121,8 +126,13 @@ class NextcloudModule extends WorkspaceObject {
 
     contents.style.position = 'relative';
     contents.appendChild(loader);
-
+    this.moduleContainer.disableRefreshButton();
     this.moduleContainer.style.display = EMPTY_STRING;
+    this.moduleContainer.addEventListener('event:custom:refresh', async () => {
+      const id = BnumMessage.DisplayMessage(this.gettext('loading'), 'loading');
+      await this._on_refresh();
+      BnumMessage.ClearMessage(id);
+    });
 
     this.on_refresh(this._on_refresh.bind(this));
 
@@ -146,6 +156,7 @@ class NextcloudModule extends WorkspaceObject {
           element.data.name.filename[0] !== '.'
         ) {
           if (loader) {
+            this.moduleContainer.enableRefreshButton();
             loader.remove();
             loader = null;
           }
@@ -169,6 +180,7 @@ class NextcloudModule extends WorkspaceObject {
     continueExec = null;
 
     if (loader) {
+      this.moduleContainer.enableRefreshButton();
       loader.remove();
       loader = null;
     }
@@ -184,6 +196,7 @@ class NextcloudModule extends WorkspaceObject {
   }
 
   async _on_refresh() {
+    this.moduleContainer.disableRefreshButton();
     const folder = `/dossiers-${this.workspace.uid}`;
     let drive = new Roundrive(folder);
 
@@ -218,6 +231,8 @@ class NextcloudModule extends WorkspaceObject {
         $('<p>Impossible de charger les documents pour le moment...</p>')[0],
       );
     }
+
+    this.moduleContainer.enableRefreshButton();
   }
 
   static CreateRoundriveTag(element) {

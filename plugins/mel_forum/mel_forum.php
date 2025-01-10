@@ -271,7 +271,7 @@ class mel_forum extends bnum_plugin
                 "_offset" => 0,
                 "_from_other_frame" => true,
             ), false, false, true);
-            $tags_html .= '<a href= "' . $url . '" class="tag" tabindex="0" role="button">#' . htmlspecialchars($tag) . '</a>';
+            $tags_html .= '<a href= "' . $url . '" data-spied="false" class="tag" tabindex="0" role="button">#' . htmlspecialchars($tag) . '</a>';
         }
 
         return $tags_html;

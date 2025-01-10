@@ -1283,6 +1283,87 @@
     }
   }
 
+  .front_page_post  {
+    .forum-content {
+      display: flex;
+      justify-content: center;
+      margin-top: 0px;
+    }
+    .content {
+      padding: 0 5px 0 5px;
+      overflow-x: hidden !important;
+    }
+    .post {
+      box-shadow: none;
+      margin: 0;
+      // box-shadow: none;
+      transition: var(--transition-all, none);
+
+      .dark-mode &,
+      .dark-mode-custom & {
+        border-radius: 5px;
+      }
+
+      &:hover {
+        background-color: var(--secondary-border-color);
+        border-radius: 5px;
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+      .post-header {
+        margin: 5px 0;
+        .post-date {
+          font-size: 13px;
+          i {
+            font-size: 17px !important;
+          }
+        }
+      }
+      .post-tags {
+        display: flex;
+        justify-content: start;
+        align-items: baseline;
+      }
+      .post-footer {
+        .post-reaction {
+          margin: 5px 0 5px;
+          .filled {
+            font-variation-settings:
+              'FILL' 1,
+              'wght' 300 !important;
+            &:hover {
+              font-variation-settings:
+                'FILL' 1,
+                'wght' 300 !important;
+            }
+          }
+          .post-reaction-info {
+            background-color: none;
+            padding: 0 8px;
+            margin-right: 5px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            i {
+              font-size: 20px !important;
+            }
+          }
+        }
+      }
+      .post-content {
+        .post-title {
+          white-space: nowrap; /* Pas de retour à la ligne */
+          overflow: hidden; /* Cache le contenu débordant */
+          text-overflow: ellipsis; /* Ajoute "..." pour le texte tronqué */
+          display: block; /* Affichage en bloc */
+          max-width: 100%; /* S'adapte à la largeur du parent */
+        }
+      }
+    }
+  }
+
   #backToTop {
     position: fixed;
     bottom: 20px;

@@ -436,7 +436,7 @@ export class Forum extends MelObject {
      * Récupère le lien a href le plus proche et le copie dans le presse papier
      * @param {*} event 
      */
-    copyPostLink(event){
+    copyPostLink(event) {
         event.preventDefault();
         event.stopPropagation();
         let url = event.currentTarget.closest("a").getAttribute('href').replaceAll("&_is_from=iframe", "&_force_bnum=1");
@@ -446,6 +446,40 @@ export class Forum extends MelObject {
                 eMessageType.Confirmation,
             );
         });
+    }
+
+    /**
+     * met le post passé en paramètre en épingler
+     * @param {string} post_uid 
+     * @param {event} event 
+     * @returns {void}
+     */
+    pinPost(post_uid, event) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.http_internal_post({
+            task: 'forum',
+            action: 'pin_post',
+            params: {
+                _workspace_uid: this.get_env('workspace_uid'),
+                _post_id: post_uid,
+            },
+            processData:false,
+            contentType:false,
+            on_success: (response) => {
+                BnumMessage.DisplayMessage(
+                    response.status,
+                    eMessageType.Confirmation,
+                );
+            },
+            on_error: (err) => {
+                BnumMessage.DisplayMessage(
+                    rcmail.gettext('mel_forum.error_editing'),
+                    eMessageType.Error,
+                );
+            },
+        });
+        
     }
 
     /**
@@ -626,6 +660,7 @@ export class Forum extends MelObject {
                 POST_IS_LIKED: post.isliked ? "filled" : "",
                 POST_IS_DISLIKED: post.isdisliked ? "filled" : "",
                 HAS_OWNER_RIGHTS: post.has_owner_rights ? "" : "hidden",
+                IS_ADMIN: post.is_admin ? "" : "hidden",
                 COMMENTS_ENABLED: post.settings?.comments ? "" : "hidden",
                 };
 
@@ -648,6 +683,8 @@ export class Forum extends MelObject {
             .addEvent('.post-options-button.delete-post', 'keydown', this.deletePost.bind(this, post.uid)) // Gestion au clavier
             .addEvent('.post-options-button.copy-post', 'click', this.copyPostLink.bind(this))
             .addEvent('.post-options-button.copy-post', 'Keydown', this.copyPostLink.bind(this)) // Gestion au clavier
+            .addEvent('.post-options-button.pin-post', 'click', this.pinPost.bind(this, post.uid))
+            .addEvent('.post-options-button.pin-post', 'Keydown', this.pinPost.bind(this, post.uid)) // Gestion au clavier
             //.addEvent(balise, action, fonction)
 
             $('#post-area').append(...template.render());

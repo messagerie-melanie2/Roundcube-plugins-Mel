@@ -56,6 +56,7 @@
     </div>
     <div class="row forum-content">
       <div class="col-12">
+        <div id="pin_post"></div>
         <div id="post-area"></div>
       </div>
     </div>
@@ -85,6 +86,10 @@
                   <button class="post-options-button copy-post" tabindex="0" role="menuitem" aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="copy_post_link" data-id="%%UID%%" title="<roundcube:label name="mel_forum.copy_article" />" >
                     <span class="icon material-symbols-outlined post-options-icon" data-icon="content_copy"></span>
                     <span class="post-options-text" style="margin-left: 8px;"><roundcube:label name="mel_forum.copy_article" /></span>
+                  </button>
+                  <button class="post-options-button pin-post %%IS_ADMIN%%" tabindex="0" role="menuitem" aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="pin_post" data-id="%%UID%%" title="<roundcube:label name="mel_forum.pin_article" />" >
+                    <span class="icon material-symbols-outlined post-options-icon" data-icon="keep"></span>
+                    <span class="post-options-text" style="margin-left: 8px;"><roundcube:label name="mel_forum.pin_article" /></span>
                   </button>
                   <button class="post-options-button edit-post %%HAS_OWNER_RIGHTS%%" tabindex="0" role="menuitem" aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="modify_post" data-id="%%UID%%" title="<roundcube:label name="mel_forum.edit_article" />" >
                     <span class="icon material-symbols-outlined post-options-icon" data-icon="border_color"></span>

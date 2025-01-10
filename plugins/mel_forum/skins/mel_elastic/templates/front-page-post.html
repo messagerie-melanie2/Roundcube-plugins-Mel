@@ -1,0 +1,43 @@
+<roundcube:include file="includes/layout.html" />
+
+<h1 class="voice">
+  <roundcube:label name="mel_forum" />
+</h1>
+
+<div class="front_page_post" id="layout-content" role="main">
+  <div class="content">
+    <div id="pin_post-area"></div>
+  </div>
+</div>
+
+<template id="new_post_template">
+  <div class="row post" tabindex="0" id="post-%%UID%%">
+    <a class="post-card" data-spied="false" href="%%POST_LINK%%" aria-label="Lire le post intitulé %%POST_TITLE%% par %%POST_CREATOR%%">
+      <div class="row col-12">
+        <div class="post-header">
+          <div class="post-creator">
+            <bnum-avatar  class="author-image" style="background-color: var(--mel-button-background-color); display: flex; align-items: center; justify-content: center; color: white" data-email="%%CREATOR_EMAIL%%" data-forceload="true"></bnum-avatar>
+            <div class="post-creator-name">%%POST_CREATOR%%</div>
+            <div class="post-date">
+              <i class="material-symbols-outlined">access_time</i
+              ><span class="ml-1">%%POST_DATE%%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="post-content %%POST_CONTENT_CLASS%%">
+          <div class="post-tags" id="new-tag-area-%%UID%%"></div>
+          <div class="post-title">%%POST_TITLE%%</div>
+          <div class="post-summary">%%POST_SUMMARY%%</div>
+        </div>
+        %%POST_IMAGE_SECTION%%
+      </div>
+    </a>
+  </div>
+</template>
+<template id="new_tag_template">
+  <span class="tag tag-%%TAG_ID%%" data-tag-id="%%TAG_ID%%">%%TAG_NAME%%</span>
+</template>
+
+<roundcube:include file="includes/footer.html" />

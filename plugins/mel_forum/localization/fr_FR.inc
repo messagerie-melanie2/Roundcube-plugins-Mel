@@ -54,6 +54,7 @@ $labels['copy_article'] = 'Copier le lien de l\'article';
 $labels['create_article'] = 'Rédiger un nouvel article';
 $labels['delete_article'] = 'Supprimer l\'article';
 $labels['edit_article'] = 'Modifier l\'article';
+$labels['pin_article'] = 'Épingler l\'article';
 
 #region Droits
 
@@ -92,6 +93,7 @@ $labels['see_response_singular'] = 'Voir la réponse';
 $labels['see_the'] = 'Voir les';
 $labels['sort_by'] = 'Trier par : ';
 $labels['workspace_news'] = 'Derniers articles';
+$labels['front_page'] = 'À la une';
 
 #region Message
 

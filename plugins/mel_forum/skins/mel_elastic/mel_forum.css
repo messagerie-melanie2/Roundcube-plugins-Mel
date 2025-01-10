@@ -1096,6 +1096,77 @@
   max-width: 100%;
   /* S'adapte à la largeur du parent */
 }
+.task-forum .front_page_post .forum-content {
+  display: flex;
+  justify-content: center;
+  margin-top: 0px;
+}
+.task-forum .front_page_post .content {
+  padding: 0 5px 0 5px;
+  overflow-x: hidden !important;
+}
+.task-forum .front_page_post .post {
+  box-shadow: none;
+  margin: 0;
+  transition: var(--transition-all, none);
+}
+.dark-mode .task-forum .front_page_post .post,
+.dark-mode-custom .task-forum .front_page_post .post {
+  border-radius: 5px;
+}
+.task-forum .front_page_post .post:hover {
+  background-color: var(--secondary-border-color);
+  border-radius: 5px;
+}
+.task-forum .front_page_post .post:last-child {
+  border-bottom: none;
+}
+.task-forum .front_page_post .post .post-header {
+  margin: 5px 0;
+}
+.task-forum .front_page_post .post .post-header .post-date {
+  font-size: 13px;
+}
+.task-forum .front_page_post .post .post-header .post-date i {
+  font-size: 17px !important;
+}
+.task-forum .front_page_post .post .post-tags {
+  display: flex;
+  justify-content: start;
+  align-items: baseline;
+}
+.task-forum .front_page_post .post .post-footer .post-reaction {
+  margin: 5px 0 5px;
+}
+.task-forum .front_page_post .post .post-footer .post-reaction .filled {
+  font-variation-settings: 'FILL' 1, 'wght' 300 !important;
+}
+.task-forum .front_page_post .post .post-footer .post-reaction .filled:hover {
+  font-variation-settings: 'FILL' 1, 'wght' 300 !important;
+}
+.task-forum .front_page_post .post .post-footer .post-reaction .post-reaction-info {
+  background-color: none;
+  padding: 0 8px;
+  margin-right: 5px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+}
+.task-forum .front_page_post .post .post-footer .post-reaction .post-reaction-info i {
+  font-size: 20px !important;
+}
+.task-forum .front_page_post .post .post-content .post-title {
+  white-space: nowrap;
+  /* Pas de retour à la ligne */
+  overflow: hidden;
+  /* Cache le contenu débordant */
+  text-overflow: ellipsis;
+  /* Ajoute "..." pour le texte tronqué */
+  display: block;
+  /* Affichage en bloc */
+  max-width: 100%;
+  /* S'adapte à la largeur du parent */
+}
 .task-forum #backToTop {
   position: fixed;
   bottom: 20px;

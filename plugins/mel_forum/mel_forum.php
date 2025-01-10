@@ -133,6 +133,10 @@ class mel_forum extends bnum_plugin
             $this->register_action('manage_reaction', array($this, 'manage_reaction'));
             //Affichage des nouveaux posts
             $this->register_action('new_posts', array($this, 'new_posts'));
+            //Affichage du post à la une
+            $this->register_action('front_page_post', array($this, 'front_page_post'));
+            //Épingler un post
+            $this->register_action('pin_post', array($this, 'pin_post'));
         } else if ($this->get_current_task() === 'workspace') {
             $this->add_hook('workspace.services.set', [$this, 'workspace_services_set']);
             $this->add_hook('wsp.show', [$this, 'wsp_show']);
@@ -641,7 +645,7 @@ class mel_forum extends bnum_plugin
      *
      * @return array post tableau d'objet posts
      */
-    protected function get_posts_byworkspace($workspace_uid = null, $limit = 20)
+    protected function get_posts_byworkspace($workspace_uid = null, $limit = 20, $pin_post_uid)
     {
         //récupérer les infos de chargement d'articles si aucune n'est fournie on met des valeurs par defaut
         $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET) ?? $workspace_uid;
@@ -665,6 +669,10 @@ class mel_forum extends bnum_plugin
         if ($get_favorite) {
             $fav_posts = $this->rc()->config->get('favorite_article', []);
             $fav_posts_uid = $fav_posts[$workspace_uid];
+        }
+        //Gestion de si on veut un post spécifique
+        if ($pin_post_uid !== null) {
+            $fav_posts_uid = [$pin_post_uid];
         }
 
 
@@ -1743,10 +1751,11 @@ class mel_forum extends bnum_plugin
     /**
      * Prend en paramètre un tableau d'objet post et retourne un tableau au format JSON
      */
-    protected function post_object_to_JSON($workspace_uid = null, $limit = 20)
+    protected function post_object_to_JSON($workspace_uid = null, $limit = 20, $pin_post_uid = null)
     {
         $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
-        $posts = $this->get_posts_byworkspace($workspace_uid, $limit);
+        $posts = $this->get_posts_byworkspace($workspace_uid, $limit, $pin_post_uid);
+        $is_admin = driver_mel::gi()->getUser()->isWorkspaceOwner($workspace_uid);
 
         // Définir la locale en français pour le formatage de la date
         $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
@@ -1802,10 +1811,46 @@ class mel_forum extends bnum_plugin
                 'image_url' => $image_url,
                 'has_owner_rights' => $this->_has_owner_rights($post, $workspace_uid),
                 'settings' => $post->settings,
+                'is_admin' => $is_admin,
             ];
         }
         return $posts_data;
     }
+
+    #region Post Épinglé
+    /**
+     * Affiche la page post à la une
+     * @return void
+     */
+    public function front_page_post()
+    {
+        $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
+        if (driver_mel::gi()->getUser()->isWorkspaceMember($workspace_uid)) {
+            $this->include_web_component()->Avatar();
+            $this->load_script_module('front_page_post');
+            $workspace = mel_workspace::Workspace($workspace_uid);
+            $pin_post = $workspace->settings()->get('forum_pinned_post');
+            $this->rc()->output->set_env('posts_data', $this->post_object_to_JSON(null, 1, $pin_post));
+            // Envoyer le template approprié
+            $this->rc()->output->send('mel_forum.front-page-post');
+        } else {
+            $this->_display_error_page();
+        }
+    }
+    /**
+     * épingle le post passé en paramètre du POST
+     */
+    public function pin_post()
+    {
+        $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_POST);
+        if (driver_mel::gi()->getUser()->isWorkspaceOwner($workspace_uid)) {
+            $post_uid = $this->get_input('_post_id', rcube_utils::INPUT_POST);
+            $workspace = mel_workspace::Workspace($workspace_uid);
+            $workspace->settings()->set('forum_pinned_post', $post_uid);
+            $workspace->save();
+        }
+    }
+    #endregion
 
     #region Favorites
     /**
@@ -1972,6 +2017,7 @@ class mel_forum extends bnum_plugin
         $this->rc()->output->set_env('posts_data', $this->post_object_to_JSON(null, 3));
     }
 
+
     /**
      * Bloquer les refresh
      * @param array $args
@@ -2022,9 +2068,10 @@ class mel_forum extends bnum_plugin
     {
         if ($args['workspace']->objects()->get('forum') !== null) {
             $args['layout']->setNavBarSetting('forum', 'newspaper', true, 4);
-            // $args['layout']->firstRow()->append(12, $args['layout']->htmlSmallModuleBlock(['id' => 'module-forum-news']));
+            $args['layout']->firstRow()->append(12, $args['layout']->htmlSmallModuleBlock(['id' => 'module-forum-news', 'data-title' => $this->gettext("front_page", "mel_forum"),]));
             $args['layout']->secondRow()->prepend(8, $args['layout']->htmlModuleBlock(['id' => 'module-forum-last', 'data-title' => $this->gettext("workspace_news", "mel_forum"), 'data-button' => 'forum']));
 
+            $this->include_module('workspace_pin.js');
             $this->include_module('workspace.js');
         }
 

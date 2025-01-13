@@ -41,6 +41,14 @@ export {
 };
 
 /**
+ * Z index pour la barre des autres applications
+ * @type {number}
+ * @default 1000
+ * @constant
+ */
+const OTHERAPPS_Z_INDEX = 1000;
+
+/**
  * Callback utilisé lors de la création des frames en jshtml.
  *
  * Permet de modifier la frame en jshtml à différents endroits de la création.
@@ -1584,7 +1592,7 @@ class FrameManager {
   add_buttons_actions() {
     let $it;
 
-    $('#otherapps').css('z-index', 80);
+    $('#otherapps').css('z-index', OTHERAPPS_Z_INDEX);
 
     for (const iterator of $('#taskmenu a, #otherapps a')) {
       $it = $(iterator);

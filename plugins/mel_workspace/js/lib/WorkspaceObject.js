@@ -416,6 +416,7 @@ class WorkspaceUsers {
 
 export class CurrentWorkspaceData {
   #users = null;
+  #workspace_created = null;
   constructor() {
     if (typeof rcmail.env.current_workspace_services_actives === 'string')
       rcmail.env.current_workspace_services_actives = JSON.parse(
@@ -455,6 +456,13 @@ export class CurrentWorkspaceData {
 
   get services() {
     return rcmail.env.current_workspace_services_actives;
+  }
+
+  get created() {
+    if (!this.#workspace_created)
+      this.#workspace_created = moment(rcmail.env.current_workspace_created);
+
+    return this.#workspace_created;
   }
 
   app_loaded(service) {

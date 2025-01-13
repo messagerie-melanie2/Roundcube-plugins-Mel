@@ -364,7 +364,11 @@ class mel_nextcloud extends rcube_plugin {
   
       driver_mel::gi()->workspace_group($workspace->uid(), $workspace->users_mail(), $create_nc);
   
-      if ($create_nc) $workspace->objects()->set(mel_workspace::KEY_DRIVE, true);
+      if ($create_nc) {
+        $workspace->objects()->set(mel_workspace::KEY_DRIVE, true);
+
+        if (!$workspace->settings()->get(mel_workspace::KEY_DRIVE)) $workspace->settings()->set(mel_workspace::KEY_DRIVE, date('c'));
+      }
       else if ($workspace->objects()->get(mel_workspace::KEY_DRIVE) === true) $workspace->objects()->remove(mel_workspace::KEY_DRIVE);
 
       $args['workspace'] = $workspace;
@@ -421,6 +425,8 @@ class mel_nextcloud extends rcube_plugin {
         unset($layout);
   
         $args['plugin']->include_workspace_module('mel_nextcloud', 'module.js', 'js/workspace');
+        
+        if ($args['workspace']->settings()->get(mel_workspace::KEY_DRIVE)) rcmail::get_instance()->output->set_env('current_workspace_nc_start', $args['workspace']->settings()->get(mel_workspace::KEY_DRIVE));
   
         $this->include_stylesheet($this->local_skin_path() . '/workspace/workspace.nextcloud.css');
       }

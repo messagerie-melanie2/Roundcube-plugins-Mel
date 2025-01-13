@@ -146,7 +146,7 @@ class Workspace {
   }
 
   public function hasService($service) {
-    return $this->services(true, true)[$service] ?? false;
+    return in_array($service, $this->services(true, true));
   }
 
   public function isPublic($newState = DEFAULT_SYMBOL) {

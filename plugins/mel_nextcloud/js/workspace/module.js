@@ -54,6 +54,20 @@ class NextcloudModule extends WorkspaceObject {
     return document.querySelector('#module-nc');
   }
 
+  get createdDate() {
+    if (this.get_env('current_workspace_nc_start'))
+      return moment(this.get_env('current_workspace_nc_start'));
+    else return this.workspace.created;
+  }
+
+  /**
+   * @type {string}
+   * @readonly
+   */
+  get storageKey() {
+    return `nc_join_${this.workspace.uid}`;
+  }
+
   main() {
     super.main();
 
@@ -138,10 +152,9 @@ class NextcloudModule extends WorkspaceObject {
 
     try {
       await roundrive.load();
+      this.unload(this.storageKey);
     } catch (error) {
-      contents.appendChild(
-        $('<p>Impossible de charger les documents pour le moment...</p>')[0],
-      );
+      this._on_error();
       continueExec = false;
     }
 
@@ -189,11 +202,11 @@ class NextcloudModule extends WorkspaceObject {
     contents = null;
   }
 
-  load() {
-    super.load();
+  // load() {
+  //   super.load();
 
-    this._main();
-  }
+  //   this._main();
+  // }
 
   async _on_refresh() {
     this.moduleContainer.disableRefreshButton();
@@ -202,6 +215,7 @@ class NextcloudModule extends WorkspaceObject {
 
     try {
       await drive.load();
+      this.unload(this.storageKey);
 
       let documents = document.createElement('div');
       /**
@@ -226,13 +240,32 @@ class NextcloudModule extends WorkspaceObject {
       contents = null;
       documents = null;
     } catch (error) {
-      contents.innerHTML = EMPTY_STRING;
-      contents.appendChild(
-        $('<p>Impossible de charger les documents pour le moment...</p>')[0],
-      );
+      this._on_error();
     }
 
     this.moduleContainer.enableRefreshButton();
+  }
+
+  _on_error() {
+    let contents = this.moduleContainer.querySelector('.module-block-content');
+    contents.innerHTML = EMPTY_STRING;
+    if (this.createdDate.add(10, 'm') > moment()) {
+      contents.appendChild($('<p>Création en cours....</p>')[0]);
+    } else {
+      if (this.load(this.storageKey, false)) {
+        if (moment(this.load(this.storageKey)).add(10, 'm') > moment())
+          contents.appendChild($('<p>Synchronisation en cours...</p>')[0]);
+        else
+          contents.appendChild(
+            $(
+              '<p>Impossible de charger les documents pour le moment...</p>',
+            )[0],
+          );
+      } else {
+        this.save(this.storageKey, moment());
+        this._on_error();
+      }
+    }
   }
 
   static CreateRoundriveTag(element) {

@@ -250,6 +250,7 @@ class mel_workspace extends bnum_plugin
             $this->rc()->output->set_env('current_workspace_uid', $uid);
             $this->rc()->output->set_env('current_workspace_title', $workspace->title());
             $this->rc()->output->set_env('current_workspace_services_actives', $workspace->services());
+            $this->rc()->output->set_env('current_workspace_created', $workspace->created());
             $this->rc()->output->set_env('current_workspace_users', $workspace->users(true)->select(function ($k, $v) {
                 return ['email' => $v->email, 'name' => $v->name, 'fullname' => $v->fullname, 'is_external' => $v->is_external];
             })->toDictionnary(function ($k, $v) {
@@ -1656,7 +1657,7 @@ class mel_workspace extends bnum_plugin
                 $events = $calendar->getRangeEvents($now);
         
                 foreach ($events as $e) {
-                    if ($e->category === 'ws#'.$workspace->uid()) 
+                    if ($e->category === 'ws#'.$args['workspace']->uid()) 
                     {
                         if ($e->recurrence->type !== LibMelanie\Api\Defaut\Recurrence::RECURTYPE_NORECUR)
                         {

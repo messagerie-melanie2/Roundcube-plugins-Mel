@@ -1,7 +1,57 @@
 import { Random } from '../../../classes/random.js';
 import { EMPTY_STRING } from '../../../constants/constants.js';
 import { BnumEvent as JsEvent } from '../../../mel_events.js';
-import { HtmlCustomTag as HtmlCustomElement } from './js_html_base_web_elements.js';
+import {
+  EWebComponentMode,
+  HtmlCustomTag as HtmlCustomElement,
+  HtmlCustomTag,
+} from './js_html_base_web_elements.js';
+
+class HTMLTabContainer extends HtmlCustomTag {
+  constructor() {
+    super();
+  }
+
+  _p_main() {
+    super._p_main();
+  }
+
+  /**
+   * @type {string}
+   * @readonly
+   */
+  static get TAG() {
+    return 'bnum-tab-container';
+  }
+}
+
+{
+  const TAG = HTMLTabContainer.TAG;
+  if (!customElements.get(TAG)) customElements.define(TAG, HTMLTabContainer);
+}
+
+class HTMLTabReceiver extends HtmlCustomTag {
+  constructor() {
+    super({ mode: EWebComponentMode.div });
+  }
+
+  _p_main() {
+    super._p_main();
+  }
+
+  /**
+   * @type {string}
+   * @readonly
+   */
+  static get TAG() {
+    return 'bnum-tab-receiver';
+  }
+}
+
+{
+  const TAG = HTMLTabReceiver.TAG;
+  if (!customElements.get(TAG)) customElements.define(TAG, HTMLTabReceiver);
+}
 
 /**
  * @class
@@ -114,7 +164,23 @@ export class TabsElement extends HtmlCustomElement {
       element_selected = null;
     }
 
-    shadow.append(tablist);
+    let hasReceiver = false;
+    let tabContainer = tmp.querySelector(HTMLTabContainer.TAG);
+
+    if (tabContainer) {
+      let tabReceiver = tabContainer.querySelector(HTMLTabReceiver.TAG);
+
+      if (tabReceiver) {
+        hasReceiver = true;
+        shadow.appendChild(tabContainer);
+        tabReceiver.append(tablist);
+        tabReceiver = null;
+      }
+      tabContainer = null;
+    }
+
+    if (!hasReceiver) shadow.append(tablist);
+
     shadow.append(tmp);
 
     this._click_button_action(tabs[0]);

@@ -156,16 +156,19 @@ export class create_or_edit_post extends MelObject {
             this.post_id = this.get_env('post').id;
 
             // Vérifier s'il s'agit d'une création ou d'une modification
-        const isModification = !!this.post_id; // true si post_id est défini (modification)
-
-            this.http_internal_post(
+            const isModification = !!this.post_id; // true si post_id est défini (modification)
+            let content = tinymce.activeEditor.getContent();
+            let title = $("#edit-title").val().trim();
+            if(title !== '' && content !== '')
+            {
+                this.http_internal_post(
                 {
                     task: 'forum',
                     action: 'send_post',
                     params: {
                         _workspace: this.workspace,
-                        _title: $("#edit-title").val(),
-                        _content: tinymce.activeEditor.getContent(),
+                        _title: title,
+                        _content: content,
                         _uid: this.post_uid,
                         _settings: JSON.stringify({extwin: true, comments: $('#enable_comment')[0].checked}),
                         _tags: this.tags,
@@ -195,8 +198,15 @@ export class create_or_edit_post extends MelObject {
                         );
                         window.location.href = this.url('forum', {action:'post',params:{'_uid' : postUid, '_workspace_uid' : this.workspace}});
                     }
-                }
-            );
+                });
+            } else {
+                BnumMessage.DisplayMessage(
+                    rcmail.gettext('mel_forum.fields_required'),
+                eMessageType.Error,
+                );
+            }
+
+            
         });
     }
 

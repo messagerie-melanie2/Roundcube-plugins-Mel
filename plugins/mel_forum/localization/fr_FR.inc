@@ -137,6 +137,7 @@ $labels['undislike'] = 'Dislike annulé avec succès.';
 $labels['unexpected_error'] = 'Une erreur inattendue est survenue.';
 $labels['unlike'] = 'Like annulé avec succès.';
 $labels['yesterday_at'] = 'Hier à';
+$labels['fields_required'] = 'Les champs titre et contenu sont requis';
 
 #region TAG
 

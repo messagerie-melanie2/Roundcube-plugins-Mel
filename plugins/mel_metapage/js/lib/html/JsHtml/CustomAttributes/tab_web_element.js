@@ -7,6 +7,13 @@ import {
   HtmlCustomTag,
 } from './js_html_base_web_elements.js';
 
+/**
+ * @class
+ * @classdesc A ajouter dans un TabsElement, element parent qui sera en dehors des panneaux et qui contiendra les onglets. Doit avoir un HTMLTabReceiver qui contiendra les onglets
+ * @extends HtmlCustomTag
+ * @package
+ * @hideconstructor
+ */
 class HTMLTabContainer extends HtmlCustomTag {
   constructor() {
     super();
@@ -17,6 +24,7 @@ class HTMLTabContainer extends HtmlCustomTag {
   }
 
   /**
+   * Balise
    * @type {string}
    * @readonly
    */
@@ -30,6 +38,13 @@ class HTMLTabContainer extends HtmlCustomTag {
   if (!customElements.get(TAG)) customElements.define(TAG, HTMLTabContainer);
 }
 
+/**
+ * @class
+ * @classdesc A mettre dans un HTMLTabContainer, contient les onglets.
+ * @package
+ * @hideconstructor
+ * @extends HtmlCustomTag
+ */
 class HTMLTabReceiver extends HtmlCustomTag {
   constructor() {
     super({ mode: EWebComponentMode.div });
@@ -40,6 +55,7 @@ class HTMLTabReceiver extends HtmlCustomTag {
   }
 
   /**
+   * Balise
    * @type {string}
    * @readonly
    */

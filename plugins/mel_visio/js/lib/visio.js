@@ -148,6 +148,7 @@ class Visio extends MelObject {
      * Données pour rejoindre la visio via téléphone
      * @type {Promise<CallData>}
      * @package
+     * @frommodule Visio/Core {@linkto CallData}
      */
     this._call_datas = null;
 
@@ -185,6 +186,7 @@ class Visio extends MelObject {
    * Récupère les données d'appels
    * @returns {Promise<CallData>}
    * @async
+   * @frommodulereturn Visio/Core {@linkto CallData}
    */
   async get_call_data() {
     return await this._call_datas;
@@ -587,6 +589,10 @@ class Visio extends MelObject {
     return toolbar;
   }
 
+  /**
+   * Génère les boutons supplémentaires de la visio, notemment le bouton retour, minimise ou maximise.
+   * @package
+   */
   _create_ui() {
     top.$('body').append(
       //prettier-ignore
@@ -600,7 +606,6 @@ class Visio extends MelObject {
             top.$('#visio-back-button').attr('title', 'Maximiser la visioconférence').find('bnum-icon').text('fullscreen');
           }
           else { 
-            // if (FramesManager.Instance.get_window()) FramesManager.Instance.get_window()._current_frame = null;
             FramesManager.Instance.switch_frame('webconf', {});
             top.$('#visio-back-button').attr('title', 'Minimiser la visioconférence').find('bnum-icon').text('fullscreen_exit');
           }
@@ -610,6 +615,12 @@ class Visio extends MelObject {
     );
   }
 
+  /**
+   * Initialise les écouteurs de la visio
+   * @returns {Promise<void>}
+   * @async
+   * @package
+   */
   async _init_listeners() {
     const promise_user_id = this.jitsii.get_user_id();
 
@@ -666,6 +677,12 @@ class Visio extends MelObject {
     });
   }
 
+  /**
+   * Change l'icône du bouton de la toolbar lorsque le micro est coupé/activé
+   * @param {MutedStatus} state Nouvel état du micro
+   * @package
+   * @frommoduleparam Visio/Jitsi state
+   */
   _event_on_audio_change(state) {
     this._update_icon_state(state.muted, 'mic');
   }

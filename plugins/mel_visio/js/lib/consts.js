@@ -110,6 +110,12 @@ export const right_item_size = 340;
  * @const
  */
 export const class_to_add_to_top = 'webconf-started';
+/**
+ * Nombre de rectangles pour visualiser une entrée audio
+ * @default 16
+ * @type {number}
+ * @const
+ */
 export const visualValueCount = 16;
 /**
  * Url de l'audio pour tester les sorties audios

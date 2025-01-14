@@ -1405,16 +1405,18 @@ body.task-settings .scroller > .listing li:hover {
   content: '\eed8' !important;
 }
 .roundbadge.can-be-favorite {
-  height: 26px;
-  width: 26px;
+  height: 32px;
+  width: 32px;
   background-color: transparent;
 }
 .roundbadge.can-be-favorite:hover {
   background-color: var(--roundbadge-default-bckg-color);
   font-variation-settings: 'FILL' 1;
 }
+.roundbadge.can-be-favorite bnum-icon {
+  font-size: 30px;
+}
 .roundbadge.can-be-favorite.active {
-  background-color: #fdcf42;
   font-variation-settings: 'FILL' 1;
 }
 .roundbadge.can-be-favorite.active:hover {
@@ -3874,6 +3876,13 @@ html.dark-mode .mv2-app-text {
   font-size: 30px;
   border-radius: 8px;
   margin: auto;
+  padding: 6px;
+  font-variation-settings: 'wght' 300;
+}
+.colored-wsp-icon {
+  font-size: 30px;
+  border-radius: 8px;
+  margin-right: 10px;
   padding: 6px;
   font-variation-settings: 'wght' 300;
 }

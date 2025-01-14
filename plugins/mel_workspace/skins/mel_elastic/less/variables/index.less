@@ -21,8 +21,8 @@
 @page-header-paddings: {
   TOP: 0;
   BOTTOM: 0;
-  LEFT: 0;
-  RIGHT: 0;
+  LEFT: 70px;
+  RIGHT: 50px;
 };
 // ### Head ###
 //Margin de la div qui contient l'icône et le titre de la page
@@ -107,7 +107,7 @@
   BOTTOM: 5px;
 };
 
-@header-padding: 0 5px;
+@header-padding: 0 15px;
 
 // Header/Create Button
 // Bouton de création d'un espace qui se trouve après les onglets, mais avant la liste des espaces
@@ -131,10 +131,10 @@
 // Fonctionnement visuel de la liste de boutons à états
 // Ici, visuel de la div qui contient les boutons
 @pressed-list-background-color: var(--card-background-color, #f8f8f8);
-@pressed-list-border-radius: 10px;
+@pressed-list-border-radius: 8px;
 @pressed-list-paddings: {
-  TOP: 3px;
-  BOTTOM: 3px;
+  TOP: 5px;
+  BOTTOM: 5px;
   LEFT: 5px;
   RIGHT: 5px;
 };
@@ -149,11 +149,19 @@
 @pressed-list-button-border-radius: @button-border-radius; //base.less
 @pressed-list-button-border: none;
 @pressed-list-button-margins: {
-  TOP: 5px; //Initial
-  RIGHT: 2.5px;
-  BOTTOM: 5px; //Initial
-  LEFT: 2.5px;
+  TOP: 0px; //Initial
+  RIGHT: 0px;
+  BOTTOM: 0px; //Initial
+  LEFT: 0px;
 };
+
+@pressed-list-button-paddings: {
+  TOP: 5px; //Initial
+  RIGHT: 5px;
+  BOTTOM: 5px; //Initial
+  LEFT: 5px;
+};
+
 // Boutons au survol
 @pressed-list-button-hover-background-color: var(--default-bckg-color, white);
 @pressed-list-button-hover-color: var(
@@ -176,13 +184,13 @@
   TOP: @pressed-list-button-margins[TOP];
   RIGHT: @pressed-list-button-margins[RIGHT];
   BOTTOM: @pressed-list-button-margins[BOTTOM];
-  LEFT: 5px;
+  LEFT: @pressed-list-button-margins[LEFT];
 };
 
 // Affichage du dernier bouton de la liste
 @pressed-list-button-last-child-margins: {
   TOP: @pressed-list-button-margins[TOP];
-  RIGHT: 5px;
+  RIGHT: @pressed-list-button-margins[RIGHT];
   BOTTOM: @pressed-list-button-margins[BOTTOM];
   LEFT: @pressed-list-button-margins[LEFT];
 };
@@ -215,6 +223,9 @@
 @pressed-list-button-margin: @pressed-list-button-margins[TOP]
   @pressed-list-button-margins[RIGHT] @pressed-list-button-margins[BOTTOM]
   @pressed-list-button-margins[LEFT];
+@pressed-list-button-padding: @pressed-list-button-paddings[TOP]
+  @pressed-list-button-paddings[RIGHT] @pressed-list-button-paddings[BOTTOM]
+  @pressed-list-button-paddings[LEFT];
 @pressed-list-button-first-child-margin: @pressed-list-button-first-child-margins[TOP]
   @pressed-list-button-first-child-margins[RIGHT]
   @pressed-list-button-first-child-margins[BOTTOM]

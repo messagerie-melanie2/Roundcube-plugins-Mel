@@ -2272,8 +2272,8 @@ body {
   }
 
   &.can-be-favorite {
-    height: 26px;
-    width: 26px;
+    height: 32px;
+    width: 32px;
     background-color: transparent;
 
     &:hover {
@@ -2281,8 +2281,12 @@ body {
       font-variation-settings: 'FILL' 1;
     }
 
+    bnum-icon {
+      font-size: 30px;
+    }
+
     &.active {
-      background-color: #fdcf42;
+      // background-color: #fdcf42;
       font-variation-settings: 'FILL' 1;
 
       &:hover {
@@ -5232,6 +5236,14 @@ html.dark-mode {
   font-size: 30px;
   border-radius: 8px;
   margin: auto;
+  padding: 6px;
+  font-variation-settings: 'wght' 300;
+}
+
+.colored-wsp-icon {
+  font-size: 30px;
+  border-radius: 8px;
+  margin-right: 10px;
   padding: 6px;
   font-variation-settings: 'wght' 300;
 }

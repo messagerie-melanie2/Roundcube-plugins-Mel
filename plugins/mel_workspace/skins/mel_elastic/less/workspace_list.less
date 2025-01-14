@@ -27,6 +27,26 @@
         img {
           align-self: center;
         }
+
+        html.layout-phone & {
+          display: none;
+        }
+      }
+
+      .workspace-block-item-users {
+        html.layout-phone & {
+          display: none;
+        }
+      }
+
+      bnum-button-icon {
+        max-width: 82px;
+      }
+
+      .workspace-block-item-title {
+        html.layout-phone & {
+          max-width: 200px;
+        }
       }
 
       .workspace-block-item-main {
@@ -42,6 +62,10 @@
         justify-content: space-between;
         margin-left: 50px;
         margin-right: 50px;
+
+        html.layout-phone & {
+          margin-left: 0;
+        }
 
         div {
           text-align: left;
@@ -95,6 +119,10 @@
     cursor: pointer;
 
     position: relative;
+
+    html.layout-phone & {
+      width: 320px;
+    }
 
     .workspace-block-item-picture {
       height: 123px;

@@ -279,7 +279,6 @@ class IndexWorkspace extends MelObject {
       // const headerHeight = $('.wsp-header').height();
       const total = tab.height();
 
-      console.log('$$$', total, tabs, headerPannel, constant);
       const result = total - tabs - headerPannel - constant;
 
       if (this._container === true)

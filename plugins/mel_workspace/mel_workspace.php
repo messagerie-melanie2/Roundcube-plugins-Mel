@@ -1069,7 +1069,10 @@ class mel_workspace extends bnum_plugin
         $shares = $this->sort_user($this->workspace->users()); 
         $nbuser = count($shares);
 
-        $html .= "<h2>Liste des membres ($nbuser)</h2>";
+        $html .= '<div class="row mb-2">';
+        $html .= "<div class='col-12 col-md-8'><h2>Liste des membres ($nbuser)</h2></div>";
+        $html .= '<div class="col-12 col-md-4 d-flex justify-content-md-end"><button onclick="rcmail.command(`workspace.leave`)" class="btn btn-danger mel-button no-button-margin" title="Quitter l\'espace de travail" style="margin-top:5px;margin-right:10px;display: flex; align-items: center;gap:15px">Quitter l\'espace de travail<span class="material-symbols-outlined">logout</span></button></div>';
+        $html .= '</div>';
         $html .= '<div class="wsp-block">';
 
         foreach ($shares as $key => $value) {
@@ -1097,10 +1100,7 @@ class mel_workspace extends bnum_plugin
             }
         }
 
-        $html .= "</div>";
-        $html .= '<button onclick="rcmail.command(`workspace.leave`)" class="btn btn-danger mel-button no-button-margin" title="Quitter l\'espace de travail" style="margin-top:5px;margin-right:10px;display: flex; align-items: center;gap:15px">Quitter l\'espace de travail<span class="material-symbols-outlined">logout</span></button>';
-        $html .= "</div>";
-
+        $html .= "</div></div>";
 
         return $html;
 

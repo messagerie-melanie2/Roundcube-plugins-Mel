@@ -159,6 +159,9 @@ class WspNavBarDescription extends NavBarComponent {
           $(this.descriptionNode).clone(),
           {
             title: "Description de l'espace",
+            options: {
+              height: 200,
+            },
           },
         );
         dialog.show();

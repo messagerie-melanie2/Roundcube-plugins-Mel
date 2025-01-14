@@ -26,12 +26,22 @@ export { Visio };
  * @module Visio/Core
  * @local CallData
  * @local Visio
+ * @local IconCallback
  */
 
 /**
  * @typedef CallData
  * @property {string} pin Code pin pour rejoindre de la visio
  * @property {string} number Numéro de téléphone de la visio
+ */
+
+/**
+ * @callback IconCallback
+ * @param {string} icon Icône récupérer des data du bouton
+ * @param {boolean} disabled Si l'élément est désactivé ou non
+ * @param {ToolbarItem} button Bouton séléctionné
+ * @param {Visio} caller Objet parent
+ * @return {string}
  */
 
 /**
@@ -687,15 +697,34 @@ class Visio extends MelObject {
     this._update_icon_state(state.muted, 'mic');
   }
 
+  /**
+   * Change l'icône du bouton de la toolbar lorsque la caméra est coupé/activé
+   * @param {MutedStatus} state Nouvel état de la caméra
+   * @package
+   * @frommoduleparam Visio/Jitsi state
+   */
   _event_on_video_change(state) {
     this._update_icon_state(state.muted, 'camera');
   }
 
+  /**
+   * Action lorsque l'état du flimstrip change
+   * @param {VisibilityStatus} state Nouvel état du filmstrip
+   * @returns {boolean}
+   * @package
+   * @frommoduleparam Visio/Jitsi state
+   */
   _event_on_filmstrip_state_changed(state) {
     state = state.visible;
     return state;
   }
 
+  /**
+   * Change l'icône "chat" sur la toolbar et gère le focus
+   * @param {ChatUpdated} state Etats du chat
+   * @package
+   * @frommoduleparam Visio/Jitsi state
+   */
   _event_on_chat_updated(state) {
     this._update_icon_state(!state.isOpen, 'chat', (icon, disabled, button) => {
       if (state.unreadCount > 0) {
@@ -711,10 +740,24 @@ class Visio extends MelObject {
     });
   }
 
+  /**
+   * Change l'icône "tileview" de la barre d'outil lorsque la tileview est activé ou non
+   * @param {EnabledStatus} state Etat de la tileview
+   * @package
+   * @frommoduleparam Visio/Jitsi state
+   */
   _event_on_tileview_updated(state) {
     this._update_icon_state(!state.enabled, 'moz');
   }
 
+  /**
+   * Change l'icône "main" de la barre d'outil si la main a été levé ou non
+   * @param {RaiseHand} state
+   * @return {Promise<void>}
+   * @package
+   * @async
+   * @frommoduleparam Visio/Jitsi state
+   */
   async _event_on_raise_hand_updated(state) {
     const id = await this.jitsii.get_user_id();
 
@@ -722,10 +765,25 @@ class Visio extends MelObject {
       this._update_icon_state(state.handRaised === 0, 'handup');
   }
 
+  /**
+   * Change l'icône "Partage d'écran" lorsque celui est activé ou désactivé
+   * @param {ScreenSharingObject} data Données du partage d'écran
+   * @package
+   * @frommoduleparam Visio/Jitsi data
+   */
   _event_on_share_screen_status_changed(data) {
     this._update_icon_state(!data.on, 'share_screen');
   }
 
+  /**
+   * Change une icône en fonction si un élément est désactivé ou non.
+   * @param {boolean} disabled Si l'élément est désactvé ou non
+   * @param {string} button_id Id du bouton qui contient l'image
+   * @param {?IconCallback} [callback_icon_ex=null]
+   * @returns {boolean} Inverse de disabled
+   * @package
+   * @frommoduleparam Visio/Core callback_icon_ex
+   */
   _update_icon_state(disabled, button_id, callback_icon_ex = null) {
     const button = this.toolbar.get_button(button_id);
 

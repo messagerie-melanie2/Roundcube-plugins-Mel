@@ -1401,6 +1401,94 @@ class mel_workspace extends bnum_plugin
         // $html .= "</select>";
         // return $html;
     }
+
+    public function synchronize_list() {
+        $echo = null;
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $wsp = self::Workspace($uid);//self::get_workspace($uid); 
+
+        if ($wsp->isAdmin()){
+            $list = rcube_utils::get_input_value("_list", rcube_utils::INPUT_POST);
+
+            $loaded_list = driver_mel::gi()->getUser(null, true, false, null, $list);
+            $list_members = $loaded_list->list->members;
+            $all_saved_list_data = $wsp->settings()->get('lists');//$this->get_setting($wsp, 'lists');
+            $current_saved_list_data = $all_saved_list_data->$list;
+            $shared = $wsp->users();
+    
+            $_POST['_users'] = [];
+    
+            $has_new = false;
+            foreach ($list_members as $value) {
+                if (!in_array($value->uid, $current_saved_list_data) || !isset($shared[$value->uid]))    
+                {
+                    $value->load();
+
+                    if (!in_array($value->uid, $current_saved_list_data)) $current_saved_list_data[] = $value->uid;
+
+                    $_POST['_users'][] = $value->email;
+
+                    if(!$has_new) $has_new = true;
+                }
+            }
+    
+            if (count($_POST['_users']) > 0) {
+                $_POST['_not_exist'] = true;
+                $this->add_users();
+                unset($_POST['_not_exist']);
+            }
+    
+            $has_deleted = false;
+            $valid = [];
+            foreach ($current_saved_list_data as $value) {
+                if (isset($list_members[$value])) $valid[] = $value;
+                else {
+                    $this->delete_user($uid, $value, false);
+
+                    if (!$has_deleted) $has_deleted = true;
+                }
+            }
+
+            if ($has_deleted || $has_new) {
+                $all_saved_list_data->$list = $valid;
+                //$this->add_setting($wsp, 'lists', $all_saved_list_data);
+                $wsp->settings()->set('lists', $all_saved_list_data);
+                $wsp->save();
+            }
+
+            $echo = 'ok';
+        }
+        else $echo = 'denied';
+
+        echo $echo;
+        exit;
+
+    }
+
+    public function delete_list() {
+        $echo = null;
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $wsp = self::Workspace($uid);//self::get_workspace($uid); 
+
+        if ($wsp->isAdmin()){
+            $list = rcube_utils::get_input_value("_list", rcube_utils::INPUT_POST);
+            $all_saved_list_data = $wsp->settings()->get('lists'); //$this->get_setting($wsp, 'lists');
+            $current_saved_list_data = $all_saved_list_data->$list;
+
+            for ($i=0, $len=count($current_saved_list_data); $i < $len; ++$i) { 
+                $this->delete_user($uid, $current_saved_list_data[$i], false);
+            }
+
+            unset($all_saved_list_data->$list);
+            //$this->add_setting($wsp, 'lists', $all_saved_list_data);
+            $wsp->settings()->set('lists', $all_saved_list_data);
+            $wsp->save();
+
+        }
+        else echo 'denied';
+
+        exit;
+    }
     #endregion
 
     #region public_functions
@@ -1580,6 +1668,8 @@ class mel_workspace extends bnum_plugin
             $this->register_action('hashtag', array($this, 'get_hashtags'));
             $this->register_action('leave_workspace', array($this, 'leave_workspace'));
             $this->register_action('join_user', array($this, 'join_user'));
+            $this->register_action('sync_list_member', [$this, 'synchronize_list']);
+            $this->register_action('delete_list', [$this, 'delete_list']);
         }
 
         private function _setup_workspace_actions() {

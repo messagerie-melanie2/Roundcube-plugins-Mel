@@ -187,6 +187,7 @@ class mel_workspace extends bnum_plugin
     public function show_workspace() {
         include_once __DIR__.'/lib/WorkspacePage.php';
         $this->add_texts('localization/workspace', true);
+        $this->load_config();
 
         $uid = $this->get_input('_uid');
 
@@ -247,6 +248,7 @@ class mel_workspace extends bnum_plugin
     
             if (!$workspace->isAdmin()) $this->include_module('page.user.js');
     
+            $this->rc()->output->set_env('workspace_force_theme', $this->get_config('workspace_force_theme', []));
             $this->rc()->output->set_env('current_workspace_uid', $uid);
             $this->rc()->output->set_env('current_workspace_title', $workspace->title());
             $this->rc()->output->set_env('current_workspace_services_actives', $workspace->services());

@@ -192,9 +192,17 @@ export class WorkspacePage extends WorkspaceObject {
   }
 
   static OnQuit() {
+    let $html;
     for (const frame of FramesManager.Instance.get_window()) {
-      if (frame) frame.$frame[0].contentWindow.$('html').removeClass('mwsp');
+      if (frame) {
+        $html = frame.$frame[0].contentWindow.$('html').removeClass('mwsp');
+
+        if ($html.attr('data-added'))
+          $html.removeClass($html.attr('data-added')).removeAttr('data-added');
+      }
     }
+
+    $html = null;
 
     if (FramesManager.Instance.has_frame('calendar')) {
       FramesManager.Instance.get_frame('calendar')[0]

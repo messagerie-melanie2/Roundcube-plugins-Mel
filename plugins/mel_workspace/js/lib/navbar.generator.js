@@ -89,6 +89,20 @@ export class NavBarManager {
       navbar.style.marginLeft = 'var(--navbar-margin-left, 60px)';
       navbar.style.marginRight = '5px';
       navbar.onquitbuttonclick.push(() => {
+        MelObject.Empty().unload('current_wsp');
+        NavBarManager.nav.$('html').removeClass('mwsp');
+
+        for (const frame of FramesManager.Instance.get_window()) {
+          if (frame)
+            frame.$frame[0].contentWindow.$('html').removeClass('mwsp');
+        }
+
+        if (FramesManager.Instance.has_frame('calendar')) {
+          FramesManager.Instance.get_frame('calendar')[0]
+            .contentWindow.$('#calendar')
+            .fullCalendar('refetchEvents');
+        }
+
         // this.currentNavBar.remove();
         // nav.$('#layout-frames').css('margin-left', EMPTY_STRING);
         top.history.replaceState(

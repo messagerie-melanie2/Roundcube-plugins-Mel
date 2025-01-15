@@ -336,6 +336,7 @@ table.messagelist td.subject span.msgicon::before {
 }
 table.messagelist td.subject span.subject {
   padding-left: 2rem;
+  padding-right: 50px;
 }
 html body div#layout-list table.messagelist td.subject a {
   color: var(--main-text-color);

@@ -18,7 +18,6 @@ export class New_posts extends MelObject {
    */
   main() {
     super.main();
-    debugger;
     this.workspace_uid = this.get_env('workspace_uid');
     if(this.get_env('workspace_uid')){
       $('#join-workspace').click(() =>
@@ -41,5 +40,8 @@ export class New_posts extends MelObject {
 
   async joinWorkspace(){
     await BnumConnector.connect(connectors.join_workspace, {params:{_uid:this.workspace_uid}});
+    FramesManager.Instance.switch_frame('workspace', {
+      args: { _uid: this.workspace_uid, _action: 'workspace' },
+    });
   }
 }

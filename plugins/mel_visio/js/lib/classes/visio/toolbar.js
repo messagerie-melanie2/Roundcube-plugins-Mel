@@ -39,6 +39,9 @@ class ToolbarFunctions {
    * @static
    */
   static Hangup(visio) {
+    if (top.$('#visio-back-button bnum-icon').text() === 'fullscreen')
+      top.$('#visio-back-button bnum-icon').click();
+
     FramesManager.Instance.detach('url');
     FramesManager.Instance.detach('before_url');
     FramesManager.Instance.detach('switch_frame');
@@ -55,6 +58,7 @@ class ToolbarFunctions {
       .$('#visio-back-button bnum-icon')
       .text('undo')
       .parent()
+      .setAttribute('title', 'Quitter la visio')
       .off('click')
       .on('click', () => {
         if (FramesManager.Instance.get_window()._history._history.length)

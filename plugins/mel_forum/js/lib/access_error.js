@@ -1,5 +1,7 @@
 import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager.js';
+import { BnumConnector } from '../../../mel_metapage/js/lib/helpers/bnum_connections/bnum_connections.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
+import { connectors } from '../../../mel_workspace/js/lib/connectors.js';
 
 export class New_posts extends MelObject {
   constructor() {
@@ -16,6 +18,16 @@ export class New_posts extends MelObject {
    */
   main() {
     super.main();
+    debugger;
+    this.workspace_uid = this.get_env('workspace_uid');
+    if(this.get_env('workspace_uid')){
+      $('#join-workspace').click(() =>
+        {
+          this.joinWorkspace()
+      });
+    } else {
+      $('#join-workspace').hide();
+    }
     $('#return_to_workspaces_list')
       .attr('href', this.url('workspace', {}))
       .click((e) => {
@@ -24,5 +36,10 @@ export class New_posts extends MelObject {
           args: { _action: 'index' },
         });
       });
+    
+  }
+
+  async joinWorkspace(){
+    await BnumConnector.connect(connectors.join_workspace, {params:{_uid:this.workspace_uid}});
   }
 }

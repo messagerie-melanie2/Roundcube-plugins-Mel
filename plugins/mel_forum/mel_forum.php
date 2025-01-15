@@ -188,12 +188,12 @@ class mel_forum extends bnum_plugin
     {
         $uid = $this->get_input('_uid', rcube_utils::INPUT_GET);
         $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
-        if (driver_mel::gi()->getUser()->isWorkspaceMember($workspace_uid)) {
+        $this->current_post = $this->get_post($uid);
+        if (driver_mel::gi()->getUser()->isWorkspaceMember($workspace_uid) && !is_null($this->current_post)) {
             mel_metapage::IncludeAvatar();
             //Récupérér uid avec GET
             $this->load_script_module('manager');
 
-            $this->current_post = $this->get_post($uid);
             $reactions = $this->current_post->listReactions();
 
 
@@ -2130,6 +2130,11 @@ class mel_forum extends bnum_plugin
 
     protected function _display_error_page()
     {
+        $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
+        $workspace = mel_workspace::Workspace($workspace_uid);
+        if ($workspace->isPublic()) {
+            $this->rc()->output->set_env('workspace_uid', $workspace_uid);
+        }
         $this->load_script_module('access_error');
         $this->rc()->output->send('mel_forum.access-error');
     }

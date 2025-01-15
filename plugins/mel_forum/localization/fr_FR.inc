@@ -204,5 +204,6 @@ $labels['image_field_required'] = 'Tous les champs sont requis.';
 #region ERREUR
 
 $labels['error'] = 'ERREUR';
-$labels['error-access'] = 'Vous n\'avez pas accès à la ressource demandée';
+$labels['error-access'] = 'Vous n\'avez pas accès à la ressource demandée.';
 $labels['return_to_workspaces_list'] = 'Retourner à la liste des espaces de travail';
+$labels['join_workspace'] = 'Rejoindre l\'espace de travail';

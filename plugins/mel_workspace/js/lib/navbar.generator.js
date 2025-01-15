@@ -232,7 +232,7 @@ export class NavBarManager {
 
           FramesManager.Instance.get_frame(task, { jquery: false })
             .contentWindow.$('html')
-            .addClass('mwsp');
+            .addClass('theme-super-classique-main');
 
           MainNav.select('workspace', { context: this.nav });
           top.history.replaceState(

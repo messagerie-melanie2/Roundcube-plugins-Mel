@@ -1275,6 +1275,12 @@ class Window {
     return this.get_window().attr(`data-ftag-${tag_name}`) ?? false;
   }
 
+  *[Symbol.iterator]() {
+    for (const element of this._frames) {
+      yield element.value;
+    }
+  }
+
   /**
    * Met à jours l'url
    * @param {string} url Nouvelle url

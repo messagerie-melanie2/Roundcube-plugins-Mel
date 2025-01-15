@@ -58,7 +58,7 @@ class ToolbarFunctions {
       .$('#visio-back-button bnum-icon')
       .text('undo')
       .parent()
-      .setAttribute('title', 'Quitter la visio')
+      .attr('title', 'Quitter la visio')
       .off('click')
       .on('click', () => {
         if (FramesManager.Instance.get_window()._history._history.length)

@@ -82,7 +82,7 @@ class MelCurrentUser extends AMelObjectUser {
       },
       main_email: {
         get: function () {
-          return self.emails?.[0];
+          return self.get_env('current_user').email; //self.emails?.[0];
         },
         configurable: true,
       },

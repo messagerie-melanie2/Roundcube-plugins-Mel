@@ -501,7 +501,7 @@ a.button.icon:not(.disabled):focus {
 }
 .messagelist td.subject span.date {
   font-size: 85%;
-  padding-top: 2px;
+  padding-top: 4px;
 }
 .messagelist td.labels {
   flex-basis: 100%;

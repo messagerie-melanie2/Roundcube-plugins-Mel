@@ -69,6 +69,10 @@ class mel_useful_link extends bnum_plugin
     $this->add_hook('save_external_ulinks', array($this, 'save_workspace_ulinks'));
   }
 
+  private function _pageEnabled() {
+    return $this->get_config('enable_page', true);
+  }
+
   /** 
    *  Hook pour l'ajout des liens utiles sur la page d'accueil
    * 
@@ -362,6 +366,8 @@ class mel_useful_link extends bnum_plugin
       $need_button = $this->rc->plugins->get_plugin('mel_metapage')->is_app_enabled('app_ul') ? $need_button : 'otherappsbar';
     }
 
+    if ($need_button && !$this->_pageEnabled()) $need_button = false; 
+
     if ($need_button) {
       $this->add_button(array(
         'command' => "useful_links",
@@ -376,6 +382,8 @@ class mel_useful_link extends bnum_plugin
     }
 
     $this->include_script('js/display.js');
+
+    $this->add_hook('mel_metapage.navigation.apps', array($this, 'gestion_apps'));
   }
 
   function index()
@@ -796,6 +804,16 @@ class mel_useful_link extends bnum_plugin
       }
     }
     return $filtered_dn;
+  }
+
+  public function gestion_apps($args) {
+    if (!$this->_pageEnabled()) {
+      $args['apps'] = mel_helper::Enumerable($args['apps'])->where(function($key) {
+          return $key !== 'app_ul';
+      })->toArray();
+    }
+
+    return $args;
   }
 
   #region Workspace

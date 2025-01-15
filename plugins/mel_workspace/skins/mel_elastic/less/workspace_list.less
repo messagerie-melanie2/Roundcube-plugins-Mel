@@ -8,7 +8,7 @@
 .workspace-list {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-evenly;
+  justify-content: space-between;
 
   .mode-list & {
     justify-content: initial;
@@ -27,6 +27,26 @@
         img {
           align-self: center;
         }
+
+        html.layout-phone & {
+          display: none;
+        }
+      }
+
+      .workspace-block-item-users {
+        html.layout-phone & {
+          display: none;
+        }
+      }
+
+      bnum-button-icon {
+        max-width: 82px;
+      }
+
+      .workspace-block-item-title {
+        html.layout-phone & {
+          max-width: 200px;
+        }
       }
 
       .workspace-block-item-main {
@@ -42,6 +62,10 @@
         justify-content: space-between;
         margin-left: 50px;
         margin-right: 50px;
+
+        html.layout-phone & {
+          margin-left: 0;
+        }
 
         div {
           text-align: left;
@@ -95,6 +119,10 @@
     cursor: pointer;
 
     position: relative;
+
+    html.layout-phone & {
+      width: 320px;
+    }
 
     .workspace-block-item-picture {
       height: 123px;
@@ -179,7 +207,7 @@
           .no-picture);
 
         background-color: var(--roundbadge-default-bckg-color);
-        border: solid var(--wsp-round-border-size);
+        border: solid 2px var(--bureau-card-background-color);
       }
 
       bnum-avatar {
@@ -188,7 +216,7 @@
         border-radius: 100%;
         background-size: cover;
         background-position: center;
-        border: solid var(--wsp-round-border-size);
+        border: solid 2px var(--bureau-card-background-color);
         filter: blur(0em);
         transition: filter 0.5s;
         object-fit: cover;
@@ -256,7 +284,8 @@
 bnum-workspace-block-item {
   &.hoverable {
     &:hover {
-      box-shadow: 0 0 0 0.2rem var(--windows-like-popup-button-focus);
+      // box-shadow: 0 0 0 0.2rem var(--windows-like-popup-button-focus);
+      background-color: var(--wsp-list-hover-background-color);
     }
   }
 }

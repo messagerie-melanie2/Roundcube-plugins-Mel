@@ -552,7 +552,8 @@ class mel_metapage extends bnum_plugin
                 'name' => $user->firstname,
                 'lastname' => $user->lastname,
                 'full' => $user->fullname,
-                'email' => $user->email
+                'email' => $user->email,
+                'dn' => $user->dn
             ]);
 
             //            $this->include_script('js/actions/startup.js');

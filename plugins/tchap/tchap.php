@@ -182,11 +182,13 @@ class tchap extends bnum_plugin
             $services = $args['services'];
             $default_values= $args['default_values'];
 
+            if ($default_values === '') $default_values = null;
+
             $users = mel_helper::Enumerable($workspace->users())->select(function ($k, $v) {
                 return $v->user;
             })->toArray();
 
-            if ($workspace->objects()->get(self::KEY_FOR_WORKSPACE) && array_search(self::KEY_FOR_WORKSPACE, $services) !== false) {
+            if (!$workspace->objects()->get(self::KEY_FOR_WORKSPACE) && array_search(self::KEY_FOR_WORKSPACE, $services) !== false) {
                 $default_values_key = "tchap-channel";
                 if (!isset($default_values)) $default_values = [$default_values_key => ['mode' => 'default']];
                 else if (!isset($default_values[$default_values_key])) $default_values[$default_values_key] = ['mode' => 'default'];
@@ -232,6 +234,15 @@ class tchap extends bnum_plugin
                 unset($services[self::KEY_FOR_WORKSPACE]);
 
                 $args['services'] = $services;
+            }
+            else if ($workspace->objects()->get(self::KEY_FOR_WORKSPACE) && array_search(self::KEY_FOR_WORKSPACE, $services) !== false) {
+                $new_users= $args['new_users'];
+                
+                if ($new_users && count($new_users) > 0) $users = mel_helper::Enumerable($new_users)->select(function ($k, $v) {
+                    return $v->uid;
+                })->toArray();
+
+                self::invite_tchap_user($workspace->objects()->get(self::KEY_FOR_WORKSPACE)->id, $users);
             }
         }
 

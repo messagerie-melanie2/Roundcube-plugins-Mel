@@ -27,6 +27,7 @@ class mel_forum extends bnum_plugin
 
     const DEFAULTSORTBY = 'created';
     const DEFAULTASC = false;
+    const POST_DEFAULT_LIMIT = 20;
 
     public $current_post;
 
@@ -275,7 +276,7 @@ class mel_forum extends bnum_plugin
                 "_offset" => 0,
                 "_from_other_frame" => true,
             ), false, false, true);
-            $tags_html .= '<a href= "' . $url . '" class="tag" tabindex="0" role="button">#' . htmlspecialchars($tag) . '</a>';
+            $tags_html .= '<a href= "' . $url . '" data-spied="false" class="tag" tabindex="0" role="button">#' . htmlspecialchars($tag) . '</a>';
         }
 
         return $tags_html;
@@ -799,6 +800,9 @@ class mel_forum extends bnum_plugin
 
         //Définition des propriétés du tag
         $tag->name = ucfirst(str_replace(' ', '', $name));
+        mel_helper::load_helper($this->rc())->include_utilities();
+        $tag->name = mel_utils::remove_accents($tag->name);
+
         $tag->workspace = $workspace_uid;
 
         // Sauvegarde du tag
@@ -1446,28 +1450,20 @@ class mel_forum extends bnum_plugin
                     error_log("Invalid base64 image, skipping.");
                     continue;
                 }
-            } else {
-                // C'est une URL, on la télécharge et la convertit en base64
-                $src = $this->convert_url_to_base64($src);
-                if ($src === false) {
-                    error_log("Failed to convert URL to base64, skipping image.");
-                    continue;
+
+                $imageUid = $this->save_image($post_id, $src);
+
+                if ($imageUid) {
+                    // Générer l'URL contenant l'UID de l'image
+                    $imageUrl = $this->get_image_url($imageUid);
+
+                    // Collecter les URLs et les UIDs des images utilisées
+                    $usedImageUrls[] = $imageUrl;
+                    $usedImageUids[] = $imageUid;
+
+                    // Remplacer la balise <img> par celle avec l'URL
+                    $content = str_replace($img[0], '<img src="' . $imageUrl . '" />', $content);
                 }
-            }
-
-            // Enregistrer l'image dans la base de données
-            $imageUid = $this->save_image($post_id, $src);
-
-            if ($imageUid) {
-                // Générer l'URL contenant l'UID de l'image
-                $imageUrl = $this->get_image_url($imageUid);
-
-                // Collecter les URLs et les UIDs des images utilisées
-                $usedImageUrls[] = $imageUrl;
-                $usedImageUids[] = $imageUid;
-
-                // Remplacer la balise <img> par celle avec l'URL
-                $content = str_replace($img[0], '<img src="' . $imageUrl . '" />', $content);
             }
         }
 
@@ -1515,7 +1511,7 @@ class mel_forum extends bnum_plugin
     protected function convert_url_to_base64($url)
     {
         // Téléchargez le contenu de l'image
-        $imageData = @file_get_contents($url);
+        $imageData = file_get_contents($url);
         if ($imageData === false) {
             return false; // Impossible de télécharger l'image
         }
@@ -1744,7 +1740,8 @@ class mel_forum extends bnum_plugin
      */
     public function get_posts_data()
     {
-        echo json_encode($this->post_object_to_JSON());
+        $limit = $this->get_input('_limit', rcube_utils::INPUT_GET);
+        echo json_encode($this->post_object_to_JSON(null, $limit ?? self::POST_DEFAULT_LIMIT));
         exit;
     }
 
@@ -1991,6 +1988,7 @@ class mel_forum extends bnum_plugin
             $this->include_web_component()->Avatar();
             $this->load_script_module('new_posts');
             $this->show_new_posts();
+            $this->rc()->output->set_env('workspace_uid', $workspace_uid);
             // Envoyer le template approprié
             $this->rc()->output->send('mel_forum.new-posts');
         } else {

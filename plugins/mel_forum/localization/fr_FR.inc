@@ -86,6 +86,7 @@ $labels['more_reactions'] = 'Plus de réactions';
 $labels['more_responses'] = 'Plus de réponses';
 $labels['newest'] = 'Plus récents';
 $labels['no_post'] = 'Cet espace ne contient aucun article pour le moment.';
+$labels['no_favorites'] = 'Vous n\'avez aucun article favori pour le moment.';
 $labels['oldest'] = 'Plus anciens';
 $labels['respond'] = 'Répondre';
 $labels['save'] = 'Sauvegarder';
@@ -138,6 +139,7 @@ $labels['undislike'] = 'Dislike annulé avec succès.';
 $labels['unexpected_error'] = 'Une erreur inattendue est survenue.';
 $labels['unlike'] = 'Like annulé avec succès.';
 $labels['yesterday_at'] = 'Hier à';
+$labels['fields_required'] = 'Les champs titre et contenu sont requis';
 
 #region TAG
 

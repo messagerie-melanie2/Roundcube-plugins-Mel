@@ -219,7 +219,6 @@ class WspNavBar extends HtmlCustomTag {
     // );
 
     // shadow.appendChild(style);
-
     let tmp = new WspPageNavigation({ parent: this, apps: this.settings });
     this.mainDiv.appendChild(tmp);
     tmp.onbuttonclicked.push(
@@ -231,7 +230,7 @@ class WspNavBar extends HtmlCustomTag {
     this.#pageNavigation = tmp;
     tmp = null;
 
-    this._generate_hashtag()._generate_minify_button();
+    this._generate_minify_button();
 
     div.style.display = null;
     div = null;
@@ -408,7 +407,7 @@ class WspNavBar extends HtmlCustomTag {
     let icon = new BnumHtmlIcon('content_copy');
     button.append(icon);
 
-    span.append(button);
+    // span.append(button);
 
     div.append(span);
 
@@ -498,7 +497,7 @@ class WspNavBar extends HtmlCustomTag {
         this._generate_invitation,
         this._generate_join,
         this._generate_start_visio,
-        this._generate_leave,
+        // this._generate_leave,
         //this._generate_params,
         //this._generate_members,
       ];
@@ -605,7 +604,7 @@ class WspNavBar extends HtmlCustomTag {
     ) {
       let button = new WspButton(this, {
         style: WspButton.Style.white,
-        text: 'Commencer une visioconférence',
+        text: 'Visioconférence',
         icon: 'videocam',
       });
 

@@ -1,9 +1,3 @@
-/**
- * @module VisioView
- * @local VisioData
- * @local VisioCreator
- */
-
 import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
@@ -12,6 +6,13 @@ import { VisioView } from './classes/view.js';
 import { SELECTOR_BUTTON_QUIT, SELECTOR_BUTTON_START } from './consts.js';
 import { VisioFunctions } from './helpers.js';
 export { VisioCreator };
+
+/**
+ * @module Visio/Pages/Index
+ * @local VisioData
+ * @local AjaxVisioData
+ * @local VisioCreator
+ */
 
 /**
  * @typedef {Object} VisioData
@@ -34,7 +35,7 @@ export { VisioCreator };
 /**
  * @class
  * @classdesc Classe permettant de gérer la création d'une visio
- * @extends MelObject
+ * @hideconstructor
  */
 class VisioCreator extends MelObject {
   constructor() {
@@ -74,9 +75,7 @@ class VisioCreator extends MelObject {
 
     if (this.locks.password) this.view.password.disable();
 
-    //$(SELECTOR_DIV_WSP).find('select').val('test-9');
-
-    $(SELECTOR_BUTTON_START).click(this._on_button_click.bind(this)); //.click();
+    $(SELECTOR_BUTTON_START).click(this._on_button_click.bind(this));
     $(SELECTOR_BUTTON_QUIT).click(() => {
       FramesManager.Instance.get_window()._history.back({
         defaultFrame: 'bureau',
@@ -92,6 +91,10 @@ class VisioCreator extends MelObject {
     } else this._check_validity();
   }
 
+  /**
+   * Check si la room de la visio à le bon format
+   * @package
+   */
   _check_validity() {
     let val = this.view.$room.val();
 
@@ -128,10 +131,12 @@ class VisioCreator extends MelObject {
     this.data = null;
     /**
      * @type {VisioView}
+     * @frommodule Visio/View
      */
     this.view = null;
     /**
      * @type {Locks}
+     * @frommodule Visio/Structures/Locks
      */
     this.locks = null;
 
@@ -194,9 +199,9 @@ class VisioCreator extends MelObject {
 
   /**
    * Action à faire au clique sur le bouton de validation
+   * @package
    */
   _on_button_click() {
-    //window.location.href = this.url('webconf', { params: this.get_config() });
     FramesManager.Instance.start_mode('visio', 'visio', this.get_config());
   }
 }

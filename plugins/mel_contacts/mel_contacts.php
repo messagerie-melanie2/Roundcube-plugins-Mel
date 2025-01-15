@@ -6,8 +6,8 @@
 require_once ('lib/mel_addressbook.php');
 require_once ('lib/all_addressbook.php');
 
-class mel_contacts extends rcube_plugin {
-  public $task = 'mail|settings|addressbook|calendar|ariane|sondage|mel_metapage';
+class mel_contacts extends bnum_plugin {
+  public $task = 'mail|settings|addressbook|calendar|ariane|sondage|mel_metapage|bnum';
 
   // Mél
   /**
@@ -102,6 +102,10 @@ class mel_contacts extends rcube_plugin {
         require_once ($this->home . '/lib/mel_contacts_ui.php');
         $this->ui = new mel_contacts_ui($this);
       }
+    }
+
+    if ($this->rc->task === 'bnum') {
+      $this->include_module('module_mel_contacts.js', 'js');
     }
   }
 

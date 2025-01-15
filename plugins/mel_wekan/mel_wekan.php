@@ -468,7 +468,7 @@ class mel_wekan extends rcube_plugin
             $workspace = $args['workspace'];
             $default_value = $args['default_values'];
             //Verifier si le wekan existe
-            $board_id = $workspace->objects()->get(self::KEY_FOR_WORKSPACE);//$this->get_object($workspace, self::WEKAN);
+            $board_id = $workspace->objects()->get(self::KEY_FOR_WORKSPACE)->id;//$this->get_object($workspace, self::WEKAN);
             
             if ($board_id === null)
             {

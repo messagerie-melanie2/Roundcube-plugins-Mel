@@ -66,22 +66,23 @@ class BnumVisio extends MelObject {
     let navigator = top ?? parent ?? window;
 
     if (!navigator.voxify_url) {
-      voxify_url.waiting = true;
+      this.voxify_url.waiting = true;
       console.info('Starting get voxify url !');
-      await mel_metapage.Functions.get(
-        mel_metapage.Functions.url('mel_settings', 'get'),
-        {
+      await MelObject.Empty().http_internal_get({
+        task: 'mel_settings',
+        action: 'get',
+        params: {
           _option: 'voxify_url',
           _default_value: 'https://webconf.numerique.gouv.fr/voxapi',
         },
-        (datas) => {
+        on_success(data) {
           console.info('Voxify url ok !');
-          datas = JSON.parse(datas);
-          navigator.voxify_url = datas;
+          data = JSON.parse(data);
+          navigator.voxify_url = data;
         },
-      );
+      });
       console.info('Finishing get voxify url !');
-      voxify_url.waiting = false;
+      this.voxify_url.waiting = false;
     }
 
     return navigator.voxify_url;

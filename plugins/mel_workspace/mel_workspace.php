@@ -250,6 +250,7 @@ class mel_workspace extends bnum_plugin
             $this->rc()->output->set_env('current_workspace_uid', $uid);
             $this->rc()->output->set_env('current_workspace_title', $workspace->title());
             $this->rc()->output->set_env('current_workspace_services_actives', $workspace->services());
+            $this->rc()->output->set_env('current_workspace_created', $workspace->created());
             $this->rc()->output->set_env('current_workspace_users', $workspace->users(true)->select(function ($k, $v) {
                 return ['email' => $v->email, 'name' => $v->name, 'fullname' => $v->fullname, 'is_external' => $v->is_external];
             })->toDictionnary(function ($k, $v) {
@@ -516,14 +517,14 @@ class mel_workspace extends bnum_plugin
         if ($workspace->isPublic() === 1)
         {
             $workspace->add_users(driver_mel::gi()->getUser()->uid);
-            $this->_add_users($workspace);
+            $this->_add_users($workspace, [driver_mel::gi()->getUser()]);
             $workspace->save();
             $admins = $workspace->getAdmins();//self::get_admins($workspace);
             foreach($admins as $admin)
             {
                 if (class_exists("mel_notification"))
                 {
-                    mel_notification::notify('workspace', driver_mel::gi()->getUser()->name.' vient de rejoindre l\'espace "'.$workspace->title().'" !','',null,$admin);
+                    mel_notification::notify('workspace', driver_mel::gi()->getUser()->name.' vient de rejoindre l\'espace "'.$workspace->title().'" !','',null,$admin->uid);
                 }
             }
             //récupérer tout les admins du workspaces
@@ -643,7 +644,7 @@ class mel_workspace extends bnum_plugin
             $echoed = $wsp->save();
         }
     
-        $this->sendExit($echoed);
+        $this->sendExit(!!$echoed);
         //exit;
     }
 
@@ -701,7 +702,9 @@ class mel_workspace extends bnum_plugin
         else {
             //get workspace
             if ($workspace->isAdmin($this->_CurrentUser()->uid)) {
-                $this->_add_users($workspace, null, $noNotifUsers);
+                $this->_add_users($workspace, mel_helper::Enumerable($users['existing_users'])->select(function ($k, $v) {
+                    return driver_mel::gi()->getUser($v['user']);
+                })->toArray(), null, $noNotifUsers);
                 //self::edit_modified_date($workspace, false);
                 //save
                 $workspace->save();
@@ -724,7 +727,7 @@ class mel_workspace extends bnum_plugin
      * 
      * @return void
      */
-    function _add_users(&$workspace, $noNotif = false, $noNotifUsers = [])
+    function _add_users(&$workspace, $added, $noNotif = false, $noNotifUsers = [])
     {
         $plugin = $this->exec_hook('wsp.services.user.add', [
             'workspace' => $workspace,
@@ -735,7 +738,7 @@ class mel_workspace extends bnum_plugin
 
         $workspace = $plugin['workspace'] ?? $workspace;
 
-        $this->_set_services($workspace, $workspace->services(true, true), null);
+        $this->_set_services($workspace, $workspace->services(true, true), null, $added);
     }
 
     function update_user_rights()
@@ -1066,7 +1069,10 @@ class mel_workspace extends bnum_plugin
         $shares = $this->sort_user($this->workspace->users()); 
         $nbuser = count($shares);
 
-        $html .= "<h2>Liste des membres ($nbuser)</h2>";
+        $html .= '<div class="row mb-2">';
+        $html .= "<div class='col-12 col-md-8'><h2>Liste des membres ($nbuser)</h2></div>";
+        $html .= '<div class="col-12 col-md-4 d-flex justify-content-md-end"><button onclick="rcmail.command(`workspace.leave`)" class="btn btn-danger mel-button no-button-margin" title="Quitter l\'espace de travail" style="margin-top:5px;margin-right:10px;display: flex; align-items: center;gap:15px">Quitter l\'espace de travail<span class="material-symbols-outlined">logout</span></button></div>';
+        $html .= '</div>';
         $html .= '<div class="wsp-block">';
 
         foreach ($shares as $key => $value) {
@@ -1105,7 +1111,8 @@ class mel_workspace extends bnum_plugin
         $workspace = $this->workspace;
         $uid = $workspace->uid();
         $user_rights = $workspace->share()->rights;
-        
+        $shares = $workspace->users();
+
         $html = mel_helper::Parse('mel_workspace.params');
 
         if ($user_rights === "l") $html->set_other_variable('users-right', '');
@@ -1133,10 +1140,13 @@ class mel_workspace extends bnum_plugin
         }
         else $html->current_hashtag = '';
 
-        if ($user_rights === Share::RIGHT_OWNER) $html->set_other_variable('button-delete', '<button onclick="rcmail.command(`workspace.delete`)" class="btn btn-danger mel-button no-button-margin" style="margin-top:5px;margin-bottom:15px">Supprimer l\'espace de travail</button>');
+
+        if ($workspace->getAdmins()->count() > 1 && $user_rights === Share::RIGHT_OWNER) $html->set_other_variable('button-leave', '<button onclick="rcmail.command(`workspace.leave`)" class="btn btn-secondary mel-button no-button-margin" style="margin-top:5px;margin-right:10px;display: flex; align-items: center;gap:15px">Quitter l\'espace de travail<span class="material-symbols-outlined">logout</span></button>');
+     
+        if ($user_rights === Share::RIGHT_OWNER) $html->set_other_variable('button-delete', '<button onclick="rcmail.command(`workspace.delete`)" class="btn btn-danger mel-button no-button-margin" style="margin-top:5px;margin-bottom:15px;display: flex; align-items: center;gap:15px">Supprimer l\'espace de travail<span class="material-symbols-outlined">delete</span></button>');
         else $html->set_other_variable('button-delete', '<button onclick="rcmail.command(`workspace.leave`)" class="btn btn-danger mel-button no-button-margin" style="margin-top:5px;margin-bottom:15px">Quitter l\'espace de travail</button>');
         
-        if (!$workspace->isArchived())  $html->set_other_variable('button-archive', '<button class="btn btn-danger mel-button no-button-margin" style="margin-top: 5px;margin-bottom: 15px;margin-left:10px;"onclick="rcmail.command(`workspace.archive`)">Archiver</button>');
+        if (!$workspace->isArchived())  $html->set_other_variable('button-archive', '<button class="btn btn-danger mel-button no-button-margin" style="margin-top: 5px;margin-bottom: 15px;margin-left:10px;display: flex; align-items: center;gap:15px"onclick="rcmail.command(`workspace.archive`)">Archiver<span class="material-symbols-outlined">archive</span></button>');
         else $html->set_other_variable('button-archive', '<button class="btn btn-success mel-button no-button-margin" style="margin-top: 5px;margin-bottom: 15px;margin-left:10px;"onclick="rcmail.command(`workspace.unarchive`)">Désarchiver</button>');
         
         if ($user_rights === Share::RIGHT_OWNER)
@@ -1649,7 +1659,7 @@ class mel_workspace extends bnum_plugin
                 $events = $calendar->getRangeEvents($now);
         
                 foreach ($events as $e) {
-                    if ($e->category === 'ws#'.$workspace->uid()) 
+                    if ($e->category === 'ws#'.$args['workspace']->uid()) 
                     {
                         if ($e->recurrence->type !== LibMelanie\Api\Defaut\Recurrence::RECURTYPE_NORECUR)
                         {
@@ -1682,8 +1692,8 @@ class mel_workspace extends bnum_plugin
         #endregion
 
         #region private/services
-        private function _set_services(&$workspace, $services, $default_value = null) {
-            $plugins = $this->rc()->plugins->exec_hook('workspace.services.set', ['workspace' => $workspace, 'services' => $services, 'default_values' => $default_value]);
+        private function _set_services(&$workspace, $services, $default_value = null, $new_users = null) {
+            $plugins = $this->rc()->plugins->exec_hook('workspace.services.set', ['workspace' => $workspace, 'services' => $services, 'default_values' => $default_value, "new_users" => $new_users]);
 
             if (isset($plugins) && isset($plugins['workspace'])) $workspace = $plugins['workspace']; 
 
@@ -1957,7 +1967,7 @@ class mel_workspace extends bnum_plugin
             }, true)->take($limit ? (($limit - $otherArr->count()) - 1) : PHP_INT_MAX));
         }
 
-        return $arr;
+        return $limit ? $arr->take($limit - 1) : $arr;
     }
 
     public static function GetWorkspace($uid)

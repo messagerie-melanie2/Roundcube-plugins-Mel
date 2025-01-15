@@ -2272,8 +2272,8 @@ body {
   }
 
   &.can-be-favorite {
-    height: 26px;
-    width: 26px;
+    height: 32px;
+    width: 32px;
     background-color: transparent;
 
     &:hover {
@@ -2281,8 +2281,12 @@ body {
       font-variation-settings: 'FILL' 1;
     }
 
+    bnum-icon {
+      font-size: 30px;
+    }
+
     &.active {
-      background-color: #fdcf42;
+      // background-color: #fdcf42;
       font-variation-settings: 'FILL' 1;
 
       &:hover {
@@ -3567,6 +3571,10 @@ html .menu a.selection::before {
         }
       }
     }
+  }
+
+  #layout {
+    background-color: var(--bureau-background-color);
   }
 
   #layout-content& {
@@ -5232,6 +5240,14 @@ html.dark-mode {
   font-variation-settings: 'wght' 300;
 }
 
+.colored-wsp-icon {
+  font-size: 30px;
+  border-radius: 8px;
+  margin-right: 10px;
+  padding: 6px;
+  font-variation-settings: 'wght' 300;
+}
+
 .colored-header-title {
   flex: 1 0 auto;
   font-weight: bold;
@@ -6221,7 +6237,7 @@ html.dark-mode-custom {
 
     html@{touch} & {
       margin-left: 0px;
-      width: calc(100% - 60px);
+      width: 100%;
     }
   }
 }
@@ -6240,7 +6256,7 @@ iframe {
     margin-bottom: 2.5px;
     display: flex;
     justify-content: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
 
     .toolbar-button {
       background-color: transparent;

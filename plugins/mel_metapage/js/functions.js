@@ -1742,6 +1742,8 @@ function m_mp_autocoplete(element, action_after = null, append = true) {
   if (val.includes(',')) {
     const splited = val.replaceAll(' ', '').split(',');
     for (val of splited) {
+      if (!(val || false) || val === ' ') continue;
+
       var html = '<li class="recipient workspace-recipient">';
       if (val.includes('<') && val.includes('>')) {
         var _enum = Enumerable.from(val);

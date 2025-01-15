@@ -18,6 +18,7 @@ import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manage
 import { BnumMessage } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
 import { HTMLMelButton } from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/HTMLMelButton.js';
 import { HTMLButtonGroup } from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/HTMLButtonGroup.js';
+import { WorkspaceModuleBlock } from '../../../mel_workspace/js/lib/WebComponents/workspace_module_block.js';
 
 class NextcloudModule extends WorkspaceObject {
   constructor() {
@@ -40,11 +41,31 @@ class NextcloudModule extends WorkspaceObject {
       );
 
       loader = null;
-    } else this.moduleContainer.style.display = 'none';
+    } else {
+      this.hideBlock(this.moduleContainer);
+    }
   }
 
+  /**
+   * @type {WorkspaceModuleBlock}
+   * @readonly
+   */
   get moduleContainer() {
     return document.querySelector('#module-nc');
+  }
+
+  get createdDate() {
+    if (this.get_env('current_workspace_nc_start'))
+      return moment(this.get_env('current_workspace_nc_start'));
+    else return this.workspace.created;
+  }
+
+  /**
+   * @type {string}
+   * @readonly
+   */
+  get storageKey() {
+    return `nc_join_${this.workspace.uid}`;
   }
 
   main() {
@@ -88,6 +109,7 @@ class NextcloudModule extends WorkspaceObject {
             );
             contents.style.position = 'relative';
             contents = null;
+            //this.showBlock(this.moduleContainer);
             await this._main();
           }
         }
@@ -112,22 +134,27 @@ class NextcloudModule extends WorkspaceObject {
     }
 
     loader = BootstrapLoader.Create({ mode: 'block', center: true });
-
     const folder = `/dossiers-${this.workspace.uid}`;
     let roundrive = new Roundrive(folder);
     let contents = this.moduleContainer.querySelector('.module-block-content');
 
     contents.style.position = 'relative';
     contents.appendChild(loader);
-
+    this.moduleContainer.disableRefreshButton();
     this.moduleContainer.style.display = EMPTY_STRING;
+    this.moduleContainer.addEventListener('event:custom:refresh', async () => {
+      const id = BnumMessage.DisplayLoadingMessage();
+      await this._on_refresh();
+      BnumMessage.ClearMessage(id);
+    });
+
+    this.on_refresh(this._on_refresh.bind(this));
 
     try {
       await roundrive.load();
+      this.unload(this.storageKey);
     } catch (error) {
-      contents.appendChild(
-        $('<p>Impossible de charger les documents pour le moment...</p>')[0],
-      );
+      this._on_error();
       continueExec = false;
     }
 
@@ -142,6 +169,7 @@ class NextcloudModule extends WorkspaceObject {
           element.data.name.filename[0] !== '.'
         ) {
           if (loader) {
+            this.moduleContainer.enableRefreshButton();
             loader.remove();
             loader = null;
           }
@@ -165,6 +193,7 @@ class NextcloudModule extends WorkspaceObject {
     continueExec = null;
 
     if (loader) {
+      this.moduleContainer.enableRefreshButton();
       loader.remove();
       loader = null;
     }
@@ -173,10 +202,70 @@ class NextcloudModule extends WorkspaceObject {
     contents = null;
   }
 
-  load() {
-    super.load();
+  // load() {
+  //   super.load();
 
-    this._main();
+  //   this._main();
+  // }
+
+  async _on_refresh() {
+    this.moduleContainer.disableRefreshButton();
+    const folder = `/dossiers-${this.workspace.uid}`;
+    let drive = new Roundrive(folder);
+
+    try {
+      await drive.load();
+      this.unload(this.storageKey);
+
+      let documents = document.createElement('div');
+      /**
+       * @type {RoundriveFile | RoundriveFolder}
+       */
+      for (const element of drive) {
+        if (
+          element.data.name.filename !== EMPTY_STRING &&
+          element.data.name.filename[0] !== '.'
+        ) {
+          documents.appendChild(NextcloudModule.CreateRoundriveTag(element));
+        }
+      }
+
+      let contents = this.moduleContainer.querySelector(
+        '.module-block-content',
+      );
+      $(contents).html($(documents).children());
+
+      documents.remove();
+
+      contents = null;
+      documents = null;
+    } catch (error) {
+      this._on_error();
+    }
+
+    this.moduleContainer.enableRefreshButton();
+  }
+
+  _on_error() {
+    let contents = this.moduleContainer.querySelector('.module-block-content');
+    contents.innerHTML = EMPTY_STRING;
+    if (this.createdDate.add(10, 'm') > moment()) {
+      contents.appendChild($('<p>Création en cours....</p>')[0]);
+    } else {
+      if (this.load(this.storageKey, false)) {
+        if (moment(this.load(this.storageKey)).add(10, 'm') > moment())
+          contents.appendChild($('<p>Synchronisation en cours...</p>')[0]);
+        else
+          contents.appendChild(
+            $(
+              '<p>Impossible de charger les documents pour le moment...</p>',
+            )[0],
+          );
+      } else {
+        this.save(this.storageKey, moment());
+        this._on_error();
+      }
+    }
   }
 
   static CreateRoundriveTag(element) {
@@ -296,6 +385,8 @@ class ABaseNextcloudTag extends HtmlCustomDataTag {
 
   _p_main() {
     super._p_main();
+
+    this.setAttribute('nextcloud', this.itemData.data.uid);
 
     let icon = document.createElement('bnum-icon');
     icon.setAttribute('data-icon', this.icon);
@@ -586,6 +677,8 @@ class FileTag extends AActionNextcloudTag {
       'true',
     );
 
+    container.style.borderRadius = '5px';
+
     container.onclick = () => {
       NextcloudModule.EmptyWorkspaceObject.switch_workspace_page('stockage', {
         newArgs: {
@@ -602,6 +695,8 @@ class FileTag extends AActionNextcloudTag {
     container.append(...super._p_append_to_container(...args));
 
     container.classList.add('nc-left-container');
+    container.style.display = 'flex';
+    container.style.alignItems = 'center';
 
     return [container];
   }

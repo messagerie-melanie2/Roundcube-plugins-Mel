@@ -1,3 +1,5 @@
+@import '../../../../../skins/mel_elastic/styles/less/variables/screen_size.less';
+
 bnum-workspace-module {
   padding: 20px;
   margin: 10px;
@@ -5,7 +7,7 @@ bnum-workspace-module {
   &.melv2-card {
     &:extend(bnum-workspace-module);
 
-    box-shadow: 0 4px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.2);
     background-color: var(--bureau-card-background-color);
   }
 
@@ -71,4 +73,24 @@ bnum-separate {
   &.member {
     padding: 10px;
   }
+}
+
+#module-ul {
+  .module-block-content {
+    max-height: unset;
+
+    html@{touch} & {
+      overflow: auto !important;
+      max-height: 200px;
+    }
+  }
+}
+
+.footer {
+  display: none !important;
+}
+
+.wsp-quit-button {
+  padding: 2.5px 5px !important;
+  gap: 8px;
 }

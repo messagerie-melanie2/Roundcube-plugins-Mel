@@ -36,6 +36,11 @@ class ToolbarMaterialIcon extends ToolbarIcon {
   }
 }
 
+/**
+ * @class
+ * @classdesc Element d'une toolbar
+ * @todo Finir la doc
+ */
 class ToolbarItem {
   constructor(id) {
     this.id = id;

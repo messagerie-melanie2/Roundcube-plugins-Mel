@@ -1,14 +1,23 @@
 import { BnumLog } from '../../../classes/bnum_log.js';
 import { MelEnumerable } from '../../../classes/enum.js';
 import { FramesManager } from '../../../classes/frame_manager.js';
-import { MelHtml } from '../MelHtml.js';
+import { JsHtml as MelHtml } from '../JsHtml.js';
 import { HtmlCustomTag } from './js_html_base_web_elements.js';
 
-export class MelWindow extends HtmlCustomTag {
+export { MelWindow, MelWindowFrame };
+
+class MelWindow extends HtmlCustomTag {
   constructor(id = null) {
     super();
 
-    this._id = id ?? this.dataset.windowId;
+    this._id = id;
+  }
+
+  _p_main() {
+    super._p_main();
+
+    this._id =
+      this._id ?? this.dataset.windowId ?? this.getAttribute('data-window-id');
 
     this.addEventListener('click', this._event_on_click.bind(this));
 
@@ -21,7 +30,7 @@ export class MelWindow extends HtmlCustomTag {
         .div({ class: 'mel-window-frame fullframe' })
         .end()
         .generate()[0],
-    ); //MelHtml.start.mel_window_frame(this._id).generate()[0]);
+    );
   }
 
   _event_on_click() {
@@ -46,7 +55,7 @@ export class MelWindow extends HtmlCustomTag {
 
   add_frame(jshtml) {
     this.$.find('.mel-window-frame').append(
-      MelHtml.start.mel_window_frame().end().generate()[0].attach_frame(jshtml),
+      MelWindowFrame.CreateNode().attach_frame(jshtml),
     );
     return this;
   }
@@ -64,9 +73,30 @@ export class MelWindow extends HtmlCustomTag {
   find_frame(task) {
     return this.$.find(`.mm-frame.${task}-frame`);
   }
+
+  /**
+   *
+   * @param {string} id
+   * @returns {MelWindow}
+   */
+  static CreateNode(id) {
+    let node = document.createElement(this.TAG);
+    node.setAttribute('data-window-id', id);
+
+    return node;
+  }
+
+  static get TAG() {
+    return 'bnum-mel-window';
+  }
 }
 
-export class MelWindowFrame extends HtmlCustomTag {
+{
+  const TAG = MelWindow.TAG;
+  if (!customElements.get(TAG)) customElements.define(TAG, MelWindow);
+}
+
+class MelWindowFrame extends HtmlCustomTag {
   constructor() {
     super();
     this._attached = false;
@@ -127,4 +157,21 @@ export class MelWindowFrame extends HtmlCustomTag {
   get_element(key) {
     return this._elements[key];
   }
+
+  /**
+   *
+   * @returns {MelWindowFrame}
+   */
+  static CreateNode() {
+    return document.createElement(this.TAG);
+  }
+
+  static get TAG() {
+    return 'bnum-mel-window-frame';
+  }
+}
+
+{
+  const TAG = MelWindowFrame.TAG;
+  if (!customElements.get(TAG)) customElements.define(TAG, MelWindowFrame);
 }

@@ -45,6 +45,21 @@ class mce_driver_mel extends driver_mel {
   protected $_restoration_api_key;
 
   /**
+   * Url pour l'API Jenkins d'unexpunge
+   */
+  protected $_restoration_jenkins_url;
+
+  /**
+   * Token pour l'API Jenkins d'unexpunge
+   */
+  protected $_restoration_jenkins_token;
+
+  /**
+   * Nom du pipeline Jenkins pour la restauration
+   */
+  protected $_restoration_jenkins_pipeline_name;
+
+  /**
    * Constructeur par défaut
    */
   public function __construct() {
@@ -52,8 +67,17 @@ class mce_driver_mel extends driver_mel {
     if ($rcmail->config->get('virtual_shared_mailboxes', false)) {
       $this->BALP_LABEL = $rcmail->config->get('virtual_balp_label', $this->BALP_LABEL);
     }
+
+    // Unexpunge API
     $this->_restoration_api_port = $rcmail->config->get('restoration_api_port', false);
     $this->_restoration_api_key = $rcmail->config->get('restoration_api_key', false);
+
+    // Unexpunge Jenkins
+    $this->_restoration_jenkins_url = $rcmail->config->get('restoration_jenkins_url', false);
+    $this->_restoration_jenkins_token = $rcmail->config->get('restoration_jenkins_token', false);
+    $this->_restoration_jenkins_pipeline_name = $rcmail->config->get('restoration_jenkins_pipeline_name', false);
+
+    // Unexpunge method
     $this->_restore_emails_method = $rcmail->config->get('restore_emails_method', 'files');
   }
 
@@ -251,15 +275,47 @@ class mce_driver_mel extends driver_mel {
     return strpos($user, "mceRDN=") === 0;
   }
 
-  private function get_restoration_api_url($mbox) {
+  /**
+   * Récupération de l'url d'api en fonction de l'utilisateur
+   * 
+   * @param string $mbox Identifiant de la boite concernée par la restauration
+   * 
+   * @return string Url de l'api
+   */
+  protected function get_restoration_api_url($mbox) {
+    // Récupération de la configuration de la boite pour l'affichage
+    $host = $this->get_restoration_host($mbox);
+
+    return $host . ":" . $this->_restoration_api_port;
+  }
+
+  /**
+   * Récupération de l'hôte de restauration en fonction de la boite
+   * 
+   * @param string $mbox Identifiant de la boite concernée par la restauration
+   * 
+   * @return string Hôte de restauration
+   */
+  protected function get_restoration_host($mbox) {
     $user = $this->getUser($mbox, false);
+
     if ($user->is_objectshare) {
       $user = $user->objectshare->mailbox;
     }
-    // Récupération de la configuration de la boite pour l'affichage
-    $host = $this->getRoutage($user, 'unexpunge');
 
-    return $host . ":" . $this->_restoration_api_port;
+    // Récupération de la configuration de la boite pour l'affichage
+    return $this->getRoutage($user, 'unexpunge');
+  }
+
+  /**
+   * Récupération de la cible de restauration en fonction de la boite
+   * 
+   * @param string $mbox Identifiant de la boite concernée par la restauration
+   * 
+   * @return string Cible de restauration
+   */
+  protected function get_restoration_target($mbox) {
+    return $this->get_restoration_host($mbox);
   }
 
   /**
@@ -275,6 +331,8 @@ class mce_driver_mel extends driver_mel {
         return $this->unexpunge_files($mbox, $folder, $hours);
       case "api":
         return $this->unexpunge_api($mbox, $folder, $hours);
+      case "jenkins":
+        return $this->unexpunge_jenkins($mbox, $folder, $hours);
       default:
         return false;
     }
@@ -287,10 +345,17 @@ class mce_driver_mel extends driver_mel {
    * 
    * @param string $mbox Identifiant de la boite concernée par la restauration
    * @param string $folder Dossier IMAP à restaurer
+   * @param int $hours Nombre d'heures à restaurer
+   * 
+   * @return boolean|string true si la restauration a été effectuée, sinon le message d'erreur
    */
-  private function unexpunge_files($mbox, $folder, $hours) {
+  protected function unexpunge_files($mbox, $folder, $hours) {
+    mel_logs::get_instance()->log(mel_logs::INFO, "[mel] mce_driver::unexpunge_files($mbox, $folder, $hours)");
+
     // Pas de dossier configuré dans le driver, par d'unexpunge
     if (!isset(static::$_unexpungeFolder)) {
+      mel_logs::get_instance()->log(mel_logs::ERROR, "[mel] mce_driver::unexpunge_files($mbox, $folder, $hours) - Pas de dossier configuré dans le driver");
+
       return false;
     }
 
@@ -310,6 +375,8 @@ class mce_driver_mel extends driver_mel {
         chmod($rep, 0774);
       }
       else {
+        mel_logs::get_instance()->log(mel_logs::ERROR, "[mel] mce_driver::unexpunge_files($mbox, $folder, $hours) - Impossible de créer le dossier $rep");
+
         return false;
       }
     }
@@ -328,6 +395,8 @@ class mce_driver_mel extends driver_mel {
       flock($fic, LOCK_UN);
     }
     else {
+      mel_logs::get_instance()->log(mel_logs::ERROR, "[mel] mce_driver::unexpunge_files($mbox, $folder, $hours) - Impossible de verrouiller le fichier $nom");
+
       return false;
     }
     fclose($fic);
@@ -336,6 +405,8 @@ class mce_driver_mel extends driver_mel {
       $res = chmod($nom, 0444);
     }
     else {
+      mel_logs::get_instance()->log(mel_logs::ERROR, "[mel] mce_driver::unexpunge_files($mbox, $folder, $hours) - Impossible de créer le fichier $nom");
+
       return false;
     }
     return $res;
@@ -348,8 +419,13 @@ class mce_driver_mel extends driver_mel {
    * 
    * @param string $mbox Identifiant de la boite concernée par la restauration
    * @param string $folder Dossier IMAP à restaurer
+   * @param int $hours Nombre d'heures à restaurer
+   * 
+   * @return boolean|string true si la restauration a été effectuée, sinon le message d'erreur
    */
-  private function unexpunge_api($mbox, $folder, $hours) {
+  protected function unexpunge_api($mbox, $folder, $hours) {
+    mel_logs::get_instance()->log(mel_logs::INFO, "[mel] mce_driver::unexpunge_api($mbox, $folder, $hours)");
+
     $body = (object) [
       "folder" => $folder,
       "hours" => $hours,
@@ -370,16 +446,81 @@ class mce_driver_mel extends driver_mel {
     ]);
     $output = curl_exec($ch);
     if ($output === false) {
-      return curl_error($ch);
+      mel_logs::get_instance()->log(mel_logs::ERROR, "[mel] mce_driver::unexpunge_api($mbox, $folder, $hours) - " . curl_error($ch));
+
+      return false;
     }
+
     $http_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
     if ($http_code < 200 || $http_code > 299) {
-      return 'Erreur HTTP ' . $http_code;
+      mel_logs::get_instance()->log(mel_logs::ERROR, "[mel] mce_driver::unexpunge_api($mbox, $folder, $hours) - Erreur HTTP " . $http_code);
+
+      return false;
+    }
+
+    curl_close($ch);
+
+    return true;
+  }
+
+  /**
+   * Méthode permettant de déclencher une commande unexpunge sur les serveurs de messagerie
+   * en passant par jenkins
+   * Utilisé pour la restauration d'un dossier
+   * 
+   * @param string $mbox Identifiant de la boite concernée par la restauration
+   * @param string $folder Dossier IMAP à restaurer
+   * @param int $hours Nombre d'heures à restaurer
+   * 
+   * @return boolean|string true si la restauration a été effectuée, sinon le message d'erreur
+   */
+  protected function unexpunge_jenkins($mbox, $folder, $hours) {
+    mel_logs::get_instance()->log(mel_logs::INFO, "[mel] mce_driver::unexpunge_jenkins($mbox, $folder, $hours)");
+
+    $params = [
+      'target'  => $this->get_restoration_target($mbox),
+      'user'    => $mbox,
+      'folder'  => $folder,
+      'nbhours' => $hours,
+    ];
+
+    $body = [
+      'pipeline_name' => $this->_restoration_jenkins_pipeline_name,
+      'additional_params' => $params,
+    ];
+
+    $json = json_encode($body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+    // Requête http à l'API
+    $ch = curl_init();
+    curl_setopt_array($ch, [
+      CURLOPT_URL             => $this->_restoration_jenkins_url,
+      CURLOPT_RETURNTRANSFER  => true,
+      CURLOPT_POST            => true,
+      CURLOPT_POSTFIELDS      => $json,
+      CURLOPT_HTTPHEADER      => [
+        'Content-Type: application/json',
+        'token: ' . $this->_restoration_jenkins_token,
+        'Content-Length: ' . strlen($json),
+      ],
+    ]);
+
+    $output = curl_exec($ch);
+    if ($output === false) {
+      mel_logs::get_instance()->log(mel_logs::ERROR, "[mel] mce_driver::unexpunge_jenkins($mbox, $folder, $hours) - " . curl_error($ch));
+
+      return false;
+    }
+
+    $http_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+    if ($http_code < 200 || $http_code > 299) {
+      mel_logs::get_instance()->log(mel_logs::ERROR, "[mel] mce_driver::unexpunge_jenkins($mbox, $folder, $hours) - Erreur HTTP " . $http_code);
+
+      return false;
     }
     curl_close($ch);
 
     return true;
- 
   }
 
   /**

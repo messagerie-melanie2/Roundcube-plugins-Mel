@@ -85,7 +85,7 @@ export class WspButton extends NavBarComponent {
     this.setAttribute('wspbutton', style);
     this.addClass('mel-focus', 'shadow-mel-button');
     this.style.justifyContent = 'space-between';
-    this.style.padding = '2.5px 5px';
+    // this.style.padding = '2.5px 5px';
     this.style.borderRadius = '50px';
 
     this.afterstyle.call(this);

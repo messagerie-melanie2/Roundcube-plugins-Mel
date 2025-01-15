@@ -944,6 +944,8 @@ class ResourcesSourceLoader extends SourceLoader {
         save: false,
       },
     )) {
+      if (!iterator.email) continue;
+
       resources.push({
         id: iterator.email,
         title: this.workspace.users.get(iterator.email)?.name || iterator.email,
@@ -998,7 +1000,7 @@ class ResourcesSourceLoader extends SourceLoader {
     let labelTds = e.itemNode;
     let resourceObj = e.itemData;
     if (resourceObj.id !== ID_RESOURCES_WSP) {
-      console.log('label', labelTds);
+      //console.log('label', labelTds);
       labelTds
         .attr(
           'title',

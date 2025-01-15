@@ -18,6 +18,7 @@
 }
 .task-forum #forum-button-add {
   margin-top: 0;
+  margin-right: -10px;
   display: inline-flex;
   gap: 30px;
   align-items: center;
@@ -646,7 +647,10 @@
   margin: 0 5px;
   padding: 2px 10px;
   border-radius: 5px;
-  background-color: var(--button-background-color);
+  background-color: var(--card-background-color);
+}
+.task-forum #add_like {
+  margin-left: -15px;
 }
 .task-forum .title-input {
   height: 50px;
@@ -674,9 +678,6 @@
 .task-forum .tag:focus .icon-remove-tag {
   display: inline-block;
 }
-.task-forum .tag .icon-remove-tag {
-  display: none;
-}
 .task-forum .tag .icon-remove-tag::before {
   font-family: 'Material Symbols Outlined';
   content: '\e5cd';
@@ -689,15 +690,12 @@
 .task-forum .add-circle-icon {
   position: absolute;
   left: 10px;
-  /* Positionne l'icône à gauche dans l'input */
   top: 50%;
   transform: translateY(-50%);
   font-size: 20px;
   /* Taille de l'icône */
   color: var(--forum-tag-text-color);
   /* Couleur de l'icône */
-  pointer-events: none;
-  /* L'icône ne bloque pas le focus sur l'input */
 }
 .task-forum #add-tag {
   background-color: var(--forum-tag-background-color);
@@ -940,7 +938,7 @@
   height: 60px;
   border-radius: 10px;
   background-color: var(--bureau-card-background-color);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.5);
   z-index: 200;
 }
 .task-forum .comment-options-button {
@@ -1187,4 +1185,9 @@
     display: none;
     /* Cache complètement la div */
   }
+}
+.task-forum .title {
+  font-weight: 600;
+  font-size: 25px;
+  margin-left: 20px;
 }

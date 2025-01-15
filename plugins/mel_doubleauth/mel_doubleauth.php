@@ -648,7 +648,7 @@ class mel_doubleauth extends bnum_plugin {
 
        // $sent = mel_helper::send_mail($subject, $message, driver_mel::gi()->getUser()->email, ['email' => $mail, 'name' => driver_mel::gi()->getUser()->name], $is_html, [['path' => __DIR__.'/skins/mel_elastic/pictures/logobnum.png', 'id' => $cid, 'type' => 'image/png']]);
         
-        $sent = \LibMelanie\Mail\Mail::Send('bnum', driver_mel::gi()->getUser()->email, $bodymail->subject(), $bodymail->body());
+        $sent = \LibMelanie\Mail\Mail::Send('bnum', $mail, $bodymail->subject(), $bodymail->body());
         
         echo json_encode(isset($mail) ? $sent : -1);
         exit;

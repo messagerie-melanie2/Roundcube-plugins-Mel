@@ -21,7 +21,7 @@ class WorkspaceAgenda extends WorkspaceObject {
       this.moduleContainer.style.display = EMPTY_STRING;
       this._main();
     } else if (this.isDisabled('calendar')) {
-      this.moduleContainer.style.display = 'none';
+      this.hideBlock(this.moduleContainer);
     }
 
     // eslint-disable-next-line no-unused-vars
@@ -53,7 +53,9 @@ class WorkspaceAgenda extends WorkspaceObject {
     this.loadModule();
     console.log('workspace', this.workspace);
     let planning = Planning.CreateNode();
-    $('#module-agenda .module-block-content').html(planning);
+    $('#module-agenda .module-block-content')
+      .css('max-height', '100%')
+      .html(planning);
 
     if (window.planning_rendered && !this.rendered) {
       planning.render();

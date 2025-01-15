@@ -240,7 +240,7 @@ class tchap_manager extends MelObject {
    */
   async _notificationhandler() {
     while (true) {
-      this._update_badge();
+      this.update_badge(); //this._update_badge();
 
       await this.sleep(
         FramesManager.Instance.currentTask === 'tchap'

@@ -1,10 +1,15 @@
 import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
-import { HTMLIconMelButton } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/HTMLMelButton.js';
 import {
+  HTMLIconMelButton,
+  HTMLMelButton,
+} from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/HTMLMelButton.js';
+import {
+  BnumHtmlIcon,
   EWebComponentMode,
   HtmlCustomDataTag,
 } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/js_html_base_web_elements.js';
 import { isNullOrUndefined } from '../../../../mel_metapage/js/lib/mel.js';
+import { BnumEvent } from '../../../../mel_metapage/js/lib/mel_events.js';
 import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';
 import { NavBarManager } from '../navbar.generator.js';
 
@@ -34,6 +39,8 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
    */
   constructor() {
     super({ mode: EWebComponentMode.div });
+
+    this.onrefresh = new BnumEvent();
   }
 
   get headerTitle() {
@@ -58,6 +65,10 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
 
   get isSmall() {
     return [true, 'true', 1, '1'].includes(this._p_get_data('small'));
+  }
+
+  get hasRefresh() {
+    return ['true', true, 1, '1'].includes(this._p_get_data('button-refresh'));
   }
 
   /**
@@ -129,8 +140,51 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
       let title = document.createElement('h3');
       title.appendChild(this.createText(this.headerTitle));
 
+      if (this.hasRefresh) {
+        title.style.display = 'inline-block';
+        title.style.marginBottom = 0;
+        let titleContainer = document.createElement('div');
+        titleContainer.classList.add('title-container');
+        titleContainer.style.display = 'flex';
+        titleContainer.style.alignItems = 'center';
+        titleContainer.appendChild(title);
+
+        title = null;
+        title = titleContainer;
+      }
+
       header.appendChild(title);
       title = null;
+    }
+
+    if (this.hasRefresh) {
+      let buttonRefresh = HTMLMelButton.CreateNode({
+        contentsNode: BnumHtmlIcon.Create({ icon: 'refresh' }),
+      });
+
+      buttonRefresh.classList.add('refresh-button');
+
+      buttonRefresh.style.borderRadius = '5px';
+      buttonRefresh.style.display = 'inline-flex';
+      buttonRefresh.style.marginLeft = '5px';
+
+      buttonRefresh.addEventListener('click', (e) => {
+        this.onrefresh.call(e, this);
+      });
+
+      this.onrefresh.add('default', (e, caller) => {
+        this.dispatchEvent(
+          new CustomEvent('event:custom:refresh', {
+            detail: { baseEvent: e, caller },
+          }),
+        );
+      });
+
+      (header.querySelector('.title-container') ?? header).appendChild(
+        buttonRefresh,
+      );
+
+      buttonRefresh = null;
     }
 
     if (this.buttonTask !== false) {
@@ -175,6 +229,28 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
 
     header = null;
     contents = null;
+  }
+
+  disableRefreshButton() {
+    let button = this.header.querySelector('.refresh-button');
+
+    if (button) {
+      button.disable();
+      button = null;
+    }
+
+    return this;
+  }
+
+  enableRefreshButton() {
+    let button = this.header.querySelector('.refresh-button');
+
+    if (button) {
+      button.enable();
+      button = null;
+    }
+
+    return this;
   }
 
   /**

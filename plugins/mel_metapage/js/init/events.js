@@ -262,7 +262,7 @@ if (rcmail && window.mel_metapage) {
             : rcmail.env['bnum.init_task'];
         //mel_metapage.Functions.change_frame(task, true, true, urls);
         FramesHelper.switch_frame(task, {
-          args: urls,
+          args: Object.keys(urls).length === 1 && !!urls._task ? null : urls,
         });
       } catch (error) {
         FramesHelper.switch_frame('bureau', {});
@@ -2521,20 +2521,22 @@ $(document).ready(() => {
           // ).then(() => {
           //   if (after !== null) after();
           // });
-          const { FramesManager } = await loadJsModule(
-            'mel_metapage',
-            'frame_manager',
-            '/js/lib/classes/',
-          );
+          // const { FramesManager } = await loadJsModule(
+          //   'mel_metapage',
+          //   'frame_manager',
+          //   '/js/lib/classes/',
+          // );
 
           if (!!action && !othersParams?._action) {
             othersParams ??= {};
             othersParams._action = action;
           }
 
-          await FramesManager.Instance.switch_frame(task, {
-            args: othersParams,
-          });
+          // await FramesManager.Instance.switch_frame(task, {
+          //   args: othersParams,
+          // });
+
+          await PageManager.SwitchFrame(task, { args: othersParams });
 
           if (after !== null) after();
 
@@ -2547,7 +2549,7 @@ $(document).ready(() => {
         }
       }
     } catch (error) {
-      //console.error("###[DEBUG][ONCLICK]", error);
+      console.error('###[DEBUG][ONCLICK]', error);
     }
   }
 

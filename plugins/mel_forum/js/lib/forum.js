@@ -519,12 +519,7 @@ export class Forum extends MelObject {
     updateCounter(span, value) {
         let currentValue = parseInt(span.text()) || 0; // Récupérer la valeur actuelle
         let newValue = currentValue + value;
-
-        if (newValue <= 0) {
-            span.text(''); // Si la valeur est 0 ou moins, on masque le compteur
-        } else {
-            span.text(newValue); // Sinon, on met à jour la valeur
-        }
+        span.text(newValue);
     }
 
     /**
@@ -559,10 +554,6 @@ export class Forum extends MelObject {
             processData:false,
             contentType:false,
             on_success: (response) => {
-                BnumMessage.DisplayMessage(
-                    response.status,
-                    eMessageType.Confirmation,
-                );
                 let like_div = $('#add_like-'+post_uid);
                 let like_counter = like_div.find('span.ml-2');
                 let dislike_div = $('#add_dislike-'+post_uid);
@@ -628,6 +619,22 @@ export class Forum extends MelObject {
      * @param {*} posts 
      */
     displayPost(posts) {
+        
+        // Vérifier si l'utilisateur souhaite afficher uniquement les favoris
+        if (this.display_fav) {
+            // Filtrer les posts pour ne garder que les favoris
+            const favoritePosts = Object.values(posts).filter(post => post.favorite);
+
+            if (favoritePosts.length === 0) {
+                // Si aucun favori, afficher un message
+                this.displayNoFavorite();
+                return; // Arrêter l'exécution ici
+            }
+
+            // Afficher uniquement les posts favoris
+            posts = favoritePosts;
+        }
+
         let post;
         let data;
         for (let postId in posts) {
@@ -726,5 +733,15 @@ export class Forum extends MelObject {
         $('#post-area').append(noPostDiv.generate());
     }
 
+    /**
+     * Affiche un message indiquant qu'il n'y a aucun favori
+     */
+    displayNoFavorite() {
+        let noFavoriteDiv = MelHtml.start
+            .span({class: 'ml-2'})
+            .text(rcmail.gettext('mel_forum.no_favorites'))
+            .end();
+        $('#post-area').append(noFavoriteDiv.generate());
+    }
     
 }

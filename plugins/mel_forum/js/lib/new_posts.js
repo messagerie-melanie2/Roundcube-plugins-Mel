@@ -2,6 +2,7 @@ import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { MelTemplate } from '../../../mel_metapage/js/lib/html/JsHtml/MelTemplate.js';
 import { WorkspaceObject } from '../../../mel_workspace/js/lib/WorkspaceObject.js';
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
+import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 
 export class New_posts extends MelObject {
   constructor() {
@@ -12,8 +13,6 @@ export class New_posts extends MelObject {
    * Point d'entrée principal de l'application.
    * Appelle la méthode principale de la classe parente,
    * initialise les propriétés et configure les éléments de l'interface utilisateur.
-   *
-   * @method main
    * @returns {void}
    */
   main() {
@@ -23,13 +22,29 @@ export class New_posts extends MelObject {
     this.initButtons();
     this.initNewPostsDisplay();
     WorkspaceObject.SendToParent('loaded', true);
+
+    //Recharge les données au refresh
+    this.rcmail().addEventListener('mel_metapage_refresh', () => {
+      this.http_internal_get({
+        task: 'forum',
+        action: 'get_posts_data',
+        params: {
+          _workspace_uid: this.get_env('workspace_uid'),
+          _limit: 3,
+        },
+        on_success: (data) => {
+          $('#new_post-area').text(EMPTY_STRING);
+          this.rcmail().env.posts_data = JSON.parse(data);
+          this.initNewPostsDisplay();
+        },
+      });
+    });
   }
 
   /**
    * Initialise les gestionnaires d'événements pour les boutons.
    * Configure l'action du bouton de vue du forum pour rediriger vers la page du forum.
    *
-   * @method initButtons
    * @returns {void}
    */
   initButtons() {
@@ -43,7 +58,6 @@ export class New_posts extends MelObject {
    * Récupère les données des posts depuis l'environnement et détermine
    * s'il faut afficher un message d'absence de posts ou les nouveaux posts.
    *
-   * @method initNewPostsDisplay
    * @returns {void}
    */
   initNewPostsDisplay() {
@@ -60,7 +74,6 @@ export class New_posts extends MelObject {
    * rend les posts accessibles via le clavier, et ajoute des gestionnaires d'événements
    * pour les clics et interactions associées.
    *
-   * @method displayNewPosts
    * @param {Object} posts - Objet contenant les données des posts, indexé par ID de post.
    * @returns {void}
    */
@@ -82,7 +95,7 @@ export class New_posts extends MelObject {
         POST_COMMENTS: post.comment_count.toString(),
         POST_IS_LIKED: post.isliked ? 'filled' : '',
         POST_IS_DISLIKED: post.isdisliked ? 'filled' : '',
-        COMMENTS_ENABLED: post.settings?.comments ? "" : "hidden",
+        COMMENTS_ENABLED: post.settings?.comments ? '' : 'hidden',
       };
 
       let template = new MelTemplate()
@@ -129,7 +142,11 @@ export class New_posts extends MelObject {
         let tag_template = new MelTemplate()
           .setTemplateSelector('#new_tag_template')
           .setData(tag_data)
-          .addEvent('.tag-' + post.tags[tag].id, 'click', this.searchTag.bind(this, post.tags[tag].name));
+          .addEvent(
+            '.tag-' + post.tags[tag].id,
+            'click',
+            this.searchTag.bind(this, post.tags[tag].name),
+          );
 
         $('#new-tag-area-' + post.uid).append(...tag_template.render());
       }
@@ -138,10 +155,10 @@ export class New_posts extends MelObject {
   }
 
   /**
-     * Affiche les posts le tag sur lequel on a cliqué
-     * @param {*} tag_name 
-     * @param {*} event 
-     */
+   * Affiche les posts le tag sur lequel on a cliqué
+   * @param {string} tag_name
+   * @param {Event} event
+   */
   searchTag(tag_name, event) {
     event.preventDefault();
     event.stopPropagation();

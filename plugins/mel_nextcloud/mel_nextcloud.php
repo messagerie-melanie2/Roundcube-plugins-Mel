@@ -361,11 +361,18 @@ class mel_nextcloud extends rcube_plugin {
   
       $search = array_search(mel_workspace::KEY_DRIVE, $services, true);
       $create_nc = $search !== false || ($workspace->objects()->get(mel_workspace::KEY_DRIVE) ?? false);
-  
+
       driver_mel::gi()->workspace_group($workspace->uid(), $workspace->users_mail(), $create_nc);
   
-      if ($create_nc) $workspace->objects()->set(mel_workspace::KEY_DRIVE, true);
-      else if ($workspace->objects()->get(mel_workspace::KEY_DRIVE) === true) $workspace->objects()->remove(mel_workspace::KEY_DRIVE);
+      if ($create_nc) {
+        $workspace->objects()->set(mel_workspace::KEY_DRIVE, true);
+
+        if (!$workspace->settings()->get(mel_workspace::KEY_DRIVE)) $workspace->settings()->set(mel_workspace::KEY_DRIVE, date('c'));
+      }
+      else if ($workspace->objects()->get(mel_workspace::KEY_DRIVE) === true) {
+        mel_logs::gi()->log(mel_logs::WARN, '/!\\[WORKSPACE]Archivage de nc lié à la désactivation de l\'app sur l\'espace '.$workspace->uid());
+        $workspace->objects()->remove(mel_workspace::KEY_DRIVE);
+      }
 
       $args['workspace'] = $workspace;
 
@@ -384,6 +391,8 @@ class mel_nextcloud extends rcube_plugin {
   public function workspace_users_services_delete($args) {
     $workspace = $args['workspace'];
 
+    if (!$workspace->hasService(mel_workspace::KEY_DRIVE)) mel_logs::gi()->log(mel_logs::INFO, '(i)[WORKSPACE]Suppression d\'utilisateurs sur l\'espace '.$workspace->uid());
+    
     driver_mel::gi()->workspace_group($workspace->uid(), $workspace->users_mail(true), $workspace->hasService(mel_workspace::KEY_DRIVE));
   }
 
@@ -399,6 +408,7 @@ class mel_nextcloud extends rcube_plugin {
   }
 
   public function workspace_service_delete($args) {
+    mel_logs::gi()->log(mel_logs::INFO, '(i)[WORKSPACE]Archivage de nc lié à la suppression de l\'espace de travail '.$args['workspace']->uid());
     driver_mel::gi()->workspace_group($args['workspace']->uid(), [], false);
     
     return $args;
@@ -414,13 +424,15 @@ class mel_nextcloud extends rcube_plugin {
       else {
         $SIZE = 4;
         $layout = $args['layout'];
-        $html = $layout->htmlModuleBlock(['id' => 'module-nc', 'data-title' => 'Documents', 'data-button' => 'stockage']);
-        $layout->secondRow()->append($SIZE, $html);
+        $html = $layout->htmlModuleBlock(['id' => 'module-nc', 'data-title' => 'Documents', 'data-button' => 'stockage', 'data-button-refresh' => true]);
+        $layout->secondRow()->append($SIZE, $html, 6, 6);
         $layout->setNavBarSetting('stockage', 'folder_open', true, 2);
         $args['layout'] = $layout;
         unset($layout);
   
         $args['plugin']->include_workspace_module('mel_nextcloud', 'module.js', 'js/workspace');
+        
+        if ($args['workspace']->settings()->get(mel_workspace::KEY_DRIVE)) rcmail::get_instance()->output->set_env('current_workspace_nc_start', $args['workspace']->settings()->get(mel_workspace::KEY_DRIVE));
   
         $this->include_stylesheet($this->local_skin_path() . '/workspace/workspace.nextcloud.css');
       }

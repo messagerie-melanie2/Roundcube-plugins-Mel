@@ -6,6 +6,8 @@ export { Connector };
 
 /**
  * Représente un connecteur avec le back-end
+ * @template {Object<string, string | number | boolean>} T
+ * @template Y
  */
 class Connector {
   /**
@@ -16,7 +18,7 @@ class Connector {
    * @param {Symbol} param2.type Type de la requête (Connector.enums.type)
    * @param {any | {} | null} param2.params Paramètres de la requête
    * @param {null | function} param2.moulinette Action à faire une fois les données récupérés
-   * @param {{} | JSON} param2.needed Paramètres à mettre dans `connect` et à compléter pour que ça fonctionne
+   * @param {?T} param2.needed Paramètres à mettre dans `connect` et à compléter pour que ça fonctionne
    */
   constructor(
     task,
@@ -34,6 +36,9 @@ class Connector {
     this.type = Connector.enums.type.get;
     this.params = null;
     this.on_success = null;
+    /**
+     * @type {T}
+     */
     this.needed = null;
     //Getter des variables privés
     Object.defineProperties(this, {
@@ -81,9 +86,9 @@ class Connector {
    *
    * Récupère ou envoi des données au serveur
    * @param {Object} param0
-   * @param {*} param0.params Paramètres additionnels
+   * @param {?T} param0.params Paramètres additionnels
    * @param {*} param0.default_return Valeur de retour par défaut
-   * @returns {Promise<{datas: any | null, has_error: boolean, error: any | null}>} Retourne les données récupérés ou null si il y a une erreur
+   * @returns {Promise<{datas: Y | null, has_error: boolean, error: any | null}>} Retourne les données récupérés ou null si il y a une erreur
    */
   async connect({ params = null, default_return = null }) {
     let return_datas = null;
@@ -209,9 +214,9 @@ class Connector {
    *
    * Récupère ou envoi des données au serveur, ignore les erreurs.
    * @param {Object} param0
-   * @param {*} param0.params Paramètres additionnels
+   * @param {?T} param0.params Paramètres additionnels
    * @param {*} param0.default_return Valeur de retour par défaut
-   * @returns {Promise<{datas: any | null, has_error: boolean, error: any | null}>} Retourne les données récupérés
+   * @returns {Promise<{datas: Y | null, has_error: boolean, error: any | null}>} Retourne les données récupérés
    */
   async force_connect({ params = null, default_return = null }) {
     return (

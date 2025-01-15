@@ -37,6 +37,9 @@ export const connectors = {
     },
   }),
   ////////////////////////////////////////////////////////////////
+  /**
+   * @type {Connector<{_uid: string}, ?string>}
+   */
   join_workspace: Connector.Create('workspace', 'join_user', {
     type: Connector.enums.type.post,
     needed: {

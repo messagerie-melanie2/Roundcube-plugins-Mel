@@ -2193,6 +2193,10 @@ class mel_metapage extends bnum_plugin
 
             if (isset($plugin['apps'])) $templates = $plugin['apps'];
 
+            if (!class_exists('mel_parapheur')) $templates = mel_helper::Enumerable($templates)->where(function($key) {
+                return $key !== 'app_parapheur';
+            })->toArray();
+
             $args['blocks']['main_nav']['name'] = 'Applications par défauts';
 
             foreach ($templates as $key => $value) {

@@ -100,30 +100,34 @@ class double_auth_modal extends module_bnum {
     return this;
   }
 
-  intro_modal() {
+  intro_modal() {    
+    if (!rcmail.env.internet_access_enable) {
+      return;
+    }
     const self = this;
 
-    const mois = [
-      'Janvier',
-      'Février',
-      'Mars',
-      'Avril',
-      'Mai',
-      'Juin',
-      'Juillet',
-      'Août',
-      'Septembre',
-      'Octobre',
-      'Novembre',
-      'Décembre',
-    ];
+    let default_width = 650;
+    let default_height = 210;
 
-    const date = !rcmail.env.double_authentification_date_butoir?.date
+    let date = !rcmail.env.double_authentification_date_butoir?.date
       ? null
       : moment(rcmail.env.double_authentification_date_butoir?.date);
-    let displayDate = date
-      ? mois[date.format('M') - 1] + ' ' + date.format('YYYY')
-      : '';
+
+    const currentDate = moment();
+    
+    let deadline_text = rcmail.gettext('mel_metapage.introduction_text_without_date');
+
+    if (date) {
+      //Si la date est déjà dépassée
+      if (date.isBefore(currentDate)) {
+        default_width = 700;
+        default_height = 230;
+        deadline_text = rcmail.gettext('mel_metapage.introduction_deadline_passed_text');
+      } else {
+        const daysRemaining = date.diff(currentDate, 'days');
+        deadline_text = rcmail.gettext('mel_metapage.introduction_text').replace('%%date%%', daysRemaining)
+      }
+    }    
 
     const html = MelHtml.start
       .div({
@@ -132,7 +136,7 @@ class double_auth_modal extends module_bnum {
         class: 'double-auth-modal mx-5 mt-n3',
       })
       .row()
-      .col_8()
+      .col_9()
       .row()
       .span({ class: 'subtitle' })
       .text(rcmail.gettext('mel_metapage.informations'))
@@ -145,17 +149,11 @@ class double_auth_modal extends module_bnum {
       .end()
       .row()
       .p({ class: 'content' })
-      .text(
-        date
-          ? rcmail
-              .gettext('mel_metapage.introduction_text')
-              .replace('%%date%%', displayDate)
-          : 'mel_metapage.introduction_text_without_date',
-      )
+      .text(deadline_text)
       .end()
       .end()
       .end()
-      .col_4()
+      .col_3({class : 'd-flex align-items-center'})
       .p()
       .img({
         src: `plugins/mel_metapage/skins/${rcmail.env.skin}/images/double_authentication.webp`,
@@ -184,9 +182,9 @@ class double_auth_modal extends module_bnum {
       .generate();
 
     rcmail.show_popup_dialog(html, '', null, {
-      width: 600,
+      width: default_width,
       resizable: false,
-      height: 210,
+      height: default_height,
     });
 
     setTimeout(() => {

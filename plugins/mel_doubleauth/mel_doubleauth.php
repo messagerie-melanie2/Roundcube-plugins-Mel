@@ -87,13 +87,14 @@ class mel_doubleauth extends bnum_plugin {
 
         $user = driver_mel::gi()->getUser();
         if ($user) {
-          $user->load(['double_authentification_forcee', 'double_authentification_date_butoir']);
+          $user->load(['double_authentification_forcee', 'double_authentification_date_butoir','internet_access_enable']);
           if ($user->double_authentification_forcee) {
             $config_2FA = $this->__get2FAconfig();
         
             if (!$config_2FA['activate']) {
                 $this->rc->output->set_env("double_authentification_forcee", $user->double_authentification_forcee);
                 $this->rc->output->set_env("double_authentification_date_butoir", $user->double_authentification_date_butoir);
+                $this->rc->output->set_env("internet_access_enable", $user->internet_access_enable);
             }
           }
         }

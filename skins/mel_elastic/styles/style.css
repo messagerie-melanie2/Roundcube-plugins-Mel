@@ -4036,9 +4036,10 @@ html.dark-mode .external_url {
   font-size: 23px;
   font-weight: 700;
   color: var(--main-text-color);
+  margin-bottom: 0.5rem;
 }
 .double-auth-modal .content {
-  max-width: 335px;
+  font-size: 15px;
 }
 .double-auth-modal .modal-custom-button {
   border-radius: 30px !important;

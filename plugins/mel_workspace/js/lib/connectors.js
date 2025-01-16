@@ -1,8 +1,17 @@
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
-import { BnumConnector } from '../../../mel_metapage/js/lib/helpers/bnum_connections/bnum_connections.js';
 import { Connector } from '../../../mel_metapage/js/lib/helpers/bnum_connections/connector.js';
 
-export const connectors = {
+export { connectors };
+
+/**
+ * @module Workspace/Connectors
+ */
+
+/**
+ * @enum {Connector<any, any>}
+ * @readonly
+ */
+const connectors = {
   /**
    * Récupère les espaces public suite à une recherche
    * @type {Connector<{_search:string, _page:number}, string>}
@@ -34,7 +43,7 @@ export const connectors = {
   ////////////////////////////////////////////////////////////////
   /**
    * Enlève/met un espace en favori
-   * @type {Connector<{_id:string}, {newState:boolean}}
+   * @type {Connector<{_id:string}, {newState:boolean}>}
    */
   toggle_favorite: Connector.Create('workspace', 'toggle_favorite', {
     type: Connector.enums.type.post,

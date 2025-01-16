@@ -449,7 +449,7 @@ export class Forum extends MelObject {
     }
 
     /**
-     * met le post passé en paramètre en épingler
+     * met le post passé en paramètre en épingler / le désépingle
      * @param {string} post_uid 
      * @param {event} event 
      * @returns {void}
@@ -471,6 +471,27 @@ export class Forum extends MelObject {
                     response.status,
                     eMessageType.Confirmation,
                 );
+                //modifier l'apparence du bouton épingler
+                var pin_button = $('#pin_' + post_uid);
+                var iconSpan = pin_button.find('.icon');
+                var textSpan = pin_button.find('.post-options-text');
+                var currentIcon = iconSpan.attr('data-icon');
+                var other_buttons = $('.pin-post');
+                other_buttons.each(function() {
+                    //nettoyer les autres boutons
+                    var button = $(this);
+                    button.find('.icon').attr('data-icon', 'keep');
+                    button.find('.post-options-text').text(rcmail.gettext('mel_forum.pin_article'));
+                });
+                //toggle le boutons sur lequel on cliqué
+                if (currentIcon === 'keep_off') {
+                    iconSpan.attr('data-icon', 'keep');
+                    textSpan.text(rcmail.gettext('mel_forum.pin_article'));
+                } else {
+                    iconSpan.attr('data-icon', 'keep_off');
+                    textSpan.text(rcmail.gettext('mel_forum.unpin_article'));
+                }
+
             },
             on_error: (err) => {
                 BnumMessage.DisplayMessage(
@@ -669,6 +690,9 @@ export class Forum extends MelObject {
                 HAS_OWNER_RIGHTS: post.has_owner_rights ? "" : "hidden",
                 IS_ADMIN: post.is_admin ? "" : "hidden",
                 COMMENTS_ENABLED: post.settings?.comments ? "" : "hidden",
+                IS_PINNED: post.pinned ? "" : "hidden",
+                POST_PINNED_LOGO: post.pinned ? "keep_off" : "keep",
+                POST_PINNED_TEXT: post.pinned ? this.gettext('mel_forum.unpin_article') : this.gettext('mel_forum.pin_article'),
                 };
 
             let template = new MelTemplate()

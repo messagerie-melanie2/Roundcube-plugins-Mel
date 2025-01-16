@@ -73,11 +73,14 @@
           <div class="col-12">
             <div class="post-header">
               <div class="post-creator">
+                <div class="post-date">
+                  <i class="material-symbols-outlined pin %%IS_PINNED%%">keep</i>
+                </div>
                 <bnum-avatar class="author-image" style="background-color: var(--mel-button-background-color); display: flex align-items: center justify-content: center color: white" data-email="%%CREATOR_EMAIL%%"></bnum-avatar>
                 <div class="post-creator-name">%%POST_CREATOR%%</div>
                 <div class="post-date">
-                  <i class="material-symbols-outlined">access_time</i
-                  ><span class="ml-1">%%POST_DATE%%</span>
+                  <i class="material-symbols-outlined">access_time</i>
+                  <span class="ml-1">%%POST_DATE%%</span>
                 </div>
               </div>
               <div class="post-actions">
@@ -88,9 +91,9 @@
                     <span class="icon material-symbols-outlined post-options-icon" data-icon="content_copy"></span>
                     <span class="post-options-text" style="margin-left: 8px;"><roundcube:label name="mel_forum.copy_article" /></span>
                   </button>
-                  <button class="post-options-button pin-post %%IS_ADMIN%%" tabindex="0" role="menuitem" aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="pin_post" data-id="%%UID%%" title="<roundcube:label name="mel_forum.pin_article" />" >
-                    <span class="icon material-symbols-outlined post-options-icon" data-icon="keep"></span>
-                    <span class="post-options-text" style="margin-left: 8px;"><roundcube:label name="mel_forum.pin_article" /></span>
+                  <button class="post-options-button pin-post %%IS_ADMIN%%" tabindex="0" role="menuitem" aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="pin_post" id="pin_%%UID%%" data-id="%%UID%%" title="<roundcube:label name="mel_forum.pin_article" />" >
+                    <span class="icon material-symbols-outlined post-options-icon" data-icon="%%POST_PINNED_LOGO%%"></span>
+                    <span class="post-options-text" style="margin-left: 8px;">%%POST_PINNED_TEXT%%</span>
                   </button>
                   <button class="post-options-button edit-post %%HAS_OWNER_RIGHTS%%" tabindex="0" role="menuitem" aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="modify_post" data-id="%%UID%%" title="<roundcube:label name="mel_forum.edit_article" />" >
                     <span class="icon material-symbols-outlined post-options-icon" data-icon="border_color"></span>

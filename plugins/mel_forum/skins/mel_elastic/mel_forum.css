@@ -752,6 +752,10 @@
 .task-forum .post .post-header .post-creator .post-date i {
   font-size: 17px !important;
 }
+.task-forum .post .post-header .post-creator .post-date i.pin {
+  font-size: 25px !important;
+  font-variation-settings: 'FILL' 1;
+}
 .task-forum .post .post-header .post-actions {
   position: relative;
   display: flex;

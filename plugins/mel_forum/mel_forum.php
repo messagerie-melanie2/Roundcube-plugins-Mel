@@ -675,6 +675,8 @@ class mel_forum extends bnum_plugin
         if ($pin_post_uid !== null) {
             $fav_posts_uid = [$pin_post_uid];
         }
+        $workspace = mel_workspace::Workspace($workspace_uid);
+        $pins = [$workspace->settings()->get('forum_pinned_post')];
 
 
         // Charger tous les posts en utilisant la méthode listPosts
@@ -682,7 +684,7 @@ class mel_forum extends bnum_plugin
         $post->workspace = $workspace_uid;
 
         // Appel de la méthode listPosts
-        $posts = $post->listPosts($search, $tags, $orderby, $asc, $limit, $offset, $fav_posts_uid);
+        $posts = $post->listPosts($search, $tags, $orderby, $asc, $limit, $offset, $fav_posts_uid, $pins);
 
         return $posts;
     }
@@ -1754,6 +1756,9 @@ class mel_forum extends bnum_plugin
         $posts = $this->get_posts_byworkspace($workspace_uid, $limit, $pin_post_uid);
         $is_admin = driver_mel::gi()->getUser()->isWorkspaceOwner($workspace_uid);
 
+        $workspace = mel_workspace::Workspace($workspace_uid);
+        $pinned_post_uid = $workspace->settings()->get('forum_pinned_post');
+
         // Définir la locale en français pour le formatage de la date
         $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
 
@@ -1809,6 +1814,7 @@ class mel_forum extends bnum_plugin
                 'has_owner_rights' => $this->_has_owner_rights($post, $workspace_uid),
                 'settings' => $post->settings,
                 'is_admin' => $is_admin,
+                'pinned' =>  $pinned_post_uid === $post->uid,
             ];
         }
         return $posts_data;
@@ -1843,7 +1849,11 @@ class mel_forum extends bnum_plugin
         if (driver_mel::gi()->getUser()->isWorkspaceOwner($workspace_uid)) {
             $post_uid = $this->get_input('_post_id', rcube_utils::INPUT_POST);
             $workspace = mel_workspace::Workspace($workspace_uid);
-            $workspace->settings()->set('forum_pinned_post', $post_uid);
+            if ($workspace->settings()->get('forum_pinned_post') === $post_uid) {
+                $workspace->settings()->set('forum_pinned_post', '');
+            } else {
+                $workspace->settings()->set('forum_pinned_post', $post_uid);
+            }
             $workspace->save();
         }
     }

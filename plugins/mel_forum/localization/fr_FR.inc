@@ -55,6 +55,7 @@ $labels['create_article'] = 'Rédiger un nouvel article';
 $labels['delete_article'] = 'Supprimer l\'article';
 $labels['edit_article'] = 'Modifier l\'article';
 $labels['pin_article'] = 'Épingler l\'article';
+$labels['unpin_article'] = 'Désépingler l\'article';
 
 #region Droits
 

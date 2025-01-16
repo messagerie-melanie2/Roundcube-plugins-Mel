@@ -440,13 +440,11 @@ class mel_doubleauth extends bnum_plugin {
             $bouton_active = new html_inputfield(['name' => $field_id, 'id' => $field_id, 'type' => 'button', 'class' => 'button mainaction', 'value' => $this->gettext('activate')]);
 
             $div_container .= row(
-                col(html::span(['class' => 'cercle'], '1'), 'col-sm-1 my-auto') . 
                 col(html::label($field_id, $this->Q($this->gettext('label_activate'))), 'col-sm-2 my-auto') .
                 col($bouton_active->show(), 'col-sm-3')
             );
 
             $div_container .= row(
-                col(' ', 'col-sm-1') . 
                 col($this->gettext('info_activer'))
             );
             

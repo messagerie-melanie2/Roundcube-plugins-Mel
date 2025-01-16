@@ -83,6 +83,7 @@ class mel_workspace extends bnum_plugin
      */
     public function init()
     {
+        $this->add_texts('localization', true);
         $this->require_plugin('mel_helper');
 
         switch ($this->get_current_task()) {
@@ -109,7 +110,6 @@ class mel_workspace extends bnum_plugin
                 break;
 
             case 'bnum':
-                $this->add_texts('localization', true);
                 // Ajoute le bouton en fonction de la skin
                 $need_button = 'taskbar';
 

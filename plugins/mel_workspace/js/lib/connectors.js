@@ -1,7 +1,12 @@
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
+import { BnumConnector } from '../../../mel_metapage/js/lib/helpers/bnum_connections/bnum_connections.js';
 import { Connector } from '../../../mel_metapage/js/lib/helpers/bnum_connections/connector.js';
 
 export const connectors = {
+  /**
+   * Récupère les espaces public suite à une recherche
+   * @type {Connector<{_search:string, _page:number}, string>}
+   */
   publics_search: Connector.Create('workspace', 'search', {
     type: Connector.enums.type.post,
     params: {
@@ -13,6 +18,10 @@ export const connectors = {
     },
   }),
   ////////////////////////////////////////////////////////////////
+  /**
+   * Récupère le nombre d'espace public trouvé suite à une recherche
+   * @type {Connector<{_search:string}, number>}
+   */
   publics_search_count: Connector.Create('workspace', 'search', {
     type: Connector.enums.type.post,
     params: {
@@ -23,6 +32,10 @@ export const connectors = {
     },
   }),
   ////////////////////////////////////////////////////////////////
+  /**
+   * Enlève/met un espace en favori
+   * @type {Connector<{_id:string}, {newState:boolean}}
+   */
   toggle_favorite: Connector.Create('workspace', 'toggle_favorite', {
     type: Connector.enums.type.post,
     needed: {
@@ -30,6 +43,10 @@ export const connectors = {
     },
   }),
   ////////////////////////////////////////////////////////////////
+  /**
+   * Change le mode de visualisation d'un espace
+   * @type {Connector<{_mode:string}, string>}
+   */
   set_visu_mode: Connector.Create('workspace', 'set_visu_mode', {
     type: Connector.enums.type.post,
     needed: {
@@ -38,7 +55,8 @@ export const connectors = {
   }),
   ////////////////////////////////////////////////////////////////
   /**
-   * @type {Connector<{_uid: string}, ?string>}
+   * Connecteur pour rejoindre un espace de travail
+   * @type {Connector<{_uid: string}, string | null>}
    */
   join_workspace: Connector.Create('workspace', 'join_user', {
     type: Connector.enums.type.post,

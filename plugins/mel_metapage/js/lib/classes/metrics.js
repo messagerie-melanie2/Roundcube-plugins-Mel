@@ -16,10 +16,25 @@ export class BaseLookLabel extends Serialize {
     super();
     this.userid = userid || rcmail.env.username;
     this.service =
-      service || rcmail.env.current_user.dn || this._get_user_service();
+      service ||
+      this.#_get_full_user_service(rcmail.env.current_user.dn) ||
+      this.#_get_user_service();
   }
 
-  _get_user_service() {
+  /**
+   * @param {string} dn
+   * @return {string}
+   */
+  #_get_full_user_service(dn) {
+    if (dn && dn.includes(',')) {
+      dn = dn.split(',');
+      dn = dn.slice(1, dn.length).join(',');
+    }
+
+    return dn;
+  }
+
+  #_get_user_service() {
     const max = rcmail.env.current_user.full.includes(' SG') ? 2 : 1;
     return MelEnumerable.from(
       rcmail.env.current_user.full.split('- ')[1].split('/'),

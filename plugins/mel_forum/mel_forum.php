@@ -1402,24 +1402,17 @@ class mel_forum extends bnum_plugin
     #region Images
 
     /**
-     * Traite les balises <img> dans un contenu HTML pour convertir les images en base64 
-     * et gérer leur association avec un post.
+     * Traite les images en base64 dans le contenu fourni et les associe au post donné.
      *
-     * Cette fonction analyse le contenu HTML pour identifier les balises <img>, vérifie si les images 
-     * sont déjà encodées en base64 ou doivent être converties. Les images sont ensuite sauvegardées 
-     * dans la base de données, associées à un post, et les URLs sont mises à jour dans le contenu.
-     * Les images obsolètes non utilisées sont supprimées.
+     * Cette fonction effectue les étapes suivantes :
+     * 1. Récupère les images existantes associées au post.
+     * 2. Extrait les balises `<img>` du contenu et vérifie la présence d'images encodées en base64.
+     * 3. Valide les images en base64, les enregistre et remplace leurs balises `<img>` par des URLs correspondantes.
+     * 4. Identifie les images non utilisées et les supprime de la base de données.
      *
-     * @param string $content Le contenu HTML à analyser et à modifier.
-     * @param int $post_id L'ID du post auquel les images doivent être associées.
-     * 
-     * @return string Le contenu HTML modifié avec les images mises à jour.
-     *
-     * @throws Exception Peut générer des erreurs si des opérations sur les images ou la base de données échouent.
-     *
-     * @example
-     * $updatedContent = $this->process_base64_images('<p><img src="https://example.com/image.jpg" /></p>', 123);
-     * echo $updatedContent;
+     * @param string $content Le contenu contenant éventuellement des images en base64.
+     * @param int $post_id L'identifiant du post auquel les images sont associées.
+     * @return string Le contenu modifié avec les images traitées.
      */
     protected function process_base64_images($content, $post_id)
     {

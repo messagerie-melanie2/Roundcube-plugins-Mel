@@ -239,13 +239,8 @@ export class create_or_edit_post extends MelObject {
                     processData: false,
                     contentType: false,
                 }).then(() => {
-                    // Supprimer l'article de l'affichage
-                    const postElement = $('#post-' + post_uid);
-                    if (postElement.length > 0) {
-                        postElement.remove(); // Supprimer l'article du DOM
-                    }
                     // Redirection vers la page d'accueil après la suppression
-                    window.location.href = this.url('forum', {action: 'index'});
+                    window.location.href = this.url('forum', {action: 'index',params:{'_workspace_uid' : this.workspace}});
                 }).catch(error => {
                     console.error(rcmail.gettext('mel_forum.delete_post_failure'), error);
                 });

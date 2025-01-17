@@ -1586,7 +1586,7 @@ class mel_workspace extends bnum_plugin
         else {
             mel_helper::include_mail_body();
             include_once 'lib/wsp_mail_body.php';
-            $email = $this->get_worskpace_services($workspace)[self::EMAIL] ? (self::get_wsp_mail($workspace_id) ?? driver_mel::gi()->getUser()->email) : driver_mel::gi()->getUser()->email;
+            $email = 'bnum';//$this->get_worskpace_services($workspace)[self::EMAIL] ? (self::get_wsp_mail($workspace_id) ?? driver_mel::gi()->getUser()->email) : driver_mel::gi()->getUser()->email;
 
             $bodymail = new WspMailBody('mel_workspace.email');
 
@@ -1631,7 +1631,8 @@ class mel_workspace extends bnum_plugin
             $message = $bodymail->body();
 
             $is_html = true;
-            mel_helper::send_mail($subject, $message, $email, ['email' => driver_mel::gi()->getUser($userid)->email, 'name' => driver_mel::gi()->getUser($userid)->name], $is_html);
+            $sent = \LibMelanie\Mail\Mail::Send($email, driver_mel::gi()->getUser($userid)->email, $subject, $body);
+            //mel_helper::send_mail($subject, $message, $email, ['email' => driver_mel::gi()->getUser($userid)->email, 'name' => driver_mel::gi()->getUser($userid)->name], $is_html);
         }
     }
         #region private/register_actions

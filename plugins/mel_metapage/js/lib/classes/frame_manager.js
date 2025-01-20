@@ -2119,7 +2119,7 @@ if (!window.mel_modules[MODULE]) window.mel_modules[MODULE] = FramesManager;
 if (!window.mel_modules[MODULE_CUSTOM_FRAMES])
   window.mel_modules[MODULE_CUSTOM_FRAMES] = {};
 
-FramesManager.Instance.add_mode('visio', async (...args) => {
+FramesManager.Instance.add_mode('visio', async function (...args) {
   const [page, params] = args;
   if (!page) {
     if (params) params._page = 'index';

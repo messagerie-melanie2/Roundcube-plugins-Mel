@@ -1,6 +1,7 @@
 import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
+import { VisioHelper } from '../helper.js';
 import { Locks } from './classes/locks.js';
 import { VisioView } from './classes/view.js';
 import { SELECTOR_BUTTON_QUIT, SELECTOR_BUTTON_START } from './consts.js';
@@ -202,6 +203,10 @@ class VisioCreator extends MelObject {
    * @package
    */
   _on_button_click() {
-    FramesManager.Instance.start_mode('visio', 'visio', this.get_config());
+    //FramesManager.Instance.start_mode('visio', 'visio', this.get_config());
+    VisioHelper.Instance.startVisioMode({
+      page: 'visio',
+      params: this.get_config(),
+    });
   }
 }

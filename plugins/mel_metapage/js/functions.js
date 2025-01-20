@@ -2234,10 +2234,11 @@ function m_mp_Help() {
     help_popUp.contents
       .find('#helppage_suggestion button')
       .click(() => {
-        mel_metapage.Functions.change_page(
-          rcmail.env.help_suggestion_url.task,
-          rcmail.env.help_suggestion_url.action,
-        );
+        PageManager.SwitchFrame(rcmail.env.help_suggestion_url.task, {
+          args: {
+            _action: rcmail.env.help_suggestion_url.action,
+          },
+        });
         help_popUp.close();
       })
       .removeClass('disabled')

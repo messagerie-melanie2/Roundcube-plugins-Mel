@@ -1471,3 +1471,14 @@ body.quickview-active {
 .mel-custom-event-dialog {
     position:unset!important;
 }
+
+
+//0007669: Vue ordre du jour: Event annulé à l'impression n'est pas barré juste le fond est clair
+.fc .fc-list-item {
+    &.cal-event-status-tentative {
+        opacity: .6;
+    }
+    &.cal-event-status-cancelled .fc-widget-content{
+        text-decoration: line-through;
+    }
+}

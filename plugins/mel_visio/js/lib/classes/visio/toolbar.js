@@ -43,9 +43,16 @@ class ToolbarFunctions {
     if (top.$('#visio-back-button bnum-icon').text() === 'fullscreen')
       top.$('#visio-back-button bnum-icon').click();
 
-    FramesManager.Instance.detach('url');
-    FramesManager.Instance.detach('before_url');
-    FramesManager.Instance.detach('switch_frame');
+    MelObject.Empty()
+      .rcmail(true)
+      .remove_handler_ex('frames.attach.url', 'visio');
+    MelObject.Empty()
+      .rcmail(true)
+      .remove_handler_ex('frames.attach.url.before', 'visio');
+    MelObject.Empty().rcmail(true).remove_handler_ex('switch_frame', 'visio');
+    // FramesManager.Instance.detach('url');
+    // FramesManager.Instance.detach('before_url');
+    // FramesManager.Instance.detach('switch_frame');
 
     if (this._audioManager) this._audioManager.dispose();
     if (this._videoManager) this._videoManager.dispose();

@@ -949,8 +949,7 @@ class Window {
     if (changepage) MainNav.select(task);
 
     //Ne prend pas en compte le changement de titre si l'attache "before_url" renvoie "break"
-    const break_next =
-      FramesManager.Instance.call_attach('before_url') === 'break';
+    const break_next = rcmail.triggerEvent('frames.attach.url.before'); //FramesManager.Instance.call_attach('before_url') === 'break';
 
     if (!break_next && changepage) {
       Window.UpdateNavUrl(Window.UrlFromTask(task));
@@ -958,7 +957,8 @@ class Window {
     }
 
     //Appelle les ataches lié à l'url
-    FramesManager.Instance.call_attach('url');
+    //FramesManager.Instance.call_attach('url');
+    rcmail.triggerEvent('frames.attach.url');
 
     if (this._frames.has(task)) {
       if (changepage) await this._open_frame(task, { new_args: args });

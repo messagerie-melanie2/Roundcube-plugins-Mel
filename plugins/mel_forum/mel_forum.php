@@ -1678,7 +1678,7 @@ class mel_forum extends bnum_plugin
             "_task" => "forum",
             "_action" => "load_image",
             "_image_uid" => $uid,
-        ), true, true, true);
+        ), false, true, true);
         // $url = 'https://' . $_SERVER['PLUGIN_MEL_HTTP_HOST'] . '?_task=forum&_action=load_image';
         // $url = $url . '&_image_uid=' . $uid;
         return $url;

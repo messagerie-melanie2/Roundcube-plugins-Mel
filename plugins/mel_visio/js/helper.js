@@ -187,11 +187,51 @@ class BnumVisio extends MelObject {
     if (pass) config._pass = pass;
     if (extra) config._need_config = extra === 'need_config';
 
-    FramesManager.Instance.start_mode(
-      'visio',
-      !key || config._need_config ? null : 'visio',
-      config,
-    );
+    // FramesManager.Instance.start_mode(
+    //   'visio',
+    //   !key || config._need_config ? null : 'visio',
+    //   config,
+    // );
+    this.startVisioMode({
+      page: !key || config._need_config ? null : 'visio',
+      params: config,
+    });
+  }
+
+  async startVisioMode({ page = 'index', params = {} } = {}) {
+    if (!page) {
+      if (params) params._page = 'index';
+
+      await FramesManager.Instance.switch_frame('webconf', {
+        args: params ?? { _page: 'index' },
+      });
+    } else if (page !== 'index') {
+      params._page = page || 'init';
+      FramesManager.Instance.close_except_selected()
+        .disable_manual_multiframe()
+        .start_custom_multi_frame()
+        .get_window()
+        .hide();
+      window.current_visio = await FramesManager.Instance.open_another_window(
+        'webconf',
+        params,
+      );
+      FramesManager.Instance.get_window()
+        .set_cannot_be_select()
+        //.set_remove_on_change()
+        .add_tag('dispo-visio');
+      FramesManager.Instance.select_window(0);
+    }
+  }
+
+  stopVisio() {
+    FramesManager.Instance.enable_manual_multiframe().stop_custom_multi_frame();
+    return this;
+  }
+
+  reinitVisio() {
+    FramesManager.Instance.close_except_selected().get_window().show();
+    return this.stopVisio().startVisioMode();
   }
 
   /**

@@ -9,6 +9,7 @@ import { MelHtml } from '../../../../../mel_metapage/js/lib/html/JsHtml/MelHtml.
 import { isNullOrUndefined } from '../../../../../mel_metapage/js/lib/mel.js';
 import { MelObject } from '../../../../../mel_metapage/js/lib/mel_object.js';
 import { Mel_Promise } from '../../../../../mel_metapage/js/lib/mel_promise.js';
+import { VisioHelper } from '../../../helper.js';
 import { MelAudioManager, MelAudioTester } from './audioManager.js';
 import { ToolbarPopup } from './toolbar_popup.js';
 import { MelVideoManager } from './videoManager.js';
@@ -76,7 +77,8 @@ class ToolbarFunctions {
         if (FramesManager.Instance.get_window().has_frame('webconf'))
           FramesManager.Instance.get_window().remove_frame('webconf');
 
-        FramesManager.Instance.start_mode('stop_visio');
+        //FramesManager.Instance.start_mode('stop_visio');
+        VisioHelper.Instance.stopVisio();
 
         FramesManager.Instance.close_except_selected();
       }

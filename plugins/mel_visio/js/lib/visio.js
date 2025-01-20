@@ -209,7 +209,8 @@ class Visio extends MelObject {
    */
   async start() {
     if (!VisioFunctions.CheckKeyIsValid(this.data.room)) {
-      FramesManager.Instance.start_mode('reinit_visio');
+      //FramesManager.Instance.start_mode('reinit_visio');
+      VisioHelper.Instance.reinitVisio();
     } else {
       const domain = rcmail.env['webconf.base_url']
         .replace('http://', '')

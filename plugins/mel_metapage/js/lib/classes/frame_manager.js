@@ -910,6 +910,9 @@ class Window {
     let frames = document.createElement('div');
     frames.setAttribute('id', 'layout-frames');
 
+    if ($('#layout-menu').css('position') !== 'fixed')
+      $('#layout-menu').css('position', 'fixed');
+
     return frames;
   }
 
@@ -1632,7 +1635,8 @@ class FrameManager {
         $it.click((e) => {
           rcmail.command($(e.currentTarget).attr('data-command'));
         });
-      } else {
+      } else if ($it.attr('id') === 'menu-small') continue;
+      else {
         $it.click(this.button_action.bind(this));
       }
 

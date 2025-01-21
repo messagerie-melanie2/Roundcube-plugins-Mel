@@ -487,9 +487,16 @@ export class Forum extends MelObject {
                 if (currentIcon === 'keep_off') {
                     iconSpan.attr('data-icon', 'keep');
                     textSpan.text(rcmail.gettext('mel_forum.pin_article'));
+                    $('.pin').addClass('hidden');
                 } else {
                     iconSpan.attr('data-icon', 'keep_off');
                     textSpan.text(rcmail.gettext('mel_forum.unpin_article'));
+                    //on passe le post en haut de la liste
+                    let post = $('#post-' + post_uid);
+                    $('#post-area').prepend(post);
+                    //on enlève le pin du post épinglé d'avant et on le met sur le nouveau
+                    $('.pin').addClass('hidden');
+                    post.find('.pin').removeClass('hidden');
                 }
 
             },

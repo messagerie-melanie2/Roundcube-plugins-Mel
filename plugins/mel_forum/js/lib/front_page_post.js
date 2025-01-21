@@ -23,6 +23,23 @@ export class Front_page_post extends MelObject {
     this.initButtons();
     this.initNewPostsDisplay();
     WorkspaceObject.SendToParent('loaded_pin', true);
+    
+    //Recharge les données au refresh
+        this.rcmail().addEventListener('mel_metapage_refresh', () => {
+          this.http_internal_get({
+            task: 'forum',
+            action: 're_load_front_page_post',
+            params: {
+              _workspace_uid: this.get_env('_workspace_uid'),
+            },
+            on_success: (data) => {
+              $('#pin_post-area').text(EMPTY_STRING);
+              this.rcmail().env.posts_data = JSON.parse(data);
+              this.initNewPostsDisplay();
+              WorkspaceObject.SendToParent('loaded_pin', true);
+            },
+          });
+        });
   }
 
   /**
@@ -49,7 +66,7 @@ export class Front_page_post extends MelObject {
   initNewPostsDisplay() {
     const posts = this.get_env('posts_data');
     if (posts.length === 0) {
-      this.displayNoPost();
+      this.NoPost(posts.length);
     }
     this.displayPinPost(posts);
   }
@@ -167,13 +184,12 @@ export class Front_page_post extends MelObject {
   }
 
   /**
-   * Affiche un message indiquant qu'il n'y a aucun post dans l'espace de travail
+   * Affiche ou non la frame en si il y a un psot épinglé
+   * @param post_number
    */
-  displayNoPost() {
-    let noPostDiv = MelHtml.start
-      .span({ class: 'ml-2' })
-      .text(rcmail.gettext('mel_forum.no_post'))
-      .end();
-    $('#new_post-area').append(noPostDiv.generate());
+  NoPost(post_number) {
+    WorkspaceObject.SendToParent('fontPagePost', {
+      _front_page_post: post_number,
+    });
   }
 }

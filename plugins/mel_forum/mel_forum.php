@@ -136,6 +136,8 @@ class mel_forum extends bnum_plugin
             $this->register_action('new_posts', array($this, 'new_posts'));
             //Affichage du post à la une
             $this->register_action('front_page_post', array($this, 'front_page_post'));
+            //Reload du post à la une
+            $this->register_action('re_load_front_page_post', array($this, 're_load_front_page_post'));
             //Épingler un post
             $this->register_action('pin_post', array($this, 'pin_post'));
         } else if ($this->get_current_task() === 'workspace') {
@@ -1833,9 +1835,23 @@ class mel_forum extends bnum_plugin
             $this->load_script_module('front_page_post');
             $workspace = mel_workspace::Workspace($workspace_uid);
             $pin_post = $workspace->settings()->get('forum_pinned_post');
+            $this->rc()->output->set_env('_workspace_uid', $workspace_uid);
             $this->rc()->output->set_env('posts_data', $this->post_object_to_JSON(null, 1, $pin_post));
             // Envoyer le template approprié
             $this->rc()->output->send('mel_forum.front-page-post');
+        } else {
+            $this->_display_error_page();
+        }
+    }
+
+    public function re_load_front_page_post()
+    {
+        $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
+        if (driver_mel::gi()->getUser()->isWorkspaceMember($workspace_uid)) {
+            $workspace = mel_workspace::Workspace($workspace_uid);
+            $pin_post = $workspace->settings()->get('forum_pinned_post');
+            echo json_encode($this->post_object_to_JSON(null, 1, $pin_post));
+            exit;
         } else {
             $this->_display_error_page();
         }

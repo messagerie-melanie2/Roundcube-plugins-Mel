@@ -117,7 +117,9 @@ export class ModuleForumPin extends WorkspaceObject {
           this._remove_loader();
           
           if (!this.hasPosts) {
-            this.block.content.style.display = 'none';
+            this.hideBlock(this.block);
+          } else {
+            this.showBlock(this.block);
           }
           break;
       }

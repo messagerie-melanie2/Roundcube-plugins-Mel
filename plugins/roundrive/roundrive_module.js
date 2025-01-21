@@ -20,7 +20,7 @@ export class Roundrive {
   }
 
   /**
-   * @type {AsyncGenerator<RoundriveFolder | RoundriveFile}
+   * @type {AsyncGenerator<RoundriveFolder | RoundriveFile>}
    */
   async *gload() {
     const busy = rcmail.set_busy(true, 'loading');

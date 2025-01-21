@@ -146,7 +146,7 @@ class WorkspaceData {
   }
 
   /**
-   * @yields {{key:string, value:boolean | Object}}
+   * @yields {{key:string, value:(boolean | Object)}}
    * @param {Object} [options={}]
    * @param {boolean} [options.boolean=false] Si on veut le service, ou que des boolean
    */

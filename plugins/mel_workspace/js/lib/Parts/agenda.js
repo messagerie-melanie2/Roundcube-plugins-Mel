@@ -6,17 +6,41 @@ import { NavBarManager } from '../navbar.generator.js';
 import { Planning } from '../WebComponents/planning.js';
 import { WorkspaceObject } from '../WorkspaceObject.js';
 
+/**
+ * @module Workspace/Parts/Agenda
+ * @local WorkspaceAgenda
+ */
+
+/**
+ * @class
+ * @classdesc  Gère la partie agenda de l'espace de travail
+ */
 class WorkspaceAgenda extends WorkspaceObject {
+  /**
+   * Hérite de {@link WorkspaceObject}.
+   *
+   * Le tag extends n'est pas utiliser pour ne pas afficher les éléments de {@link WorkspaceObject} qui gènerait la lisbilité de la documentation.
+   */
   constructor() {
     super();
   }
 
+  /**
+   * Récupère le container du module
+   * @type {WorkspaceModuleBlock}
+   * @readonly
+   */
   get moduleContainer() {
     return document.querySelector('#module-agenda');
   }
 
+  /**
+   * Contenu principal du module
+   */
   main() {
     super.main();
+
+    //Charge ou non le module
     if (!this.loaded && !this.isDisabled('calendar')) {
       this.moduleContainer.style.display = EMPTY_STRING;
       this._main();
@@ -49,6 +73,10 @@ class WorkspaceAgenda extends WorkspaceObject {
     });
   }
 
+  /**
+   * Génération du module
+   * @package
+   */
   _main() {
     this.loadModule();
     console.log('workspace', this.workspace);

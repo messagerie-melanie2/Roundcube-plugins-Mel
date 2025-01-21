@@ -2193,9 +2193,19 @@ class mel_metapage extends bnum_plugin
 
             if (isset($plugin['apps'])) $templates = $plugin['apps'];
 
-            if (!class_exists('mel_parapheur')) $templates = mel_helper::Enumerable($templates)->where(function($key) {
+            $templates = mel_helper::Enumerable($templates);
+
+            if (!class_exists('mel_parapheur')) $templates = $templates->where(function($key) {
                 return $key !== 'app_parapheur';
-            })->toArray();
+            });
+
+            if (!class_exists('rizomo')) $templates = $templates->where(function($key) {
+                return $key !== 'app_rizomo';
+            });
+
+            if (!class_exists('mel_rocket_chat')) $templates = $templates->where(function($key) {
+                return $key !== 'app_chat';
+            });
 
             $args['blocks']['main_nav']['name'] = 'Applications par défauts';
 

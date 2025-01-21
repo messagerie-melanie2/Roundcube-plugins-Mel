@@ -961,3 +961,6 @@ body.quickview-active .fc .fc-scroller {
 .fc .fc-list-item.cal-event-status-cancelled .fc-widget-content {
   text-decoration: line-through;
 }
+#agendaoptions {
+  background-color: transparent !important;
+}

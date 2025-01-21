@@ -5243,6 +5243,11 @@ function rcube_calendar_ui(settings) {
 
       this.search_request = this.search_query = null;
 
+      // 0008284: Vue agenda: Réinitialiser la recherche et revenir sur la vue précédente (vue par défaut)
+      if (this.default_view) {
+        fc.fullCalendar('changeView', this.default_view);
+      }
+
       fc.fullCalendar('refetchEvents');
     }
   };

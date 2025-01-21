@@ -617,10 +617,13 @@ class mel_driver extends calendar_driver {
           $cal->id = $id;
           if ($cal->load()) {
             $mailbox = driver_mel::gi()->getUser($cal->owner);
-            //Si l'utilisateur n'à pas les droits d'admin sur l'agenda partagé
-            if (!isset($mailbox->shares[$this->rc->get_user_name()]) || !($mailbox->shares[$this->rc->get_user_name()]->type == \LibMelanie\Api\Defaut\Users\Share::TYPE_ADMIN)) {
-              $this->rc->output->show_message($this->rc->gettext('calendar.aclnorights'), 'error');
-              return false;
+            //On laisse la possibilité à l'utilisateur de modifier la couleur d'un agenda partagé
+            if (!isset($prop['color'])) {
+              //Si l'utilisateur n'à pas les droits d'admin sur l'agenda partagé
+              if (!isset($mailbox->shares[$this->rc->get_user_name()]) || !($mailbox->shares[$this->rc->get_user_name()]->type == \LibMelanie\Api\Defaut\Users\Share::TYPE_ADMIN)) {
+                $this->rc->output->show_message($this->rc->gettext('calendar.aclnorights'), 'error');
+                return false;
+              }
             }
           } else {
             return false;

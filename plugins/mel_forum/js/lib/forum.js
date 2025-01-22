@@ -168,6 +168,7 @@ export class Forum extends MelObject {
                     _search: encodeURIComponent(this.searchString),
                     _tags: this.tags,
                     _fav_only: this.display_fav,
+                    _pin: true,
                 },
                 processData: false,
                 contentType: false,

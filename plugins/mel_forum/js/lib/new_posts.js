@@ -31,6 +31,7 @@ export class New_posts extends MelObject {
         params: {
           _workspace_uid: this.get_env('workspace_uid'),
           _limit: 3,
+          _pin: false,
         },
         on_success: (data) => {
           $('#new_post-area').text(EMPTY_STRING);

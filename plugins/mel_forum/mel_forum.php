@@ -648,7 +648,7 @@ class mel_forum extends bnum_plugin
      *
      * @return array post tableau d'objet posts
      */
-    protected function get_posts_byworkspace($workspace_uid = null, $limit = 20, $pin_post_uid)
+    protected function get_posts_byworkspace($workspace_uid = null, $limit = 20, $pin_post = false)
     {
         //récupérer les infos de chargement d'articles si aucune n'est fournie on met des valeurs par defaut
         $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET) ?? $workspace_uid;
@@ -674,12 +674,10 @@ class mel_forum extends bnum_plugin
             $fav_posts_uid = $fav_posts[$workspace_uid];
         }
         //Gestion de si on veut un post spécifique
-        if ($pin_post_uid !== null) {
-            $fav_posts_uid = [$pin_post_uid];
+        if ($pin_post) {
+            $workspace = mel_workspace::Workspace($workspace_uid);
+            $pins = [$workspace->settings()->get('forum_pinned_post')];
         }
-        $workspace = mel_workspace::Workspace($workspace_uid);
-        $pins = [$workspace->settings()->get('forum_pinned_post')];
-
 
         // Charger tous les posts en utilisant la méthode listPosts
         $post = new LibMelanie\Api\Defaut\Posts\Post();
@@ -1729,7 +1727,7 @@ class mel_forum extends bnum_plugin
      */
     protected function show_posts()
     {
-        $this->rc()->output->set_env('posts_data', $this->post_object_to_JSON());
+        $this->rc()->output->set_env('posts_data', $this->post_object_to_JSON(null, self::POST_DEFAULT_LIMIT, true));
     }
 
     /**
@@ -1738,17 +1736,18 @@ class mel_forum extends bnum_plugin
     public function get_posts_data()
     {
         $limit = $this->get_input('_limit', rcube_utils::INPUT_GET);
-        echo json_encode($this->post_object_to_JSON(null, $limit ?? self::POST_DEFAULT_LIMIT));
+        $pin = $this->get_input('_pin', rcube_utils::INPUT_GET) === "true";
+        echo json_encode($this->post_object_to_JSON(null, $limit ?? self::POST_DEFAULT_LIMIT, $pin));
         exit;
     }
 
     /**
      * Prend en paramètre un tableau d'objet post et retourne un tableau au format JSON
      */
-    protected function post_object_to_JSON($workspace_uid = null, $limit = 20, $pin_post_uid = null)
+    protected function post_object_to_JSON($workspace_uid = null, $limit = 20, $pin_post = false)
     {
         $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
-        $posts = $this->get_posts_byworkspace($workspace_uid, $limit, $pin_post_uid);
+        $posts = $this->get_posts_byworkspace($workspace_uid, $limit, $pin_post);
         $is_admin = driver_mel::gi()->getUser()->isWorkspaceOwner($workspace_uid);
 
         $workspace = mel_workspace::Workspace($workspace_uid);
@@ -1826,10 +1825,8 @@ class mel_forum extends bnum_plugin
         if (driver_mel::gi()->getUser()->isWorkspaceMember($workspace_uid)) {
             $this->include_web_component()->Avatar();
             $this->load_script_module('front_page_post');
-            $workspace = mel_workspace::Workspace($workspace_uid);
-            $pin_post = $workspace->settings()->get('forum_pinned_post');
             $this->rc()->output->set_env('_workspace_uid', $workspace_uid);
-            $this->rc()->output->set_env('posts_data', $this->post_object_to_JSON(null, 1, $pin_post));
+            $this->rc()->output->set_env('posts_data', $this->post_object_to_JSON(null, 0, true));
             // Envoyer le template approprié
             $this->rc()->output->send('mel_forum.front-page-post');
         } else {
@@ -1841,9 +1838,7 @@ class mel_forum extends bnum_plugin
     {
         $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
         if (driver_mel::gi()->getUser()->isWorkspaceMember($workspace_uid)) {
-            $workspace = mel_workspace::Workspace($workspace_uid);
-            $pin_post = $workspace->settings()->get('forum_pinned_post');
-            echo json_encode($this->post_object_to_JSON(null, 1, $pin_post));
+            echo json_encode($this->post_object_to_JSON(null, 0, true));
             exit;
         } else {
             $this->_display_error_page();
@@ -2031,7 +2026,7 @@ class mel_forum extends bnum_plugin
 
         // $this->rc()->output->set_env('posts_data', $posts_data);
 
-        $this->rc()->output->set_env('posts_data', $this->post_object_to_JSON(null, 3));
+        $this->rc()->output->set_env('posts_data', $this->post_object_to_JSON(null, 3, false));
     }
 
 

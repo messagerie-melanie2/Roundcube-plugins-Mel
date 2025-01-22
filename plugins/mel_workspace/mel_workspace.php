@@ -83,6 +83,7 @@ class mel_workspace extends bnum_plugin
      */
     public function init()
     {
+        $this->add_texts('localization', true);
         $this->require_plugin('mel_helper');
 
         switch ($this->get_current_task()) {
@@ -109,7 +110,6 @@ class mel_workspace extends bnum_plugin
                 break;
 
             case 'bnum':
-                $this->add_texts('localization', true);
                 // Ajoute le bouton en fonction de la skin
                 $need_button = 'taskbar';
 
@@ -187,6 +187,7 @@ class mel_workspace extends bnum_plugin
     public function show_workspace() {
         include_once __DIR__.'/lib/WorkspacePage.php';
         $this->add_texts('localization/workspace', true);
+        $this->load_config();
 
         $uid = $this->get_input('_uid');
 
@@ -247,6 +248,7 @@ class mel_workspace extends bnum_plugin
     
             if (!$workspace->isAdmin()) $this->include_module('page.user.js');
     
+            $this->rc()->output->set_env('workspace_force_theme', $this->get_config('workspace_force_theme', []));
             $this->rc()->output->set_env('current_workspace_uid', $uid);
             $this->rc()->output->set_env('current_workspace_title', $workspace->title());
             $this->rc()->output->set_env('current_workspace_services_actives', $workspace->services());
@@ -1401,6 +1403,94 @@ class mel_workspace extends bnum_plugin
         // $html .= "</select>";
         // return $html;
     }
+
+    public function synchronize_list() {
+        $echo = null;
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $wsp = self::Workspace($uid);//self::get_workspace($uid); 
+
+        if ($wsp->isAdmin()){
+            $list = rcube_utils::get_input_value("_list", rcube_utils::INPUT_POST);
+
+            $loaded_list = driver_mel::gi()->getUser(null, true, false, null, $list);
+            $list_members = $loaded_list->list->members;
+            $all_saved_list_data = $wsp->settings()->get('lists');//$this->get_setting($wsp, 'lists');
+            $current_saved_list_data = $all_saved_list_data->$list;
+            $shared = $wsp->users();
+    
+            $_POST['_users'] = [];
+    
+            $has_new = false;
+            foreach ($list_members as $value) {
+                if (!in_array($value->uid, $current_saved_list_data) || !isset($shared[$value->uid]))    
+                {
+                    $value->load();
+
+                    if (!in_array($value->uid, $current_saved_list_data)) $current_saved_list_data[] = $value->uid;
+
+                    $_POST['_users'][] = $value->email;
+
+                    if(!$has_new) $has_new = true;
+                }
+            }
+    
+            if (count($_POST['_users']) > 0) {
+                $_POST['_not_exist'] = true;
+                $this->add_users();
+                unset($_POST['_not_exist']);
+            }
+    
+            $has_deleted = false;
+            $valid = [];
+            foreach ($current_saved_list_data as $value) {
+                if (isset($list_members[$value])) $valid[] = $value;
+                else {
+                    $this->delete_user($uid, $value, false);
+
+                    if (!$has_deleted) $has_deleted = true;
+                }
+            }
+
+            if ($has_deleted || $has_new) {
+                $all_saved_list_data->$list = $valid;
+                //$this->add_setting($wsp, 'lists', $all_saved_list_data);
+                $wsp->settings()->set('lists', $all_saved_list_data);
+                $wsp->save();
+            }
+
+            $echo = 'ok';
+        }
+        else $echo = 'denied';
+
+        echo $echo;
+        exit;
+
+    }
+
+    public function delete_list() {
+        $echo = null;
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $wsp = self::Workspace($uid);//self::get_workspace($uid); 
+
+        if ($wsp->isAdmin()){
+            $list = rcube_utils::get_input_value("_list", rcube_utils::INPUT_POST);
+            $all_saved_list_data = $wsp->settings()->get('lists'); //$this->get_setting($wsp, 'lists');
+            $current_saved_list_data = $all_saved_list_data->$list;
+
+            for ($i=0, $len=count($current_saved_list_data); $i < $len; ++$i) { 
+                $this->delete_user($uid, $current_saved_list_data[$i], false);
+            }
+
+            unset($all_saved_list_data->$list);
+            //$this->add_setting($wsp, 'lists', $all_saved_list_data);
+            $wsp->settings()->set('lists', $all_saved_list_data);
+            $wsp->save();
+
+        }
+        else echo 'denied';
+
+        exit;
+    }
     #endregion
 
     #region public_functions
@@ -1496,7 +1586,7 @@ class mel_workspace extends bnum_plugin
         else {
             mel_helper::include_mail_body();
             include_once 'lib/wsp_mail_body.php';
-            $email = $this->get_worskpace_services($workspace)[self::EMAIL] ? (self::get_wsp_mail($workspace_id) ?? driver_mel::gi()->getUser()->email) : driver_mel::gi()->getUser()->email;
+            $email = 'bnum';//$this->get_worskpace_services($workspace)[self::EMAIL] ? (self::get_wsp_mail($workspace_id) ?? driver_mel::gi()->getUser()->email) : driver_mel::gi()->getUser()->email;
 
             $bodymail = new WspMailBody('mel_workspace.email');
 
@@ -1541,7 +1631,8 @@ class mel_workspace extends bnum_plugin
             $message = $bodymail->body();
 
             $is_html = true;
-            mel_helper::send_mail($subject, $message, $email, ['email' => driver_mel::gi()->getUser($userid)->email, 'name' => driver_mel::gi()->getUser($userid)->name], $is_html);
+            $sent = \LibMelanie\Mail\Mail::Send($email, driver_mel::gi()->getUser($userid)->email, $subject, $body);
+            //mel_helper::send_mail($subject, $message, $email, ['email' => driver_mel::gi()->getUser($userid)->email, 'name' => driver_mel::gi()->getUser($userid)->name], $is_html);
         }
     }
         #region private/register_actions
@@ -1580,6 +1671,8 @@ class mel_workspace extends bnum_plugin
             $this->register_action('hashtag', array($this, 'get_hashtags'));
             $this->register_action('leave_workspace', array($this, 'leave_workspace'));
             $this->register_action('join_user', array($this, 'join_user'));
+            $this->register_action('sync_list_member', [$this, 'synchronize_list']);
+            $this->register_action('delete_list', [$this, 'delete_list']);
         }
 
         private function _setup_workspace_actions() {

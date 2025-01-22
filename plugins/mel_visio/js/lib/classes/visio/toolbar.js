@@ -9,6 +9,7 @@ import { MelHtml } from '../../../../../mel_metapage/js/lib/html/JsHtml/MelHtml.
 import { isNullOrUndefined } from '../../../../../mel_metapage/js/lib/mel.js';
 import { MelObject } from '../../../../../mel_metapage/js/lib/mel_object.js';
 import { Mel_Promise } from '../../../../../mel_metapage/js/lib/mel_promise.js';
+import { VisioHelper } from '../../../helper.js';
 import { MelAudioManager, MelAudioTester } from './audioManager.js';
 import { ToolbarPopup } from './toolbar_popup.js';
 import { MelVideoManager } from './videoManager.js';
@@ -39,9 +40,19 @@ class ToolbarFunctions {
    * @static
    */
   static Hangup(visio) {
-    FramesManager.Instance.detach('url');
-    FramesManager.Instance.detach('before_url');
-    FramesManager.Instance.detach('switch_frame');
+    if (top.$('#visio-back-button bnum-icon').text() === 'fullscreen')
+      top.$('#visio-back-button bnum-icon').click();
+
+    MelObject.Empty()
+      .rcmail(true)
+      .remove_handler_ex('frames.attach.url', 'visio');
+    MelObject.Empty()
+      .rcmail(true)
+      .remove_handler_ex('frames.attach.url.before', 'visio');
+    MelObject.Empty().rcmail(true).remove_handler_ex('switch_frame', 'visio');
+    // FramesManager.Instance.detach('url');
+    // FramesManager.Instance.detach('before_url');
+    // FramesManager.Instance.detach('switch_frame');
 
     if (this._audioManager) this._audioManager.dispose();
     if (this._videoManager) this._videoManager.dispose();
@@ -55,6 +66,7 @@ class ToolbarFunctions {
       .$('#visio-back-button bnum-icon')
       .text('undo')
       .parent()
+      .attr('title', 'Quitter la visio')
       .off('click')
       .on('click', () => {
         if (FramesManager.Instance.get_window()._history._history.length)
@@ -72,7 +84,8 @@ class ToolbarFunctions {
         if (FramesManager.Instance.get_window().has_frame('webconf'))
           FramesManager.Instance.get_window().remove_frame('webconf');
 
-        FramesManager.Instance.start_mode('stop_visio');
+        //FramesManager.Instance.start_mode('stop_visio');
+        VisioHelper.Instance.stopVisio();
 
         FramesManager.Instance.close_except_selected();
       }

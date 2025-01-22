@@ -8,6 +8,8 @@ import { Mel_Promise } from '../mel_metapage/js/lib/mel_promise.js';
 import { MelHtml } from '../tchap/js/lib/jshtmlex.js';
 
 const ENABLE_AVATAR_LOADING = false;
+const TCHAP_HELP_ROOM_ID = 'tchap_help_id';
+
 export class TchapBnum extends MelObject {
   constructor() {
     super();
@@ -47,6 +49,11 @@ export class TchapBnum extends MelObject {
     this._init_listener();
   }
 
+  /**
+   * Essaye de récupérer l'url de l'avatr tchap
+   * @returns {Mel_Ajax}
+   * @deprecated Ne fonctionne pas
+   */
   load_url() {
     return this.http_internal_get({
       task: 'tchap',
@@ -72,7 +79,12 @@ export class TchapBnum extends MelObject {
     });
   }
 
+  /**
+   * Initialise les listeners
+   * @returns {TchapBnum}
+   */
   _init_listener() {
+    //Désactive tchap en fonction de certaines frames
     rcmail.addEventListener('frame.opened', (args) => {
       const { task } = args;
       const not = ['tchap', 'discussion', 'visio'];
@@ -97,9 +109,22 @@ export class TchapBnum extends MelObject {
       }
     });
 
+    this.rcmail().addEventListener('help.redirect', () => {
+      this.switch_frame('tchap').then(() => {
+        FramesManager.Instance.get_frame('tchap').attr(
+          'src',
+          this.get_env('tchap_url') +
+            `#/room/${this.get_env(TCHAP_HELP_ROOM_ID)}`,
+        );
+      });
+    });
+
     return this;
   }
 
+  /**
+   * Lorsque l'on clique sur ouvrir une frame
+   */
   async _button_on_click() {
     if (
       !this.have_frame('tchap') ||

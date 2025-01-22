@@ -229,7 +229,10 @@
       let modal = MelDialog.Create(
         'index',
         HTMLWrapperElement.CreateNode({
-          contents: MEL_ELASTIC_UI.get_input_mail_search('tmp-id-wsp'),
+          contents: MEL_ELASTIC_UI.get_input_mail_search('tmp-id-wsp', {
+            inputTabIndex: 0,
+            contactTabIndex: 0,
+          }),
           context: context.document,
         }).$,
         {

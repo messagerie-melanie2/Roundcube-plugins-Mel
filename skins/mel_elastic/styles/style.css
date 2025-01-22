@@ -4821,3 +4821,6 @@ html.touch:root {
   --wsp-nav-hashtag-display: none;
   --wsp-nav-me-display: none;
 }
+#tmp-id-wsp {
+  color: var(--input-text-color);
+}

@@ -1740,9 +1740,22 @@ function m_mp_autocoplete(element, action_after = null, append = true) {
   let val = $(element).val();
 
   if (val.includes(',')) {
+    {
+      const REG_BETWEEN_PARENTHESIS = /\((.*?)\)/gi;
+      const match = val.match(REG_BETWEEN_PARENTHESIS);
+
+      if (!!match && match.length > 0) {
+        for (const iterator of match) {
+          val = val.replaceAll(iterator, iterator.replace(',', '¤'));
+        }
+      }
+    }
+
     const splited = val.replaceAll(' ', '').split(',');
     for (val of splited) {
       if (!(val || false) || val === ' ') continue;
+
+      val = val.replaceAll('¤', ',');
 
       var html = '<li class="recipient workspace-recipient">';
       if (val.includes('<') && val.includes('>')) {
@@ -2221,10 +2234,11 @@ function m_mp_Help() {
     help_popUp.contents
       .find('#helppage_suggestion button')
       .click(() => {
-        mel_metapage.Functions.change_page(
-          rcmail.env.help_suggestion_url.task,
-          rcmail.env.help_suggestion_url.action,
-        );
+        PageManager.SwitchFrame(rcmail.env.help_suggestion_url.task, {
+          args: {
+            _action: rcmail.env.help_suggestion_url.action,
+          },
+        });
         help_popUp.close();
       })
       .removeClass('disabled')

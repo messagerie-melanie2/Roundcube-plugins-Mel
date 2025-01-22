@@ -66,6 +66,7 @@ class tchap extends bnum_plugin
             ]);
         } else if ($this->is_bnum_task() && $this->is_index_action()) {
             $this->load_script_module('bnum.js', '/');
+            $rcmail->output->set_env('tchap_help_id', $this->get_config('tchap_help_id'));
         }
 
         $tchap_url = $rcmail->config->get('tchap_url');

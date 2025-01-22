@@ -316,6 +316,8 @@ class Workspace {
       if ($user_exists) {
         foreach ($this->_add_internal_user($tmp_user) as $added_user) {
             if ($added_user !== null) {
+              if ($shares[$added_user] !== null) continue;
+
                 $return_data["existing_users"][] = ['just_created' => $just_created, 'user' => $added_user];
                 $share = driver_mel::gi()->workspace_share([$this->_workspace]);
                 $share->user = $added_user;

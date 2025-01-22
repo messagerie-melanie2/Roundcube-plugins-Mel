@@ -64,26 +64,34 @@ class Visio extends MelObject {
     (top ?? parent ?? window).$('html').addClass('fullscreen-visio');
 
     //Modifie l'url lors du switch de frames
-    FramesManager.Instance.attach('url', () => {
-      const use_top = true;
-      FramesManager.Helper.window_object.UpdateNavUrl(
-        this.get_visio_url(),
-        use_top,
-      );
+    this.rcmail(true).add_event_listener_ex(
+      'frames.attach.url',
+      'visio',
+      () => {
+        const use_top = true;
+        FramesManager.Helper.window_object.UpdateNavUrl(
+          this.get_visio_url(),
+          use_top,
+        );
 
-      FramesManager.Helper.window_object.UpdateDocumentTitle(
-        'Visioconférence',
-        use_top,
-      );
-    });
+        FramesManager.Helper.window_object.UpdateDocumentTitle(
+          'Visioconférence',
+          use_top,
+        );
+      },
+    );
 
     //Ignore le changement de titre par défaut
-    FramesManager.Instance.attach('before_url', () => {
-      return 'break';
-    });
+    this.rcmail(true).add_event_listener_ex(
+      'frames.attach.url.before',
+      'visio',
+      () => 'break',
+    );
 
     //Actions à faire lors du changement de frame
-    FramesManager.Instance.attach('switch_frame', (task) => {
+    this.rcmail(true).add_event_listener_ex('switch_frame', 'visio', (args) => {
+      const { task } = args;
+
       if (task === 'webconf') {
         top
           .$('#visio-back-button')
@@ -209,7 +217,8 @@ class Visio extends MelObject {
    */
   async start() {
     if (!VisioFunctions.CheckKeyIsValid(this.data.room)) {
-      FramesManager.Instance.start_mode('reinit_visio');
+      //FramesManager.Instance.start_mode('reinit_visio');
+      VisioHelper.Instance.reinitVisio();
     } else {
       const domain = rcmail.env['webconf.base_url']
         .replace('http://', '')

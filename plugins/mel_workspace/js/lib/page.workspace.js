@@ -54,6 +54,8 @@ export class WorkspacePage extends WorkspaceObject {
       { background: !this.get_env('start_app') },
     );
 
+    NavBarManager.currentNavBar.onquitbuttonclick.push(WorkspacePage.OnQuit);
+
     //Tâche
     NavBarManager.AddEventListener().OnBeforeSwitch((args) => {
       const { task } = args;
@@ -190,19 +192,22 @@ export class WorkspacePage extends WorkspaceObject {
   }
 
   static OnQuit() {
-    var context = null;
+    let $html;
+    for (const frame of FramesManager.Instance.get_window()) {
+      if (frame) {
+        $html = frame.$frame[0].contentWindow.$('html').removeClass('mwsp');
+
+        if ($html.attr('data-added'))
+          $html.removeClass($html.attr('data-added')).removeAttr('data-added');
+      }
+    }
+
+    $html = null;
+
     if (FramesManager.Instance.has_frame('calendar')) {
       FramesManager.Instance.get_frame('calendar')[0]
         .contentWindow.$('#calendar')
-        .fullCalendar('rerenderEvents');
-      // context = FramesManager.Instance.get_frame('calendar')[0].contentWindow;
-      // for (const key in context.cal.calendars) {
-      //   if (Object.prototype.hasOwnProperty.call(context.cal.calendars, key)) {
-      //     const element = context.cal.calendars[key];
-
-      //     if (element.active) context.cal.calendar_refresh_source(element.id);
-      //   }
-      // }
+        .fullCalendar('refetchEvents');
     }
   }
 }

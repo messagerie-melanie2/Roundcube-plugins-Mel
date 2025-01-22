@@ -910,6 +910,9 @@ class Window {
     let frames = document.createElement('div');
     frames.setAttribute('id', 'layout-frames');
 
+    if ($('#layout-menu').css('position') !== 'fixed')
+      $('#layout-menu').css('position', 'fixed');
+
     return frames;
   }
 
@@ -946,8 +949,7 @@ class Window {
     if (changepage) MainNav.select(task);
 
     //Ne prend pas en compte le changement de titre si l'attache "before_url" renvoie "break"
-    const break_next =
-      FramesManager.Instance.call_attach('before_url') === 'break';
+    const break_next = rcmail.triggerEvent('frames.attach.url.before'); //FramesManager.Instance.call_attach('before_url') === 'break';
 
     if (!break_next && changepage) {
       Window.UpdateNavUrl(Window.UrlFromTask(task));
@@ -955,7 +957,8 @@ class Window {
     }
 
     //Appelle les ataches lié à l'url
-    FramesManager.Instance.call_attach('url');
+    //FramesManager.Instance.call_attach('url');
+    rcmail.triggerEvent('frames.attach.url');
 
     if (this._frames.has(task)) {
       if (changepage) await this._open_frame(task, { new_args: args });
@@ -1273,6 +1276,12 @@ class Window {
    */
   has_tag(tag_name) {
     return this.get_window().attr(`data-ftag-${tag_name}`) ?? false;
+  }
+
+  *[Symbol.iterator]() {
+    for (const element of this._frames) {
+      yield element.value;
+    }
   }
 
   /**
@@ -1626,7 +1635,8 @@ class FrameManager {
         $it.click((e) => {
           rcmail.command($(e.currentTarget).attr('data-command'));
         });
-      } else {
+      } else if ($it.attr('id') === 'menu-small') continue;
+      else {
         $it.click(this.button_action.bind(this));
       }
 
@@ -2113,39 +2123,39 @@ if (!window.mel_modules[MODULE]) window.mel_modules[MODULE] = FramesManager;
 if (!window.mel_modules[MODULE_CUSTOM_FRAMES])
   window.mel_modules[MODULE_CUSTOM_FRAMES] = {};
 
-FramesManager.Instance.add_mode('visio', async (...args) => {
-  const [page, params] = args;
-  if (!page) {
-    if (params) params._page = 'index';
+// FramesManager.Instance.add_mode('visio', async function (...args) {
+//   const [page, params] = args;
+//   if (!page) {
+//     if (params) params._page = 'index';
 
-    await FramesManager.Instance.switch_frame('webconf', {
-      args: params ?? { _page: 'index' },
-    });
-  } else if (page !== 'index') {
-    params._page = page || 'init';
-    FramesManager.Instance.close_except_selected()
-      .disable_manual_multiframe()
-      .start_custom_multi_frame()
-      .get_window()
-      .hide();
-    window.current_visio = await FramesManager.Instance.open_another_window(
-      'webconf',
-      params,
-    );
-    FramesManager.Instance.get_window()
-      .set_cannot_be_select()
-      //.set_remove_on_change()
-      .add_tag('dispo-visio');
-    FramesManager.Instance.select_window(0);
-  }
-});
+//     await FramesManager.Instance.switch_frame('webconf', {
+//       args: params ?? { _page: 'index' },
+//     });
+//   } else if (page !== 'index') {
+//     params._page = page || 'init';
+//     FramesManager.Instance.close_except_selected()
+//       .disable_manual_multiframe()
+//       .start_custom_multi_frame()
+//       .get_window()
+//       .hide();
+//     window.current_visio = await FramesManager.Instance.open_another_window(
+//       'webconf',
+//       params,
+//     );
+//     FramesManager.Instance.get_window()
+//       .set_cannot_be_select()
+//       //.set_remove_on_change()
+//       .add_tag('dispo-visio');
+//     FramesManager.Instance.select_window(0);
+//   }
+// });
 
-FramesManager.Instance.add_mode('stop_visio', function () {
-  FramesManager.Instance.enable_manual_multiframe().stop_custom_multi_frame();
-});
+// FramesManager.Instance.add_mode('stop_visio', function () {
+//   FramesManager.Instance.enable_manual_multiframe().stop_custom_multi_frame();
+// });
 
-FramesManager.Instance.add_mode('reinit_visio', function () {
-  FramesManager.Instance.close_except_selected().get_window().show();
-  FramesManager.Instance.start_mode('stop_visio');
-  FramesManager.Instance.start_mode('visio');
-});
+// FramesManager.Instance.add_mode('reinit_visio', function () {
+//   FramesManager.Instance.close_except_selected().get_window().show();
+//   FramesManager.Instance.start_mode('stop_visio');
+//   FramesManager.Instance.start_mode('visio');
+// });

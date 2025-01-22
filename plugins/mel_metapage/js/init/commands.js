@@ -145,7 +145,7 @@ if (rcmail) {
         config._action = 'folders';
 
         PageManager.SwitchFrame('settings', {
-          args: config
+          args: config,
         });
 
         // change_frame('settings', {
@@ -219,28 +219,33 @@ if (rcmail) {
       true,
     );
 
-    rcmail.register_command('calendar-setting-resource', () => {
+    rcmail.register_command('calendar-setting-resource', async () => {
+      const helper = await load_helper();
+
+      await helper.switch_frame('settings', {
+        args: { _action: 'plugin.mel_resources_agendas' },
+      });
       //window.location.href = mel_metapage.Functions.url("settings", "plugin.mel_resources_agendas");
       //la page existe encore
-      if (parent.$('iframe.settings-frame').length > 0) {
-        parent.$('iframe.settings-frame')[0].src = mel_metapage.Functions.url(
-          'settings',
-          'plugin.mel_resources_agendas',
-        );
-        mel_metapage.Functions.change_frame('settings', true, false);
-      } else if (parent.$('.settings-frame').length > 0) {
-        rcmail.set_busy(true, 'loading');
-        window.location.href = mel_metapage.Functions.url(
-          'settings',
-          'plugin.mel_resources_agendas',
-        );
-      } else {
-        mel_metapage.Functions.change_frame('settings', true, true, {
-          _action: 'plugin.mel_resources_agendas',
-        }).then(() => {
-          parent.$('iframe.settings-frame')[0].contentWindow.location.reload();
-        });
-      }
+      // if (parent.$('iframe.settings-frame').length > 0) {
+      //   parent.$('iframe.settings-frame')[0].src = mel_metapage.Functions.url(
+      //     'settings',
+      //     'plugin.mel_resources_agendas',
+      //   );
+      //   mel_metapage.Functions.change_frame('settings', true, false);
+      // } else if (parent.$('.settings-frame').length > 0) {
+      //   rcmail.set_busy(true, 'loading');
+      //   window.location.href = mel_metapage.Functions.url(
+      //     'settings',
+      //     'plugin.mel_resources_agendas',
+      //   );
+      // } else {
+      //   mel_metapage.Functions.change_frame('settings', true, true, {
+      //     _action: 'plugin.mel_resources_agendas',
+      //   }).then(() => {
+      //     parent.$('iframe.settings-frame')[0].contentWindow.location.reload();
+      //   });
+      // }
     });
 
     rcmail.register_command(

@@ -89,6 +89,29 @@ export class NavBarManager {
       navbar.style.marginLeft = 'var(--navbar-margin-left, 60px)';
       navbar.style.marginRight = '5px';
       navbar.onquitbuttonclick.push(() => {
+        MelObject.Empty().unload('current_wsp');
+        NavBarManager.nav.$('html').removeClass('mwsp');
+
+        let $html;
+        for (const frame of FramesManager.Instance.get_window()) {
+          if (frame) {
+            $html = frame.$frame[0].contentWindow.$('html').removeClass('mwsp');
+
+            if ($html.attr('data-added'))
+              $html
+                .removeClass($html.attr('data-added'))
+                .removeAttr('data-added');
+          }
+        }
+
+        $html = null;
+
+        if (FramesManager.Instance.has_frame('calendar')) {
+          FramesManager.Instance.get_frame('calendar')[0]
+            .contentWindow.$('#calendar')
+            .fullCalendar('refetchEvents');
+        }
+
         // this.currentNavBar.remove();
         // nav.$('#layout-frames').css('margin-left', EMPTY_STRING);
         top.history.replaceState(
@@ -214,6 +237,22 @@ export class NavBarManager {
             FramesManager.Instance.get_frame('calendar')[0]
               .contentWindow.$('#calendar')
               .fullCalendar('rerenderEvents');
+          }
+
+          FramesManager.Instance.get_frame(task, { jquery: false })
+            .contentWindow.$('html')
+            .addClass('mwsp');
+
+          const workspace_force = FramesManager.Instance.get_frame(
+            'workspace',
+            { jquery: false },
+          ).contentWindow.rcmail.env.workspace_force_theme;
+
+          if (workspace_force && workspace_force[task]) {
+            FramesManager.Instance.get_frame(task, { jquery: false })
+              .contentWindow.$('html')
+              .addClass(workspace_force[task])
+              .attr('data-added', workspace_force[task]);
           }
 
           MainNav.select('workspace', { context: this.nav });

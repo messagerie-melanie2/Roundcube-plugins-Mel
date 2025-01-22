@@ -2604,11 +2604,9 @@ function sendMessageToAriane(data) {
     //Evènement venant d'une visio
     if (event.origin.includes(rcmail.env['webconf.base_url'])) {
       const datas_accepted = 'feedbackSubmitted';
-      let $querry = $('.webconf-frame');
 
-      if (event.data === datas_accepted && $querry.length > 0) {
-        $querry.remove();
-        mel_metapage.Frames.back();
+      if (event.data === datas_accepted) {
+        PageManager.Instance.get_window().back({ defaultFrame: 'bureau' });
       }
     } else if (chat_urls_origin.includes(event.origin)) {
       //Evènement venant du chat

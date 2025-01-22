@@ -1278,6 +1278,14 @@ class Window {
     return this.get_window().attr(`data-ftag-${tag_name}`) ?? false;
   }
 
+  /**
+   *
+   * @returns Promise<void>
+   */
+  async back({ defaultFrame = null } = {}) {
+    return await this._history.back({ defaultFrame });
+  }
+
   *[Symbol.iterator]() {
     for (const element of this._frames) {
       yield element.value;

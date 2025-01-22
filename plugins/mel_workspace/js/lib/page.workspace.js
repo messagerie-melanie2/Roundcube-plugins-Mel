@@ -76,7 +76,7 @@ export class WorkspacePage extends WorkspaceObject {
         case 'more':
         case 'settings':
           $('.wsp-params').css('display', EMPTY_STRING);
-          $('.wsp-row').css('display', 'none');
+          $('#main-content').css('display', 'none');
           break;
 
         case 'invitation':

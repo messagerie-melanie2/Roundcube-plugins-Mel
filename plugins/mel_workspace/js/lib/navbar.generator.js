@@ -159,7 +159,7 @@ export class NavBarManager {
     switch (task) {
       case 'home':
         $('.wsp-params').css('display', 'none');
-        $('.wsp-row').css('display', EMPTY_STRING);
+        $('#main-content').css('display', EMPTY_STRING);
         await FramesManager.Instance.switch_frame('workspace', {
           args: config,
           actions: ['workspace'],

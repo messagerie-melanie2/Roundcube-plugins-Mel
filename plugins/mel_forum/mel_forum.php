@@ -1397,7 +1397,7 @@ class mel_forum extends bnum_plugin
                         'likes' => $count['like'],
                         'dislikes' => $count['dislike'],
                         'current_user_reacted' => $current_user_reacted,
-                        'current_user_email' => $current_user_email,
+                        'current_user_email' => $current_user_email, //TODO mettre une valeurs ou supprimer cette valeur
                     ];
                 }
             }
@@ -1741,6 +1741,7 @@ class mel_forum extends bnum_plugin
         exit;
     }
 
+    #region Post Object to JSON
     /**
      * Prend en paramètre un tableau d'objet post et retourne un tableau au format JSON
      */
@@ -1813,7 +1814,7 @@ class mel_forum extends bnum_plugin
         }
         return $posts_data;
     }
-
+    #endregion
     #region Post Épinglé
     /**
      * Affiche la page post à la une

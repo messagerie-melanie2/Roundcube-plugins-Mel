@@ -160,6 +160,12 @@ export class FullCalendarElement extends HtmlCustomDataTag {
     this.ondatechanged.call(moment(val), this);
   }
 
+  get slotSize() {
+    const size = this._p_get_data('slot-size');
+
+    return isNullOrUndefined(size) ? null : +size;
+  }
+
   _p_main() {
     super._p_main();
 
@@ -169,6 +175,8 @@ export class FullCalendarElement extends HtmlCustomDataTag {
       eventRender: this.oneventrender.call.bind(this.oneventrender),
       dayRender: this.ondayrender.call.bind(this.ondayrender),
     };
+
+    if (!isNullOrUndefined(this.slotSize)) config.slotSize = this.slotSize;
 
     if (this.resourceSources) config.resources = this.resourceSources;
 
@@ -316,6 +324,7 @@ export class FullCalendarElement extends HtmlCustomDataTag {
       slotLabelFormat = null,
       sourcesCallback = null,
       render = false,
+      slotSize = null,
     } = {},
   ) {
     /**
@@ -327,6 +336,9 @@ export class FullCalendarElement extends HtmlCustomDataTag {
       sources = sources.join(',');
 
     node.setAttribute('data-sources', sources);
+
+    if (!isNullOrUndefined(slotSize))
+      node.setAttribute('data-slot-size', slotSize);
 
     if (defaultView) node.setAttribute('data-default-view', defaultView);
 

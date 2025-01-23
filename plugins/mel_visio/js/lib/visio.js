@@ -246,7 +246,7 @@ class Visio extends MelObject {
       {
         const use_top = true;
         FramesManager.Helper.window_object.UpdateNavUrl(
-          mel_metapage.Functions.public_url('webconf', this.visio_config()),
+          this.get_visio_url(),
           use_top,
         );
       }
@@ -351,11 +351,19 @@ class Visio extends MelObject {
 
     if (this.data.wsp) params['_wsp'] = this.data.wsp;
 
+    // return mel_metapage.Functions.public_url(
+    //   'webconf',
+    //   this.visio_config(),
+    // ).replace('&_is_from=iframe', EMPTY_STRING);
     return this.url('webconf', {
       params,
     }).replace('&_is_from=iframe', EMPTY_STRING);
   }
 
+  /**
+   * Paramètres de la visio pour l'url
+   * @returns {Object<string, string>}
+   */
   visio_config() {
     const params = {
       _key: this.data.room,

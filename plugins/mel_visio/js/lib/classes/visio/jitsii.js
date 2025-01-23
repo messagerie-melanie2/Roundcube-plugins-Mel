@@ -229,6 +229,11 @@ class JitsiAdaptor {
      */
     this._password = null;
 
+    /**
+     * Appelé lorsque l'on quitte
+     * @type {BnumEvent<function(string:void)>}
+     * @event
+     */
     this.on_video_conference_left = new BnumEvent();
 
     /**

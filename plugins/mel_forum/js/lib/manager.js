@@ -48,9 +48,6 @@ export class Manager extends MelObject {
     $('#forum-comment-select').change(async (event) => {
       const selectedValue = $(event.target).val(); // Récupérer la valeur sélectionnée
 
-      // Vérifier si la valeur sélectionnée est correctement récupérée
-      console.log('Option sélectionnée:', selectedValue);
-
       // Sauvegarder la sélection dans le LocalStorage
       localStorage.setItem('commentSortOrder', selectedValue);
 

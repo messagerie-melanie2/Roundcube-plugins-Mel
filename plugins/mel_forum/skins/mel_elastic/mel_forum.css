@@ -869,7 +869,7 @@
 }
 .task-forum .post .post-image {
   max-width: 150px;
-  max-height: 150px;
+  max-height: 100px;
   border-radius: 5px;
 }
 .task-forum .post .post-footer .post-reaction {

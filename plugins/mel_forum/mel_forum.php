@@ -759,7 +759,7 @@ class mel_forum extends bnum_plugin
         // Détecter et sauvegarder les images en base64 dans le contenu
         $content = $this->process_base64_images($content, $post_id);
 
-        //Créer un nouvel Article
+        //charge l'article en bdd
         $post = new LibMelanie\Api\Defaut\Posts\Post();
         $post->uid = $uid;
         $post->load();
@@ -773,6 +773,12 @@ class mel_forum extends bnum_plugin
 
         // Enregistrer les modifications dans l'historique
         $this->save_post_history($post, $post->user_uid, $new_data);
+
+        //gestion de miniature url
+        preg_match_all('/<img[^>]+src="([^"]+)"[^>]*>/i', $content, $matches);
+        $settings = json_decode($settings);
+        $settings->miniature_url = $matches[1][0];
+        $settings = json_encode($settings);
 
         //Définition des propriétés de l'article
         $post->title = $title;
@@ -1785,8 +1791,10 @@ class mel_forum extends bnum_plugin
 
             // Récupérer la première image du post et son URL
             $first_image = $post->firstImage();
-
             $image_url = $first_image ? $this->get_image_url($first_image->uid) : null;
+            if ($post->settings['miniature_url'] !== null) {
+                $image_url = $post->settings['miniature_url'];
+            }
 
             $posts_data[$post->uid] = [
                 'uid' => $post->uid,

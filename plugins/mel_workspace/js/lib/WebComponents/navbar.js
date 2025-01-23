@@ -38,6 +38,15 @@ class WspNavBar extends HtmlCustomTag {
     this.onbuttonclicked = new BnumEvent();
     this.onstatetoggle = new BnumEvent();
     this.onquitbuttonclick = new BnumEvent();
+    this.onuserrequested = new BnumEvent();
+    this.onuserchanged = new BnumEvent();
+  }
+
+  /**
+   * @readonly
+   */
+  get users() {
+    return this.onuserrequested.call() || {};
   }
 
   /**
@@ -494,6 +503,7 @@ class WspNavBar extends HtmlCustomTag {
 
     if (!plugin.break) {
       const items = [
+        this._generate_send,
         this._generate_invitation,
         this._generate_join,
         this._generate_start_visio,
@@ -593,6 +603,35 @@ class WspNavBar extends HtmlCustomTag {
 
       return button;
     }
+  }
+
+  _generate_send() {
+    if (this.workspace.isJoin && !this.workspace.isPublic) {
+      let button = new WspButton(this, {
+        style: WspButton.Style.classic,
+        text: 'Ecrire aux participants',
+        icon: 'mail',
+      });
+
+      button.setAttribute('data-up-nav', 'send');
+
+      if (!this.users?.emails || this.users.emails.length <= 1)
+        button.disable();
+
+      return button;
+    }
+  }
+
+  tryUpdateSendButton() {
+    let button = this.mainDiv.querySelector('[data-up-nav="send"]');
+
+    if (button) {
+      if (!this.users?.emails || this.users.emails.length <= 1)
+        button.disable();
+      else button.enable();
+    }
+
+    return this;
   }
 
   _generate_start_visio() {

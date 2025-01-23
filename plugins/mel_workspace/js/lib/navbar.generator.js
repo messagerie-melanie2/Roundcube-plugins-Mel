@@ -88,6 +88,12 @@ export class NavBarManager {
       navbar.style.marginTop = '60px';
       navbar.style.marginLeft = 'var(--navbar-margin-left, 60px)';
       navbar.style.marginRight = '5px';
+      navbar.onuserchanged.push(() =>
+        WorkspaceObject.GetWorkspaceData().reloadUsers(),
+      );
+      navbar.onuserrequested.push(
+        () => WorkspaceObject.GetWorkspaceData().users,
+      );
       navbar.onquitbuttonclick.push(() => {
         MelObject.Empty().unload('current_wsp');
         NavBarManager.nav.$('html').removeClass('mwsp');

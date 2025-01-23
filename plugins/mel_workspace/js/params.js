@@ -277,6 +277,25 @@
       context.rcmail.init_address_input_events(Workspace_Param.PopUp.input);
     }
 
+    async get_new_members() {
+      //get_members
+      return await this.ajax(
+        this.url('get_members'),
+        {
+          _uid: this.uid,
+        },
+        (data) => {
+          data = JSON.parse(data);
+
+          if (data === 'denied')
+            rcmail.display_message('Accès interdit !', 'error');
+          else {
+            rcmail.env.current_workspace_users = data;
+          }
+        },
+      );
+    }
+
     save_users({ context = window } = {}) {
       this.busy();
       let users = [];
@@ -382,6 +401,11 @@
         },
         (datas) => {
           this.update_table(datas);
+          this.NavBarManager().then(async (manager) => {
+            await this.get_new_members();
+            manager.currentNavBar.onuserchanged.call();
+            manager.currentNavBar.tryUpdateSendButton();
+          });
         },
       ).always(() => {
         func();

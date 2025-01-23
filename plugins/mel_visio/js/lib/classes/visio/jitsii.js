@@ -230,6 +230,13 @@ class JitsiAdaptor {
     this._password = null;
 
     /**
+     * Appelé lorsque l'on quitte
+     * @type {BnumEvent<function(string:void)>}
+     * @event
+     */
+    this.on_video_conference_left = new BnumEvent();
+
+    /**
      * Est appelé lorsque la caméra est activé/désactivé
      * @type {BnumEvent<MuteStatusChangedCallback>}
      * @event
@@ -716,7 +723,9 @@ class JitsiAdaptor {
         'screenSharingStatusChanged',
         'on_share_screen_status_changed',
       )
-      ._add_listener('mouseMove', 'on_mouse_move');
+      ._add_listener('mouseMove', 'on_mouse_move')
+      ._add_listener('readyToClose', 'on_ready_to_close')
+      ._add_listener('videoConferenceLeft', 'on_video_conference_left');
   }
 
   /**

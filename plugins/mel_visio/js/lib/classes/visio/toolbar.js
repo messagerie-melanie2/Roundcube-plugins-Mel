@@ -54,13 +54,13 @@ class ToolbarFunctions {
     // FramesManager.Instance.detach('before_url');
     // FramesManager.Instance.detach('switch_frame');
 
-    if (this._audioManager) this._audioManager.dispose();
-    if (this._videoManager) this._videoManager.dispose();
+    // if (this._audioManager) this._audioManager.dispose();
+    // if (this._videoManager) this._videoManager.dispose();
 
-    if (this._popup) this._popup.destroy();
+    // if (this._popup) this._popup.destroy();
 
-    visio.jitsii.hangup();
-    visio.toolbar.destroy();
+    //visio.jitsii.
+    //visio.toolbar.destroy();
 
     top
       .$('#visio-back-button bnum-icon')

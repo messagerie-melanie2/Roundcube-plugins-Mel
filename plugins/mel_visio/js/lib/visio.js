@@ -21,6 +21,8 @@ import { VisioConnectors } from './connectors.js';
 import { VisioFunctions } from './helpers.js';
 export { Visio };
 
+const ENABLE_CALL_DATA = false;
+
 /**
  * Gère la visio
  * @module Visio/Core
@@ -193,7 +195,10 @@ class Visio extends MelObject {
 
     this.loader = new VisioLoader('#mm-webconf .loading-visio-text');
     this.jitsii = null;
-    this._call_datas = VisioHelper.Instance.getWebconfPhone(this.data.room); //webconf_helper.phone.getAll(this.data.wsp);
+
+    if (ENABLE_CALL_DATA)
+      this._call_datas = VisioHelper.Instance.getWebconfPhone(this.data.room); //webconf_helper.phone.getAll(this.data.wsp);
+
     this._token = this._get_jwt();
     this._toolbar = null;
 
@@ -241,7 +246,7 @@ class Visio extends MelObject {
       {
         const use_top = true;
         FramesManager.Helper.window_object.UpdateNavUrl(
-          this.get_visio_url(),
+          mel_metapage.Functions.public_url('webconf', this.visio_config()),
           use_top,
         );
       }
@@ -287,7 +292,6 @@ class Visio extends MelObject {
 
           if (this.loader) {
             this.loader = this.loader.destroy();
-            this.toolbar = this._create_toolbar();
             this._init_listeners();
             this._create_ui();
 
@@ -303,14 +307,14 @@ class Visio extends MelObject {
           prejoinConfig: {
             enabled: false,
           },
-          toolbarButtons: [
-            'filmstrip',
-            // 'microphone', 'camera', 'closedcaptions', 'desktop', 'embedmeeting', 'fullscreen',
-            // 'fodeviceselection', 'hangup', 'profile', 'chat', 'recording',
-            // 'livestreaming', 'etherpad', 'sharedvideo', 'shareaudio', 'settings', 'raisehand',
-            // 'videoquality', 'filmstrip', 'invite', 'feedback', 'stats', 'shortcuts',
-            // 'tileview', 'select-background', 'download', 'help', 'mute-everyone', 'mute-video-everyone', 'security'
-          ],
+          // toolbarButtons: [
+          //   'filmstrip',
+          //   // 'microphone', 'camera', 'closedcaptions', 'desktop', 'embedmeeting', 'fullscreen',
+          //   // 'fodeviceselection', 'hangup', 'profile', 'chat', 'recording',
+          //   // 'livestreaming', 'etherpad', 'sharedvideo', 'shareaudio', 'settings', 'raisehand',
+          //   // 'videoquality', 'filmstrip', 'invite', 'feedback', 'stats', 'shortcuts',
+          //   // 'tileview', 'select-background', 'download', 'help', 'mute-everyone', 'mute-video-everyone', 'security'
+          // ],
         },
         interfaceConfigOverwrite: {
           // INITIAL_TOOLBAR_TIMEOUT:1,
@@ -350,6 +354,16 @@ class Visio extends MelObject {
     return this.url('webconf', {
       params,
     }).replace('&_is_from=iframe', EMPTY_STRING);
+  }
+
+  visio_config() {
+    const params = {
+      _key: this.data.room,
+    };
+
+    if (this.data.wsp) params['_wsp'] = this.data.wsp;
+
+    return params;
   }
 
   /**
@@ -636,64 +650,14 @@ class Visio extends MelObject {
 
   /**
    * Initialise les écouteurs de la visio
-   * @returns {Promise<void>}
-   * @async
    * @package
    */
-  async _init_listeners() {
-    const promise_user_id = this.jitsii.get_user_id();
-
-    this.jitsii.on_audio_mute_status_changed.push(
-      this._event_on_audio_change.bind(this),
-    );
-
-    this.jitsii.on_video_mute_status_changed.push(
-      this._event_on_video_change.bind(this),
-    );
-
-    this.jitsii.on_film_strip_display_changed.push(
-      this._event_on_filmstrip_state_changed.bind(this),
-    );
-
-    this.jitsii.on_chat_updated.push(this._event_on_chat_updated.bind(this));
-
-    this.jitsii.on_tile_view_updated.push(
-      this._event_on_tileview_updated.bind(this),
-    );
-
-    this.jitsii.on_raise_hand_updated.push(
-      this._event_on_raise_hand_updated.bind(this),
-    );
-
-    this.jitsii.on_share_screen_status_changed.push(
-      this._event_on_share_screen_status_changed.bind(this),
-    );
-
-    this.jitsii.on_password_required.push(() => {
-      this.jitsii._jitsi.executeCommand('password', this.data.password);
+  _init_listeners() {
+    this.jitsii.on_video_conference_left.push(() => {
+      ToolbarFunctions.Hangup(this);
     });
 
-    this.jitsii.on_mouse_move.push(() => {
-      this.toolbar.toolbar().css('display', EMPTY_STRING);
-      clearTimeout(this._timeout);
-      this._timeout = setTimeout(() => {
-        this.toolbar.toolbar().css('display', 'none');
-      }, 60 * 1000);
-    });
-
-    this.jitsii.on_chat_updated.call({
-      unreadCount: 0,
-      isOpen: false,
-    });
-
-    this.jitsii.on_share_screen_status_changed.call({
-      on: false,
-    });
-
-    this.jitsii.on_raise_hand_updated.call({
-      id: await promise_user_id,
-      handRaised: 0,
-    });
+    return;
   }
 
   /**

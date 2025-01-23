@@ -1033,8 +1033,12 @@
   padding: 0 5px 0 5px;
   overflow-x: hidden !important;
 }
+.dark-mode .task-forum .new_posts .content,
+.dark-mode-custom .task-forum .new_posts .content {
+  --layout-content-background-color: var(--bureau-card-background-color);
+}
 .task-forum .new_posts .post {
-  margin-top: 10px;
+  margin: 10px 10px;
   padding-bottom: 10px;
   box-shadow: none;
   border-bottom: solid 1px var(--scrollbar-background-color);
@@ -1044,6 +1048,7 @@
 .dark-mode .task-forum .new_posts .post,
 .dark-mode-custom .task-forum .new_posts .post {
   border-radius: 5px;
+  background-color: var(--bureau-card-content-background-color);
 }
 .task-forum .new_posts .post:hover {
   background-color: var(--secondary-border-color);
@@ -1107,7 +1112,15 @@
   padding: 0 5px 0 5px;
   overflow-x: hidden !important;
 }
+.dark-mode .task-forum .front_page_post .content,
+.dark-mode-custom .task-forum .front_page_post .content {
+  --layout-content-background-color: var(--bureau-card-background-color);
+}
+.task-forum .front_page_post #pin_post-area {
+  height: 100%;
+}
 .task-forum .front_page_post .post {
+  height: 100%;
   box-shadow: none;
   margin: 0;
   transition: var(--transition-all, none);
@@ -1115,6 +1128,7 @@
 .dark-mode .task-forum .front_page_post .post,
 .dark-mode-custom .task-forum .front_page_post .post {
   border-radius: 5px;
+  --layout-content-background-color: var(--bureau-card-content-background-color);
 }
 .task-forum .front_page_post .post:hover {
   background-color: var(--secondary-border-color);
@@ -1168,6 +1182,9 @@
   /* Affichage en bloc */
   max-width: 100%;
   /* S'adapte à la largeur du parent */
+}
+.task-forum .front_page_post .post .post-image {
+  max-width: 190px;
 }
 .task-forum #backToTop {
   position: fixed;

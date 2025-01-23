@@ -469,7 +469,7 @@ export class Forum extends MelObject {
             contentType:false,
             on_success: (response) => {
                 BnumMessage.DisplayMessage(
-                    response.status,
+                    rcmail.gettext('mel_forum....saved',),
                     eMessageType.Confirmation,
                 );
                 //modifier l'apparence du bouton épingler

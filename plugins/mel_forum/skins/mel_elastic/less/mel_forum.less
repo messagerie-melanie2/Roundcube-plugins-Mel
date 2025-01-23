@@ -1215,12 +1215,15 @@
     .content {
       padding: 0 5px 0 5px;
       overflow-x: hidden !important;
+      .dark-mode &,
+      .dark-mode-custom & {
+        --layout-content-background-color: var(--bureau-card-background-color);
+      } 
     }
     .post {
-      margin-top: 10px;
+      margin: 10px 10px;
       padding-bottom: 10px;
       box-shadow: none;
-      // box-shadow: none;
       border-bottom: solid 1px var(--scrollbar-background-color);
       border-radius: 0px;
       transition: var(--transition-all, none);
@@ -1228,6 +1231,7 @@
       .dark-mode &,
       .dark-mode-custom & {
         border-radius: 5px;
+        background-color: var(--bureau-card-content-background-color);
       }
 
       &:hover {
@@ -1299,8 +1303,16 @@
     .content {
       padding: 0 5px 0 5px;
       overflow-x: hidden !important;
+      .dark-mode &,
+      .dark-mode-custom & {
+        --layout-content-background-color: var(--bureau-card-background-color);
+      } 
+    }
+    #pin_post-area {
+      height: 100%;
     }
     .post {
+      height: 100%;
       box-shadow: none;
       margin: 0;
       // box-shadow: none;
@@ -1309,6 +1321,7 @@
       .dark-mode &,
       .dark-mode-custom & {
         border-radius: 5px;
+        --layout-content-background-color: var(--bureau-card-content-background-color);
       }
 
       &:hover {
@@ -1367,6 +1380,9 @@
           display: block; /* Affichage en bloc */
           max-width: 100%; /* S'adapte à la largeur du parent */
         }
+      }
+      .post-image {
+        max-width: 190px;
       }
     }
   }

@@ -14,18 +14,20 @@
   <div class="row post" tabindex="0" id="post-%%UID%%">
     <a class="post-card" data-spied="false" href="%%POST_LINK%%" aria-label="Lire le post intitulé %%POST_TITLE%% par %%POST_CREATOR%%">
       <div class="row col-12">
-        <div class="post-header">
-          <div class="post-creator">
-            <bnum-avatar  class="author-image" style="background-color: var(--mel-button-background-color); display: flex; align-items: center; justify-content: center; color: white" data-email="%%CREATOR_EMAIL%%" data-forceload="true"></bnum-avatar>
-            <div class="post-creator-name">%%POST_CREATOR%%</div>
-            <div class="post-date">
-              <i class="material-symbols-outlined">access_time</i
-              ><span class="ml-1">%%POST_DATE%%</span>
+        <div class="col-12">
+          <div class="post-header">
+            <div class="post-creator">
+              <bnum-avatar  class="author-image" style="background-color: var(--mel-button-background-color); display: flex; align-items: center; justify-content: center; color: white" data-email="%%CREATOR_EMAIL%%" data-forceload="true"></bnum-avatar>
+              <div class="post-creator-name">%%POST_CREATOR%%</div>
+              <div class="post-date">
+                <i class="material-symbols-outlined">access_time</i
+                ><span class="ml-1">%%POST_DATE%%</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="row">
+      <div class="row col-12">
         <div class="post-content %%POST_CONTENT_CLASS%%">
           <div class="post-tags" id="new-tag-area-%%UID%%"></div>
           <div class="post-title">%%POST_TITLE%%</div>

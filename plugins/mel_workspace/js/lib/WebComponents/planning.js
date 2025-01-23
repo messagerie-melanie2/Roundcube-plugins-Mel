@@ -959,7 +959,7 @@ class ResourcesSourceLoader extends SourceLoader {
         slot: iterator,
       });
     }
-    debugger;
+
     try {
       resources = MelEnumerable.from(
         this.#_generate_events.bind(this, resources),

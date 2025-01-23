@@ -304,13 +304,6 @@ export class Planning extends HtmlCustomDataTag {
       this.#resourceSource.render(e);
     });
 
-    calendar.addEventListener('api:fc.day.render', (e) => {
-      const { date, cell } = e.detail;
-
-      cell.addClass('planning-cell');
-      console.log('render', date, cell);
-    });
-
     /**
      *
      * @param {ViewRender} e

@@ -3008,6 +3008,8 @@ $("#rcmfd_new_category").keypress(function(event) {
             $dts->setTimezone($this->timezone);
         }
 
+        date_default_timezone_set($this->timezone->getName());
+
         $fblist = $this->driver->get_freebusy_list($email, $start, $end);
         $slots  = '';
 

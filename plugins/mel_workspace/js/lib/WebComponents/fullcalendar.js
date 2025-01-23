@@ -22,6 +22,7 @@ export class FullCalendarElement extends HtmlCustomDataTag {
     this.oneventrender = new BnumEvent();
     this.onresourcerender = new BnumEvent();
     this.ondatechanged = new BnumEvent();
+    this.ondayrender = new BnumEvent();
     this.onallloaded = new BnumEvent();
     this.onviewchanged = new BnumEvent();
 
@@ -40,6 +41,12 @@ export class FullCalendarElement extends HtmlCustomDataTag {
 
     this.onviewchanged.push((view, node) => {
       this.dispatchEvent(new ViewRender(view, node, this));
+    });
+
+    this.ondayrender.push((date, cell) => {
+      this.dispatchEvent(
+        new CustomEvent('api:fc.day.render', { detail: { date, cell } }),
+      );
     });
 
     this.licenseKey = LICENSE_KEY;
@@ -160,6 +167,7 @@ export class FullCalendarElement extends HtmlCustomDataTag {
       schedulerLicenseKey: this.licenseKey,
       resourceRender: this.onresourcerender.call.bind(this.onresourcerender),
       eventRender: this.oneventrender.call.bind(this.oneventrender),
+      dayRender: this.ondayrender.call.bind(this.ondayrender),
     };
 
     if (this.resourceSources) config.resources = this.resourceSources;

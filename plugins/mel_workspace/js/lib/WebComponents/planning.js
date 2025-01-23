@@ -304,6 +304,13 @@ export class Planning extends HtmlCustomDataTag {
       this.#resourceSource.render(e);
     });
 
+    calendar.addEventListener('api:fc.day.render', (e) => {
+      const { date, cell } = e.detail;
+
+      cell.addClass('planning-cell');
+      console.log('render', date, cell);
+    });
+
     /**
      *
      * @param {ViewRender} e
@@ -952,7 +959,7 @@ class ResourcesSourceLoader extends SourceLoader {
         slot: iterator,
       });
     }
-
+    debugger;
     try {
       resources = MelEnumerable.from(
         this.#_generate_events.bind(this, resources),

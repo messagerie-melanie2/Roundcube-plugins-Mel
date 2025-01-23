@@ -804,7 +804,7 @@ class mel_metapage extends bnum_plugin
             'classsel' => 'compose options',
             'innerclass' => 'inner',
             'label'    => 'compose',
-            'title' => 'Composer un email',
+            'title' => 'mel_metapage.compose-mail',
             'type'       => 'link',
         ), "listcontrols");
 
@@ -815,7 +815,7 @@ class mel_metapage extends bnum_plugin
             'classsel' => 'compose mel-event-compose options',
             'innerclass' => 'inner',
             'label'    => 'mel_metapage.event-compose',
-            'title' => 'Composer un email',
+            'title' => 'mel_metapage.compose-mail',
             'type'       => 'link-menuitem',
         ), "events-options-containers");
 

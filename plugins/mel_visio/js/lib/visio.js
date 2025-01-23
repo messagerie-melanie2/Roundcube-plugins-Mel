@@ -106,11 +106,14 @@ class Visio extends MelObject {
 
         FramesManager.Instance.get_window().hide();
 
-        this.toolbar.toolbar().find('button').first().focus();
+        //this.toolbar.toolbar().find('button').first().focus();
 
         top.rcmail.triggerEvent('visio.back');
 
-        (top ?? parent ?? window).$('html').addClass('fullscreen-visio');
+        (top ?? parent ?? window)
+          .$('html')
+          .addClass('fullscreen-visio')
+          .removeClass('visio-minimised');
 
         return 'break';
       } else
@@ -120,7 +123,10 @@ class Visio extends MelObject {
           .find('bnum-icon')
           .text('fullscreen');
 
-      (top ?? parent ?? window).$('html').removeClass('fullscreen-visio');
+      (top ?? parent ?? window)
+        .$('html')
+        .removeClass('fullscreen-visio')
+        .addClass('visio-minimised');
     });
 
     this._init()._setup().start();
@@ -351,10 +357,6 @@ class Visio extends MelObject {
 
     if (this.data.wsp) params['_wsp'] = this.data.wsp;
 
-    // return mel_metapage.Functions.public_url(
-    //   'webconf',
-    //   this.visio_config(),
-    // ).replace('&_is_from=iframe', EMPTY_STRING);
     return this.url('webconf', {
       params,
     }).replace('&_is_from=iframe', EMPTY_STRING);
@@ -638,7 +640,7 @@ class Visio extends MelObject {
     top.$('body').append(
       //prettier-ignore
       MelHtml.start
-        .button( { id:'visio-back-button', class:'visio-back-button', title:'Minimiser la visioconférence' } )
+        .button( { id:'visio-back-button', class:'visio-back-button not-busy-only', title:'Minimiser la visioconférence' } )
         .attr('onclick', () => {
           if (top.$('#visio-back-button').find('bnum-icon').text() === 'fullscreen_exit') {
             if (FramesManager.Instance.get_window()._history._history.length) FramesManager.Instance.get_window()._history.back();

@@ -677,6 +677,9 @@ class mel_forum extends bnum_plugin
         if ($pin_post) {
             $workspace = mel_workspace::Workspace($workspace_uid);
             $pins = [$workspace->settings()->get('forum_pinned_post')];
+            if ($pins[0] === null) {
+                $pins = null;
+            }
         }
 
         // Charger tous les posts en utilisant la méthode listPosts

@@ -183,7 +183,6 @@ class NextcloudModule extends WorkspaceObject {
       if (!continueExec) {
         contents.appendChild(
           $('<p>Aucun document...</p>').css({
-            'text-align': 'center',
             'margin-top': '5px',
           })[0],
         );

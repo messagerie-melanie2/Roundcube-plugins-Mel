@@ -83,9 +83,15 @@ class WorkspacePageRow {
       $size = $this->row[$i]['size'];
       $currentRowSize += $size;
 
+      //On enlève le padding entre les différentes colonnes
+      $padding = '';
+      if ($len > 1) {
+        $padding = $i === 0 ? 'pr-3 pr-md-0' : ($i === $len-1 ? 'pl-3 pl-md-0' : 'px-3 px-md-0'); 
+      }
+
       if ($i+1 >= $len && ($sizeTotal - $currentRowSize) > 0) $size += ($sizeTotal - $currentRowSize);
 
-      $html .= html::div(['class' => "col-lg-$size".' '.($this->row[$i]['md'] === null ? '' : 'col-md-'.$this->row[$i]['md']).' '.($this->row[$i]['sd'] === null ? '' : 'col-sd-'.$this->row[$i]['sd'])], $this->row[$i]['html']);
+      $html .= html::div(['class' => "col-lg-$size".' '.($this->row[$i]['md'] === null ? '' : 'col-md-'.$this->row[$i]['md']).' '.($this->row[$i]['sd'] === null ? '' : 'col-sd-'.$this->row[$i]['sd']) .' '. $padding], $this->row[$i]['html']);
     }
 
     return $html;

@@ -95,7 +95,7 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
    * @static
    */
   static get maxHeight() {
-    return '350px';
+    return '300px';
   }
 
   /**
@@ -113,7 +113,7 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
    * @static
    */
   static get minHeight() {
-    return '100px';
+    return '300px';
   }
 
   _p_main() {

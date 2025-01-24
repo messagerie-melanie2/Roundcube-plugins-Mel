@@ -177,7 +177,7 @@ export class New_posts extends MelObject {
    */
   displayNoPost() {
     let noPostDiv = MelHtml.start
-      .span({ class: 'ml-2' })
+      .span()
       .text(rcmail.gettext('mel_forum.no_post'))
       .end();
     $('#new_post-area').append(noPostDiv.generate());

@@ -180,24 +180,11 @@ if (rcmail) {
 
     rcmail.register_command(
       'mel_metapage_manage_mail_box',
-      () => {
-        let config = {};
+      async () => {
+        const helper = await load_helper();
 
-        if (rcmail.env.mel_metapage_const !== undefined)
-          config[rcmail.env.mel_metapage_const.key] =
-            rcmail.env.mel_metapage_const.value;
-
-        change_frame('settings', {
-          args: {
-            _action: 'plugin.mel_resources_bal',
-          },
-          action_args: [
-            mel_metapage.Functions.url(
-              'settings',
-              'plugin.mel_resources_bal',
-              config,
-            ),
-          ],
+        await helper.switch_frame('settings', {
+          args: { _action: 'plugin.mel_resources_bal' },
         });
       },
       true,

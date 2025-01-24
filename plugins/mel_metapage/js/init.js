@@ -217,7 +217,7 @@
             return (async () => {})();
           }
 
-          const last_count = mel_metapage.Storage.get(
+          const last_count = (top ?? parent ?? window).mel_metapage.Storage.get(
             mel_metapage.Storage.mail,
           );
           return $.ajax({
@@ -225,16 +225,15 @@
             type: 'GET', // methode de transmission des données au fichier php
             url: '?_task=mel_metapage&_action=get_unread_mail_count', //rcmail.env.ev_calendar_url+'&start='+dateNow(new Date())+'&end='+dateNow(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()+1)), // url du fichier php
             success: function (data) {
+              data = +data;
               try {
-                //console.log("mail_updated", data);
                 if (
                   isFromRefresh === true &&
-                  (last_count === null ||
-                    last_count ||
-                    undefined ||
-                    last_count < data)
+                  last_count !== null &&
+                  last_count !== undefined &&
+                  last_count < data
                 ) {
-                  if (rcmail.env.current_frame_name !== 'mail') {
+                  if (PageManager.Instance.currentTask !== 'mail') {
                     const querry = $('iframe.mail-frame');
                     if (querry.length > 0)
                       querry[0].contentWindow.postMessage({
@@ -246,7 +245,10 @@
                   }
                 }
 
-                mel_metapage.Storage.set(mel_metapage.Storage.mail, data);
+                (top ?? parent ?? window).mel_metapage.Storage.set(
+                  mel_metapage.Storage.mail,
+                  data,
+                );
                 try_add_round('.mail ', mel_metapage.Ids.menu.badge.mail);
                 update_badge(data, mel_metapage.Ids.menu.badge.mail);
                 parent.rcmail.triggerEvent(

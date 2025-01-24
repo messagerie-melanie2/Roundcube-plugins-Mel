@@ -61,8 +61,8 @@ const connectors = {
     needed: { _value: '' },
   }),
   mail_get_favorite_folder: new Connector(
-    'mail',
-    'plugin.mel_metapage.get_favorite_folders',
+    'alone_action',
+    'get_favorite_folders',
     {
       type: Connector.enums.type.post,
     },
@@ -75,14 +75,10 @@ const connectors = {
       needed: { _folder: '', _color: '' },
     },
   ),
-  mail_get_folders_color: new Connector(
-    'mail',
-    'plugin.mel_metapage.get_folders_color',
-    {
-      type: Connector.enums.type.post,
-      postProcess: m_mail_get_favorites_colors,
-    },
-  ),
+  mail_get_folders_color: new Connector('alone_action', 'get_folders_color', {
+    type: Connector.enums.type.post,
+    postProcess: m_mail_get_favorites_colors,
+  }),
   mail_set_folder_icon: new Connector(
     'mail',
     'plugin.mel_metapage.set_folder_icon',
@@ -91,12 +87,8 @@ const connectors = {
       needed: { _folder: '', _icon: '' },
     },
   ),
-  mail_get_folders_icon: new Connector(
-    'mail',
-    'plugin.mel_metapage.get_folders_icon',
-    {
-      type: Connector.enums.type.post,
-      postProcess: m_mail_get_favorites_icons,
-    },
-  ),
+  mail_get_folders_icon: new Connector('alone_action', 'get_folders_icons', {
+    type: Connector.enums.type.post,
+    postProcess: m_mail_get_favorites_icons,
+  }),
 };

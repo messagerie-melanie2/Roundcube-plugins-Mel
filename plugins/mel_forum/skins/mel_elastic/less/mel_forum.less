@@ -1001,14 +1001,23 @@
       }
     }
 
+    &:hover {
+      background-color: var(--forum-list-hover-background-color);
+      border-radius: 5px;
+    }
+
     .post-content {
       .post-title {
         font-weight: 600;
-        font-size: 20px;
+        font-size: 18px;
         margin-top: 5px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+      }
+
+      .post-tags {
+        line-height: 1.8;
       }
 
       .post-summary {
@@ -1210,7 +1219,7 @@
     .forum-content {
       display: flex;
       justify-content: center;
-      margin-top: 0px;
+      margin-top: 10px;
     }
     .content {
       padding: 0 5px 0 5px;
@@ -1221,21 +1230,17 @@
       } 
     }
     .post {
-      margin: 10px 10px;
-      padding-bottom: 10px;
+      margin: 5px 10px;
+      padding-bottom: 0px;
       box-shadow: none;
-      border-bottom: solid 1px var(--scrollbar-background-color);
       border-radius: 0px;
       transition: var(--transition-all, none);
+      border-radius: 5px;
+      background-color: var(--bureau-card-content-background-color);
 
-      .dark-mode &,
-      .dark-mode-custom & {
-        border-radius: 5px;
-        background-color: var(--bureau-card-content-background-color);
-      }
 
       &:hover {
-        background-color: var(--secondary-border-color);
+        background-color: var(--forum-list-hover-background-color);
         border-radius: 5px;
       }
 
@@ -1252,9 +1257,14 @@
         }
       }
       .post-tags {
-        display: flex;
-        justify-content: end;
-        align-items: baseline;
+        text-align: end;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+
+        @media (max-width: 768px) {
+         display: none;
+        }
       }
       .post-footer {
         .post-reaction {
@@ -1306,7 +1316,7 @@
       .dark-mode &,
       .dark-mode-custom & {
         --layout-content-background-color: var(--bureau-card-background-color);
-      } 
+      }      
     }
     #pin_post-area {
       height: 100%;
@@ -1412,4 +1422,26 @@
     margin-left: 20px;
   }
   
+}
+
+
+
+.task-forum {
+  &.action-none,
+  &.action-index,
+  &.action-post,
+  &.action-front_page_post,
+  &.action-create_or_edit_post,
+  &.action-new_posts {
+    #layout {
+    background-color: var(--bureau-card-background-color);
+      #layout-content {
+        .content {
+          border-radius: 0 !important;
+          margin: 0 !important;
+          box-shadow: none !important;
+        }
+      }
+    }
+  }
 }

@@ -135,7 +135,9 @@ export class New_posts extends MelObject {
         );
       }
 
+      let count = 0;
       for (let tag in post.tags) {
+        if (count >= 3) break;
         let tag_data = {
           TAG_NAME: '#' + post.tags[tag].name,
           TAG_ID: post.tags[tag].id,
@@ -150,6 +152,8 @@ export class New_posts extends MelObject {
           );
 
         $('#new-tag-area-' + post.uid).append(...tag_template.render());
+
+        count++;
       }
       this.offset++;
     }

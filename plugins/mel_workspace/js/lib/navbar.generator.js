@@ -79,21 +79,27 @@ export class NavBarManager {
     if (this.currentNavBar) this.currentNavBar.remove();
 
     if (!nav.document.querySelector(`#navbar-${workspace.uid}`)) {
+      if (typeof rcmail.env.navbar === 'string')
+        rcmail.env.navbar = JSON.parse(rcmail.env.navbar);
       /**
        * @type {WspNavBar}
        */
-      let navbar = nav.$(rcmail.env.navbar)[0];
+      let navbar = WspNavBar.CreateElement({
+        nav: nav.document,
+        workspace: rcmail.env.navbar.workspace,
+        css: rcmail.env.navbar.css,
+        modules: rcmail.env.navbar.module,
+        scripts: rcmail.env.navbar.scripts,
+        settings: rcmail.env.navbar.settings,
+        onuserchanged: () => WorkspaceObject.GetWorkspaceData().reloadUsers(),
+        onuserrequested: () => WorkspaceObject.GetWorkspaceData().users,
+      });
+      //nav.$(rcmail.env.navbar)[0];
       navbar.startingStates = rcmail.env['workspace_modules_visibility'] ?? {};
       navbar.setAttribute('id', `navbar-${workspace.uid}`);
       navbar.style.marginTop = '60px';
       navbar.style.marginLeft = 'var(--navbar-margin-left, 60px)';
       navbar.style.marginRight = '5px';
-      navbar.onuserchanged.push(() =>
-        WorkspaceObject.GetWorkspaceData().reloadUsers(),
-      );
-      navbar.onuserrequested.push(
-        () => WorkspaceObject.GetWorkspaceData().users,
-      );
       navbar.onquitbuttonclick.push(() => {
         MelObject.Empty().unload('current_wsp');
         NavBarManager.nav.$('html').removeClass('mwsp');
@@ -233,7 +239,6 @@ export class NavBarManager {
           args: config,
           actions: ['workspace'],
         }).then(() => {
-          // debugger;
           rcmail.triggerEvent('workspace.navbar.onclick', {
             task,
             caller: event,

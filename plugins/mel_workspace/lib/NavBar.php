@@ -163,10 +163,16 @@ class NavBar {
     // $title = $workspace->title();
     $serialize = str_replace('"', "¤'¤'", $workspace->serialize());
     $raw = str_replace('"', "¤'¤'", json_encode($this->settings));
-    $settings = isset($this->settings) ? "data-apps-settings=\"$raw\"" : '';
+    //$settings = isset($this->settings) ? "data-apps-settings=\"$raw\"" : '';
     $this->css ??= [];
     $css = implode("\r\n", $this->css);
-    return "<bnum-wsp-nav data-workspace=\"$serialize\" $settings data-modules=\"$this->modules\" data-scripts=\"$this->scripts\" data-css=\"$css\"></bnum-wsp-nav>";
+    return json_encode([
+      'workspace' =>$serialize,
+      'modules' => $this->modules,
+      'scripts' => $this->scripts,
+      'css' => $css,
+      'settings' => $raw
+    ]);//"<bnum-wsp-nav data-workspace=\"$serialize\" $settings data-modules=\"$this->modules\" data-scripts=\"$this->scripts\" data-css=\"$css\"></bnum-wsp-nav>";
   }
 
 }

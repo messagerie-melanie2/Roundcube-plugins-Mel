@@ -195,7 +195,12 @@ class WspNavBar extends HtmlCustomTag {
    * @type {{task:string, canBeHidden:boolean}[]}
    */
   get settings() {
-    return JSON.parse(this.#_get_data('apps-settings').replaceAll("¤'¤'", '"'));
+    return JSON.parse(
+      (this.#_get_data('apps-settings') || JSON.stringify([])).replaceAll(
+        "¤'¤'",
+        '"',
+      ),
+    );
   }
 
   _p_main() {
@@ -219,15 +224,6 @@ class WspNavBar extends HtmlCustomTag {
       ._generate_description()
       ._generate_block();
 
-    // let style = document.createElement('link');
-    // style.setAttribute('rel', 'stylesheet');
-    // style.setAttribute('type', 'text/css');
-    // style.setAttribute(
-    //   'href',
-    //   `plugins/mel_workspace/skins/mel_elastic/navbar.css?v=${BnumModules.VERSION}`,
-    // );
-
-    // shadow.appendChild(style);
     let tmp = new WspPageNavigation({ parent: this, apps: this.settings });
     this.mainDiv.appendChild(tmp);
     tmp.onbuttonclicked.push(
@@ -813,7 +809,19 @@ class WspNavBar extends HtmlCustomTag {
     this.#actions.push(action);
   }
 
-  static CreateElement({ nav = document, workspace = null } = {}) {
+  static CreateElement({
+    nav = document,
+    workspace = null,
+    css = null,
+    modules = null,
+    scripts = null,
+    settings = null,
+    onuserrequested = null,
+    onuserchanged = null,
+  } = {}) {
+    /**
+     * @type {WspNavBar}
+     */
     let node = nav.createElement('bnum-wsp-nav');
 
     if (workspace) {
@@ -822,6 +830,14 @@ class WspNavBar extends HtmlCustomTag {
 
       node.setAttribute('data-workspace', workspace);
     }
+
+    if (css) node.setAttribute('data-css', css);
+    if (modules) node.setAttribute('data-modules', modules);
+    if (scripts) node.setAttribute('data-scripts', scripts);
+    if (settings) node.setAttribute('data-apps-settings', settings);
+
+    if (onuserrequested) node.onuserrequested.push(onuserrequested);
+    if (onuserchanged) node.onuserchanged.push(onuserchanged);
 
     return node;
   }

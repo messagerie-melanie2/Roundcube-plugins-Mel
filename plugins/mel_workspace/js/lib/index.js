@@ -184,6 +184,13 @@ class IndexWorkspace extends MelObject {
    * @private
    */
   #_main() {
+    if (!FramesManager.Instance.has_frame('stockage')) {
+      console.info(
+        '(!)[Workspace/Index] Chargement des documents en arrière plan...',
+      );
+      FramesManager.Instance.switch_frame('stockage', { changepage: false });
+    }
+
     this._init_buttons_data();
 
     this._set_listeners();

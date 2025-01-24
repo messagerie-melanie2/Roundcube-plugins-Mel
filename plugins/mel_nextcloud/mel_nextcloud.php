@@ -431,6 +431,7 @@ class mel_nextcloud extends rcube_plugin {
         unset($layout);
   
         $args['plugin']->include_workspace_module('mel_nextcloud', 'module.js', 'js/workspace');
+        rcmail::get_instance()->output->set_env('nextcloud_url', rcmail::get_instance()->config->get('nextcloud_url'));
         
         if ($args['workspace']->settings()->get(mel_workspace::KEY_DRIVE)) rcmail::get_instance()->output->set_env('current_workspace_nc_start', $args['workspace']->settings()->get(mel_workspace::KEY_DRIVE));
   

@@ -32,6 +32,12 @@ export class WorkspacePage extends WorkspaceObject {
 
   main() {
     super.main();
+    if (!FramesManager.Instance.has_frame('stockage')) {
+      console.info(
+        '(!)[Workspace/Index] Chargement des documents en arrière plan...',
+      );
+      FramesManager.Instance.switch_frame('stockage', { changepage: false });
+    }
 
     $('#layout-content').css({ overflow: 'hidden auto', height: '100%' });
 

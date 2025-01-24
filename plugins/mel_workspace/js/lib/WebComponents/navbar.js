@@ -38,6 +38,15 @@ class WspNavBar extends HtmlCustomTag {
     this.onbuttonclicked = new BnumEvent();
     this.onstatetoggle = new BnumEvent();
     this.onquitbuttonclick = new BnumEvent();
+    this.onuserrequested = new BnumEvent();
+    this.onuserchanged = new BnumEvent();
+  }
+
+  /**
+   * @readonly
+   */
+  get users() {
+    return this.onuserrequested.call() || {};
   }
 
   /**
@@ -186,7 +195,12 @@ class WspNavBar extends HtmlCustomTag {
    * @type {{task:string, canBeHidden:boolean}[]}
    */
   get settings() {
-    return JSON.parse(this.#_get_data('apps-settings').replaceAll("¤'¤'", '"'));
+    return JSON.parse(
+      (this.#_get_data('apps-settings') || JSON.stringify([])).replaceAll(
+        "¤'¤'",
+        '"',
+      ),
+    );
   }
 
   _p_main() {
@@ -210,15 +224,6 @@ class WspNavBar extends HtmlCustomTag {
       ._generate_description()
       ._generate_block();
 
-    // let style = document.createElement('link');
-    // style.setAttribute('rel', 'stylesheet');
-    // style.setAttribute('type', 'text/css');
-    // style.setAttribute(
-    //   'href',
-    //   `plugins/mel_workspace/skins/mel_elastic/navbar.css?v=${BnumModules.VERSION}`,
-    // );
-
-    // shadow.appendChild(style);
     let tmp = new WspPageNavigation({ parent: this, apps: this.settings });
     this.mainDiv.appendChild(tmp);
     tmp.onbuttonclicked.push(
@@ -494,6 +499,7 @@ class WspNavBar extends HtmlCustomTag {
 
     if (!plugin.break) {
       const items = [
+        this._generate_send,
         this._generate_invitation,
         this._generate_join,
         this._generate_start_visio,
@@ -593,6 +599,35 @@ class WspNavBar extends HtmlCustomTag {
 
       return button;
     }
+  }
+
+  _generate_send() {
+    if (this.workspace.isJoin && !this.workspace.isPublic) {
+      let button = new WspButton(this, {
+        style: WspButton.Style.classic,
+        text: 'Ecrire aux participants',
+        icon: 'mail',
+      });
+
+      button.setAttribute('data-up-nav', 'send');
+
+      if (!this.users?.emails || this.users.emails.length <= 1)
+        button.disable();
+
+      return button;
+    }
+  }
+
+  tryUpdateSendButton() {
+    let button = this.mainDiv.querySelector('[data-up-nav="send"]');
+
+    if (button) {
+      if (!this.users?.emails || this.users.emails.length <= 1)
+        button.disable();
+      else button.enable();
+    }
+
+    return this;
   }
 
   _generate_start_visio() {
@@ -774,7 +809,19 @@ class WspNavBar extends HtmlCustomTag {
     this.#actions.push(action);
   }
 
-  static CreateElement({ nav = document, workspace = null } = {}) {
+  static CreateElement({
+    nav = document,
+    workspace = null,
+    css = null,
+    modules = null,
+    scripts = null,
+    settings = null,
+    onuserrequested = null,
+    onuserchanged = null,
+  } = {}) {
+    /**
+     * @type {WspNavBar}
+     */
     let node = nav.createElement('bnum-wsp-nav');
 
     if (workspace) {
@@ -783,6 +830,14 @@ class WspNavBar extends HtmlCustomTag {
 
       node.setAttribute('data-workspace', workspace);
     }
+
+    if (css) node.setAttribute('data-css', css);
+    if (modules) node.setAttribute('data-modules', modules);
+    if (scripts) node.setAttribute('data-scripts', scripts);
+    if (settings) node.setAttribute('data-apps-settings', settings);
+
+    if (onuserrequested) node.onuserrequested.push(onuserrequested);
+    if (onuserchanged) node.onuserchanged.push(onuserchanged);
 
     return node;
   }

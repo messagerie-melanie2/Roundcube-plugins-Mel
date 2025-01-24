@@ -164,6 +164,15 @@ class MelObject {
     return top && !!Top.top()?.rcmail ? Top.top().rcmail : window.rcmail;
   }
 
+  open_compose_step({ to = undefined, subject = undefined } = {}) {
+    let config = {};
+
+    if (to) config.to = to;
+    if (subject) config.subject = subject;
+
+    this.rcmail().open_compose_step(config);
+  }
+
   /**
    * Récupère une clé sous forme de texte.
    * @param {string} key_text Clé

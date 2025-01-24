@@ -680,10 +680,15 @@ class FileTag extends AActionNextcloudTag {
     container.style.borderRadius = '5px';
 
     container.onclick = () => {
-      NextcloudModule.EmptyWorkspaceObject.switch_workspace_page('stockage', {
-        newArgs: {
-          _params: `/apps/files?dir=/dossiers-${NextcloudModule.Workspace().uid}&openfile=${this.itemData.data.uid}`,
-        },
+      NextcloudModule.EmptyWorkspaceObject.switch_workspace_page(
+        'stockage',
+      ).then(() => {
+        FramesManager.Instance.get_frame('stockage', { jquery: false })
+          .contentWindow.$('iframe')
+          .attr(
+            'src',
+            `${rcmail.env.nextcloud_url}/apps/files?dir=/dossiers-${NextcloudModule.Workspace().uid}&openfile=${this.itemData.data.uid}`,
+          );
       });
     };
 

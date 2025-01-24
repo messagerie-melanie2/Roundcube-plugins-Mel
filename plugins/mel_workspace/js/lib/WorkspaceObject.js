@@ -683,6 +683,11 @@ class CurrentWorkspaceData {
         ))
     );
   }
+
+  reloadUsers() {
+    this.#users = null;
+    return this;
+  }
 }
 
 /**

@@ -22,6 +22,7 @@ export class FullCalendarElement extends HtmlCustomDataTag {
     this.oneventrender = new BnumEvent();
     this.onresourcerender = new BnumEvent();
     this.ondatechanged = new BnumEvent();
+    this.ondayrender = new BnumEvent();
     this.onallloaded = new BnumEvent();
     this.onviewchanged = new BnumEvent();
 
@@ -40,6 +41,12 @@ export class FullCalendarElement extends HtmlCustomDataTag {
 
     this.onviewchanged.push((view, node) => {
       this.dispatchEvent(new ViewRender(view, node, this));
+    });
+
+    this.ondayrender.push((date, cell) => {
+      this.dispatchEvent(
+        new CustomEvent('api:fc.day.render', { detail: { date, cell } }),
+      );
     });
 
     this.licenseKey = LICENSE_KEY;
@@ -153,6 +160,12 @@ export class FullCalendarElement extends HtmlCustomDataTag {
     this.ondatechanged.call(moment(val), this);
   }
 
+  get slotSize() {
+    const size = this._p_get_data('slot-size');
+
+    return isNullOrUndefined(size) ? null : +size;
+  }
+
   _p_main() {
     super._p_main();
 
@@ -160,7 +173,11 @@ export class FullCalendarElement extends HtmlCustomDataTag {
       schedulerLicenseKey: this.licenseKey,
       resourceRender: this.onresourcerender.call.bind(this.onresourcerender),
       eventRender: this.oneventrender.call.bind(this.oneventrender),
+      dayRender: this.ondayrender.call.bind(this.ondayrender),
+      slotWidth: 30,
     };
+
+    if (!isNullOrUndefined(this.slotSize)) config.slotSize = this.slotSize;
 
     if (this.resourceSources) config.resources = this.resourceSources;
 
@@ -242,14 +259,31 @@ export class FullCalendarElement extends HtmlCustomDataTag {
       }
     }
 
+    this._config = config;
+
     let calendar = new FullCalendar.Calendar($(this), config);
+
+    this.onviewchanged.add('start', () => {
+      this.onviewchanged.remove('start');
+      setTimeout(() => {
+        const date = `${this.date.format('YYYY-MM-DD')}T${this.scrollTime ? (this.scrollTime.split(':').length === 2 ? `${this.scrollTime}:00` : this.scrollTime) : '09:00:00'}`;
+
+        this.$.find('.fc-scroller').animate(
+          {
+            scrollLeft: $(`[data-date="${date}"]`).position().left, // Scroll to 01:00 pm
+          },
+          1000,
+        );
+      }, 10);
+    });
 
     calendar.on('eventAfterAllRender', (...args) => {
       this.onallloaded.call(this, ...args);
     });
 
     calendar.on('viewRender', (...args) => {
-      this.onviewchanged.call(...args);
+      if (this.calendar.getView().slotWidth === 1) this.forceRerender();
+      else this.onviewchanged.call(...args);
     });
 
     if (this.startRendering) calendar.render();
@@ -281,6 +315,23 @@ export class FullCalendarElement extends HtmlCustomDataTag {
     this.calendar.render();
   }
 
+  forceRerender() {
+    this.calendar.destroy();
+    let calendar = new FullCalendar.Calendar($(this), this._config);
+
+    calendar.on('eventAfterAllRender', (...args) => {
+      this.onallloaded.call(this, ...args);
+    });
+
+    calendar.on('viewRender', (...args) => {
+      this.onviewchanged.call(...args);
+    });
+
+    calendar.render();
+
+    this.calendar = calendar;
+  }
+
   fetch() {
     this.calendar.refetchEvents();
   }
@@ -308,6 +359,7 @@ export class FullCalendarElement extends HtmlCustomDataTag {
       slotLabelFormat = null,
       sourcesCallback = null,
       render = false,
+      slotSize = null,
     } = {},
   ) {
     /**
@@ -319,6 +371,9 @@ export class FullCalendarElement extends HtmlCustomDataTag {
       sources = sources.join(',');
 
     node.setAttribute('data-sources', sources);
+
+    if (!isNullOrUndefined(slotSize))
+      node.setAttribute('data-slot-size', slotSize);
 
     if (defaultView) node.setAttribute('data-default-view', defaultView);
 

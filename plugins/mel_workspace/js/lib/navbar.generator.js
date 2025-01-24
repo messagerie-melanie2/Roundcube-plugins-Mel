@@ -79,10 +79,22 @@ export class NavBarManager {
     if (this.currentNavBar) this.currentNavBar.remove();
 
     if (!nav.document.querySelector(`#navbar-${workspace.uid}`)) {
+      if (typeof rcmail.env.navbar === 'string')
+        rcmail.env.navbar = JSON.parse(rcmail.env.navbar);
       /**
        * @type {WspNavBar}
        */
-      let navbar = nav.$(rcmail.env.navbar)[0];
+      let navbar = WspNavBar.CreateElement({
+        nav: nav.document,
+        workspace: rcmail.env.navbar.workspace,
+        css: rcmail.env.navbar.css,
+        modules: rcmail.env.navbar.module,
+        scripts: rcmail.env.navbar.scripts,
+        settings: rcmail.env.navbar.settings,
+        onuserchanged: () => WorkspaceObject.GetWorkspaceData().reloadUsers(),
+        onuserrequested: () => WorkspaceObject.GetWorkspaceData().users,
+      });
+      //nav.$(rcmail.env.navbar)[0];
       navbar.startingStates = rcmail.env['workspace_modules_visibility'] ?? {};
       navbar.setAttribute('id', `navbar-${workspace.uid}`);
       navbar.style.marginTop = '60px';
@@ -159,7 +171,7 @@ export class NavBarManager {
     switch (task) {
       case 'home':
         $('.wsp-params').css('display', 'none');
-        $('.wsp-row').css('display', EMPTY_STRING);
+        $('#main-content').css('display', EMPTY_STRING);
         await FramesManager.Instance.switch_frame('workspace', {
           args: config,
           actions: ['workspace'],
@@ -227,7 +239,6 @@ export class NavBarManager {
           args: config,
           actions: ['workspace'],
         }).then(() => {
-          // debugger;
           rcmail.triggerEvent('workspace.navbar.onclick', {
             task,
             caller: event,

@@ -282,13 +282,8 @@ class mel_workspace extends bnum_plugin
             $navbar->set_settings($this->workspacePageLayout->getNavBarSettings());
             $navbar->add_css(__DIR__.'/'.$this->local_skin_path().'/navbar.css');
             $navbar->add_css(__DIR__.'/../../'.$this->local_skin_path().'/material-symbols.css');
-            // $navbar->add_module('js/lib/navbar.js');
     
             $this->rc()->output->set_env('navbar', $navbar->get());
-    
-            // $this->add_handler('navbar', function() use ($navbar) {
-            //     return $navbar->get();
-            // });
     
             self::IncludeNavBarComponent();
 
@@ -511,6 +506,20 @@ class mel_workspace extends bnum_plugin
     }
 
     #region actions/params
+    public function get_members() {
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $workspace = self::Workspace($uid);
+
+        if (!$workspace->hasUser()) $this->sendEncodedExit('denied');
+
+        $this->sendEncodedExit($workspace->users(true)->select(function ($k, $v) {
+            return ['email' => $v->email, 'name' => $v->name, 'fullname' => $v->fullname, 'is_external' => $v->is_external];
+        })->toDictionnary(function ($k, $v) {
+            return $v['email'];
+        }, function ($k, $v) {
+            return $v;
+        }));
+    }
 
     public function join_user()
     {
@@ -1673,6 +1682,7 @@ class mel_workspace extends bnum_plugin
             $this->register_action('join_user', array($this, 'join_user'));
             $this->register_action('sync_list_member', [$this, 'synchronize_list']);
             $this->register_action('delete_list', [$this, 'delete_list']);
+            $this->register_action('get_members', [$this, 'get_members']);
         }
 
         private function _setup_workspace_actions() {

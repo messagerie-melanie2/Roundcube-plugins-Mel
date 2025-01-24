@@ -1,4 +1,6 @@
+import { MelEnumerable } from '../../../mel_metapage/js/lib/classes/enum.js';
 import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager.js';
+import { MelCurrentUser } from '../../../mel_metapage/js/lib/classes/user.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { NavBarManager } from './navbar.generator.js';
 import { WorkspaceObject } from './WorkspaceObject.js';
@@ -30,6 +32,12 @@ export class WorkspacePage extends WorkspaceObject {
 
   main() {
     super.main();
+    if (!FramesManager.Instance.has_frame('stockage')) {
+      console.info(
+        '(!)[Workspace/Index] Chargement des documents en arrière plan...',
+      );
+      FramesManager.Instance.switch_frame('stockage', { changepage: false });
+    }
 
     $('#layout-content').css({ overflow: 'hidden auto', height: '100%' });
 
@@ -76,7 +84,7 @@ export class WorkspacePage extends WorkspaceObject {
         case 'more':
         case 'settings':
           $('.wsp-params').css('display', EMPTY_STRING);
-          $('.wsp-row').css('display', 'none');
+          $('#main-content').css('display', 'none');
           break;
 
         case 'invitation':
@@ -95,6 +103,24 @@ export class WorkspacePage extends WorkspaceObject {
           this.rcmail(true).triggerEvent('visio.start', {
             workspace: this.workspace.uid,
             room: '¤random¤',
+          });
+          break;
+
+        case 'send':
+          if (this.workspace.users.emails.length >= 300) {
+            if (
+              !confirm(
+                "Attention, la limite d'envoi est de 300 destinataires, vous pourrez envoyer un mail seulement aux 300 premiers membres.",
+              )
+            )
+              return;
+          }
+
+          this.open_compose_step({
+            to: MelEnumerable.from(this.workspace.users.emails)
+              .where((x) => x !== MelCurrentUser.main_email)
+              .take(300)
+              .join(','),
           });
           break;
 

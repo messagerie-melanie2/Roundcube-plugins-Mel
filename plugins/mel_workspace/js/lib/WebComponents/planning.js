@@ -278,7 +278,8 @@ export class Planning extends HtmlCustomDataTag {
       slotLabelFormat: DATE_HOUR_FORMAT,
       resources: this._generate_resources(),
       sourcesCallback: this._resource_loading_callback.bind(this),
-      slotSize: '60px',
+      slotSize: 60,
+      slotWidth: 30,
     });
 
     if (this.workspace.isPublic)
@@ -597,6 +598,9 @@ class SourceLoader extends WorkspaceObject {
     return this.#data.obj;
   }
 
+  /**
+   * @type {DataSource}
+   */
   get dataSource() {
     return this.#data;
   }

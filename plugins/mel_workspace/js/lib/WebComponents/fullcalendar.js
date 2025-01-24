@@ -174,6 +174,7 @@ export class FullCalendarElement extends HtmlCustomDataTag {
       resourceRender: this.onresourcerender.call.bind(this.onresourcerender),
       eventRender: this.oneventrender.call.bind(this.oneventrender),
       dayRender: this.ondayrender.call.bind(this.ondayrender),
+      slotWidth: 30,
     };
 
     if (!isNullOrUndefined(this.slotSize)) config.slotSize = this.slotSize;
@@ -258,14 +259,31 @@ export class FullCalendarElement extends HtmlCustomDataTag {
       }
     }
 
+    this._config = config;
+
     let calendar = new FullCalendar.Calendar($(this), config);
+
+    this.onviewchanged.add('start', () => {
+      this.onviewchanged.remove('start');
+      setTimeout(() => {
+        const date = `${this.date.format('YYYY-MM-DD')}T${this.scrollTime ? (this.scrollTime.split(':').length === 2 ? `${this.scrollTime}:00` : this.scrollTime) : '09:00:00'}`;
+
+        this.$.find('.fc-scroller').animate(
+          {
+            scrollLeft: $(`[data-date="${date}"]`).position().left, // Scroll to 01:00 pm
+          },
+          1000,
+        );
+      }, 10);
+    });
 
     calendar.on('eventAfterAllRender', (...args) => {
       this.onallloaded.call(this, ...args);
     });
 
     calendar.on('viewRender', (...args) => {
-      this.onviewchanged.call(...args);
+      if (this.calendar.getView().slotWidth === 1) this.forceRerender();
+      else this.onviewchanged.call(...args);
     });
 
     if (this.startRendering) calendar.render();
@@ -295,6 +313,23 @@ export class FullCalendarElement extends HtmlCustomDataTag {
 
   render() {
     this.calendar.render();
+  }
+
+  forceRerender() {
+    this.calendar.destroy();
+    let calendar = new FullCalendar.Calendar($(this), this._config);
+
+    calendar.on('eventAfterAllRender', (...args) => {
+      this.onallloaded.call(this, ...args);
+    });
+
+    calendar.on('viewRender', (...args) => {
+      this.onviewchanged.call(...args);
+    });
+
+    calendar.render();
+
+    this.calendar = calendar;
   }
 
   fetch() {

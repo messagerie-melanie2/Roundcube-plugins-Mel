@@ -11,7 +11,7 @@ import {
 import { isNullOrUndefined } from '../../../../mel_metapage/js/lib/mel.js';
 import { BnumEvent } from '../../../../mel_metapage/js/lib/mel_events.js';
 import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';
-import { NavBarManager } from '../navbar.generator.js';
+import { NavBarManager } from '../program/navbar.generator.js';
 
 /**
  * @class

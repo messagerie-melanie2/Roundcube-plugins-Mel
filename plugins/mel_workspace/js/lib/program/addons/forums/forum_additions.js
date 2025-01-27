@@ -1,4 +1,4 @@
-import { WorkspaceObject } from '../WorkspaceObject.js';
+import { WorkspaceObject } from '../../WorkspaceObject.js';
 
 class ForumAddition extends WorkspaceObject {
   constructor() {

@@ -1,4 +1,4 @@
-import { WorkspaceObject } from './WorkspaceObject.js';
+import { WorkspaceObject } from '../WorkspaceObject.js';
 
 /**
  * Classe des avatars qui doivent avoir une couleur de texte changée

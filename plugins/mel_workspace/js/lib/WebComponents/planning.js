@@ -21,13 +21,11 @@ import {
 import { SearchBar } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/searchbar.js';
 import { MelHtml } from '../../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { BnumEvent } from '../../../../mel_metapage/js/lib/mel_events.js';
-import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';
-import { Mel_Promise } from '../../../../mel_metapage/js/lib/mel_promise.js';
 import {
   CONFIG_FIRST_LETTER,
   ID_RESOURCES_WSP,
-} from '../Parts/planning_manager.constants.js';
-import { WorkspaceObject } from '../WorkspaceObject.js';
+} from '../program/Parts/planning_manager.constants.js';
+import { WorkspaceObject } from '../program/WorkspaceObject.js';
 import { RenderEvent, ViewRender } from './events.js';
 import { FullCalendarElement } from './fullcalendar.js';
 import { WorkspaceModuleBlock } from './workspace_module_block.js';

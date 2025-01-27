@@ -23,6 +23,7 @@ export class create_or_edit_post extends MelObject {
             $("#edit-title").val('');
         });
         $('#go-back-to-articles').click(() => {
+            $('#cancel-post').click();
             window.location.href = this.url('forum',{action:'index', params:{'_workspace_uid': this.workspace}});
         });
  
@@ -217,10 +218,9 @@ export class create_or_edit_post extends MelObject {
      * - Si les champs sont vides, le post est supprimé via une requête HTTP interne et l'utilisateur est redirigé vers la page d'accueil.
      * - Si les champs ne sont pas vides, l'utilisateur est simplement redirigé vers la page d'accueil sans suppression du post.
      *
-     * @param {string} post_uid - Identifiant unique du post à supprimer en cas de suppression.
      * @returns {void}
      */
-    cancelButton(post_uid) {
+    cancelButton() {
         $('#cancel-post').click(() => {
             // Récupérer les valeurs des champs
             const _title = $("#edit-title").val();

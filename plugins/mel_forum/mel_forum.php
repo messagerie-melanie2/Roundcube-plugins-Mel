@@ -172,8 +172,6 @@ class mel_forum extends bnum_plugin
         }
     }
 
-
-
     // Fonctions nécessaires à l'affichage d'un article
 
     /**
@@ -337,7 +335,6 @@ class mel_forum extends bnum_plugin
 
         return $formatted_date;
     }
-
 
     /**
      * Affiche le contenu de la publication actuelle.
@@ -570,13 +567,10 @@ class mel_forum extends bnum_plugin
         $history = array_values($history);
 
         // Enregistrer l'historique mis à jour dans le champ `history`
-        // TODO pas besoin de json_encode ?
         $post->history = json_encode($history);
 
-        // TODO a tester
         $post->save();
     }
-
 
     /**
      * Supprime un article existant en fonction de l'UID fourni.
@@ -1179,7 +1173,6 @@ class mel_forum extends bnum_plugin
         exit;
     }
 
-
     /**
      * Gère les actions de like et dislike sur un commentaire.
      *
@@ -1300,7 +1293,6 @@ class mel_forum extends bnum_plugin
         echo json_encode(['status' => $status, 'message' => $message]);
         exit;
     }
-
 
     /**
      * Récupère tous les commentaires associés à un article spécifique ou les réponses d'un commentaire.
@@ -1691,8 +1683,6 @@ class mel_forum extends bnum_plugin
             "_action" => "load_image",
             "_image_uid" => $uid,
         ), false, true, true);
-        // $url = 'https://' . $_SERVER['PLUGIN_MEL_HTTP_HOST'] . '?_task=forum&_action=load_image';
-        // $url = $url . '&_image_uid=' . $uid;
         return $url;
     }
 
@@ -2042,11 +2032,6 @@ class mel_forum extends bnum_plugin
      */
     public function show_new_posts()
     {
-        // $posts = $this->get_new_posts_byworkspace();
-        // $posts_data = $this->new_posts_object_to_Json($posts);
-
-        // $this->rc()->output->set_env('posts_data', $posts_data);
-
         $this->rc()->output->set_env('posts_data', $this->post_object_to_JSON(null, 3, false));
     }
 

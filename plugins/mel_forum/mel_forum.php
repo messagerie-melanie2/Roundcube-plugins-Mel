@@ -644,7 +644,9 @@ class mel_forum extends bnum_plugin
     /**
      * Retourne les posts en fonction des paramètres passés en POST.
      * 
-     * TODO params
+     * @param string $workspace_uid l'uid de l'espace de travail
+     * @param int $limit nombre d'article à charger
+     * @param bool $pin_post doit-on récupérer le post épinglé
      *
      * @return array post tableau d'objet posts
      */
@@ -849,7 +851,6 @@ class mel_forum extends bnum_plugin
      * Associe un tag à un post
      * @param string $name nom du tag
      */
-    // TODO: ajouter post en parametre
     protected function _associate_tag_with_post($name)
     {
         $workspace_uid = $this->get_input('_workspace', rcube_utils::INPUT_POST);
@@ -871,10 +872,9 @@ class mel_forum extends bnum_plugin
     }
 
     /**
-     * Dessaocie un tag d'un post
+     * Dessassocie un tag d'un post
      * @param string $name nom du tag
      */
-    // TODO: ajouter post en parametre
     protected function _unsassociate_tags_from_post($name)
     {
         $workspace_uid = $this->get_input('_workspace', rcube_utils::INPUT_POST);
@@ -922,7 +922,6 @@ class mel_forum extends bnum_plugin
      * @param string $exist_tag nom du tag à vérifie
      * @return bool le tag existe
      */
-    // TODO: ajouter workspace en parametre
     protected function _exist_tag($exist_tag)
     {
         $tag = new LibMelanie\Api\Defaut\Posts\Tag();
@@ -941,7 +940,6 @@ class mel_forum extends bnum_plugin
      * @param string $tag_name nom du tag à chercher
      * @return bool 
      */
-    // TODO: ajouter workspace en parametre
     protected function _tag_is_associated_to_any_post($tag_name)
     {
         $tag = new LibMelanie\Api\Defaut\Posts\Tag();
@@ -954,7 +952,8 @@ class mel_forum extends bnum_plugin
     /**
      * charge le post correspondant, et liste tous les tags associés à ce post.
      * Les tags sont ensuite renvoyés en réponse au format JSON.
-     *
+     * 
+     * @param \LibMelanie\Api\Defaut\Posts\Post $post objet post dont on veut récupérer les tags
      * @return void
      */
     public function get_all_tags_bypost($post)
@@ -971,6 +970,7 @@ class mel_forum extends bnum_plugin
     }
     #endregion
     #region COMMENTS
+
     /**
      * Crée un commentaire.
      *
@@ -1406,7 +1406,6 @@ class mel_forum extends bnum_plugin
                         'likes' => $count['like'],
                         'dislikes' => $count['dislike'],
                         'current_user_reacted' => $current_user_reacted,
-                        'current_user_email' => $current_user_email, //TODO mettre une valeurs ou supprimer cette valeur
                     ];
                 }
             }
@@ -1548,13 +1547,7 @@ class mel_forum extends bnum_plugin
      *
      * @throws Exception Peut générer une erreur si la chaîne n'est pas correctement formatée.
      *
-     * @example
-     * $isValid = $this->is_valid_base64_image('data:image/png;base64,iVBORw...');
-     * if ($isValid) {
-     *     echo "L'image est valide.";
-     * } else {
-     *     echo "L'image n'est pas valide.";
-     * }
+     * @example $isValid = $this->is_valid_base64_image('data:image/png;base64,iVBORw...');
      */
     protected function is_valid_base64_image($base64)
     {
@@ -1753,6 +1746,10 @@ class mel_forum extends bnum_plugin
     #region Post Object to JSON
     /**
      * Prend en paramètre un tableau d'objet post et retourne un tableau au format JSON
+     * @param string $workspace_uid uid de l'espace du travail est overide par la valeur passer en GET
+     * @param int $limit nombre de post à charger
+     * @param bool $pin_post true si on veut charger le post épinglé
+     * @return array $post_data tableau de tableau contenant les infos des posts
      */
     protected function post_object_to_JSON($workspace_uid = null, $limit = 20, $pin_post = false)
     {
@@ -1776,8 +1773,6 @@ class mel_forum extends bnum_plugin
 
             $post_creator = driver_mel::gi()->getUser($post->creator);
             $tags = $this->get_all_tags_bypost($post);
-            // Récupérer le nombre de réaction pas pris en compte dans la v1
-            //$reaction_count = $this->count_reactions($post->uid);
             // Récupérer le nombre de likes
             $reactions = $post->listReactions();
             $isliked = $this->_has_Reacted('like', $reactions);
@@ -1808,7 +1803,6 @@ class mel_forum extends bnum_plugin
                 'creator_email' => $post_creator->email,
                 'tags' => $tags,
                 'summary' => $post->summary,
-                // 'reaction' => $reaction_count,
                 'like_count' => $post->likes,
                 'dislike_count' => $post->dislikes,
                 'comment_count' => $comment_count,
@@ -1826,7 +1820,9 @@ class mel_forum extends bnum_plugin
         return $posts_data;
     }
     #endregion
+
     #region Post Épinglé
+
     /**
      * Affiche la page post à la une
      * @return void
@@ -1846,6 +1842,10 @@ class mel_forum extends bnum_plugin
         }
     }
 
+    /**
+     * rafraichis la page post à la une en renvoyant les données au format json
+     * @return void
+     */
     public function re_load_front_page_post()
     {
         $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
@@ -1856,8 +1856,10 @@ class mel_forum extends bnum_plugin
             $this->_display_error_page();
         }
     }
+
     /**
-     * épingle le post passé en paramètre du POST
+     * épingle/désépingle le post passé en paramètre du POST
+     * @return void
      */
     public function pin_post()
     {
@@ -1873,11 +1875,16 @@ class mel_forum extends bnum_plugin
             $workspace->save();
         }
     }
+
     #endregion
 
     #region Favorites
+
     /**
      * vérifie si un article est en favori
+     * @param string $post_uid 
+     * @param string $workspace_uid 
+     * @return bool si l'article est en favori
      */
     protected function is_fav($post_uid, $workspace_uid)
     {
@@ -1887,6 +1894,7 @@ class mel_forum extends bnum_plugin
 
     /**
      * ajoute un article aux favoris dans les user pref
+     * @return void
      */
     public function add_to_favorite()
     {
@@ -1924,6 +1932,7 @@ class mel_forum extends bnum_plugin
         }
     }
     #endregion
+
     #region Posts Reactions 
 
     /**
@@ -2102,6 +2111,12 @@ class mel_forum extends bnum_plugin
         return $args;
     }
 
+    /**
+     * Affiche le service dans le workspace
+     * 
+     * @param array $args - Les arguments contenant l'espace de travail et la mise en page.
+     * @return array - Les arguments modifiés avec la mise en page mise à jour.
+     */
     public function workspace_params_services_show($args)
     {
         if ($args['app'] === 'forum') $args['continue'] = false;
@@ -2109,6 +2124,11 @@ class mel_forum extends bnum_plugin
         return $args;
     }
 
+    /**
+     * Récupère le service du workspace
+     * @param array $args - Les arguments contenant l'espace de travail et la mise en page.
+     * @return array - Les arguments modifiés avec la mise en page mise à jour.
+     */
     public function workspace_service_get($args)
     {
         if ($args['services']['forum'] === null) $args['services']['forum'] = false;
@@ -2154,6 +2174,9 @@ class mel_forum extends bnum_plugin
         return $return;
     }
 
+    /**
+     * affichage la page d'erreur de forum
+     */
     protected function _display_error_page()
     {
         $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);

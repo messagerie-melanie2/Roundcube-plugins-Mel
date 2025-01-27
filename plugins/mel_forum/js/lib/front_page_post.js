@@ -21,7 +21,7 @@ export class Front_page_post extends MelObject {
 
     this.tags = [];
     this.initButtons();
-    this.initNewPostsDisplay();
+    this.initPinPostsDisplay();
     WorkspaceObject.SendToParent('loaded_pin', true);
     
     //Recharge les données au refresh
@@ -35,7 +35,7 @@ export class Front_page_post extends MelObject {
             on_success: (data) => {
               $('#pin_post-area').text(EMPTY_STRING);
               this.rcmail().env.posts_data = JSON.parse(data);
-              this.initNewPostsDisplay();
+              this.initPinPostsDisplay();
               WorkspaceObject.SendToParent('loaded_pin', true);
             },
           });
@@ -56,14 +56,14 @@ export class Front_page_post extends MelObject {
   }
 
   /**
-   * Initialise l'affichage des nouveaux posts.
-   * Récupère les données des posts depuis l'environnement et détermine
-   * s'il faut afficher un message d'absence de posts ou les nouveaux posts.
+   * Initialise l'affichage du post épinglé.
+   * Récupère les données du post depuis l'environnement et détermine
+   * s'il faut cacher le cadre.
    *
-   * @method initNewPostsDisplay
+   * @method initPinPostsDisplay
    * @returns {void}
    */
-  initNewPostsDisplay() {
+  initPinPostsDisplay() {
     const posts = this.get_env('posts_data');
     if (posts.length === 0) {
       this.NoPost(posts.length);
@@ -72,7 +72,7 @@ export class Front_page_post extends MelObject {
   }
 
   /**
-   * Affiche les nouveaux posts en utilisant les données fournies.
+   * Affiche le post épinglé en utilisant les données fournies.
    * Génère dynamiquement le contenu des posts à partir des modèles,
    * rend les posts accessibles via le clavier, et ajoute des gestionnaires d'événements
    * pour les clics et interactions associées.
@@ -119,7 +119,7 @@ export class Front_page_post extends MelObject {
         };
 
       let template = new MelTemplate()
-        .setTemplateSelector('#new_post_template')
+        .setTemplateSelector('#pin_post_template')
         .setData(data);
       // .addEvent('#more-'+post.uid, 'click', this.toggleMenuPost.bind(this, post.uid))
       //.addEvent(balise, action, fonction)

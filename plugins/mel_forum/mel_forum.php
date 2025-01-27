@@ -490,6 +490,8 @@ class mel_forum extends bnum_plugin
      */
     protected function create_summary_from_content($content)
     {
+        //TODO couper au saut de ligne
+
         // Suppression des balises <img> pour ne pas les prendre en compte
         $content = preg_replace('/<img[^>]*>/i', '', $content);
 
@@ -622,7 +624,7 @@ class mel_forum extends bnum_plugin
      *
      * @return LibMelanie\Api\Defaut\Posts\Post objet post.
      */
-    public function get_post($uid)
+    protected function get_post($uid)
     {
         $post = new LibMelanie\Api\Defaut\Posts\Post();
         $post->uid = $uid;
@@ -644,7 +646,7 @@ class mel_forum extends bnum_plugin
      *
      * @return array post tableau d'objet posts
      */
-    protected function get_posts_byworkspace($workspace_uid = null, $limit = 20, $pin_post = false)
+    protected function get_posts_byworkspace($workspace_uid = null, $limit = self::POST_DEFAULT_LIMIT, $pin_post = false)
     {
         //récupérer les infos de chargement d'articles si aucune n'est fournie on met des valeurs par defaut
         $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET) ?? $workspace_uid;
@@ -695,6 +697,7 @@ class mel_forum extends bnum_plugin
     public function send_post()
     {
         $result = $this->_add_post();
+        //TODO fonction qui gère les tags
         if ($result !== null) {
             // le post est créé on passe aux tags
             $tags = $this->get_input('_tags', rcube_utils::INPUT_POST);
@@ -735,7 +738,7 @@ class mel_forum extends bnum_plugin
      * Elle extrait également les liens d'image du contenu et les enregistre.
      * La fonction retourne une réponse JSON indiquant le statut de la création de l'article.
      *
-     * @return LibMelanie\Api\Defaut\Posts\Post $post 
+     * @return bool true si creation false si modif null si echec
      */
     protected function _add_post()
     {
@@ -1184,7 +1187,7 @@ class mel_forum extends bnum_plugin
      */
     public function like_comment()
     {
-
+        //TODO utiliser la même méthodo que les reactions aux posts
         header('Content-Type: application/json');
 
         // Récupérer l'utilisateur
@@ -1442,6 +1445,7 @@ class mel_forum extends bnum_plugin
             if (strpos($src, 'data:image/') === 0) {
                 // C'est déjà une image en base64, on vérifie sa validité
                 if (!$this->is_valid_base64_image($src)) {
+                    //TODO utiliser le plugin mel_logs en debug
                     error_log("Invalid base64 image, skipping.");
                     continue;
                 }
@@ -1477,53 +1481,6 @@ class mel_forum extends bnum_plugin
         }
 
         return $content;
-    }
-
-    /**
-     * Convertit une URL d'image en une chaîne Base64 encodée avec le type MIME.
-     *
-     * Cette fonction télécharge le contenu d'une image à partir d'une URL donnée,
-     * détecte son type MIME, et retourne une chaîne encodée en Base64 incluant le type MIME.
-     * Si l'URL ne peut pas être téléchargée, ou si le type MIME de l'image n'est pas supporté,
-     * la fonction retourne `false`.
-     *
-     * @param string $url L'URL de l'image à convertir.
-     * 
-     * @return string|false Une chaîne encodée en Base64 incluant le type MIME si l'opération réussit,
-     *                      ou `false` en cas d'échec (par exemple, si l'URL est invalide ou si le type MIME n'est pas supporté).
-     *
-     * @throws Exception Peut déclencher des erreurs si des fonctions système comme `file_get_contents`
-     *                   ou `finfo_*` rencontrent un problème.
-     *
-     * @example
-     * $base64Image = $this->convert_url_to_base64('https://example.com/image.jpg');
-     * if ($base64Image !== false) {
-     *     echo $base64Image;
-     * } else {
-     *     echo "Conversion échouée.";
-     * }
-     */
-    protected function convert_url_to_base64($url)
-    {
-        // Téléchargez le contenu de l'image
-        $imageData = file_get_contents($url);
-        if ($imageData === false) {
-            return false; // Impossible de télécharger l'image
-        }
-
-        // Détectez le type MIME de l'image
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mimeType = finfo_buffer($finfo, $imageData);
-        finfo_close($finfo);
-
-        if (!in_array($mimeType, ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/bmp'])) {
-            error_log("Unsupported image MIME type: {$mimeType}");
-            return false; // Type MIME non supporté
-        }
-
-        // Encodez l'image en base64
-        $base64Data = base64_encode($imageData);
-        return "data:{$mimeType};base64,{$base64Data}";
     }
 
     /**
@@ -1703,7 +1660,7 @@ class mel_forum extends bnum_plugin
             exit;
         }
         if (!empty($_GET['_error'])) {
-            $this->rc()->output->sendExit('', ['HTTP/1.0 204 Photo not found']);
+            $this->rc()->output->sendExit('', ['HTTP/1.0 404 Photo not found']);
         }
         $this->rc()->output->sendExit(base64_decode(rcmail_output::BLANK_GIF), ['Content-Type: image/gif']);
     }
@@ -1836,6 +1793,7 @@ class mel_forum extends bnum_plugin
      * rafraichis la page post à la une en renvoyant les données au format json
      * @return void
      */
+    //TODO renommé en refresh 
     public function re_load_front_page_post()
     {
         $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
@@ -1868,7 +1826,7 @@ class mel_forum extends bnum_plugin
 
     #endregion
 
-    #region Favorites
+    #region Favoris
 
     /**
      * vérifie si un article est en favori
@@ -1882,6 +1840,7 @@ class mel_forum extends bnum_plugin
         return isset($fav_articles[$workspace_uid]) && in_array($post_uid, $fav_articles[$workspace_uid]);
     }
 
+    //TODO faire 3 fonctions
     /**
      * ajoute un article aux favoris dans les user pref
      * @return void

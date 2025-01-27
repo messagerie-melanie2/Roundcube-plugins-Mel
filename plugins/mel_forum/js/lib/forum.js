@@ -36,7 +36,7 @@ export class Forum extends MelObject {
             window.location.href = this.url('forum', {action:'create_or_edit_post', params:{'_workspace_uid':this.workspace}});
         });
         //affichage des boutons favoris
-        $('.favorite').click(() => {
+        $('.favorite').click((event) => {
             event.stopPropagation();
             if ($(this).text() === 'star_border') {
                 // Si elle est vide, la remplir
@@ -469,7 +469,7 @@ export class Forum extends MelObject {
             contentType:false,
             on_success: (response) => {
                 BnumMessage.DisplayMessage(
-                    rcmail.gettext('mel_forum....saved',),
+                    rcmail.gettext('mel_forum.saved',),
                     eMessageType.Confirmation,
                 );
                 //modifier l'apparence du bouton épingler
@@ -529,6 +529,7 @@ export class Forum extends MelObject {
      * @param {*} tag_name 
      * @param {*} event 
      */
+    //TODO Changer nom par searchPostByTag
     searchTag (tag_id, tag_name, event) {
         event.preventDefault();
         event.stopPropagation();
@@ -558,6 +559,7 @@ export class Forum extends MelObject {
      * @param {*} post_uid 
      * @param {*} event 
      */
+    //TODO avoir un truc un peu plus dynamique pour les futurs réactions
     addLikeOrDislike(type, post_id, post_uid,event){
         // Vérification si un événement est fourni
         if (event) {
@@ -625,6 +627,7 @@ export class Forum extends MelObject {
         });
     }
 
+//TODO Docbloc PARTOUT !!!
     openComments(post_link, event)
     {
         if (event) {
@@ -753,7 +756,7 @@ export class Forum extends MelObject {
             .addEvent('.tag-' + post.tags[tag].id, 'click', this.searchTag.bind(this, post.tags[tag].id, post.tags[tag].name));
             $('#tag-area-'+post.uid).append(...tag_template.render());
             }
-            this.offset ++;
+            this.offset++;
         }
     }
 

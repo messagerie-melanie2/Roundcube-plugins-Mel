@@ -245,7 +245,7 @@ class WspNavBar extends HtmlCustomTag {
 
   _generate_back_button() {
     let button = new WspButton(this, {
-      text: 'Retour',
+      text: 'Revenir',
       icon: 'arrow_left_alt',
     });
     button.setAttribute('id', 'wsp-quit-button');
@@ -253,7 +253,7 @@ class WspNavBar extends HtmlCustomTag {
     button.style.maxWidth = '80px';
     button.style.marginBottom = '15px';
     button.onclick = this.onquitbuttonclick.call.bind(this.onquitbuttonclick);
-    button.classList.add('quit-wsp-button');
+    button.classList.add('quit-wsp-button', 'white');
 
     this.mainDiv.prepend(button);
 

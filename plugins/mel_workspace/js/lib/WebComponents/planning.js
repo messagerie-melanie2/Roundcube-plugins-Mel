@@ -205,10 +205,13 @@ export class Planning extends HtmlCustomDataTag {
     next.classList.add('bckg', 'true');
 
     let today = document.createElement('button');
+    today.classList.add('white');
+    today.style.borderRight = '0';
     today.onclick = () => this._load() || this.calendarNode.today();
     today.appendChild(this.createText("Aujourd'hui"));
 
     let day = document.createElement('button');
+    day.classList.add('white');
     day.setAttribute('id', `btn-day-${this.internalId}`);
     day.onclick = () => {
       const fnc = function _accept_calendar(tmp) {

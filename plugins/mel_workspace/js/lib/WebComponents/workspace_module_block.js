@@ -162,11 +162,11 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
         contentsNode: BnumHtmlIcon.Create({ icon: 'refresh' }),
       });
 
-      buttonRefresh.classList.add('refresh-button');
+      buttonRefresh.classList.add('refresh-button', 'white');
 
-      buttonRefresh.style.borderRadius = '5px';
       buttonRefresh.style.display = 'inline-flex';
-      buttonRefresh.style.marginLeft = '5px';
+      buttonRefresh.style.marginLeft = '10px';
+      buttonRefresh.style.padding = '4px';
 
       buttonRefresh.addEventListener('click', (e) => {
         this.onrefresh.call(e, this);
@@ -190,7 +190,7 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
     if (this.buttonTask !== false) {
       let button = HTMLIconMelButton.CreateNode(this.buttonIcon, {
         content: this.createText(this.buttonText),
-      });
+      }).addClass('white');
       // let button = document.createElement('button');
       // button.style.paddingTop = 0;
       // button.style.paddingBottom = 0;

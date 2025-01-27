@@ -584,7 +584,6 @@ class roundcube_auth extends rcube_plugin
             {    
                 // Détermine la méthode d'auth
                 $selected_auth = $this->select_auth();
-                $selected_auth = AuthTypeEnum::KERBEROS;
                 mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] Selected : " . $selected_auth);
 
                 // Store the redirection query

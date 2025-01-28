@@ -60,11 +60,17 @@ export class Manager extends MelObject {
 
     // Redirection à la page d'accueil au clic sur 'return-homepage'
     $('#return-homepage').click(() => {
+      $("body").css("cursor", "wait");
       window.location.href = this.url('forum', {
         action: 'index',
         params: { _workspace_uid: this.get_env('workspace_uid') },
       });
     });
+    $('#return-homepage').on("keydown", (event) => {
+      if (event.keyCode === 13) { // Touche "Entrée"
+        $('#return-homepage').click(); 
+      }
+  });
 
     // Fonction de redimensionnement automatique du textarea
     $(document).on('input', '.forum-comment-input', function () {

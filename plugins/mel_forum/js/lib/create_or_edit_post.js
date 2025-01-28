@@ -24,7 +24,13 @@ export class create_or_edit_post extends MelObject {
         $("#reset-title-button").click(() => {
             $("#edit-title").val('');
         });
+        $('#go-back-to-articles').on("keydown", (event) => {
+            if (event.keyCode === 13) { // Touche "Entrée"
+              $('#go-back-to-articles').click(); 
+            }
+        });
         $('#go-back-to-articles').click(() => {
+            $("body").css("cursor", "wait");
             $('#cancel-post').click();
             window.location.href = this.url('forum',{action:'index', params:{'_workspace_uid': this.workspace}});
         });
@@ -171,6 +177,7 @@ export class create_or_edit_post extends MelObject {
             let title = $("#edit-title").val().trim();
             if(title !== '' && content !== '')
             {
+                $("body").css("cursor", "wait");
                 this.http_internal_post(
                 {
                     task: 'forum',
@@ -236,6 +243,7 @@ export class create_or_edit_post extends MelObject {
             const _content = tinymce.activeEditor.getContent();
             const _uid = this.post_uid
             
+            $("body").css("cursor", "wait");
             if (!_title.trim() && !_content.trim()) {
                 // Les champs sont vides, suppression du post
                 

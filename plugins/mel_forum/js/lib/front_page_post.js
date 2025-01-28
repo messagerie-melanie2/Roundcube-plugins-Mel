@@ -28,7 +28,7 @@ export class Front_page_post extends MelObject {
     this.rcmail().addEventListener('mel_metapage_refresh', () => {
       this.http_internal_get({
         task: 'forum',
-        action: 're_load_front_page_post',
+        action: 'refresh_front_page_post',
         params: {
           _workspace_uid: this.get_env('_workspace_uid'),
         },
@@ -177,7 +177,7 @@ export class Front_page_post extends MelObject {
           .addEvent(
             '.tag-' + post.tags[tag].id,
             'click',
-            this.searchTag.bind(this, post.tags[tag].name),
+            this.searchPostByTag.bind(this, post.tags[tag].name),
           );
 
         $('#new-tag-area-' + post.uid).append(...tag_template.render());
@@ -191,7 +191,7 @@ export class Front_page_post extends MelObject {
    * @param {*} tag_name
    * @param {*} event
    */
-  searchTag(tag_name, event) {
+  searchPostByTag(tag_name, event) {
     event.preventDefault();
     event.stopPropagation();
     WorkspaceObject.SendToParent('tagClicked', {

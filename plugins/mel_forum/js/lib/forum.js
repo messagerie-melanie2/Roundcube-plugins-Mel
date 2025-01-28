@@ -8,6 +8,9 @@ export class Forum extends MelObject {
         super();
     }
 
+    /**
+     * initialise les variables et l'affichage
+     */
     main() {
         super.main();
         this.workspace = this.get_env('workspace_uid');
@@ -105,6 +108,9 @@ export class Forum extends MelObject {
         });
     }
 
+    /**
+     * Affiche ou non la croix pour supprimer le texte de la barre de recherche
+     */
     toggleClearButton() {
         const searchInput = $('#post-search-input');
         const clearButton = $('#clear-button');
@@ -253,12 +259,11 @@ export class Forum extends MelObject {
                 return;
             }
         }
-        //TODO récupérer le workspaces via l'url ou le post
         let workspace = this.get_env('workspace_uid');
         this.http_internal_post(
             {
                 task: 'forum',
-                action: 'add_to_favorite',
+                action: 'manage_favorite',
                 params: {
                     _workspace_uid: workspace,
                     _article_uid: post_uid,
@@ -514,16 +519,13 @@ export class Forum extends MelObject {
         
     }
 
-    
-
     /**
      * Affiche les posts comportant un tag
      * @param {*} tag_id 
      * @param {*} tag_name 
      * @param {*} event 
      */
-    //TODO Changer nom par searchPostByTag
-    searchTag (tag_id, tag_name, event) {
+    searchPostByTag (tag_id, tag_name, event) {
         event.preventDefault();
         event.stopPropagation();
         this.offset = 0;
@@ -620,7 +622,12 @@ export class Forum extends MelObject {
         });
     }
 
-//TODO Docbloc PARTOUT !!!
+    /**
+     * ouvre l'article sur la section commentaires
+     * @param {*} post_link lien du post
+     * @param {*} event 
+     * @returns 
+     */
     openComments(post_link, event)
     {
         if (event) {
@@ -761,7 +768,7 @@ export class Forum extends MelObject {
             let tag_template = new MelTemplate()
             .setTemplateSelector('#tag_template')
             .setData(tag_data)
-            .addEvent('.tag-' + post.tags[tag].id, 'click', this.searchTag.bind(this, post.tags[tag].id, post.tags[tag].name));
+            .addEvent('.tag-' + post.tags[tag].id, 'click', this.searchPostByTag.bind(this, post.tags[tag].id, post.tags[tag].name));
             $('#tag-area-'+post.uid).append(...tag_template.render());
             }
             this.offset++;

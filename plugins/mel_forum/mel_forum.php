@@ -127,7 +127,7 @@ class mel_forum extends bnum_plugin
             // affiche une image chargé sur le serveur
             $this->register_action('load_image', array($this, 'load_image'));
             // ajoute un article aux favoris de l'utilisateur courant
-            $this->register_action('add_to_favorite', array($this, 'add_to_favorite'));
+            $this->register_action('manage_favorite', array($this, 'manage_favorite'));
             // récupérer des posts au format Json
             $this->register_action('get_posts_data', array($this, 'get_posts_data'));
             //gestion des réaction aux posts
@@ -137,7 +137,7 @@ class mel_forum extends bnum_plugin
             //Affichage du post à la une
             $this->register_action('front_page_post', array($this, 'front_page_post'));
             //Reload du post à la une
-            $this->register_action('re_load_front_page_post', array($this, 're_load_front_page_post'));
+            $this->register_action('refresh_front_page_post', array($this, 'refresh_front_page_post'));
             //Épingler un post
             $this->register_action('pin_post', array($this, 'pin_post'));
         } else if ($this->get_current_task() === 'workspace') {
@@ -691,42 +691,15 @@ class mel_forum extends bnum_plugin
     }
 
     /**
-     * Gère les tags suite à la modification/création d'un post
+     * Gère l'enregistrement d'un article et des tags qui lui sont associés
      * @return void
      */
     public function send_post()
     {
         $result = $this->_add_post();
-        //TODO fonction qui gère les tags
         if ($result !== null) {
             // le post est créé on passe aux tags
-            $tags = $this->get_input('_tags', rcube_utils::INPUT_POST);
-            if (is_null($tags)) $tags = [];
-            $post_tags = $this->_get_tags_name_bypost($this->get_input('_uid', rcube_utils::INPUT_POST));
-            if (empty(array_diff($tags, $post_tags))) {
-                if (!empty(array_diff($post_tags, $tags))) {
-                    //il y a moins de tags suite à la modifs décorellé les tags
-                    $unlink_tags = array_diff($post_tags, $tags);
-                    foreach ($unlink_tags as $tag) {
-                        $this->_unsassociate_tags_from_post($tag);
-                        // si le tag est associé à aucun post le supprimer
-                        if (!$this->_tag_is_associated_to_any_post($tag)) {
-                            $this->_delete_tag($tag);
-                        }
-                    }
-                }
-            } else {
-                //il y plus de tag que dans la bdd
-                $new_tags = array_diff($tags, $post_tags);
-                foreach ($new_tags as $tag) {
-                    if (!$this->_exist_tag($tag)) {
-                        //le tag n'éxiste pas encore il faut le créer
-                        $this->_create_tag($tag);
-                    }
-                    //associé le tag au post
-                    $this->_associate_tag_with_post($tag);
-                }
-            }
+            $this->_manage_tags();
         }
     }
 
@@ -795,6 +768,41 @@ class mel_forum extends bnum_plugin
     }
 
     #region TAGS
+
+    /**
+     * fait le traitement de création suppression des tags
+     */
+    protected function _manage_tags()
+    {
+        $tags = $this->get_input('_tags', rcube_utils::INPUT_POST);
+        if (is_null($tags)) $tags = [];
+        $post_tags = $this->_get_tags_name_bypost($this->get_input('_uid', rcube_utils::INPUT_POST));
+        if (empty(array_diff($tags, $post_tags))) {
+            if (!empty(array_diff($post_tags, $tags))) {
+                //il y a moins de tags suite à la modifs décorellé les tags
+                $unlink_tags = array_diff($post_tags, $tags);
+                foreach ($unlink_tags as $tag) {
+                    $this->_unsassociate_tags_from_post($tag);
+                    // si le tag est associé à aucun post le supprimer
+                    if (!$this->_tag_is_associated_to_any_post($tag)) {
+                        $this->_delete_tag($tag);
+                    }
+                }
+            }
+        } else {
+            //il y plus de tag que dans la bdd
+            $new_tags = array_diff($tags, $post_tags);
+            foreach ($new_tags as $tag) {
+                if (!$this->_exist_tag($tag)) {
+                    //le tag n'éxiste pas encore il faut le créer
+                    $this->_create_tag($tag);
+                }
+                //associé le tag au post
+                $this->_associate_tag_with_post($tag);
+            }
+        }
+    }
+
     /**
      * créer un tag dans l'espace de travail courant
      * @param string $name Nom du tag
@@ -1793,8 +1801,7 @@ class mel_forum extends bnum_plugin
      * rafraichis la page post à la une en renvoyant les données au format json
      * @return void
      */
-    //TODO renommé en refresh 
-    public function re_load_front_page_post()
+    public function refresh_front_page_post()
     {
         $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
         if (driver_mel::gi()->getUser()->isWorkspaceMember($workspace_uid)) {
@@ -1840,12 +1847,12 @@ class mel_forum extends bnum_plugin
         return isset($fav_articles[$workspace_uid]) && in_array($post_uid, $fav_articles[$workspace_uid]);
     }
 
-    //TODO faire 3 fonctions
+
     /**
-     * ajoute un article aux favoris dans les user pref
+     * ajoute un article aux favoris dans les user pref ou le suprime
      * @return void
      */
-    public function add_to_favorite()
+    public function manage_favorite()
     {
         $new_fav_post_workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_POST);
         $new_fav_post_uid = $this->get_input('_article_uid', rcube_utils::INPUT_POST);

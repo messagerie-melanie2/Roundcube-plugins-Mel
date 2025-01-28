@@ -351,8 +351,7 @@ export class Manager extends MelObject {
       button_delete.toggleClass('hidden');
       button_edit.toggleClass('hidden');
     }
-    
-  //TODO gérer les actions clavier
+  
     more_action.click(()=>
     {
       context_menu.toggleClass('hidden');

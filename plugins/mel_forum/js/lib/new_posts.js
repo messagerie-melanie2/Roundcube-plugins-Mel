@@ -148,7 +148,7 @@ export class New_posts extends MelObject {
           .addEvent(
             '.tag-' + post.tags[tag].id,
             'click',
-            this.searchTag.bind(this, post.tags[tag].name),
+            this.searchPostByTag.bind(this, post.tags[tag].name),
           );
 
         $('#new-tag-area-' + post.uid).append(...tag_template.render());
@@ -164,7 +164,7 @@ export class New_posts extends MelObject {
    * @param {string} tag_name
    * @param {Event} event
    */
-  searchTag(tag_name, event) {
+  searchPostByTag(tag_name, event) {
     event.preventDefault();
     event.stopPropagation();
     WorkspaceObject.SendToParent('tagClicked', {

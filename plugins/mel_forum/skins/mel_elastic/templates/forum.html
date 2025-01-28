@@ -66,16 +66,13 @@
 </div>
 
 <template id="post_template">
-  <div class="row post" tabindex="0" id="post-%%UID%%">
+  <div class="row post %%POST_PINNED%%" tabindex="0" id="post-%%UID%%">
     <a class="post-card" data-spied="false" href="%%POST_LINK%%">
       <div class="col-12">
         <div class="row">
           <div class="col-12">
             <div class="post-header">
               <div class="post-creator">
-                <div class="post-pinned">
-                  <i class="material-symbols-outlined pin %%IS_PINNED%%">keep</i>
-                </div>
                 <bnum-avatar class="author-image" style="background-color: var(--mel-button-background-color); display: flex align-items: center justify-content: center color: white" data-email="%%CREATOR_EMAIL%%"></bnum-avatar>
                 <div class="post-creator-name">%%POST_CREATOR%%</div>
                 <div class="post-date">
@@ -121,7 +118,7 @@
         </div>
         <div class="row">
           <div class="col-12">
-            <div class="post-footer">
+            <div class="post-footer d-flex justify-content-between">
               <div class="post-reaction">
                 <!-- <div id="add_reaction" class="reaction">
                   <i class="material-symbols-outlined">add_reaction</i>
@@ -138,6 +135,11 @@
                 <div id="add_comment-%%UID%%" class="comment hoverable %%COMMENTS_ENABLED%%" aria-label="%%POST_COMMENTS%% commentaires">
                   <i class="material-symbols-outlined">comment</i>
                   <span class="ml-2">%%POST_COMMENTS%%</span>
+                </div>
+              </div>
+              <div class="post_pin">
+                <div class="post-pinned">
+                  <i class="material-symbols-outlined pin %%IS_PINNED%%">keep</i>
                 </div>
               </div>
             </div>

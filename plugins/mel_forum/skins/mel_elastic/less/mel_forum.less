@@ -851,6 +851,10 @@
     box-shadow: 0 1px 7px rgba(0, 0, 0, 0.2);
     border-radius: 5px;
 
+    &.post_pinned {
+      border: solid 1px var(--main-border-color);
+    }
+
     .post-header {
       margin: 10px 0;
       display: flex;
@@ -878,10 +882,6 @@
           font-size: 13px;
           i {
             font-size: 17px !important;
-            &.pin {
-              font-size: 25px !important;
-              font-variation-settings: 'FILL' 1,;
-            }
           }
         }
       }
@@ -1096,6 +1096,10 @@
             font-size: 20px;
           }
         }
+      }
+      .pin {
+        font-size: 25px !important;
+        font-variation-settings: 'FILL' 1,;
       }
     }
   }

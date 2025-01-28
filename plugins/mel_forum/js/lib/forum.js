@@ -489,6 +489,7 @@ export class Forum extends MelObject {
                     iconSpan.attr('data-icon', 'keep');
                     textSpan.text(rcmail.gettext('mel_forum.pin_article'));
                     $('.pin').addClass('hidden');
+                    $('.post_pinned').removeClass('post_pinned')
                 } else {
                     iconSpan.attr('data-icon', 'keep_off');
                     textSpan.text(rcmail.gettext('mel_forum.unpin_article'));
@@ -496,6 +497,8 @@ export class Forum extends MelObject {
                     let post = $('#post-' + post_uid);
                     $('#post-area').prepend(post);
                     //on enlève le pin du post épinglé d'avant et on le met sur le nouveau
+                    $('.post_pinned').removeClass('post_pinned')
+                    post.addClass('post_pinned');
                     $('.pin').addClass('hidden');
                     post.find('.pin').removeClass('hidden');
                 }
@@ -706,6 +709,7 @@ export class Forum extends MelObject {
                 IS_ADMIN: post.is_admin ? "" : "hidden",
                 COMMENTS_ENABLED: post.settings?.comments ? "" : "hidden",
                 IS_PINNED: post.pinned ? "" : "hidden",
+                POST_PINNED: post.pinned ? "post_pinned" : "",
                 POST_PINNED_LOGO: post.pinned ? "keep_off" : "keep",
                 POST_PINNED_TEXT: post.pinned ? this.gettext('mel_forum.unpin_article') : this.gettext('mel_forum.pin_article'),
                 };

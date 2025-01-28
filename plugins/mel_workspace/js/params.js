@@ -23,6 +23,7 @@
       const { NavBarManager } = await loadJsModule(
         'mel_workspace',
         'navbar.generator',
+        '/js/lib/program/',
       );
 
       return NavBarManager;

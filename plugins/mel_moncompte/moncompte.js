@@ -1089,8 +1089,12 @@ rcube_webmail.prototype.delete_resource = function () {
 rcube_webmail.prototype.calendar_edit = function (calId, data) {
   if (calId && data) {
     data = JSON.parse(data.replace(/'/g, '"'));
-    const url = 'calendar&_action=calendar';
-    cal_data = {
+
+    if (data[0] === 'showalarms') {
+      data[1] = data[1] === 'true' ? 1 : data[1] === 'false' ? 0 : data[1];
+    }
+
+    let cal_data = {
       action: 'edit',
       c: {
         id: calId,
@@ -1102,14 +1106,17 @@ rcube_webmail.prototype.calendar_edit = function (calId, data) {
 
     const busy = rcmail.set_busy(true, 'loading');
 
-    rcmail.http_post('calendar/calendar', cal_data, busy).done((a) => {
-      if (data[0] === 'name') {
-        $('.boxtitle').text(data[1]);
-        parent.$(`#rcmrow${calId} td.name`).text(data[1]);
-      }
-    }).fail((...e) => {
-      console.log('Error:', ...e);
-    })
+    rcmail
+      .http_post('calendar/calendar', cal_data, busy)
+      .done(() => {
+        if (data[0] === 'name') {
+          $('.boxtitle').text(data[1]);
+          parent.$(`#rcmrow${calId} td.name`).text(data[1]);
+        }
+      })
+      .fail((...e) => {
+        console.log('Error:', ...e);
+      });
   }
 };
 

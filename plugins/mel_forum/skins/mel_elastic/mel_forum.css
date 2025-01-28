@@ -1143,7 +1143,7 @@
   --layout-content-background-color: var(--bureau-card-content-background-color);
 }
 .task-forum .front_page_post .post:hover {
-  background-color: var(--secondary-border-color);
+  background-color: var(--forum-list-hover-background-color);
   border-radius: 5px;
 }
 .task-forum .front_page_post .post:last-child {

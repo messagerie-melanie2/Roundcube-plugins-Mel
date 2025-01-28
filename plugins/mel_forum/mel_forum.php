@@ -1732,7 +1732,7 @@ class mel_forum extends bnum_plugin
                 "_action" => "post",
                 "_uid" => $post->uid,
                 "workspace_uid" => $workspace_uid,
-            ), false, false, true);
+            ), false, true, true);
 
             // Récupérer la première image du post et son URL
             $first_image = $post->firstImage();

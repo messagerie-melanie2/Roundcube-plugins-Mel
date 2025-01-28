@@ -10,8 +10,8 @@ import { PressedButton } from '../../../../mel_metapage/js/lib/html/JsHtml/Custo
 import { BnumEvent } from '../../../../mel_metapage/js/lib/mel_events.js';
 // import { isNullOrUndefined } from '../../../../mel_metapage/js/lib/mel.js';
 import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';
-import { WorkspaceData } from '../program/workspaceData.js';
-import { WspButton } from './NavbarComponents/button.js';
+import { WorkspaceData } from '../workspaceData.js';
+import { WspButton, WspNavigationButton } from './NavbarComponents/button.js';
 import { WspNavBarDescription } from './NavbarComponents/components.js';
 import { WspPageNavigation } from './NavbarComponents/nav.js';
 
@@ -245,7 +245,7 @@ class WspNavBar extends HtmlCustomTag {
 
   _generate_back_button() {
     let button = new WspButton(this, {
-      text: 'Revenir',
+      text: 'Retour',
       icon: 'arrow_left_alt',
     });
     button.setAttribute('id', 'wsp-quit-button');

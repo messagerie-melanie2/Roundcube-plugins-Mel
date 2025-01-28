@@ -511,17 +511,7 @@ export class Forum extends MelObject {
         
     }
 
-    /**
-     * initialise l'affichage des posts au chargement de la page
-     * @param {*} event 
-     */
-    initPostDisplay () {
-        const posts = this.get_env('posts_data');
-        if(posts.length === 0){
-            this.displayNoPost();
-        }
-        this.displayPost(posts);
-    }
+    
 
     /**
      * Affiche les posts comportant un tag
@@ -646,6 +636,20 @@ export class Forum extends MelObject {
         window.location.href = post_link + "#comment-section";
     }
 
+    //region AFFICHAGE des posts
+    
+    /**
+     * initialise l'affichage des posts au chargement de la page
+     * @param {*} event 
+     */
+    initPostDisplay () {
+        const posts = this.get_env('posts_data');
+        if(posts.length === 0){
+            this.displayNoPost();
+        }
+        this.displayPost(posts);
+    }
+
     /**
      * affiche les posts passés en paramètres dans la div post-area
      * @param {*} posts 
@@ -760,6 +764,9 @@ export class Forum extends MelObject {
         }
     }
 
+    //endregion
+    //region Absence de post
+
     /**
      * Affiche un message indiquant qu'il n'y a aucun post dans l'espace de travail
      */
@@ -779,4 +786,5 @@ export class Forum extends MelObject {
         $('#post-area').append(noFavoriteDiv.generate());
     }
     
+    //endregion
 }

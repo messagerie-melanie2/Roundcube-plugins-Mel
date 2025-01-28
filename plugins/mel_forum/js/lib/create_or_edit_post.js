@@ -10,6 +10,8 @@ export class create_or_edit_post extends MelObject {
         this.post_id = rcmail.env.post_id;    // Initialisation de `post_id` depuis l'environnement
     }
 
+    // region MAIN
+
     main() {
         super.main();
 
@@ -50,6 +52,9 @@ export class create_or_edit_post extends MelObject {
         this.saveButton();
         this.cancelButton();
     }
+
+    // endregion
+    // region TAG
 
     /**
      * Affiche la liste des tags dans l'élément HTML avec la classe "tag-list".
@@ -141,6 +146,10 @@ export class create_or_edit_post extends MelObject {
             }
         });
     }
+
+    // endregion
+
+    // region Boutons principaux
 
     /**
      * Gère l'envoi du post, soit pour la création, soit pour la modification.
@@ -251,6 +260,9 @@ export class create_or_edit_post extends MelObject {
         });
     }
 
+    // endregion
+    // region Modale import image
+
     /**
      * Bascule vers une nouvelle page de dialogue.
      *
@@ -338,5 +350,7 @@ export class create_or_edit_post extends MelObject {
         dialog.show();
         this.dialog = dialog;
     }
+
+    // endregion
     
 }

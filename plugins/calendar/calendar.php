@@ -951,7 +951,9 @@ $("#rcmfd_new_category").keypress(function(event) {
         $reload  = false;
 
         if (isset($cal['showalarms'])) {
-            $cal['showalarms'] = intval($cal['showalarms']);
+            $cal['showalarms'] = $cal['showalarms'] === "true";
+            // if ($cal['showalarms'] === true || $cal['showalarms'] === "true") $cal['showalarms'] = 1;
+            // else $cal['showalarms'] = intval($cal['showalarms']);
         }
 
         switch ($action) {

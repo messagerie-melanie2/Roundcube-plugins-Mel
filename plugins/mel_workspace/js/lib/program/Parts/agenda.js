@@ -1,10 +1,10 @@
 /* eslint-disable no-async-promise-executor */
-import { BnumMessage } from '../../../../mel_metapage/js/lib/classes/bnum_message.js';
-import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
-import { Mel_Promise } from '../../../../mel_metapage/js/lib/mel_promise.js';
-import { NavBarManager } from '../navbar.generator.js';
-import { Planning } from '../WebComponents/planning.js';
+import { BnumMessage } from '../../../../../mel_metapage/js/lib/classes/bnum_message.js';
+import { EMPTY_STRING } from '../../../../../mel_metapage/js/lib/constants/constants.js';
+import { Mel_Promise } from '../../../../../mel_metapage/js/lib/mel_promise.js';
 import { WorkspaceObject } from '../WorkspaceObject.js';
+import { NavBarManager } from '../navbar.generator.js';
+import { Planning } from '../../WebComponents/planning.js';
 
 class WorkspaceAgenda extends WorkspaceObject {
   constructor() {

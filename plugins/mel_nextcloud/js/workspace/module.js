@@ -3,7 +3,6 @@ import {
   EWebComponentMode,
   HtmlCustomDataTag,
 } from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/js_html_base_web_elements.js';
-import { WorkspaceObject } from '../../../mel_workspace/js/lib/WorkspaceObject.js';
 import {
   Roundrive,
   RoundriveFile,
@@ -13,12 +12,14 @@ import { PressedButton } from '../../../mel_metapage/js/lib/html/JsHtml/CustomAt
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { BootstrapLoader } from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/bootstrap-loader.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
-import { NavBarManager } from '../../../mel_workspace/js/lib/navbar.generator.js';
+
 import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager.js';
 import { BnumMessage } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
 import { HTMLMelButton } from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/HTMLMelButton.js';
 import { HTMLButtonGroup } from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/HTMLButtonGroup.js';
 import { WorkspaceModuleBlock } from '../../../mel_workspace/js/lib/WebComponents/workspace_module_block.js';
+import { WorkspaceObject } from '../../../mel_workspace/js/lib/program/WorkspaceObject.js';
+import { NavBarManager } from '../../../mel_workspace/js/lib/program/navbar.generator.js';
 
 class NextcloudModule extends WorkspaceObject {
   constructor() {

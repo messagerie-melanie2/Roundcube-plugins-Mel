@@ -1,8 +1,8 @@
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { MelTemplate } from '../../../mel_metapage/js/lib/html/JsHtml/MelTemplate.js';
-import { WorkspaceObject } from '../../../mel_workspace/js/lib/WorkspaceObject.js';
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
+import { WorkspaceObject } from '../../../mel_workspace/js/lib/program/WorkspaceObject.js';
 
 export class New_posts extends MelObject {
   constructor() {

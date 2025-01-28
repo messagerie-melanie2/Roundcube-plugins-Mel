@@ -139,7 +139,7 @@ class mel_workspace extends bnum_plugin
                 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                     try {
                         if ($this->rc()->output !== null) {
-                            $this->include_module('forum_additions.js', 'js/lib/forums');
+                           $this->include_module_addon('forum_additions.js', 'forums');// $this->include_module('forum_additions.js', 'js/lib/forums');
                         }
                     } catch (\Throwable $th) {
                         //throw $th;
@@ -149,7 +149,8 @@ class mel_workspace extends bnum_plugin
 
             case 'tasks':
                 if ($this->is_index_action()) {
-                    $this->include_module('page.tasks.js');
+                    //$this->include_module('page.tasks.js');
+                    $this->include_module_action('page.tasks.js');
                 }
                 break;
 
@@ -242,11 +243,11 @@ class mel_workspace extends bnum_plugin
     
             $this->include_css('workspace.css');
             self::IncludeWorkspaceModuleComponent();
-            $this->include_module('agenda.js', 'js/lib/Parts');
-            $this->load_script_module('page.workspace.js');
+            $this->include_module_program('agenda.js', 'Parts');
+            $this->load_script_module('page.workspace.js', '/js/lib/program/actions/');
             $this->include_script('js/params.js');
     
-            if (!$workspace->isAdmin()) $this->include_module('page.user.js');
+            if (!$workspace->isAdmin()) $this->include_module_action('page.user.js');
     
             $this->rc()->output->set_env('workspace_force_theme', $this->get_config('workspace_force_theme', []));
             $this->rc()->output->set_env('current_workspace_uid', $uid);
@@ -274,7 +275,7 @@ class mel_workspace extends bnum_plugin
             $this->rc()->plugins->get_plugin('calendar')->include_stylesheet('lib/js/scheduler.css');
             $this->rc()->output->set_env("wsp_shares",             $workspace->users_mail(true));
 
-            if (class_exists('mel_forum')) $this->include_module('forum_additions.js', 'js/lib/forums');
+            if (class_exists('mel_forum')) $this->include_module_addon('forum_additions.js', 'forums');
 
             include_once __DIR__.'/lib/NavBar.php';
 
@@ -289,7 +290,7 @@ class mel_workspace extends bnum_plugin
 
             if ($this->get_input('_page')) $this->rc()->output->set_env('start_page', $this->get_input('_page'));
         } else {
-            $this->load_script_module('page.not_in_workspace.js');
+            $this->load_script_module('page.not_in_workspace.js', '/js/lib/program/actions/');
             $this->rc()->output->set_env('current_workspace_uid', $uid);
             $this->rc()->output->set_env('current_workspace_is_public', $workspace->isPublic());
         }

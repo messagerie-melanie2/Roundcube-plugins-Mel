@@ -1,6 +1,6 @@
 import { FramesManager } from '../../mel_metapage/js/lib/classes/frame_manager.js';
-import { NavBarManager } from '../../mel_workspace/js/lib/navbar.generator.js';
-import { WorkspaceObject } from '../../mel_workspace/js/lib/WorkspaceObject.js';
+import { NavBarManager } from '../../mel_workspace/js/lib/program/navbar.generator.js';
+import { WorkspaceObject } from '../../mel_workspace/js/lib/program/WorkspaceObject.js';
 
 export class ModuleWekan extends WorkspaceObject {
   constructor() {

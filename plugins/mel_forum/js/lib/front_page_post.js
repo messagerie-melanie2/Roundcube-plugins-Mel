@@ -1,7 +1,7 @@
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { MelTemplate } from '../../../mel_metapage/js/lib/html/JsHtml/MelTemplate.js';
-import { WorkspaceObject } from '../../../mel_workspace/js/lib/WorkspaceObject.js';
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
+import { WorkspaceObject } from '../../../mel_workspace/js/lib/program/WorkspaceObject.js';
 
 export class Front_page_post extends MelObject {
   constructor() {
@@ -23,23 +23,23 @@ export class Front_page_post extends MelObject {
     this.initButtons();
     this.initPinPostsDisplay();
     WorkspaceObject.SendToParent('loaded_pin', true);
-    
+
     //Recharge les données au refresh
-        this.rcmail().addEventListener('mel_metapage_refresh', () => {
-          this.http_internal_get({
-            task: 'forum',
-            action: 're_load_front_page_post',
-            params: {
-              _workspace_uid: this.get_env('_workspace_uid'),
-            },
-            on_success: (data) => {
-              $('#pin_post-area').text(EMPTY_STRING);
-              this.rcmail().env.posts_data = JSON.parse(data);
-              this.initPinPostsDisplay();
-              WorkspaceObject.SendToParent('loaded_pin', true);
-            },
-          });
-        });
+    this.rcmail().addEventListener('mel_metapage_refresh', () => {
+      this.http_internal_get({
+        task: 'forum',
+        action: 're_load_front_page_post',
+        params: {
+          _workspace_uid: this.get_env('_workspace_uid'),
+        },
+        on_success: (data) => {
+          $('#pin_post-area').text(EMPTY_STRING);
+          this.rcmail().env.posts_data = JSON.parse(data);
+          this.initPinPostsDisplay();
+          WorkspaceObject.SendToParent('loaded_pin', true);
+        },
+      });
+    });
   }
 
   /**
@@ -96,27 +96,39 @@ export class Front_page_post extends MelObject {
         CREATOR_EMAIL: post.creator_email,
         POST_DATE: post.creation_date,
         UID: post.uid,
-        POST_CONTENT_CLASS: hasImage ? 'col-md-10 col-xl-10' : 'col-12 no-image-padding',
+        POST_CONTENT_CLASS: hasImage
+          ? 'col-md-10 col-xl-10'
+          : 'col-12 no-image-padding',
         POST_TITLE: post.title,
         POST_SUMMARY: post.summary,
         POST_IMAGE: post.image_url,
         POST_IMAGE_SECTION: hasImage
-        ? `<div class="col-12 col-md-2 col-xl-2">
+          ? `<div class="col-12 col-md-2 col-xl-2">
              <img src="${post.image_url}" alt="" class="post-image">
            </div>`
-        : '', // Vide si aucune image n'est présente
+          : '', // Vide si aucune image n'est présente
         //POST_COUNT_REACTION: post.reaction,
         POST_THUMB_UP: post.like_count.toString(),
         POST_THUMB_DOWN: post.dislike_count.toString(),
         POST_COMMENTS: post.comment_count.toString(),
-        POST_FAVORITE: 
-            MelHtml.start.tag('i',{id: 'favorite-'+post.uid, tabindex:'0', title: post.favorite ? "Supprimer de mes favoris" : "Ajouter à mes favoris", class:`hoverable icon favorite material-symbols-outlined ${post.favorite ? 'filled' : ''}`}).text('star_border').end().generate_html({}),
-        POST_IS_LIKED: post.isliked ? "filled" : "",
-        POST_IS_DISLIKED: post.isdisliked ? "filled" : "",
-        HAS_OWNER_RIGHTS: post.has_owner_rights ? "" : "hidden",
-        IS_ADMIN: post.is_admin ? "" : "hidden",
-        COMMENTS_ENABLED: post.settings?.comments ? "" : "hidden",
-        };
+        POST_FAVORITE: MelHtml.start
+          .tag('i', {
+            id: 'favorite-' + post.uid,
+            tabindex: '0',
+            title: post.favorite
+              ? 'Supprimer de mes favoris'
+              : 'Ajouter à mes favoris',
+            class: `hoverable icon favorite material-symbols-outlined ${post.favorite ? 'filled' : ''}`,
+          })
+          .text('star_border')
+          .end()
+          .generate_html({}),
+        POST_IS_LIKED: post.isliked ? 'filled' : '',
+        POST_IS_DISLIKED: post.isdisliked ? 'filled' : '',
+        HAS_OWNER_RIGHTS: post.has_owner_rights ? '' : 'hidden',
+        IS_ADMIN: post.is_admin ? '' : 'hidden',
+        COMMENTS_ENABLED: post.settings?.comments ? '' : 'hidden',
+      };
 
       let template = new MelTemplate()
         .setTemplateSelector('#pin_post_template')
@@ -162,7 +174,11 @@ export class Front_page_post extends MelObject {
         let tag_template = new MelTemplate()
           .setTemplateSelector('#new_tag_template')
           .setData(tag_data)
-          .addEvent('.tag-' + post.tags[tag].id, 'click', this.searchTag.bind(this, post.tags[tag].name));
+          .addEvent(
+            '.tag-' + post.tags[tag].id,
+            'click',
+            this.searchTag.bind(this, post.tags[tag].name),
+          );
 
         $('#new-tag-area-' + post.uid).append(...tag_template.render());
       }
@@ -171,10 +187,10 @@ export class Front_page_post extends MelObject {
   }
 
   /**
-     * Affiche les posts le tag sur lequel on a cliqué
-     * @param {*} tag_name 
-     * @param {*} event 
-     */
+   * Affiche les posts le tag sur lequel on a cliqué
+   * @param {*} tag_name
+   * @param {*} event
+   */
   searchTag(tag_name, event) {
     event.preventDefault();
     event.stopPropagation();

@@ -1,7 +1,6 @@
 import { BnumLog } from '../../../../../mel_metapage/js/lib/classes/bnum_log.js';
 import { MelDialog } from '../../../../../mel_metapage/js/lib/classes/modal.js';
 import { EMPTY_STRING } from '../../../../../mel_metapage/js/lib/constants/constants.js';
-import { HTMLIconMelButton } from '../../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/HTMLMelButton.js';
 import {
   BnumHtmlIcon,
   BnumHtmlSeparate,

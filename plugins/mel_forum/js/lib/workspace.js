@@ -1,10 +1,10 @@
 import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager.js';
-import { NavBarManager } from '../../../mel_workspace/js/lib/navbar.generator.js';
 import { WorkspaceModuleBlock } from '../../../mel_workspace/js/lib/WebComponents/workspace_module_block.js';
-import { WorkspaceObject } from '../../../mel_workspace/js/lib/WorkspaceObject.js';
 import { BnumMessage } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { BootstrapLoader } from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/bootstrap-loader.js';
+import { WorkspaceObject } from '../../../mel_workspace/js/lib/program/WorkspaceObject.js';
+import { NavBarManager } from '../../../mel_workspace/js/lib/program/navbar.generator.js';
 
 export class ModuleForum extends WorkspaceObject {
   constructor() {

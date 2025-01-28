@@ -1,9 +1,9 @@
-import { MelEnumerable } from '../../../mel_metapage/js/lib/classes/enum.js';
-import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager.js';
-import { MelCurrentUser } from '../../../mel_metapage/js/lib/classes/user.js';
-import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
-import { NavBarManager } from './navbar.generator.js';
-import { WorkspaceObject } from './WorkspaceObject.js';
+import { MelEnumerable } from '../../../../../mel_metapage/js/lib/classes/enum.js';
+import { FramesManager } from '../../../../../mel_metapage/js/lib/classes/frame_manager.js';
+import { MelCurrentUser } from '../../../../../mel_metapage/js/lib/classes/user.js';
+import { EMPTY_STRING } from '../../../../../mel_metapage/js/lib/constants/constants.js';
+import { NavBarManager } from '../navbar.generator.js';
+import { WorkspaceObject } from '../WorkspaceObject.js';
 
 export class WorkspacePage extends WorkspaceObject {
   get firstRow() {

@@ -1,7 +1,7 @@
-import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager.js';
-import { BnumConnector } from '../../../mel_metapage/js/lib/helpers/bnum_connections/bnum_connections.js';
-import { connectors } from './connectors.js';
-import { WorkspaceObject } from './WorkspaceObject.js';
+import { FramesManager } from '../../../../../mel_metapage/js/lib/classes/frame_manager.js';
+import { BnumConnector } from '../../../../../mel_metapage/js/lib/helpers/bnum_connections/bnum_connections.js';
+import { connectors } from '../../connectors.js';
+import { WorkspaceObject } from '../WorkspaceObject.js';
 
 export class NotInWorkspacePage extends WorkspaceObject {
   constructor() {

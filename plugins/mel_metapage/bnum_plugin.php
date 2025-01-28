@@ -68,6 +68,21 @@ abstract class bnum_plugin extends rcube_plugin
         $this->include_script_from_plugin($this->ID, "$path/$name/scriptType:module", 'head');
     }
 
+    public function include_module_program($name, $path = null ) {
+        $path = $path === null ? '' : "/$path";
+        $this->include_module($name, "js/lib/program$path");
+    }
+
+    public function include_module_action($name, $path = null ) {
+        $path = $path === null ? '' : "/$path";
+        $this->include_module($name, "js/lib/program/actions$path");
+    }
+
+    public function include_module_addon($name, $path = null ) {
+        $path = $path === null ? '' : "/$path";
+        $this->include_module($name, "js/lib/program/addons$path");
+    }
+
     protected function break_initial_fonctionality($key) {
         $this->add_script("rcmail.addEventListener('$key', function break_fonctionality () {return {break:true}; });");
     }

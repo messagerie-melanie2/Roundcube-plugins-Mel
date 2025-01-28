@@ -190,7 +190,7 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
     if (this.buttonTask !== false) {
       let button = HTMLIconMelButton.CreateNode(this.buttonIcon, {
         content: this.createText(this.buttonText),
-      }).addClass('white').addClass('see-all-button');
+      }).addClass('white', 'button-task');
       // let button = document.createElement('button');
       // button.style.paddingTop = 0;
       // button.style.paddingBottom = 0;

@@ -7,21 +7,27 @@
 <div id="layout-content" role="main">
   <div class="content">
     <div class="row return-header d-flex justify-content-between mb-3">
-      <div class="col-2">
-        <span class="title"><roundcube:label name="mel_forum.articles" /></span>
+      <div class="col-2 d-none d-md-block">
+        <span class="title">
+          <roundcube:label name="mel_forum.articles" />
+        </span>
       </div>
-      <div class="row forum-header col-8">
+      <div class="forum-header col-10 col-sm-8">
         <div class="input-group mel-search-group mel-centered mel-max-width-500">
-          <input id="post-search-input" type="text" placeholder="Rechercher un article ..." value=<roundcube:object name="post_search" /> class="form-control mel-max-width-500">
+          <input id="post-search-input" type="text" placeholder="Rechercher un article ..." value=<roundcube:object
+            name="post_search" /> class="form-control mel-max-width-500">
           <button id="clear-button" style="display: none;">✖</button>
-          <div class="input-group-append" role="button" id="post-search-button" tabindex="0" aria-label="Lancer la recherche">
+          <div class="input-group-append" role="button" id="post-search-button" tabindex="0"
+            aria-label="Lancer la recherche">
             <span class="icon-mel-search input-group-text"></span>
           </div>
         </div>
       </div>
-      <div class="col-2 flex justify-content-end">
+      <div class="col-2 d-flex justify-content-start justify-content-md-end pl-0">
         <button id="forum-button-add" class="mel-button btn btn-secondary" aria-label="Ajouter un nouvel article">
-          <span class="add"><roundcube:label name="mel_forum.add" /></span>
+          <span class="add d-none d-sm-block">
+            <roundcube:label name="mel_forum.add" />
+          </span>
           <span class="material-symbols-outlined">
             add_circle
           </span>
@@ -29,29 +35,47 @@
       </div>
     </div>
     <div class="row forum-sort">
-      <div>
+      <div class="col-6">
         <div class="input-group mel-group">
           <select title="" id="forum-sort-select" class="form-control input-mel mel-input custom-select pretty-select"
-            data-original-title="<roundcube:label name="mel_forum.sort_by" />">
-            <!-- A dynamiser en js -->
-            <option value="date_desc"><roundcube:label name="mel_forum.newest" /></option>
-            <option value="date_asc"><roundcube:label name="mel_forum.oldest" /></option>
-            <option value="comment_desc"><roundcube:label name="mel_forum.more_comments" /></option>
-            <option value="comment_asc"><roundcube:label name="mel_forum.less_comments" /></option>
-            <option value="reaction_desc"><roundcube:label name="mel_forum.more_reactions" /></option>
-            <option value="reaction_asc"><roundcube:label name="mel_forum.less_reactions" /></option>
+            data-original-title="<roundcube:label name=" mel_forum.sort_by" />">
+          <!-- A dynamiser en js -->
+          <option value="date_desc">
+            <roundcube:label name="mel_forum.newest" />
+          </option>
+          <option value="date_asc">
+            <roundcube:label name="mel_forum.oldest" />
+          </option>
+          <option value="comment_desc">
+            <roundcube:label name="mel_forum.more_comments" />
+          </option>
+          <option value="comment_asc">
+            <roundcube:label name="mel_forum.less_comments" />
+          </option>
+          <option value="reaction_desc">
+            <roundcube:label name="mel_forum.more_reactions" />
+          </option>
+          <option value="reaction_asc">
+            <roundcube:label name="mel_forum.less_reactions" />
+          </option>
           </select>
         </div>
       </div>
-      <div class="d-flex align-items-center">
-        <div class="d-flex justify-content-center align-items-center mr-2">
-          <roundcube:label name="mel_forum.display_fav_only" />
-        </div>
-        <div class="custom-control custom-switch no-click-focus d-flex align-items-center">
-          <input name="favoris" id="display-fav-only" type="checkbox"
-            class="form-check-input custom-control-input no-click-focus" aria-label="Afficher uniquement les articles favoris">
-          <label for="display-fav-only" class="custom-control-label option-switch no-click-focus">
-          </label>
+      <div class="col-6">
+        <div class="d-flex justify-content-end align-items-center">
+          <div class="mr-2 d-none d-md-block">
+            <roundcube:label name="mel_forum.display_fav_only" />
+          </div>
+          <div class="d-block d-md-none d-flex align-items-center">
+            <i tabindex="0" title="Afficher uniquement mes favoris" class="material-symbols-outlined f-31">star_border</i>
+          </div>
+          <div class="custom-control custom-switch no-click-focus d-flex align-items-center">
+            <input name="favoris" id="display-fav-only" type="checkbox"
+              class="form-check-input custom-control-input no-click-focus"
+              aria-label="Afficher uniquement les articles favoris">
+            <label for="display-fav-only" class="custom-control-label option-switch no-click-focus">
+            </label>
+          </div>
         </div>
       </div>
     </div>
@@ -61,7 +85,7 @@
         <div id="post-area"></div>
       </div>
     </div>
-    <button id="backToTop" class="mel-button material-symbols-outlined hidden" >keyboard_arrow_up</button>
+    <button id="backToTop" class="mel-button material-symbols-outlined hidden">keyboard_arrow_up</button>
   </div>
 </div>
 
@@ -81,24 +105,42 @@
                 </div>
               </div>
               <div class="post-actions">
-                <span class="more_action icon" id="more-%%UID%%" data-icon="more_vert" tabindex="0" role="button" title="Plus d'options" aria-label="Options supplémentaires pour l'article intitulé %%POST_TITLE%%" aria-haspopup="true" aria-expanded="false"></span>
-                <div id="post-context-menu-%%UID%%" class="forum-post-context-menu hidden" role="menu" aria-labelledby="trigger-%%UID%%" aria-hidden="true">
+                <span class="more_action icon" id="more-%%UID%%" data-icon="more_vert" tabindex="0" role="button"
+                  title="Plus d'options" aria-label="Options supplémentaires pour l'article intitulé %%POST_TITLE%%"
+                  aria-haspopup="true" aria-expanded="false"></span>
+                <div id="post-context-menu-%%UID%%" class="forum-post-context-menu hidden" role="menu"
+                  aria-labelledby="trigger-%%UID%%" aria-hidden="true">
                   <h3 id="aria-label-groupoptions-smallmenu" class="voice">Menu du post</h3>
-                  <button class="post-options-button copy-post" tabindex="0" role="menuitem" aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="copy_post_link" data-id="%%UID%%" title="<roundcube:label name="mel_forum.copy_article" />" >
-                    <span class="icon material-symbols-outlined post-options-icon" data-icon="content_copy"></span>
-                    <span class="post-options-text" style="margin-left: 8px;"><roundcube:label name="mel_forum.copy_article" /></span>
+                  <button class="post-options-button copy-post" tabindex="0" role="menuitem"
+                    aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="copy_post_link"
+                    data-id="%%UID%%" title="<roundcube:label name=" mel_forum.copy_article" />" >
+                  <span class="icon material-symbols-outlined post-options-icon" data-icon="content_copy"></span>
+                  <span class="post-options-text" style="margin-left: 8px;">
+                    <roundcube:label name="mel_forum.copy_article" />
+                  </span>
                   </button>
-                  <button class="post-options-button pin-post %%IS_ADMIN%%" tabindex="0" role="menuitem" aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="pin_post" id="pin_%%UID%%" data-id="%%UID%%" title="<roundcube:label name="mel_forum.pin_article" />" >
-                    <span class="icon material-symbols-outlined post-options-icon" data-icon="%%POST_PINNED_LOGO%%"></span>
-                    <span class="post-options-text" style="margin-left: 8px;">%%POST_PINNED_TEXT%%</span>
+                  <button class="post-options-button pin-post %%IS_ADMIN%%" tabindex="0" role="menuitem"
+                    aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="pin_post" id="pin_%%UID%%"
+                    data-id="%%UID%%" title="<roundcube:label name=" mel_forum.pin_article" />" >
+                  <span class="icon material-symbols-outlined post-options-icon"
+                    data-icon="%%POST_PINNED_LOGO%%"></span>
+                  <span class="post-options-text" style="margin-left: 8px;">%%POST_PINNED_TEXT%%</span>
                   </button>
-                  <button class="post-options-button edit-post %%HAS_OWNER_RIGHTS%%" tabindex="0" role="menuitem" aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="modify_post" data-id="%%UID%%" title="<roundcube:label name="mel_forum.edit_article" />" >
-                    <span class="icon material-symbols-outlined post-options-icon" data-icon="border_color"></span>
-                    <span class="post-options-text" style="margin-left: 8px;"><roundcube:label name="mel_forum.edit_article" /></span>
+                  <button class="post-options-button edit-post %%HAS_OWNER_RIGHTS%%" tabindex="0" role="menuitem"
+                    aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="modify_post" data-id="%%UID%%"
+                    title="<roundcube:label name=" mel_forum.edit_article" />" >
+                  <span class="icon material-symbols-outlined post-options-icon" data-icon="border_color"></span>
+                  <span class="post-options-text" style="margin-left: 8px;">
+                    <roundcube:label name="mel_forum.edit_article" />
+                  </span>
                   </button>
-                  <button class="post-options-button delete-post %%HAS_OWNER_RIGHTS%%" tabindex="0" role="menuitem" aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="delete_post" data-id="%%UID%%" title="<roundcube:label name="mel_forum.delete_article" />" >
-                    <span class="icon material-symbols-outlined post-options-icon" data-icon="delete"></span>
-                    <span class="post-options-text" style="margin-left: 8px;"><roundcube:label name="mel_forum.delete_article" /></span>
+                  <button class="post-options-button delete-post %%HAS_OWNER_RIGHTS%%" tabindex="0" role="menuitem"
+                    aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="delete_post" data-id="%%UID%%"
+                    title="<roundcube:label name=" mel_forum.delete_article" />" >
+                  <span class="icon material-symbols-outlined post-options-icon" data-icon="delete"></span>
+                  <span class="post-options-text" style="margin-left: 8px;">
+                    <roundcube:label name="mel_forum.delete_article" />
+                  </span>
                   </button>
                 </div>
                 %%POST_FAVORITE%%
@@ -132,7 +174,8 @@
                   <i class="material-symbols-outlined">thumb_down</i>
                   <span class="ml-2">%%POST_THUMB_DOWN%%</span>
                 </div>
-                <div id="add_comment-%%UID%%" class="comment hoverable %%COMMENTS_ENABLED%%" aria-label="%%POST_COMMENTS%% commentaires">
+                <div id="add_comment-%%UID%%" class="comment hoverable %%COMMENTS_ENABLED%%"
+                  aria-label="%%POST_COMMENTS%% commentaires">
                   <i class="material-symbols-outlined">comment</i>
                   <span class="ml-2">%%POST_COMMENTS%%</span>
                 </div>
@@ -150,7 +193,8 @@
   </div>
 </template>
 <template id="tag_template">
-  <span class="tag tag-clickable tag-%%TAG_ID%%" data-tag-id="%%TAG_ID%%" tabindex="0" role="button" aria-label="Tag %%TAG_NAME%%">%%TAG_NAME%%</span>
+  <span class="tag tag-clickable tag-%%TAG_ID%%" data-tag-id="%%TAG_ID%%" tabindex="0" role="button"
+    aria-label="Tag %%TAG_NAME%%">%%TAG_NAME%%</span>
 </template>
 
 <roundcube:include file="includes/footer.html" />

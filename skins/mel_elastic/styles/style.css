@@ -4800,7 +4800,7 @@ html.touch:root {
   --wsp-navbar-picture-size: var(--wsp-navbar-picture-size-mobile, 4rem);
   --wsp-navbar-picture-width: var(--wsp-navbar-picture-width-mobile, var(--wsp-navbar-picture-size, 4rem));
   --wsp-navbar-picture-height: var(--wsp-navbar-picture-height-mobile, var(--wsp-navbar-picture-size, 4rem));
-  --wsp-navbar-no-picture-size: var(--wsp-navbar-no-picture-size-mobile, 2rem);
+  --wsp-navbar-no-picture-size: var(--wsp-navbar-no-picture-size-mobile, 1.5rem);
   --wsp-nav-title-display: var(--wsp-nav-title-display-mobile, none);
   --wsp-nav-quit-button-justify: var(--wsp-nav-quit-button-justify-mobile, center);
   --wsp-nav-quit-button-text-display: var(--wsp-nav-quit-button-text-display-mobile, none);

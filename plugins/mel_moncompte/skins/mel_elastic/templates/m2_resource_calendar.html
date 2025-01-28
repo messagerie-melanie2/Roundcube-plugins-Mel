@@ -65,10 +65,10 @@
 				  <tr>
 					<roundcube:if condition="env:resource_showalarms == true" />
 						<td class="title"><label for="calendar-switch"><roundcube:label name="mel_moncompte.display_reminder" /></label></td>
-							<td><div class="custom-control custom-switch"><input name="showalarms" id="calendar-showalarms" value="1" type="checkbox" class="form-check-input custom-control-input" checked onchange="rcmail.command('calendar_edit','<roundcube:var name="env:resource_id" />', `['showalarms', '${this.checked}']`)"><label for="calendar-showalarms" class="custom-control-label" title=""></label></div></td>
+							<td><div class="custom-control custom-switch"><input name="showalarms" id="calendar-showalarms" value="1" type="checkbox" class="form-check-input custom-control-input" checked onchange="rcmail.command('calendar_edit','<roundcube:var name="env:resource_id" />', `['showalarms', ${+this.checked}]`)"><label for="calendar-showalarms" class="custom-control-label" title=""></label></div></td>
 					<roundcube:else />
 					<td class="title"><label for="calendar-switch"><roundcube:label name="mel_moncompte.display_reminder" /></label></td>
-							<td><div class="custom-control custom-switch"><input name="showalarms" id="calendar-showalarms" value="1" type="checkbox" class="form-check-input custom-control-input" onchange="rcmail.command('calendar_edit','<roundcube:var name="env:resource_id" />', `['showalarms', '${this.checked}']`)"><label for="calendar-showalarms" class="custom-control-label" title=""></label></div></td>
+							<td><div class="custom-control custom-switch"><input name="showalarms" id="calendar-showalarms" value="1" type="checkbox" class="form-check-input custom-control-input" onchange="rcmail.command('calendar_edit','<roundcube:var name="env:resource_id" />', `['showalarms', ${+this.checked}]`)"><label for="calendar-showalarms" class="custom-control-label" title=""></label></div></td>
 					<roundcube:endif />
 				  </tr>
 				<tr>

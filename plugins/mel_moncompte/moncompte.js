@@ -1090,10 +1090,6 @@ rcube_webmail.prototype.calendar_edit = function (calId, data) {
   if (calId && data) {
     data = JSON.parse(data.replace(/'/g, '"'));
 
-    if (data[0] === 'showalarms') {
-      data[1] = data[1] === 'true' ? 1 : data[1] === 'false' ? 0 : data[1];
-    }
-
     let cal_data = {
       action: 'edit',
       c: {

@@ -64,7 +64,7 @@ $labels['enable_comments'] = 'Autoriser la publication de commentaires';
 
 #region Bouton et Action
 
-$labels['add'] = 'Ajouter';
+$labels['add'] = 'Rédiger';
 $labels['add_content'] = 'Ajouter du contenu :';
 $labels['add_title'] = 'Ajouter un titre :';
 $labels['article_image'] = 'Image de l\'article';

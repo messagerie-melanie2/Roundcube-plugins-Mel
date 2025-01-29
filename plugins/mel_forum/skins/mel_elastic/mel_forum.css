@@ -18,9 +18,9 @@
 }
 .task-forum #forum-button-add {
   margin-top: 0;
-  margin-right: -10px;
+  margin-right: 20px;
   display: inline-flex;
-  gap: 30px;
+  gap: 10px;
   align-items: center;
 }
 .task-forum #forum-button-view {

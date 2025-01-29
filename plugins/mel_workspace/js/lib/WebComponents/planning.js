@@ -100,6 +100,10 @@ export class Planning extends HtmlCustomDataTag {
     return document.querySelector('#module-agenda');
   }
 
+  get useHeaderBlock() {
+    return !['false', false].includes(this._p_get_data('header-block'));
+  }
+
   get header() {
     return document.querySelector(`#header-planning-${this.internalId}`);
   }
@@ -122,7 +126,10 @@ export class Planning extends HtmlCustomDataTag {
       ._generate_navigation()
       ._generate_calendar();
 
-    if (this.parentContainer.querySelector('.module-block-header')) {
+    if (
+      this.useHeaderBlock &&
+      this.parentContainer.querySelector('.module-block-header')
+    ) {
       this.parentContainer
         .querySelector('.module-block-header')
         .appendChild(this.header);
@@ -429,8 +436,12 @@ export class Planning extends HtmlCustomDataTag {
     this.calendarNode.fetch();
   }
 
-  static CreateNode() {
-    return document.createElement('bnum-planning');
+  static CreateNode({ useHeaderModule = true } = {}) {
+    let node = document.createElement('bnum-planning');
+
+    node.setAttribute('data-header-block', useHeaderModule);
+
+    return node;
   }
 }
 

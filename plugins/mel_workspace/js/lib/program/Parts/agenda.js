@@ -5,6 +5,7 @@ import { Mel_Promise } from '../../../../../mel_metapage/js/lib/mel_promise.js';
 import { WorkspaceObject } from '../WorkspaceObject.js';
 import { NavBarManager } from '../navbar.generator.js';
 import { Planning } from '../../WebComponents/planning.js';
+import { PLANNING_USE_MODULE_BLOCK } from '../config.js';
 
 class WorkspaceAgenda extends WorkspaceObject {
   constructor() {
@@ -52,7 +53,9 @@ class WorkspaceAgenda extends WorkspaceObject {
   _main() {
     this.loadModule();
     console.log('workspace', this.workspace);
-    let planning = Planning.CreateNode();
+    let planning = Planning.CreateNode({
+      useHeaderModule: PLANNING_USE_MODULE_BLOCK,
+    });
     $('#module-agenda .module-block-content')
       .css('max-height', '100%')
       .html(planning);

@@ -554,7 +554,6 @@ export class Forum extends MelObject {
      * @param {*} post_uid 
      * @param {*} event 
      */
-    //TODO avoir un truc un peu plus dynamique pour les futurs réactions
     addLikeOrDislike(type, post_id, post_uid,event){
         // Vérification si un événement est fourni
         if (event) {
@@ -580,36 +579,26 @@ export class Forum extends MelObject {
             processData:false,
             contentType:false,
             on_success: (response) => {
-                let like_div = $('#add_like-'+post_uid);
+                let like_div = $('#add_like-' + post_uid);
+                let dislike_div = $('#add_dislike-' + post_uid);
                 let like_counter = like_div.find('span.ml-2');
-                let dislike_div = $('#add_dislike-'+post_uid);
                 let dislike_counter = dislike_div.find('span.ml-2');
 
-                if (type ==='like'){
-                    if (like_div.hasClass('filled')){
-                        like_div.removeClass('filled');
-                        this.updateCounter(like_counter, -1);
-                    }else{
-                        like_div.addClass('filled');
-                        this.updateCounter(like_counter, 1);
+                let target_div = type === 'like' ? like_div : dislike_div;
+                let target_counter = type === 'like' ? like_counter : dislike_counter;
+                let opposite_div = type === 'like' ? dislike_div : like_div;
+                let opposite_counter = type === 'like' ? dislike_counter : like_counter;
 
-                        if(dislike_div.hasClass('filled')) {
-                            dislike_div.removeClass('filled');
-                            this.updateCounter(dislike_counter, -1);
-                        }
-                    }
-                } else if (type === 'dislike'){
-                    if (dislike_div.hasClass('filled')){
-                        dislike_div.removeClass('filled');
-                        this.updateCounter(dislike_counter, -1);
-                    }else{
-                        dislike_div.addClass('filled');
-                        this.updateCounter(dislike_counter, 1);
+                if (target_div.hasClass('filled')) {
+                    target_div.removeClass('filled');
+                    this.updateCounter(target_counter, -1);
+                } else {
+                    target_div.addClass('filled');
+                    this.updateCounter(target_counter, 1);
 
-                        if(like_div.hasClass('filled')){
-                            like_div.removeClass('filled');
-                            this.updateCounter(like_counter, -1);
-                        }
+                    if (opposite_div.hasClass('filled')) {
+                        opposite_div.removeClass('filled');
+                        this.updateCounter(opposite_counter, -1);
                     }
                 }
             },

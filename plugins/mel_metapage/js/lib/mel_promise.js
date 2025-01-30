@@ -170,7 +170,6 @@ class Mel_Promise {
     };
 
     current.start();
-    console.log('starting request !');
 
     //Async functions
     this.executor = async () => {

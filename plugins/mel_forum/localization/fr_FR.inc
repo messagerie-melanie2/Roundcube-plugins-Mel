@@ -156,6 +156,7 @@ $labels['tag_unassociated'] = 'Tag dissocié du post avec succès.';
 $labels['tag_unfindable'] = 'Tag introuvable.';
 $labels['tags'] = 'Tags :';
 $labels['the_tag'] = 'Le tag ';
+$labels['tag_already_exists'] = 'Ce tag est déjà présent dans la liste';
 
 #region COMMENTS
 

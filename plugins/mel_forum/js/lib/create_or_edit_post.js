@@ -81,7 +81,7 @@ export class create_or_edit_post extends MelObject {
     }
 
     /**
-     * Ajoute un nouveau tag à la liste lorsque la touche "Entrée" est pressée.
+     * bind l'action d'ajout de tag à son boutton.
      *
      * - Surveille l'événement `keydown` sur le champ d'ajout de tag (`#add-tag`).
      * - Si le tag n'existe pas déjà, il est ajouté à la liste et affiché.
@@ -101,6 +101,9 @@ export class create_or_edit_post extends MelObject {
         });
     }
 
+    /**
+     * Ajoute un tag à la liste si il existe déjà il n'est pas ajouté
+     */
     _addTag() {
         let tagname = $('#add-tag').val().trim();
         if (tagname) {
@@ -117,6 +120,11 @@ export class create_or_edit_post extends MelObject {
                 this.tags.push(tagname);
                 $('#add-tag').val(''); // Réinitialise le champ de saisie
                 this.removeTag(); // Ajoute l'événement de suppression au tag
+            } else {
+                BnumMessage.DisplayMessage(
+                    rcmail.gettext('mel_forum.tag_already_exists'),
+                    eMessageType.Error,
+                );
             }
         }
     }

@@ -97,9 +97,7 @@ export class create_or_edit_post extends MelObject {
             }
         });
         $('#add-tag').on("focusout", (event) => {
-            if($(event.target).val().trim().length >= 2){
-                this._addTag();
-            }
+            this._addTag();
         });
         $('#add-tag-button').on("click",(event) => {
             this._addTag();

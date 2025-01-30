@@ -16,6 +16,29 @@ export { BnumPromise };
  * @local ResolvingState
  * @local BnumAjax
  * @local EAjaxMethod
+ * @local MethodCallback
+ * @local SuccessCallback
+ * @local ErrorCallback
+ * @local BnumResolvedPromise
+ */
+
+/**
+ * @callback SuccessCallback
+ * @param {D} data
+ * @returns {R}
+ * @template D
+ * @template R
+ */
+
+/**
+ * @callback ErrorCallback
+ * @param {...any} args
+ * @return {any[]}
+ */
+
+/**
+ * @callback MethodCallback
+ * @return {void}
  */
 
 /**
@@ -72,7 +95,8 @@ class BnumPromise {
   /**
    *
    * @param {PromiseCallback<T> | PromiseCallbackAsync<T>} callback
-   * @param  {...any} args
+   * @param  {...any} args Arguments qui seront envoyé au callback
+   * @frommoduleparam BnumPromise callback {@linkto PromiseCallbackAsync}
    */
   constructor(callback, ...args) {
     this.#_callback = callback;
@@ -103,6 +127,7 @@ class BnumPromise {
   }
 
   /**
+   * Etat courant de la promesse
    * @type {EPromiseState}
    * @readonly
    */
@@ -111,6 +136,7 @@ class BnumPromise {
   }
 
   /**
+   * Si la promesse a commencé ou non
    * @type {boolean}
    * @readonly
    */
@@ -123,6 +149,7 @@ class BnumPromise {
    * @param {BnumPromise} promise_creator
    * @param {*} param1
    * @returns {BnumPromise}
+   * @private
    */
   #_create_promises(promise_creator, { onAbort = () => {} } = {}) {
     let deleted = false;
@@ -158,10 +185,11 @@ class BnumPromise {
    * @async
    * @param {Object} options
    * @param {PromiseCallback<Y> | PromiseCallbackAsync<Y>} options.callback
-   * @param {() => void} [options.onAbort=()=>{}]
-   * @param  {...any} args
+   * @param {MethodCallback} [options.onAbort=()=>{}]
+   * @param  {...any} args Arguments à donner à la nouvelle promesse
    * @returns {BnumPromise<Y>}
    * @template Y
+   * @frommoduleparam BnumPromise options.callback {@linkto PromiseCallbackAsync}
    */
   createPromise({ callback, onAbort = () => {} }, ...args) {
     const promiseCreator = () => {
@@ -181,11 +209,12 @@ class BnumPromise {
    * @param {string} url Url de la requête
    * @param {Object} [options={}]
    * @param {EAjaxMethod} [options.type=EAjaxMethod.get] Type de la requête
-   * @param {(data:any) => any} [options.success=(d)=>d] Action à faire si tout se déroule bien.
-   * @param {(...args:any[]) => any[]} [options.failed=(...args)=>args] Action à faire si la la requête à échoué.
-   * @param {() => void} [options.onAbort=()=>{}] Action à faire lorsque la variable mère s'arrête
+   * @param {SuccessCallback<D, Y>} [options.success=(d)=>d] Action à faire si tout se déroule bien.
+   * @param {ErrorCallback} [options.failed=(...args)=>args] Action à faire si la la requête à échoué.
+   * @param {MethodCallback} [options.onAbort=()=>{}] Action à faire lorsque la variable mère s'arrête
    * @param {Object<string, any> | string | null} [options.data=null] Body de la requête. Ne fonctionne pas avec get.
    * @returns {BnumPromise<Y>}
+   * @template D
    * @template Y
    */
   createAjaxRequest(
@@ -211,11 +240,12 @@ class BnumPromise {
    * @async
    * @param {string} url Url de la requête
    * @param {Object} [options={}]
-   * @param {(data:any) => Y} [options.success=(d)=>d] Action à faire si tout se déroule bien.
-   * @param {(...args:any[]) => any[]} [options.failed=(...args)=>args] Action à faire si la la requête à échoué.
-   * @param {() => void} [options.onAbort=()=>{}] Action à faire lorsque la variable mère s'arrête
+   * @param {SuccessCallback<D, Y>} [options.success=(d)=>d] Action à faire si tout se déroule bien.
+   * @param {ErrorCallback} [options.failed=(...args)=>args] Action à faire si la la requête à échoué.
+   * @param {MethodCallback} [options.onAbort=()=>{}] Action à faire lorsque la variable mère s'arrête
    * @param {Object<string, any> | string | null} [options.data=null] Body de la requête.
    * @returns {BnumPromise<Y>}
+   * @template D
    * @template Y
    */
   createAjaxPostRequest(
@@ -237,10 +267,11 @@ class BnumPromise {
    * @async
    * @param {string} url Url de la requête
    * @param {Object} [options={}]
-   * @param {(data:any) => Y} [options.success=(d)=>d] Action à faire si tout se déroule bien.
-   * @param {(...args:any[]) => any[]} [options.failed=(...args)=>args] Action à faire si la la requête à échoué.
-   * @param {() => void} [options.onAbort=()=>{}] Action à faire lorsque la variable mère s'arrête
+   * @param {SuccessCallback<D, Y>} [options.success=(d)=>d] Action à faire si tout se déroule bien.
+   * @param {ErrorCallback} [options.failed=(...args)=>args] Action à faire si la la requête à échoué.
+   * @param {MethodCallback} [options.onAbort=()=>{}] Action à faire lorsque la variable mère s'arrête
    * @returns {BnumPromise<Y>}
+   * @template D
    * @template Y
    */
   createAjaxGetRequest(
@@ -304,6 +335,7 @@ class BnumPromise {
    * Arrète la promesse.
    * @returns {BnumPromise<boolean>}
    * @async
+   * @fires BnumPromise.onAbort
    */
   abort() {
     this.#_state = EPromiseState.cancelled;
@@ -457,11 +489,11 @@ class BnumPromise {
   }
 
   /**
-   * @param {(data:T) => Y} onfullfiled
-   * @param {(error:any) => Z} onerror
-   * @returns {BnumPromise<Y | Z>}
+   * Action à faire ensuite.
+   * @param {SuccessCallback<T, Y>} onfullfiled
+   * @param {ErrorCallback} onerror
+   * @returns {BnumPromise<Y>}
    * @template Y
-   * @template Z
    * @async
    */
   then(onfullfiled, onerror = (data) => data) {
@@ -471,7 +503,8 @@ class BnumPromise {
   }
 
   /**
-   * @param {(data:T) => Y} onrejected
+   * Action lorsque la promesse plante
+   * @param {SuccessCallback<T, Y>} onrejected
    * @returns {BnumPromise<Y>}
    * @template Y
    * @async
@@ -483,8 +516,8 @@ class BnumPromise {
   }
 
   /**
-   *
-   * @param {(data:T) => Y} onSuccess
+   * Action au succès
+   * @param {SuccessCallback<T, Y>} onSuccess
    * @returns {BnumPromise<Y>}
    * @template Y
    * @async
@@ -494,8 +527,8 @@ class BnumPromise {
   }
 
   /**
-   *
-   * @param {(data:T) => Y} onSuccess
+   * Action si rejeté
+   * @param {SuccessCallback<T, Y>} onSuccess
    * @returns {BnumPromise<Y>}
    * @template Y
    * @async
@@ -505,8 +538,8 @@ class BnumPromise {
   }
 
   /**
-   *
-   * @param {(data:T) => Y} onSuccess
+   * Action à faire quoi qu'il arrive
+   * @param {SuccessCallback<T, Y>} onSuccess
    * @returns {BnumPromise<Y>}
    * @template Y
    * @async

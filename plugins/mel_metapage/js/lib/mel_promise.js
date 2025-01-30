@@ -170,6 +170,7 @@ class Mel_Promise {
     };
 
     current.start();
+    console.log('starting request !');
 
     //Async functions
     this.executor = async () => {
@@ -248,11 +249,15 @@ class Mel_Promise {
  */
 class Mel_Ajax extends Mel_Promise {
   constructor({ type, url, success, failed, datas = null }) {
-    let parameters = { type, url, success, failed };
-
-    if (datas) parameters['data'] = datas;
-
-    super($.ajax, parameters);
+    super(
+      async () =>
+        await BnumPromise.Ajax.Call(url, {
+          type,
+          success,
+          failed,
+          data: datas,
+        }),
+    );
   }
 }
 

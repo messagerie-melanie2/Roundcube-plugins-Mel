@@ -2,16 +2,38 @@ import { isAsync } from './mel.js';
 import { BnumEvent as JsEvent } from './mel_events.js';
 
 export { BnumPromise };
+
 /**
+ * Contient les classes utiles aux promesses du Bnum
+ * @module BnumPromise
+ * @local PromiseManager
+ * @local PromiseManagerAsync
+ * @local PromiseCallback
+ * @local PromiseCallbackAsync
+ * @local BnumPromise
+ * @local EPromiseState
+ * @local CheckStateCallback
+ * @local ResolvingState
+ * @local BnumAjax
+ * @local EAjaxMethod
+ */
+
+/**
+ * @callback CheckStateCallback
+ * @returns {EPromiseState}
+ */
+
+/**
+ * Permet de savoir l'état de la promise et de pouvoir résoudre ou non la promesse
  * @template T
  * @typedef PromiseManager
- * @property {?ResolvingState<T>} resolver Null on async function
- * @property {function():EPromiseState} state
+ * @property {ResolvingState<T> | null | undefined} resolver Null on async function
+ * @property {CheckStateCallback} state
  */
 
 /**
  * @typedef PromiseManagerAsync
- * @property {function():EPromiseState} state
+ * @property {CheckStateCallback} state
  */
 
 /**
@@ -28,7 +50,7 @@ export { BnumPromise };
  * @callback PromiseCallbackAsync
  * @param {PromiseManager<T>} manager
  * @param {...any} args
- * @return {Promise<T> | BnumPromise<T>}
+ * @return {BnumPromise<T> | Promise<T>}
  */
 
 /**
@@ -624,6 +646,7 @@ class BnumPromise {
    * Fonctions Ajax
    * @type {typeof BnumAjax}
    * @readonly
+   * @frommodule BnumPromise {@linkto BnumAjax}
    */
   static get Ajax() {
     return BnumAjax;
@@ -828,7 +851,13 @@ class ResolvingState {
 }
 
 /**
+ * Liste des états d'une promesse. Utilisez {@link BnumPromise.PromiseStates} pour y accéder.
  * @enum {Symbol}
+ * @property {Symbol} pending
+ * @property {Symbol} rejected
+ * @property {Symbol} resolved
+ * @property {Symbol} cancelled
+ * @package
  */
 const EPromiseState = Object.freeze({
   pending: Symbol('pending'),
@@ -838,7 +867,17 @@ const EPromiseState = Object.freeze({
 });
 
 /**
+ * Liste des types d'appel ajax. Utilisez {@link BnumPromise.Ajax.EAjaxMethod} pour y accéder.
  * @enum {Symbol}
+ * @property {Symbol} get
+ * @property {Symbol} head
+ * @property {Symbol} post
+ * @property {Symbol} put
+ * @property {Symbol} delete
+ * @property {Symbol} connect
+ * @property {Symbol} options
+ * @property {Symbol} trace
+ * @package
  */
 const EAjaxMethod = Object.freeze({
   get: Symbol('get'),

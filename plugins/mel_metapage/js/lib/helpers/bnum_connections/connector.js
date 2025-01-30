@@ -1,7 +1,7 @@
+import { BnumPromise } from '../../BnumPromise.js';
 import { BnumLog } from '../../classes/bnum_log.js';
 import { EMPTY_STRING } from '../../constants/constants.js';
 import { MelObject } from '../../mel_object.js';
-import { Mel_Promise } from '../../mel_promise.js';
 export { Connector };
 
 /**
@@ -129,62 +129,71 @@ class Connector {
         }
       }
 
+      /**
+       * @type {?BnumPromise<void>}
+       * @package
+       */
       let promise;
       switch (this.type) {
         case Connector.enums.type.get:
-          promise = new Mel_Promise(() => {}).create_ajax_get_request({
-            url: MelObject.Empty().url(this.task, {
+          promise = BnumPromise.Ajax.Get(
+            MelObject.Empty().url(this.task, {
               action: this.action,
               params: url_parameters,
             }),
-            success: (datas) => {
-              try {
-                if (typeof datas === 'string') datas = JSON.parse(datas);
-              } catch (error) {
-                BnumLog.debug('connect', 'datas', datas, error);
-              }
+            {
+              success: (datas) => {
+                try {
+                  if (typeof datas === 'string') datas = JSON.parse(datas);
+                } catch (error) {
+                  BnumLog.debug('connect', 'datas', datas, error);
+                }
 
-              return_datas = datas;
+                return_datas = datas;
 
-              BnumLog.info('connect', 'Connected !');
+                BnumLog.info('connect', 'Connected !');
+              },
+              failed: (...args) => {
+                error_datas.has_error = true;
+                error_datas.error = args;
+                BnumLog.error(
+                  'connect',
+                  `${this.task}/${this.action}`,
+                  'Connexion failed !',
+                  ...args,
+                );
+              },
             },
-            failed: (...args) => {
-              error_datas.has_error = true;
-              error_datas.error = args;
-              BnumLog.error(
-                'connect',
-                `${this.task}/${this.action}`,
-                'Connexion failed !',
-                ...args,
-              );
-            },
-          });
+          );
           break;
         case Connector.enums.type.post:
-          promise = new Mel_Promise(() => {}).create_ajax_post_request({
-            url: MelObject.Empty().url(this.task, { action: this.action }),
-            datas: url_parameters,
-            success: (datas) => {
-              try {
-                if (typeof datas === 'string') datas = JSON.parse(datas);
-              } catch (error) {
-                BnumLog.debug('connect', 'datas', datas, error);
-              }
+          promise = BnumPromise.Ajax.Post(
+            MelObject.Empty().url(this.task, { action: this.action }),
+            {
+              data: url_parameters,
+              success: (datas) => {
+                try {
+                  if (typeof datas === 'string') datas = JSON.parse(datas);
+                } catch (error) {
+                  BnumLog.debug('connect', 'datas', datas, error);
+                }
 
-              return_datas = datas;
-              BnumLog.info('connect', 'Connected !');
+                return_datas = datas;
+                BnumLog.info('connect', 'Connected !');
+              },
+              failed: (...args) => {
+                error_datas.has_error = true;
+                error_datas.error = args;
+                BnumLog.error(
+                  'connect',
+                  `${this.task}/${this.action}`,
+                  'Connexion failed !',
+                  ...args,
+                );
+              },
             },
-            failed: (...args) => {
-              error_datas.has_error = true;
-              error_datas.error = args;
-              BnumLog.error(
-                'connect',
-                `${this.task}/${this.action}`,
-                'Connexion failed !',
-                ...args,
-              );
-            },
-          });
+          );
+
           break;
         default:
           throw new Error('Unknown connector type');

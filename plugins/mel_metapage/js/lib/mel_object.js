@@ -5,15 +5,12 @@
  */
 
 export { MelObject };
-import {
-  Mel_Ajax,
-  Mel_Promise,
-} from '../../../mel_metapage/js/lib/mel_promise.js';
+import { BnumPromise } from './BnumPromise.js';
 import { BaseStorage } from './classes/base_storage.js';
 import { Cookie } from './classes/cookies.js';
 import { FramesManager } from './classes/frame_manager.js';
 import { EMPTY_STRING } from './constants/constants.js';
-import { isAsync, isNullOrUndefined } from './mel.js';
+import { isNullOrUndefined } from './mel.js';
 import { Top } from './top.js';
 
 /**
@@ -415,12 +412,15 @@ class MelObject {
    * Effectue un appel ajax avec les options spécifiées.
    * @param {Object} options - Les options pour l'appel HTTP.
    * @param {string} options.url - L'URL à appeler.
-   * @param {function} [options.on_success=() => {}] - La fonction à appeler en cas de succès.
-   * @param {function} [options.on_error=(...args) => {console.error('###[http_call]', ...args)}] - La fonction à appeler en cas d'erreur.
+   * @param {(data:T) => Y} [options.on_success=() => {}] - La fonction à appeler en cas de succès.
+   * @param {(...args:any[]) => any[]} [options.on_error=(...args) => {console.error('###[http_call]', ...args)}] - La fonction à appeler en cas d'erreur.
    * @param {Object} [options.params=null] - Les paramètres à envoyer dans la requête.
-   * @param {string} [options.type='POST'] - Le type de requête HTTP à effectuer.
-   * @returns {Mel_Ajax}
+   * @param {string | BnumPromise.Ajax.EAjaxMethod} [options.type=BnumPromise.Ajax.EAjaxMethod.post] - Le type de requête HTTP à effectuer.
+   * @returns {BnumPromise<Y>}
+   * @frommodulereturn BnumPromise
    * @protected
+   * @template T
+   * @template Y
    */
   http_call({
     url,
@@ -429,14 +429,13 @@ class MelObject {
       console.error('###[http_call]', ...args);
     },
     params = null,
-    type = 'POST',
+    type = BnumPromise.Ajax.EAjaxMethod.post,
   }) {
-    return new Mel_Ajax({
+    return BnumPromise.Ajax.Call(url, {
       type,
-      url,
       success: on_success,
       failed: on_error,
-      datas: params,
+      data: params,
     });
   }
 
@@ -445,12 +444,15 @@ class MelObject {
    * @param {Object} options - Les options pour l'appel HTTP.
    * @param {string} options.task - Tache
    * @param {string} options.action - Action
-   * @param {function} [options.on_success=() => {}] - La fonction à appeler en cas de succès.
-   * @param {function} [options.on_error=(...args) => {console.error('###[http_call]', ...args)}] - La fonction à appeler en cas d'erreur.
+   * @param {(data:T) => Y} [options.on_success=() => {}] - La fonction à appeler en cas de succès.
+   * @param {(...args:any[]) => any[]} [options.on_error=(...args) => {console.error('###[http_call]', ...args)}] - La fonction à appeler en cas d'erreur.
    * @param {Object} [options.params=null] - Les paramètres à envoyer dans la requête.
-   * @param {string} [options.type='POST'] - Le type de requête HTTP à effectuer.
-   * @returns {Mel_Ajax}
+   * @param {string | BnumPromise.Ajax.EAjaxMethod} [options.type=BnumPromise.Ajax.EAjaxMethod.post] - Le type de requête HTTP à effectuer.
+   * @returns {BnumPromise<Y>}
    * @protected
+   * @frommodulereturn BnumPromise
+   * @template T
+   * @template Y
    */
   http_internal_call({
     task,
@@ -460,16 +462,17 @@ class MelObject {
       console.error('###[http_internal_call]', ...args);
     },
     params = null,
-    type = 'POST',
+    type = BnumPromise.Ajax.EAjaxMethod.post,
   }) {
+    const isGet = ['GET', BnumPromise.Ajax.EAjaxMethod.get].includes(type);
     return this.http_call({
       type,
       on_error,
       on_success,
-      params: type === 'GET' ? null : params,
+      params: isGet ? null : params,
       url: this.url(task, {
         action: action,
-        params: type === 'GET' ? params : null,
+        params: isGet ? params : null,
       }),
     });
   }
@@ -479,11 +482,14 @@ class MelObject {
    * @param {Object} options - Les options pour l'appel HTTP.
    * @param {string} options.task - Tache
    * @param {string} options.action - Action
-   * @param {function} [options.on_success=() => {}] - La fonction à appeler en cas de succès.
-   * @param {function} [options.on_error=(...args) => {console.error('###[http_call]', ...args)}] - La fonction à appeler en cas d'erreur.
+   * @param {(data:T) => Y} [options.on_success=() => {}] - La fonction à appeler en cas de succès.
+   * @param {(...args:any[]) => any[]} [options.on_error=(...args) => {console.error('###[http_call]', ...args)}] - La fonction à appeler en cas d'erreur.
    * @param {Object} [options.params=null] - Les paramètres à envoyer dans la requête.
-   * @returns {Mel_Ajax}
+   * @returns {BnumPromise<Y>}
    * @protected
+   * @frommodulereturn BnumPromise
+   * @template T
+   * @template Y
    */
   http_internal_post({
     task,
@@ -509,11 +515,14 @@ class MelObject {
    * @param {Object} options - Les options pour l'appel HTTP.
    * @param {string} options.task - Tache
    * @param {string} options.action - Action
-   * @param {function} [options.on_success=() => {}] - La fonction à appeler en cas de succès.
-   * @param {function} [options.on_error=(...args) => {console.error('###[http_call]', ...args)}] - La fonction à appeler en cas d'erreur.
+   * @param {(data:T) => Y} [options.on_success=() => {}] - La fonction à appeler en cas de succès.
+   * @param {(...args:any[]) => any[]} [options.on_error=(...args) => {console.error('###[http_call]', ...args)}] - La fonction à appeler en cas d'erreur.
    * @param {Object} [options.params=null] - Les paramètres à envoyer dans la requête.
-   * @returns {Mel_Ajax}
+   * @returns {BnumPromise<Y>}
    * @protected
+   * @frommodulereturn BnumPromise
+   * @template T
+   * @template Y
    */
   http_internal_get({
     task,
@@ -718,13 +727,15 @@ class MelObject {
 
   /**
    * (async) Créer une promesse "Mel" qui contient des fonctionnalités en plus
-   * @param {import('../../../mel_metapage/js/lib/mel_promise.js').MelPromiseCallback} callback Peut être asynchrone. Fonction qui sera appelé.
+   * @param {import('./BnumPromise.js').PromiseCallback<T> | import('./BnumPromise.js').PromiseCallbackAsync<T>} callback Peut être asynchrone. Fonction qui sera appelé.
    * @param  {...any} args Arguments du callback
-   * @returns {Mel_Promise}
+   * @returns {BnumPromise<T>}
    * @async
+   * @template T
+   * @frommodulereturn BnumPromise
    */
   create_promise(callback, ...args) {
-    return new Mel_Promise(callback, ...args);
+    return new BnumPromise(callback, ...args);
   }
 
   /**
@@ -732,25 +743,21 @@ class MelObject {
    * @param {import('../../../mel_metapage/js/lib/mel_promise.js').WaitCallback | import('../../../mel_metapage/js/lib/mel_promise.js').WaitCallbackAsync} callback Function qui est appelé à chaque tick. Lorsque "true" est renvoyé, la boucle s'arrête
    * @param {Object} [options={}]
    * @param {number} [options.timeout=5] Au bout de combien de secondes la boucle s'arrête
-   * @returns {WaitSomething | WaitSomethingAsync}
+   * @returns {BnumPromise<{ resolved: boolean; msg: (string | undefined); }>}
    * @async
    */
   wait_something(callback, { timeout = 5 } = {}) {
-    let promise;
-    if (isAsync(callback)) promise = Mel_Promise.wait_async(callback, timeout);
-    else promise = Mel_Promise.wait(callback, timeout);
-
-    return promise;
+    return BnumPromise.Wait(callback, { timeout });
   }
 
   /**
    * (async) Attend x millisecondes
    * @param {number} ms Temps en millisecondes
-   * @returns {Mel_Promise}
+   * @returns {BnumPromise<void>}
    * @async
    */
   sleep(ms) {
-    return Mel_Promise.Sleep(ms);
+    return BnumPromise.Sleep(ms);
   }
 
   /**

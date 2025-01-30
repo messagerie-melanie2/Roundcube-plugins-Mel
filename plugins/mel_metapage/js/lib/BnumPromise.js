@@ -109,7 +109,7 @@ class BnumPromise {
 
     if (tmp.start) tmp.start();
 
-    const index = _childs.push(tmp) - 1;
+    const index = this.#_childs.push(tmp) - 1;
     const key = this.onAbort.push(async () => {
       console.log('ABORT !', tmp);
       await tmp.abort();
@@ -411,6 +411,7 @@ class BnumPromise {
       (r) => {
         this.onSignalChanged.remove('resolver');
         this.#_state = EPromiseState.rejected;
+        console.error('Promise Rejected : ', r);
         return r;
       },
     );
@@ -671,7 +672,7 @@ class BnumAjax {
     return new BnumPromise((manager, config) => {
       manager.resolver.start();
       $.ajax(config)
-        .success((d) => manager.resolver.resolve(d))
+        .done((d) => manager.resolver.resolve(d))
         .fail((...args) => manager.resolver.reject(args));
     }, parameters).start();
   }
@@ -830,22 +831,22 @@ class ResolvingState {
  * @enum {Symbol}
  */
 const EPromiseState = Object.freeze({
-  pending: Symbol(),
-  rejected: Symbol(),
-  resolved: Symbol(),
-  cancelled: Symbol(),
+  pending: Symbol('pending'),
+  rejected: Symbol('rejected'),
+  resolved: Symbol('resolved'),
+  cancelled: Symbol('canlcelled'),
 });
 
 /**
  * @enum {Symbol}
  */
 const EAjaxMethod = Object.freeze({
-  get: Symbol(),
-  head: Symbol(),
-  post: Symbol(),
-  put: Symbol(),
-  delete: Symbol(),
-  connect: Symbol(),
-  options: Symbol(),
-  trace: Symbol(),
+  get: Symbol('get'),
+  head: Symbol('head'),
+  post: Symbol('post'),
+  put: Symbol('put'),
+  delete: Symbol('delete'),
+  connect: Symbol('connect'),
+  options: Symbol('options'),
+  trace: Symbol('trace'),
 });

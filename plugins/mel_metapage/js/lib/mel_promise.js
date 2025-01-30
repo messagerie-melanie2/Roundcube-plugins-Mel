@@ -54,6 +54,12 @@ class Mel_Promise {
       );
 
     /**
+     * Récupère sous forme de BnumPromise
+     * @returns {BnumPromise<T>}
+     */
+    this.toBnumPromise = () => current;
+
+    /**
      * Vrai si la fonction est en cours d'éxécution
      * @returns {boolean}
      */

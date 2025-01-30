@@ -729,6 +729,7 @@
   border: solid 1px var(--main-border-color);
 }
 .task-forum .post .post-header {
+  width: 100%;
   margin: 10px 0;
   display: flex;
   justify-content: space-between;

@@ -94,9 +94,9 @@
     <a class="post-card" data-spied="false" href="%%POST_LINK%%">
       <div class="col-12">
         <div class="row">
-          <div class="col-12">
-            <div class="post-header">
-              <div class="post-creator">
+          
+            <div class="post-header d-block d-md-flex">
+              <div class="post-creator col-12 col-md-11">
                 <bnum-avatar class="author-image" style="background-color: var(--mel-button-background-color); display: flex align-items: center justify-content: center color: white" data-email="%%CREATOR_EMAIL%%"></bnum-avatar>
                 <div class="post-creator-name">%%POST_CREATOR%%</div>
                 <div class="post-date">
@@ -104,7 +104,7 @@
                   <span class="ml-1">%%POST_DATE%%</span>
                 </div>
               </div>
-              <div class="post-actions">
+              <div class="post-actions col-12 col-md-1 justify-content-end">
                 <span class="more_action icon" id="more-%%UID%%" data-icon="more_vert" tabindex="0" role="button"
                   title="Plus d'options" aria-label="Options supplémentaires pour l'article intitulé %%POST_TITLE%%"
                   aria-haspopup="true" aria-expanded="false"></span>
@@ -146,7 +146,7 @@
                 %%POST_FAVORITE%%
               </div>
             </div>
-          </div>
+          
         </div>
         <div class="row">
           <div class="%%POST_CONTENT_CLASS%%">

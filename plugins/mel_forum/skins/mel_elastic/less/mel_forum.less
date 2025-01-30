@@ -965,8 +965,8 @@
           justify-content: center;
           padding: 5px;
           position: absolute;
-          top: 15px;
-          left: -171px; // Ajustement de la position vers la gauche
+          top: 20px;
+          left: -133px; // Ajustement de la position vers la gauche
           transform: translateX(
             -10px
           ); // Ajustement supplémentaire vers la gauche
@@ -977,6 +977,10 @@
           box-shadow: 0 10px 10px rgba(0, 0, 0, 0.5);
           color: var(--main-text-color);
           z-index: 200;
+
+          @media (max-width: 576px) {
+            left: 0;
+           }
 
           .post-options-button {
             display: flex;

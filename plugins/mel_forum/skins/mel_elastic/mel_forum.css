@@ -831,14 +831,19 @@
   justify-content: center;
   padding: 5px;
   position: absolute;
-  top: 15px;
-  left: -171px;
+  top: 20px;
+  left: -133px;
   transform: translateX(-10px);
   border-radius: 10px;
   background-color: var(--bureau-card-background-color);
   box-shadow: 0 10px 10px rgba(0, 0, 0, 0.5);
   color: var(--main-text-color);
   z-index: 200;
+}
+@media (max-width: 576px) {
+  .task-forum .post .post-header .post-actions .forum-post-context-menu {
+    left: 0;
+  }
 }
 .task-forum .post .post-header .post-actions .forum-post-context-menu .post-options-button {
   display: flex;

@@ -60,30 +60,12 @@ class mel_forum extends bnum_plugin
             $this->register_action('post', [$this, 'post']);
             // Affichage de la page qui permet de créer un article
             $this->register_action('create_or_edit_post', [$this, 'create_or_edit_post']);
-            // Récupérer le User Connecté
-            $this->register_action('check_user', array($this, 'check_user'));
-            //Ajouter une réaction
-            $this->register_action('add_reaction', array($this, 'add_reaction'));
-            // Supprimer une réaction
-            $this->register_action('delete_reaction', array($this, 'delete_reaction'));
-            // Lister les Réactions d'un Post
-            $this->register_action('get_all_reactions_bypost', array($this, 'get_all_reactions_bypost'));
-            // Compter le nombre de réactions pour un Post
-            $this->register_action('count_reactions', array($this, 'count_reactions'));
-            // Créer un article
+            // Créer/Modifier un article
             $this->register_action('add_post', array($this, 'add_post'));
-            //modifier un article
-            $this->register_action('update_post', array($this, 'update_post'));
             //supprimer un article
             $this->register_action('delete_post', array($this, 'delete_post'));
-            // récupérer un  article
-            $this->register_action('get_post', array($this, 'get_post'));
-            // récupérer tous les articles
-            $this->register_action('get_posts_byworkspace', array($this, 'get_posts_byworkspace'));
             // Ajouter un commentaire ou une réponse
             $this->register_action('create_comment', array($this, 'create_comment'));
-            // Répondre à un commentaire ou une réponse
-            $this->register_action('reply_comment', array($this, 'reply_comment'));
             // Modifier un commentaire ou une réponse
             $this->register_action('update_comment', array($this, 'update_comment'));
             // Supprimer un commentaire ou une réponse
@@ -92,36 +74,8 @@ class mel_forum extends bnum_plugin
             $this->register_action('like_comment', array($this, 'like_comment'));
             //Lister les comments d'un Post
             $this->register_action('get_all_comments_bypost', [$this, 'get_all_comments_bypost']);
-            // Compter le nombre de commentaires pour un Post
-            $this->register_action('count_comment', array($this, 'count_comment'));
-            //Supprimer un Like
-            $this->register_action('delete_like', array($this, 'delete_like'));
-            // Compter le nombre de commentaires pour un Post
-            $this->register_action('count_likes', array($this, 'count_likes'));
-            //Gère les tags suite à la modification/création d'un post
+            //Gère la modification/création d'un post
             $this->register_action('send_post', array($this, 'send_post'));
-            // Créer un tag
-            $this->register_action('create_tag', array($this, 'create_tag'));
-            // Modifier un tag
-            $this->register_action('update_tag', array($this, 'update_tag'));
-            // Supprimer un tag
-            $this->register_action('delete_tag', array($this, 'delete_tag'));
-            // Associer un tag à un Post
-            $this->register_action('associate_tag_at_post', array($this, 'associate_tag_at_post'));
-            // Enlever un Tag existant d'un post
-            $this->register_action('unassociate_tag_from_post', array($this, 'unassociate_tag_from_post'));
-            // récupérer tous les tags associés à un espace de travail
-            $this->register_action('get_all_tags_byworkspace', array($this, 'get_all_tags_byworkspace'));
-            // Récupérer tous les tags associés à un Post
-            $this->register_action('get_all_tags_bypost', array($this, 'get_all_tags_bypost'));
-            // afficher les articles par tag
-            $this->register_action('all_posts_by_tag', array($this, 'all_posts_by_tag'));
-            // Récupérer toutes les images associés à un Post
-            $this->register_action('get_all_images_by_post', array($this, 'get_all_images_by_post'));
-            // Créer une image
-            $this->register_action('create_image', array($this, 'create_image'));
-            // Supprimer une image
-            $this->register_action('delete_image', array($this, 'delete_image'));
             // Import une image sur le serveur
             $this->register_action('upload_image', array($this, 'upload_image'));
             // affiche une image chargé sur le serveur
@@ -149,6 +103,8 @@ class mel_forum extends bnum_plugin
         $this->add_hook('workspace.service.delete', [$this, 'workspace_deleted']);
     }
 
+    #region Liste d'articles
+
     /**
      * Affiche la page d'accueil du forum.
      *
@@ -163,9 +119,9 @@ class mel_forum extends bnum_plugin
         if (driver_mel::gi()->getUser()->isWorkspaceMember($workspace_uid)) {
             $this->include_web_component()->Avatar();
             $this->load_script_module('forum');
-            $this->show_posts();
+            $this->_show_posts();
             $this->rc()->output->set_env('workspace_uid', $workspace_uid);
-            $this->rc()->output->add_handlers(array('post_search' => array($this, 'show_search')));
+            $this->rc()->output->add_handlers(array('post_search' => array($this, '_show_search')));
             $this->rc()->output->send('mel_forum.forum');
         } else {
             $this->_display_error_page();
@@ -173,6 +129,23 @@ class mel_forum extends bnum_plugin
     }
 
     // Fonctions nécessaires à l'affichage d'un article
+
+    /**
+     * Affiche la recherche dans la barre de recherche .
+     *
+     * @return string La recherche.
+     */
+    protected function _show_search()
+    {
+        $search = '""';
+        if ($this->get_input('_from_other_frame', rcube_utils::INPUT_GET)) {
+            $search = urldecode($this->get_input('_search', rcube_utils::INPUT_GET));
+        }
+        return $search;
+    }
+
+    #endregion
+    #region AFFICHAGE POST
 
     /**
      * Affiche un article du forum.
@@ -188,7 +161,7 @@ class mel_forum extends bnum_plugin
     {
         $uid = $this->get_input('_uid', rcube_utils::INPUT_GET);
         $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
-        $this->current_post = $this->get_post($uid);
+        $this->current_post = $this->_get_post($uid);
         if (driver_mel::gi()->getUser()->isWorkspaceMember($workspace_uid) && !is_null($this->current_post)) {
             mel_metapage::IncludeAvatar();
             //Récupérér uid avec GET
@@ -220,21 +193,6 @@ class mel_forum extends bnum_plugin
         }
     }
 
-    /**
-     * Affiche la recherche dans la barre de recherche .
-     *
-     * @return string La recherche.
-     */
-    public function show_search()
-    {
-        $search = '""';
-        if ($this->get_input('_from_other_frame', rcube_utils::INPUT_GET)) {
-            $search = urldecode($this->get_input('_search', rcube_utils::INPUT_GET));
-        }
-        return $search;
-    }
-
-    #region AFFICHAGE POST
     /**
      * Affiche le titre de la publication actuelle.
      *
@@ -367,7 +325,9 @@ class mel_forum extends bnum_plugin
     {
         return strval($this->current_post->dislikes);
     }
+    
     #endregion
+    #region Page création
 
     /**
      * Gère la création ou la modification d'un article.
@@ -421,8 +381,8 @@ class mel_forum extends bnum_plugin
                 // Mode création : initialiser un nouvel article avec des valeurs par défaut
                 $post->title = '';
                 $post->content = '';
-                $post->summary = $this->create_summary_from_content($post->content);
-                $post->uid = $this->generateRandomString(24);
+                $post->summary = $this->_create_summary_from_content($post->content);
+                $post->uid = $this->_generateRandomString(24);
                 $post->modified = date('Y-m-d H:i:s');
                 $post->creator = driver_mel::gi()->getUser()->uid;
                 $post->settings = json_encode(['extwin' => true, 'comments' => true]);
@@ -458,121 +418,8 @@ class mel_forum extends bnum_plugin
         }
     }
 
-
-    /**
-     * Génère une chaîne de caractères aléatoire d'une longueur spécifiée.
-     *
-     * Cette fonction génère une chaîne de caractères aléatoire de la longueur spécifiée
-     * en utilisant des caractères d'un ensemble prédéfini de caractères alphanumériques.
-     *
-     * @param int $length La longueur de la chaîne de caractères aléatoire à générer. La valeur par défaut est 10.
-     * @return string La chaîne de caractères aléatoire générée.
-     */
-    protected function generateRandomString($length = 10)
-    {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $charactersLength = strlen($characters);
-        $randomString = '';
-        for ($i = 0; $i < $length; $i++) {
-            $randomString .= $characters[random_int(0, $charactersLength - 1)];
-        }
-        return $randomString;
-    }
-
-    /**
-     * Crée un résumé à partir du contenu fourni.
-     *
-     * Cette fonction extrait les deux premières phrases du contenu, en ignorant
-     * les balises images et en supprimant les espaces inutiles avant le texte.
-     *
-     * @param string $content Le contenu HTML complet.
-     * @return string Le résumé généré à partir des deux premières phrases du contenu.
-     */
-    protected function create_summary_from_content($content)
-    {
-        //TODO couper au saut de ligne
-
-        // Suppression des balises <img> pour ne pas les prendre en compte
-        $content = preg_replace('/<img[^>]*>/i', '', $content);
-
-        // Suppression des balises HTML restantes pour ne garder que le texte brut
-        $content = strip_tags($content);
-
-        // Suppression des espaces inutiles (espaces multiples, tabulations, retours à la ligne)
-        $content = preg_replace('/\s+/', ' ', $content);
-
-        // Supprimer les espaces en début et fin de chaîne
-        $content = trim($content);
-
-        // Extraction des phrases en utilisant un délimiteur de phrase
-        $sentences = preg_split('/(\. |\? |\! )/', $content, -1, PREG_SPLIT_NO_EMPTY);
-
-        // Prendre les deux premières phrases
-        $summary_sentences = array_slice($sentences, 0, 2);
-        $summary = implode('. ', $summary_sentences);
-
-        // Vérifier si le dernier caractère est un point final ou équivalent
-        if (!preg_match('/[.!?]$/', $summary)) {
-            $summary .= '.';
-        }
-
-        return $summary;
-    }
-
-    /**
-     * Enregistre l'historique des modifications d'un article.
-     * 
-     * @param object $post L'article modifié.
-     * @param string $user_uid L'UID de l'utilisateur effectuant la modification.
-     * @param array $new_data Les nouvelles données de l'article.
-     */
-    protected function save_post_history(&$post, $user_uid, $new_data)
-    {
-        // Charger l'historique actuel
-        $history = $post->history;
-        if (!is_array($history)) {
-            $history = [];
-        }
-
-        // Accumuler les champs modifiés
-        $modified_fields = [];
-        foreach ($new_data as $field => $new_value) {
-            $old_value = $post->$field;
-
-            // Vérifier si le champ est `settings` et normaliser pour comparaison
-            if ($field === 'settings') {
-                // Encoder l'ancien tableau en JSON pour le comparer à la nouvelle chaîne
-                $old_value = json_encode($old_value);
-            }
-
-            if ($old_value !== $new_value) {
-                $modified_fields[] = $field;
-            }
-        }
-
-        // Si des champs ont été modifiés, ajouter une seule entrée à l'historique
-        if (!empty($modified_fields)) {
-            // Ajouter l'entrée à l'historique
-            $history[] = [
-                'field' => $modified_fields,
-                'user_id' => $user_uid,
-                'timestamp' => date('Y-m-d H:i:s')
-            ];
-        }
-
-        // Supprimer les éléments `null` dans l'historique
-        $history = array_filter($history, function ($entry) {
-            return !is_null($entry);
-        });
-
-        // Réindexer l'historique (supprime les indices vides)
-        $history = array_values($history);
-
-        // Enregistrer l'historique mis à jour dans le champ `history`
-        $post->history = json_encode($history);
-
-        $post->save();
-    }
+    #endregion
+    #region Suppression de post
 
     /**
      * Supprime un article existant en fonction de l'UID fourni.
@@ -619,12 +466,15 @@ class mel_forum extends bnum_plugin
         exit;
     }
 
+    #endregion
+    #region Récupération de post
+
     /**
      * Récupère un article en fonction de son UID.
      *
      * @return LibMelanie\Api\Defaut\Posts\Post objet post.
      */
-    protected function get_post($uid)
+    protected function _get_post($uid)
     {
         $post = new LibMelanie\Api\Defaut\Posts\Post();
         $post->uid = $uid;
@@ -646,7 +496,7 @@ class mel_forum extends bnum_plugin
      *
      * @return array post tableau d'objet posts
      */
-    protected function get_posts_byworkspace($workspace_uid = null, $limit = self::POST_DEFAULT_LIMIT, $pin_post = false)
+    protected function _get_posts_byworkspace($workspace_uid = null, $limit = self::POST_DEFAULT_LIMIT, $pin_post = false)
     {
         //récupérer les infos de chargement d'articles si aucune n'est fournie on met des valeurs par defaut
         $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET) ?? $workspace_uid;
@@ -690,6 +540,110 @@ class mel_forum extends bnum_plugin
         return $posts;
     }
 
+    #endregion
+    #region Envois des posts
+
+    /**
+     * Prend en paramètre un tableau d'objet post et retourne un tableau au format JSON
+     * @param string $workspace_uid uid de l'espace du travail est overide par la valeur passer en GET
+     * @param int $limit nombre de post à charger
+     * @param bool $pin_post true si on veut charger le post épinglé
+     * @return array $post_data tableau de tableau contenant les infos des posts
+     */
+    protected function _post_object_to_JSON($workspace_uid = null, $limit = 20, $pin_post = false)
+    {
+        $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
+        $posts = $this->_get_posts_byworkspace($workspace_uid, $limit, $pin_post);
+        $is_admin = driver_mel::gi()->getUser()->isWorkspaceOwner($workspace_uid);
+
+        $workspace = mel_workspace::Workspace($workspace_uid);
+        $pinned_post_uid = $workspace->settings()->get('forum_pinned_post');
+
+        // Définir la locale en français pour le formatage de la date
+        $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
+
+        $posts_data = [];
+
+        foreach ($posts as $post) {
+            // Convertit la date du post en un timestamp Unix
+            $timestamp = strtotime($post->created);
+            // Formate la date du post
+            $formatted_date = $formatter->format($timestamp);
+
+            $post_creator = driver_mel::gi()->getUser($post->creator);
+            $tags = $this->_get_all_tags_bypost($post);
+            // Récupérer le nombre de likes
+            $reactions = $post->listReactions();
+            $isliked = $this->_has_Reacted('like', $reactions);
+            $isdisliked = $this->_has_Reacted('dislike', $reactions);
+            // Récupérer le nombre de commentaire
+            $comment_count = $post->countComments();
+            $is_fav = $this->_is_fav($post->uid, $workspace_uid);
+            $post_link = $this->rc()->url(array(
+                "_task" => "forum",
+                "_action" => "post",
+                "_uid" => $post->uid,
+                "workspace_uid" => $workspace_uid,
+            ), false, true, true);
+
+            // Récupérer la première image du post et son URL
+            $first_image = $post->firstImage();
+            $image_url = $first_image ? $this->_get_image_url($first_image->uid) : null;
+            if ($post->settings['miniature_url'] !== null) {
+                $image_url = $post->settings['miniature_url'];
+            }
+
+            $posts_data[$post->uid] = [
+                'uid' => $post->uid,
+                'id' => $post->id,
+                'title' => $post->title,
+                'creation_date' => $formatted_date,
+                'post_creator' => $post_creator->name,
+                'creator_email' => $post_creator->email,
+                'tags' => $tags,
+                'summary' => $post->summary,
+                'like_count' => $post->likes,
+                'dislike_count' => $post->dislikes,
+                'comment_count' => $comment_count,
+                'favorite' => $is_fav,
+                'isliked' => $isliked,
+                'isdisliked' => $isdisliked,
+                'post_link' => $post_link,
+                'image_url' => $image_url,
+                'has_owner_rights' => $this->_has_owner_rights($post, $workspace_uid),
+                'settings' => $post->settings,
+                'is_admin' => $is_admin,
+                'pinned' =>  $pinned_post_uid === $post->uid,
+            ];
+        }
+        return $posts_data;
+    }
+
+    /**
+     * Met dans l'env roundcube une liste de post.
+     *
+     * Cette fonction récupère toutes les publications d'un espace de travail, 
+     * formate chaque publication avec ses détails (créateur, date, titre, résumé, image, tags, 
+     * et nombre de réactions et commentaires) et génère le HTML correspondant.
+     */
+    protected function _show_posts()
+    {
+        $this->rc()->output->set_env('posts_data', $this->_post_object_to_JSON(null, self::POST_DEFAULT_LIMIT, true));
+    }
+
+    /**
+     * Retourne les données des posts sous forme de JSON
+     */
+    public function get_posts_data()
+    {
+        $limit = intval($this->get_input('_limit', rcube_utils::INPUT_GET));
+        $pin = $this->get_input('_pin', rcube_utils::INPUT_GET) === "true";
+        echo json_encode($this->_post_object_to_JSON(null, $limit ?? self::POST_DEFAULT_LIMIT, $pin));
+        exit;
+    }
+
+    #endregion
+    #region Enregistrement
     /**
      * Gère l'enregistrement d'un article et des tags qui lui sont associés
      * @return void
@@ -723,7 +677,7 @@ class mel_forum extends bnum_plugin
         $content = mel_helper::wash_html($content);
         $workspace_uid = $this->get_input('_workspace', rcube_utils::INPUT_POST);
         // création du summary à l'aide d'une fonction qui récupère les 2 premières phrases du content
-        $summary = $this->create_summary_from_content($content);
+        $summary = $this->_create_summary_from_content($content);
         $settings = $this->get_input('_settings', rcube_utils::INPUT_POST);
 
         // Validation des données saisies
@@ -732,7 +686,7 @@ class mel_forum extends bnum_plugin
         }
 
         // Détecter et sauvegarder les images en base64 dans le contenu
-        $content = $this->process_base64_images($content, $post_id);
+        $content = $this->_process_base64_images($content, $post_id);
 
         //charge l'article en bdd
         $post = new LibMelanie\Api\Defaut\Posts\Post();
@@ -747,7 +701,7 @@ class mel_forum extends bnum_plugin
         ];
 
         // Enregistrer les modifications dans l'historique
-        $this->save_post_history($post, $post->user_uid, $new_data);
+        $this->_save_post_history($post, $post->user_uid, $new_data);
 
         //gestion de miniature url
         preg_match_all('/<img[^>]+src="([^"]+)"[^>]*>/i', $content, $matches);
@@ -767,6 +721,102 @@ class mel_forum extends bnum_plugin
         return $post->save();
     }
 
+    /**
+     * Crée un résumé à partir du contenu fourni.
+     *
+     * Cette fonction extrait les deux premières phrases du contenu, en ignorant
+     * les balises images et en supprimant les espaces inutiles avant le texte.
+     *
+     * @param string $content Le contenu HTML complet.
+     * @return string Le résumé généré à partir des deux premières phrases du contenu.
+     */
+    protected function _create_summary_from_content($content)
+    {
+        //TODO couper au saut de ligne
+
+        // Suppression des balises <img> pour ne pas les prendre en compte
+        $content = preg_replace('/<img[^>]*>/i', '', $content);
+
+        // Suppression des balises HTML restantes pour ne garder que le texte brut
+        $content = strip_tags($content);
+
+        // Suppression des espaces inutiles (espaces multiples, tabulations, retours à la ligne)
+        $content = preg_replace('/\s+/', ' ', $content);
+
+        // Supprimer les espaces en début et fin de chaîne
+        $content = trim($content);
+
+        // Extraction des phrases en utilisant un délimiteur de phrase
+        $sentences = preg_split('/(\. |\? |\! )/', $content, -1, PREG_SPLIT_NO_EMPTY);
+
+        // Prendre les deux premières phrases
+        $summary_sentences = array_slice($sentences, 0, 2);
+        $summary = implode('. ', $summary_sentences);
+
+        // Vérifier si le dernier caractère est un point final ou équivalent
+        if (!preg_match('/[.!?]$/', $summary)) {
+            $summary .= '.';
+        }
+
+        return $summary;
+    }
+
+    /**
+     * Enregistre l'historique des modifications d'un article.
+     * 
+     * @param object $post L'article modifié.
+     * @param string $user_uid L'UID de l'utilisateur effectuant la modification.
+     * @param array $new_data Les nouvelles données de l'article.
+     */
+    protected function _save_post_history(&$post, $user_uid, $new_data)
+    {
+        // Charger l'historique actuel
+        $history = $post->history;
+        if (!is_array($history)) {
+            $history = [];
+        }
+
+        // Accumuler les champs modifiés
+        $modified_fields = [];
+        foreach ($new_data as $field => $new_value) {
+            $old_value = $post->$field;
+
+            // Vérifier si le champ est `settings` et normaliser pour comparaison
+            if ($field === 'settings') {
+                // Encoder l'ancien tableau en JSON pour le comparer à la nouvelle chaîne
+                $old_value = json_encode($old_value);
+            }
+
+            if ($old_value !== $new_value) {
+                $modified_fields[] = $field;
+            }
+        }
+
+        // Si des champs ont été modifiés, ajouter une seule entrée à l'historique
+        if (!empty($modified_fields)) {
+            // Ajouter l'entrée à l'historique
+            $history[] = [
+                'field' => $modified_fields,
+                'user_id' => $user_uid,
+                'timestamp' => date('Y-m-d H:i:s')
+            ];
+        }
+
+        // Supprimer les éléments `null` dans l'historique
+        $history = array_filter($history, function ($entry) {
+            return !is_null($entry);
+        });
+
+        // Réindexer l'historique (supprime les indices vides)
+        $history = array_values($history);
+
+        // Enregistrer l'historique mis à jour dans le champ `history`
+        $post->history = json_encode($history);
+
+        $post->save();
+    }
+    
+    #endregion
     #region TAGS
 
     /**
@@ -961,7 +1011,7 @@ class mel_forum extends bnum_plugin
      * @param \LibMelanie\Api\Defaut\Posts\Post $post objet post dont on veut récupérer les tags
      * @return void
      */
-    public function get_all_tags_bypost($post)
+    protected function _get_all_tags_bypost($post)
     {
         $rettags = [];
 
@@ -1005,7 +1055,7 @@ class mel_forum extends bnum_plugin
         // Création du commentaire
         $comment = new LibMelanie\Api\Defaut\Posts\Comment();
         $comment->content = $content;
-        $comment->uid = $this->generateRandomString(24);
+        $comment->uid = $this->_generateRandomString(24);
         $comment->created = date('Y-m-d H:i:s');
         $comment->modified = date('Y-m-d H:i:s');
         $comment->creator = $user->uid;
@@ -1418,8 +1468,8 @@ class mel_forum extends bnum_plugin
         }
         exit;
     }
-    #endregion
 
+    #endregion
     #region Images
 
     /**
@@ -1435,10 +1485,10 @@ class mel_forum extends bnum_plugin
      * @param int $post_id L'identifiant du post auquel les images sont associées.
      * @return string Le contenu modifié avec les images traitées.
      */
-    protected function process_base64_images($content, $post_id)
+    protected function _process_base64_images($content, $post_id)
     {
         // Récupérer les images existantes associées au post
-        $existingImageUids = $this->get_all_images_by_post($post_id);
+        $existingImageUids = $this->_get_all_images_by_post($post_id);
 
         // Tableau pour collecter les URLs des images réellement utilisées
         $usedImageUrls = [];
@@ -1452,17 +1502,17 @@ class mel_forum extends bnum_plugin
 
             if (strpos($src, 'data:image/') === 0) {
                 // C'est déjà une image en base64, on vérifie sa validité
-                if (!$this->is_valid_base64_image($src)) {
+                if (!$this->_is_valid_base64_image($src)) {
                     //TODO utiliser le plugin mel_logs en debug
                     error_log("Invalid base64 image, skipping.");
                     continue;
                 }
 
-                $imageUid = $this->save_image($post_id, $src);
+                $imageUid = $this->_save_image($post_id, $src);
 
                 if ($imageUid) {
                     // Générer l'URL contenant l'UID de l'image
-                    $imageUrl = $this->get_image_url($imageUid);
+                    $imageUrl = $this->_get_image_url($imageUid);
 
                     // Collecter les URLs et les UIDs des images utilisées
                     $usedImageUrls[] = $imageUrl;
@@ -1485,7 +1535,7 @@ class mel_forum extends bnum_plugin
 
         // Supprimer les images obsolètes de la BDD
         foreach ($obsoleteImageUids as $uid) {
-            $this->delete_image($uid);
+            $this->_delete_image($uid);
         }
 
         return $content;
@@ -1504,9 +1554,9 @@ class mel_forum extends bnum_plugin
      *
      * @throws Exception Peut générer une erreur si la chaîne n'est pas correctement formatée.
      *
-     * @example $isValid = $this->is_valid_base64_image('data:image/png;base64,iVBORw...');
+     * @example $isValid = $this->_is_valid_base64_image('data:image/png;base64,iVBORw...');
      */
-    protected function is_valid_base64_image($base64)
+    protected function _is_valid_base64_image($base64)
     {
         // Vérifiez si le format correspond à data:image/<type>;base64,<data>
         if (!preg_match('/^data:image\/[a-zA-Z]+;base64,/', $base64)) {
@@ -1533,7 +1583,7 @@ class mel_forum extends bnum_plugin
      * 
      * @return string|false L'UID de l'image en cas de succès, ou false en cas d'échec.
      */
-    protected function save_image($post_id, $data)
+    protected function _save_image($post_id, $data)
     {
         // Validation des données saisies
         if (empty($post_id) || empty($data)) {
@@ -1543,7 +1593,7 @@ class mel_forum extends bnum_plugin
 
         // Créer une nouvelle image
         $image = new LibMelanie\Api\Defaut\Posts\Image();
-        $image->uid = $this->generateRandomString(24);
+        $image->uid = $this->_generateRandomString(24);
         $image->post_id = $post_id;
         $image->data = $data;
 
@@ -1566,7 +1616,7 @@ class mel_forum extends bnum_plugin
      * @param string $post_id L'identifiant de la publication pour laquelle les images doivent être récupérées.
      * @return array Un tableau contenant les données des images associées à la publication, ou un tableau vide si aucune image n'est trouvée.
      */
-    public function get_all_images_by_post($post_id)
+    protected function _get_all_images_by_post($post_id)
     {
         $post = new LibMelanie\Api\Defaut\Posts\Post();
         $post->post_id = $post_id;
@@ -1598,7 +1648,7 @@ class mel_forum extends bnum_plugin
      * @param string $image_uid L'UID de l'image à supprimer.
      * @return bool True si l'image a été supprimée, false sinon.
      */
-    protected function delete_image($uid)
+    protected function _delete_image($uid)
     {
         // Récupérer l'image existante
         $image = new LibMelanie\Api\Defaut\Posts\Image();
@@ -1625,11 +1675,11 @@ class mel_forum extends bnum_plugin
         $image = new LibMelanie\Api\Defaut\Posts\Image();
         $image->post = $post_id;
         $image->data = $this->get_input('_file', rcube_utils::INPUT_POST);
-        $image->uid = $this->generateRandomString(24);
+        $image->uid = $this->_generateRandomString(24);
         // Sauvegarde de l'image
         $ret = $image->save();
         if (!is_null($ret)) {
-            $url = $this->get_image_url($image->uid);
+            $url = $this->_get_image_url($image->uid);
             echo json_encode(['status' => 'success', 'image_uid' => $image->uid, 'url' => $url]);
             exit;
         }
@@ -1640,7 +1690,7 @@ class mel_forum extends bnum_plugin
      * @param string $uid uid de l'image que l'on veut afficher
      * @return string url de l'image
      */
-    protected function get_image_url($uid)
+    protected function _get_image_url($uid)
     {
         $rcmail = rcmail::get_instance();
         $url = $rcmail->url(array(
@@ -1674,108 +1724,6 @@ class mel_forum extends bnum_plugin
     }
 
     #endregion
-
-    /**
-     * Met dans l'env roundcube une liste de post.
-     *
-     * Cette fonction récupère toutes les publications d'un espace de travail, 
-     * formate chaque publication avec ses détails (créateur, date, titre, résumé, image, tags, 
-     * et nombre de réactions et commentaires) et génère le HTML correspondant.
-     */
-    protected function show_posts()
-    {
-        $this->rc()->output->set_env('posts_data', $this->post_object_to_JSON(null, self::POST_DEFAULT_LIMIT, true));
-    }
-
-    /**
-     * Retourne les données des posts sous forme de JSON
-     */
-    public function get_posts_data()
-    {
-        $limit = intval($this->get_input('_limit', rcube_utils::INPUT_GET));
-        $pin = $this->get_input('_pin', rcube_utils::INPUT_GET) === "true";
-        echo json_encode($this->post_object_to_JSON(null, $limit ?? self::POST_DEFAULT_LIMIT, $pin));
-        exit;
-    }
-
-    #region Post Object to JSON
-    /**
-     * Prend en paramètre un tableau d'objet post et retourne un tableau au format JSON
-     * @param string $workspace_uid uid de l'espace du travail est overide par la valeur passer en GET
-     * @param int $limit nombre de post à charger
-     * @param bool $pin_post true si on veut charger le post épinglé
-     * @return array $post_data tableau de tableau contenant les infos des posts
-     */
-    protected function post_object_to_JSON($workspace_uid = null, $limit = 20, $pin_post = false)
-    {
-        $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
-        $posts = $this->get_posts_byworkspace($workspace_uid, $limit, $pin_post);
-        $is_admin = driver_mel::gi()->getUser()->isWorkspaceOwner($workspace_uid);
-
-        $workspace = mel_workspace::Workspace($workspace_uid);
-        $pinned_post_uid = $workspace->settings()->get('forum_pinned_post');
-
-        // Définir la locale en français pour le formatage de la date
-        $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
-
-        $posts_data = [];
-
-        foreach ($posts as $post) {
-            // Convertit la date du post en un timestamp Unix
-            $timestamp = strtotime($post->created);
-            // Formate la date du post
-            $formatted_date = $formatter->format($timestamp);
-
-            $post_creator = driver_mel::gi()->getUser($post->creator);
-            $tags = $this->get_all_tags_bypost($post);
-            // Récupérer le nombre de likes
-            $reactions = $post->listReactions();
-            $isliked = $this->_has_Reacted('like', $reactions);
-            $isdisliked = $this->_has_Reacted('dislike', $reactions);
-            // Récupérer le nombre de commentaire
-            $comment_count = $post->countComments();
-            $is_fav = $this->is_fav($post->uid, $workspace_uid);
-            $post_link = $this->rc()->url(array(
-                "_task" => "forum",
-                "_action" => "post",
-                "_uid" => $post->uid,
-                "workspace_uid" => $workspace_uid,
-            ), false, true, true);
-
-            // Récupérer la première image du post et son URL
-            $first_image = $post->firstImage();
-            $image_url = $first_image ? $this->get_image_url($first_image->uid) : null;
-            if ($post->settings['miniature_url'] !== null) {
-                $image_url = $post->settings['miniature_url'];
-            }
-
-            $posts_data[$post->uid] = [
-                'uid' => $post->uid,
-                'id' => $post->id,
-                'title' => $post->title,
-                'creation_date' => $formatted_date,
-                'post_creator' => $post_creator->name,
-                'creator_email' => $post_creator->email,
-                'tags' => $tags,
-                'summary' => $post->summary,
-                'like_count' => $post->likes,
-                'dislike_count' => $post->dislikes,
-                'comment_count' => $comment_count,
-                'favorite' => $is_fav,
-                'isliked' => $isliked,
-                'isdisliked' => $isdisliked,
-                'post_link' => $post_link,
-                'image_url' => $image_url,
-                'has_owner_rights' => $this->_has_owner_rights($post, $workspace_uid),
-                'settings' => $post->settings,
-                'is_admin' => $is_admin,
-                'pinned' =>  $pinned_post_uid === $post->uid,
-            ];
-        }
-        return $posts_data;
-    }
-    #endregion
-
     #region Post Épinglé
 
     /**
@@ -1789,7 +1737,7 @@ class mel_forum extends bnum_plugin
             $this->include_web_component()->Avatar();
             $this->load_script_module('front_page_post');
             $this->rc()->output->set_env('_workspace_uid', $workspace_uid);
-            $this->rc()->output->set_env('posts_data', $this->post_object_to_JSON(null, 0, true));
+            $this->rc()->output->set_env('posts_data', $this->_post_object_to_JSON(null, 0, true));
             // Envoyer le template approprié
             $this->rc()->output->send('mel_forum.front-page-post');
         } else {
@@ -1805,7 +1753,7 @@ class mel_forum extends bnum_plugin
     {
         $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
         if (driver_mel::gi()->getUser()->isWorkspaceMember($workspace_uid)) {
-            echo json_encode($this->post_object_to_JSON(null, 0, true));
+            echo json_encode($this->_post_object_to_JSON(null, 0, true));
             exit;
         } else {
             $this->_display_error_page();
@@ -1832,7 +1780,6 @@ class mel_forum extends bnum_plugin
     }
 
     #endregion
-
     #region Favoris
 
     /**
@@ -1841,7 +1788,7 @@ class mel_forum extends bnum_plugin
      * @param string $workspace_uid 
      * @return bool si l'article est en favori
      */
-    protected function is_fav($post_uid, $workspace_uid)
+    protected function _is_fav($post_uid, $workspace_uid)
     {
         $fav_articles = $this->rc()->config->get('favorite_article', []);
         return isset($fav_articles[$workspace_uid]) && in_array($post_uid, $fav_articles[$workspace_uid]);
@@ -1887,8 +1834,8 @@ class mel_forum extends bnum_plugin
             }
         }
     }
-    #endregion
 
+    #endregion
     #region Posts Reactions 
 
     /**
@@ -1963,6 +1910,7 @@ class mel_forum extends bnum_plugin
     }
 
     #endregion
+    #region Derniers articles
 
     /**
      * Affiche la page des 3 posts du workspace.
@@ -1978,7 +1926,7 @@ class mel_forum extends bnum_plugin
         if (driver_mel::gi()->getUser()->isWorkspaceMember($workspace_uid)) {
             $this->include_web_component()->Avatar();
             $this->load_script_module('new_posts');
-            $this->show_new_posts();
+            $this->_show_new_posts();
             $this->rc()->output->set_env('workspace_uid', $workspace_uid);
             // Envoyer le template approprié
             $this->rc()->output->send('mel_forum.new-posts');
@@ -1996,9 +1944,9 @@ class mel_forum extends bnum_plugin
      *
      * @returns {void}
      */
-    public function show_new_posts()
+    protected function _show_new_posts()
     {
-        $this->rc()->output->set_env('posts_data', $this->post_object_to_JSON(null, 3, false));
+        $this->rc()->output->set_env('posts_data', $this->_post_object_to_JSON(null, 3, false));
     }
 
 
@@ -2011,7 +1959,9 @@ class mel_forum extends bnum_plugin
         return array('abort' => true);
     }
 
+    #endregion
     #region Espaces des travail
+
     /**
      * Définit les services disponibles pour un espace de travail, y compris le service "forum".
      *
@@ -2102,6 +2052,7 @@ class mel_forum extends bnum_plugin
     }
 
     #endregion
+    #region Droits et Page d'Erreur
 
     /**
      * Retourne si l'utilisateur a le droit de modifier/effacer un article
@@ -2112,7 +2063,7 @@ class mel_forum extends bnum_plugin
      * 
      * @return boolean
      */
-    public function _has_owner_rights($post, $workspace)
+    protected function _has_owner_rights($post, $workspace)
     {
         $current_user = driver_mel::gi()->getUser();
         $return = false;
@@ -2138,4 +2089,29 @@ class mel_forum extends bnum_plugin
         $this->load_script_module('access_error');
         $this->rc()->output->send('mel_forum.access-error');
     }
+    
+    #endregion
+    #region Utils
+
+    /**
+     * Génère une chaîne de caractères aléatoire d'une longueur spécifiée.
+     *
+     * Cette fonction génère une chaîne de caractères aléatoire de la longueur spécifiée
+     * en utilisant des caractères d'un ensemble prédéfini de caractères alphanumériques.
+     *
+     * @param int $length La longueur de la chaîne de caractères aléatoire à générer. La valeur par défaut est 10.
+     * @return string La chaîne de caractères aléatoire générée.
+     */
+    protected function _generateRandomString($length = 10)
+    {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[random_int(0, $charactersLength - 1)];
+        }
+        return $randomString;
+    }
+
+    #endregion
 }

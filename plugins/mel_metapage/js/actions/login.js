@@ -3,6 +3,9 @@ if (parent != window) {
 }
 
 $(document).ready(() => {
+  const LOGO_LIGHT = 'skins/mel_elastic/images/logo-light.png';
+  const LOGO_DARK = 'skins/mel_elastic/images/logo-dark.png';
+
   let color_mode = window.matchMedia('(prefers-color-scheme: dark)');
   color_mode.addListener(function (e) {
     let _color_mode = e.matches ? 'dark' : 'light';
@@ -10,24 +13,15 @@ $(document).ready(() => {
     if (MEL_ELASTIC_UI.color_mode() !== _color_mode)
       MEL_ELASTIC_UI.switch_color();
 
-    if (_color_mode === 'dark')
-      $('.mel-logo').attr('src', 'skins/mel_elastic/images/taskbar-logo.svg');
-    else
-      $('.mel-logo').attr(
-        'src',
-        'plugins/mel_portal/skins/elastic/images/logoportal.svg',
-      );
+    if (_color_mode === 'dark') $('.mel-logo').attr('src', LOGO_DARK);
+    else $('.mel-logo').attr('src', LOGO_LIGHT);
     // switch_color_mode();
     // reset_cookie();
   });
 
   if (MEL_ELASTIC_UI.color_mode() === 'dark')
-    $('.mel-logo').attr('src', 'skins/mel_elastic/images/taskbar-logo.svg');
-  else
-    $('.mel-logo').attr(
-      'src',
-      'plugins/mel_portal/skins/elastic/images/logoportal.svg',
-    );
+    $('.mel-logo').attr('src', LOGO_DARK);
+  else $('.mel-logo').attr('src', LOGO_LIGHT);
 
   if (rcmail.env.maintenance_text !== undefined) {
     $('#mel-login-form').prepend(`

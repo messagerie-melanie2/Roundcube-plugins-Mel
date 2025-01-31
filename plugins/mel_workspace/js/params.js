@@ -974,7 +974,7 @@
 
       if (
         await MelDialog.Confirm(
-          `Êtes-vous sûr de vouloir supprimer l'espace de travail : ${$('.header-wsp').text()} ? <br/> Attention, cette action sera irréversible !`,
+          `Êtes-vous sûr de vouloir supprimer l'espace de travail : ${rcmail.env.current_workspace_title} ? <br/> Attention, cette action sera irréversible !`,
           {
             waiting_button_enabled: 5,
             title: 'Confirmation',

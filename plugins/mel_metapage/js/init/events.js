@@ -748,7 +748,7 @@ if (rcmail && window.mel_metapage) {
   });
 
   function on_switched_color_mode(color_mode) {
-    const dark_logo = 'skins/mel_elastic/images/taskbar-logo.svg';
+    const dark_logo = 'skins/mel_elastic/images/logo-dark.png';
     const element_data_name = 'initsrc';
 
     let $logo = $('.logo-mel');

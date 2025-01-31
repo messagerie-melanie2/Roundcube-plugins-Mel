@@ -31,7 +31,7 @@
 
 		<header role="banner">
 			<h1 class="voice">Connexion</h1>
-			<img class="mel-logo" src="../../plugins/mel_portal/skins/elastic/images/logoportal.svg?s=1675084516" data-src-small="0" id="" alt="Ministères Transition Ecologique, Cohésion des Territoires, Mer - Liberté, Egalité, Fraternité" />
+			<img class="mel-logo" src="../../skins/mel_elastic/images/logo-light.png?s=1675084516" data-src-small="0" id="" alt="Ministères Transition Ecologique, Cohésion des Territoires, Mer - Liberté, Egalité, Fraternité" />
 		</header>
 
 		<main role="main">

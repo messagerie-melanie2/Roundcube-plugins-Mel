@@ -6,6 +6,7 @@ export { BnumPromise };
 /**
  * Contient les classes utiles aux promesses du Bnum
  * @module BnumPromise
+ * @tutorial bnum-promise
  * @local PromiseManager
  * @local PromiseManagerAsync
  * @local PromiseCallback
@@ -20,6 +21,14 @@ export { BnumPromise };
  * @local SuccessCallback
  * @local ErrorCallback
  * @local BnumResolvedPromise
+ * @local ResolvingCallback
+ */
+
+/**
+ * @callback ResolvingCallback
+ * @param {T} why
+ * @return {unknown}
+ * @template T
  */
 
 /**
@@ -80,6 +89,7 @@ export { BnumPromise };
  * @class
  * @classdesc
  * @template {Object} T
+ * @tutorial bnum-promise
  */
 class BnumPromise {
   #_childs = [];
@@ -388,7 +398,7 @@ class BnumPromise {
               j(error);
             }
           });
-          rej('Cancelled');
+          nok('Cancelled');
         }
       }, 100);
 
@@ -832,8 +842,8 @@ class ResolvingState {
   #_timeout = null;
   /**
    *
-   * @param {(why:T) => unknown} ok Fonction qui permet de marquer la promesse comme résolue
-   * @param {(why:E) => unknown} nok Fonction qui permet de marquer la promesse comme erreur
+   * @param {ResolvingCallback<T>} ok Fonction qui permet de marquer la promesse comme résolue
+   * @param {ResolvingCallback<E>} nok Fonction qui permet de marquer la promesse comme erreur
    * @param {number} timeout Id du timeout à arreter
    */
   constructor(ok, nok, timeout) {

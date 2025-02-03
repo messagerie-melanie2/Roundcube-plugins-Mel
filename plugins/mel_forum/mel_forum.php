@@ -643,7 +643,8 @@ class mel_forum extends bnum_plugin
      */
     public function get_posts_data()
     {
-        $limit = intval($this->get_input('_limit', rcube_utils::INPUT_GET));
+        $input = $this->get_input('_limit', rcube_utils::INPUT_GET);
+        $limit = $input !== null ? intval($input) : null;
         $pin = $this->get_input('_pin', rcube_utils::INPUT_GET) === "true";
         echo json_encode($this->_post_object_to_JSON(null, $limit ?? self::POST_DEFAULT_LIMIT, $pin));
         exit;

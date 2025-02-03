@@ -2546,7 +2546,6 @@ class mel_forum extends bnum_plugin
 
     #endregion
 
-    #endregion
     #region Espaces des travail
 
     /**

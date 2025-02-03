@@ -11,6 +11,7 @@
  */
 
 import { BnumEvent } from '../../mel_events.js';
+import { HtmlCustomDataTag } from './CustomAttributes/js_html_base_web_elements.js';
 
 export { JsHtml, ____JsHtml };
 
@@ -47,6 +48,8 @@ export { JsHtml, ____JsHtml };
  * @tutorial js-html
  */
 class ____JsHtml {
+  #_parent;
+  #_observed = false;
   /**
    *
    * @param {string} balise
@@ -57,7 +60,25 @@ class ____JsHtml {
     this.balise = balise;
     this.attribs = attribs;
     this.childs = [];
-    this._parent = parent;
+    this.#_parent = parent;
+  }
+
+  /**
+   * Observe un élément, ce qui permet de les retrouver plus tard
+   * @param {Object} [options={}]
+   * @param {?string} [options.key=null]
+   * @returns {____JsHtml}
+   */
+  observe({ key = null } = {}) {
+    if (this.balise[0] === '/')
+      throw new Error("L'observeur doit être sur la balise ouvrante !");
+
+    key ??= this._update_attribs().attribs.id;
+
+    if (!key) throw new Error('Vous devez définir un id !');
+
+    this.#_observed = key;
+    return this._update_attribs();
   }
 
   /**
@@ -261,7 +282,7 @@ class ____JsHtml {
    * @returns {____JsHtml}
    */
   parent() {
-    return this._parent;
+    return this.#_parent;
   }
 
   /**
@@ -294,6 +315,88 @@ class ____JsHtml {
    */
   tag_one_line(balise, attribs = {}) {
     return this._create_oneline(balise, this, attribs);
+  }
+
+  /**
+   *
+   * @param {string | typeof HtmlCustomDataTag | {tag:string, onconnected:(element:HtmlCustomDataTag)=>{}, hasShadowDom:boolean, }} element
+   * @param {Attribs} attribs
+   */
+  customElement(element, attribs = {}) {
+    const CUSTOM_TAG_PREFIX = 'bnum-custom';
+    window.tags ??= {};
+
+    if (typeof element === 'string') {
+      attribs['oncustom:event:generated:show'] =
+        window.tags[element].onconnected;
+      return this.tag(
+        element.includes('bnum-') ? element : `${CUSTOM_TAG_PREFIX}-${element}`,
+        attribs,
+      );
+    } else if (element.TAG) {
+      HtmlCustomDataTag.TryDefine(element.TAG, element);
+      return this.tag(element.TAG, attribs);
+    } else {
+      const tag = `${CUSTOM_TAG_PREFIX}-${element.tag}`;
+
+      let tmp = `
+      (() => {
+        class HTMLCreated${element.tag.toUpperCase()} extends HtmlCustomDataTag {
+          constructor() {
+            super();
+          }
+  
+          _p_main() {
+            super._p_main();
+            this.dispatchEvent(new CustomEvent('custom:event:generated:show',{detail:{current:this}}));
+          }
+        }
+  
+        return HTMLCreated${element.tag.toUpperCase()};
+  })();
+        `;
+
+      tmp = eval(tmp);
+      HtmlCustomDataTag.TryDefine(tag, tmp);
+
+      attribs['data-shadow'] = element.hasShadowDom ?? false;
+
+      attribs['oncustom:event:generated:show'] = function (callback, event) {
+        callback.call(event.detail.current, event.detail.current);
+      }.bind(undefined, element.onconnected);
+
+      window.tags[element.tag] = {
+        class: tmp,
+        onconnected: attribs['oncustom:event:generated:show'],
+      };
+
+      return this.tag(tag, attribs);
+    }
+  }
+
+  if(condition) {
+    return this.tag('if', { condition });
+  }
+
+  #_endif() {
+    let current = this;
+    while (!['if', 'elseif', 'else'].includes(current.balise)) {
+      current = current.end();
+    }
+
+    return current.end();
+  }
+
+  elseif(condition) {
+    return this.#_endif().tag('elseif', { condition });
+  }
+
+  else() {
+    return this.#_endif().tag('else');
+  }
+
+  endif() {
+    return this.#_endif().tag('endif').end();
   }
 
   /**
@@ -928,7 +1031,12 @@ class ____JsHtml {
    * @example JsHtml.start.div().end()
    */
   end(debug = null) {
-    let end = this._parent._create(`/${this.balise}`, this._parent, null, true);
+    let end = this.#_parent._create(
+      `/${this.balise}`,
+      this.#_parent,
+      null,
+      true,
+    );
 
     if (debug) end.text(`<!-- ${debug} -->`);
 
@@ -961,15 +1069,75 @@ class ____JsHtml {
   }
 
   /**
+   *
+   * @param {____JsHtml} item
+   */
+  #_revert_conds(item) {
+    for (const element of item.childs) {
+      if (element.childs.length) this.#_revert_conds(element);
+      if (element.balise.includes('_'))
+        element.balise = element.balise.split('_')[1];
+    }
+  }
+
+  #_generate_and_revert({ mode = 0, context = window, joli_html = false }) {
+    let generated = this._generate({ mode, context, joli_html });
+
+    this.#_revert_conds(this);
+
+    return generated;
+  }
+
+  /**
+   *
+   * @param {{key:string, value:HTMLElement}[]} arr
+   * @returns {Object<string, HTMLElement>}
+   */
+  #_toJson(arr) {
+    let obj = {};
+    for (const element of arr) {
+      obj[element.key] = element.value;
+    }
+
+    return obj;
+  }
+
+  /**
    * Génère en jQuery
    * @returns {external:jQuery}
    */
   generate({ context = window } = {}) {
-    return this._generate({ mode: 1, context });
+    return this.#_generate_and_revert({ mode: 1, context });
   }
 
   generate_dom() {
-    return this._generate({ mode: 1 })[0];
+    return this.#_generate_and_revert({ mode: 1 })[0];
+  }
+
+  generate_with_observer({ context = window, jQuery = true } = {}) {
+    let arr = this.#_generate_and_revert({ mode: 1, context });
+
+    return {
+      observed: this.#_toJson(
+        arr
+          .map((x) => {
+            let array = Array.from(
+              x.find('[data-rotomeca-framework-observer]'),
+            );
+
+            if (!!x.attr('data-rotomeca-framework-observer')) array.push(x);
+
+            return array;
+          })
+          .flat()
+          .map((x) => {
+            const key = x.attr('data-rotomeca-framework-observer');
+            x.removeAttr('data-rotomeca-framework-observer');
+            return { key, value: x };
+          }),
+      ),
+      generated: jQuery ? arr : arr[0],
+    };
   }
 
   /**
@@ -979,7 +1147,7 @@ class ____JsHtml {
    * @returns {string}
    */
   generate_html({ joli_html = false }) {
-    return this._generate({ joli_html });
+    return this.#_generate_and_revert({ joli_html });
   }
 
   /**
@@ -1061,21 +1229,98 @@ class ____JsHtml {
   }
 
   /**
+   *
+   * @param {____JsHtml} jshtml
+   */
+  #_generate_w_conditions(jshtml) {
+    const IF = 'if';
+    const ELSE = 'else';
+    const ELSIF = 'elseif';
+    const ENDIF = 'endif';
+
+    let condition;
+
+    if (jshtml.balise === IF) {
+      condition = jshtml._update_attribs().attribs.condition;
+
+      if (typeof condition === 'function') condition = condition();
+
+      if (condition) {
+        jshtml.balise = `ok_${IF}`;
+      } else {
+        let valid = false;
+        for (const element of jshtml
+          .parent()
+          .childs.filter((x) => x.balise === ELSIF || x.balise === ENDIF)) {
+          if (element.balise === ENDIF) break;
+
+          condition = element._update_attribs().attribs.condition;
+
+          if (typeof condition === 'function') condition = condition();
+
+          if (condition) {
+            valid = true;
+            element.balise = `ok_${ELSIF}`;
+            break;
+          }
+        }
+
+        if (!valid) {
+          const SEARCH_ELSE = jshtml
+            .parent()
+            .childs.filter((x) => x.balise === ELSE || x.balise === ENDIF);
+
+          for (const element of SEARCH_ELSE) {
+            if (element.balise === ELSE) {
+              element.balise = `ok_${ELSE}`;
+              break;
+            } else {
+              break;
+            }
+          }
+        }
+      } // END ELSE
+
+      for (const element of jshtml
+        .parent()
+        .childs.filter((x) => [IF, ELSIF, ELSE, ENDIF].includes(x.balise))) {
+        if (element.balise === ENDIF) {
+          element.balise = `finished_${ENDIF}`;
+          break;
+        } else {
+          element.balise = `ignored_${element.balise}`;
+        }
+      }
+    } // END MAIN IF
+
+    return jshtml;
+  }
+
+  /**
    * Génère le html.
    * @param {*} param0
    * @returns {(string | external:jQuery)}
    * @private
    */
   _generate({ i = -1, mode = 0, joli_html = false, context = window }) {
+    const IGNORED_BALISES = ['start', 'if', 'elseif', 'else', 'endif']
+      .map((x) => [x, `/${x}`, `ignored_${x}`, `finished_${x}`, `ok_${x}`])
+      .flat();
     let html = [];
+    let current = this.#_generate_w_conditions(this);
 
-    if (this.balise !== 'start')
+    if (!IGNORED_BALISES.includes(current.balise))
       html.push(
         `${this.balise !== '/textarea' && joli_html ? this._create_blanks(i) : ''}${this._get_balise()}`,
       );
 
-    for (const iterator of this.childs) {
-      html.push(iterator._generate({ i: i + 1, joli_html, context }));
+    if (
+      !current.balise.includes('ignored_') &&
+      !current.balise.includes('finished_')
+    ) {
+      for (const iterator of current.childs) {
+        html.push(iterator._generate({ i: i + 1, joli_html, context }));
+      }
     }
 
     html = html.join(joli_html ? '\r\n' : '');
@@ -1141,6 +1386,9 @@ class ____JsHtml {
     const memory_tag =
       typeof this.balise === 'function' ? this.balise(this) : this.balise;
     let balise;
+
+    if (this.#_observed)
+      this.attr('data-rotomeca-framework-observer', this.#_observed);
 
     if (this.attribs?.is_raw === true) balise = memory_tag;
     else {

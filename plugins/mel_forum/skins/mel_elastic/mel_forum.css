@@ -1251,3 +1251,19 @@
 .material-symbols-outlined.f-31 {
   font-size: 31px;
 }
+.task-forum .radio-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 5px;
+}
+.task-forum .radio-group label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: -5px;
+  margin-left: 50px;
+}
+.task-forum .radio-group input[type="radio"] {
+  margin: 0;
+}

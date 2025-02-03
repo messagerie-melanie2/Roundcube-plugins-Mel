@@ -1,5 +1,7 @@
 <?php
 
+use League\HTMLToMarkdown\HtmlConverter;
+
 /**
  * Plugin Forum
  *
@@ -84,9 +86,9 @@ class mel_forum extends bnum_plugin
             $this->register_action('manage_favorite', array($this, 'manage_favorite'));
             // récupérer des posts au format Json
             $this->register_action('get_posts_data', array($this, 'get_posts_data'));
-            //gestion des réaction aux posts
+            // gestion des réaction aux posts
             $this->register_action('manage_reaction', array($this, 'manage_reaction'));
-            //Affichage des nouveaux posts
+            // Affichage des nouveaux posts
             $this->register_action('new_posts', array($this, 'new_posts'));
             //Affichage du post à la une
             $this->register_action('front_page_post', array($this, 'front_page_post'));
@@ -94,6 +96,11 @@ class mel_forum extends bnum_plugin
             $this->register_action('refresh_front_page_post', array($this, 'refresh_front_page_post'));
             //Épingler un post
             $this->register_action('pin_post', array($this, 'pin_post'));
+            // Conversion d'un article en Markdown
+            $this->register_action('convert_post_in_markdown', [$this, 'convert_post_in_markdown']);
+            $this->register_action('download_article', [$this, 'download_article']);
+
+            $this->register_action('create_zip_with_md_and_images', [$this, 'create_zip_with_md_and_images']);
         } else if ($this->get_current_task() === 'workspace') {
             $this->add_hook('workspace.services.set', [$this, 'workspace_services_set']);
             $this->add_hook('wsp.show', [$this, 'wsp_show']);
@@ -325,7 +332,7 @@ class mel_forum extends bnum_plugin
     {
         return strval($this->current_post->dislikes);
     }
-    
+
     #endregion
     #region Page création
 
@@ -815,7 +822,7 @@ class mel_forum extends bnum_plugin
 
         $post->save();
     }
-    
+
     #endregion
     #region TAGS
 
@@ -1959,7 +1966,586 @@ class mel_forum extends bnum_plugin
         return array('abort' => true);
     }
 
+    #region Téléchargements
+
+    /**
+     * Télécharge un article sous forme de fichier dans le format spécifié (html ou markdown).
+     *
+     * @return void
+     */
+    public function download_article()
+    {
+        // Récupérer l'UID de l'article et le format depuis la requête HTTP
+        $uid = $this->get_input('_uid', rcube_utils::INPUT_GPC);
+        $format = $this->get_input('_format', rcube_utils::INPUT_GPC); // paramètre pour le format
+
+        // Récupérer l'article à partir de son UID
+        $post = $this->get_post($uid);
+
+        // Traiter en fonction du format
+        switch (strtolower($format)) {
+            case 'markdown':
+                $markdownContent = $this->convert_post_in_markdown($post); // Convertir en Markdown
+                $this->download_zip($post->title, $markdownContent, $post); // Télécharger sous forme de ZIP
+                break;
+
+            case 'html':
+                $htmlContent = $this->convert_post_in_html($post); // Convertir en HTML
+
+                // Remplacer les URLs d'images par leurs données base64
+                $htmlContent = $this->replace_image_urls_with_base64($htmlContent, $post->id);
+
+                $fileName = $post->title . '.html';
+                $mimeType = 'text/html';
+                $this->send_file($fileName, $htmlContent, $mimeType); // Télécharger directement le fichier HTML
+                break;
+        }
+    }
+
+    /**
+     * Récupère les commentaires d'un post, ainsi que leurs sous-commentaires si spécifié.
+     *
+     * @param string $post_uid L'identifiant unique du post pour lequel récupérer les commentaires.
+     * @param int|null $param_comment_id (Optionnel) L'identifiant d'un commentaire spécifique pour lequel récupérer les sous-commentaires.
+     * 
+     * @return array Un tableau contenant les structures des commentaires associés au post. Si aucun commentaire n'est trouvé, retourne un tableau vide.
+     */
+    protected function get_comments_for_post($post_uid, $param_comment_id = null)
+    {
+        $post = new LibMelanie\Api\Defaut\Posts\Post();
+        $post->uid = $post_uid;
+
+        $comments_array = [];
+
+        if ($post->load()) {
+            if ($param_comment_id) {
+                $comment = new LibMelanie\Api\Defaut\Posts\Comment();
+                $comment->id = $param_comment_id;
+                $comments = $comment->listChildren(null, 'created', false);
+            } else {
+                $comments = $post->listComments(true, null, 'created', false);
+            }
+
+            foreach ($comments as $comment) {
+                $comments_array[] = $this->build_comment_structure($comment);
+            }
+        }
+
+        return $comments_array;
+    }
+
+    /**
+     * Convertit un post en format Markdown avec auteur et date formatée.
+     *
+     * Cette méthode effectue les opérations suivantes :
+     * 1. Convertit le titre du post en Markdown en le précédant d'un symbole `#` pour en faire un titre de premier niveau.
+     * 2. Ajoute le nom de l'auteur du post.
+     * 3. Ajoute la date de création du post, formatée.
+     * 4. Récupère le contenu HTML du post et le convertit en Markdown en utilisant un convertisseur HTML-to-Markdown.
+     * 5. Combine le titre Markdown, l'auteur, la date et le contenu Markdown pour créer le post complet.
+     *
+     * @param object $post L'objet représentant le post à convertir, contenant les propriétés `title`, `content`, et `created`.
+     * 
+     * @return string Le post complet au format Markdown.
+     */
+    public function convert_post_in_markdown($post)
+    {
+        // Vérifier si le post est introuvable
+        if (!$post || empty($post->title) || empty($post->content)) {
+            return $this->gettext("article_unfindable", "mel_forum");
+        }
+
+        // Convertir le titre en Markdown
+        $markdown_title = "# " . $post->title;
+
+        // Récupérer le nom de l'auteur
+        $author_name = $this->show_post_creator_name();
+        $markdown_author = $this->gettext("author_md", "mel_forum") . $author_name . "*";
+
+        // Récupérer et formater la date de création
+        $date = new DateTime($post->created);
+        $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
+        $formatted_date_localized = $formatter->format($date);
+
+        // Inclure la date formatée dans le Markdown
+        $markdown_date = $this->gettext("create_date_md", "mel_forum") . $formatted_date_localized . "*";
+
+        // Récupérer le contenu HTML et le convertir en Markdown
+        $html_content = $post->content;
+        $converter = new HtmlConverter();
+        $markdown_content = $converter->convert($html_content);
+
+        // Ajouter le titre de second niveau "Commentaires et réponses"
+        $comments_section_title = $this->gettext("##_comments_and_responses", "mel_forum");
+
+        // Récupérer les commentaires et les réponses
+        $uid = $post->uid; // Assurez-vous que vous avez l'UID du post
+        $comments_array = $this->get_comments_for_post($uid);
+
+        // Convertir les commentaires en Markdown
+        $comments_markdown = $this->format_comments_in_markdown($comments_array);
+
+        // Combiner le titre, l'auteur, la date, le contenu et les commentaires avec des retours à la ligne appropriés
+        $complete_markdown = implode("\n\n", [
+            $markdown_title,
+            $markdown_author,
+            $markdown_date,
+            $markdown_content,
+            $comments_section_title,
+            $comments_markdown
+        ]);
+
+        return $complete_markdown;
+    }
+
+    /**
+     * Convertit un post en HTML avec auteur, date de création, commentaires et réponses.
+     *
+     * @param object $post Objet contenant les données du post
+     * @return string Contenu en HTML
+     */
+    /**
+     * Convertit un post en HTML avec auteur, date de création, commentaires et réponses.
+     *
+     * @param object $post Objet contenant les données du post
+     * @return string Contenu en HTML
+     */
+    protected function convert_post_in_html($post)
+    {
+        // Construire une structure HTML complète
+        $html = "<!DOCTYPE html>";
+        $html .= "<html lang='fr'>";
+        $html .= "<head>";
+        $html .= "<meta charset='UTF-8'>";
+        $html .= "<meta name='viewport' content='width=device-width, initial-scale=1.0'>";
+        $html .= "<title>" . htmlspecialchars($post->title) . "</title>";
+        $html .= "<style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #202122; background-color: #ffffff; margin: 20px; }
+            h1, h2, h3 { color: #333; }
+            p { margin-bottom: 1em; }
+            a { color: #36c; text-decoration: none; }
+            a:hover { text-decoration: underline; }
+            .metadata { font-size: 0.9em; color: #555; margin-bottom: 20px; }
+            .comments-section { margin-top: 40px; }
+            .comment { margin-bottom: 20px; padding-left: 20px; border-left: 2px solid #ddd; }
+            .reply { margin-top: 10px; padding-left: 20px; border-left: 2px dashed #ccc; }
+          </style>";
+        $html .= "</head>";
+        $html .= "<body>";
+
+        // Titre de l'article
+        $html .= "<h1>" . htmlspecialchars($post->title) . "</h1>";
+
+        // Ajout de l'auteur et de la date de création
+        $author_name = $this->show_post_creator_name(); // Récupère le nom de l'auteur
+        $date = new DateTime($post->created);
+        $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
+        $formatted_date_localized = $formatter->format($date);
+        $html .= "<div class='metadata'>" . $this->gettext("author_html", "mel_forum") . htmlspecialchars($author_name) . "<br>" . $this->gettext("create_date_html", "mel_forum") . htmlspecialchars($formatted_date_localized) . "</div>";
+
+        // Contenu de l'article
+        $html .= "<div>" . $this->sanitize_content($post->content) . "</div>";
+
+        // Récupération des commentaires et sous-commentaires
+        $uid = $post->uid; // UID de l'article
+        $comments_array = $this->get_comments_for_post($uid);
+
+        if (!empty($comments_array)) {
+            $html .= "<div class='comments-section'>";
+            $html .= "<h2>" . $this->gettext("comments_and_responses", "mel_forum") . "</h2>";
+            $html .= $this->format_comments_in_html($comments_array);
+            $html .= "</div>"; // Fin de la section des commentaires
+        }
+
+        $html .= "</body>";
+        $html .= "</html>";
+
+        return $html;
+    }
+
+
+    /**
+     * Nettoie le contenu pour éviter les problèmes de sécurité ou de formatage.
+     *
+     * @param string $content Contenu brut
+     * @return string Contenu nettoyé
+     */
+    protected function sanitize_content($content)
+    {
+        // Permet de conserver les balises HTML de base (h1, h2, p, a, ul, li, img, etc.)
+        return nl2br(strip_tags($content, '<p><a><ul><li><h1><h2><h3><img><br><strong><em>'));
+    }
+
+    /**
+     * Formate les commentaires en texte Markdown, avec gestion des niveaux d'indentation pour les réponses.
+     *
+     * @param array $comments_array Un tableau de commentaires à formater. Chaque commentaire doit inclure les informations suivantes :
+     *                              - 'user_name' : Le nom de l'utilisateur ayant posté le commentaire.
+     *                              - 'created' : La date de création du commentaire.
+     *                              - 'content' : Le contenu du commentaire.
+     *                              - 'children' : Un tableau des sous-commentaires.
+     * @param int $indent_level (Optionnel) Le niveau d'indentation actuel pour structurer les réponses. Par défaut : 0.
+     * 
+     * @return string Une chaîne de caractères contenant les commentaires formatés en Markdown.
+     */
+    protected function format_comments_in_markdown($comments_array, $indent_level = 0)
+    {
+        $comments_markdown = "";
+        $total_comments = count($comments_array); // Compter le nombre de commentaires à ce niveau
+        $counter = 0; // Initialiser le compteur
+
+        foreach ($comments_array as $comment) {
+            $counter++; // Incrémenter le compteur pour chaque commentaire
+
+            // Déterminer si c'est un commentaire principal ou une réponse
+            $is_comment = $indent_level === 0;
+            $label = $is_comment ? $this->gettext("md_comment", "mel_forum") : $this->gettext("md_response", "mel_forum");
+
+            // Texte pour "Publié(e)"
+            $published_label = $is_comment ? $this->gettext("created_m", "mel_forum") : $this->gettext("created_f", "mel_forum");
+
+            // Gérer l'indentation en fonction du niveau
+            $indent = str_repeat("    ", $indent_level);
+            $comments_markdown .= $indent . "$label de " . $comment['user_name'] . "\n\n";
+            $comments_markdown .= $indent . $published_label . $comment['created'] . "\n\n";
+            $comments_markdown .= $indent . $comment['content'] . "\n\n";
+
+            // Appeler récursivement pour formater les réponses (enfants)
+            if (!empty($comment['children'])) {
+                $comments_markdown .= $this->format_comments_in_markdown($comment['children'], $indent_level + 1);
+            }
+
+            // Ajouter un séparateur si ce n'est pas le dernier commentaire de ce niveau
+            if ($counter < $total_comments) {
+                $comments_markdown .= $indent . "---\n\n";
+            }
+        }
+
+        return $comments_markdown;
+    }
+
+    /**
+     * Construit la structure d'un commentaire avec ses informations associées.
+     *
+     * @param object $comment L'objet représentant le commentaire à structurer.
+     * 
+     * @return array Un tableau associatif contenant les informations du commentaire, y compris :
+     *               - 'id' : L'identifiant du commentaire.
+     *               - 'uid' : L'identifiant unique du commentaire.
+     *               - 'user_name' : Le nom de l'utilisateur ayant créé le commentaire.
+     *               - 'content' : Le contenu du commentaire.
+     *               - 'created' : La date de création formatée du commentaire.
+     *               - 'parent' : L'identifiant du commentaire parent.
+     *               - 'children_number' : Le nombre d'enfants (sous-commentaires) du commentaire.
+     *               - 'children' : Un tableau des structures des sous-commentaires.
+     */
+    protected function build_comment_structure($comment)
+    {
+        $user = driver_mel::gi()->getUser($comment->user_uid);
+        $user_name = ($user !== null && !empty($user->name)) ? $user->name : '? ?';
+
+        $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::SHORT);
+        $timestamp = strtotime($comment->created);
+        $formatted_date = $formatter->format($timestamp);
+
+        $comment_data = [
+            'id' => $comment->id,
+            'uid' => $comment->uid,
+            'user_name' => $user_name,
+            'content' => $comment->content,
+            'created' => $formatted_date,
+            'parent' => $comment->parent,
+            'children_number' => $comment->countChildren(),
+            'children' => [], // Stocker les enfants ici
+        ];
+
+        if ($comment->countChildren() > 0) {
+            $children_comments = $comment->listChildren(null, 'created', false);
+            foreach ($children_comments as $child_comment) {
+                $comment_data['children'][] = $this->build_comment_structure($child_comment);
+            }
+        }
+
+        return $comment_data;
+    }
+
+    /**
+     * Formate les commentaires et réponses en HTML.
+     *
+     * @param array $comments_array Tableau des commentaires avec leurs réponses.
+     * @param int $indent_level Niveau d'indentation pour structurer les réponses.
+     * @return string HTML formatté des commentaires et réponses.
+     */
+    protected function format_comments_in_html($comments_array, $indent_level = 0)
+    {
+        $comments_html = "";
+
+        foreach ($comments_array as $comment) {
+            // Commentaire principal
+            $comments_html .= "<div class='comment'>";
+            $comments_html .= "<strong>" . htmlspecialchars($comment['user_name']) . "</strong> - ";
+            $comments_html .= "<em>" . $this->gettext("created_m", "mel_forum") . htmlspecialchars($comment['created']) . "</em>";
+            $comments_html .= "<p>" . htmlspecialchars($comment['content']) . "</p>";
+
+            // Sous-commentaires (réponses)
+            if (!empty($comment['children'])) {
+                $comments_html .= "<div class='reply'>";
+                $comments_html .= $this->format_comments_in_html($comment['children'], $indent_level + 1);
+                $comments_html .= "</div>";
+            }
+
+            $comments_html .= "</div>";
+        }
+
+        return $comments_html;
+    }
+
+    /**
+     * Crée un fichier ZIP contenant le contenu Markdown et les images associées, puis le livre au client pour téléchargement.
+     *
+     * Cette méthode effectue les opérations suivantes :
+     * 1. Extrait les UID des images à partir du contenu Markdown.
+     * 2. Récupère les données des images en base64.
+     * 3. Nettoie et remplace les URLs d'images par des chemins relatifs.
+     * 4. Crée un fichier ZIP contenant un dossier "image/" pour les images et le fichier Markdown.
+     * 5. Envoie le fichier ZIP généré au client pour téléchargement.
+     *
+     * @param string $title Le titre du fichier ZIP (nom du fichier).
+     * @param string $content Le contenu du post au format Markdown.
+     * @param object $post L'objet du post contenant les informations sur le post, y compris son ID.
+     * 
+     * @return void
+     */
+    public function download_zip($title, $content, $post)
+    {
+        $temp_dir = $this->rc()->config->get('temp_dir_shared', $this->rc()->config->get('temp_dir'));
+        $tmpfname = tempnam($temp_dir, 'mel_forum');
+
+        // Extraire les UIDs des images du contenu
+        $uids = $this->extract_image_uids($content);
+
+        // Récupérer les données des images en base64
+        $images_base64 = $this->get_images_base64_by_post($post->post_id);
+
+        // Nettoyer les URLs et remplacer par des chemins relatifs
+        $content = $this->clean_and_replace_image_urls($content, $uids);
+
+        // Créer le fichier ZIP
+        $zip = new ZipArchive();
+        if ($zip->open($tmpfname, ZIPARCHIVE::OVERWRITE) === TRUE) {
+            // Ajouter un dossier 'image/' dans le ZIP
+            $zip->addEmptyDir('image');
+
+            // Ajouter les images au ZIP
+            foreach ($uids as $uid) {
+                if (isset($images_base64[$uid])) {
+                    // Décoder l'image base64
+                    $data = explode(',', $images_base64[$uid]);
+                    $image_data = base64_decode(end($data));
+
+                    // Ajouter l'image au ZIP
+                    $relative_path = "image/$uid.jpg";
+                    $zip->addFromString($relative_path, $image_data);
+                }
+            }
+
+            // Ajouter le fichier Markdown
+            $zip->addFromString('post.md', $content);
+
+            $zip->close();
+
+            // Vérifier si le fichier ZIP a bien été créé
+            if (file_exists($tmpfname)) {
+                $this->_deliver_zipfile($tmpfname, $title . '.zip');
+            } else {
+                echo json_encode(['status' => 'error', 'message' => $this->gettext("no_created_zip", "mel_forum")]);
+            }
+        }
+    }
+
+    /**
+     * Envoie un fichier ZIP au client pour téléchargement.
+     *
+     * Cette méthode configure les en-têtes HTTP nécessaires pour un téléchargement
+     * de fichier, lit le contenu du fichier ZIP temporaire, puis le supprime une fois envoyé.
+     *
+     * @param string $tmpfname Le chemin du fichier ZIP temporaire à envoyer.
+     * @param string $filename Le nom du fichier ZIP proposé pour le téléchargement.
+     * 
+     * @return void
+     */
+    protected function _deliver_zipfile($tmpfname, $filename)
+    {
+        $this->rc()->output->nocacheing_headers();
+
+        $this->rc()->output->download_headers($filename, ['length' => filesize($tmpfname)]);
+        readfile($tmpfname);
+        unlink($tmpfname);
+    }
+
+    /**
+     * Envoie un fichier au client pour téléchargement.
+     *
+     * @param string $file_name Nom du fichier à télécharger.
+     * @param string $content Contenu du fichier.
+     * @param string $mime_type Type MIME du fichier (par défaut : text/html).
+     * @return void
+     */
+    protected function send_file($file_name, $content, $mime_type = 'text/html')
+    {
+        // Définir les en-têtes HTTP pour le téléchargement
+        header('Content-Description: File Transfer');
+        header('Content-Type: ' . $mime_type);
+        header('Content-Disposition: attachment; filename="' . basename($file_name) . '"');
+        header('Content-Transfer-Encoding: binary');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate');
+        header('Pragma: public');
+        header('Content-Length: ' . strlen($content));
+
+        // Envoyer le contenu du fichier
+        echo $content;
+
+        // Terminer l'exécution pour s'assurer qu'aucun contenu supplémentaire n'est envoyé
+        exit;
+    }
+
+    /**
+     * Récupère les données des images associées à un post sous forme de chaînes base64 encodées.
+     *
+     * @param string $post_id L'identifiant du post pour lequel récupérer les images.
+     * 
+     * @return array Tableau associatif des UIDs d'images avec leurs données base64 encodées.
+     *               Exemple : ['UID1' => 'data:image/jpeg;base64,...', 'UID2' => 'data:image/png;base64,...']
+     */
+    public function get_images_base64_by_post($post_id)
+    {
+        $post = new LibMelanie\Api\Defaut\Posts\Post();
+        $post->post_id = $post_id;
+
+        $images = $post->listImages(true);
+        $images_base64 = [];
+
+        if (empty($images)) {
+            //error_log("Aucune image trouvée pour le post_id: $post_id");
+            error_log($this->gettext("no_image_found", "mel_forum") . $post_id);
+            return [];
+        }
+
+        foreach ($images as $image) {
+            if ($image->load()) {
+                $base64_data = $image->data;
+
+                // Vérifier si le préfixe est déjà présent
+                if (strpos($base64_data, 'data:image/') === 0) {
+                    // Utiliser directement les données si elles contiennent déjà le préfixe
+                    $images_base64[$image->uid] = $base64_data;
+                } else {
+                    // Ajouter le préfixe manuellement si nécessaire
+                    $mime_type = $image->getExtension() === 'png' ? 'image/png' : 'image/jpeg';
+                    $images_base64[$image->uid] = "data:$mime_type;base64,$base64_data";
+                }
+            } else {
+                error_log($this->gettext("image_load_error", "mel_forum") . $image->uid);
+            }
+        }
+
+        return $images_base64;
+    }
+
+    /**
+     * Extrait les UIDs des images à partir du contenu Markdown.
+     *
+     * Recherche les UIDs d'images présents dans le contenu à l'aide d'une expression régulière.
+     *
+     * @param string $content Le contenu Markdown contenant les URLs des images.
+     * 
+     * @return array Tableau des UIDs extraits depuis les URLs d'images.
+     */
+    protected function extract_image_uids($content)
+    {
+        $uids = [];
+        $pattern = '/_image_uid=([\w]+)/'; // Regex pour capturer les UID
+        if (preg_match_all($pattern, $content, $matches)) {
+            $uids = $matches[1]; // Récupère tous les UIDs
+        }
+        return $uids;
+    }
+
+    /**
+     * Remplace les URLs des images dans le contenu Markdown par des chemins relatifs.
+     *
+     * @param string $content Le contenu Markdown contenant les URLs d'images à nettoyer.
+     * @param array $uids Tableau des UID des images associées.
+     * 
+     * @return string Le contenu modifié avec les chemins relatifs des images.
+     */
+    public function clean_and_replace_image_urls($content, $uids)
+    {
+        foreach ($uids as &$uid) {
+            // Corrige les préfixes incorrects dans les UID si nécessaire
+            $uid = preg_replace('/^data:image\/jpeg;base64,data:image\/jpeg;base64,/', 'data:image/jpeg;base64,', $uid);
+        }
+        unset($uid);
+
+        // Parcourir les UIDs corrigés pour remplacer dans le contenu
+        foreach ($uids as $uid) {
+            // Regex pour capturer l'URL Markdown en acceptant n'importe quel domaine et token
+            $pattern = '/!\[\]\(https?:\/\/[^\/]+\/\?_task=forum&_action=load_image&_image_uid=' . preg_quote($uid, '/') . '(?:&[^&\s]*)*&_token=[^&\s]+\)/';
+
+            // Remplacement par le chemin relatif
+            $replacement = '![](image/' . $uid . '.jpg)';
+
+            // Mettre à jour le contenu avec chaque remplacement
+            $content = preg_replace($pattern, $replacement, $content);
+        }
+
+        return $content;
+    }
+
+    /**
+     * Remplace les URLs des images dans le contenu HTML par des données encodées en base64.
+     *
+     * @param string $html Contenu HTML contenant les balises <img>.
+     * @param string $post_id L'identifiant du post pour lequel récupérer les images.
+     *
+     * @return string Contenu HTML avec les URLs d'images remplacées par les données base64.
+     */
+    private function replace_image_urls_with_base64($html, $post_id)
+    {
+        // Récupérer les données base64 des images associées au post
+        $images_base64 = $this->get_images_base64_by_post($post_id);
+
+        // Si aucune image n'est trouvée, retourner le contenu inchangé
+        if (empty($images_base64)) {
+            error_log($this->gettext("no_image_to_replace", "mel_forum") . $post_id);
+            return $html;
+        }
+
+        // Remplacer les URLs d'images dans le contenu HTML (sans récupérer dynamiquement le domaine)
+        $html = preg_replace_callback(
+            '/<img\s+[^>]*src=["\']https?:\/\/[^\/]+\/\?_task=forum&amp;_action=load_image&amp;_image_uid=([^"&]+)[^>]*>/i',
+            function ($matches) use ($images_base64) {
+                // Extraire l'UID de l'image depuis l'URL
+                $image_uid = $matches[1];
+
+                // Si l'UID est trouvé dans les données base64
+                if (isset($images_base64[$image_uid])) {
+                    // Remplacer l'URL par l'image en base64
+                    return '<img src="' . $images_base64[$image_uid] . '" />';
+                }
+
+                // Si l'UID n'est pas trouvé, garder l'URL d'origine
+                return $matches[0];
+            },
+            $html
+        );
+
+        return $html;
+    }
+
     #endregion
+
     #region Espaces des travail
 
     /**
@@ -2089,7 +2675,7 @@ class mel_forum extends bnum_plugin
         $this->load_script_module('access_error');
         $this->rc()->output->send('mel_forum.access-error');
     }
-    
+
     #endregion
     #region Utils
 

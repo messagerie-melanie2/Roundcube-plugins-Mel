@@ -2,7 +2,8 @@ import { BnumMessage, eMessageType } from '../../../mel_metapage/js/lib/classes/
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { PostComment, PostCommentView } from './comments.js';
-
+import { MelDialog, DialogPage, RcmailDialogButton } from "../../../mel_metapage/js/lib/classes/modal.js";
+import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 export class Manager extends MelObject {
   constructor() {
     super();
@@ -341,10 +342,12 @@ export class Manager extends MelObject {
     const more_action = $('#more-action');
     const context_menu = $('#post-context-menu');
     const button_copy = $('#copy-post');
+    const button_download = $('#download-post');
     const button_edit = $('#edit-post');
     const button_delete = $('#delete-post');
     const button_add_like = $('#add_like');
     const button_add_dislike = $('#add_dislike');
+    
 
     //Ne pas afficher les boutons d'édition et supression si l'utilisateur n'a pas les droits suffisant
     if(!rcmail.env.has_owner_rights){
@@ -395,6 +398,9 @@ export class Manager extends MelObject {
     button_delete.click(() =>{
       this.deletePost();
     });
+    button_download.click(() =>{
+      this.downloadPost();
+    })
 
     // Initialisation de l'affichage boutons like et dislike en fonction de l'utilisateur.
     if (rcmail.env.has_liked) {
@@ -510,6 +516,89 @@ export class Manager extends MelObject {
         }
     });
   }
+
+  /**
+ * Affiche une modale pour choisir le format de téléchargement d'un article et lance le téléchargement dans le format sélectionné.
+ *
+ * Cette fonction vérifie la validité de l'UID de l'article avant d'afficher une modale permettant à l'utilisateur
+ * de choisir entre les formats Markdown et HTML. Une fois le format choisi, le téléchargement est lancé via une URL
+ * construite dynamiquement.
+ *
+ * @return void Cette fonction n'a pas de valeur de retour.
+ */
+  downloadPost() {
+    const uid = rcmail.env.post_uid; // Récupération de l'UID du post depuis l'environnement
+
+    // Vérifier si l'UID est valide avant de continuer
+    if (!uid) {
+        console.error("UID du post non fourni !");
+        BnumMessage.DisplayMessage(
+            rcmail.gettext('mel_forum.download_post_failure'),
+            eMessageType.Error
+        );
+        return;
+    }
+
+    const modalContent = MelHtml.start
+    .div()
+    .text(rcmail.gettext('mel_forum.choose_download_format'))
+    .div({ class: 'radio-group' })  // Appliquer la classe 'radio-group'
+    .label()
+    .input({ id: 'dl-markdown', type: 'radio', name: "download-format", value: "Markdown", checked: true })
+    .text("Markdown")
+    .end()
+    .label()
+    .input({ id: 'dl-html', type: 'radio', name: "download-format", value: "Html" })
+    .text("HTML")
+    .end()
+    .end();
+
+    // Configuration de la modale
+    let dialog = new MelDialog(
+        new DialogPage("choose-download-format", {
+            content: modalContent,
+            title: "Télécharger l'article",
+            buttons: [
+                new RcmailDialogButton('Annuler', {
+                    click: () => {
+                        dialog.hide();
+                    },
+                    classes: 'mel-button btn btn-secondary'
+                }),
+                new RcmailDialogButton('Télécharger', {
+                    click: () => {
+                        // Récupérer le format choisi
+                        const selectedFormat = $('input[name="download-format"]:checked').val();
+                        
+                        // Construire l'URL de téléchargement avec le format sélectionné
+                        const baseUrl = "/?_task=forum&_action=download_article"; // Base URL pour le téléchargement du ZIP
+                        const downloadUrl = `${baseUrl}&_uid=${uid}&_format=${selectedFormat}`;
+
+                        // Ouvrir l'URL dans un nouvel onglet
+                        window.open(downloadUrl, '_blank');
+
+                        // Optionnel : Afficher un message de confirmation après ouverture du lien
+                        BnumMessage.DisplayMessage(
+                            rcmail.gettext('mel_forum.download_post_success'),
+                            eMessageType.Confirmation
+                        );
+
+                        // Cacher la modale après l'action
+                        dialog.hide();
+                    },
+                }),
+            ],
+        }),
+        {
+            height: 175,
+            width: 300,
+            close: () => {},
+        }
+    );
+
+    // Afficher la modale
+    dialog.show();
+}
 
   /**
      * Gestion des likes et dislike des posts

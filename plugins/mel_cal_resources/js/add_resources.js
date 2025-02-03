@@ -177,7 +177,6 @@ class ResourceDialog extends MelObject {
   async _init() {
     let page;
     let resources = [];
-
     if (this._resource_type) {
       resources.push(
         new ResourcesBase(

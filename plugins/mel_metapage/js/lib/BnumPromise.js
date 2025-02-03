@@ -398,7 +398,7 @@ class BnumPromise {
               j(error);
             }
           });
-          nok('Cancelled');
+          nok(BnumPromise.PromiseStates.cancelled);
         }
       }, 100);
 
@@ -474,7 +474,8 @@ class BnumPromise {
       },
       (r) => {
         this.onSignalChanged.remove('resolver');
-        this.#_state = EPromiseState.rejected;
+        this.#_state =
+          r === EPromiseState.cancelled ? r : EPromiseState.rejected;
         console.error('Promise Rejected : ', r);
         return r;
       },

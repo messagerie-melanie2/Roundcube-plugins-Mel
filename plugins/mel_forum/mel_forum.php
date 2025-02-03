@@ -1980,7 +1980,7 @@ class mel_forum extends bnum_plugin
         $format = $this->get_input('_format', rcube_utils::INPUT_GPC); // paramètre pour le format
 
         // Récupérer l'article à partir de son UID
-        $post = $this->get_post($uid);
+        $post = $this->_get_post($uid);
 
         // Traiter en fonction du format
         switch (strtolower($format)) {

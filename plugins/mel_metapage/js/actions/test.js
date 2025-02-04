@@ -18,6 +18,13 @@ const html = JsHtml.start
     .if(() => Random.range(0, 2) === 0)
       .span().text('STARTINNNNNNNNG').end()
     .endif()
+    .resolve((element) => {
+      return element.css('color', 'blue');
+    })
+    .resolveNow((element) => {
+      if (mode === 1) return element.css('background-color', 'red');
+      else return element;
+    })
     .customElement({
       tag: 'test',
       onconnected: function () {
@@ -35,7 +42,7 @@ const html = JsHtml.start
         }, 500);
       },
       hasShadowDom: true,
-    })
+    }).observe({ key:'first' })
     .end()
     .customElement('test')
     .end()
@@ -49,4 +56,11 @@ const html = JsHtml.start
     }, 0)
   .end();
 
-html.generate().prependTo($('body'));
+const data = html.generate_with_observer(); //.prependTo($('body'));
+data.observed.first.css({
+  color: 'white',
+  display: 'block',
+  'background-color': 'black',
+});
+$('body').prepend(data.generated);
+data.free();

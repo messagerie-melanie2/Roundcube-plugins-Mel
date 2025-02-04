@@ -48,6 +48,12 @@ export { JsHtml, ____JsHtml };
  * @tutorial js-html
  */
 class ____JsHtml {
+  /**
+   * @type {BnumEvent<ActionCallback>}
+   * @private
+   * @event
+   */
+  #_onResolve;
   #_parent;
   #_observed = false;
   /**
@@ -61,6 +67,7 @@ class ____JsHtml {
     this.attribs = attribs;
     this.childs = [];
     this.#_parent = parent;
+    this.#_onResolve = new BnumEvent();
   }
 
   /**
@@ -397,6 +404,27 @@ class ____JsHtml {
 
   endif() {
     return this.#_endif().tag('endif').end();
+  }
+
+  /**
+   * Met de côté une fonction qui sera résolue à la génération du jshtml.
+   * @param {ActionCallback} callback
+   * @param  {...any} args
+   * @returns {____JsHtml}
+   */
+  resolve(callback, ...args) {
+    this.#_onResolve.push(callback, this, ...args);
+    return this;
+  }
+
+  /**
+   * Execute une fonction qui renvoi du jshtml
+   * @param {ActionCallback} callback
+   * @param  {...any} args
+   * @returns {____JsHtml}
+   */
+  resolveNow(callback, ...args) {
+    return callback(this, ...args) ?? this;
   }
 
   /**
@@ -1114,13 +1142,21 @@ class ____JsHtml {
     return this.#_generate_and_revert({ mode: 1 })[0];
   }
 
+  /**
+   *
+   * @param {Object} [options={}]
+   * @param {Window} [options.context=window]
+   * @param {boolean} [options.jQuery=true]
+   * @returns {{observed:Object<string, (jQuery | HTMLElement)>, generated:(jQuery | HTMLElement), free:() => null}}
+   */
   generate_with_observer({ context = window, jQuery = true } = {}) {
     let arr = this.#_generate_and_revert({ mode: 1, context });
 
     return {
       observed: this.#_toJson(
-        arr
+        [...arr]
           .map((x) => {
+            x = $(x);
             let array = Array.from(
               x.find('[data-rotomeca-framework-observer]'),
             );
@@ -1131,12 +1167,18 @@ class ____JsHtml {
           })
           .flat()
           .map((x) => {
+            x = $(x);
             const key = x.attr('data-rotomeca-framework-observer');
             x.removeAttr('data-rotomeca-framework-observer');
-            return { key, value: x };
+            return { key, value: jQuery ? x : x[0] };
           }),
       ),
       generated: jQuery ? arr : arr[0],
+      free() {
+        this.observed = null;
+        this.generated = null;
+        return null;
+      },
     };
   }
 
@@ -1308,6 +1350,16 @@ class ____JsHtml {
       .flat();
     let html = [];
     let current = this.#_generate_w_conditions(this);
+
+    if (current.#_onResolve.haveEvents()) {
+      let resolved = current.#_onResolve.call();
+
+      if (Array.isArray(resolved)) {
+        for (const element of resolved) {
+          current = element ?? current;
+        }
+      } else current = resolved ?? current;
+    }
 
     if (!IGNORED_BALISES.includes(current.balise))
       html.push(

@@ -11,65 +11,26 @@ import {
   BnumHtmlSrOnly,
   HtmlCustomTag,
 } from './CustomAttributes/js_html_base_web_elements.js';
-import { JsHtml } from './JsHtml.js';
+import { ABaseModulesJsHtml, JsHtml } from './JsHtml.js';
 
 export { JsHtml };
 
-JsHtml.create_custom_tag = function (
-  name,
-  {
-    already_existing_class = null,
-    one_line = false,
-    generate_callback = null,
-    extend = null,
-    prefix_tag = 'bnum',
-  },
-) {
-  let ret = false;
-
-  const tag = `${prefix_tag}-${name}`;
-  if (!customElements.get(tag)) {
-    let config = {};
-
-    if (extend) config.extends = extend;
-
-    customElements.define(tag, already_existing_class ?? HtmlCustomTag, config);
-
-    ret = true;
+class JsCustomHtml extends ABaseModulesJsHtml {
+  constructor(jshtml) {
+    super(jshtml);
   }
 
-  if (!JsHtml.start[name.replaceAll('-', '_')]) {
-    JsHtml.create_alias(name.replaceAll('-', '_'), {
-      tag,
-      generate_callback,
-      online: one_line,
-      after_callback: (html) => {
-        return html.attr('data-custom-tag', name);
-      },
-    });
+  icon(icon, attribs = {}) {
+    if (typeof icon !== 'string') {
+      attribs = icon ?? {};
+      icon = null;
+    }
+
+    return this._p_get()
+      .customElement(BnumHtmlIcon, attribs)
+      .resolveNow((jshtml) => (icon ? jshtml.attr('data-icon', icon) : jshtml));
   }
-
-  return ret;
-};
-
-JsHtml.create_custom_tag('icon', {
-  already_existing_class: BnumHtmlIcon,
-});
-
-JsHtml.update('icon', function (self, old, icon, attribs = {}) {
-  if (typeof icon !== 'string') {
-    attribs = icon;
-    icon = null;
-  }
-
-  let html = old.call(self, attribs); //.attr('data-icon', icon);
-
-  if (icon) {
-    html = html.attr('data-icon', icon);
-  }
-
-  return html;
-});
+}
 
 JsHtml.create_custom_tag('screen-reader', {
   already_existing_class: BnumHtmlSrOnly,

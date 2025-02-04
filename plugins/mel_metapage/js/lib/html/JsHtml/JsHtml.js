@@ -13,6 +13,7 @@
 import { BnumEvent } from '../../mel_events.js';
 import { HtmlCustomDataTag } from './CustomAttributes/js_html_base_web_elements.js';
 import { JsHtmlAccessibility } from './JsAccessibilityHtml.js';
+import { JsBoostrapHtml } from './JsBootstrapHtml.js';
 
 export { JsHtml, ____JsHtml };
 
@@ -303,6 +304,10 @@ class ____JsHtml {
 
   accessibilty() {
     return new JsHtmlAccessibility(this);
+  }
+
+  bootstrap() {
+    return new JsBoostrapHtml(this);
   }
 
   /**

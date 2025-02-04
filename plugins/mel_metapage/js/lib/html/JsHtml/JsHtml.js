@@ -12,6 +12,7 @@
 
 import { BnumEvent } from '../../mel_events.js';
 import { HtmlCustomDataTag } from './CustomAttributes/js_html_base_web_elements.js';
+import { JsHtmlAccessibility } from './JsAccessibilityHtml.js';
 
 export { JsHtml, ____JsHtml };
 
@@ -298,6 +299,10 @@ class ____JsHtml {
    */
   first() {
     return this.childs[0];
+  }
+
+  accessibilty() {
+    return new JsHtmlAccessibility(this);
   }
 
   /**
@@ -1684,6 +1689,21 @@ ____JsHtml.add_action = function (id, action, callback) {
 
   ____JsHtml.actions[id][action] = callback;
 };
+
+export class ABaseModulesJsHtml {
+  #_jshtml;
+  constructor(jshtml) {
+    this.#_jshtml = jshtml;
+  }
+
+  /**
+   * @returns {____JsHtml}
+   * @protected
+   */
+  _p_get() {
+    return this.#_jshtml;
+  }
+}
 
 /**
  * @class

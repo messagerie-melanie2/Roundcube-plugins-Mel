@@ -1,5 +1,15 @@
-import { JsHtml } from './JsHtml.js';
+import { ABaseModulesJsHtml, JsHtml } from './JsHtml.js';
 export { JsHtml };
+
+export class JsBoostrapHtml extends ABaseModulesJsHtml {
+  constructor(jshtml) {
+    super(jshtml);
+  }
+
+  row(attribs = {}) {
+    return this._p_get().div(attribs).addClass('row');
+  }
+}
 
 JsHtml.create_alias('row', {
   after_callback(html) {

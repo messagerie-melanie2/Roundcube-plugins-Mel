@@ -1,3 +1,6 @@
+/**
+ * @template {import("./JsHtml")._JsHtml} T
+ */
 export class ABaseModulesJsHtml {
   #_jshtml;
   constructor(jshtml) {
@@ -5,7 +8,7 @@ export class ABaseModulesJsHtml {
   }
 
   /**
-   * @returns {____JsHtml}
+   * @returns {T}
    * @protected
    */
   _p_get() {

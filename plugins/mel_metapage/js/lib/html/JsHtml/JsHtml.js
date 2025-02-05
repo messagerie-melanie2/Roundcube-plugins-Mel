@@ -337,6 +337,14 @@ class ____JsHtml {
   }
 
   /**
+   * @param {typeof import('./ABaseModulesJsHtml.js').ABaseModulesJsHtml<this>} CustomNamespace
+   * @returns {import('./ABaseModulesJsHtml.js').ABaseModulesJsHtml<this>}
+   */
+  namespace(CustomNamespace) {
+    return new CustomNamespace(this);
+  }
+
+  /**
    * Ajoute une balise enfant à la balise actuelle et la retourne.
    *
    * Terminez par {@link end} pour fermer la balise.

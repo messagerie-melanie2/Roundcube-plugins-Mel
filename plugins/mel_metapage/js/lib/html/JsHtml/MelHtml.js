@@ -488,5 +488,6 @@ class ____mel_html___ {
  * @type {____mel_html___}
  * @description Permet de générer du html en javascript et d'écrire du javascript sous forme html.
  * @tutorial js-html
+ * @deprecated Utilisez {@link MelJsHtml} ou {@link JsHtml}
  */
 export const MelHtml = new ____mel_html___();

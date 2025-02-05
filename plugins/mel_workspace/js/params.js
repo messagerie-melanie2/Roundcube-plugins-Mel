@@ -39,7 +39,15 @@
       $('#layout-content').remove();
       rcmail.set_busy(true, 'loading');
 
-      window.location.reload();
+      window.location.href = mel_metapage.Functions.url(
+        'workspace',
+        'workspace',
+        {
+          _uid: this.uid,
+          _page: 'settings',
+          _is_form: 'iframe',
+        },
+      );
     }
 
     init_params_buttons() {

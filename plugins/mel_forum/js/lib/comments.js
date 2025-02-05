@@ -913,7 +913,7 @@ class PostComment {
       USER_EMAIL: this.user_email,
       USER_NAME: this.user_name,
       COMMENT_DATE: formatCommentDate(this.created),
-      COMMENT_CONTENT: this.content,
+      COMMENT_CONTENT: this.content.replace(/\n/g, '<br>'),
       COMMENT_ID: this.id,
       LIKE_CLASS: likeClass,
       DISLIKE_CLASS: dislikeClass,

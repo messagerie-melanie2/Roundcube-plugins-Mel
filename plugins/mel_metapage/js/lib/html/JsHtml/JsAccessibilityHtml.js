@@ -1,5 +1,10 @@
-import { ____JsHtml, ABaseModulesJsHtml } from './JsHtml.js';
+import { ABaseModulesJsHtml } from './ABaseModulesJsHtml.js';
 
+/**
+ * @class
+ * @classdesc
+ * @template {import('./JsHtml.js')._JsHtml} T
+ */
 export class JsHtmlAccessibility extends ABaseModulesJsHtml {
   constructor(jshtml) {
     super(jshtml);
@@ -17,7 +22,7 @@ export class JsHtmlAccessibility extends ABaseModulesJsHtml {
   /**
    *
    * @param {Object} [options={}]
-   * @returns {____JsHtml}
+   * @returns {T}
    */
   accessibilty_setup_button({ isChild = false, return_child = false } = {}) {
     let navigator = isChild
@@ -40,7 +45,7 @@ export class JsHtmlAccessibility extends ABaseModulesJsHtml {
    *
    * @param {string} label
    * @param {Object} [options={}]
-   * @returns {____JsHtml}
+   * @returns {T}
    */
   input_text_floating(
     label,

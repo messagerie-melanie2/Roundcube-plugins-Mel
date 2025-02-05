@@ -160,6 +160,14 @@ export class BootstrapLoader extends HtmlCustomDataTag {
 
     return node;
   }
+
+  /**
+   * @type {string}
+   * @readonly
+   */
+  static get TAG() {
+    return 'bootstrap-loader';
+  }
 }
 
 /**
@@ -173,7 +181,7 @@ BootstrapLoader.EMode = {
 };
 
 {
-  const TAG = 'bootstrap-loader';
+  const TAG = BootstrapLoader.TAG;
 
   if (!customElements.get(TAG)) customElements.define(TAG, BootstrapLoader);
 }

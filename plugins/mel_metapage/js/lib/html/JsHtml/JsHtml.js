@@ -14,6 +14,7 @@ import { BnumEvent } from '../../mel_events.js';
 import { HtmlCustomDataTag } from './CustomAttributes/js_html_base_web_elements.js';
 import { JsHtmlAccessibility } from './JsAccessibilityHtml.js';
 import { JsBoostrapHtml } from './JsBootstrapHtml.js';
+import { JsCustomHtml } from './JsCustomHtml.js';
 
 export { JsHtml, ____JsHtml };
 
@@ -41,6 +42,10 @@ export { JsHtml, ____JsHtml };
  * @param {____JsHtml} jsHtml JsHtml en cours
  * @param {...*} args Arguments
  * @return {____JsHtml} Chaîne de JsHtml
+ */
+
+/**
+ * @typedef {____JsHtml} _JsHtml
  */
 
 /**
@@ -76,7 +81,7 @@ class ____JsHtml {
    * Observe un élément, ce qui permet de les retrouver plus tard
    * @param {Object} [options={}]
    * @param {?string} [options.key=null]
-   * @returns {____JsHtml}
+   * @returns {this}
    */
   observe({ key = null } = {}) {
     if (this.balise[0] === '/')
@@ -93,7 +98,7 @@ class ____JsHtml {
   /**
    * Ajoute une classe à la balise
    * @param {string} class_to_add Classe à ajouter
-   * @returns {____JsHtml}
+   * @returns {this}
    */
   addClass(class_to_add) {
     let navigator = this._updated_balise();
@@ -105,7 +110,7 @@ class ____JsHtml {
   /**
    * Si la balise à une classe ou non
    * @param {string} class_to_verify Classe à vérifier
-   * @returns {____JsHtml}
+   * @returns {this}
    */
   hasClass(class_to_verify) {
     return this._updated_balise()
@@ -116,7 +121,7 @@ class ____JsHtml {
   /**
    * Supprime une classe à la balise
    * @param {string} class_to_remove Classe à supprimer
-   * @returns {____JsHtml}
+   * @returns {this}
    */
   removeClass(class_to_remove) {
     let navigator = this._updated_balise();
@@ -132,7 +137,7 @@ class ____JsHtml {
    * Désactive la balise.
    *
    * Ajoute la classe `disabled` et l'attribut `disabled`
-   * @returns {____JsHtml}
+   * @returns {this}
    */
   disable() {
     return this.addClass('disabed').attr('disabled', 'disabled');
@@ -142,7 +147,7 @@ class ____JsHtml {
    * Ajoute un attribut css à la balise
    * @param {(string | Object<string, string>)} key_or_attrib Clé ou attributs
    * @param {!string} value Valeur de la propriété css si il ne s'agit pas d'un attribut.
-   * @returns {____JsHtml}
+   * @returns {this}
    */
   css(key_or_attrib, value = '') {
     if (typeof key_or_attrib === 'string') {
@@ -163,7 +168,7 @@ class ____JsHtml {
   /**
    * Récupère la bonne balise.
    * @private
-   * @returns {____JsHtml}
+   * @returns {this}
    */
   _updated_balise() {
     if (this.childs.length > 0) {
@@ -196,7 +201,7 @@ class ____JsHtml {
    * Attribut à rajouter à la balise
    * @param {string} name Nom de la balise
    * @param {string} value valeur de l'attribut
-   * @returns {____JsHtml}
+   * @returns {this}
    */
   attr(name, value) {
     let navigator = this._updated_balise();
@@ -211,7 +216,7 @@ class ____JsHtml {
   /**
    * Attributs à rajouter à la balise
    * @param {Object<string, string>} attributes Attributs à ajouter
-   * @returns {____JsHtml}
+   * @returns {this}
    */
   attrs(attributes) {
     for (const key in attributes) {
@@ -227,7 +232,7 @@ class ____JsHtml {
   /**
    * Met à jours les attributs. Si il s'agissait d'une chaîne de caractère à la base, elle est transformée en objet.
    * @private
-   * @returns {____JsHtml}
+   * @returns {this}
    */
   _update_attribs() {
     if (typeof this.attribs === 'string') {
@@ -279,7 +284,7 @@ class ____JsHtml {
   /**
    * Supprime un attribut
    * @param {string} name Nom de l'attribut
-   * @returns {____JsHtml}
+   * @returns {this}
    */
   removeAttr(name) {
     this._updated_balise().attribs[name] = undefined;
@@ -288,7 +293,8 @@ class ____JsHtml {
 
   /**
    * Récupère la balise parente.
-   * @returns {____JsHtml}
+   * @returns {P}
+   * @template {____JsHtml} P
    */
   parent() {
     return this.#_parent;
@@ -296,18 +302,38 @@ class ____JsHtml {
 
   /**
    * Récpère le premier enfant
-   * @returns {____JsHtml}
+   * @returns {C}
+   * @template {____JsHtml} C
    */
   first() {
     return this.childs[0];
   }
 
+  /**
+   *
+   * @returns {JsHtmlAccessibility<this>}
+   *
+   */
   accessibilty() {
     return new JsHtmlAccessibility(this);
   }
 
+  /**
+   *
+   * @returns {JsBoostrapHtml<this>}
+   *
+   */
   bootstrap() {
     return new JsBoostrapHtml(this);
+  }
+
+  /**
+   *
+   * @returns {JsCustomHtml<this>}
+   *
+   */
+  webcomponents() {
+    return new JsCustomHtml(this);
   }
 
   /**
@@ -316,7 +342,8 @@ class ____JsHtml {
    * Terminez par {@link end} pour fermer la balise.
    * @param {string} balise Nom de la balise
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise créée
+   * @returns {this} Balise créée
+   *
    */
   tag(balise, attribs = {}) {
     return this._create(balise, this, attribs, false);
@@ -328,33 +355,48 @@ class ____JsHtml {
    * Il s'agit d'une balise qui ne possède pas de balise de fermeture comme `input` ou `br`
    * @param {string} balise Nom de la balise
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise créée
+   * @returns {this} Balise créée
+   *
    */
   tag_one_line(balise, attribs = {}) {
     return this._create_oneline(balise, this, attribs);
   }
 
   /**
-   *
+   * Permet de générer un custom élément à la volé ou d'en afficher un déjà existant.
    * @param {string | typeof HtmlCustomDataTag | {tag:string, onconnected:(element:HtmlCustomDataTag)=>{}, hasShadowDom:boolean, }} element
    * @param {Attribs} attribs
+   * @returns {this}
+   *
    */
   customElement(element, attribs = {}) {
     const CUSTOM_TAG_PREFIX = 'bnum-custom';
     window.tags ??= {};
 
-    if (typeof element === 'string') {
-      attribs['oncustom:event:generated:show'] =
-        window.tags[element].onconnected;
+    //Si le tag est un string ou est déjà défini
+    if (
+      typeof element === 'string' ||
+      (!!element?.tag && !!window.tags[element.tag])
+    ) {
+      //Si onconnected existe
+      if (window.tags[element].onconnected) {
+        attribs['oncustom:event:generated:show'] =
+          window.tags[element].onconnected;
+      }
+
       return this.tag(
-        element.includes('bnum-') ? element : `${CUSTOM_TAG_PREFIX}-${element}`,
+        element.includes('-') ? element : `${CUSTOM_TAG_PREFIX}-${element}`,
         attribs,
       );
     } else if (element.TAG) {
+      //Si il s'agit d'une classe déjà existante
       HtmlCustomDataTag.TryDefine(element.TAG, element);
       return this.tag(element.TAG, attribs);
     } else {
-      const tag = `${CUSTOM_TAG_PREFIX}-${element.tag}`;
+      // Sinon, on le créé
+      const tag = element.tag.includes('-')
+        ? element.tag
+        : `${CUSTOM_TAG_PREFIX}-${element.tag}`;
 
       let tmp = `
       (() => {
@@ -420,7 +462,8 @@ class ____JsHtml {
    * Met de côté une fonction qui sera résolue à la génération du jshtml.
    * @param {ActionCallback} callback
    * @param  {...any} args
-   * @returns {____JsHtml}
+   * @returns {this}
+   *
    */
   resolve(callback, ...args) {
     this.#_onResolve.push(callback, this, ...args);
@@ -431,7 +474,8 @@ class ____JsHtml {
    * Execute une fonction qui renvoi du jshtml
    * @param {ActionCallback} callback
    * @param  {...any} args
-   * @returns {____JsHtml}
+   * @returns {this}
+   *
    */
   resolveNow(callback, ...args) {
     return callback(this, ...args) ?? this;
@@ -440,7 +484,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `a` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `a` créée
+   * @returns {this}
+   *
    */
   a(attribs = {}) {
     return this.tag('a', attribs);
@@ -449,7 +494,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `dd` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `dd` créée
+   * @returns {this}
+   *
    */
   dd(attribs = {}) {
     return this.tag('dd', attribs);
@@ -458,7 +504,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `dt` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `dt` créée
+   * @returns {this}
+   *
    */
   dt(attribs = {}) {
     return this.tag('dt', attribs);
@@ -467,7 +514,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `dl` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `dl` créée
+   * @returns {this}
+   *
    */
   dl(attribs = {}) {
     return this.tag('dl', attribs);
@@ -476,7 +524,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `div` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `div` créée
+   * @returns {this}
+   *
    */
   div(attribs = {}) {
     return this.tag('div', attribs);
@@ -485,7 +534,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `blockquote` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `blockquote` créée
+   * @returns {this}
+   *
    */
   blockquote(attribs = {}) {
     return this.tag('blockquote', attribs);
@@ -494,7 +544,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `ul` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `ul` créée
+   * @returns {this}
+   *
    */
   ul(attribs = {}) {
     let ul = this.tag('ul', attribs);
@@ -509,7 +560,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `ol` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `ol` créée
+   * @returns {this}
+   *
    */
   ol(attribs = {}) {
     return this.tag('ol', attribs);
@@ -518,7 +570,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `li` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `li` créée
+   * @returns {this}
+   *
    */
   li(attribs = {}) {
     return this.tag('li', attribs);
@@ -527,7 +580,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `span` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `span` créée
+   * @returns {this}
+   *
    */
   span(attribs = {}) {
     return this.tag('span', attribs);
@@ -536,7 +590,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `p` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `p` créée
+   * @returns {this}
+   *
    */
   p(attribs = {}) {
     return this.tag('p', attribs);
@@ -545,7 +600,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `img` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `img` créée
+   * @returns {this}
+   *
    */
   img(attribs = {}) {
     return this.tag_one_line('img', attribs);
@@ -553,7 +609,8 @@ class ____JsHtml {
 
   /**
    * Ajoute une balise `style` à la balise actuelle et la retourne.
-   * @returns {____JsHtml} Balise `style` créée
+   * @returns {this}
+   *
    */
   style() {
     return this.tag('style');
@@ -563,7 +620,8 @@ class ____JsHtml {
    * Ajoute une propriété css. Idéalement après une balise `style`.
    * @param {string} key Clé de la propriété css
    * @param {string} value Valeur de la propriété css
-   * @returns {____JsHtml} Propriété css créée
+   * @returns {this}
+   *
    * @see {@link ____JsHtml.style}
    */
   style_css_prop(key, value) {
@@ -573,7 +631,8 @@ class ____JsHtml {
   /**
    * Essaye d'ajouter un label.
    * @param {Attribs} attribs
-   * @returns {____JsHtml}
+   * @returns {this}
+   *
    * @private
    */
   _try_add_label(attribs = {}) {
@@ -591,10 +650,229 @@ class ____JsHtml {
   /**
    * Ajoute une balise `input` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `input` créée
+   * @returns {this}
+   *
    */
   input(attribs = {}) {
     return this._try_add_label(attribs).tag_one_line('input', attribs);
+  }
+
+  #_input(type, attribs) {
+    attribs ??= {};
+
+    attribs.type = type;
+    return this.input(attribs);
+  }
+
+  /**
+   *
+   * @param {Attribs} attribs
+   * @returns {this}
+   *
+   * @deprecated N'utilisez pas d'input pour les bouttons !!!!
+   */
+  input_button(attribs = {}) {
+    return this.#_input('button', attribs);
+  }
+
+  /**
+   *
+   * @param {Attribs} attribs
+   * @returns {this}
+   *
+   */
+  input_checkbox(attribs = {}) {
+    return this.#_input('checkbox', attribs);
+  }
+
+  /**
+   *
+   * @param {Attribs} attribs
+   * @returns {this}
+   *
+   */
+  input_color(attribs = {}) {
+    return this.#_input('color', attribs);
+  }
+
+  /**
+   *
+   * @param {Attribs} attribs
+   * @returns {this}
+   *
+   */
+  input_date(attribs = {}) {
+    return this.#_input('date', attribs);
+  }
+
+  /**
+   *
+   * @param {Attribs} attribs
+   * @returns {this}
+   *
+   */
+  input_datetime_local(attribs = {}) {
+    return this.#_input('datetime_local', attribs);
+  }
+
+  /**
+   *
+   * @param {Attribs} attribs
+   * @returns {this}
+   *
+   */
+  input_email(attribs = {}) {
+    return this.#_input('email', attribs);
+  }
+
+  /**
+   *
+   * @param {Attribs} attribs
+   * @returns {this}
+   *
+   */
+  input_file(attribs = {}) {
+    return this.#_input('file', attribs);
+  }
+
+  /**
+   *
+   * @param {Attribs} attribs
+   * @returns {this}
+   *
+   */
+  input_hidden(attribs = {}) {
+    return this.#_input('hidden', attribs);
+  }
+
+  /**
+   *
+   * @param {Attribs} attribs
+   * @returns {this}
+   *
+   */
+  input_month(attribs = {}) {
+    return this.#_input('month', attribs);
+  }
+
+  /**
+   *
+   * @param {Attribs} attribs
+   * @returns {this}
+   *
+   */
+  input_number(attribs = {}) {
+    return this.#_input('number', attribs);
+  }
+
+  /**
+   *
+   * @param {Attribs} attribs
+   * @returns {this}
+   *
+   */
+  input_image(attribs = {}) {
+    return this.#_input('image', attribs);
+  }
+
+  /**
+   *
+   * @param {Attribs} attribs
+   * @returns {this}
+   *
+   */
+  input_password(attribs = {}) {
+    return this.#_input('password', attribs);
+  }
+
+  /**
+   *
+   * @param {Attribs} attribs
+   * @returns {this}
+   *
+   */
+  input_radio(attribs = {}) {
+    return this.#_input('radio', attribs);
+  }
+
+  /**
+   *
+   * @param {Attribs} attribs
+   * @returns {this}
+   *
+   */
+  input_reset(attribs = {}) {
+    return this.#_input('reset', attribs);
+  }
+
+  /**
+   *
+   * @param {Attribs} attribs
+   * @returns {this}
+   *
+   */
+  input_search(attribs = {}) {
+    return this.#_input('search', attribs);
+  }
+
+  /**
+   *
+   * @param {Attribs} attribs
+   * @returns {this}
+   *
+   */
+  input_submit(attribs = {}) {
+    return this.#_input('submit', attribs);
+  }
+
+  /**
+   *
+   * @param {Attribs} attribs
+   * @returns {this}
+   *
+   */
+  input_tel(attribs = {}) {
+    return this.#_input('tel', attribs);
+  }
+
+  /**
+   *
+   * @param {Attribs} attribs
+   * @returns {this}
+   *
+   */
+  input_text(attribs = {}) {
+    return this.#_input('text', attribs);
+  }
+
+  /**
+   *
+   * @param {Attribs} attribs
+   * @returns {this}
+   *
+   */
+  input_time(attribs = {}) {
+    return this.#_input('time', attribs);
+  }
+
+  /**
+   *
+   * @param {Attribs} attribs
+   * @returns {this}
+   *
+   */
+  input_url(attribs = {}) {
+    return this.#_input('url', attribs);
+  }
+
+  /**
+   *
+   * @param {Attribs} attribs
+   * @returns {this}
+   *
+   */
+  input_week(attribs = {}) {
+    return this.#_input('week', attribs);
   }
 
   /**
@@ -602,7 +880,8 @@ class ____JsHtml {
    *
    * Si l'attribut `label` éxiste, ajoute un `label` avant les `select`.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `select` créée
+   * @returns {this}
+   *
    */
   select(attribs = {}) {
     return this._try_add_label(attribs).tag('select', attribs);
@@ -611,7 +890,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `option` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `option` créée
+   * @returns {this}
+   *
    */
   option(attribs = {}) {
     return this.tag('option', attribs);
@@ -624,7 +904,8 @@ class ____JsHtml {
    * @param {string} value Valeur de l'option
    * @param {string} text Texte de l'option
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `img` créée
+   * @returns {this}
+   *
    */
   option_one_line(value, text, attribs = {}) {
     attribs.value = value;
@@ -634,7 +915,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `textarea` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `textarea` créée
+   * @returns {this}
+   *
    */
   textarea(attribs = {}) {
     return this._try_add_label(attribs).tag('textarea', attribs);
@@ -643,7 +925,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `form` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `form` créée
+   * @returns {this}
+   *
    */
   form(attribs = {}) {
     return this.tag('form', attribs);
@@ -652,7 +935,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `button` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `button` créée
+   * @returns {this}
+   *
    */
   button(attribs = {}) {
     return this.tag('button', attribs);
@@ -661,7 +945,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `fieldset` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `fieldset` créée
+   * @returns {this}
+   *
    */
   fieldset(attribs = {}) {
     return this.tag('fieldset', attribs);
@@ -670,7 +955,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `label` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `label` créée
+   * @returns {this}
+   *
    */
   label(attribs = {}) {
     return this.tag('label', attribs);
@@ -679,7 +965,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `legend` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `legend` créée
+   * @returns {this}
+   *
    */
   legend(attribs = {}) {
     return this.tag('legend', attribs);
@@ -688,7 +975,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `meter` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `meter` créée
+   * @returns {this}
+   *
    */
   meter(attribs = {}) {
     return this.tag('meter', attribs);
@@ -697,7 +985,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `optgroup` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `optgroup` créée
+   * @returns {this}
+   *
    */
   optgroup(attribs = {}) {
     return this.tag('optgroup', attribs);
@@ -706,7 +995,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `output` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `output` créée
+   * @returns {this}
+   *
    */
   output(attribs = {}) {
     return this.tag('output', attribs);
@@ -715,7 +1005,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `progress` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `progress` créée
+   * @returns {this}
+   *
    */
   progress(attribs = {}) {
     return this.tag('progress', attribs);
@@ -724,7 +1015,9 @@ class ____JsHtml {
   /**
    * Ajoute une balise `br` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `br` créée
+   * @returns {this}
+   *
+   * @deprecated
    */
   br() {
     return this.tag_one_line('br');
@@ -733,7 +1026,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `hr` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `hr` créée
+   * @returns {this}
+   *
    */
   hr() {
     return this.tag_one_line('hr');
@@ -742,7 +1036,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `address` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `address` créée
+   * @returns {this}
+   *
    */
   address(attribs = {}) {
     return this.tag('address', attribs);
@@ -751,7 +1046,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `article` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `article` créée
+   * @returns {this}
+   *
    */
   article(attribs = {}) {
     return this.tag('article', attribs);
@@ -760,7 +1056,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `aside` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `aside` créée
+   * @returns {this}
+   *
    */
   aside(attribs = {}) {
     return this.tag('aside', attribs);
@@ -769,7 +1066,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `footer` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `footer` créée
+   * @returns {this}
+   *
    */
   footer(attribs = {}) {
     return this.tag('footer', attribs);
@@ -778,7 +1076,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `header` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `header` créée
+   * @returns {this}
+   *
    */
   header(attribs = {}) {
     return this.tag('header', attribs);
@@ -787,7 +1086,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `h` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `h` créée
+   * @returns {this}
+   *
    */
   h(num, attribs = {}) {
     return this.tag(`h${num}`, attribs);
@@ -796,7 +1096,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `h1` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `h1` créée
+   * @returns {this}
+   *
    */
   h1(attribs = {}) {
     return this.h(1, attribs);
@@ -805,7 +1106,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `h2` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `h2` créée
+   * @returns {this}
+   *
    */
   h2(attribs = {}) {
     return this.h(2, attribs);
@@ -814,7 +1116,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `h3` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `h3` créée
+   * @returns {this}
+   *
    */
   h3(attribs = {}) {
     return this.h(3, attribs);
@@ -823,7 +1126,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `h4` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `h4` créée
+   * @returns {this}
+   *
    */
   h4(attribs = {}) {
     return this.h(4, attribs);
@@ -832,7 +1136,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `h5` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `h5` créée
+   * @returns {this}
+   *
    */
   h5(attribs = {}) {
     return this.h(5, attribs);
@@ -841,7 +1146,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `h6` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `h6` créée
+   * @returns {this}
+   *
    */
   h6(attribs = {}) {
     return this.h(6, attribs);
@@ -850,7 +1156,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `hgroup` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `hgroup` créée
+   * @returns {this}
+   *
    */
   hgroup(attribs = {}) {
     return this.tag('hgroup', attribs);
@@ -859,7 +1166,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `main` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `main` créée
+   * @returns {this}
+   *
    */
   main(attribs = {}) {
     return this.tag('main', attribs);
@@ -868,7 +1176,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `nav` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `nav` créée
+   * @returns {this}
+   *
    */
   nav(attribs = {}) {
     return this.tag('nav', attribs);
@@ -877,7 +1186,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `section` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `section` créée
+   * @returns {this}
+   *
    */
   section(attribs = {}) {
     return this.tag('section', attribs);
@@ -886,7 +1196,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `menu` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `menu` créée
+   * @returns {this}
+   *
    */
   menu(attribs = {}) {
     return this.tag('menu', attribs);
@@ -895,7 +1206,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `iframe` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `iframe` créée
+   * @returns {this}
+   *
    */
   iframe(attribs = {}, close = true) {
     let tmp = this.tag('iframe', attribs);
@@ -907,7 +1219,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `canvas` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `canvas` créée
+   * @returns {this}
+   *
    */
   canvas(attribs = {}) {
     return this.tag('canvas', attribs);
@@ -916,7 +1229,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `script` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `script` créée
+   * @returns {this}
+   *
    */
   script(attribs = {}) {
     return this.tag('script', attribs);
@@ -925,7 +1239,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `table` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `table` créée
+   * @returns {this}
+   *
    */
   table(attribs = {}) {
     return this.tag('table', attribs);
@@ -934,7 +1249,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `caption` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `caption` créée
+   * @returns {this}
+   *
    */
   caption(attribs = {}) {
     return this.tag('caption', attribs);
@@ -943,7 +1259,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `thead` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `thead` créée
+   * @returns {this}
+   *
    */
   thead(attribs = {}) {
     return this.tag('thead', attribs);
@@ -952,7 +1269,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `col` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `col` créée
+   * @returns {this}
+   *
    */
   col() {
     return this.tag_one_line('col');
@@ -961,7 +1279,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `colgroup` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `colgroup` créée
+   * @returns {this}
+   *
    */
   colgroup(attribs = {}) {
     return this.tag('colgroup', attribs);
@@ -970,7 +1289,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `tbody` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `tbody` créée
+   * @returns {this}
+   *
    */
   tbody(attribs = {}) {
     return this.tag('tbody', attribs);
@@ -979,7 +1299,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `td` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `td` créée
+   * @returns {this}
+   *
    */
   td(attribs = {}) {
     return this.tag('td', attribs);
@@ -988,7 +1309,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `th` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `th` créée
+   * @returns {this}
+   *
    */
   th(attribs = {}) {
     return this.tag('th', attribs);
@@ -997,7 +1319,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `tr` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `tr` créée
+   * @returns {this}
+   *
    */
   tr(attribs = {}) {
     return this.tag('tr', attribs);
@@ -1006,7 +1329,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `tfoot` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `tfoot` créée
+   * @returns {this}
+   *
    */
   tfoot(attribs = {}) {
     return this.tag('tfoot', attribs);
@@ -1015,7 +1339,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `details` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `details` créée
+   * @returns {this}
+   *
    */
   details(attribs = {}) {
     return this.tag('details', attribs);
@@ -1024,7 +1349,8 @@ class ____JsHtml {
   /**
    * Ajoute une balise `summary` à la balise actuelle et la retourne.
    * @param {Attribs} attribs Attributs de la balise
-   * @returns {____JsHtml} Balise `summary` créée
+   * @returns {this}
+   *
    */
   summary(attribs = {}) {
     return this.tag('summary', attribs);
@@ -1037,7 +1363,8 @@ class ____JsHtml {
   /**
    * Affichera un commentaire html
    * @param {string} text Commentaire à afficher
-   * @returns {____JsHtml}
+   * @returns {this}
+   * @template {this} J
    */
   comment(text) {
     return this.text(`<!-- ${text} -->`);
@@ -1046,7 +1373,7 @@ class ____JsHtml {
   /**
    * Commentaire qui ne sera pas affiché
    * @param {string} commentary Commentaire
-   * @returns {____JsHtml}
+   * @returns {this}
    */
   // eslint-disable-next-line no-unused-vars
   _(commentary) {
@@ -1056,7 +1383,8 @@ class ____JsHtml {
   /**
    * Affiche un texte brute
    * @param {string} text Texte à afficher
-   * @returns {____JsHtml}
+   * @returns {this}
+   *
    */
   text(text) {
     return this._create(text, this, { is_raw: true }, true);
@@ -1065,7 +1393,8 @@ class ____JsHtml {
   /**
    * Termine une balise
    * @param {?string} debug Commentaire à afficher pour pouvoir s'y retrouver plus facilement
-   * @returns {____JsHtml}
+   * @returns {this}
+   *
    * @example JsHtml.start.div().end()
    */
   end(debug = null) {
@@ -1085,7 +1414,8 @@ class ____JsHtml {
    * Permet d'ajouter des éléments en jshtml qui nécéssitent d'être bouclés.
    * @param {EachCallback} callback Action
    * @param  {...*} items Objets
-   * @returns {____JsHtml} JsHtml en cours
+   * @returns {this}
+   *
    */
   each(callback, ...items) {
     let html = this;
@@ -1100,7 +1430,8 @@ class ____JsHtml {
    * Actions à éxécuter dans le JsHtml.
    * @param {ActionCallback} callback
    * @param  {...any} args Arguments qui seront transmits au callback
-   * @returns {____JsHtml} Chaîne de JsHtml
+   * @returns {this}
+   *
    */
   action(callback, ...args) {
     return callback(this, ...args);
@@ -1694,21 +2025,6 @@ ____JsHtml.add_action = function (id, action, callback) {
 
   ____JsHtml.actions[id][action] = callback;
 };
-
-export class ABaseModulesJsHtml {
-  #_jshtml;
-  constructor(jshtml) {
-    this.#_jshtml = jshtml;
-  }
-
-  /**
-   * @returns {____JsHtml}
-   * @protected
-   */
-  _p_get() {
-    return this.#_jshtml;
-  }
-}
 
 /**
  * @class

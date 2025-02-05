@@ -714,7 +714,8 @@ class mel_workspace extends bnum_plugin
         else {
             //get workspace
             if ($workspace->isAdmin($this->_CurrentUser()->uid)) {
-                $this->_add_users($workspace, mel_helper::Enumerable($users['existing_users'])->select(function ($k, $v) {
+                $this->_add_users($workspace, mel_helper::Enumerable($users['existing_users'])->select(function ($k, $v) use($workspace) {
+                    $this->_notify_user($v['user'], $workspace->get(), $v['user']);
                     return driver_mel::gi()->getUser($v['user']);
                 })->toArray(), null, $noNotifUsers);
                 //self::edit_modified_date($workspace, false);

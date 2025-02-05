@@ -284,6 +284,16 @@ class HtmlCustomTag extends HTMLElement {
   static SetTextCallback(callback) {
     this._p_text_callback = callback;
   }
+
+  /**
+   * D�fini un �l�ment si il n'a pas �t� d�fini.
+   * @static
+   * @param {string} tag Tag de l'�l�ment custom
+   * @param {typeof HtmlCustomTag} constructor Element d�riv� de HTMLCustomElement
+   */
+  static TryDefine(tag, constructor) {
+    if (!customElements.get(tag)) customElements.define(tag, constructor);
+  }
 }
 
 /**

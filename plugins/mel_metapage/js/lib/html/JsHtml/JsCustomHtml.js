@@ -1,122 +1,96 @@
-import { BootstrapLoader } from './CustomAttributes/bootstrap-loader.js';
-// import {
-//   MelWindow,
-//   MelWindowFrame,
-// } from './CustomAttributes/frames_web_elements.js';
+import { ABaseModulesJsHtml } from './ABaseModulesJsHtml.js';
 import {
   BnumHtmlCenteredFlexContainer,
   BnumHtmlFlexContainer,
   BnumHtmlIcon,
   BnumHtmlSeparate,
   BnumHtmlSrOnly,
-  HtmlCustomTag,
 } from './CustomAttributes/js_html_base_web_elements.js';
-import { JsHtml } from './JsHtml.js';
 
-export { JsHtml };
-
-JsHtml.create_custom_tag = function (
-  name,
-  {
-    already_existing_class = null,
-    one_line = false,
-    generate_callback = null,
-    extend = null,
-    prefix_tag = 'bnum',
-  },
-) {
-  let ret = false;
-
-  const tag = `${prefix_tag}-${name}`;
-  if (!customElements.get(tag)) {
-    let config = {};
-
-    if (extend) config.extends = extend;
-
-    customElements.define(tag, already_existing_class ?? HtmlCustomTag, config);
-
-    ret = true;
+/**
+ * @class
+ * @classdesc
+ * @template {import('./JsHtml.js')._JsHtml} T
+ */
+export class JsCustomHtml extends ABaseModulesJsHtml {
+  constructor(jshtml) {
+    super(jshtml);
   }
 
-  if (!JsHtml.start[name.replaceAll('-', '_')]) {
-    JsHtml.create_alias(name.replaceAll('-', '_'), {
-      tag,
-      generate_callback,
-      online: one_line,
-      after_callback: (html) => {
-        return html.attr('data-custom-tag', name);
-      },
-    });
+  /**
+   * @param {string} icon
+   * @param {import('./JsHtml.js').Attribs} [attribs={}]
+   * @returns {T}
+   */
+  icon(icon, attribs = {}) {
+    if (typeof icon !== 'string') {
+      attribs = icon ?? {};
+      icon = null;
+    }
+
+    return this._p_get()
+      .customElement(BnumHtmlIcon, attribs)
+      .resolveNow((jshtml) => (icon ? jshtml.attr('data-icon', icon) : jshtml));
   }
 
-  return ret;
-};
-
-JsHtml.create_custom_tag('icon', {
-  already_existing_class: BnumHtmlIcon,
-});
-
-JsHtml.update('icon', function (self, old, icon, attribs = {}) {
-  if (typeof icon !== 'string') {
-    attribs = icon;
-    icon = null;
+  /**
+   *
+   * @param {import('./JsHtml.js').Attribs} [attribs={}]
+   * @returns {T}
+   */
+  screen_reader(attribs = {}) {
+    return this._p_get().customElement(BnumHtmlSrOnly, attribs);
   }
 
-  let html = old.call(self, attribs); //.attr('data-icon', icon);
-
-  if (icon) {
-    html = html.attr('data-icon', icon);
+  /**
+   *
+   * @param {import('./JsHtml.js').Attribs} [attribs={}]
+   * @returns {T}
+   */
+  sr(attribs = {}) {
+    return this.screen_reader(attribs);
   }
 
-  return html;
-});
+  /**
+   *
+   * @param {import('./JsHtml.js').Attribs} [attribs={}]
+   * @returns {T}
+   */
+  separate(attribs = {}) {
+    return this._p_get().customElement(BnumHtmlSeparate, attribs).end();
+  }
 
-JsHtml.create_custom_tag('screen-reader', {
-  already_existing_class: BnumHtmlSrOnly,
-});
+  /**
+   *
+   * @param {import('./JsHtml.js').Attribs} [attribs={}]
+   * @returns {T}
+   */
+  flex_container(attribs = {}) {
+    return this._p_get()
+      .customElement(BnumHtmlFlexContainer, attribs)
+      .css('display', 'flex');
+  }
 
-JsHtml.extend('sr', function (attribs = {}) {
-  return this.screen_reader(attribs);
-});
+  /**
+   *
+   * @param {import('./JsHtml.js').Attribs} [attribs={}]
+   * @returns {T}
+   */
+  centered_flex_container(attribs = {}) {
+    return this._p_get()
+      .customElement(BnumHtmlCenteredFlexContainer, attribs)
+      .css('display', 'flex');
+  }
 
-JsHtml.create_custom_tag('separate', {
-  already_existing_class: BnumHtmlSeparate,
-  one_line: true,
-});
-
-JsHtml.create_custom_tag('flex-container', {
-  already_existing_class: BnumHtmlFlexContainer,
-});
-
-JsHtml.update('flex_container', function (self, old, attribs = {}) {
-  let html = old.call(self, attribs);
-
-  return html.css('display', 'flex');
-});
-
-JsHtml.create_custom_tag('centered-flex-container', {
-  already_existing_class: BnumHtmlCenteredFlexContainer,
-});
-
-JsHtml.create_custom_tag('placeholder', {});
-
-// JsHtml.create_custom_tag('mel-window', {
-//   already_existing_class: MelWindow,
-// });
-
-// JsHtml.update('mel_window', function (self, old, id, attribs = {}) {
-//   attribs['data-window-id'] = id;
-
-//   let html = old.call(self, attribs);
-
-//   return html;
-// });
-
-// JsHtml.create_custom_tag('mel-window-frame', {
-//   already_existing_class: MelWindowFrame,
-// });
-
-JsHtml.create_custom_tag('loader', {
-  prefix_tag: 'bootstrap',
-  already_existing_class: BootstrapLoader,
-});
+  /**
+   *
+   * @param {import('./JsHtml.js').Attribs} [attribs={}]
+   * @returns {T}
+   */
+  placeholder(attribs = {}) {
+    return this._p_get().customElement(
+      { tag: 'bnum-placeholder', onconnected: () => {}, hasShadowDom: false },
+      attribs,
+    );
+  }
+}

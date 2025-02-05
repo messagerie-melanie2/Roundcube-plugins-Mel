@@ -2967,7 +2967,7 @@ class mel_metapage extends bnum_plugin
     {
         //$this->include_script('js/program/webconf_video_manager.js');
         self::IncludeLoader();
-        $this->include_script('js/actions/test.js');
+        $this->include_module('test.js', 'js/actions');
         $this->rc->output->send('mel_metapage.test');
     }
 

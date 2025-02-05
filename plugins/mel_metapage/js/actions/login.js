@@ -13,15 +13,25 @@ $(document).ready(() => {
     if (MEL_ELASTIC_UI.color_mode() !== _color_mode)
       MEL_ELASTIC_UI.switch_color();
 
-    if (_color_mode === 'dark') $('.mel-logo').attr('src', LOGO_DARK);
-    else $('.mel-logo').attr('src', LOGO_LIGHT);
+    if (_color_mode === 'dark') {
+      $('.mel-logo').attr('src', LOGO_DARK);
+
+      if ($('html').hasClass('dark-mode-custom'))
+        $('html').addClass('dark-mode');
+    } else {
+      $('.mel-logo').attr('src', LOGO_LIGHT);
+
+      if ($('html').hasClass('dark-mode-custom'))
+        $('html').removeClass('dark-mode');
+    }
     // switch_color_mode();
     // reset_cookie();
   });
 
-  if (MEL_ELASTIC_UI.color_mode() === 'dark')
+  if (MEL_ELASTIC_UI.color_mode() === 'dark') {
     $('.mel-logo').attr('src', LOGO_DARK);
-  else $('.mel-logo').attr('src', LOGO_LIGHT);
+    if ($('html').hasClass('dark-mode-custom')) $('html').addClass('dark-mode');
+  } else $('.mel-logo').attr('src', LOGO_LIGHT);
 
   if (rcmail.env.maintenance_text !== undefined) {
     $('#mel-login-form').prepend(`

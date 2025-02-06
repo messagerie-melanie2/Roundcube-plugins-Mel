@@ -597,12 +597,11 @@ export class Manager extends MelObject {
               let downloadUrl = this.url('forum', {
                 action: 'download_article',
                 params: {
-                _uid: uid,
-                _format: selectedFormat}
+                  _uid: uid,
+                  _format: selectedFormat,
+                },
+                removeIsFromIframe: true,
               });
-
-              // Supprimer `_is_from=iframe` s'il est ajouté
-              downloadUrl = downloadUrl.replace(/&_is_from=iframe/, '');
 
               // Ouvrir l'URL dans un nouvel onglet
               window.open(downloadUrl, '_blank');

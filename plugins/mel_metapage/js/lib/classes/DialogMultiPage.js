@@ -1,9 +1,14 @@
 import { JsHtml } from '../html/JsHtml/JsHtml.js';
 import { DialogPage } from './modal.js';
 
-class DialogMultiPage extends DialogPage {
+export class DialogMultiPage extends DialogPage {
+  /**
+   * @type {DialogPage[]}
+   * @private
+   */
   #_pages = [];
-  constructor(id, pages) {
+  #_description;
+  constructor(id, pages, description) {
     super(id, {});
     this.#_pages = pages ?? [];
     this.content = null;
@@ -11,6 +16,8 @@ class DialogMultiPage extends DialogPage {
       get: this.get.bind(this),
       set: (value) => this.start_update_content({ new_content: value }),
     });
+
+    this.#_description = description;
   }
 
   /**
@@ -28,9 +35,27 @@ class DialogMultiPage extends DialogPage {
 
   /**
    * Récupère sous format jQuery
-   * @returns {import("../html/JsHtml/JsHtml.js").____JsHtml}
+   * @returns {import('../html/JsHtml/JsHtml.js')._JsHtml}
    */
   get() {
     //Creation des onglets
+    const tabs = this.#_pages.map((x) => x.name).join(',');
+    //prettier-ignore
+    return JsHtml.start
+    .webcomponents().tabs(tabs, this.#_description)
+      .each((jshtml, page) => {
+        /**
+         * @type {DialogPage}
+         */
+        const dialogPage = page;
+
+        return jshtml.webcomponents()
+          .tab_panel(dialogPage.name)
+            .add_child(dialogPage.content ?? JsHtml.start.webcomponents().placeholder().end())
+          .end()
+        
+      }, ...this.#_pages)
+    .end()
+    .generate();
   }
 }

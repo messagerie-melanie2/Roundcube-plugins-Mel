@@ -1,11 +1,12 @@
+import { BnumPromise } from '../mel_metapage/js/lib/BnumPromise.js';
 import {
   FramesManager,
   MULTI_FRAME_FROM_NAV_BAR,
 } from '../mel_metapage/js/lib/classes/frame_manager.js';
-//import { MelHtml } from '../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
+import { EMPTY_STRING } from '../mel_metapage/js/lib/constants/constants.js';
+import { JsHtml } from '../mel_metapage/js/lib/html/JsHtml/JsHtml.js';
 import { MelObject } from '../mel_metapage/js/lib/mel_object.js';
-import { Mel_Promise } from '../mel_metapage/js/lib/mel_promise.js';
-import { MelHtml } from '../tchap/js/lib/jshtmlex.js';
+import { JsHtmlTchapModule as Tchap } from './js/lib/jshtmlex.js';
 
 const ENABLE_AVATAR_LOADING = false;
 const TCHAP_HELP_ROOM_ID = 'tchap_help_id';
@@ -132,16 +133,17 @@ export class TchapBnum extends MelObject {
     ) {
       this.switch_frame('tchap', { changepage: false });
 
-      await Mel_Promise.wait(() => !!this.$tchap_frame_container.length);
+      await BnumPromise.Wait(() => this.$tchap_frame_container.length);
 
       this.$tchap_frame_container.addClass('frame-card a-frame tchap-card');
 
       this.tchap_frame_container_element.add_element(
         'tchap',
-        MelHtml.start
-          .tchap_actions(
-            this._button_on_click.bind(this),
-            () => {
+        JsHtml.start
+          .namespace(Tchap)
+          .frames_actions({
+            close_callback: this._button_on_click.bind(this),
+            attach_callback: () => {
               if (this._anchor) {
                 FramesManager.Instance.remove_tag('attach');
                 this.tchap_frame_container_element
@@ -158,8 +160,15 @@ export class TchapBnum extends MelObject {
                 this._anchor = true;
               }
             },
-            () => FramesManager.Instance.switch_frame('tchap', {}),
-          )
+            fullscreen_callback: async () => {
+              await FramesManager.Instance.switch_frame('tchap', {});
+
+              FramesManager.Instance.get_frame('tchap').css(
+                'display',
+                EMPTY_STRING,
+              );
+            },
+          })
           .end(),
         false,
       );

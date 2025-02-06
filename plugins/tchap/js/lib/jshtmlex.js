@@ -1,27 +1,27 @@
-import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
-import { TchapFrameAction } from './webcomponents/tchap_web_component.js';
-export { MelHtml };
-MelHtml.create_custom_tag('tchap-actions', {
-  already_existing_class: TchapFrameAction,
-});
+import { ABaseModulesJsHtml } from '../../../mel_metapage/js/lib/html/JsHtml/ABaseModulesJsHtml.js';
+import { TchapFrameAction } from './webcomponents/tchap_web_component';
 
-MelHtml.update(
-  'tchap_actions',
-  function (
-    self,
-    old,
+/**
+ * @extends ABaseModulesJsHtml<J>
+ * @template {import('../../../mel_metapage/js/lib/html/JsHtml/JsHtml.js')._JsHtml} J
+ */
+export class JsHtmlTchapModule extends ABaseModulesJsHtml {
+  constructor(jshtml) {
+    super(jshtml);
+  }
+
+  frames_actions({
     close_callback,
     attach_callback,
     fullscreen_callback,
     attribs = {},
-  ) {
-    attribs = attribs || {};
-    let html = old.call(self, attribs);
+  }) {
+    attribs ??= {};
 
-    html.attr('ontchapclose', close_callback);
-    html.attr('ontchapattach', attach_callback);
-    html.attr('ontchapfullscreen', fullscreen_callback);
-
-    return html;
-  },
-);
+    return this._p_get().customElement(TchapFrameAction).attrs({
+      ontchapclose: close_callback,
+      ontchapattach: attach_callback,
+      ontchapfullscreen: fullscreen_callback,
+    });
+  }
+}

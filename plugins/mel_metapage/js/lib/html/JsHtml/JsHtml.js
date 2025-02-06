@@ -337,8 +337,9 @@ class ____JsHtml {
   }
 
   /**
-   * @param {typeof import('./ABaseModulesJsHtml.js').ABaseModulesJsHtml<this>} CustomNamespace
-   * @returns {import('./ABaseModulesJsHtml.js').ABaseModulesJsHtml<this>}
+   * @param {N} CustomNamespace
+   * @returns {InstanceType<N>}
+   * @template {typeof import('./ABaseModulesJsHtml.js').ABaseModulesJsHtml<this>} N
    */
   namespace(CustomNamespace) {
     return new CustomNamespace(this);

@@ -1,5 +1,5 @@
 import { HtmlCustomTag } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/js_html_base_web_elements.js';
-import { MelHtml } from '../../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
+import { JsHtml } from '../../../../mel_metapage/js/lib/html/JsHtml/JsHtml.js';
 import { BnumEvent } from '../../../../mel_metapage/js/lib/mel_events.js';
 
 export class TchapFrameAction extends HtmlCustomTag {
@@ -57,10 +57,19 @@ export class TchapFrameAction extends HtmlCustomTag {
 
   _generate_button(icon, title, clickaction, classes = []) {
     //prettier-ignore
-    return MelHtml.start
+    return JsHtml.start
     .button({ class:(classes + ' bckg true'), title, onclick:clickaction })
-      .icon(icon).end()
+      .webcomponents().icon(icon).end()
     .end();
+  }
+
+  /**
+   * @type {string}
+   * @readonly
+   * @static
+   */
+  static get TAG() {
+    return 'bnum-tchap-actions';
   }
 }
 

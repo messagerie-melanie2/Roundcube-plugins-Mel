@@ -1,7 +1,7 @@
 import { BnumLog } from '../../../classes/bnum_log.js';
 import { MelEnumerable } from '../../../classes/enum.js';
 import { FramesManager } from '../../../classes/frame_manager.js';
-import { JsHtml as MelHtml } from '../JsHtml.js';
+import { MelHtml } from '../MelHtml.js';
 import { HtmlCustomTag } from './js_html_base_web_elements.js';
 
 export { MelWindow, MelWindowFrame };

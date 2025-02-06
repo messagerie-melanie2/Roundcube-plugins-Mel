@@ -593,11 +593,16 @@ export class Manager extends MelObject {
                 'input[name="download-format"]:checked',
               ).val();
 
-              // Générer l'URL de téléchargement avec this.url()
-              const downloadUrl = this.url('forum/download_article', {
+              // Construction de l'URL en utilisant this.url()
+              let downloadUrl = this.url('forum', {
+                action: 'download_article',
+                params: {
                 _uid: uid,
-                _format: selectedFormat,
+                _format: selectedFormat}
               });
+
+              // Supprimer `_is_from=iframe` s'il est ajouté
+              downloadUrl = downloadUrl.replace(/&_is_from=iframe/, '');
 
               // Ouvrir l'URL dans un nouvel onglet
               window.open(downloadUrl, '_blank');

@@ -165,6 +165,11 @@ class ____JsHtml {
     return this;
   }
 
+  getCss(key) {
+    const navigator = this._update_attribs()._updated_balise()._update_css();
+    return navigator.attribs.style[key];
+  }
+
   /**
    * Récupère la bonne balise.
    * @private

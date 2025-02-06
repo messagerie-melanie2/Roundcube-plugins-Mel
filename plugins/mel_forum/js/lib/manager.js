@@ -1,8 +1,15 @@
-import { BnumMessage, eMessageType } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
+import {
+  BnumMessage,
+  eMessageType,
+} from '../../../mel_metapage/js/lib/classes/bnum_message.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { PostComment, PostCommentView } from './comments.js';
-import { MelDialog, DialogPage, RcmailDialogButton } from "../../../mel_metapage/js/lib/classes/modal.js";
+import {
+  MelDialog,
+  DialogPage,
+  RcmailDialogButton,
+} from '../../../mel_metapage/js/lib/classes/modal.js';
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 export class Manager extends MelObject {
   constructor() {
@@ -61,17 +68,18 @@ export class Manager extends MelObject {
 
     // Redirection à la page d'accueil au clic sur 'return-homepage'
     $('#return-homepage').click(() => {
-      $("body").css("cursor", "wait");
+      $('body').css('cursor', 'wait');
       window.location.href = this.url('forum', {
         action: 'index',
         params: { _workspace_uid: this.get_env('workspace_uid') },
       });
     });
-    $('#return-homepage').on("keydown", (event) => {
-      if (event.keyCode === 13) { // Touche "Entrée"
-        $('#return-homepage').click(); 
+    $('#return-homepage').on('keydown', (event) => {
+      if (event.keyCode === 13) {
+        // Touche "Entrée"
+        $('#return-homepage').click();
       }
-  });
+    });
 
     // Fonction de redimensionnement automatique du textarea
     $(document).on('input', '.forum-comment-input', function () {
@@ -347,60 +355,60 @@ export class Manager extends MelObject {
     const button_delete = $('#delete-post');
     const button_add_like = $('#add_like');
     const button_add_dislike = $('#add_dislike');
-    
 
     //Ne pas afficher les boutons d'édition et supression si l'utilisateur n'a pas les droits suffisant
-    if(!rcmail.env.has_owner_rights){
+    if (!rcmail.env.has_owner_rights) {
       button_delete.toggleClass('hidden');
       button_edit.toggleClass('hidden');
     }
-  
-    more_action.click(()=>
-    {
+
+    more_action.click(() => {
       context_menu.toggleClass('hidden');
       // Si le menu est visible, ajouter un écouteur pour détecter les clics extérieurs
       if (!context_menu.hasClass('hidden')) {
         // Ajouter un écouteur de clic sur tout le document après un léger délai
         setTimeout(() => {
-          $(document).on('click.menuOutside', function(event) {
-              // Vérifier si le clic est en dehors du menu et du bouton trigger
-              if (!$(event.target).closest(context_menu).length && !$(event.target).closest(more_action).length) {
-                  context_menu.addClass('hidden');  // Masquer le menu
-                  $(document).off('click.menuOutside'); // Retirer l'écouteur après fermeture
-              }
+          $(document).on('click.menuOutside', function (event) {
+            // Vérifier si le clic est en dehors du menu et du bouton trigger
+            if (
+              !$(event.target).closest(context_menu).length &&
+              !$(event.target).closest(more_action).length
+            ) {
+              context_menu.addClass('hidden'); // Masquer le menu
+              $(document).off('click.menuOutside'); // Retirer l'écouteur après fermeture
+            }
           });
 
           // Ajouter un écouteur d'événements pour chaque bouton du menu
-          context_menu.find('.post-options-button').on('click', function() {
-              context_menu.addClass('hidden'); // Fermer le menu
-              $(document).off('click.menuOutside'); // Retirer l'écouteur après fermeture
+          context_menu.find('.post-options-button').on('click', function () {
+            context_menu.addClass('hidden'); // Fermer le menu
+            $(document).off('click.menuOutside'); // Retirer l'écouteur après fermeture
           });
-        }, 0);  // Délai de 0 pour que l'événement de clic sur le bouton soit géré en premier
-
+        }, 0); // Délai de 0 pour que l'événement de clic sur le bouton soit géré en premier
       } else {
         // Si le menu est caché, retirer l'écouteur du document
         $(document).off('click.menuOutside');
       }
     });
     //Gestion du clavier
-    more_action.on("keydown", (event) => {
-      if(event.keyCode === 13) {
+    more_action.on('keydown', (event) => {
+      if (event.keyCode === 13) {
         more_action.click();
       }
     });
 
-    button_copy.click(() =>{
+    button_copy.click(() => {
       this.copyPostLink();
     });
-    button_edit.click(() =>{
+    button_edit.click(() => {
       this.editPost();
     });
-    button_delete.click(() =>{
+    button_delete.click(() => {
       this.deletePost();
     });
-    button_download.click(() =>{
+    button_download.click(() => {
       this.downloadPost();
-    })
+    });
 
     // Initialisation de l'affichage boutons like et dislike en fonction de l'utilisateur.
     if (rcmail.env.has_liked) {
@@ -410,17 +418,17 @@ export class Manager extends MelObject {
       button_add_dislike.addClass('filled');
     }
 
-    button_add_like.click(()=> {
+    button_add_like.click(() => {
       this.addLikeOrDislike('like');
     });
-    button_add_dislike.click(()=> {
+    button_add_dislike.click(() => {
       this.addLikeOrDislike('dislike');
     });
 
     //gestion du scroll sur la page
-    document.querySelector('.content').addEventListener("scroll", () => {
+    document.querySelector('.content').addEventListener('scroll', () => {
       const scrollPos = document.querySelector('.content').scrollTop;
-      if(scrollPos === 0){
+      if (scrollPos === 0) {
         $('#backToTop').addClass('hidden');
       } else {
         $('#backToTop').removeClass('hidden');
@@ -430,34 +438,43 @@ export class Manager extends MelObject {
     //action backToTop
     $('#backToTop').click(() => {
       document.querySelector('.content').scrollTo({
-        top:0,
-        behavior:"smooth",
+        top: 0,
+        behavior: 'smooth',
       });
     });
   }
 
   /**
-     * copie dans le presse papier l'url de la page
-     */
-  copyPostLink(){
-    let url = window.location.href.replaceAll("&_is_from=iframe", "&_force_bnum=1");
+   * copie dans le presse papier l'url de la page
+   */
+  copyPostLink() {
+    let url = window.location.href.replaceAll(
+      '&_is_from=iframe',
+      '&_force_bnum=1',
+    );
     navigator.clipboard.writeText(url).then(() => {
-        BnumMessage.DisplayMessage(
-            rcmail.gettext('mel_forum.link_copied'),
-            eMessageType.Confirmation,
-        );
+      BnumMessage.DisplayMessage(
+        rcmail.gettext('mel_forum.link_copied'),
+        eMessageType.Confirmation,
+      );
     });
   }
 
   /**
-     * Permet d'éditer un post.
-     *
-     * - Construit l'URL d'édition en utilisant l'uid du post et du workspace.
-     * @returns {void}
-     */
+   * Permet d'éditer un post.
+   *
+   * - Construit l'URL d'édition en utilisant l'uid du post et du workspace.
+   * @returns {void}
+   */
   editPost() {
     // Rediriger vers la page d'édition avec l'UID du post
-    window.location.href = this.url('forum', { action: 'create_or_edit_post', params:{'_uid': rcmail.env.post_uid, '_workspace_uid': rcmail.env.workspace_uid}});
+    window.location.href = this.url('forum', {
+      action: 'create_or_edit_post',
+      params: {
+        _uid: rcmail.env.post_uid,
+        _workspace_uid: rcmail.env.workspace_uid,
+      },
+    });
   }
 
   /**
@@ -470,197 +487,205 @@ export class Manager extends MelObject {
    * @returns {void}
    */
   deletePost() {
-
     // Demander confirmation à l'utilisateur avant de supprimer
-    const confirmation = confirm(rcmail.gettext('mel_forum.delete_post_confirm'));
+    const confirmation = confirm(
+      rcmail.gettext('mel_forum.delete_post_confirm'),
+    );
     if (!confirmation) return; // Arrêter la fonction si l'utilisateur annule
 
     // Envoi d'une requête HTTP pour supprimer le post
     this.http_internal_post({
-        task: 'forum',
-        action: 'delete_post',
-        params: {
-            _uid: rcmail.env.post_uid,
-        },
-        processData: false,
-        contentType: false,
-        on_success: (response) => {
-            const parsedResponse = JSON.parse(response);
+      task: 'forum',
+      action: 'delete_post',
+      params: {
+        _uid: rcmail.env.post_uid,
+      },
+      processData: false,
+      contentType: false,
+      on_success: (response) => {
+        const parsedResponse = JSON.parse(response);
 
-            if (parsedResponse.status === 'success') {
-                // Affichage du message de succès
-                BnumMessage.DisplayMessage(
-                    parsedResponse.message || rcmail.gettext('mel_forum.delete_post_success'),
-                    eMessageType.Confirmation
-                );
+        if (parsedResponse.status === 'success') {
+          // Affichage du message de succès
+          BnumMessage.DisplayMessage(
+            parsedResponse.message ||
+              rcmail.gettext('mel_forum.delete_post_success'),
+            eMessageType.Confirmation,
+          );
 
-                //retourner à la page d'accueil
-                window.location.href = this.url('forum', {
-                  action: 'index',
-                  params: { _workspace_uid: this.get_env('workspace_uid') },
-                });
-            } else {
-                // Affichage du message d'erreur en cas d'échec
-                BnumMessage.DisplayMessage(
-                      parsedResponse.message || rcmail.gettext('mel_forum.delete_post_failure'),
-                      eMessageType.Error
-                );
-            }
-        },
-        on_error: (err) => {
-            // Affichage du message d'erreur en cas de problème avec la requête
-            BnumMessage.DisplayMessage(
-                  rcmail.gettext('mel_forum.delete_post_failure'),
-                  eMessageType.Error
-            );
+          //retourner à la page d'accueil
+          window.location.href = this.url('forum', {
+            action: 'index',
+            params: { _workspace_uid: this.get_env('workspace_uid') },
+          });
+        } else {
+          // Affichage du message d'erreur en cas d'échec
+          BnumMessage.DisplayMessage(
+            parsedResponse.message ||
+              rcmail.gettext('mel_forum.delete_post_failure'),
+            eMessageType.Error,
+          );
         }
+      },
+      on_error: (err) => {
+        // Affichage du message d'erreur en cas de problème avec la requête
+        BnumMessage.DisplayMessage(
+          rcmail.gettext('mel_forum.delete_post_failure'),
+          eMessageType.Error,
+        );
+      },
     });
   }
 
   /**
- * Affiche une modale pour choisir le format de téléchargement d'un article et lance le téléchargement dans le format sélectionné.
- *
- * Cette fonction vérifie la validité de l'UID de l'article avant d'afficher une modale permettant à l'utilisateur
- * de choisir entre les formats Markdown et HTML. Une fois le format choisi, le téléchargement est lancé via une URL
- * construite dynamiquement.
- *
- * @return void Cette fonction n'a pas de valeur de retour.
- */
+   * Affiche une modale pour choisir le format de téléchargement d'un article et lance le téléchargement dans le format sélectionné.
+   *
+   * Cette fonction vérifie la validité de l'UID de l'article avant d'afficher une modale permettant à l'utilisateur
+   * de choisir entre les formats Markdown et HTML. Une fois le format choisi, le téléchargement est lancé via une URL
+   * construite dynamiquement.
+   *
+   * @return void Cette fonction n'a pas de valeur de retour.
+   */
   downloadPost() {
     const uid = rcmail.env.post_uid; // Récupération de l'UID du post depuis l'environnement
 
     // Vérifier si l'UID est valide avant de continuer
     if (!uid) {
-        console.error("UID du post non fourni !");
-        BnumMessage.DisplayMessage(
-            rcmail.gettext('mel_forum.download_post_failure'),
-            eMessageType.Error
-        );
-        return;
+      console.error('UID du post non fourni !');
+      BnumMessage.DisplayMessage(
+        rcmail.gettext('mel_forum.download_post_failure'),
+        eMessageType.Error,
+      );
+      return;
     }
 
+    //prettier-ignore
     const modalContent = MelHtml.start
         .div()
-        .text(rcmail.gettext('mel_forum.choose_download_format'))
-        .div({ class: 'radio-group' })  // Appliquer la classe 'radio-group'
-        .label()
-        .input({ id: 'dl-markdown', type: 'radio', name: "download-format", value: "Markdown", checked: true })
-        .text("Markdown")
-        .end()
-        .label()
-        .input({ id: 'dl-html', type: 'radio', name: "download-format", value: "Html" })
-        .text("HTML")
-        .end()
-        .end();
+          .text(rcmail.gettext('mel_forum.choose_download_format'))
+          .div({ class: 'radio-group' })  // Appliquer la classe 'radio-group'
+            .label()
+              .input({ id: 'dl-markdown', type: 'radio', name: 'download-format', value: 'Markdown', checked: true })
+              .text('Markdown')
+            .end()
+            .label()
+              .input({ id: 'dl-html', type: 'radio', name: 'download-format', value: 'Html' })
+              .text('HTML')
+            .end()
+          .end();
 
     // Configuration de la modale
     let dialog = new MelDialog(
-        new DialogPage("choose-download-format", {
-            content: modalContent,
-            title: "Télécharger l'article",
-            buttons: [
-                new RcmailDialogButton('Annuler', {
-                    click: () => {
-                        dialog.hide();
-                    },
-                    classes: 'mel-button btn btn-secondary'
-                }),
-                new RcmailDialogButton('Télécharger', {
-                    click: () => {
-                        // Récupérer le format choisi
-                        const selectedFormat = $('input[name="download-format"]:checked').val();
+      new DialogPage('choose-download-format', {
+        content: modalContent,
+        title: "Télécharger l'article",
+        buttons: [
+          new RcmailDialogButton('Annuler', {
+            click: () => {
+              dialog.hide();
+            },
+            classes: 'mel-button btn btn-secondary',
+          }),
+          new RcmailDialogButton('Télécharger', {
+            click: () => {
+              // Récupérer le format choisi
+              const selectedFormat = $(
+                'input[name="download-format"]:checked',
+              ).val();
 
-                        // Générer l'URL de téléchargement avec rcmail.url()
-                        const downloadUrl = rcmail.url('forum/download_article', { _uid: uid, _format: selectedFormat });
+              // Générer l'URL de téléchargement avec rcmail.url()
+              const downloadUrl = rcmail.url('forum/download_article', {
+                _uid: uid,
+                _format: selectedFormat,
+              });
 
-                        // Ouvrir l'URL dans un nouvel onglet
-                        window.open(downloadUrl, '_blank');
+              // Ouvrir l'URL dans un nouvel onglet
+              window.open(downloadUrl, '_blank');
 
-                        // Optionnel : Afficher un message de confirmation après ouverture du lien
-                        BnumMessage.DisplayMessage(
-                            rcmail.gettext('mel_forum.download_post_success'),
-                            eMessageType.Confirmation
-                        );
+              // Optionnel : Afficher un message de confirmation après ouverture du lien
+              BnumMessage.DisplayMessage(
+                rcmail.gettext('mel_forum.download_post_success'),
+                eMessageType.Confirmation,
+              );
 
-                        // Cacher la modale après l'action
-                        dialog.hide();
-                    },
-                }),
-            ],
-        }),
-        {
-            height: 175,
-            width: 300,
-            close: () => {},
-        }
+              // Cacher la modale après l'action
+              dialog.hide();
+            },
+          }),
+        ],
+      }),
+      {
+        height: 175,
+        width: 300,
+        close: () => {},
+      },
     );
 
     // Afficher la modale
     dialog.show();
   }
 
-
   /**
-     * Gestion des likes et dislike des posts
-     * @param {*} type type de la reaction
-     */
-  addLikeOrDislike(type){
+   * Gestion des likes et dislike des posts
+   * @param {*} type type de la reaction
+   */
+  addLikeOrDislike(type) {
     this.http_internal_post({
-        task: 'forum',
-        action: 'manage_reaction',
-        params: {
-            _post_id: rcmail.env.post_id,
-            _type: type,
-        },
-        processData:false,
-        contentType:false,
-        on_success: () => {
-            let like_div = $('#add_like');
-            let like_counter = like_div.find('span.ml-2');
-            let dislike_div = $('#add_dislike');
-            let dislike_counter = dislike_div.find('span.ml-2');
+      task: 'forum',
+      action: 'manage_reaction',
+      params: {
+        _post_id: rcmail.env.post_id,
+        _type: type,
+      },
+      processData: false,
+      contentType: false,
+      on_success: () => {
+        let like_div = $('#add_like');
+        let like_counter = like_div.find('span.ml-2');
+        let dislike_div = $('#add_dislike');
+        let dislike_counter = dislike_div.find('span.ml-2');
 
-            if (type ==='like'){
-                if (like_div.hasClass('filled')){
-                    like_div.removeClass('filled');
-                    this.updateCounter(like_counter, -1);
-                }else{
-                    like_div.addClass('filled');
-                    this.updateCounter(like_counter, 1);
+        if (type === 'like') {
+          if (like_div.hasClass('filled')) {
+            like_div.removeClass('filled');
+            this.updateCounter(like_counter, -1);
+          } else {
+            like_div.addClass('filled');
+            this.updateCounter(like_counter, 1);
 
-                    if(dislike_div.hasClass('filled')) {
-                        dislike_div.removeClass('filled');
-                        this.updateCounter(dislike_counter, -1);
-                    }
-                }
-            } else if (type === 'dislike'){
-                if (dislike_div.hasClass('filled')){
-                    dislike_div.removeClass('filled');
-                    this.updateCounter(dislike_counter, -1);
-                }else{
-                    dislike_div.addClass('filled');
-                    this.updateCounter(dislike_counter, 1);
-
-                    if(like_div.hasClass('filled')){
-                        like_div.removeClass('filled');
-                        this.updateCounter(like_counter, -1);
-                    }
-                }
+            if (dislike_div.hasClass('filled')) {
+              dislike_div.removeClass('filled');
+              this.updateCounter(dislike_counter, -1);
             }
-        },
-        on_error: (err) => {
-            BnumMessage.DisplayMessage(
-                rcmail.gettext('mel_forum.error_editing'),
-                eMessageType.Error,
-            );
-        },
+          }
+        } else if (type === 'dislike') {
+          if (dislike_div.hasClass('filled')) {
+            dislike_div.removeClass('filled');
+            this.updateCounter(dislike_counter, -1);
+          } else {
+            dislike_div.addClass('filled');
+            this.updateCounter(dislike_counter, 1);
+
+            if (like_div.hasClass('filled')) {
+              like_div.removeClass('filled');
+              this.updateCounter(like_counter, -1);
+            }
+          }
+        }
+      },
+      on_error: (err) => {
+        BnumMessage.DisplayMessage(
+          rcmail.gettext('mel_forum.error_editing'),
+          eMessageType.Error,
+        );
+      },
     });
   }
   /**
-     * Met à jour le compteur de like , si on est à 0 n'affiche rien
-     * @param {*} span élément html à mettre à jour
-     * @param {*} value modification apportée au compteur
-     */
+   * Met à jour le compteur de like , si on est à 0 n'affiche rien
+   * @param {*} span élément html à mettre à jour
+   * @param {*} value modification apportée au compteur
+   */
   updateCounter(span, value) {
     let currentValue = parseInt(span.text()) || 0; // Récupérer la valeur actuelle
     let newValue = currentValue + value;

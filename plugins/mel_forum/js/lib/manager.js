@@ -540,18 +540,18 @@ export class Manager extends MelObject {
     }
 
     const modalContent = MelHtml.start
-    .div()
-    .text(rcmail.gettext('mel_forum.choose_download_format'))
-    .div({ class: 'radio-group' })  // Appliquer la classe 'radio-group'
-    .label()
-    .input({ id: 'dl-markdown', type: 'radio', name: "download-format", value: "Markdown", checked: true })
-    .text("Markdown")
-    .end()
-    .label()
-    .input({ id: 'dl-html', type: 'radio', name: "download-format", value: "Html" })
-    .text("HTML")
-    .end()
-    .end();
+        .div()
+        .text(rcmail.gettext('mel_forum.choose_download_format'))
+        .div({ class: 'radio-group' })  // Appliquer la classe 'radio-group'
+        .label()
+        .input({ id: 'dl-markdown', type: 'radio', name: "download-format", value: "Markdown", checked: true })
+        .text("Markdown")
+        .end()
+        .label()
+        .input({ id: 'dl-html', type: 'radio', name: "download-format", value: "Html" })
+        .text("HTML")
+        .end()
+        .end();
 
     // Configuration de la modale
     let dialog = new MelDialog(
@@ -569,10 +569,9 @@ export class Manager extends MelObject {
                     click: () => {
                         // Récupérer le format choisi
                         const selectedFormat = $('input[name="download-format"]:checked').val();
-                        
-                        // Construire l'URL de téléchargement avec le format sélectionné
-                        const baseUrl = "/?_task=forum&_action=download_article"; // Base URL pour le téléchargement du ZIP
-                        const downloadUrl = `${baseUrl}&_uid=${uid}&_format=${selectedFormat}`;
+
+                        // Générer l'URL de téléchargement avec rcmail.url()
+                        const downloadUrl = rcmail.url('forum/download_article', { _uid: uid, _format: selectedFormat });
 
                         // Ouvrir l'URL dans un nouvel onglet
                         window.open(downloadUrl, '_blank');
@@ -598,7 +597,8 @@ export class Manager extends MelObject {
 
     // Afficher la modale
     dialog.show();
-}
+  }
+
 
   /**
      * Gestion des likes et dislike des posts

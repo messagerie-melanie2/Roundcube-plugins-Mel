@@ -593,8 +593,8 @@ export class Manager extends MelObject {
                 'input[name="download-format"]:checked',
               ).val();
 
-              // Générer l'URL de téléchargement avec rcmail.url()
-              const downloadUrl = rcmail.url('forum/download_article', {
+              // Générer l'URL de téléchargement avec this.url()
+              const downloadUrl = this.url('forum/download_article', {
                 _uid: uid,
                 _format: selectedFormat,
               });

@@ -14,7 +14,7 @@ import {
  * @package
  * @hideconstructor
  */
-class HTMLTabContainer extends HtmlCustomTag {
+export class HTMLTabContainer extends HtmlCustomTag {
   constructor() {
     super();
   }
@@ -45,7 +45,7 @@ class HTMLTabContainer extends HtmlCustomTag {
  * @hideconstructor
  * @extends HtmlCustomTag
  */
-class HTMLTabReceiver extends HtmlCustomTag {
+export class HTMLTabReceiver extends HtmlCustomTag {
   constructor() {
     super({ mode: EWebComponentMode.div });
   }

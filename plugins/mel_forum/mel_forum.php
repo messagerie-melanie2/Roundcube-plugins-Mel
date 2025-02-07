@@ -2206,17 +2206,34 @@ class mel_forum extends bnum_plugin
         return $html;
     }
 
-
     /**
-     * Nettoie le contenu pour éviter les problèmes de sécurité ou de formatage.
+     * Nettoie le contenu en supprimant les balises HTML non autorisées, en remplaçant les espaces multiples et les retours à la ligne inutiles.
+     * 
+     * Cette fonction permet de conserver certaines balises HTML de base (comme <p>, <a>, <ul>, <li>, <h1>, <h2>, <h3>, <img>, <br>, <strong>, <em>),
+     * remplace les espaces multiples par un seul espace, gère les retours à la ligne excessifs, et ajoute un retour à la ligne pour chaque paragraphe.
+     * Elle nettoie également les espaces en début et fin de chaîne.
      *
-     * @param string $content Contenu brut
-     * @return string Contenu nettoyé
+     * @param string $content Le contenu brut à nettoyer
+     * @return string Le contenu nettoyé
      */
     protected function sanitize_content($content)
     {
-        // Permet de conserver les balises HTML de base (h1, h2, p, a, ul, li, img, etc.)
-        return nl2br(strip_tags($content, '<p><a><ul><li><h1><h2><h3><img><br><strong><em>'));
+        // Permet de conserver les balises HTML de base
+        $content = strip_tags($content, '<p><a><ul><li><h1><h2><h3><img><br><strong><em>');
+
+        // Remplacer les espaces multiples par un seul espace
+        $content = preg_replace('/\s+/', ' ', $content);
+
+        // Enlever les retours à la ligne inutiles
+        $content = preg_replace('/(\s*\n\s*)+/', '<br>', $content); // Remplacer les retours à la ligne multiples par <br>
+
+        // Ajouter un retour à la ligne pour chaque nouveau paragraphe
+        $content = nl2br($content);
+
+        // Nettoyer les espaces en début et fin de chaîne
+        $content = trim($content);
+
+        return $content;
     }
 
     /**

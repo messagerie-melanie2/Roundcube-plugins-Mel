@@ -16,6 +16,10 @@
   box-sizing: border-box;
   /* Inclut le padding dans la largeur totale */
 }
+.task-forum pre {
+  background-color: var(--main-background-color) !important;
+  color: var(--main-text-color) !important;
+}
 .task-forum #forum-button-add {
   margin-top: 0;
   margin-right: 20px;
@@ -1248,9 +1252,6 @@
   margin: 0 !important;
   box-shadow: none !important;
 }
-.material-symbols-outlined.f-31 {
-  font-size: 31px;
-}
 .task-forum .radio-group {
   display: flex;
   flex-direction: column;
@@ -1266,4 +1267,7 @@
 }
 .task-forum .radio-group input[type="radio"] {
   margin: 0;
+}
+.material-symbols-outlined.f-31 {
+  font-size: 31px;
 }

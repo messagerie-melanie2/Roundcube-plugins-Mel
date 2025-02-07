@@ -2057,11 +2057,11 @@ class mel_forum extends bnum_plugin
         }
 
         // Convertir le titre en Markdown
-        $markdown_title = "# " . $post->title;
+        $markdown_title = "# " . $post->title . "\n\n";  // Ajouter un saut de ligne après le titre
 
         // Récupérer le nom de l'auteur
         $author_name = $this->show_post_creator_name();
-        $markdown_author = $this->gettext("author_md", "mel_forum") . $author_name . "*";
+        $markdown_author = $this->gettext("author_md", "mel_forum") . $author_name . "*\n\n";  // Ajouter un saut de ligne après l'auteur
 
         // Récupérer et formater la date de création
         $date = new DateTime($post->created);
@@ -2069,15 +2069,27 @@ class mel_forum extends bnum_plugin
         $formatted_date_localized = $formatter->format($date);
 
         // Inclure la date formatée dans le Markdown
-        $markdown_date = $this->gettext("create_date_md", "mel_forum") . $formatted_date_localized . "*";
+        $markdown_date = $this->gettext("create_date_md", "mel_forum") . $formatted_date_localized . "*\n\n";  // Ajouter un saut de ligne après la date
+        $separator = "\n" . str_repeat('-', 35) . "\n\n";  // Séparateur similaire à celui utilisé pour les sections
 
-        // Récupérer le contenu HTML et le convertir en Markdown
+        // Ajouter un séparateur après la date de création
+        $markdown_date .= $separator;
+
+        // Récupérer le contenu HTML
         $html_content = $post->content;
-        $converter = new HtmlConverter();
+
+        // Convertir le contenu HTML en Markdown sans nettoyage préalable
+        $converter = new HtmlConverter([
+            'strip_tags' => true,  // Supprime les balises non prises en charge
+            'hard_break' => true,  // Convertit les <br> en retour à la ligne
+        ]);
         $markdown_content = $converter->convert($html_content);
 
+        // Nettoyer le contenu Markdown pour les sauts de ligne excessifs
+        $markdown_content = $this->clean_markdown_content($markdown_content);
+
         // Ajouter le titre de second niveau "Commentaires et réponses"
-        $comments_section_title = $this->gettext("##_comments_and_responses", "mel_forum");
+        $comments_section_title = $this->gettext("##_comments_and_responses", "mel_forum") . "\n\n";
 
         // Récupérer les commentaires et les réponses
         $uid = $post->uid; // Assurez-vous que vous avez l'UID du post
@@ -2087,7 +2099,7 @@ class mel_forum extends bnum_plugin
         $comments_markdown = $this->format_comments_in_markdown($comments_array);
 
         // Combiner le titre, l'auteur, la date, le contenu et les commentaires avec des retours à la ligne appropriés
-        $complete_markdown = implode("\n\n", [
+        $complete_markdown = implode("\n", [
             $markdown_title,
             $markdown_author,
             $markdown_date,
@@ -2097,6 +2109,36 @@ class mel_forum extends bnum_plugin
         ]);
 
         return $complete_markdown;
+    }
+
+    /**
+     * Nettoie et formate le contenu Markdown en appliquant diverses règles de mise en forme.
+     *
+     * Cette méthode effectue les opérations suivantes sur le contenu Markdown :
+     * 1. Remplace les retours à la ligne multiples par un seul retour à la ligne.
+     * 2. Ajoute un espace supplémentaire après les titres et entre les sections, notamment avant les lignes de soulignement.
+     * 3. Ajoute un double saut de ligne entre chaque paragraphe.
+     * 4. Remplace les lignes de séparation (---) par un nombre fixe d'espaces pour une séparation uniforme.
+     *
+     * @param string $content Le contenu Markdown à nettoyer et formater.
+     *
+     * @return string Le contenu nettoyé et correctement formaté.
+     */
+    protected function clean_markdown_content($content)
+    {
+        // Remplacer les retours à la ligne multiples par un seul
+        $content = preg_replace('/\n+/', "\n", $content);
+    
+        // Ajouter un espace après les titres et entre les sections (avant les lignes de soulignement)
+        $content = preg_replace('/([a-zA-Z0-9])(\n)([-=]+)(\n)/', '$1\n\n$3\n', $content);  // Assurer un bon espacement entre les sections
+    
+        // Ajouter un saut de ligne entre chaque paragraphe
+        $content = preg_replace('/([^\n])\n([^\n])/', "$1\n\n$2", $content);  // Ajoute un double saut de ligne entre les paragraphes
+    
+        // Remplacer les lignes de séparation (---) qui suivent les titres de sections par un nombre fixe d'espaces
+        $content = preg_replace('/^-{5,}/', '-----', $content);  // Unifié pour une séparation propre
+    
+        return $content;
     }
 
     /**

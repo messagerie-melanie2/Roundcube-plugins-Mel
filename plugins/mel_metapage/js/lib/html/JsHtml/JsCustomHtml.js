@@ -9,8 +9,8 @@ import {
 import {
   HTMLTabContainer,
   HTMLTabReceiver,
-  TabsElement,
-} from './CustomAttributes/tab_web_element.js';
+} from './CustomAttributes/tabs/HTMLTabContainerAndReceiver.js';
+import { HTMLTabsElement } from './CustomAttributes/tabs/HTMLTabElement.js';
 import { HTMLWrapperElement } from './CustomAttributes/wrapper.js';
 
 /**
@@ -133,7 +133,7 @@ export class JsCustomHtml extends ABaseModulesJsHtml {
 
     if (pluginText) attribs['data-ex-label'] = pluginText;
 
-    return this._p_get().customElement(TabsElement, attribs);
+    return this._p_get().customElement(HTMLTabsElement, attribs);
   }
 
   /**

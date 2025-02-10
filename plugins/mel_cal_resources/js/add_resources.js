@@ -5,6 +5,7 @@ import {
   BnumMessage,
   eMessageType,
 } from '../../mel_metapage/js/lib/classes/bnum_message.js';
+import { DialogMultiPage } from '../../mel_metapage/js/lib/classes/DialogMultiPage.js';
 import { MelEnumerable } from '../../mel_metapage/js/lib/classes/enum.js';
 import { MelDialog } from '../../mel_metapage/js/lib/classes/modal.js';
 import {
@@ -177,6 +178,7 @@ class ResourceDialog extends MelObject {
   async _init() {
     let page;
     let resources = [];
+    //Si il n'y a qu'un seul type de ressources
     if (this._resource_type) {
       resources.push(
         new ResourcesBase(
@@ -204,9 +206,41 @@ class ResourceDialog extends MelObject {
 
       page = await resources[resources.length - 1].create_page();
     } else {
-      throw 'not implemented';
-    }
+      //Récupération des différentes ressources
+      let pages = [];
+      const configResources = rcmail.env.cal_resources.resources;
+      for (const key in configResources) {
+        resources.push(
+          new ResourcesBase(key, rcmail.env.cal_resources.filters[key]),
+        );
 
+        resources[resources.length - 1].all_day = this._date.is_all_day;
+        resources[resources.length - 1].start = this._date.date_start;
+        resources[resources.length - 1].end = this._date.date_end;
+        resources[resources.length - 1].event_on_save.push(
+          this._on_save.bind(this),
+        );
+        resources[resources.length - 1].location_id = this._location.id;
+
+        if (this._resource && window.selected_resources[this._location.id]) {
+          resources[resources.length - 1].selected_resource =
+            window.selected_resources[this._location.id];
+          resources[resources.length - 1].try_add_resource(
+            window.selected_resources[this._location.id],
+            false,
+          );
+        }
+
+        page = await resources[resources.length - 1].create_page();
+        pages.push(page);
+      }
+
+      page = new DialogMultiPage('index', pages, "Choix d'une ressource.", {
+        pluginLocalisation: 'mel_cal_resources',
+        title: 'Réserver une ressource',
+      });
+    }
+    debugger;
     this.dialog = new MelDialog(page, {
       width: 800,
       height: 500,
@@ -554,8 +588,12 @@ class ResourceDialog extends MelObject {
    * @frommodulereturn Resources
    */
   get_current_page_resource() {
+    debugger;
     return MelEnumerable.from(this.resources)
-      .where((x) => x._name === this.dialog.page_manager._current_page)
+      .where((x) => {
+        debugger;
+        return x._name === this.dialog.page_manager._current_page;
+      })
       .firstOrDefault();
   }
 
@@ -564,9 +602,7 @@ class ResourceDialog extends MelObject {
    * @returns {?import('./lib/resource_base.js').ResourceData}
    */
   get_selected_resource() {
-    return MelEnumerable.from(this.resources)
-      .where((x) => x._name === this.dialog.page_manager._current_page)
-      .firstOrDefault()?.selected_resource;
+    return this.get_current_page_resource()?.selected_resource;
   }
 
   /**

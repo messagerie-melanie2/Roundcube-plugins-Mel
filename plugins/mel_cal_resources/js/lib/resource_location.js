@@ -417,7 +417,7 @@ class ResourceLocation extends AExternalLocationPart {
     }
   }
 }
-
+rcmail.env.cal_resources.enable_all = true;
 if (!window.mel_cal_resource_loaded) {
   if (rcmail.env.cal_resources.enable_all)
     //Ajoute les resources au select

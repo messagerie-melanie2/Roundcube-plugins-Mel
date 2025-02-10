@@ -294,7 +294,8 @@ export class TabsElement extends HtmlCustomElement {
    * @private
    */
   _from_label(text) {
-    if (this.dataset.exLabel) text = `${this.dataset.exLabel}.${text}`;
+    if (this.hasAttribute('data-ex-label'))
+      text = `${this.getAttribute('data-ex-label')}.${text}`;
 
     if (HtmlCustomElement._p_text_callback)
       text = HtmlCustomElement._p_text_callback(text);

@@ -8,8 +8,14 @@ export class DialogMultiPage extends DialogPage {
    */
   #_pages = [];
   #_description;
-  constructor(id, pages, description) {
-    super(id, {});
+  #_pluginLocalisation;
+  constructor(
+    id,
+    pages,
+    description,
+    { pluginLocalisation = 'mel_metapage', title = 'MultiPage' } = {},
+  ) {
+    super(id, { title });
     this.#_pages = pages ?? [];
     this.content = null;
     Object.defineProperty(this, 'content', {
@@ -18,6 +24,7 @@ export class DialogMultiPage extends DialogPage {
     });
 
     this.#_description = description;
+    this.#_pluginLocalisation = pluginLocalisation;
   }
 
   /**
@@ -35,14 +42,15 @@ export class DialogMultiPage extends DialogPage {
 
   /**
    * Récupère sous format jQuery
-   * @returns {import('../html/JsHtml/JsHtml.js')._JsHtml}
+   * @returns {external:jQuery}
    */
   get() {
+    debugger;
     //Creation des onglets
     const tabs = this.#_pages.map((x) => x.name).join(',');
     //prettier-ignore
-    return JsHtml.start
-    .webcomponents().tabs(tabs, this.#_description)
+    const generated = JsHtml.start
+    .webcomponents().tabs(tabs, this.#_description, {pluginText: this.#_pluginLocalisation})
       .each((jshtml, page) => {
         /**
          * @type {DialogPage}
@@ -50,12 +58,17 @@ export class DialogMultiPage extends DialogPage {
         const dialogPage = page;
 
         return jshtml.webcomponents()
-          .tab_panel(dialogPage.name)
-            .add_child(dialogPage.content ?? JsHtml.start.webcomponents().placeholder().end())
+          .tab_panel(dialogPage.name).observe({ key:dialogPage.name })
           .end()
         
       }, ...this.#_pages)
     .end()
-    .generate();
+    .generate_with_observer();
+
+    for (const page of this.#_pages) {
+      generated.observed[page.name].append(page.get());
+    }
+
+    return generated.generated;
   }
 }

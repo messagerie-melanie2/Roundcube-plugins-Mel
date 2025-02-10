@@ -536,7 +536,7 @@ class ResourcesBase extends MelObject {
       title: this._name,
       buttons: [button_cancel, button_save],
     });
-
+    debugger;
     page = template_resource.get_page(
       page,
       (await Promise.allSettled(this._p_filters.map((x) => x.generate()))).map(

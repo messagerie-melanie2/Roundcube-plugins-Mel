@@ -432,7 +432,7 @@ function getSelectedDayOccupiedTimeSlot(date) {
   let occupiedTimeSlot = [];
   datetimepicker_fullcalendar.getEvents().forEach((value) => {    
     if (moment(value.start).startOf('day').toString() == moment(date).startOf('day').toString()) {
-      let start = moment(value.start).subtract(appointment_duration, 'minute').format('HH:mm')
+      let start = moment(value.start).format('HH:mm')
       let end = moment(value.end).format('HH:mm')
       occupiedTimeSlot.push([start, end]);
     }

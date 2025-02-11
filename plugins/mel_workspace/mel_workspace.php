@@ -331,7 +331,7 @@ class mel_workspace extends bnum_plugin
             $return = $workspace->exists() ? 0 : 1;
         }
 
-        $this->sendEncodedExit($return);
+        $this->sendEncodedExit($return, []);
     }
 
     public function create() {
@@ -399,7 +399,7 @@ class mel_workspace extends bnum_plugin
 
             $retour["uncreated_services"] = $services;
 
-            $this->sendEncodedExit($retour);
+            $this->sendEncodedExit($retour, []);
         } catch (\Throwable $th) {
             $func = "create";
             mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func] Un erreur est survenue lors de la création de l'espace de travail ''".$workspace->title."'' !");
@@ -427,7 +427,7 @@ class mel_workspace extends bnum_plugin
                 throw new Exception("###[workspaces_search]Type de recherche ''$type'' inconnue !", 1);
         }
 
-        $this->sendEncodedExit($html);
+        $this->sendEncodedExit($html, []);
     }
 
     public function toggle_favorite() {
@@ -435,7 +435,7 @@ class mel_workspace extends bnum_plugin
 
         $wsp = Workspace::ToggleFavoriteWsp($uid);
 
-        $this->sendEncodedExit(['newState' => $wsp->isFavorite()]);
+        $this->sendEncodedExit(['newState' => $wsp->isFavorite()], []);
     }
 
     public function set_visu_mode() {
@@ -443,7 +443,7 @@ class mel_workspace extends bnum_plugin
 
         $this->rc()->user->save_prefs(array('wsp-visu-mode' => $mode));
 
-        $this->sendEncodedExit('ok');
+        $this->sendEncodedExit('ok', []);
     }
 
     public function update_module_visibility() {
@@ -503,7 +503,7 @@ class mel_workspace extends bnum_plugin
             $hashtags[] = $value->hashtag;
         }
 
-        $this->sendEncodedExit($hashtags);
+        $this->sendEncodedExit($hashtags, []);
     }
 
     #region actions/params
@@ -511,7 +511,7 @@ class mel_workspace extends bnum_plugin
         $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
         $workspace = self::Workspace($uid);
 
-        if (!$workspace->hasUser()) $this->sendEncodedExit('denied');
+        if (!$workspace->hasUser()) $this->sendEncodedExit('denied', []);
 
         $this->sendEncodedExit($workspace->users(true)->select(function ($k, $v) {
             return ['email' => $v->email, 'name' => $v->name, 'fullname' => $v->fullname, 'is_external' => $v->is_external];
@@ -519,7 +519,7 @@ class mel_workspace extends bnum_plugin
             return $v['email'];
         }, function ($k, $v) {
             return $v;
-        }));
+        }), []);
     }
 
     public function join_user()

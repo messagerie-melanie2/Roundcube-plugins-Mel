@@ -16,6 +16,14 @@
   box-sizing: border-box;
   /* Inclut le padding dans la largeur totale */
 }
+.task-forum #refresh {
+  padding: 0;
+  margin-top: 0;
+}
+.task-forum #refresh:hover {
+  color: inherit;
+  background-color: inherit;
+}
 .task-forum #forum-button-add {
   margin-top: 0;
   margin-right: 20px;
@@ -1248,9 +1256,6 @@
   margin: 0 !important;
   box-shadow: none !important;
 }
-.material-symbols-outlined.f-31 {
-  font-size: 31px;
-}
 .task-forum .radio-group {
   display: flex;
   flex-direction: column;
@@ -1266,4 +1271,7 @@
 }
 .task-forum .radio-group input[type="radio"] {
   margin: 0;
+}
+.material-symbols-outlined.f-31 {
+  font-size: 31px;
 }

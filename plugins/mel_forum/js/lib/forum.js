@@ -91,7 +91,7 @@ export class Forum extends MelObject {
         });
 
         //bouton refresh
-        $('.refresh').on('click',() => { 
+        $('#refresh').on('click',() => { 
             clearButton.click();
         });
 

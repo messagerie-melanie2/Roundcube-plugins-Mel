@@ -317,6 +317,10 @@ class FrameData {
    */
   show() {
     this.$frame.parent().show();
+
+    if (this.$frame.css('display') === 'none')
+      this.$frame.css('display', EMPTY_STRING);
+
     return this;
   }
 

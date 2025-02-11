@@ -235,6 +235,11 @@ abstract class bnum_plugin extends rcube_plugin
         $this->sendExit(json_encode($item), $headers);
     }
 
+    protected function sendJsonExit($item, $headers = []) {
+        $headers[]='Content-Type: application/json';
+        $this->sendEncodedExit($item, $headers);
+    }
+
     protected function include_web_component() {
         return WebComponnents::Instance();
     } 

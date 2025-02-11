@@ -73,6 +73,7 @@ export class Forum extends MelObject {
         $('#post-search-button').on('click',() => {
             this.searchPosts();
         });
+        
         //gestion du boutons de suprression de texte de la barre de recherche
         const searchInput = $('#post-search-input');
         const clearButton = $('#clear-button');
@@ -87,6 +88,11 @@ export class Forum extends MelObject {
             clearButton.hide(); // Cache le bouton
             searchInput.focus();
             this.searchPosts();
+        });
+
+        //bouton refresh
+        $('.refresh').on('click',() => { 
+            clearButton.click();
         });
 
         //gestion du scroll sur la page

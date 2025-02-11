@@ -463,6 +463,8 @@ class mel_forum extends bnum_plugin
 
         // Supprimer l'article
         $ret = $post->delete();
+        if (mel_logs::is(mel_logs::TRACE))
+            mel_logs::get_instance()->log(mel_logs::TRACE, "mel_forum:: post : $uid deleted from workspace : $post->workspace by : $current_user_uid");
         if (!is_null($ret)) {
             echo json_encode(['status' => 'success', 'message' => $this->gettext("the_article", "mel_forum") . $post->title . $this->gettext("has_been_deleted", "mel_forum")]);
         } else {
@@ -662,6 +664,8 @@ class mel_forum extends bnum_plugin
         if ($result !== null) {
             // le post est créé on passe aux tags
             $this->_manage_tags();
+        } else {
+            mel_logs::get_instance()->log(mel_logs::ERROR, "mel_forum:: erreur de lors de la modification du post");
         }
     }
 
@@ -726,6 +730,8 @@ class mel_forum extends bnum_plugin
         $post->workspace = $workspace_uid;
 
         // Sauvegarde de l'article
+        if (mel_logs::is(mel_logs::TRACE))
+            mel_logs::get_instance()->log(mel_logs::TRACE, "mel_forum:: post : $uid modified from workspace : $post->workspace by" . driver_mel::gi()->getUser()->uid);
         return $post->save();
     }
 

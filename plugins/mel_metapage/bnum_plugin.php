@@ -231,14 +231,10 @@ abstract class bnum_plugin extends rcube_plugin
         exit;
     }
 
-    protected function sendEncodedExit($item, $headers = []) {
+    protected function sendEncodedExit($item, $headers = ['Content-Type: application/json']) {
         $this->sendExit(json_encode($item), $headers);
     }
-
-    protected function sendJsonExit($item, $headers = ['Content-Type: application/json']) {
-        $this->sendEncodedExit($item, $headers);
-    }
-
+    
     protected function include_web_component() {
         return WebComponnents::Instance();
     } 

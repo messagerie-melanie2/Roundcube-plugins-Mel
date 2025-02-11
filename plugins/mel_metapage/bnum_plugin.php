@@ -235,8 +235,7 @@ abstract class bnum_plugin extends rcube_plugin
         $this->sendExit(json_encode($item), $headers);
     }
 
-    protected function sendJsonExit($item, $headers = []) {
-        $headers[]='Content-Type: application/json';
+    protected function sendJsonExit($item, $headers = ['Content-Type: application/json']) {
         $this->sendEncodedExit($item, $headers);
     }
 

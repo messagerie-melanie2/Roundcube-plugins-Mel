@@ -1055,7 +1055,7 @@ class mel_forum extends bnum_plugin
 
         // Validation des données
         if (empty($content)) {
-            $this->sendJsonExit([
+            $this->sendEncodedExit([
                 'status' => 'error',
                 'message' => $this->gettext("comment_field_required", "mel_forum")
             ]);
@@ -1083,14 +1083,14 @@ class mel_forum extends bnum_plugin
                 $id = $comment->id; // Récupérer l'ID après le chargement
             } else {
                 // Gestion si le chargement échoue
-                $this->sendJsonExit([
+                $this->sendEncodedExit([
                     'status' => 'error',
                     'message' => $this->gettext("comment_creation_failed", "mel_forum")
                 ]);
             }
         } else {
             // Gestion d'une erreur de sauvegarde
-            $this->sendJsonExit([
+            $this->sendEncodedExit([
                 'status' => 'error',
                 'message' => $this->gettext("comment_creation_failed", "mel_forum")
             ]);
@@ -1109,7 +1109,7 @@ class mel_forum extends bnum_plugin
         ];
 
         // Réponse JSON avec succès
-        $this->sendJsonExit([
+        $this->sendEncodedExit([
             'status' => 'success',
             'message' => $this->gettext("comment_creation", "mel_forum"),
             'comment' => $commentData
@@ -1139,7 +1139,7 @@ class mel_forum extends bnum_plugin
         $comment->uid = $uid;
 
         if (!$comment->load()) {
-            $this->sendJsonExit([
+            $this->sendEncodedExit([
                 'status' => 'error',
                 'message' => $this->gettext("comment_unfindable", "mel_forum")
             ]);
@@ -1147,14 +1147,14 @@ class mel_forum extends bnum_plugin
 
         // Vérifier si le commentaire existe
         if (!$comment) {
-            $this->sendJsonExit([
+            $this->sendEncodedExit([
                 'status' => 'error',
                 'message' => $this->gettext("comment_unfindable", "mel_forum")
             ]);
         }
         // Vérifier si l'utilisateur est bien l'auteur du commentaire
         if ($comment->user_uid !== $user->uid) { // Vérification si l'utilisateur est l'auteur
-            $this->sendJsonExit([
+            $this->sendEncodedExit([
             'status' => 'error',
             'message' => $this->gettext("cannot_edit_comment", "mel_forum")
             ]);
@@ -1174,13 +1174,13 @@ class mel_forum extends bnum_plugin
             ];
 
             // Réponse JSON avec les modifications apportées au commentaire
-            $this->sendJsonExit([
+            $this->sendEncodedExit([
                 'status' => 'success',
                 'message' => $this->gettext("comment_updated", "mel_forum"),
                 'comment' => $modifyData
             ]);
         } else {
-            $this->sendJsonExit([
+            $this->sendEncodedExit([
                 'status' => 'error',
                 'message' => $this->gettext("comment_updated_failure", "mel_forum")
                 ]);
@@ -1270,7 +1270,7 @@ class mel_forum extends bnum_plugin
 
         // Validation des données saisies
         if (empty($type) || empty($comment_id)) {
-            $this->sendJsonExit(['status' => 'error', 'message' => $this->gettext("every_field_required", "mel_forum")]);
+            $this->sendEncodedExit(['status' => 'error', 'message' => $this->gettext("every_field_required", "mel_forum")]);
         }
 
         // Charger le commentaire pour récupérer son id et son créateur
@@ -1278,7 +1278,7 @@ class mel_forum extends bnum_plugin
         $comment->uid = $comment_uid;
 
         if (!$comment->load()) {
-            $this->sendJsonExit(['status' => 'error', 'message' => $this->gettext("comment_unfindable", "mel_forum")]);
+            $this->sendEncodedExit(['status' => 'error', 'message' => $this->gettext("comment_unfindable", "mel_forum")]);
         }
 
         // Vérifier si un like ou dislike existe déjà
@@ -1310,7 +1310,7 @@ class mel_forum extends bnum_plugin
                 // Sauvegarde de la nouvelle réaction
                 $ret = $reaction->save();
                 if (is_null($ret)) {
-                    $this->sendJsonExit(['status' => 'error', 'message' => gettext("failed_to_save...", "mel_forum") . $type . '.']);
+                    $this->sendEncodedExit(['status' => 'error', 'message' => gettext("failed_to_save...", "mel_forum") . $type . '.']);
                 }
                 $message = ucfirst($type) . gettext("...saved", "mel_forum");
             }
@@ -1335,7 +1335,7 @@ class mel_forum extends bnum_plugin
                     // Sauvegarde de la nouvelle réaction
                     $ret = $reaction->save();
                     if (is_null($ret)) {
-                        $this->sendJsonExit(['status' => 'error', 'message' => gettext("failed_to_save...", "mel_forum") . $type . '.']);
+                        $this->sendEncodedExit(['status' => 'error', 'message' => gettext("failed_to_save...", "mel_forum") . $type . '.']);
                     }
                     $message = ucfirst($type) . $this->gettext("...saved", "mel_forum");
                 }
@@ -1349,14 +1349,14 @@ class mel_forum extends bnum_plugin
                 // Sauvegarde de la nouvelle réaction
                 $ret = $reaction->save();
                 if (is_null($ret)) {
-                    $this->sendJsonExit(['status' => 'error', 'message' => gettext("failed_to_save...", "mel_forum") . $type . '.']);
+                    $this->sendEncodedExit(['status' => 'error', 'message' => gettext("failed_to_save...", "mel_forum") . $type . '.']);
                 }
                 $message = ucfirst($type) . $this->gettext("...saved", "mel_forum");
             }
         }
 
         // Retourner la réponse JSON avec le statut et le message approprié
-        $this->sendJsonExit(['status' => $status, 'message' => $message]);
+        $this->sendEncodedExit(['status' => $status, 'message' => $message]);
     }
 
     /**

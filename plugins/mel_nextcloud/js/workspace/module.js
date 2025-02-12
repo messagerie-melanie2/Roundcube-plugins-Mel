@@ -21,7 +21,7 @@ import { WorkspaceModuleBlock } from '../../../mel_workspace/js/lib/WebComponent
 import { WorkspaceObject } from '../../../mel_workspace/js/lib/program/WorkspaceObject.js';
 import { NavBarManager } from '../../../mel_workspace/js/lib/program/navbar.generator.js';
 
-const ENABLE_DIRECT_SELECT = true;
+const ENABLE_DIRECT_SELECT = false;
 class NextcloudModule extends WorkspaceObject {
   constructor() {
     super();

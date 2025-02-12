@@ -687,7 +687,7 @@ class FileTag extends AActionNextcloudTag {
           .contentWindow.$('iframe')
           .attr(
             'src',
-            `${rcmail.env.nextcloud_url}/apps/files?dir=/dossiers-${NextcloudModule.Workspace().uid}&openfile=${this.itemData.data.uid}`,
+            `${rcmail.env.nextcloud_url}/apps/files?dir=/${this.itemData.data.dirname}&openfile=${this.itemData.data.uid}`,
           );
       });
     };
@@ -747,10 +747,20 @@ class FileTag extends AActionNextcloudTag {
     other.appendChild(BnumHtmlIcon.Create({ icon: 'account_tree' }));
     other.setAttribute('title', "Ouvrir dans l'arborescence");
     other.onclick = () => {
-      NextcloudModule.EmptyWorkspaceObject.switch_workspace_page('stockage', {
-        newArgs: {
-          _params: `/apps/files?dir=/dossiers-${NextcloudModule.Workspace().uid}&fileid=${this.itemData.data.uid}`,
-        },
+      // NextcloudModule.EmptyWorkspaceObject.switch_workspace_page('stockage', {
+      //   newArgs: {
+      //     _params: `/apps/files?dir=/${this.itemData.data.dirname}/&fileid=${this.itemData.data.uid}`,
+      //   },
+      // });
+      NextcloudModule.EmptyWorkspaceObject.switch_workspace_page(
+        'stockage',
+      ).then(() => {
+        FramesManager.Instance.get_frame('stockage', { jquery: false })
+          .contentWindow.$('iframe')
+          .attr(
+            'src',
+            `${rcmail.env.nextcloud_url}/apps/files?dir=/${this.itemData.data.dirname}&fileid=${this.itemData.data.uid}`,
+          );
       });
     };
 

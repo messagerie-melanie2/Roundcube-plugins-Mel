@@ -21,6 +21,7 @@ import { WorkspaceModuleBlock } from '../../../mel_workspace/js/lib/WebComponent
 import { WorkspaceObject } from '../../../mel_workspace/js/lib/program/WorkspaceObject.js';
 import { NavBarManager } from '../../../mel_workspace/js/lib/program/navbar.generator.js';
 
+const ENABLE_DIRECT_SELECT = true;
 class NextcloudModule extends WorkspaceObject {
   constructor() {
     super();
@@ -708,6 +709,7 @@ class FileTag extends AActionNextcloudTag {
 
   _p_create_button(button) {
     const helper = MelObject.Empty();
+    let itemsToAdd = [];
     button = super._p_create_button(button);
 
     button.classList.add(
@@ -739,33 +741,34 @@ class FileTag extends AActionNextcloudTag {
 
     button.style.borderRadius = '5px';
 
-    /**
-     * @type {HTMLButtonElement}
-     */
-    let other = button.cloneNode();
-    other.textContent = EMPTY_STRING;
-    other.appendChild(BnumHtmlIcon.Create({ icon: 'account_tree' }));
-    other.setAttribute('title', "Ouvrir dans l'arborescence");
-    other.onclick = () => {
-      // NextcloudModule.EmptyWorkspaceObject.switch_workspace_page('stockage', {
-      //   newArgs: {
-      //     _params: `/apps/files?dir=/${this.itemData.data.dirname}/&fileid=${this.itemData.data.uid}`,
-      //   },
-      // });
-      NextcloudModule.EmptyWorkspaceObject.switch_workspace_page(
-        'stockage',
-      ).then(() => {
-        FramesManager.Instance.get_frame('stockage', { jquery: false })
-          .contentWindow.$('iframe')
-          .attr(
-            'src',
-            `${rcmail.env.nextcloud_url}/apps/files?dir=/${this.itemData.data.dirname}&fileid=${this.itemData.data.uid}`,
-          );
-      });
-    };
+    itemsToAdd.push(button);
+
+    if (ENABLE_DIRECT_SELECT) {
+      /**
+       * @type {HTMLButtonElement}
+       */
+      let other = button.cloneNode();
+      other.textContent = EMPTY_STRING;
+      other.appendChild(BnumHtmlIcon.Create({ icon: 'account_tree' }));
+      other.setAttribute('title', "Ouvrir dans l'arborescence");
+      other.onclick = () => {
+        NextcloudModule.EmptyWorkspaceObject.switch_workspace_page(
+          'stockage',
+        ).then(() => {
+          FramesManager.Instance.get_frame('stockage', { jquery: false })
+            .contentWindow.$('iframe')
+            .attr(
+              'src',
+              `${rcmail.env.nextcloud_url}/apps/files?dir=/${this.itemData.data.dirname}&fileid=${this.itemData.data.uid}`,
+            );
+        });
+      };
+
+      itemsToAdd = [other, ...itemsToAdd];
+    }
 
     let group = HTMLButtonGroup.CreateNode([]);
-    group.navigator.append(other, button);
+    group.navigator.append(...itemsToAdd);
 
     group.onloaded.push((caller) => {
       caller.removeClass('btn-group-vertical').addClass('btn-group');

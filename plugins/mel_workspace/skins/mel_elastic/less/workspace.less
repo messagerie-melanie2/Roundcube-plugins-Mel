@@ -50,11 +50,29 @@ bnum-workspace-module {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-}
+  flex-wrap: wrap;
 
-// th.fc-widget-header {
-//   width: 30px;
-// }
+  .planning-top-header {
+    display: flex;
+    flex: 4;
+    justify-content: space-between;
+      
+    @media (max-width: 600px) {
+        flex: 100%; /* Force les blocs à prendre toute la largeur */
+    }
+  }
+
+  .planning-bottom-header {
+    display: flex;
+    flex: 1;
+    justify-content: flex-end;
+   
+    @media (max-width: 600px) {
+      justify-content: center;
+   }
+  }
+
+}
 
 bnum-searchbar {
   flex: 0.5;

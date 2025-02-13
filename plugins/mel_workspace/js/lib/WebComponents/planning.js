@@ -107,6 +107,12 @@ export class Planning extends HtmlCustomDataTag {
   get header() {
     return document.querySelector(`#header-planning-${this.internalId}`);
   }
+  get topHeader() {
+    return document.querySelector(`#top-header-planning-${this.internalId}`);
+  }
+  get bottomHeader() {
+    return document.querySelector(`#bottom-header-planning-${this.internalId}`);
+  }
 
   _p_main() {
     super._p_main();
@@ -120,6 +126,13 @@ export class Planning extends HtmlCustomDataTag {
 
     this.appendChild(header);
     header = null;
+
+    let topHeader = BnumHtmlFlexContainer.Create().addClass('planning-element', 'planning-top-header');
+    topHeader.setAttribute('id', `top-header-planning-${this.internalId}`); 
+    this.header.appendChild(topHeader);
+    let bottomHeader = BnumHtmlFlexContainer.Create().addClass('planning-element', 'planning-bottom-header');
+    bottomHeader.setAttribute('id', `bottom-header-planning-${this.internalId}`); 
+    this.header.appendChild(bottomHeader);
 
     this._generate_date()
       ._generate_search()
@@ -154,7 +167,7 @@ export class Planning extends HtmlCustomDataTag {
     this._dateHeader = text;
 
     container.append(icon, text);
-    this.header.appendChild(container);
+    this.topHeader.appendChild(container);
 
     container = null;
     icon = null;
@@ -177,7 +190,7 @@ export class Planning extends HtmlCustomDataTag {
 
     src.addEventListener('api:search.input.change', this._on_search.bind(this));
 
-    this.header.appendChild(src);
+    this.topHeader.appendChild(src);
 
     return this;
   }
@@ -260,7 +273,7 @@ export class Planning extends HtmlCustomDataTag {
     // // input.style.display = 'none';
     // input.setAttribute('id', `date-${this.internalId}`);
 
-    this.header.append(/*input, */ container);
+    this.bottomHeader.append(/*input, */ container);
 
     container = null;
     prev = null;

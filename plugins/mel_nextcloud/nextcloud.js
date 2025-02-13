@@ -31,9 +31,13 @@ $(document).ready(function () {
       }
     }
 
-    window.document
-      .getElementById('mel_nextcloud_frame')
-      .contentWindow.postMessage(`switch-theme-${MEL_ELASTIC_UI.color_mode()}`);
+    const ui = window.MEL_ELASTIC_UI ?? parent.MEL_ELASTIC_UI;
+
+    if (ui) {
+      window.document
+        .getElementById('mel_nextcloud_frame')
+        .contentWindow.postMessage(`switch-theme-${ui.color_mode()}`);
+    }
   });
 
   function nc_login(refresh = true) {

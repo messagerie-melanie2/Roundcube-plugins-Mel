@@ -279,6 +279,21 @@ function getMaxBusinessHour(response) {
   return Math.max(...max_ranges) + ':00';
 }
 
+function getDayBusinessHour(day) {
+  let businessHours = [];
+  response.range.forEach((value, index) => {
+    if (value[0] != "" && index === day) {
+      for (let i = 0; i < value.length; i += 2) {
+        businessHours.push({
+          startTime: value[i],
+          endTime: value[i + 1],
+        })
+      }
+    }
+  });
+  return businessHours[0];
+}
+
 function showModal(start, end) {
   let selectedValue = checkToday(roundTimeQuarterHour(new Date()));
   let allowTimes = generateAllowTimes(start ? start : selectedValue);
@@ -430,20 +445,27 @@ function generateAllowTimes(start = new Date()) {
 
 function getSelectedDayOccupiedTimeSlot(date) {
   let occupiedTimeSlot = [];
+  date = moment(date)
+
+  let businessHours = getDayBusinessHour(date.day());
   datetimepicker_fullcalendar.getEvents().forEach((value) => {    
-    if (moment(value.start).startOf('day').toString() == moment(date).startOf('day').toString()) {
-      let start = moment(value.start).subtract(appointment_duration, 'minute').format('HH:mm')
+    if (moment(value.start).startOf('day').toString() === date.startOf('day').toString()) {
+      let start = moment(value.start).format('HH:mm')
       let end = moment(value.end).format('HH:mm')
       occupiedTimeSlot.push([start, end]);
     }
   });
+
+  //On rajoute la fin de journée comme plage horaire
+  occupiedTimeSlot.push([businessHours.endTime, moment(businessHours.endTime, 'HH:mm').add(1, 'hour').format('HH:mm')]);
+
   return occupiedTimeSlot;
 }
 
 function isEventInRange(start, end, ranges) {
   return ranges.some(([rangeStart, rangeEnd]) => {
     const rangeStartTime = moment(start.format("YYYY/MM/DD") + " " + rangeStart, "YYYY/MM/DD HH:mm");
-    const rangeEndTime = moment(end.format("YYYY/MM/DD") + " " + rangeEnd, "YYYY/MM/DD HH:mm");      
+    const rangeEndTime = moment(end.format("YYYY/MM/DD") + " " + rangeEnd, "YYYY/MM/DD HH:mm");
 
       return start.isBetween(rangeStartTime, rangeEndTime, null, '[)') ||
              end.isBetween(rangeStartTime, rangeEndTime, null, '(]') ||

@@ -2,28 +2,19 @@
 
 // Inclusion des fichiers
 require_once '../lib/utils.php';
-require_once 'mail.php';
 require_once __DIR__ . '/../config.inc.php';
+require_once 'mail.php';
 
 // Configuration du nom de l'application pour l'ORM
 if (!defined('CONFIGURATION_APP_LIBM2')) {
   define('CONFIGURATION_APP_LIBM2', 'roundcube');
 }
 
-if ($config['DEV']) {
-  $dir = str_replace('/public/fullcalendar', '', dirname($_SERVER['SCRIPT_FILENAME']));
-} 
-else if ($config['DOCKER']) {
-  $dir = __DIR__ . '/../../bnum';
-}
-else {
-  $dir = __DIR__ . '/../..';
-}
+$dir = utils::getDirPath('fullcalendar');
+
 
 // Inclusion de l'ORM M2
 @include_once 'includes/libm2.php';
-
-@include_once '../lib/mel/mel.php';
 
 // Utilisation de la librairie Sabre VObject pour la conversion ICS
 require_once '../lib/vendor/autoload.php';

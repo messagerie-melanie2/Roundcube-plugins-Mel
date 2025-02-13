@@ -17,12 +17,16 @@
   }
 
   #refresh {
-    padding:0;
+    padding: 0;
     margin-top: 0;
-    &:hover{
+    &:hover {
       color: inherit;
       background-color: inherit;
     }
+  }
+  pre {
+    background-color: var(--main-background-color) !important;
+    color: var(--main-text-color) !important;
   }
 
   #forum-button-add {
@@ -396,7 +400,7 @@
       font-weight: bold;
     }
   }
- //todo
+  //todo
   .return-header {
     justify-content: space-between;
     .return {
@@ -430,7 +434,7 @@
         color: inherit;
       }
     }
-    .more_actions_area{
+    .more_actions_area {
       position: relative;
       margin: 10px 50px 0 0;
     }
@@ -478,9 +482,7 @@
       position: absolute;
       top: 40px;
       left: -180px; // Ajustement de la position vers la gauche
-      transform: translateX(
-        -10px
-      ); // Ajustement supplémentaire vers la gauche
+      transform: translateX(-10px); // Ajustement supplémentaire vers la gauche
       // width: 198px;
       // height: 100px;
       border-radius: 10px;
@@ -686,7 +688,7 @@
     }
     #submit-comment {
       margin-right: 50px;
-      .save-comment-button{
+      .save-comment-button {
         margin-left: 15px;
       }
     }
@@ -753,7 +755,7 @@
       width: 100%;
     }
 
-    .post-reaction{
+    .post-reaction {
       display: flex;
       margin: 10px 0;
       .reaction {
@@ -989,7 +991,7 @@
 
           @media (max-width: 576px) {
             left: 0;
-           }
+          }
 
           .post-options-button {
             display: flex;
@@ -1113,7 +1115,7 @@
       }
       .pin {
         font-size: 25px !important;
-        font-variation-settings: 'FILL' 1,;
+        font-variation-settings: 'FILL' 1;
       }
     }
   }
@@ -1245,7 +1247,7 @@
       .dark-mode &,
       .dark-mode-custom & {
         --layout-content-background-color: var(--bureau-card-background-color);
-      } 
+      }
     }
     .post {
       margin: 5px 10px;
@@ -1255,7 +1257,6 @@
       transition: var(--transition-all, none);
       border-radius: 5px;
       background-color: var(--bureau-card-content-background-color);
-
 
       &:hover {
         background-color: var(--forum-list-hover-background-color);
@@ -1281,7 +1282,7 @@
         text-overflow: ellipsis;
 
         @media (max-width: 768px) {
-         display: none;
+          display: none;
         }
       }
       .post-footer {
@@ -1322,7 +1323,7 @@
     }
   }
 
-  .front_page_post  {
+  .front_page_post {
     .forum-content {
       display: flex;
       justify-content: center;
@@ -1334,7 +1335,7 @@
       .dark-mode &,
       .dark-mode-custom & {
         --layout-content-background-color: var(--bureau-card-background-color);
-      }      
+      }
     }
     #pin_post-area {
       height: 100%;
@@ -1349,7 +1350,9 @@
       .dark-mode &,
       .dark-mode-custom & {
         border-radius: 5px;
-        --layout-content-background-color: var(--bureau-card-content-background-color);
+        --layout-content-background-color: var(
+          --bureau-card-content-background-color
+        );
       }
 
       &:hover {
@@ -1428,7 +1431,8 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
 
-  @media (max-width: 768px) { /* ou une autre largeur en pixels correspondant au mobile */
+  @media (max-width: 768px) {
+    /* ou une autre largeur en pixels correspondant au mobile */
     #layout > div > .footer {
       display: none; /* Cache complètement la div */
     }
@@ -1439,10 +1443,7 @@
     font-size: 25px;
     margin-left: 20px;
   }
-  
 }
-
-
 
 .task-forum {
   &.action-none,
@@ -1452,7 +1453,7 @@
   &.action-create_or_edit_post,
   &.action-new_posts {
     #layout {
-    background-color: var(--bureau-card-background-color);
+      background-color: var(--bureau-card-background-color);
       #layout-content {
         .content {
           border-radius: 0 !important;
@@ -1469,7 +1470,7 @@
     align-items: flex-start;
     margin-top: 5px;
   }
-  
+
   .radio-group label {
     display: flex;
     align-items: center;
@@ -1477,11 +1478,10 @@
     margin-bottom: -5px; // Réduction de l'espace entre les labels
     margin-left: 50px;
   }
-  
-  .radio-group input[type="radio"] {
+
+  .radio-group input[type='radio'] {
     margin: 0; // Supprime les marges par défaut des inputs
-  }  
-  
+  }
 }
 
 .material-symbols-outlined.f-31 {

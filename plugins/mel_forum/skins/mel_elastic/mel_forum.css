@@ -24,6 +24,10 @@
   color: inherit;
   background-color: inherit;
 }
+.task-forum pre {
+  background-color: var(--main-background-color) !important;
+  color: var(--main-text-color) !important;
+}
 .task-forum #forum-button-add {
   margin-top: 0;
   margin-right: 20px;
@@ -1269,7 +1273,7 @@
   margin-bottom: -5px;
   margin-left: 50px;
 }
-.task-forum .radio-group input[type="radio"] {
+.task-forum .radio-group input[type='radio'] {
   margin: 0;
 }
 .material-symbols-outlined.f-31 {

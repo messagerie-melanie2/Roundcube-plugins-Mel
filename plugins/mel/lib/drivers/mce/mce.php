@@ -477,9 +477,14 @@ class mce_driver_mel extends driver_mel {
   protected function unexpunge_jenkins($mbox, $folder, $hours) {
     mel_logs::get_instance()->log(mel_logs::INFO, "[mel] mce_driver::unexpunge_jenkins($mbox, $folder, $hours)");
 
+    $_user = $this->getUser($mbox, false);
+    if ($_user->is_objectshare) {
+      $_user = $_user->objectshare->mailbox;
+    }
+
     $params = [
       'target'  => $this->get_restoration_target($mbox),
-      'user'    => $mbox,
+      'user'    => $_user->uid,
       'folder'  => $folder,
       'nbhours' => $hours,
     ];

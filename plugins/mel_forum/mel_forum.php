@@ -2673,8 +2673,9 @@ class mel_forum extends bnum_plugin
     {
         if (class_exists("mel_notification")) {
             $workspace_uid = $this->get_input('_workspace', rcube_utils::INPUT_POST);
+            $post_uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
 
-            if ($workspace_uid !== null) {
+            if ($workspace_uid !== null && $post_uid !== null) {
                 $workspace = mel_workspace::Workspace($workspace_uid);
 
                 $current_user = driver_mel::gi()->getUser();
@@ -2690,7 +2691,7 @@ class mel_forum extends bnum_plugin
                             'Découvrez le nouvel article intitulé : "' . $post_title . '" en cliquant sur le lien ci-dessous.',
                             [
                                 [
-                                    'href' => "./?_task=workspace&_action=workspace&_uid=".$workspace_uid,
+                                    'href' => "./?_task=forum&_action=post&_uid=" . $post_uid . "&_workspace_uid=" . $workspace_uid . "&_force_bnum=1",
                                     'text' => "Lire l'article",
                                     'title' => "Cliquez pour lire l'article",
                                     'command' => "event.click"

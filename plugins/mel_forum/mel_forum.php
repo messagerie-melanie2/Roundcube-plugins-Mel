@@ -664,6 +664,8 @@ class mel_forum extends bnum_plugin
         if ($result !== null) {
             // le post est créé on passe aux tags
             $this->_manage_tags();
+            //on notifie les utilisateur via le salon tchap associé si il éxiste
+            tchap::send_message($this->get_input('_workspace', rcube_utils::INPUT_POST), $this->gettext("a_post_has_been_published", "mel_forum"));
         } else {
             mel_logs::get_instance()->log(mel_logs::ERROR, "mel_forum:: erreur de lors de la modification du post");
         }

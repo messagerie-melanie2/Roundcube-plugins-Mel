@@ -18,6 +18,7 @@ $labels['Friday'] = 'Vendredi';
 $labels['Saturday'] = 'Samedi';
 $labels['Sunday'] = 'Dimanche';
 
+#endregion
 #region Mois
 
 $labels['January'] = 'Janvier';
@@ -47,6 +48,7 @@ $labels['source'] = "Source";
 $labels['tout'] = "A la suite";
 $labels['un'] = "Vignette";
 
+#endregion
 #region FORUM LABELS
 
 $labels['articles'] = 'Articles';
@@ -60,11 +62,13 @@ $labels['edit_article'] = 'Modifier l\'article';
 $labels['pin_article'] = 'Épingler l\'article';
 $labels['unpin_article'] = 'Désépingler l\'article';
 
+#endregion
 #region Droits
 
 $labels['admin_edit_only'] = 'Autoriser uniquement les administrateurs de l\'espace à modifier l\'article';
 $labels['enable_comments'] = 'Autoriser la publication de commentaires';
 
+#endregion
 #region Bouton et Action
 
 $labels['add'] = 'Rédiger';
@@ -100,6 +104,7 @@ $labels['sort_by'] = 'Trier par : ';
 $labels['workspace_news'] = 'Derniers articles';
 $labels['front_page'] = 'À la une';
 
+#endregion
 #region Message
 
 $labels['article_created'] = 'Article créé avec succès.';
@@ -146,6 +151,7 @@ $labels['unlike'] = 'Like annulé avec succès.';
 $labels['yesterday_at'] = 'Hier à';
 $labels['fields_required'] = 'Les champs titre et contenu sont requis';
 
+#endregion
 #region TAG
 
 $labels['no_tag_found'] = 'Aucun tag trouvé.';
@@ -162,6 +168,7 @@ $labels['tags'] = 'Tags :';
 $labels['the_tag'] = 'Le tag ';
 $labels['tag_already_exists'] = 'Ce tag est déjà présent dans votre article';
 
+#endregion
 #region COMMENTS
 
 $labels['cannot_delete_comment'] = 'Vous n\'êtes pas autorisé à supprimer ce commentaire.';
@@ -188,6 +195,7 @@ $labels['response_creation_failed'] = 'Echec de création de la réponse.';
 $labels['response_plural'] = 'réponses';
 $labels['response_singular'] = 'réponse';
 
+#endregion
 #region REACTIONS
 
 $labels['dislike_cancelled'] = 'Dislike annulé avec succès.';
@@ -202,11 +210,13 @@ $labels['reaction_deleted'] = 'La réaction a été supprimée avec succès.';
 $labels['reaction_deleted_failure'] = 'Echec de suppression de la réaction.';
 $labels['reaction_saved'] = 'Réaction enregistrée.';
 
+#endregion
 #region IMAGES
 
 $labels['failed_to_load_image'] = 'Echec du chargement de l\'image.';
 $labels['image_field_required'] = 'Tous les champs sont requis.';
 
+#endregion
 #region ERREUR
 
 $labels['error'] = 'ERREUR';
@@ -214,6 +224,7 @@ $labels['error-access'] = 'Vous n\'avez pas accès à la ressource demandée.';
 $labels['return_to_workspaces_list'] = 'Retourner à la liste des espaces de travail';
 $labels['join_workspace'] = 'Rejoindre l\'espace de travail';
 
+#endregion
 #region TELECHARGEMENT
 
 $labels['author_html'] = 'Auteur : ';
@@ -232,3 +243,8 @@ $labels['no_comments'] = 'Aucun commentaire pour cet article.';
 $labels['no_created_zip'] = 'Le fichier ZIP n\'a pas été créé.';
 $labels['no_image_found'] = 'Aucune image trouvée pour le post_id: ';
 $labels['no_image_to_replace'] = "Aucune image à remplacer pour le post_id : ";
+
+#endregion
+#region MESSAGE TCHAP
+
+$labels['a_post_has_been_published'] = "📰 Un article a été publié dans votre espace de travail.";

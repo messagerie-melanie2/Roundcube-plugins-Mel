@@ -109,6 +109,16 @@ export class ModuleForum extends WorkspaceObject {
       // Réactiver l'élément déclencheur
       this.select(caller).removeClass('disabled').removeAttr('disabled');
       this.rcmail().hide_message(loading);
+
+      //Ajout du onclick sur le checkbox
+      $("#tchap-notification").click(() => {
+        debugger;
+        if(this.get_params('tchap_notification') === "1"){
+          this.save_params('tchap_notification', "0");
+        }else{
+          this.save_params('tchap_notification', "1");
+        }
+      });
     });
 
     //Lorsque une donnée est reçu de la part de la frame enfante

@@ -73,4 +73,21 @@ const connectors = {
       _uid: EMPTY_STRING,
     },
   }),
+  ///////////////////////////////////////////////////////////////
+  params_get: Connector.Create('workspace', 'PARAMS_get', {
+    type: Connector.enums.type.post,
+    needed: {
+      _uid: EMPTY_STRING,
+      _key: EMPTY_STRING,
+    },
+  }),
+  ///////////////////////////////////////////////////////////////
+  params_set: Connector.Create('workspace', 'PARAMS_save', {
+    type: Connector.enums.type.post,
+    needed: {
+      _uid: EMPTY_STRING,
+      _key: EMPTY_STRING,
+      _value: EMPTY_STRING,
+    },
+  }),
 };

@@ -653,7 +653,7 @@ class mel_forum extends bnum_plugin
     }
 
     #endregion
-    
+
     #region Enregistrement
 
     /**
@@ -2675,7 +2675,7 @@ class mel_forum extends bnum_plugin
                 $post_title = rcube_utils::get_input_value('_title', rcube_utils::INPUT_POST);
 
                 foreach ($users as $user) {
-                    if (true || $user->user !== $current_user->uid) { 
+                    if ($user->user !== $current_user->uid) { 
                         $notification_title = sprintf(
                             $this->gettext("mel_forum.notification_title"),
                             $current_user->name,

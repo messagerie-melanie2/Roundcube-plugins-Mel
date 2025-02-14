@@ -653,22 +653,13 @@ class mel_forum extends bnum_plugin
     }
 
     #endregion
+    
     #region Enregistrement
+
     /**
      * Gère l'enregistrement d'un article et des tags qui lui sont associés
      * @return void
      */
-    // public function send_post()
-    // {
-    //     $result = $this->_add_post();
-    //     if ($result !== null) {
-    //         // le post est créé on passe aux tags
-    //         $this->_manage_tags();
-    //     } else {
-    //         mel_logs::get_instance()->log(mel_logs::ERROR, "mel_forum:: erreur de lors de la modification du post");
-    //     }
-    // }
-
     public function send_post()
     {
         $result = $this->_add_post();
@@ -2684,16 +2675,27 @@ class mel_forum extends bnum_plugin
                 $post_title = rcube_utils::get_input_value('_title', rcube_utils::INPUT_POST);
 
                 foreach ($users as $user) {
-                    if (true || $user->user !== $current_user->uid) {
+                    if (true || $user->user !== $current_user->uid) { 
+                        $notification_title = sprintf(
+                            $this->gettext("mel_forum.notification_title"),
+                            $current_user->name,
+                            $workspace->title()
+                        );
+                
+                        $notification_message = sprintf(
+                            $this->gettext("mel_forum.post_published_message"),
+                            $post_title
+                        );
+                
                         mel_notification::notify(
                             'workspace',
-                            $current_user->name . $this->gettext("mel_forum.post_published") . $workspace->title(),
-                            'Découvrez le nouvel article intitulé : "' . $post_title . '" en cliquant sur le lien ci-dessous.',
+                            $notification_title,
+                            $notification_message,
                             [
                                 [
                                     'href' => "./?_task=forum&_action=post&_uid=" . $post_uid . "&_workspace_uid=" . $workspace_uid . "&_force_bnum=1",
-                                    'text' => "Lire l'article",
-                                    'title' => "Cliquez pour lire l'article",
+                                    'text' => $this->gettext("mel_forum.read_article"),
+                                    'title' => $this->gettext("mel_forum.read_article_title"),
                                     'command' => "event.click"
                                 ]
                             ],

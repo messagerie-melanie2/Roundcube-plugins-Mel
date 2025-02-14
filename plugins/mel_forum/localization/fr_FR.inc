@@ -235,4 +235,7 @@ $labels['no_image_to_replace'] = "Aucune image à remplacer pour le post_id : ";
 
 #region NOTIFICATION
 
-$labels['post_published'] = " a publié un nouvel article dans l'espace : ";
+$labels['post_published_message'] = 'Découvrez le nouvel article intitulé : "%s" en cliquant sur le lien ci-dessous.';
+$labels['notification_title'] = '%s a publié un nouvel article dans l\'espace : %s';
+$labels['read_article'] = 'Lire l\'article';
+$labels['read_article_title'] = 'Cliquez pour lire l\'article';

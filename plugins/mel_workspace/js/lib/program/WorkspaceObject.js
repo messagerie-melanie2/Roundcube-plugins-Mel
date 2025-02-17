@@ -11,6 +11,8 @@ import { BnumEvent } from '../../../../mel_metapage/js/lib/mel_events.js';
 import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';
 import { NavBarManager } from './navbar.generator.js';
 import { WorkspaceModuleBlock } from '../WebComponents/workspace_module_block.js';
+import { BnumConnector } from '../../../../mel_metapage/js/lib/helpers/bnum_connections/bnum_connections.js';
+import { connectors } from '../connectors.js';
 
 export { WorkspaceObject, CurrentWorkspaceData };
 
@@ -181,6 +183,50 @@ class WorkspaceObject extends MelObject {
     params ??= {};
     params._key = key;
     return await this.http_workspace_post('param', params);
+  }
+
+  /**
+   * Sauvegarde un paramètre dans un espace
+   *
+   * @param {string} key
+   * @param {string | number | boolean} value
+   * @returns {Promise<('ok' | 'denied')>}
+   * @async
+   * @throws {Error} If denied
+   */
+  async save_params(key, value) {
+    const response = await BnumConnector.connect(connectors.params_set, {
+      params: {
+        _uid: this.workspace.uid,
+        _key: key,
+        _value: value,
+      },
+    });
+
+    if (response.datas === 'denied') throw new Error('Denied');
+
+    return response.datas;
+  }
+
+  /**
+   * Récupère un paramètre sauvegarder dans un espace
+   *
+   * @param {string} key
+   * @returns {Promise<any | 'denied'>}
+   * @async
+   * @throws {Error} If denied
+   */
+  async get_params(key) {
+    const response = await BnumConnector.connect(connectors.params_get, {
+      params: {
+        _uid: this.workspace.uid,
+        _key: key,
+      },
+    });
+
+    if (response.datas === 'denied') throw new Error('Denied');
+
+    return response.datas;
   }
 
   /**

@@ -4302,14 +4302,15 @@ bnum-separate {
   background: none;
   border: none;
   color: var(--input-mel-text-color);
-  margin-top: 4px;
+  height: 34px;
+  width: 100%;
 }
 .button-icon-hover:hover span {
   font-variation-settings: 'FILL' 1;
 }
-.button-icon-hover:focus,
-.button-icon-hover:active,
-.button-icon-hover:active:focus {
+.button-icon-hover:not(.shadow-focus):focus,
+.button-icon-hover:not(.shadow-focus):active,
+.button-icon-hover:not(.shadow-focus):active:focus {
   box-shadow: none !important;
 }
 .icon-front-col {

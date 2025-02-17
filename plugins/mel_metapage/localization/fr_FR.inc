@@ -501,3 +501,4 @@ $labels['pad'] = 'Pad';
 $labels['login_da'] = "Si vous êtes sur internet et n'avez pas activé l'authentification à double facteur vous ne pouvez pas vous connecter.<br/>Vous devez passer par le VPN pour vous connecter et ainsi activer l'authentification à deux facteurs";
 
 $labels['compose-mail'] = 'Composer un email';
+$labels['note-delete-warning'] = 'Attention ! Vous allez supprimer votre note, si vous êtes sûr, appuyez sur "ok".';

@@ -132,6 +132,9 @@ export class Manager extends MelObject {
    * @throws {Error} En cas d'échec de l'enregistrement ou d'une erreur réseau.
    */
   async saveComment(content) {
+    // Changer le curseur en "wait"
+    $("body").css("cursor", "wait");
+
     // Désactiver le bouton de validation pour éviter les clics multiples
     const submitButton = $('#submit-comment');
     submitButton.prop('disabled', true);
@@ -163,8 +166,9 @@ export class Manager extends MelObject {
       );
       console.error(rcmail.gettext('mel_forum.comment_save_failure'), error);
     } finally {
-      // Réactiver le bouton de validation une fois la requête terminée
+      // Réactiver le bouton de validation une fois la requête terminée et remettre le curseur par défaut
       submitButton.prop('disabled', false);
+      $("body").css("cursor", "default");
     }
   }
 
@@ -184,6 +188,9 @@ export class Manager extends MelObject {
    * @returns {Promise<void>} Retourne une promesse qui est résolue une fois que tous les commentaires sont affichés et que les événements sont attachés.
    */
   static async displayComments(order = 'date_desc', parent_comment_id = null) {
+
+    $("body").css("cursor", "wait");
+
     BnumMessage.SetBusyLoading();
 
     let PostCommentManager = new PostCommentView(
@@ -256,6 +263,8 @@ export class Manager extends MelObject {
     }
 
     BnumMessage.StopBusyLoading();
+
+    $("body").css("cursor", "default");
   }
 
   /**
@@ -467,6 +476,8 @@ export class Manager extends MelObject {
    * @returns {void}
    */
   editPost() {
+    $("body").css("cursor", "wait");
+
     // Rediriger vers la page d'édition avec l'UID du post
     window.location.href = this.url('forum', {
       action: 'create_or_edit_post',
@@ -492,6 +503,8 @@ export class Manager extends MelObject {
       rcmail.gettext('mel_forum.delete_post_confirm'),
     );
     if (!confirmation) return; // Arrêter la fonction si l'utilisateur annule
+
+    $("body").css("cursor", "wait");
 
     // Envoi d'une requête HTTP pour supprimer le post
     this.http_internal_post({
@@ -533,6 +546,8 @@ export class Manager extends MelObject {
           rcmail.gettext('mel_forum.delete_post_failure'),
           eMessageType.Error,
         );
+
+        $("body").css("cursor", "default");
       },
     });
   }

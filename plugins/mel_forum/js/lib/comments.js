@@ -289,6 +289,9 @@ class PostComment {
 
       // Si le conteneur est caché, on veut l'afficher
       if (responseContainer.hasClass('hidden')) {
+
+        $("body").css("cursor", "wait");
+
         BnumMessage.SetBusyLoading();
 
         // Charger les réponses seulement si elles ne sont pas déjà présentes
@@ -299,6 +302,8 @@ class PostComment {
         }
 
         BnumMessage.StopBusyLoading();
+
+        $("body").css("cursor", "default");
 
         // Afficher les réponses
         responseContainer.removeClass('hidden');
@@ -383,6 +388,8 @@ class PostComment {
         // Vérifier si le commentaire n'est pas vide
 
         submitButton.prop('disabled', true); // Désactiver le bouton de validation pour éviter les clics multiples
+
+        $("body").css("cursor", "wait");
 
         BnumMessage.SetBusyLoading();
 
@@ -506,6 +513,8 @@ class PostComment {
         } finally {
             BnumMessage.StopBusyLoading();
 
+            $("body").css("cursor", "default");
+
             // Réactiver le bouton de validation une fois la requête terminée
             submitButton.prop('disabled', false);
         }
@@ -627,6 +636,9 @@ class PostComment {
     const $textarea = $('#edit-comment-textarea-' + uid);
     const updatedContent = $textarea.val(); // Récupère le nouveau contenu du commentaire
     if (updatedContent && updatedContent.trim() !== '') {
+
+      $("body").css("cursor", "wait");
+
       BnumMessage.SetBusyLoading();
 
       try {
@@ -664,6 +676,8 @@ class PostComment {
         console.error('Erreur lors de la mise à jour du commentaire:', error);
       } finally {
         BnumMessage.StopBusyLoading();
+
+        $("body").css("cursor", "default");
       }
     } else {
       rcmail.display_message(
@@ -692,6 +706,8 @@ class PostComment {
     );
 
     if (!confirmation) return;
+
+    $("body").css("cursor", "wait");
 
     BnumMessage.SetBusyLoading();
 
@@ -767,6 +783,8 @@ class PostComment {
       console.error(rcmail.gettext('mel_forum.comment_delete_failure'), error);
     } finally {
       BnumMessage.StopBusyLoading();
+
+      $("body").css("cursor", "default");
     }
   }
 
@@ -1082,6 +1100,9 @@ class PostCommentView {
    * @returns {Promise<Object>} - Les données du commentaire du post, après analyse de la réponse.
    */
   async getCommentByPost() {
+
+    $("body").css("cursor", "wait");
+
     BnumMessage.SetBusyLoading();
 
     let return_data;
@@ -1110,6 +1131,8 @@ class PostCommentView {
       console.error(rcmail.gettext('mel_forum.comments_fetch_error'), error);
     } finally {
       BnumMessage.StopBusyLoading();
+
+      $("body").css("cursor", "default");
     }
 
     return return_data;

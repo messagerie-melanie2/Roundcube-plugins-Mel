@@ -319,8 +319,6 @@ class ResourcesBase extends MelObject {
     try {
       $fc.css('width', '100%').fullCalendar(config);
       $fc.fullCalendar('render');
-      //$fc.fullCalendar('option', 'height', 200);
-      //$fc.fullCalendar('render');
     } catch (error) {
       console.error(error);
     }

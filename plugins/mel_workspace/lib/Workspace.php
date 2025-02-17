@@ -392,17 +392,20 @@ class Workspace {
           $text = $title;
       }
       $it = 0;
-      do {
-          $workspace = driver_mel::gi()->workspace();
-          $workspace->uid = $text."-".(++$it);
-      } while ($workspace->exists());
-      
-      do {
-          $workspace = driver_mel::gi()->workspace();
-          $workspace->uid = $text."-".(++$it);
-      } while (driver_mel::gi()->if_group_exist($workspace->uid));
 
-      return $text."-".$it;
+      $workspace = driver_mel::gi()->workspace();
+      $workspace->uid = $text;
+      while ($workspace->exists()) {
+        $workspace = driver_mel::gi()->workspace();
+        $workspace->uid = $text."-".(++$it);
+      }
+
+      while (driver_mel::gi()->if_group_exist($workspace->uid)) {
+        $workspace = driver_mel::gi()->workspace();
+        $workspace->uid = $text."-".(++$it);
+      }
+      
+      return $it > 0 ? $text."-".$it : $text;
   }
 
   public static function ToggleFavoriteWsp($uid, $load = false) {

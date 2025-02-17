@@ -537,8 +537,8 @@ class DialogPage {
   _init() {
     /**
      * Contenu de la dialog
-     * @type {?____JsHtml}
-     * @frommodule JsHtml {@linkto ____JsHtml}
+     * @type {?import('../html/JsHtml/JsHtml.js')._JsHtml}
+     * @frommodule JsHtml {@linkto _JsHtml}
      */
     this.content = null;
     /**
@@ -767,7 +767,7 @@ class DialogPageManager {
   _init() {
     /**
      * Pages de la dialog
-     * @type {module:BaseStorage~BaseStorage<DialogPage>}
+     * @type {BaseStorage<DialogPage>}
      * @package
      * @frommodule Modal {@linkto DialogPage}
      */
@@ -790,6 +790,10 @@ class DialogPageManager {
   _setup(...pages) {
     this.add_pages(...pages);
     return this;
+  }
+
+  get(pageName) {
+    return this._pages.get(pageName);
   }
 
   _add_page(page) {
@@ -918,7 +922,7 @@ class MelDialog {
   }
 
   _main() {
-    this.page_manager.onswitchpage.push(this._update_page.bind(this));
+    this.page_manager.onswitchpage.add('default', this._update_page.bind(this));
   }
 
   /**

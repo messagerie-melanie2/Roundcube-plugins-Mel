@@ -6638,12 +6638,20 @@ html@{touch} {
 
 .footer {
   &.ignore {
-    display: 'none'!important;
+    display: 'none' !important;
   }
 }
 
 #filterslist {
   tr.disabled td.name:before {
-    content: "\f00d";
+    content: '\f00d';
   }
+}
+
+.multipage-footer {
+  display: flex;
+  position: sticky;
+  bottom: 0;
+  background-color: var(--modal-background-color);
+  justify-content: end;
 }

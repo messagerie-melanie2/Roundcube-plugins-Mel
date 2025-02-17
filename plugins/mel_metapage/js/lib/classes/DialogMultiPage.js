@@ -9,6 +9,7 @@ export class DialogMultiPage extends DialogPage {
   #_pages = [];
   #_description;
   #_pluginLocalisation;
+  #_observed;
   constructor(
     id,
     pages,
@@ -18,26 +19,29 @@ export class DialogMultiPage extends DialogPage {
     super(id, { title });
     this.#_pages = pages ?? [];
     this.content = null;
-    Object.defineProperty(this, 'content', {
-      get: this.get.bind(this),
-      set: (value) => this.start_update_content({ new_content: value }),
-    });
-
     this.#_description = description;
     this.#_pluginLocalisation = pluginLocalisation;
   }
 
   /**
+   * @type {Object<string, boolean | HTMLElement>}
+   * @readonly
+   */
+  get observed() {
+    return this.#_observed;
+  }
+
+  /**
    * Permet de modifier le contenu de la dialog
    * @param {Object} param0
-   * @param {DialogPage[] | null} param0.new_content Si on recommence l'écriture de la page ou non
-   * @returns {DialogPage[]}
+   * @param {boolean} param0.force_restart Si on recommence l'écriture de la page ou non
+   * @returns {import('../html/JsHtml/JsHtml.js')._JsHtml}
    * @override
    */
-  start_update_content({ new_content = null } = {}) {
-    if (new_content) this.#_pages = new_content;
+  start_update_content({ force_restart = false }) {
+    if (force_restart) this.content = JsHtml.start;
 
-    return this.#_pages;
+    return this.content;
   }
 
   /**
@@ -45,11 +49,10 @@ export class DialogMultiPage extends DialogPage {
    * @returns {external:jQuery}
    */
   get() {
-    debugger;
     //Creation des onglets
     const tabs = this.#_pages.map((x) => x.name).join(',');
     //prettier-ignore
-    const generated = JsHtml.start
+    const html = this.content ?? JsHtml.start
     .webcomponents().tabs(tabs, this.#_description, {pluginText: this.#_pluginLocalisation})
       .each((jshtml, page) => {
         /**
@@ -62,12 +65,15 @@ export class DialogMultiPage extends DialogPage {
           .end()
         
       }, ...this.#_pages)
-    .end()
-    .generate_with_observer();
+    .end();
+
+    const generated = html.generate_with_observer();
 
     for (const page of this.#_pages) {
       generated.observed[page.name].append(page.get());
     }
+
+    this.#_observed = generated.observed;
 
     return generated.generated;
   }

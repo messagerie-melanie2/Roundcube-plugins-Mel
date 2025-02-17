@@ -472,7 +472,11 @@ class HTMLTabsElement extends HtmlCustomDataTag {
    * @returns {external:jQuery} Onglet choisi
    */
   selectTab(id) {
-    return this.$.find(`[data-button-namespace="${id}"]`).click();
+    return this.getTab(id).click();
+  }
+
+  getTab(id) {
+    return this.$.find(`[data-button-namespace="${id}"]`);
   }
 
   /**

@@ -550,7 +550,7 @@ export class MailFavoriteFolder extends MailModule {
   }
 
   _update_count_collapsed() {
-    const $current = $('.treetoggle.collapsed');
+    const $current = $('#favorite-folders .treetoggle.collapsed');
 
     for (const iterator of $current) {
       this._update_current_count_collapsed($(iterator));

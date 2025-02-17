@@ -653,7 +653,9 @@ class mel_forum extends bnum_plugin
     }
 
     #endregion
+
     #region Enregistrement
+
     /**
      * Gère l'enregistrement d'un article et des tags qui lui sont associés
      * @return void
@@ -662,7 +664,10 @@ class mel_forum extends bnum_plugin
     {
         $result = $this->_add_post();
         if ($result !== null) {
-            // le post est créé on passe aux tags
+            // Le post est créé, notifier les utilisateurs
+            $this->notify();  // Appel à la fonction de notification
+
+            // Ensuite, passer à la gestion des tags
             $this->_manage_tags();
         } else {
             mel_logs::get_instance()->log(mel_logs::ERROR, "mel_forum:: erreur de lors de la modification du post");
@@ -733,6 +738,7 @@ class mel_forum extends bnum_plugin
         if (mel_logs::is(mel_logs::TRACE))
             mel_logs::get_instance()->log(mel_logs::TRACE, "mel_forum:: post : $uid modified from workspace : $post->workspace by" . driver_mel::gi()->getUser()->uid);
         return $post->save();
+
     }
 
     /**
@@ -2700,6 +2706,68 @@ class mel_forum extends bnum_plugin
     }
 
     #endregion
+
+    #region Notifications
+
+    /**
+     * Envoie une notification aux utilisateurs d'un espace de travail lorsqu'un nouvel article est publié.
+     *
+     * Cette fonction vérifie si la classe "mel_notification" existe, puis récupère l'identifiant de 
+     * l'espace de travail depuis la requête POST. Si un espace de travail est trouvé, elle récupère 
+     * la liste des utilisateurs associés et envoie une notification à chacun d'eux, à l'exception de 
+     * l'utilisateur actuel, pour les informer de la publication d'un nouvel article.
+     *
+     * @return void
+     */
+    public function notify()
+    {
+        if (class_exists("mel_notification")) {
+            $workspace_uid = $this->get_input('_workspace', rcube_utils::INPUT_POST);
+            $post_uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
+
+            if ($workspace_uid !== null && $post_uid !== null) {
+                $workspace = mel_workspace::Workspace($workspace_uid);
+
+                $current_user = driver_mel::gi()->getUser();
+                $users = $workspace->users(); // Liste des utilisateurs de l'espace de travail
+
+                $post_title = rcube_utils::get_input_value('_title', rcube_utils::INPUT_POST);
+
+                foreach ($users as $user) {
+                    if ($user->user !== $current_user->uid) { 
+                        $notification_title = sprintf(
+                            $this->gettext("mel_forum.notification_title"),
+                            $current_user->name,
+                            $workspace->title()
+                        );
+                
+                        $notification_message = sprintf(
+                            $this->gettext("mel_forum.post_published_message"),
+                            $post_title
+                        );
+                
+                        mel_notification::notify(
+                            'workspace',
+                            $notification_title,
+                            $notification_message,
+                            [
+                                [
+                                    'href' => "./?_task=forum&_action=post&_uid=" . $post_uid . "&_workspace_uid=" . $workspace_uid . "&_force_bnum=1",
+                                    'text' => $this->gettext("mel_forum.read_article"),
+                                    'title' => $this->gettext("mel_forum.read_article_title"),
+                                    'command' => "event.click"
+                                ]
+                            ],
+                            $user->user
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    #endregion
+
     #region Droits et Page d'Erreur
 
     /**

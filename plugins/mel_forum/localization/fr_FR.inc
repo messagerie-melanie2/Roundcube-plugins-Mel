@@ -232,3 +232,10 @@ $labels['no_comments'] = 'Aucun commentaire pour cet article.';
 $labels['no_created_zip'] = 'Le fichier ZIP n\'a pas été créé.';
 $labels['no_image_found'] = 'Aucune image trouvée pour le post_id: ';
 $labels['no_image_to_replace'] = "Aucune image à remplacer pour le post_id : ";
+
+#region NOTIFICATION
+
+$labels['post_published_message'] = 'Découvrez le nouvel article intitulé : "%s" en cliquant sur le lien ci-dessous.';
+$labels['notification_title'] = '%s a publié un nouvel article dans l\'espace : %s';
+$labels['read_article'] = 'Lire l\'article';
+$labels['read_article_title'] = 'Cliquez pour lire l\'article';

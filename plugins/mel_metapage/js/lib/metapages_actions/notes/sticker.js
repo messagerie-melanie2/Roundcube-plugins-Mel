@@ -427,6 +427,13 @@ export class Sticker {
     $element.find('button.db').click(async () => {
       if (rcmail.busy === true) return;
 
+      if (
+        confirm(
+          MelObject.Empty().gettext('note-delete-warning', 'mel_metapage'),
+        ) === false
+      )
+        return;
+
       if (this.uid === default_note_uid) {
         rcmail.display_message(
           rcmail.gettext('note_reinit_success', plugin_text),

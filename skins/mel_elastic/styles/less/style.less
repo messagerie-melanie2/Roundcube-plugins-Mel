@@ -3961,6 +3961,12 @@ a.rcmContactAddress {
   }
 }
 
+.hide-on-touch {
+  html@{touch} & {
+    display: none;
+  }
+}
+
 .menu a.ct-cm {
   &::before {
     ._material-icon() !important;
@@ -6627,5 +6633,11 @@ html@{touch} {
 .visio-minimised {
   #messagestack {
     right: 325px;
+  }
+}
+
+.footer {
+  &.ignore {
+    display: 'none'!important;
   }
 }

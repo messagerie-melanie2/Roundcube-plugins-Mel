@@ -280,6 +280,18 @@ class ResourcesBase extends MelObject {
   }
 
   /**
+   * Renvoie une heure au format HH:mm
+   * @param {number} hour
+   * @returns {string} format HH:mm
+   * @private
+   */
+  #_set_buisness_hour(hour) {
+    if (hour < 10) hour = `0${hour}`;
+
+    return `${hour}:00`;
+  }
+
+  /**
    * Génère l'agenda avec fullcalendar
    * @package
    * @param {external:jQuery} $fc Div qui contient le fullcalendar
@@ -299,6 +311,8 @@ class ResourcesBase extends MelObject {
       schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
       height: 200,
       firstHour: settings.first_hour,
+      minTime: this.#_set_buisness_hour(settings.work_start),
+      maxTime: this.#_set_buisness_hour(settings.work_end),
       scrollTime: { hours: settings.first_hour },
       slotDuration: { minutes: 60 },
       locale: 'fr',
@@ -373,6 +387,39 @@ class ResourcesBase extends MelObject {
   }
 
   /**
+   * Met les input en rouge si la date n'est pas bonne
+   * @private
+   */
+  _set_validity() {
+    if (!$('.input-time-end')[0].checkValidity())
+      $('.input-time-end').addClass('is-invalid');
+    else $('.input-time-end').removeClass('is-invalid');
+
+    if (!$('.input-time-start')[0].checkValidity())
+      $('.input-time-start').addClass('is-invalid');
+    else $('.input-time-start').removeClass('is-invalid');
+
+    if (this._has_invalid()) {
+      $('.ui-dialog .save-btn')
+        .addClass('disabled')
+        .attr('disabled', 'disabled');
+    } else {
+      $('.ui-dialog .save-btn').removeClass('disabled').removeAttr('disabled');
+    }
+  }
+
+  /**
+   * Check si les input de temps sont valides ou non
+   * @returns {boolean}
+   */
+  _has_invalid() {
+    return (
+      !$('.input-time-end')[0].checkValidity() ||
+      !$('.input-time-start')[0].checkValidity()
+    );
+  }
+
+  /**
    * Fonction get pour la page de dialog retournée
    * @package
    * @param {Function} old Ancienne fonction get bind
@@ -386,6 +433,13 @@ class ResourcesBase extends MelObject {
     if ($fc.length) this._$calendar = this._generate_ui($fc);
 
     this.refresh_calendar_date();
+
+    this.wait_something(
+      () =>
+        $('.input-time-end').length > 0 && $('.ui-dialog .save-btn').length > 0,
+    ).then(() => {
+      this._set_validity();
+    });
 
     return $rtn;
   }
@@ -517,6 +571,9 @@ class ResourcesBase extends MelObject {
     const button_save = RcmailDialogButton.ButtonSave({
       click: this.event_on_save,
     });
+
+    button_save.classes += ' save-btn';
+
     const button_cancel = RcmailDialogButton.ButtonCancel({
       click: () => {
         let $parent = this._$calendar;

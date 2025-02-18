@@ -1,5 +1,6 @@
 import { BnumMessage } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
 import { ISO_FORMAT_REGEX } from '../../../mel_metapage/js/lib/constants/regexp.js';
+import { CursorUtils } from '../../../mel_metapage/js/lib/helpers/cursorUtils.js';
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { MelTemplate } from '../../../mel_metapage/js/lib/html/JsHtml/MelTemplate.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
@@ -290,7 +291,7 @@ class PostComment {
       // Si le conteneur est caché, on veut l'afficher
       if (responseContainer.hasClass('hidden')) {
 
-        $("body").css("cursor", "wait");
+        CursorUtils.SetLoadingCursor();
 
         BnumMessage.SetBusyLoading();
 
@@ -303,7 +304,7 @@ class PostComment {
 
         BnumMessage.StopBusyLoading();
 
-        $("body").css("cursor", "default");
+        CursorUtils.ResetCursor();
 
         // Afficher les réponses
         responseContainer.removeClass('hidden');
@@ -389,7 +390,7 @@ class PostComment {
 
         submitButton.prop('disabled', true); // Désactiver le bouton de validation pour éviter les clics multiples
 
-        $("body").css("cursor", "wait");
+        CursorUtils.SetLoadingCursor();
 
         BnumMessage.SetBusyLoading();
 
@@ -513,7 +514,7 @@ class PostComment {
         } finally {
             BnumMessage.StopBusyLoading();
 
-            $("body").css("cursor", "default");
+            CursorUtils.ResetCursor();
 
             // Réactiver le bouton de validation une fois la requête terminée
             submitButton.prop('disabled', false);
@@ -637,7 +638,7 @@ class PostComment {
     const updatedContent = $textarea.val(); // Récupère le nouveau contenu du commentaire
     if (updatedContent && updatedContent.trim() !== '') {
 
-      $("body").css("cursor", "wait");
+      CursorUtils.SetLoadingCursor();
 
       BnumMessage.SetBusyLoading();
 
@@ -677,7 +678,7 @@ class PostComment {
       } finally {
         BnumMessage.StopBusyLoading();
 
-        $("body").css("cursor", "default");
+        CursorUtils.ResetCursor();
       }
     } else {
       rcmail.display_message(
@@ -707,7 +708,7 @@ class PostComment {
 
     if (!confirmation) return;
 
-    $("body").css("cursor", "wait");
+    CursorUtils.SetLoadingCursor();
 
     BnumMessage.SetBusyLoading();
 
@@ -784,7 +785,7 @@ class PostComment {
     } finally {
       BnumMessage.StopBusyLoading();
 
-      $("body").css("cursor", "default");
+      CursorUtils.ResetCursor();
     }
   }
 
@@ -1101,7 +1102,7 @@ class PostCommentView {
    */
   async getCommentByPost() {
 
-    $("body").css("cursor", "wait");
+    CursorUtils.SetLoadingCursor();
 
     BnumMessage.SetBusyLoading();
 
@@ -1132,7 +1133,7 @@ class PostCommentView {
     } finally {
       BnumMessage.StopBusyLoading();
 
-      $("body").css("cursor", "default");
+      CursorUtils.ResetCursor();
     }
 
     return return_data;

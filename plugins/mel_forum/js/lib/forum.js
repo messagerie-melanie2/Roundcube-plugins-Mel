@@ -2,6 +2,7 @@ import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { BnumMessage, eMessageType } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
 import { MelTemplate } from '../../../mel_metapage/js/lib/html/JsHtml/MelTemplate.js';
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
+import { CursorUtils } from '../../../mel_metapage/js/lib/helpers/cursorUtils.js';
 
 export class Forum extends MelObject {
     constructor() {
@@ -168,7 +169,7 @@ export class Forum extends MelObject {
         //On empêche de faire un appel tant que le précédent n'est pas finit
         this.lock = true;
 
-        $("body").css("cursor", "wait");
+        CursorUtils.SetLoadingCursor();
 
         BnumMessage.SetBusyLoading();
         this.http_internal_get(
@@ -198,14 +199,14 @@ export class Forum extends MelObject {
                     this.searchString = null;
                     this.tags = [];
 
-                    $("body").css("cursor", "default");
+                    CursorUtils.ResetCursor();
                 },
                 on_error: (err) => {
                     this.lock = false;
 
                     BnumMessage.StopBusyLoading();
 
-                    $("body").css("cursor", "default");
+                    CursorUtils.ResetCursor();
                 }
             }
         );
@@ -275,7 +276,7 @@ export class Forum extends MelObject {
             }
         }
 
-        $("body").css("cursor", "wait");
+        CursorUtils.SetLoadingCursor();
 
         let workspace = this.get_env('workspace_uid');
         this.http_internal_post(
@@ -299,7 +300,7 @@ export class Forum extends MelObject {
                         rcmail.gettext('mel_forum.fav_updated'),
                         eMessageType.Confirmation,
                     );
-                    $("body").css("cursor", "default");
+                    CursorUtils.ResetCursor();
                 },
                 on_error: (err) => {
                     BnumMessage.DisplayMessage(
@@ -391,7 +392,7 @@ export class Forum extends MelObject {
       event.preventDefault();
       event.stopPropagation();
 
-      $("body").css("cursor", "wait");
+      CursorUtils.SetLoadingCursor();
 
       // Rediriger vers la page d'édition avec l'UID du post
       window.location.href = this.url('forum', { action: 'create_or_edit_post', params:{'_uid': post_uid, '_workspace_uid': this.workspace}});
@@ -413,7 +414,7 @@ export class Forum extends MelObject {
       event.preventDefault();
       event.stopPropagation();
 
-      $("body").css("cursor", "wait");
+      CursorUtils.SetLoadingCursor();
   
       // Demander confirmation à l'utilisateur avant de supprimer
       const confirmation = confirm(rcmail.gettext('mel_forum.delete_post_confirm'));
@@ -445,7 +446,7 @@ export class Forum extends MelObject {
                       rcmail.triggerEvent('forum.post.delete');
                   }
 
-                  $("body").css("cursor", "default");
+                  CursorUtils.ResetCursor();
               } else {
                   // Affichage du message d'erreur en cas d'échec
                   BnumMessage.DisplayMessage(
@@ -490,7 +491,7 @@ export class Forum extends MelObject {
         event.preventDefault();
         event.stopPropagation();
 
-        $("body").css("cursor", "wait");
+        CursorUtils.SetLoadingCursor();
 
         this.http_internal_post({
             task: 'forum',
@@ -537,7 +538,7 @@ export class Forum extends MelObject {
                     post.find('.pin').removeClass('hidden');
                 }
 
-                $("body").css("cursor", "default");
+                CursorUtils.ResetCursor();
 
             },
             on_error: (err) => {
@@ -686,7 +687,7 @@ export class Forum extends MelObject {
      */
     displayPost(posts) {
 
-        $("body").css("cursor", "wait");
+        CursorUtils.SetLoadingCursor();
         
         // Vérifier si l'utilisateur souhaite afficher uniquement les favoris
         if (this.display_fav) {
@@ -796,7 +797,7 @@ export class Forum extends MelObject {
             this.offset++;
         }
 
-        $("body").css("cursor", "default");
+        CursorUtils.ResetCursor();
     }
 
     //endregion

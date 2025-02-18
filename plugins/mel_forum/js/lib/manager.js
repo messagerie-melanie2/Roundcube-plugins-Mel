@@ -11,6 +11,7 @@ import {
   RcmailDialogButton,
 } from '../../../mel_metapage/js/lib/classes/modal.js';
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
+import { CursorUtils } from '../../../mel_metapage/js/lib/helpers/cursorUtils.js';
 export class Manager extends MelObject {
   constructor() {
     super();
@@ -68,7 +69,7 @@ export class Manager extends MelObject {
 
     // Redirection à la page d'accueil au clic sur 'return-homepage'
     $('#return-homepage').click(() => {
-      $('body').css('cursor', 'wait');
+      CursorUtils.SetLoadingCursor();
       window.location.href = this.url('forum', {
         action: 'index',
         params: { _workspace_uid: this.get_env('workspace_uid') },
@@ -133,7 +134,7 @@ export class Manager extends MelObject {
    */
   async saveComment(content) {
     // Changer le curseur en "wait"
-    $("body").css("cursor", "wait");
+    CursorUtils.SetLoadingCursor();
 
     // Désactiver le bouton de validation pour éviter les clics multiples
     const submitButton = $('#submit-comment');
@@ -168,7 +169,7 @@ export class Manager extends MelObject {
     } finally {
       // Réactiver le bouton de validation une fois la requête terminée et remettre le curseur par défaut
       submitButton.prop('disabled', false);
-      $("body").css("cursor", "default");
+      CursorUtils.ResetCursor();
     }
   }
 
@@ -189,7 +190,7 @@ export class Manager extends MelObject {
    */
   static async displayComments(order = 'date_desc', parent_comment_id = null) {
 
-    $("body").css("cursor", "wait");
+    CursorUtils.SetLoadingCursor;
 
     BnumMessage.SetBusyLoading();
 
@@ -264,7 +265,7 @@ export class Manager extends MelObject {
 
     BnumMessage.StopBusyLoading();
 
-    $("body").css("cursor", "default");
+    CursorUtils.ResetCursor();
   }
 
   /**
@@ -476,7 +477,7 @@ export class Manager extends MelObject {
    * @returns {void}
    */
   editPost() {
-    $("body").css("cursor", "wait");
+    CursorUtils.SetLoadingCursor();
 
     // Rediriger vers la page d'édition avec l'UID du post
     window.location.href = this.url('forum', {
@@ -504,7 +505,7 @@ export class Manager extends MelObject {
     );
     if (!confirmation) return; // Arrêter la fonction si l'utilisateur annule
 
-    $("body").css("cursor", "wait");
+    CursorUtils.SetLoadingCursor();
 
     // Envoi d'une requête HTTP pour supprimer le post
     this.http_internal_post({
@@ -547,7 +548,7 @@ export class Manager extends MelObject {
           eMessageType.Error,
         );
 
-        $("body").css("cursor", "default");
+        CursorUtils.ResetCursor();
       },
     });
   }

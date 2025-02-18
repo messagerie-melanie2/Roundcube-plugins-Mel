@@ -331,7 +331,6 @@ class FilterBase extends MelObject {
         _function: this._load_data_on_start,
       },
       on_success: (data) => {
-        // console.log('_load_first_data', data);
         if (typeof data === 'string') data = JSON.parse(data);
 
         return_data = data;
@@ -357,7 +356,6 @@ class FilterBase extends MelObject {
         _value: this.value,
       },
       on_success: (data) => {
-        // console.log('_load_data', data);
         if (typeof data === 'string') data = JSON.parse(data);
 
         return_data = data;

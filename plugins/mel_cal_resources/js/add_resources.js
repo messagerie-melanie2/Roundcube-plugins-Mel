@@ -297,8 +297,6 @@ class ResourceDialog extends MelObject {
 
     //Si multi-modale, faire remplacer le fonctionnement de page par défaut de la dialog
     if (!this._resource_type) {
-      console.log('I THINK IM FIRST');
-
       this.dialog.page_manager.onswitchpage.add('first', () => {
         this.dialog.page_manager.onswitchpage.remove('default');
         this.dialog.page_manager.onswitchpage.remove('first');

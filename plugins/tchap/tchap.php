@@ -567,11 +567,11 @@ class tchap extends bnum_plugin
                     $config['message_raw'] = $raw;
                 }
                 $content = self::call_tchap_api($rcmail->config->get('post_webhook_endpoint') . $webhook, $config, 'POST');
-                if ($content["httpCode"] === 200) {
-                    mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->create_webhook]message envoyé dans le salon : " . $tchap_id);
+                if ($content['httpCode'] === 200) {
+                    mel_logs::get_instance()->log(mel_logs::DEBUG, '[tchap->create_webhook]message envoyé dans le salon : ' . $tchap_id);
                     return true;
                 } else {
-                    mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->search_user]Valeur retour de l'api : " . $content);
+                    mel_logs::get_instance()->log(mel_logs::ERROR, '[tchap->search_user]Valeur retour de l\'api : ' . $content);
                     return false;
                 }
             }

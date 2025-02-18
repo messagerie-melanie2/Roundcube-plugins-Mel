@@ -179,7 +179,8 @@ class mel_workspace extends bnum_plugin
         $this->add_handler('publics', [$this, 'handler_publics']);
         $this->add_handler('archived', [$this, 'handler_archived']);
         $this->add_handler('publiccount', [$this, 'handler_public_count']);
-
+        
+        $this->ignore_footer();
         $this->rc()->output->set_env('visu-mode', $this->get_config('wsp-visu-mode', 'cards'));
 
         $this->rc()->output->send('mel_workspace.index');
@@ -294,6 +295,8 @@ class mel_workspace extends bnum_plugin
             $this->rc()->output->set_env('current_workspace_uid', $uid);
             $this->rc()->output->set_env('current_workspace_is_public', $workspace->isPublic());
         }
+
+        $this->ignore_footer();
 
         $this->rc()->output->send('mel_workspace.workspace');
     }

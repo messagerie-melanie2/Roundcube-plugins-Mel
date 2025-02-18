@@ -184,6 +184,7 @@ class ResourceDialog extends MelObject {
     let page;
     let resources = [];
     let baseHeight = 500;
+
     //Si il n'y a qu'un seul type de ressources
     if (this._resource_type) {
       resources.push(
@@ -306,6 +307,14 @@ class ResourceDialog extends MelObject {
             this.dialog.switch_page(page);
             this.get_current_page_resource().rerender();
           });
+
+        if (this._resource) {
+          this.dialog.page_manager
+            .get('index')
+            .observed.tabs[0].selectTab(
+              this._resource.resource_type.toLowerCase(),
+            );
+        }
       });
     }
 

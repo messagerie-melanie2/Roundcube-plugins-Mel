@@ -2641,6 +2641,9 @@ html.layout-phone .hide-on-small,
 html.layout-small .hide-on-small {
   display: none;
 }
+html.touch .hide-on-touch {
+  display: none;
+}
 .menu a.ct-cm::before {
   font-size: 26px !important;
   font-family: 'Material Symbols Outlined' !important;
@@ -4827,4 +4830,7 @@ html.touch:root {
 }
 .visio-minimised #messagestack {
   right: 325px;
+}
+.footer.ignore {
+  display: 'none' !important;
 }

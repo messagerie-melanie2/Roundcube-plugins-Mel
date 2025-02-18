@@ -220,6 +220,10 @@ abstract class bnum_plugin extends rcube_plugin
         return  driver_mel::gi()->getUser(null, true, false, null, $email);
     }
 
+    protected function ignore_footer() {
+        mel_elastic::IgnoreFooter();
+    }
+
     protected function sendExit($item, $headers = []) {
         if (count($headers) > 0) {
             foreach ($headers as $header) {

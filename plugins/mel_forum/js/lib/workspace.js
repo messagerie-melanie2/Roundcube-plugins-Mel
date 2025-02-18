@@ -113,8 +113,8 @@ export class ModuleForum extends WorkspaceObject {
     });
 
     //Ajout du onclick sur la checkbox notification tchap
-    $("#tchap-notification").change(() => {
-        this.save_params('tchap_notification', +$("#tchap-notification").prop('checked'));
+    $('#tchap-notification').change(() => {
+        this.save_params('tchap_notification', +$('#tchap-notification').prop('checked'));
     });
 
     //Lorsque une donnée est reçu de la part de la frame enfante

@@ -513,12 +513,12 @@ class mel_workspace extends bnum_plugin
      * "ok" ou "denied".
      */
     public function save_params() {
-        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
         $workspace = self::Workspace($uid);
 
         if ($workspace->isAdmin()) {
-            $value = rcube_utils::get_input_value("_value", rcube_utils::INPUT_POST);
-            $key = rcube_utils::get_input_value("_key", rcube_utils::INPUT_POST);
+            $value = rcube_utils::get_input_value('_value', rcube_utils::INPUT_POST);
+            $key = rcube_utils::get_input_value('_key', rcube_utils::INPUT_POST);
 
             $workspace->settings()->set($key, $value);
 
@@ -535,11 +535,11 @@ class mel_workspace extends bnum_plugin
      * "denied" ou valeur
      */
     public function get_param() {
-        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
         $workspace = self::Workspace($uid);
 
         if ($workspace->isAdmin()) {
-            $key = rcube_utils::get_input_value("_key", rcube_utils::INPUT_POST);
+            $key = rcube_utils::get_input_value('_key', rcube_utils::INPUT_POST);
 
             $value = $workspace->settings()->get($key);
 
@@ -549,7 +549,7 @@ class mel_workspace extends bnum_plugin
     }
 
     public function get_members() {
-        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
         $workspace = self::Workspace($uid);
 
         if (!$workspace->hasUser()) $this->sendEncodedExit('denied', []);
@@ -1204,15 +1204,15 @@ class mel_workspace extends bnum_plugin
         else $html->set_other_variable('button-archive', '<button class="btn btn-success mel-button no-button-margin" style="margin-top: 5px;margin-bottom: 15px;margin-left:10px;"onclick="rcmail.command(`workspace.unarchive`)">Désarchiver</button>');
 
         if ($workspace->hasService(tchap::KEY_FOR_WORKSPACE) && $workspace->hasService('forum')) {
-            $html->tchapnotif = "";
+            $html->tchapnotif = '';
         } 
         else {
             $html->tchapnotif = 'style="display:none"';
         }
-        if($workspace->settings()->get('tchap_notification') === "1") {
-            $html->tchapnotifenabled = "checked=true";
+        if($workspace->settings()->get('tchap_notification') === '1') {
+            $html->tchapnotifenabled = 'checked=true';
         }else {
-            $html->tchapnotifenabled = ""; 
+            $html->tchapnotifenabled = ''; 
         }
         
         if ($user_rights === Share::RIGHT_OWNER)

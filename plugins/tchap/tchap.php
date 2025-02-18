@@ -548,7 +548,7 @@ class tchap extends bnum_plugin
     public static function send_message($wsp_uid, $message, $format = null, $raw = null) {
         $rcmail = rcmail::get_instance();
         $workspace = mel_workspace::Workspace($wsp_uid);
-        if($workspace->settings()->get('tchap_notification') === "1"){
+        if($workspace->settings()->get('tchap_notification') === '1'){
             if (!is_null($workspace->objects()->get(self::KEY_FOR_WORKSPACE))){
                 $tchap_id = $workspace->objects()->get(self::KEY_FOR_WORKSPACE)->id;
                 if ($workspace->settings()->get('tchap_webhook') === null || $workspace->settings()->get('tchap_webhook') === false) {

@@ -70,11 +70,7 @@ class HTMLTabSelectElement extends HTMLTabsElement {
       'id',
       `${HTMLTabsElement.ID_TAB_PREFIX}${this.#_generate_id(`${HTMLTabsElement.ID_TAB_PREFIX}%0`)}`,
     );
-    select.addEventListener('change', () => {
-      const value = this.select.value;
-      this._p_select_button(value)._p_show_pannel(value);
-      this.ontabswitched.call(value);
-    });
+    select.addEventListener('change', this.action_change.bind(this));
 
     /**
      * Id de l'onglet
@@ -167,6 +163,19 @@ class HTMLTabSelectElement extends HTMLTabsElement {
 
   //#region Actions
   /**
+   * Action lorsque le select change de valeur
+   * @returns {HTMLTabSelectElement} Chaînage
+   * @fires ontabswitched
+   */
+  action_change() {
+    const value = this.select.value;
+    this._p_select_button(value)._p_show_pannel(value);
+    this.ontabswitched.call(value);
+
+    return this;
+  }
+
+  /**
    * Appeler au clique d'un onglet
    * @param {Event} e
    * @override
@@ -192,13 +201,12 @@ class HTMLTabSelectElement extends HTMLTabsElement {
    */
   selectTab(id) {
     this.select.value = id;
-    $(this.select).change();
 
-    return this.getTab(id);
+    return this.action_change().getTab(id);
   }
 
   getTab(id) {
-    return $(this.select).find(`option[value="${id}"}`);
+    return $(this.select).find(`option[value="${id}"]`);
   }
 
   /**

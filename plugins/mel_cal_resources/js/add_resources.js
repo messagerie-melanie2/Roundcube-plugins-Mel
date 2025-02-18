@@ -218,6 +218,9 @@ class ResourceDialog extends MelObject {
       let pages = [];
       const configResources = rcmail.env.cal_resources.resources;
       for (const key in configResources) {
+        //Ignorer les éléments qui sont dans la liste de type d'évènements
+        if (rcmail.env.cal_resources.resources[key].is_option) continue;
+
         resources.push(
           new ResourcesBase(key, rcmail.env.cal_resources.filters[key], {
             startRender: false,

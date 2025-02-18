@@ -445,8 +445,14 @@ class ResourceLocation extends AExternalLocationPart {
 }
 rcmail.env.cal_resources.enable_all = true;
 if (!window.mel_cal_resource_loaded) {
-  if (rcmail.env.cal_resources.enable_all)
-    //Ajoute les resources au select
+  if (
+    rcmail.env.cal_resources.enable_all &&
+    Object.keys(rcmail.env.cal_resources.resources).length > 0 &&
+    MelEnumerable.from(rcmail.env.cal_resources.resources)
+      .where((x) => x.value.is_option !== true)
+      .any()
+  )
+    //Ajoute les resources au select, seulement si il y en a
     LocationPartManager.AddExtraLocationType(ResourceLocation);
 
   ResourceLocation.GenerateUniqueResources();

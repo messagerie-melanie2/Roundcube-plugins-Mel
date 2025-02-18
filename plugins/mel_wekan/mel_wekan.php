@@ -1,5 +1,5 @@
 <?php
-class mel_wekan extends rcube_plugin
+class mel_wekan extends bnum_plugin
 {
     public const KEY_FOR_WORKSPACE = 'wekan';
     /**
@@ -97,6 +97,7 @@ class mel_wekan extends rcube_plugin
         if ($startupUrl !== null && $startupUrl !== "") $this->rc->output->set_env("wekan_startup_url", $startupUrl);
 
         $this->rc->output->set_env("wekan_storage_end", $this->rc->config->get("wekan_storage_end"));
+        $this->ignore_footer();
 
         $this->rc->output->set_pagetitle("Kanban");
         $this->rc->output->send('mel_wekan.wekan');

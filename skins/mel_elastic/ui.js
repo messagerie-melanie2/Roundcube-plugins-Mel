@@ -599,7 +599,8 @@ $(document).ready(() => {
         .init_theme($(`#theme-panel .${tabs[ID_THEME_CONTENT].id}`))
         .init_theme_pictures({
           picturePannel: `#theme-panel .${tabs[ID_PICTURES_CONTENT].id}`,
-        }).init_footer();
+        })
+        .init_footer();
     }
 
     /**
@@ -715,6 +716,10 @@ $(document).ready(() => {
       return this;
     }
 
+    /**
+     * Ajoute la classe `ignore` si la variable d'environement `ui_ignore_footer` existe.
+     * @returns {Mel_Elastic}
+     */
     init_footer() {
       if (rcmail.env.ui_ignore_footer) {
         $('.footer').addClass('ignore');

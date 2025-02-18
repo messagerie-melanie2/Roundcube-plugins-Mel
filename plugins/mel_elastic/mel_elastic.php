@@ -255,6 +255,11 @@ class mel_elastic extends rcube_plugin
         return self::$default_theme;
     }
 
+    /**
+     * Indique au plugin que le footer doit être caché
+     * 
+     * Envoie une variable d'environement `ui_ignore_footer=true` au javascript qui sera utilisé par `MEL_ELASTIC_UI`
+     */
     public static function IgnoreFooter() {
         rcmail::get_instance()->output->set_env('ui_ignore_footer', true);
     }

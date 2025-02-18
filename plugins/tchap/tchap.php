@@ -548,30 +548,32 @@ class tchap extends bnum_plugin
     public static function send_message($wsp_uid, $message, $format = null, $raw = null) {
         $rcmail = rcmail::get_instance();
         $workspace = mel_workspace::Workspace($wsp_uid);
-        if (!is_null($workspace->objects()->get(self::KEY_FOR_WORKSPACE))){
-            $tchap_id = $workspace->objects()->get(self::KEY_FOR_WORKSPACE)->id;
-            if ($workspace->settings()->get('tchap_webhook') === null || $workspace->settings()->get('tchap_webhook') === false) {
-                $wsp_name = $workspace->title();
-                //pas de webhook enregistré on en créé un
-                $webhook = self::create_webhook($tchap_id, $wsp_name);
-                $workspace->settings()->set('tchap_webhook', $webhook);
-                $workspace->save();                
-            }
-            $webhook = $workspace->settings()->get('tchap_webhook');
-            $config = ['message' => $message];
-            if(!is_null($format)) {
-                $config['message_format'] = $format;
-            }
-            if(!is_null($raw)) {
-                $config['message_raw'] = $raw;
-            }
-            $content = self::call_tchap_api($rcmail->config->get('post_webhook_endpoint') . $webhook, $config, 'POST');
-            if ($content["httpCode"] === 200) {
-                mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->create_webhook]message envoyé dans le salon : " . $tchap_id);
-                return true;
-            } else {
-                mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->search_user]Valeur retour de l'api : " . $content);
-                return false;
+        if($workspace->settings()->get('tchap_notification') === "1"){
+            if (!is_null($workspace->objects()->get(self::KEY_FOR_WORKSPACE))){
+                $tchap_id = $workspace->objects()->get(self::KEY_FOR_WORKSPACE)->id;
+                if ($workspace->settings()->get('tchap_webhook') === null || $workspace->settings()->get('tchap_webhook') === false) {
+                    $wsp_name = $workspace->title();
+                    //pas de webhook enregistré on en créé un
+                    $webhook = self::create_webhook($tchap_id, $wsp_name);
+                    $workspace->settings()->set('tchap_webhook', $webhook);
+                    $workspace->save();                
+                }
+                $webhook = $workspace->settings()->get('tchap_webhook');
+                $config = ['message' => $message];
+                if(!is_null($format)) {
+                    $config['message_format'] = $format;
+                }
+                if(!is_null($raw)) {
+                    $config['message_raw'] = $raw;
+                }
+                $content = self::call_tchap_api($rcmail->config->get('post_webhook_endpoint') . $webhook, $config, 'POST');
+                if ($content["httpCode"] === 200) {
+                    mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->create_webhook]message envoyé dans le salon : " . $tchap_id);
+                    return true;
+                } else {
+                    mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->search_user]Valeur retour de l'api : " . $content);
+                    return false;
+                }
             }
         }
     }

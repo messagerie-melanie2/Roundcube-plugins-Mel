@@ -510,8 +510,49 @@ class mel_workspace extends bnum_plugin
     }
 
     #region actions/params
+    /**
+     * Récupère un paramètre sauvegarder dans un espace si on est admin
+     * 
+     * "ok" ou "denied".
+     */
+    public function save_params() {
+        $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
+        $workspace = self::Workspace($uid);
+
+        if ($workspace->isAdmin()) {
+            $value = rcube_utils::get_input_value('_value', rcube_utils::INPUT_POST);
+            $key = rcube_utils::get_input_value('_key', rcube_utils::INPUT_POST);
+
+            $workspace->settings()->set($key, $value);
+
+            $workspace->save();
+
+            $this->sendExit('ok');
+        }
+        else $this->sendExit('denied');
+    }
+
+    /**
+     * Récupère un paramètre si on est admin.
+     * 
+     * "denied" ou valeur
+     */
+    public function get_param() {
+        $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
+        $workspace = self::Workspace($uid);
+
+        if ($workspace->isAdmin()) {
+            $key = rcube_utils::get_input_value('_key', rcube_utils::INPUT_POST);
+
+            $value = $workspace->settings()->get($key);
+
+            $this->sendEncodedExit($value);
+        }
+        else $this->sendExit('denied');
+    }
+
     public function get_members() {
-        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
         $workspace = self::Workspace($uid);
 
         if (!$workspace->hasUser()) $this->sendEncodedExit('denied', []);
@@ -1164,6 +1205,18 @@ class mel_workspace extends bnum_plugin
         
         if (!$workspace->isArchived())  $html->set_other_variable('button-archive', '<button class="btn btn-danger mel-button no-button-margin" style="margin-top: 5px;margin-bottom: 15px;margin-left:10px;display: flex; align-items: center;gap:15px"onclick="rcmail.command(`workspace.archive`)">Archiver<span class="material-symbols-outlined">archive</span></button>');
         else $html->set_other_variable('button-archive', '<button class="btn btn-success mel-button no-button-margin" style="margin-top: 5px;margin-bottom: 15px;margin-left:10px;"onclick="rcmail.command(`workspace.unarchive`)">Désarchiver</button>');
+
+        if ($workspace->hasService(tchap::KEY_FOR_WORKSPACE) && $workspace->hasService('forum')) {
+            $html->tchapnotif = '';
+        } 
+        else {
+            $html->tchapnotif = 'style="display:none"';
+        }
+        if($workspace->settings()->get('tchap_notification') === '1') {
+            $html->tchapnotifenabled = 'checked=true';
+        }else {
+            $html->tchapnotifenabled = ''; 
+        }
         
         if ($user_rights === Share::RIGHT_OWNER)
         {
@@ -1176,6 +1229,8 @@ class mel_workspace extends bnum_plugin
             $html->logo = '';
             $html->visibility = '???';
         }
+
+
 
         // if ($this->rc->config->get('workspace_bar_color_force', "default") === 'default')
         // {
@@ -1664,7 +1719,9 @@ class mel_workspace extends bnum_plugin
                     'toggle_favorite' => [$this, 'toggle_favorite'],
                     'set_visu_mode' => [$this, 'set_visu_mode'],
                     'update_module_visibility' => [$this, 'update_module_visibility'],
-                    'get_email_from_ws' => [$this, 'get_email_from_workspace']
+                    'get_email_from_ws' => [$this, 'get_email_from_workspace'],
+                    'PARAMS_save' => [$this, 'save_params'],
+                    'PARAMS_get' => [$this, 'get_param']
                 ]
             );
             $this->register_action('PARAM_Change_color', array($this, 'change_color'));

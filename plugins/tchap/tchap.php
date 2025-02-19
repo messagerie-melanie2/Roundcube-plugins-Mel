@@ -153,12 +153,19 @@ class tchap extends bnum_plugin
     }
 
     #region workspaces
+    /**
+     * permet d'afficher ou non le plugin tchap dans la liste des applications
+     * @param $args tableau contenant un string 'app' l'application en cours et un bool 'continue' si on arrête l'affichage
+     */
     public function workspace_params_services_show($args) {
         if ($args['app'] === self::KEY_FOR_WORKSPACE) $args['continue'] = false;
 
         return $args;
     }
 
+    /**
+     * supprime le service tchap du workspace
+     */
     public function workspace_service_delete($args) {
         if (class_exists('mel_workspace') && array_search(self::KEY_FOR_WORKSPACE, $args['services']) !== false) {
              $can = true;
@@ -177,6 +184,9 @@ class tchap extends bnum_plugin
         return $args;
     }
     
+    /**
+     * ajoute l'application tchap au workspace
+     */
     public function workspace_set_tchap($args) {
         if (class_exists('mel_workspace')) {
             $workspace = $args['workspace'];
@@ -250,6 +260,9 @@ class tchap extends bnum_plugin
         return $args;
     }
 
+    /**
+     * permet de supprimer tout les utilisateurs de l'espaces
+     */
     public function workspace_users_services_delete($args) {
         if ($args['workspace']->hasService(self::KEY_FOR_WORKSPACE)) {
             self::kick_member($args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE)->id, $args['user']);
@@ -258,6 +271,9 @@ class tchap extends bnum_plugin
         return $args;
     }
 
+    /**
+     * hook pour quand on affiche le widget tchap
+     */
     public function on_show_workspace($args) {
         if ($args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE) !== null) {
             $this->include_module('workspace.js', 'js/lib/workspace');
@@ -267,6 +283,9 @@ class tchap extends bnum_plugin
         return $args;
     }
 
+    /**
+     * récupère le service
+     */
     public function workspace_service_get($args) {
         if ($args['services'][self::KEY_FOR_WORKSPACE] === null) $args['services'][self::KEY_FOR_WORKSPACE] = false;
 
@@ -455,6 +474,7 @@ class tchap extends bnum_plugin
     }
 
     /**
+     * Renvoie un utilisateur à partir de son mail
      * @param $user_mail mail de lutilisateur à chercher
      */
     private static function get_user_tchap_id($user_mail)
@@ -474,6 +494,9 @@ class tchap extends bnum_plugin
         }
     }
 
+    /**
+     * retourne un utilisateur tchap en fonction de son id
+     */
     private static function search_user($user)
     {
         $rcmail = rcmail::get_instance();
@@ -488,6 +511,70 @@ class tchap extends bnum_plugin
         } else {
             mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->search_user]Valeur retour de l'api : " . json_encode($content));
             return false;
+        }
+    }
+
+    /**
+     * créé un webhook
+     * @param string $room_id id interne du salon tchap pour lequel on veut créer un webhook
+     * @param string nom du workspace
+     */
+    protected static function create_webhook($room_id, $workspace_name) {
+        $rcmail = rcmail::get_instance();
+        $token = self::get_tchap_token();
+        $label = "EDT - " . $workspace_name;
+        $config = ['token' => $token, 'room' => $room_id, 'label' => $label];
+        $content = self::call_tchap_api($rcmail->config->get('create_webhook_endpoint'), $config, 'POST');
+
+        if ($content["httpCode"] === 200) {
+            $content = json_decode($content['content']);
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->create_webhook]Valeur retour de l'api : " . json_encode($content));
+            return $content->webhook_id;
+        } else {
+            mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->search_user]Valeur retour de l'api : " . json_encode($content));
+            return false;
+        }
+    }
+
+    /**
+     * Envoi un message dans le salon tchap associé au workspace
+     * @param string $wsp_uid uid du workspace où on veut envoyer le message
+     * @param string $message message à envoyer
+     * @param string $format optionnel, peut prendre les valeurs suivantes : html|md|markdown
+     * @param string $raw optionnel, permet de fournir une alternative texte brut au message si un format est spécifié
+     * 
+     * @return bool réussite de l'envoie du message
+     */
+    public static function send_message($wsp_uid, $message, $format = null, $raw = null) {
+        $rcmail = rcmail::get_instance();
+        $workspace = mel_workspace::Workspace($wsp_uid);
+        if($workspace->settings()->get('tchap_notification') === '1'){
+            if (!is_null($workspace->objects()->get(self::KEY_FOR_WORKSPACE))){
+                $tchap_id = $workspace->objects()->get(self::KEY_FOR_WORKSPACE)->id;
+                if ($workspace->settings()->get('tchap_webhook') === null || $workspace->settings()->get('tchap_webhook') === false) {
+                    $wsp_name = $workspace->title();
+                    //pas de webhook enregistré on en créé un
+                    $webhook = self::create_webhook($tchap_id, $wsp_name);
+                    $workspace->settings()->set('tchap_webhook', $webhook);
+                    $workspace->save();                
+                }
+                $webhook = $workspace->settings()->get('tchap_webhook');
+                $config = ['message' => $message];
+                if(!is_null($format)) {
+                    $config['message_format'] = $format;
+                }
+                if(!is_null($raw)) {
+                    $config['message_raw'] = $raw;
+                }
+                $content = self::call_tchap_api($rcmail->config->get('post_webhook_endpoint') . $webhook, $config, 'POST');
+                if ($content['httpCode'] === 200) {
+                    mel_logs::get_instance()->log(mel_logs::DEBUG, '[tchap->create_webhook]message envoyé dans le salon : ' . $tchap_id);
+                    return true;
+                } else {
+                    mel_logs::get_instance()->log(mel_logs::ERROR, '[tchap->search_user]Valeur retour de l\'api : ' . $content);
+                    return false;
+                }
+            }
         }
     }
 
@@ -510,9 +597,10 @@ class tchap extends bnum_plugin
 
 
     /**
+     * Envoie une requête à l'api du tchap bot
      * @param $endpoint
-     * @param $config
-     * @param $type POST ou DELETE
+     * @param $config paramètres à passer
+     * @param $type POST, DELETE, PUT ou GET 
      */
     private static function call_tchap_api($endpoint, $config, $type)
     {

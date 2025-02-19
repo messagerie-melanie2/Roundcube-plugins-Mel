@@ -519,7 +519,7 @@ class tchap extends bnum_plugin
      * @param string $room_id id interne du salon tchap pour lequel on veut créer un webhook
      * @param string nom du workspace
      */
-    private static function create_webhook($room_id, $workspace_name) {
+    protected static function create_webhook($room_id, $workspace_name) {
         $rcmail = rcmail::get_instance();
         $token = self::get_tchap_token();
         $label = "EDT - " . $workspace_name;

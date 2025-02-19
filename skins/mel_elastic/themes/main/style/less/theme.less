@@ -608,10 +608,10 @@ button.btn.mel-tab {
 }
 
 .popover {
-  background-color: var(--popover-background-color);
-  color: var(--popover-text-color);
-  border: var(--popover-border);
-  box-shadow: var(--popover-box-shadow);
+  background-color: var(--popover-background-color) !important;
+  color: var(--popover-text-color) !important;
+  border: var(--popover-border) !important;
+  box-shadow: var(--popover-box-shadow) !important;
 
   &.menu a:not(.disabled):focus,
   .menu a:not(.disabled):hover,
@@ -620,6 +620,10 @@ button.btn.mel-tab {
     background-color: var(--popover-hover-background-color) !important;
     color: var(--popover-hover-text-color) !important;
     --popover-text-color: var(--popover-hover-text-color);
+  }
+
+  .listing li {
+    border: none !important;
   }
 
   .listing li a,

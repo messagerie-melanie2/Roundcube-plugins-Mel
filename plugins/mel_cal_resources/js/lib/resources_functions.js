@@ -215,6 +215,7 @@ class ResourceBaseFunctions {
    * @this ResourcesBase
    * @see {@link ResourcesBase._generate_ui}
    * @frommodulethis Resources
+   * @todo Améliorer la fonction
    */
   resource_render(resourceObj, labelTds) {
     if (resourceObj.id !== 'resources') {
@@ -228,19 +229,19 @@ class ResourceBaseFunctions {
           ).click(this._functions.on_resource_selected),
         )
         .append(
+          //prettier-ignore
           MelHtml.start
             .div({ class: 'star-button-parent' })
-            .button({
-              class: 'star-button',
-              id: `button-${resourceObj.data.uid}-${this.location_id}`,
-              onclick: this._functions.on_star_clicked,
-              'data-favorite':
-                this.get_env('fav_resources')[resourceObj.data.email] ?? false,
-              'data-email': resourceObj.data.email,
-            })
-            .icon('star')
-            .end()
-            .end()
+              .button({
+                class: 'star-button',
+                id: `button-${resourceObj.data.uid}-${this.location_id}`,
+                onclick: this._functions.on_star_clicked,
+                'data-favorite':
+                  this.get_env('fav_resources')[resourceObj.data.email] ?? false,
+                'data-email': resourceObj.data.email,
+              })
+                .icon('star').end()
+              .end()
             .end()
             .generate(),
         );

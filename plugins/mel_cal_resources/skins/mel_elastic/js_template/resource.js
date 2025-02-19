@@ -14,8 +14,15 @@ import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constant
  * @memberof Plugins.MelCalResource.exports.template_resource
  */
 function get_page(page, filters, resource) {
+    const settings = window.cal?.settings || top.cal.settings;
     const date = (resource.start ?? moment().startOf('day'));
     const end_date = (resource.end ?? moment());
+
+    const business_hour = function(time) {
+        if (+time < 9) time = `0${time}`;
+
+        return `${time}:00`;
+    };
 
     page
     .start_update_content({ force_restart: true })
@@ -47,7 +54,7 @@ function get_page(page, filters, resource) {
                         .icon('schedule').end()
                     .end()
                     .input_text({ class:'input-date-start', datepicker: true, value:date.format(DATE_FORMAT), onchange:resource._functions.on_date_start_changed }).css('margin-right', '5px')
-                    .input_time({ class:'input-time-start', value:date.format(DATE_HOUR_FORMAT), onchange:resource._functions.on_time_start_changed }).css('display', resource.all_day ? 'none' : EMPTY_STRING).css('margin-right', '5px')
+                    .input_time({ class:'input-time-start',min: business_hour(settings.work_start), max:business_hour(settings.work_end),value:date.format(DATE_HOUR_FORMAT), onchange:resource._functions.on_time_start_changed }).css('display', resource.all_day ? 'none' : EMPTY_STRING).css('margin-right', '5px')
                 .end()
                 .col_6()
                     .div({ class:'custom-control custom-switch' })
@@ -76,7 +83,7 @@ function get_page(page, filters, resource) {
                         .icon('schedule').css('opacity', 0).end()
                     .end()
                     .input_text({ class:'input-date-end', datepicker: true, value:end_date.format(DATE_FORMAT), onchange:resource._functions.on_date_end_changed }).css('margin-right', '5px')
-                    .input_time({ class:'input-time-end', value:end_date.format(DATE_HOUR_FORMAT), onchange:resource._functions.on_time_end_changed }).css('display', resource.all_day ? 'none' : EMPTY_STRING).css('margin-right', '5px')
+                    .input_time({ class:'input-time-end',min: business_hour(settings.work_start), max:business_hour(settings.work_end), value:end_date.format(DATE_HOUR_FORMAT), onchange:resource._functions.on_time_end_changed }).css('display', resource.all_day ? 'none' : EMPTY_STRING).css('margin-right', '5px')
                 .end()
                 .col_6()
                 .end()

@@ -182,6 +182,32 @@ class ResourceBaseFunctions {
       else this._p_resources[i].data.selected = false;
     }
 
+    //Met les dates aux heures de travail
+    const settings = window.cal?.settings || top.cal.settings;
+
+    if (+this.start.format('HH') < settings.work_start) {
+      $('.input-time-start')
+        .val(
+          `${settings.work_start < 9 ? `0${settings.work_start}` : settings.work_start}:00`,
+        )
+        .change();
+    }
+
+    if (+this.end.format('HH') > settings.work_end) {
+      if (+this.start.format('HH') >= settings.work_end) {
+        const start = settings.work_end - 1;
+        $('.input-time-start')
+          .val(`${start < 9 ? `0${start}` : start}:00`)
+          .change();
+      }
+
+      $('.input-time-end')
+        .val(
+          `${settings.work_end < 9 ? `0${settings.work_end}` : settings.work_end}:00`,
+        )
+        .change();
+    }
+
     this._$calendar.fullCalendar('refetchEvents');
   }
 
@@ -360,6 +386,8 @@ class ResourceBaseFunctions {
     this._$calendar.fullCalendar('gotoDate', this.start);
     this._$calendar.fullCalendar('refetchEvents');
 
+    this._set_validity();
+
     this.refresh_calendar_date();
   }
 
@@ -370,7 +398,7 @@ class ResourceBaseFunctions {
    * @param {Event} e Reçu lors du changement de date
    */
   on_date_start_changed(e) {
-    this._functions.on_date_changed($(e.currentTarget), '.input-date-start');
+    this._functions.on_date_changed($(e.currentTarget), '.input-date-start', e);
   }
 
   /**

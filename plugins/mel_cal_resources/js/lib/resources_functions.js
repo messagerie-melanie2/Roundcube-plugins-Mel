@@ -3,7 +3,7 @@ import { BnumMessage } from '../../../mel_metapage/js/lib/classes/bnum_message.j
 import { MelEnumerable } from '../../../mel_metapage/js/lib/classes/enum.js';
 import { DATE_TIME_FORMAT } from '../../../mel_metapage/js/lib/constants/constants.dates.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
-import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
+import { rcs_cell_template } from '../../skins/mel_elastic/js_template/favorite_cell.js';
 import { FavoriteLoader } from './favorite_loader.js';
 import { ResourcesBase } from './resource_base.js';
 
@@ -186,26 +186,54 @@ class ResourceBaseFunctions {
   }
 
   /**
-   * Action lorsqu'un label de ressource est cliqué
-   * @param {Event} e
+   * Génère le bouton pour mettre en favoris une ressource
+   * @param {import('./resource_base.js').ResourceData} data Donnée de la ressource
+   * @returns {external:jQuery}
    * @this ResourcesBase
-   * @see {@link ResourceBaseFunctions.resource_render}
-   * @frommodulethis Resources
-   * @deprecated
    */
-  on_resource_label_clicked(e) {
-    // for (let i = 0; i < this._p_resources.length; ++i) {
-    //   this._p_resources[i].data.selected = false;
-    // }
-    // e = $(e.currentTarget);
-    // if (!e.attr('for'))
-    //   e = $(`label[for="${e.attr('id').replace('radio', EMPTY_STRING)}"`);
-    // const id = e.data('id');
-    // const index = MelEnumerable.from(this._p_resources)
-    //   .select((x, i) => ({ x, i }))
-    //   .where((x) => x.x.id === id)
-    //   .first().i;
-    // this._p_resources[index].data.selected = true;
+  resource_render_favorite(data) {
+    let favorite_button = rcs_cell_template.favorite_button_template;
+
+    favorite_button.observed.favorite
+      .attr('id', `button-${data.uid}-${this.location_id}`)
+      .attr('data-email', data.email)
+      .attr('data-favorite', this.get_env('fav_resources')[data.email] ?? false)
+      .removeAttr('onclick');
+
+    let generated_favorite_button = favorite_button.generate_with_observer();
+
+    generated_favorite_button.observed.favorite.on(
+      'click',
+      this._functions.on_star_clicked,
+    );
+
+    return generated_favorite_button.generated;
+  }
+
+  /**
+   * Génère le radio pour séléctionner la ressource.
+   * @param {import('./resource_base.js').ResourceData} data Donnée de la ressource
+   * @returns {extenral:jQuery}
+   * @this ResourcesBase
+   */
+  resource_render_option(data) {
+    let radio_button = rcs_cell_template.radio_button_selector_template;
+
+    radio_button.observed.radio.attrs({
+      id: `radio-${data.uid}-${this.location_id}`,
+      value: data.email,
+      'data-email': data.email,
+    });
+
+    if (data.selected) radio_button.observed.radio.attr('checked', 'checked');
+
+    let generated_radio_button = radio_button.generate_with_observer();
+    generated_radio_button.observed.radio.on(
+      'click',
+      this._functions.on_resource_selected,
+    );
+
+    return generated_radio_button.generated;
   }
 
   /**
@@ -215,37 +243,22 @@ class ResourceBaseFunctions {
    * @this ResourcesBase
    * @see {@link ResourcesBase._generate_ui}
    * @frommodulethis Resources
-   * @todo Améliorer la fonction
    */
   resource_render(resourceObj, labelTds) {
     if (resourceObj.id !== 'resources') {
       let cell = labelTds
         .find('.fc-cell-content')
-        .css('display', 'flex')
-        .css('align-items', 'center')
+        .addClass('cfc-resource')
         .prepend(
-          $(
-            `<input type="radio" class="resource-radio" data-email="${resourceObj.data.email}" id="radio-${resourceObj.data.uid}-${this.location_id}" value="${resourceObj.data.email}" name="resa" ${resourceObj.data.selected ? 'checked' : EMPTY_STRING} />`,
-          ).click(this._functions.on_resource_selected),
+          //Génère l'input radio
+          this._functions.resource_render_option(resourceObj.data),
         )
         .append(
-          //prettier-ignore
-          MelHtml.start
-            .div({ class: 'star-button-parent' })
-              .button({
-                class: 'star-button',
-                id: `button-${resourceObj.data.uid}-${this.location_id}`,
-                onclick: this._functions.on_star_clicked,
-                'data-favorite':
-                  this.get_env('fav_resources')[resourceObj.data.email] ?? false,
-                'data-email': resourceObj.data.email,
-              })
-                .icon('star').end()
-              .end()
-            .end()
-            .generate(),
+          //Génère le bouton favoris
+          this._functions.resource_render_favorite(resourceObj.data),
         );
 
+      //Change le span par un label
       cell = cell.find('.fc-cell-text')?.[0];
 
       if (cell) {
@@ -253,8 +266,6 @@ class ResourceBaseFunctions {
           'for',
           `radio-${resourceObj.data.uid}-${this.location_id}`,
         );
-        cell.style.margin = '0 0 0 5px';
-        cell.style.padding = 0;
         cell.outerHTML = cell.outerHTML.replaceAll('span', 'label');
       }
     }

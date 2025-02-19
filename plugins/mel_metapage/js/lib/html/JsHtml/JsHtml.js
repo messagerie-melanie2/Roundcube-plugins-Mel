@@ -78,6 +78,24 @@ class ____JsHtml {
   }
 
   /**
+   * @type {Object<string, T>}
+   * @template {this} T
+   * @readonly
+   */
+  get observed() {
+    return this.#_getObserved({});
+  }
+
+  #_getObserved(obs) {
+    if (this.#_observed) obs[this.#_observed] = this;
+    for (const child of this.childs) {
+      obs = child.#_getObserved(obs);
+    }
+
+    return obs;
+  }
+
+  /**
    * Observe un élément, ce qui permet de les retrouver plus tard
    * @param {Object} [options={}]
    * @param {?string} [options.key=null]
@@ -87,12 +105,14 @@ class ____JsHtml {
     if (this.balise[0] === '/')
       throw new Error("L'observeur doit être sur la balise ouvrante !");
 
-    key ??= this._update_attribs().attribs.id;
+    let navigator = this._updated_balise();
+
+    key ??= navigator._update_attribs().attribs.id;
 
     if (!key) throw new Error('Vous devez définir un id !');
 
-    this.#_observed = key;
-    return this._update_attribs();
+    navigator.#_observed = key;
+    return navigator._update_attribs();
   }
 
   /**
@@ -1788,8 +1808,9 @@ class ____JsHtml {
       typeof this.balise === 'function' ? this.balise(this) : this.balise;
     let balise;
 
-    if (this.#_observed)
+    if (this.#_observed) {
       this.attr('data-rotomeca-framework-observer', this.#_observed);
+    }
 
     if (this.attribs?.is_raw === true) balise = memory_tag;
     else {

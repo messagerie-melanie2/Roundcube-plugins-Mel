@@ -2,6 +2,7 @@ import { JsHtml } from "../../../mel_metapage/js/lib/html/JsHtml/JsHtml.js";
 import { BnumMessage, eMessageType } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { MelDialog, DialogPage, RcmailDialogButton } from "../../../mel_metapage/js/lib/classes/modal.js";
+import { CursorUtils } from "../../../mel_metapage/js/lib/helpers/cursorUtils.js";
 
 export class create_or_edit_post extends MelObject {
     constructor() {
@@ -30,7 +31,7 @@ export class create_or_edit_post extends MelObject {
             }
         });
         $('#go-back-to-articles').click(() => {
-            $("body").css("cursor", "wait");
+            CursorUtils.SetLoadingCursor();
             $('#cancel-post').click();
             window.location.href = this.url('forum',{action:'index', params:{'_workspace_uid': this.workspace}});
         });
@@ -188,7 +189,7 @@ export class create_or_edit_post extends MelObject {
             let title = $("#edit-title").val().trim();
             if(title !== '' && content !== '')
             {
-                $("body").css("cursor", "wait");
+                CursorUtils.SetLoadingCursor();
                 this.http_internal_post(
                 {
                     task: 'forum',
@@ -254,7 +255,7 @@ export class create_or_edit_post extends MelObject {
             const _content = tinymce.activeEditor.getContent();
             const _uid = this.post_uid
             
-            $("body").css("cursor", "wait");
+            CursorUtils.SetLoadingCursor();
             if (!_title.trim() && !_content.trim()) {
                 // Les champs sont vides, suppression du post
                 

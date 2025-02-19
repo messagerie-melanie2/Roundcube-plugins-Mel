@@ -1,5 +1,6 @@
 import { BnumMessage } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
 import { ISO_FORMAT_REGEX } from '../../../mel_metapage/js/lib/constants/regexp.js';
+import { CursorUtils } from '../../../mel_metapage/js/lib/helpers/cursorUtils.js';
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { MelTemplate } from '../../../mel_metapage/js/lib/html/JsHtml/MelTemplate.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
@@ -289,6 +290,9 @@ class PostComment {
 
       // Si le conteneur est caché, on veut l'afficher
       if (responseContainer.hasClass('hidden')) {
+
+        CursorUtils.SetLoadingCursor();
+
         BnumMessage.SetBusyLoading();
 
         // Charger les réponses seulement si elles ne sont pas déjà présentes
@@ -299,6 +303,8 @@ class PostComment {
         }
 
         BnumMessage.StopBusyLoading();
+
+        CursorUtils.ResetCursor();
 
         // Afficher les réponses
         responseContainer.removeClass('hidden');
@@ -383,6 +389,8 @@ class PostComment {
         // Vérifier si le commentaire n'est pas vide
 
         submitButton.prop('disabled', true); // Désactiver le bouton de validation pour éviter les clics multiples
+
+        CursorUtils.SetLoadingCursor();
 
         BnumMessage.SetBusyLoading();
 
@@ -506,6 +514,8 @@ class PostComment {
         } finally {
             BnumMessage.StopBusyLoading();
 
+            CursorUtils.ResetCursor();
+
             // Réactiver le bouton de validation une fois la requête terminée
             submitButton.prop('disabled', false);
         }
@@ -627,6 +637,9 @@ class PostComment {
     const $textarea = $('#edit-comment-textarea-' + uid);
     const updatedContent = $textarea.val(); // Récupère le nouveau contenu du commentaire
     if (updatedContent && updatedContent.trim() !== '') {
+
+      CursorUtils.SetLoadingCursor();
+
       BnumMessage.SetBusyLoading();
 
       try {
@@ -664,6 +677,8 @@ class PostComment {
         console.error('Erreur lors de la mise à jour du commentaire:', error);
       } finally {
         BnumMessage.StopBusyLoading();
+
+        CursorUtils.ResetCursor();
       }
     } else {
       rcmail.display_message(
@@ -692,6 +707,8 @@ class PostComment {
     );
 
     if (!confirmation) return;
+
+    CursorUtils.SetLoadingCursor();
 
     BnumMessage.SetBusyLoading();
 
@@ -767,6 +784,8 @@ class PostComment {
       console.error(rcmail.gettext('mel_forum.comment_delete_failure'), error);
     } finally {
       BnumMessage.StopBusyLoading();
+
+      CursorUtils.ResetCursor();
     }
   }
 
@@ -1082,6 +1101,9 @@ class PostCommentView {
    * @returns {Promise<Object>} - Les données du commentaire du post, après analyse de la réponse.
    */
   async getCommentByPost() {
+
+    CursorUtils.SetLoadingCursor();
+
     BnumMessage.SetBusyLoading();
 
     let return_data;
@@ -1110,6 +1132,8 @@ class PostCommentView {
       console.error(rcmail.gettext('mel_forum.comments_fetch_error'), error);
     } finally {
       BnumMessage.StopBusyLoading();
+
+      CursorUtils.ResetCursor();
     }
 
     return return_data;

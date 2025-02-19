@@ -2,6 +2,7 @@ import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { BnumMessage, eMessageType } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
 import { MelTemplate } from '../../../mel_metapage/js/lib/html/JsHtml/MelTemplate.js';
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
+import { CursorUtils } from '../../../mel_metapage/js/lib/helpers/cursorUtils.js';
 
 export class Forum extends MelObject {
     constructor() {
@@ -167,6 +168,9 @@ export class Forum extends MelObject {
     loadPosts() {
         //On empêche de faire un appel tant que le précédent n'est pas finit
         this.lock = true;
+
+        CursorUtils.SetLoadingCursor();
+
         BnumMessage.SetBusyLoading();
         this.http_internal_get(
             {
@@ -194,9 +198,15 @@ export class Forum extends MelObject {
                     this.lock = false;
                     this.searchString = null;
                     this.tags = [];
+
+                    CursorUtils.ResetCursor();
                 },
                 on_error: (err) => {
                     this.lock = false;
+
+                    BnumMessage.StopBusyLoading();
+
+                    CursorUtils.ResetCursor();
                 }
             }
         );
@@ -265,6 +275,9 @@ export class Forum extends MelObject {
                 return;
             }
         }
+
+        CursorUtils.SetLoadingCursor();
+
         let workspace = this.get_env('workspace_uid');
         this.http_internal_post(
             {
@@ -287,6 +300,7 @@ export class Forum extends MelObject {
                         rcmail.gettext('mel_forum.fav_updated'),
                         eMessageType.Confirmation,
                     );
+                    CursorUtils.ResetCursor();
                 },
                 on_error: (err) => {
                     BnumMessage.DisplayMessage(
@@ -377,6 +391,9 @@ export class Forum extends MelObject {
     editPost(post_uid, event) {
       event.preventDefault();
       event.stopPropagation();
+
+      CursorUtils.SetLoadingCursor();
+
       // Rediriger vers la page d'édition avec l'UID du post
       window.location.href = this.url('forum', { action: 'create_or_edit_post', params:{'_uid': post_uid, '_workspace_uid': this.workspace}});
     }
@@ -396,6 +413,8 @@ export class Forum extends MelObject {
     deletePost(post_uid, event) {
       event.preventDefault();
       event.stopPropagation();
+
+      CursorUtils.SetLoadingCursor();
   
       // Demander confirmation à l'utilisateur avant de supprimer
       const confirmation = confirm(rcmail.gettext('mel_forum.delete_post_confirm'));
@@ -426,6 +445,8 @@ export class Forum extends MelObject {
                       postElement.remove(); // Supprimer l'article du DOM
                       rcmail.triggerEvent('forum.post.delete');
                   }
+
+                  CursorUtils.ResetCursor();
               } else {
                   // Affichage du message d'erreur en cas d'échec
                   BnumMessage.DisplayMessage(
@@ -469,6 +490,9 @@ export class Forum extends MelObject {
     pinPost(post_uid, event) {
         event.preventDefault();
         event.stopPropagation();
+
+        CursorUtils.SetLoadingCursor();
+
         this.http_internal_post({
             task: 'forum',
             action: 'pin_post',
@@ -513,6 +537,8 @@ export class Forum extends MelObject {
                     $('.pin').addClass('hidden');
                     post.find('.pin').removeClass('hidden');
                 }
+
+                CursorUtils.ResetCursor();
 
             },
             on_error: (err) => {
@@ -660,6 +686,8 @@ export class Forum extends MelObject {
      * @param {*} posts 
      */
     displayPost(posts) {
+
+        CursorUtils.SetLoadingCursor();
         
         // Vérifier si l'utilisateur souhaite afficher uniquement les favoris
         if (this.display_fav) {
@@ -768,6 +796,8 @@ export class Forum extends MelObject {
             }
             this.offset++;
         }
+
+        CursorUtils.ResetCursor();
     }
 
     //endregion

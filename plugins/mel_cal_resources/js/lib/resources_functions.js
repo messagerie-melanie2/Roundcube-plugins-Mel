@@ -218,8 +218,10 @@ class ResourceBaseFunctions {
    */
   resource_render(resourceObj, labelTds) {
     if (resourceObj.id !== 'resources') {
-      labelTds
+      let cell = labelTds
+        .find('.fc-cell-content')
         .css('display', 'flex')
+        .css('align-items', 'center')
         .prepend(
           $(
             `<input type="radio" class="resource-radio" data-email="${resourceObj.data.email}" id="radio-${resourceObj.data.uid}-${this.location_id}" value="${resourceObj.data.email}" name="resa" ${resourceObj.data.selected ? 'checked' : EMPTY_STRING} />`,
@@ -243,27 +245,17 @@ class ResourceBaseFunctions {
             .generate(),
         );
 
-      labelTds = labelTds.find('.fc-cell-text');
-      let parent = labelTds.parent();
-      let text = labelTds.text();
-      labelTds.remove();
-      parent
-        .html(
-          $(
-            `<label for="radio-${resourceObj.data.uid}-${this.location_id}"></label>`,
-          )
-            .data('id', resourceObj.data.uid)
-            .text(text)
-            .css('margin', '0 0 0 5px')
-            .css('padding', 0)
-            .click(this._functions.on_resource_label_clicked),
-        )
-        .css({
-          height: '100%',
-          display: 'flex',
-          'align-items': 'center',
-          padding: 0,
-        });
+      cell = cell.find('.fc-cell-text')?.[0];
+
+      if (cell) {
+        cell.setAttribute(
+          'for',
+          `radio-${resourceObj.data.uid}-${this.location_id}`,
+        );
+        cell.style.margin = '0 0 0 5px';
+        cell.style.padding = 0;
+        cell.outerHTML = cell.outerHTML.replaceAll('span', 'label');
+      }
     }
   }
 

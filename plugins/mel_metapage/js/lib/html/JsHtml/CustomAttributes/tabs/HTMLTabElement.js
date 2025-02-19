@@ -11,7 +11,7 @@ import { HTMLWrapperElement } from '../wrapper.js';
 import {
   HTMLTabContainer,
   HTMLTabReceiver,
-} from './HTMLTabContainerAndReceiver';
+} from './HTMLTabContainerAndReceiver.js';
 
 export { HTMLTabsElement };
 

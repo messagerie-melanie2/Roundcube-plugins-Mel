@@ -82,7 +82,7 @@ class mel_archivage extends rcube_plugin
           'type'        => 'link',
           'command'     => 'plugin_archiver',
           'class'       => 'button archiver disabled',
-          'classact'    => 'button archiver',
+          'classact'    => 'button archiver hide-touch',
           'label'       => 'archive',
           'title'       => 'title',
           'domain'      => $this->ID,

@@ -2641,6 +2641,9 @@ html.layout-phone .hide-on-small,
 html.layout-small .hide-on-small {
   display: none;
 }
+html.touch .hide-on-touch {
+  display: none;
+}
 .menu a.ct-cm::before {
   font-size: 26px !important;
   font-family: 'Material Symbols Outlined' !important;
@@ -4302,14 +4305,15 @@ bnum-separate {
   background: none;
   border: none;
   color: var(--input-mel-text-color);
-  margin-top: 4px;
+  height: 34px;
+  width: 100%;
 }
 .button-icon-hover:hover span {
   font-variation-settings: 'FILL' 1;
 }
-.button-icon-hover:focus,
-.button-icon-hover:active,
-.button-icon-hover:active:focus {
+.button-icon-hover:not(.shadow-focus):focus,
+.button-icon-hover:not(.shadow-focus):active,
+.button-icon-hover:not(.shadow-focus):active:focus {
   box-shadow: none !important;
 }
 .icon-front-col {
@@ -4826,4 +4830,7 @@ html.touch:root {
 }
 .visio-minimised #messagestack {
   right: 325px;
+}
+.footer.ignore {
+  display: 'none' !important;
 }

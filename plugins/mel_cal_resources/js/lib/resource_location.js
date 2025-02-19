@@ -164,8 +164,34 @@ class ResourceLocation extends AExternalLocationPart {
     return this;
   }
 
+  /**
+   * Action du bouton pour ouvrir l'agenda de ressource.
+   *
+   * Sera utilisé par le bouton dans le template {@link ResourceLocation.page}
+   * @return {Promise<void>}
+   * @async
+   */
+  async action_rcs_button_click() {
+    await (await this.dialog.try_init()).show();
+    this.onclickafter.call();
+  }
+
+  /**
+   * Ouvre l'agenda de ressource
+   *
+   * Invoke {@link ResourceLocation.action_rcs_button_click} mais le thisargs est la page car c'est la page qui contient la dialog.
+   * @return {Promise<void>}
+   * @async
+   * @private
+   */
+  async #_rcs_button_action() {
+    return await this.action_rcs_button_click.call(this.page);
+  }
+
   changed_to_this() {
-    if (!window.start_planify) this.force_click();
+    if (!window.start_planify) {
+      this.#_rcs_button_action();
+    }
   }
 
   /**

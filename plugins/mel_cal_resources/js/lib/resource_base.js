@@ -300,13 +300,12 @@ class ResourcesBase extends MelObject {
       height: 200,
       firstHour: settings.first_hour,
       scrollTime: { hours: settings.first_hour },
-      slotDuration: { minutes: 60 / settings.timeslots },
+      slotDuration: { minutes: 60 },
       locale: 'fr',
       axisFormat: DATE_HOUR_FORMAT,
       slotLabelFormat: DATE_HOUR_FORMAT,
       selectable: true,
       selectHelper: true,
-      //stickyFooterScrollbar:true,
       slotWidth: 50,
       defaultDate: this.start,
       select: this._functions.on_selected_date,
@@ -320,8 +319,6 @@ class ResourcesBase extends MelObject {
     try {
       $fc.css('width', '100%').fullCalendar(config);
       $fc.fullCalendar('render');
-      //$fc.fullCalendar('option', 'height', 200);
-      //$fc.fullCalendar('render');
     } catch (error) {
       console.error(error);
     }

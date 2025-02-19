@@ -3961,6 +3961,12 @@ a.rcmContactAddress {
   }
 }
 
+.hide-on-touch {
+  html@{touch} & {
+    display: none;
+  }
+}
+
 .menu a.ct-cm {
   &::before {
     ._material-icon() !important;
@@ -5855,7 +5861,8 @@ bnum-separate {
   background: none;
   border: none;
   color: var(--input-mel-text-color);
-  margin-top: 4px;
+  height: 34px;
+  width: 100%;
 }
 
 .button-icon-hover:hover {
@@ -5864,9 +5871,9 @@ bnum-separate {
   }
 }
 
-.button-icon-hover:focus,
-.button-icon-hover:active,
-.button-icon-hover:active:focus {
+.button-icon-hover:not(.shadow-focus):focus,
+.button-icon-hover:not(.shadow-focus):active,
+.button-icon-hover:not(.shadow-focus):active:focus {
   box-shadow: none !important;
 }
 
@@ -6626,5 +6633,11 @@ html@{touch} {
 .visio-minimised {
   #messagestack {
     right: 325px;
+  }
+}
+
+.footer {
+  &.ignore {
+    display: 'none'!important;
   }
 }

@@ -51,10 +51,7 @@ class ResourceDialogPage {
       })
         .button({
           type: 'button',
-          onclick:async () => {
-              await (await this.dialog.try_init()).show();
-              this.onclickafter.call();
-          }
+          onclick:resource.action_rcs_button_click.bind(this)
         }).addClass(resaData || false ? 'disabled' : EMPTY_STRING)
           .attr(resaData || false ? 'disabled' : 'waitingclick', resaData || false ? 'disabled' : 'true')
           .icon(resaData || false ? '' : 'ads_click').addClass(resaData || false ? 'clock-loader' : EMPTY_STRING)

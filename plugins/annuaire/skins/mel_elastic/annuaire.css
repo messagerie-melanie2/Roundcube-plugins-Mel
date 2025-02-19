@@ -67,6 +67,11 @@
 	top: 0;
 	height: 33px;
 	width: 33px;
+	font-size: 12px;
+}
+
+html.touch #annuaire-list li > .gototree {
+	top: -7px;
 }
 
 #annuaire-list li.selected > .gototree {

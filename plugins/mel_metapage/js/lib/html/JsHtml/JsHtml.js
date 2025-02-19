@@ -669,8 +669,7 @@ class ____JsHtml {
   #_input(type, attribs) {
     attribs ??= {};
 
-    attribs.type = type;
-    return this.input(attribs);
+    return this.input(attribs).attr('type', type);
   }
 
   /**

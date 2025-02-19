@@ -1,5 +1,5 @@
 import { ABaseModulesJsHtml } from '../../../mel_metapage/js/lib/html/JsHtml/ABaseModulesJsHtml.js';
-import { TchapFrameAction } from './webcomponents/tchap_web_component';
+import { TchapFrameAction } from './webcomponents/tchap_web_component.js';
 
 /**
  * @extends ABaseModulesJsHtml<J>

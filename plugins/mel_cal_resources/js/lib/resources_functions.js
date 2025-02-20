@@ -6,6 +6,7 @@ import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.j
 import { rcs_cell_template } from '../../skins/mel_elastic/js_template/favorite_cell.js';
 import { FavoriteLoader } from './favorite_loader.js';
 import { ResourcesBase } from './resource_base.js';
+import { HTMLResourceElement } from './webcomponents/HTMLResourceElement.js';
 
 export { ResourceBaseFunctions };
 
@@ -237,6 +238,28 @@ class ResourceBaseFunctions {
   }
 
   /**
+   * Génère le radio pour séléctionner la ressource.
+   * @param {import('./resource_base.js').ResourceData} data Donnée de la ressource
+   * @returns {HTMLResourceElement}
+   * @this ResourcesBase
+   */
+  resource_render_element(data) {
+    let node = HTMLResourceElement.CreateNode({
+      selected: data.selected,
+      rcsId: data.uid,
+      locationId: this.location_id,
+      email: data.email,
+      favorite: this.get_env('fav_resources')[data.email] ?? false,
+      value: data.email,
+    });
+
+    node.onradioclicked.push(this._functions.on_resource_selected);
+    node.onfavoriteclicked.push(this._functions.on_star_clicked);
+
+    return node;
+  }
+
+  /**
    * Action à faire lors du rendu de la ressource
    * @param {import('./resource_base.js').ResourceObject} resourceObj Ressourceà rendre
    * @param {external:jQuery} labelTds Div qui contient l'affichage
@@ -246,28 +269,21 @@ class ResourceBaseFunctions {
    */
   resource_render(resourceObj, labelTds) {
     if (resourceObj.id !== 'resources') {
-      let cell = labelTds
+      /*let cell = */ labelTds
         .find('.fc-cell-content')
         .addClass('cfc-resource')
-        .prepend(
-          //Génère l'input radio
-          this._functions.resource_render_option(resourceObj.data),
-        )
-        .append(
-          //Génère le bouton favoris
-          this._functions.resource_render_favorite(resourceObj.data),
-        );
+        .append(this._functions.resource_render_element(resourceObj.data));
 
-      //Change le span par un label
-      cell = cell.find('.fc-cell-text')?.[0];
+      // //Change le span par un label
+      // cell = cell.find('.fc-cell-text')?.[0];
 
-      if (cell) {
-        cell.setAttribute(
-          'for',
-          `radio-${resourceObj.data.uid}-${this.location_id}`,
-        );
-        cell.outerHTML = cell.outerHTML.replaceAll('span', 'label');
-      }
+      // if (cell) {
+      //   cell.setAttribute(
+      //     'for',
+      //     `radio-${resourceObj.data.uid}-${this.location_id}`,
+      //   );
+      //   cell.outerHTML = cell.outerHTML.replaceAll('span', 'label');
+      // }
     }
   }
 

@@ -3013,6 +3013,10 @@ $("#rcmfd_new_category").keypress(function(event) {
         $fblist = $this->driver->get_freebusy_list($email, $start, $end);
         $slots  = '';
 
+        // PAMELA - Createur du freebusy
+        $creator = '';
+        $creators = [];
+
         // prepare freebusy list before use (for better performance)
         if (is_array($fblist)) {
             foreach ($fblist as $idx => $slot) {
@@ -3039,7 +3043,8 @@ $("#rcmfd_new_category").keypress(function(event) {
                 $status = self::FREEBUSY_FREE;
 
                 foreach ($fblist as $slot) {
-                    list($from, $to, $type) = $slot;
+                    // PAMELA - Createur du freebusy
+                    list($from, $to, $type, $creator) = $slot;
 
                     if ($from < $t_end && $to > $t) {
                         $status = isset($type) ? $type : self::FREEBUSY_BUSY;
@@ -3048,6 +3053,10 @@ $("#rcmfd_new_category").keypress(function(event) {
                         //     break;
                         // }
                         $max_freebusy = $this->compare_freebusy($status, $max_freebusy);
+
+                    }
+                    else {
+                        $creator = '';
                     }
                 }
             }
@@ -3057,6 +3066,10 @@ $("#rcmfd_new_category").keypress(function(event) {
 
             $status = $max_freebusy;
             $max_freebusy = self::FREEBUSY_FREE;
+
+            // PAMELA - Createur du freebusy
+            $creators[] = $creator;
+            $creator = '';
 
             // use most compact format, assume $status is one digit/character
             $slots .= $status;
@@ -3077,6 +3090,8 @@ $("#rcmfd_new_category").keypress(function(event) {
             'end'   => $dte->format('c'),
             'interval' => $interval,
             'slots' => $slots,
+            // PAMELA - Createur du freebusy
+            'creators' => $creators,
         ]);
         exit;
     }

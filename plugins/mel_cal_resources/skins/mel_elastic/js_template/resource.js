@@ -1,5 +1,6 @@
 import { DATE_FORMAT, DATE_HOUR_FORMAT } from '../../../../mel_metapage/js/lib/constants/constants.dates.js';
 import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
+import { HTMLWrapperElement } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/wrapper.js';
 
 /**
  * Récupère la page d'une ressource
@@ -26,6 +27,30 @@ function get_page(page, filters, resource) {
 
     page
     .start_update_content({ force_restart: true })
+    .tag('template', { id: 'mel-cal-resources-template' })
+        .input_radio({  
+            class: 'resource-radio',
+            id: 'radio-%0-%1',
+            value: '%0',
+            name: 'resa',
+            'data-email': '%0',
+            'data-template-namespace': 'radio',
+            'data-template-elements': 'id,value,data-email,onclick'
+        })
+        .customElement(HTMLWrapperElement, {class:'rcs-label-wrapper', 'data-template-content':'true', 'data-template-namespace': 'label'}).end()
+        .div({ class: 'star-button-parent' })
+            .button({
+                class: 'star-button',
+                id: 'button-%0-%1',
+                'data-favorite': '%0',
+                'data-email': '%0',
+                'data-template-elements': 'id,data-favorite,data-email,onclick',
+                'data-template-namespace': 'button',
+            })
+            .webcomponents().icon('star').end()
+            .end()
+        .end()
+    .end()
     .div({ style:'margin:10px' }).attr('data-resourcetype', resource._name)
         .div({ class: 'rc-page-filters row' })
             .each((jhtml, filter) => {

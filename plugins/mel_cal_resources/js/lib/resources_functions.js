@@ -3,9 +3,9 @@ import { BnumMessage } from '../../../mel_metapage/js/lib/classes/bnum_message.j
 import { MelEnumerable } from '../../../mel_metapage/js/lib/classes/enum.js';
 import { DATE_TIME_FORMAT } from '../../../mel_metapage/js/lib/constants/constants.dates.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
-import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { FavoriteLoader } from './favorite_loader.js';
 import { ResourcesBase } from './resource_base.js';
+import { HTMLResourceElement } from './webcomponents/HTMLResourceElement.js';
 
 export { ResourceBaseFunctions };
 
@@ -212,26 +212,25 @@ class ResourceBaseFunctions {
   }
 
   /**
-   * Action lorsqu'un label de ressource est cliqué
-   * @param {Event} e
+   * Génère le radio pour séléctionner la ressource.
+   * @param {import('./resource_base.js').ResourceData} data Donnée de la ressource
+   * @returns {HTMLResourceElement}
    * @this ResourcesBase
-   * @see {@link ResourceBaseFunctions.resource_render}
-   * @frommodulethis Resources
-   * @deprecated
    */
-  on_resource_label_clicked(e) {
-    // for (let i = 0; i < this._p_resources.length; ++i) {
-    //   this._p_resources[i].data.selected = false;
-    // }
-    // e = $(e.currentTarget);
-    // if (!e.attr('for'))
-    //   e = $(`label[for="${e.attr('id').replace('radio', EMPTY_STRING)}"`);
-    // const id = e.data('id');
-    // const index = MelEnumerable.from(this._p_resources)
-    //   .select((x, i) => ({ x, i }))
-    //   .where((x) => x.x.id === id)
-    //   .first().i;
-    // this._p_resources[index].data.selected = true;
+  resource_render_element(data) {
+    let node = HTMLResourceElement.CreateNode({
+      selected: data.selected,
+      rcsId: data.uid,
+      locationId: this.location_id,
+      email: data.email,
+      favorite: this.get_env('fav_resources')[data.email] ?? false,
+      value: data.email,
+    });
+
+    node.onradioclicked.push(this._functions.on_resource_selected);
+    node.onfavoriteclicked.push(this._functions.on_star_clicked);
+
+    return node;
   }
 
   /**
@@ -244,44 +243,10 @@ class ResourceBaseFunctions {
    */
   resource_render(resourceObj, labelTds) {
     if (resourceObj.id !== 'resources') {
-      let cell = labelTds
+      labelTds
         .find('.fc-cell-content')
-        .css('display', 'flex')
-        .css('align-items', 'center')
-        .prepend(
-          $(
-            `<input type="radio" class="resource-radio" data-email="${resourceObj.data.email}" id="radio-${resourceObj.data.uid}-${this.location_id}" value="${resourceObj.data.email}" name="resa" ${resourceObj.data.selected ? 'checked' : EMPTY_STRING} />`,
-          ).click(this._functions.on_resource_selected),
-        )
-        .append(
-          MelHtml.start
-            .div({ class: 'star-button-parent' })
-            .button({
-              class: 'star-button',
-              id: `button-${resourceObj.data.uid}-${this.location_id}`,
-              onclick: this._functions.on_star_clicked,
-              'data-favorite':
-                this.get_env('fav_resources')[resourceObj.data.email] ?? false,
-              'data-email': resourceObj.data.email,
-            })
-            .icon('star')
-            .end()
-            .end()
-            .end()
-            .generate(),
-        );
-
-      cell = cell.find('.fc-cell-text')?.[0];
-
-      if (cell) {
-        cell.setAttribute(
-          'for',
-          `radio-${resourceObj.data.uid}-${this.location_id}`,
-        );
-        cell.style.margin = '0 0 0 5px';
-        cell.style.padding = 0;
-        cell.outerHTML = cell.outerHTML.replaceAll('span', 'label');
-      }
+        .addClass('cfc-resource')
+        .append(this._functions.resource_render_element(resourceObj.data));
     }
   }
 

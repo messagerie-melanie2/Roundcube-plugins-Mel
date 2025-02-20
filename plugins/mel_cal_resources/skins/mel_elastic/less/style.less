@@ -35,20 +35,24 @@
           color: var(--main-text-color);
         }
       }
+
+      > .material-symbols-outlined {
+        vertical-align: middle;
+      }
     }
   }
 }
 
 .fo-filter-icon {
-	position: absolute;
-	top: 6px;
-	left: 7px;
-	font-size: 20px;
+  position: absolute;
+  top: 6px;
+  left: 7px;
+  font-size: 20px;
   z-index: 1;
 }
 
 .fo-select {
-  padding-left:25px;
+  padding-left: 25px;
 }
 
 .rc-page-filters {
@@ -68,7 +72,7 @@
 .mel-dialog-page {
   .fc {
     table {
-      margin-bottom:0;
+      margin-bottom: 0;
     }
   }
 
@@ -80,10 +84,10 @@
   }
 }
 
-.multiselect{
-text-align: left !important;
+.multiselect {
+  text-align: left !important;
 
-  &.form-control{
+  &.form-control {
     &.input-mel {
       width: 100%;
       border-radius: 50px;
@@ -93,4 +97,22 @@ text-align: left !important;
       }
     }
   }
+}
+
+//Custom FullCalendar
+.cfc-resource {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 !important;
+
+  .fc-cell-text {
+    margin: 0 0 0 5px;
+    padding: 0;
+  }
+}
+
+bnum-resource-selector {
+  flex: 1;
+  align-items: center;
 }

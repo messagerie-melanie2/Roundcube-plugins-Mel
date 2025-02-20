@@ -572,7 +572,7 @@ class DialogPage {
    * Permet de modifier le contenu de la dialog
    * @param {Object} param0
    * @param {!boolean} param0.force_restart Si on recommence l'écriture de la page ou non
-   * @returns {____JsHtml}
+   * @returns {import('../html/JsHtml/JsHtml.js')._JsHtml}
    * @frommodulereturn JsHtml
    */
   start_update_content({ force_restart = false }) {

@@ -3,7 +3,6 @@ import { BnumMessage } from '../../../mel_metapage/js/lib/classes/bnum_message.j
 import { MelEnumerable } from '../../../mel_metapage/js/lib/classes/enum.js';
 import { DATE_TIME_FORMAT } from '../../../mel_metapage/js/lib/constants/constants.dates.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
-import { rcs_cell_template } from '../../skins/mel_elastic/js_template/favorite_cell.js';
 import { FavoriteLoader } from './favorite_loader.js';
 import { ResourcesBase } from './resource_base.js';
 import { HTMLResourceElement } from './webcomponents/HTMLResourceElement.js';

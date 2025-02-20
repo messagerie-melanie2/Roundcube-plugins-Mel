@@ -64,13 +64,15 @@ export { ResourcesBase, ResourceSettings };
  * @extends MelObject
  */
 class ResourcesBase extends MelObject {
+  #_startRender;
   /**
    * Constructeur de la classe
    * @param {string} name Id de la ressource
    * @param {FilterConfig[]} filters Liste des filtres de la ressource. Ils seront convertit en {@link FilterBase}
    */
-  constructor(name, filters) {
+  constructor(name, filters, { startRender = true } = {}) {
     super(name, filters);
+    this.#_startRender = startRender;
   }
 
   /**
@@ -221,6 +223,7 @@ class ResourcesBase extends MelObject {
         input_type: x.type,
         icon: x.icon,
         number: x.number,
+        rowname: x?.rowname,
       })
         .push_event(this._on_data_loaded.bind(this))
         .push_event_data_changed(this._on_data_changed.bind(this)),
@@ -332,7 +335,8 @@ class ResourcesBase extends MelObject {
     };
     try {
       $fc.css('width', '100%').fullCalendar(config);
-      $fc.fullCalendar('render');
+
+      if (this.#_startRender) $fc.fullCalendar('render');
     } catch (error) {
       console.error(error);
     }
@@ -586,22 +590,29 @@ class ResourcesBase extends MelObject {
         } else $('.ui-dialog-titlebar-close').click();
       },
     });
+
     let page = new DialogPage(this._name, {
       title: this._name,
       buttons: [button_cancel, button_save],
     });
 
-    page = template_resource.get_page(
-      page,
-      (await Promise.allSettled(this._p_filters.map((x) => x.generate()))).map(
-        (x) => x.value,
-      ),
-      this,
-    );
+    page = await this._p_get_page(page);
     this._last_get = page.get.bind(page);
     page.get = this._get.bind(this, this._last_get);
 
     return page;
+  }
+
+  async _p_get_page(page) {
+    return template_resource.get_page(
+      page,
+      (
+        await Promise.allSettled(
+          this._p_filters.map((x) => x.generate(this._p_filters)),
+        )
+      ).map((x) => x.value),
+      this,
+    );
   }
 
   /**
@@ -658,6 +669,10 @@ class ResourcesBase extends MelObject {
    */
   render() {
     this._$calendar.fullCalendar('rerender');
+  }
+
+  rerender() {
+    $(window).trigger('resize');
   }
 }
 

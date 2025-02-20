@@ -35,6 +35,7 @@ class mel_cal_resources extends bnum_plugin {
                 
                 $this->include_css('style.css');
                 $this->add_hook('send_page', [$this, 'render_page']);
+                $this->rc()->output->set_env('lang', $this->rc()->get_user_language());
             }
 
 

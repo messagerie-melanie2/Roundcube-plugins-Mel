@@ -5,6 +5,7 @@ import {
   BnumMessage,
   eMessageType,
 } from '../../mel_metapage/js/lib/classes/bnum_message.js';
+import { DialogMultiPage } from '../../mel_metapage/js/lib/classes/DialogMultiPage.js';
 import { MelEnumerable } from '../../mel_metapage/js/lib/classes/enum.js';
 import { MelDialog } from '../../mel_metapage/js/lib/classes/modal.js';
 import {
@@ -12,6 +13,10 @@ import {
   DATE_HOUR_FORMAT,
 } from '../../mel_metapage/js/lib/constants/constants.dates.js';
 import { EMPTY_STRING } from '../../mel_metapage/js/lib/constants/constants.js';
+import {
+  HTMLIconMelButton,
+  HTMLMelButton,
+} from '../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/HTMLMelButton.js';
 import { MelHtml } from '../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { getRelativePos } from '../../mel_metapage/js/lib/mel.js';
 import { BnumEvent } from '../../mel_metapage/js/lib/mel_events.js';
@@ -20,6 +25,7 @@ import { Mel_Promise } from '../../mel_metapage/js/lib/mel_promise.js';
 import { FavoriteLoader } from './lib/favorite_loader.js';
 import { ResourcesBase } from './lib/resource_base.js';
 import { ResourceLocation } from './lib/resource_location.js';
+import { HTMLTabSelectElement } from './lib/webcomponents/HTMLTabSelectElement.js';
 
 export { ResourceDialog };
 
@@ -177,7 +183,9 @@ class ResourceDialog extends MelObject {
   async _init() {
     let page;
     let resources = [];
+    let baseHeight = 500;
 
+    //Si il n'y a qu'un seul type de ressources
     if (this._resource_type) {
       resources.push(
         new ResourcesBase(
@@ -205,12 +213,90 @@ class ResourceDialog extends MelObject {
 
       page = await resources[resources.length - 1].create_page();
     } else {
-      throw 'not implemented';
+      baseHeight = 550;
+      //Récupération des différentes ressources
+      let pages = [];
+      const configResources = rcmail.env.cal_resources.resources;
+      for (const key in configResources) {
+        //Ignorer les éléments qui sont dans la liste de type d'évènements
+        if (rcmail.env.cal_resources.resources[key].is_option) continue;
+
+        //Enregistrer les textes dans rcmail.labels pour le select
+        if (
+          rcmail.env.cal_resources.resources[key].labels?.[
+            rcmail.env.lang.toLowerCase()
+          ] &&
+          !this.rcmail().labels[`mel_cal_resources.${key}`]
+        ) {
+          this.rcmail().labels[`mel_cal_resources.${key}`] =
+            rcmail.env.cal_resources.resources[key].labels[
+              rcmail.env.lang.toLowerCase()
+            ];
+        }
+
+        resources.push(
+          new ResourcesBase(key, rcmail.env.cal_resources.filters[key], {
+            startRender: false,
+          }),
+        );
+
+        resources[resources.length - 1].all_day = this._date.is_all_day;
+        resources[resources.length - 1].start = this._date.date_start;
+        resources[resources.length - 1].end = this._date.date_end;
+        resources[resources.length - 1].event_on_save.push(
+          this._on_save.bind(this),
+        );
+        resources[resources.length - 1].location_id = this._location.id;
+
+        if (this._resource && window.selected_resources[this._location.id]) {
+          resources[resources.length - 1].selected_resource =
+            window.selected_resources[this._location.id];
+          resources[resources.length - 1].try_add_resource(
+            window.selected_resources[this._location.id],
+            false,
+          );
+        }
+
+        page = await resources[resources.length - 1].create_page();
+        pages.push(page);
+      }
+
+      page = new DialogMultiPage('index', pages, "Choix d'une ressource.", {
+        pluginLocalisation: 'mel_cal_resources',
+        title: 'Réserver une ressource',
+      });
+
+      const tabs = pages.map((x) => x.name).join(',');
+      //prettier-ignore
+      page.start_update_content({ force_restart: true })
+      .customElement(HTMLTabSelectElement, { 'data-navs':tabs, 'data-description':'Choix d\'une ressource.', 'data-ex-label':'mel_cal_resources' }).observe({ key:'tabs' })
+        .each((jshtml, page) => {
+          /**
+           * @type {DialogPage}
+           */
+          const dialogPage = page;
+
+          return jshtml.webcomponents()
+            .tab_panel(dialogPage.name).observe({ key:dialogPage.name })
+            .end();
+          
+        }, ...pages)
+      .end()
+      .div({ class:'multipage-footer' }).css('display', 'flex')
+        .customElement(HTMLIconMelButton, { class:'btn btn-danger', 'data-icon': 'cancel' }).attr('onclick', () => {
+          this.dialog.hide();
+        })
+          .text('Annuler')
+        .end()
+        .customElement(HTMLIconMelButton, { 'data-icon': 'arrow_right_alt' }).attr('onclick', this._on_save.bind(this)).css('margin-left', '5px')
+          .text('Sauvegarder')
+        .end()
+      .end();
     }
 
     this.dialog = new MelDialog(page, {
       width: 800,
-      height: 500,
+      height: baseHeight,
       close: () => {
         $('#eventedit').css('opacity', EMPTY_STRING);
         if (!EventView.INSTANCE.is_jquery_dialog()) {
@@ -221,6 +307,30 @@ class ResourceDialog extends MelObject {
         }
       },
     });
+
+    //Si multi-modale, faire remplacer le fonctionnement de page par défaut de la dialog
+    if (!this._resource_type) {
+      this.dialog.page_manager.onswitchpage.add('first', () => {
+        this.dialog.page_manager.onswitchpage.remove('default');
+        this.dialog.page_manager.onswitchpage.remove('first');
+
+        this.dialog.page_manager
+          .get('index')
+          .observed.tabs.on('api:tabswitched', (e) => {
+            const page = e.originalEvent.detail;
+            this.dialog.switch_page(page);
+            this.get_current_page_resource().rerender();
+          });
+
+        if (this._resource) {
+          this.dialog.page_manager
+            .get('index')
+            .observed.tabs[0].selectTab(
+              this._resource.resource_type.toLowerCase(),
+            );
+        }
+      });
+    }
 
     this.resources = resources;
   }
@@ -397,8 +507,21 @@ class ResourceDialog extends MelObject {
     this._selected_resource = this.get_selected_resource();
     return new Mel_Promise((current_promise) => {
       current_promise.start_resolving();
-
       this.dialog.show();
+
+      if (this.dialog.page_manager?.get?.('index')?.observed) {
+        for (const tab of this.dialog.page_manager.get('index').observed.tabs[0]
+          .rawTabs) {
+          this.dialog.add_page(tab, {
+            content: EMPTY_STRING,
+            title: EMPTY_STRING,
+          });
+        }
+
+        this.dialog.switch_page(
+          this.dialog.page_manager.get('index').observed.tabs[0].rawTabs[0],
+        );
+      }
 
       if (!this._selected_resource)
         this._selected_resource = this.get_selected_resource();
@@ -556,7 +679,9 @@ class ResourceDialog extends MelObject {
    */
   get_current_page_resource() {
     return MelEnumerable.from(this.resources)
-      .where((x) => x._name === this.dialog.page_manager._current_page)
+      .where((x) => {
+        return x._name === this.dialog.page_manager._current_page;
+      })
       .firstOrDefault();
   }
 
@@ -565,9 +690,7 @@ class ResourceDialog extends MelObject {
    * @returns {?import('./lib/resource_base.js').ResourceData}
    */
   get_selected_resource() {
-    return MelEnumerable.from(this.resources)
-      .where((x) => x._name === this.dialog.page_manager._current_page)
-      .firstOrDefault()?.selected_resource;
+    return this.get_current_page_resource()?.selected_resource;
   }
 
   /**

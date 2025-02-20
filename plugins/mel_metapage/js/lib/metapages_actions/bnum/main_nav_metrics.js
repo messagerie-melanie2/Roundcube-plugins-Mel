@@ -1,4 +1,5 @@
 import { BnumLog } from '../../classes/bnum_log.js';
+import { FramesManager } from '../../classes/frame_manager.js';
 import { Look, LookLabel } from '../../classes/metrics.js';
 import { AMetricsModule } from '../ametrics_module.js';
 
@@ -56,7 +57,7 @@ export class MainNavMetrics extends AMetricsModule {
   tasks_corrections(task) {
     switch (task) {
       case 'discussion':
-        task = 'chat';
+        task = 'tchap';
         break;
 
       default:
@@ -75,7 +76,7 @@ export class MainNavMetrics extends AMetricsModule {
   }
 
   async _send_current_task() {
-    const task = this.tasks_corrections(this.rc_data.task);
+    const task = this.tasks_corrections(FramesManager.Instance.currentTask);
 
     if (!current_tasks_to_ignore.includes(task)) {
       BnumLog.info('_send_current_task', 'send current task : ', task);

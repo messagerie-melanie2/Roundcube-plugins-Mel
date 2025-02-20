@@ -108,6 +108,7 @@ class MelObject {
     /**
      * @type {{task:string}}
      * @package
+     * @deprecated Renverra forcément `undefined`, utilisez plutôt {@link FramesManager.Instance.currentTask}
      */
     this.rc_data = { task: '' };
     Object.defineProperties(this, {

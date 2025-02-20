@@ -183,7 +183,6 @@ class ResourceDialog extends MelObject {
   async _init() {
     let page;
     let resources = [];
-    let baseHeight = 500;
 
     //Si il n'y a qu'un seul type de ressources
     if (this._resource_type) {
@@ -213,7 +212,6 @@ class ResourceDialog extends MelObject {
 
       page = await resources[resources.length - 1].create_page();
     } else {
-      baseHeight = 550;
       //Récupération des différentes ressources
       let pages = [];
       const configResources = rcmail.env.cal_resources.resources;
@@ -294,9 +292,10 @@ class ResourceDialog extends MelObject {
       .end();
     }
 
+    //90 => 60px d'es navigations + 30px de padding (15 et 15)
     this.dialog = new MelDialog(page, {
-      width: 800,
-      height: baseHeight,
+      width: window.innerWidth - 90,
+      height: window.innerHeight - 90,
       close: () => {
         $('#eventedit').css('opacity', EMPTY_STRING);
         if (!EventView.INSTANCE.is_jquery_dialog()) {

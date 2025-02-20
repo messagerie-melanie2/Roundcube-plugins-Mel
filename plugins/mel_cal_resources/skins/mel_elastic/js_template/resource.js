@@ -51,7 +51,7 @@ function get_page(page, filters, resource) {
             .end()
         .end()
     .end()
-    .div({ style:'margin:10px' }).attr('data-resourcetype', resource._name)
+    .div().attr('data-resourcetype', resource._name).addClass('rcs-page-content')
         .div({ class: 'rc-page-filters row' })
             .each((jhtml, filter) => {
                 return jhtml.add_child(filter);

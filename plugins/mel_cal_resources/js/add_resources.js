@@ -221,6 +221,19 @@ class ResourceDialog extends MelObject {
         //Ignorer les éléments qui sont dans la liste de type d'évènements
         if (rcmail.env.cal_resources.resources[key].is_option) continue;
 
+        //Enregistrer les textes dans rcmail.labels pour le select
+        if (
+          rcmail.env.cal_resources.resources[key].labels?.[
+            rcmail.env.lang.toLowerCase()
+          ] &&
+          !this.rcmail().labels[`mel_cal_resources.${key}`]
+        ) {
+          this.rcmail().labels[`mel_cal_resources.${key}`] =
+            rcmail.env.cal_resources.resources[key].labels[
+              rcmail.env.lang.toLowerCase()
+            ];
+        }
+
         resources.push(
           new ResourcesBase(key, rcmail.env.cal_resources.filters[key], {
             startRender: false,

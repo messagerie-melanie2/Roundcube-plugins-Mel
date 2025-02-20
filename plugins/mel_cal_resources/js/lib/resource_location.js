@@ -411,8 +411,12 @@ class ResourceLocation extends AExternalLocationPart {
             ResourceLocation,
           );
           tmp.resource_type = key;
+          tmp.rcs_labels = iterator.labels;
           tmp.OptionValue = function () {
             return this.resource_type;
+          }.bind(tmp);
+          tmp.CustomText = function () {
+            return this.rcs_labels?.[rcmail.env.lang.toLowerCase()];
           }.bind(tmp);
           tmp.Has = function (event) {
             return (

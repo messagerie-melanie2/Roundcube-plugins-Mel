@@ -182,6 +182,16 @@ class ALocationPart extends IDestroyable {
   static OptionValue() {}
 
   /**
+ * Texte à mettre si on ne veux pas passer par le système de langue de roundcube
+ * @protected
+ * @return {?string}
+ * @static
+ */
+  static CustomText() {
+    return null;
+  }
+
+  /**
    * Nombre maximum de cette classe qui peut être utilisé
    * @virtual
    * @returns {number}
@@ -1713,10 +1723,11 @@ export class LocationPartManager extends IDestroyable {
               is_selected ? 'selected' : 'not_selected',
             )
             .text(
-              rcmail.gettext(
-                `event-location-${item.OptionValue()}`,
-                item.PluginName?.() ?? 'mel_metapage',
-              ),
+              item.CustomText() ||
+                rcmail.gettext(
+                  `event-location-${item.OptionValue()}`,
+                  item.PluginName?.() ?? 'mel_metapage',
+                ),
             );
 
           if (is_disabled)

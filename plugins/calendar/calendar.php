@@ -3144,8 +3144,8 @@ $("#rcmfd_new_category").keypress(function(event) {
     public static function event_diff($a, $b)
     {
         $diff   = [];
-        //PAMELA - 0007779: MAJ event: Lorsque l'organisateur ajoute un rappel sur l'évènement, l'implanter dans agenda sans transmission de notif mail
-        $ignore = ['changed' => 1, 'attachments' => 1,'x_alarm_minutes' => 1, 'alarms' => 1, 'valarms' => 1, 'alarm_dismissed' => 1, 'x_moz_lastack' => 1, 'x_moz_snooze_time' => 1];
+        //PAMELA - 0007779: MAJ event: Lorsque l'organisateur ajoute un rappel sur l'évènement, l'implanter dans agenda sans transmission de notif mail + 0008049
+        $ignore = ['calendar_token' => 1, 'changed' => 1, 'attachments' => 1,'x_alarm_minutes' => 1, 'alarms' => 1, 'valarms' => 1, 'alarm_dismissed' => 1, 'x_moz_lastack' => 1, 'x_moz_snooze_time' => 1];
 
         foreach (array_unique(array_merge(array_keys($a), array_keys($b))) as $key) {
             if (empty($ignore[$key]) && $key[0] != '_') {

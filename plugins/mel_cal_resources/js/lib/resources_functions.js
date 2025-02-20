@@ -186,57 +186,6 @@ class ResourceBaseFunctions {
   }
 
   /**
-   * Génère le bouton pour mettre en favoris une ressource
-   * @param {import('./resource_base.js').ResourceData} data Donnée de la ressource
-   * @returns {external:jQuery}
-   * @this ResourcesBase
-   */
-  resource_render_favorite(data) {
-    let favorite_button = rcs_cell_template.favorite_button_template;
-
-    favorite_button.observed.favorite
-      .attr('id', `button-${data.uid}-${this.location_id}`)
-      .attr('data-email', data.email)
-      .attr('data-favorite', this.get_env('fav_resources')[data.email] ?? false)
-      .removeAttr('onclick');
-
-    let generated_favorite_button = favorite_button.generate_with_observer();
-
-    generated_favorite_button.observed.favorite.on(
-      'click',
-      this._functions.on_star_clicked,
-    );
-
-    return generated_favorite_button.generated;
-  }
-
-  /**
-   * Génère le radio pour séléctionner la ressource.
-   * @param {import('./resource_base.js').ResourceData} data Donnée de la ressource
-   * @returns {extenral:jQuery}
-   * @this ResourcesBase
-   */
-  resource_render_option(data) {
-    let radio_button = rcs_cell_template.radio_button_selector_template;
-
-    radio_button.observed.radio.attrs({
-      id: `radio-${data.uid}-${this.location_id}`,
-      value: data.email,
-      'data-email': data.email,
-    });
-
-    if (data.selected) radio_button.observed.radio.attr('checked', 'checked');
-
-    let generated_radio_button = radio_button.generate_with_observer();
-    generated_radio_button.observed.radio.on(
-      'click',
-      this._functions.on_resource_selected,
-    );
-
-    return generated_radio_button.generated;
-  }
-
-  /**
    * Génère le radio pour séléctionner la ressource.
    * @param {import('./resource_base.js').ResourceData} data Donnée de la ressource
    * @returns {HTMLResourceElement}
@@ -268,21 +217,10 @@ class ResourceBaseFunctions {
    */
   resource_render(resourceObj, labelTds) {
     if (resourceObj.id !== 'resources') {
-      /*let cell = */ labelTds
+      labelTds
         .find('.fc-cell-content')
         .addClass('cfc-resource')
         .append(this._functions.resource_render_element(resourceObj.data));
-
-      // //Change le span par un label
-      // cell = cell.find('.fc-cell-text')?.[0];
-
-      // if (cell) {
-      //   cell.setAttribute(
-      //     'for',
-      //     `radio-${resourceObj.data.uid}-${this.location_id}`,
-      //   );
-      //   cell.outerHTML = cell.outerHTML.replaceAll('span', 'label');
-      // }
     }
   }
 

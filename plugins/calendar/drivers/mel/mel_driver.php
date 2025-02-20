@@ -2344,6 +2344,9 @@ class mel_driver extends calendar_driver {
           $_event['recurrence'] = $this->_read_event_exceptions($event, $recurrence);
         }
       }
+
+      // Créateur de la ressource
+      $_event['creator'] = driver_mel::gi()->getUser($event->owner)->name;
     }
     else {
       // Test si privé
@@ -2948,7 +2951,7 @@ class mel_driver extends calendar_driver {
             $from = strtotime($event['start']->format(self::DB_DATE_FORMAT));
             $to = strtotime($event['end']->format(self::DB_DATE_FORMAT));
           }
-          $result[] = array($from,$to,isset($fbtypemap[$event['free_busy']]) ? $fbtypemap[$event['free_busy']] : calendar::FREEBUSY_BUSY);
+          $result[] = array($from,$to,isset($fbtypemap[$event['free_busy']]) ? $fbtypemap[$event['free_busy']] : calendar::FREEBUSY_BUSY,$event['creator']);
         }
         return $result;
       }

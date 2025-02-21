@@ -426,12 +426,31 @@ export class Manager extends MelObject {
     if (rcmail.env.has_liked) {
       button_add_like.addClass('filled');
     }
+    button_add_like.attr('title', rcmail.env.like_reactions.join(', ') + 
+    (rcmail.env.like_count > 1 ? this.gettext('mel_forum.liked_this_plural') : (rcmail.env.like_count === 1 ? this.gettext('mel_forum.liked_this_sing') : this.gettext('mel_forum.like_action'))));
+
     if (rcmail.env.has_disliked) {
       button_add_dislike.addClass('filled');
     }
+    button_add_dislike.attr('title', rcmail.env.dislike_reactions.join(', ') + 
+    (rcmail.env.dislike_count > 1 ? this.gettext('mel_forum.disliked_this_plural') : (rcmail.env.dislike_count === 1 ? this.gettext('mel_forum.disliked_this_sing') : this.gettext('mel_forum.dislike_action'))));
 
+    //listenner des boutons likes est dislike
+    button_add_like.on('keydown', (event) => {
+      if (event.keyCode === 13) {
+        // Touche "Entrée"
+        this.addLikeOrDislike('like');
+      }
+    });
     button_add_like.click(() => {
       this.addLikeOrDislike('like');
+    });
+
+    button_add_dislike.on('keydown', (event) => {
+      if (event.keyCode === 13) {
+        // Touche "Entrée"
+        this.addLikeOrDislike('dislike');
+      }
     });
     button_add_dislike.click(() => {
       this.addLikeOrDislike('dislike');
@@ -515,6 +534,7 @@ export class Manager extends MelObject {
       action: 'delete_post',
       params: {
         _uid: rcmail.env.post_uid,
+        _workspace_uid: rcmail.env.workspace_uid,
       },
       processData: false,
       contentType: false,
@@ -646,6 +666,49 @@ export class Manager extends MelObject {
     // Afficher la modale
     dialog.show();
   }
+  /**
+   * Met à jour le compteur de like
+   * @param {*} span élément html à mettre à jour
+   * @param {*} value modification apportée au compteur
+   */
+  updateCounter(span, value) {
+    let currentValue = parseInt(span.text()) || 0; // Récupérer la valeur actuelle
+    let newValue = currentValue + value;
+    span.text(newValue);
+  }
+
+  /**
+     * Met à jour le title de la reaction
+     * @param {*} div élément html à mettre à jour
+     * @param {*} counter div du compteur de reaction
+     * @param {*} type type de la reaction (like ou dislike)
+     * @param {boolean} add booleen true si on ajoute une reaction false si on l'enlève
+     */
+  updateTitle(div, counter, type, add) {
+    let currentValue = parseInt(counter.text()) || 0;
+    let newstring = div.attr('title');
+    let dis = type === 'like' ? '' : 'dis';
+    switch (currentValue) {
+        case 0:
+            newstring = this.gettext('mel_forum.' + dis + 'like_action');
+            break;
+        case 1:
+            if (add){
+                newstring = this.get_env('user_fullname') + this.gettext('mel_forum.' + dis + 'liked_this_sing');
+            } else {
+                newstring = newstring.replace(this.get_env('user_fullname'), '').replace(', ', '').replace(this.gettext('mel_forum.' + dis + 'liked_this_plural'), this.gettext('mel_forum.' + dis + 'liked_this_sing'));
+            }
+            break;
+        default:
+            if (add) {
+                newstring = this.get_env('user_fullname') + ', ' + newstring.replace(this.gettext('mel_forum.' + dis + 'liked_this_sing'), this.gettext('mel_forum.' + dis + 'liked_this_plural'));
+            } else {
+                newstring = newstring.replace(this.get_env('user_fullname'), '');
+            }
+            break;
+    }
+    div.attr('title',newstring);
+}
 
   /**
    * Gestion des likes et dislike des posts
@@ -658,43 +721,43 @@ export class Manager extends MelObject {
       params: {
         _post_id: rcmail.env.post_id,
         _type: type,
+        _workspace_uid: rcmail.env.workspace_uid,
       },
       processData: false,
       contentType: false,
       on_success: () => {
         let like_div = $('#add_like');
-        let like_counter = like_div.find('span.ml-2');
         let dislike_div = $('#add_dislike');
+        let like_counter = like_div.find('span.ml-2');
         let dislike_counter = dislike_div.find('span.ml-2');
 
         if (type === 'like') {
-          if (like_div.hasClass('filled')) {
-            like_div.removeClass('filled');
-            this.updateCounter(like_counter, -1);
-          } else {
-            like_div.addClass('filled');
-            this.updateCounter(like_counter, 1);
-
-            if (dislike_div.hasClass('filled')) {
-              dislike_div.removeClass('filled');
-              this.updateCounter(dislike_counter, -1);
-            }
-          }
-        } else if (type === 'dislike') {
-          if (dislike_div.hasClass('filled')) {
-            dislike_div.removeClass('filled');
-            this.updateCounter(dislike_counter, -1);
-          } else {
-            dislike_div.addClass('filled');
-            this.updateCounter(dislike_counter, 1);
-
-            if (like_div.hasClass('filled')) {
-              like_div.removeClass('filled');
-              this.updateCounter(like_counter, -1);
-            }
-          }
+            var opposite_type = 'dislike';
+        } else {
+            var opposite_type = 'like';
         }
-      },
+        let target_div = type === 'like' ? like_div : dislike_div;
+        let target_counter = type === 'like' ? like_counter : dislike_counter;
+        let opposite_div = type === 'like' ? dislike_div : like_div;
+        let opposite_counter = type === 'like' ? dislike_counter : like_counter;
+
+        if (target_div.hasClass('filled')) {
+            target_div.removeClass('filled');
+            this.updateCounter(target_counter, -1);
+            this.updateTitle(target_div, target_counter, type, false);
+
+        } else {
+            target_div.addClass('filled');
+            this.updateCounter(target_counter, 1);
+            this.updateTitle(target_div, target_counter, type, true);
+
+            if (opposite_div.hasClass('filled')) {
+                opposite_div.removeClass('filled');
+                this.updateCounter(opposite_counter, -1);
+                this.updateTitle(opposite_div, opposite_counter, opposite_type, false);
+            }
+        }
+    },
       on_error: (err) => {
         BnumMessage.DisplayMessage(
           rcmail.gettext('mel_forum.error_editing'),
@@ -702,15 +765,5 @@ export class Manager extends MelObject {
         );
       },
     });
-  }
-  /**
-   * Met à jour le compteur de like , si on est à 0 n'affiche rien
-   * @param {*} span élément html à mettre à jour
-   * @param {*} value modification apportée au compteur
-   */
-  updateCounter(span, value) {
-    let currentValue = parseInt(span.text()) || 0; // Récupérer la valeur actuelle
-    let newValue = currentValue + value;
-    span.text(newValue);
   }
 }

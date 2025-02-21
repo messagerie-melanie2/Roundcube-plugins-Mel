@@ -312,7 +312,7 @@ class ResourcesBase extends MelObject {
       resourceRender: this._functions.resource_render,
       defaultView: 'timelineDay',
       schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
-      height: 200,
+      height: () => this._$calendar.height(),
       firstHour: settings.first_hour,
       minTime: this.#_set_buisness_hour(settings.work_start),
       maxTime: this.#_set_buisness_hour(settings.work_end),

@@ -275,7 +275,7 @@ class ResourceDialog extends MelObject {
           const dialogPage = page;
 
           return jshtml.webcomponents()
-            .tab_panel(dialogPage.name).observe({ key:dialogPage.name })
+            .tab_panel(dialogPage.name, { class:'multi-page-pan' }).observe({ key:dialogPage.name })
             .end();
           
         }, ...pages)
@@ -292,7 +292,7 @@ class ResourceDialog extends MelObject {
       .end();
     }
 
-    //90 => 60px d'es navigations + 30px de padding (15 et 15)
+    //90 => 60px des navigations + 30px de padding (15 et 15)
     this.dialog = new MelDialog(page, {
       width: window.innerWidth - 90,
       height: window.innerHeight - 90,
@@ -328,6 +328,8 @@ class ResourceDialog extends MelObject {
               this._resource.resource_type.toLowerCase(),
             );
         }
+
+        this.dialog.dialog.addClass('multi-page');
       });
     }
 

@@ -64,6 +64,8 @@
 }
 
 .rc-page-cal {
+  min-height: 100px;
+
   .fc-header-toolbar {
     display: none;
   }
@@ -71,6 +73,10 @@
 
 .mel-dialog-page {
   height: 100%;
+
+  .multi-page & {
+    height: 94%;
+  }
 
   .fc {
     flex: 1;
@@ -130,7 +136,24 @@ bnum-resource-selector {
 }
 
 bnum-tabs-select {
+  height: 95%;
+
   .mel-ui-tab-system {
     padding: 0 10px;
+    margin-bottom: 10px;
   }
+
+  .pannels-contents {
+    height: 100%;
+
+    bnum-wrapper {
+      height: 100%;
+    }
+  }
+}
+
+html .multipage-footer {
+  position: absolute;
+  bottom: 10px;
+  right: 15px;
 }

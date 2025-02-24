@@ -455,11 +455,16 @@ export class Slot {
 
   /**
    * Créateur du free-busy
-   * @type {string | false}
+   * @type {Readonly<{id: string | false, name: string | false}>}
    * @readonly
    */
   get creator() {
-    return this.#_creator || false;
+    const splited = (this.#_creator || '/').split('/');
+
+    return {
+      id: splited?.[0] || false,
+      name: splited?.[1] || false,
+    };
   }
 
   /**

@@ -404,16 +404,16 @@ class ResourceBaseFunctions {
 class ResourceEvent {
   /**
    * Constructeur de la classe
-   * @param {Slot} slot Slot qui contient les données
+   * @param {import('../../../mel_metapage/js/lib/calendar/event/parts/guestspart.free_busy.js').Slot} slot Slot qui contient les données
    * @param {string} email Email qui correspond à l'id
    */
   constructor(slot, email) {
     /**
-     * Titre de l'évènement
+     * Titre de l'évènement, occupé si on ne connaît pas l'organisateur
      * @type {string}
      * @default 'Occupé'
      */
-    this.title = slot.creator;
+    this.title = slot.creator.name || 'Occupé';
     /**
      * Date de début de l'évènement
      * @type {external:moment}

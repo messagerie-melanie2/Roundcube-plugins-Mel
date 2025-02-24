@@ -3,6 +3,7 @@ import { BnumMessage } from '../../../mel_metapage/js/lib/classes/bnum_message.j
 import { MelEnumerable } from '../../../mel_metapage/js/lib/classes/enum.js';
 import { DATE_TIME_FORMAT } from '../../../mel_metapage/js/lib/constants/constants.dates.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
+import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { FavoriteLoader } from './favorite_loader.js';
 import { ResourcesBase } from './resource_base.js';
 import { HTMLResourceElement } from './webcomponents/HTMLResourceElement.js';
@@ -413,7 +414,11 @@ class ResourceEvent {
      * @type {string}
      * @default 'Occupé'
      */
-    this.title = slot.creator.name || 'Occupé';
+    this.title =
+      (slot.creator.id === MelObject.Empty().get_env('username')
+        ? MelObject.Empty().gettext('me', 'mel_cal_resources')
+        : slot.creator.name) ||
+      MelObject.Empty().gettext('busy', 'mel_cal_resources');
     /**
      * Date de début de l'évènement
      * @type {external:moment}

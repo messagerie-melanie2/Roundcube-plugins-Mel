@@ -320,7 +320,7 @@ export class Slots {
       slot.end.format(DATE_TIME_FORMAT) ===
         next_slot.start.format(DATE_TIME_FORMAT) &&
       slot.state === next_slot.state &&
-      slot.creator === next_slot.creator
+      slot.creator.id === next_slot.creator.id
     );
   }
 
@@ -457,12 +457,18 @@ export class Slot {
    * @readonly
    */
   get creator() {
-    const splited = (this.#_creator || '/').split('/');
+    let freeBusyCreator;
+    if (this.#_creator?.id && this.#_creator?.name) freeBusyCreator = this.#_creator;
+    else {
+      const splited = (this.#_creator || '/').split('/');
 
-    return {
-      id: splited?.[0] || false,
-      name: splited?.[1] || false,
-    };
+      freeBusyCreator = {
+        id: splited?.[0] || false,
+        name: splited?.[1] || false,
+      };
+    }
+
+    return freeBusyCreator;
   }
 
   /**

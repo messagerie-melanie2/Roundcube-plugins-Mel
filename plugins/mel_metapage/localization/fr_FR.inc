@@ -504,3 +504,4 @@ $labels['compose-mail'] = 'Composer un email';
 $labels['note-delete-warning'] = 'Attention ! Vous allez supprimer votre note, si vous êtes sûr, appuyez sur "ok".';
 $labels['search_in_addressbook'] = 'Rechercher dans l\'annuaire';
 $labels['start_search'] = 'Lancer la recherche';
+$labels['erase_text'] = 'Effacer la saisie';

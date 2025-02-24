@@ -503,3 +503,4 @@ $labels['login_da'] = "Si vous êtes sur internet et n'avez pas activé l'authen
 $labels['compose-mail'] = 'Composer un email';
 $labels['note-delete-warning'] = 'Attention ! Vous allez supprimer votre note, si vous êtes sûr, appuyez sur "ok".';
 $labels['search_in_addressbook'] = 'Rechercher dans l\'annuaire';
+$labels['start_search'] = 'Lancer la recherche';

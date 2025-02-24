@@ -3,6 +3,7 @@ import { BnumMessage } from '../../../mel_metapage/js/lib/classes/bnum_message.j
 import { MelEnumerable } from '../../../mel_metapage/js/lib/classes/enum.js';
 import { DATE_TIME_FORMAT } from '../../../mel_metapage/js/lib/constants/constants.dates.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
+import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { FavoriteLoader } from './favorite_loader.js';
 import { ResourcesBase } from './resource_base.js';
 import { HTMLResourceElement } from './webcomponents/HTMLResourceElement.js';
@@ -404,16 +405,20 @@ class ResourceBaseFunctions {
 class ResourceEvent {
   /**
    * Constructeur de la classe
-   * @param {Slot} slot Slot qui contient les données
+   * @param {import('../../../mel_metapage/js/lib/calendar/event/parts/guestspart.free_busy.js').Slot} slot Slot qui contient les données
    * @param {string} email Email qui correspond à l'id
    */
   constructor(slot, email) {
     /**
-     * Titre de l'évènement
+     * Titre de l'évènement, occupé si on ne connaît pas l'organisateur
      * @type {string}
      * @default 'Occupé'
      */
-    this.title = rcmail.gettext('mel_cal_resources.busy');
+    this.title =
+      (slot.creator.id === MelObject.Empty().get_env('username')
+        ? MelObject.Empty().gettext('me', 'mel_cal_resources')
+        : slot.creator.name) ||
+      MelObject.Empty().gettext('busy', 'mel_cal_resources');
     /**
      * Date de début de l'évènement
      * @type {external:moment}
@@ -429,5 +434,11 @@ class ResourceEvent {
      * @type {string}
      */
     this.resourceId = email;
+
+    //Diff' entre les autres utilisateurs et l'utilisateur en cours.
+    if (slot.creator.id === MelObject.Empty().get_env('username')) {
+      this.borderColor = 'rouge';
+      this.backgroundColor = 'green';
+    }
   }
 }

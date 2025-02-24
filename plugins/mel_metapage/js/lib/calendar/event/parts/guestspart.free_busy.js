@@ -106,7 +106,6 @@ export class FreeBusyGuests {
             _remote: 1,
           },
           success: function (data) {
-            console.log('received', data);
             // find attendee
             var i,
               attendee = null;
@@ -294,7 +293,6 @@ export class Slots {
     for (let index = 0, len = this.slots.length; index < len; ++index) {
       current_slot = this.slots[index];
       next_slot = this.slots[index + 1];
-      console.log('slot', current_slot.creator, next_slot?.creator);
       if (!slot) {
         if (this.#_is_same(current_slot, next_slot)) {
           slot = current_slot;

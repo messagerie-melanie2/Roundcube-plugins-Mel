@@ -3044,7 +3044,7 @@ $("#rcmfd_new_category").keypress(function(event) {
 
                 foreach ($fblist as $slot) {
                     // PAMELA - Createur du freebusy
-                    list($from, $to, $type, $creator) = $slot;
+                    list($from, $to, $type, $c) = $slot;
 
                     if ($from < $t_end && $to > $t) {
                         $status = isset($type) ? $type : self::FREEBUSY_BUSY;
@@ -3054,9 +3054,8 @@ $("#rcmfd_new_category").keypress(function(event) {
                         // }
                         $max_freebusy = $this->compare_freebusy($status, $max_freebusy);
 
-                    }
-                    else {
-                        $creator = '';
+                        // PAMELA - Createur du freebusy
+                        $creator = $c;
                     }
                 }
             }

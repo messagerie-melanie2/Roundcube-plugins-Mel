@@ -5,6 +5,12 @@
 #taskmenu .button-mail,
 #taskmenu .button-calendar,
 #taskmenu .button-contacts,
+#taskmenu .button-mel-wekan,
+#otherapps .button-home,
+#otherapps .button-mail,
+#otherapps .button-calendar,
+#otherapps .button-contacts,
+#otherapps .button-mel-wekan,
 #sections-table #rcmrowmailbox,
 #sections-table #rcmrowmailview,
 #sections-table #rcmrowcompose,
@@ -25,6 +31,9 @@
 #rcmrowaccesinternet,
 #rcmrowgestionnairelistes,
 #rcmrowsuspectsurls,
+#rcmrowmel_news_flux,
+#news-button-add,
+#button-tchap-chat,
 #settingstabpluginmelroadmap {
   display: none !important;
 }

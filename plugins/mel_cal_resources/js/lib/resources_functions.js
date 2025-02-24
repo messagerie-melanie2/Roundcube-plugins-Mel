@@ -434,5 +434,11 @@ class ResourceEvent {
      * @type {string}
      */
     this.resourceId = email;
+
+    //Diff' entre les autres utilisateurs et l'utilisateur en cours.
+    if (slot.creator.id === MelObject.Empty().get_env('username')) {
+      this.borderColor = 'rouge';
+      this.backgroundColor = 'green';
+    }
   }
 }

@@ -106,6 +106,7 @@ export class FreeBusyGuests {
             _remote: 1,
           },
           success: function (data) {
+            console.log('received', data);
             // find attendee
             var i,
               attendee = null;
@@ -256,7 +257,9 @@ export class Slots {
 
     for (let index = 0, len = data.slots.length; index < len; ++index) {
       const slot = data.slots[index];
-      this.slots.push(new Slot(this.start, this.interval, index, slot));
+      this.slots.push(
+        new Slot(this.start, this.interval, index, slot, data.creators[index]),
+      );
     }
   }
 
@@ -291,13 +294,14 @@ export class Slots {
     for (let index = 0, len = this.slots.length; index < len; ++index) {
       current_slot = this.slots[index];
       next_slot = this.slots[index + 1];
+      console.log('slot', current_slot.creator, next_slot?.creator);
       if (!slot) {
-        if (this._is_same(current_slot, next_slot)) {
+        if (this.#_is_same(current_slot, next_slot)) {
           slot = current_slot;
         } else yield current_slot;
       } else {
-        if (!this._is_same(current_slot, next_slot)) {
-          slot = this._extend_slot(slot, current_slot);
+        if (!this.#_is_same(current_slot, next_slot)) {
+          slot = this.#_extend_slot(slot, current_slot);
           yield slot;
           slot = null;
         }
@@ -305,21 +309,37 @@ export class Slots {
     }
   }
 
-  _is_same(slot, next_slot) {
+  /**
+   * Vérifie si un slot est identique ou non
+   * @param {Slot} slot
+   * @param {Slot} next_slot
+   * @returns {boolean}
+   * @private
+   */
+  #_is_same(slot, next_slot) {
     return (
       next_slot &&
       slot.end.format(DATE_TIME_FORMAT) ===
         next_slot.start.format(DATE_TIME_FORMAT) &&
-      slot.state === next_slot.state
+      slot.state === next_slot.state &&
+      slot.creator === next_slot.creator
     );
   }
 
-  _extend_slot(slot, next_slot) {
+  /**
+   * Vérifie si un slot est identique ou non
+   * @param {Slot} slot
+   * @param {Slot} next_slot
+   * @returns {boolean}
+   * @private
+   */
+  #_extend_slot(slot, next_slot) {
     return new Slot(
       slot.start,
       moment.duration(next_slot.end.diff(slot.start)).as('minutes'),
       0,
       slot.state,
+      slot.creator || next_slot.creator,
     );
   }
 
@@ -353,14 +373,17 @@ export class Slots {
  * @classdesc Représentation d'un créneau horraire avec l'information de sa disponibilitée ou non
  */
 export class Slot {
+  #_creator;
   /**
    *
    * @param {string | external:moment | date | number} start Date de début
    * @param {number} interval Interval entre chaque créneau
    * @param {number} index Index du créneau
    * @param {string} state Etat du créneau
+   * @param {string} creator Possesseur du free-busy
    */
-  constructor(start, interval, index, state) {
+  constructor(start, interval, index, state, creator) {
+    this.#_creator = creator;
     /**
      * Date de début du créneaux
      * @type {external:moment}
@@ -428,6 +451,15 @@ export class Slot {
         this.start.format('d') === '0' ||
         this.start.format('d') === '6',
     });
+  }
+
+  /**
+   * Créateur du free-busy
+   * @type {string | false}
+   * @readonly
+   */
+  get creator() {
+    return this.#_creator || false;
   }
 
   /**

@@ -155,26 +155,8 @@ class ResourceBaseFunctions {
 
     this.start = start;
     this.end = end;
-    if (this._functions.search(start, end, resource).any()) {
-      BnumMessage.DisplayMessage(
-        'La ressource est déjà prise à cette date.',
-        'error',
-      );
-      this.selected_resource = null;
-      $(`#radio-${resource.data.uid}-${this.location_id}`)[0].checked = false;
-    } else {
-      let searched = this._functions
-        .search(start, end, resource, {
-          includesNonPlainDate: true,
-        })
-        .toArray();
 
-      if (searched.length > 0) {
-        if (start < searched[0].start) this.end = searched[0].start;
-        else if (searched[0].end < end) this.start = searched[0].end;
-        $(`#radio-${resource.data.uid}-${this.location_id}`).click();
-      } else $(`#radio-${resource.data.uid}-${this.location_id}`).click();
-    }
+    $(`#radio-${resource.data.uid}-${this.location_id}`).click();
 
     this._$calendar.fullCalendar('refetchEvents');
   }
@@ -208,11 +190,6 @@ class ResourceBaseFunctions {
           value.resourceId === rcs.id
         );
       });
-    // .where((x) => {
-    //   if (includesNonPlainDate) {
-    //     return x.start.isBetween(sd, ed) || x.end.isBetween(sd, ed);
-    //   } else return true;
-    // });
   }
 
   /**
@@ -225,6 +202,7 @@ class ResourceBaseFunctions {
   on_resource_selected(e) {
     e = $(e.currentTarget);
 
+    //Id de la ressource se trouve entre `radio-` et `-${this.location_id}`
     const id = e
       .attr('id')
       .replace('radio-', EMPTY_STRING)
@@ -234,10 +212,43 @@ class ResourceBaseFunctions {
       .where((x) => x.data.uid === id)
       .firstOrDefault()?.data;
 
+    //On selectionne la bon ne ressource et on décoche les autres
     for (let i = 0; i < this._p_resources.length; ++i) {
       if (this._p_resources[i].data.uid === id)
         this._p_resources[i].data.selected = true;
       else this._p_resources[i].data.selected = false;
+    }
+
+    //On vérifie si la ressource est déjà prise, et on empêche la sélection si c'est le cas
+    const start = moment(this.start);
+    const end = moment(this.end);
+    if (
+      this._functions
+        .search(start, end, { id: this.selected_resource.email })
+        .any()
+    ) {
+      BnumMessage.DisplayMessage(
+        'La ressource est déjà prise à cette date.',
+        'error',
+      );
+      this.selected_resource = null;
+      e[0].checked = false;
+    } else {
+      let searched = this._functions
+        .search(
+          start,
+          end,
+          { id: this.selected_resource.email },
+          {
+            includesNonPlainDate: true,
+          },
+        )
+        .toArray();
+
+      if (searched.length > 0) {
+        if (start < searched[0].start) this.end = searched[0].start;
+        else if (searched[0].end < end) this.start = searched[0].end;
+      }
     }
 
     //Met les dates aux heures de travail

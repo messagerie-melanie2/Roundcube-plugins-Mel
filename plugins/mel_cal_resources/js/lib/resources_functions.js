@@ -10,11 +10,6 @@ import { HTMLResourceElement } from './webcomponents/HTMLResourceElement.js';
 
 export { ResourceBaseFunctions };
 
-function start_debug(val) {
-  debugger;
-  return val;
-}
-
 /**
  * Ajoute une location à la liste de location d'un évènement
  * @module Resources/ResourceBaseFunctions/Functions

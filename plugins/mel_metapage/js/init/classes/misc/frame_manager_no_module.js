@@ -55,7 +55,7 @@ var PageManager =
       },
       async SwitchFrame(
         task,
-        { changepage = true, args = null, actions = [] },
+        { changepage = true, args = null, anchor = null, actions = [] },
       ) {
         let instance;
         if (!this.Has()) instance = (await this.Load()).Instance;
@@ -65,6 +65,7 @@ var PageManager =
           changepage,
           args,
           actions,
+          anchor,
         });
       },
     };

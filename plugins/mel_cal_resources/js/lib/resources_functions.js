@@ -150,12 +150,69 @@ class ResourceBaseFunctions {
    * @frommodulethis Resources
    */
   on_selected_date(start, end, jsEvent, view, resource) {
+    start = moment(start.format('DD/MM/YYYY HH:mm'), 'DD/MM/YYYY HH:mm');
+    end = moment(end.format('DD/MM/YYYY HH:mm'), 'DD/MM/YYYY HH:mm');
+
     this.start = start;
     this.end = end;
+    if (this._functions.search(start, end, resource).any()) {
+      BnumMessage.DisplayMessage(
+        'La ressource est déjà prise à cette date.',
+        'error',
+      );
+      this.selected_resource = null;
+      $(`#radio-${resource.data.uid}-${this.location_id}`)[0].checked = false;
+    } else {
+      let searched = this._functions
+        .search(start, end, resource, {
+          includesNonPlainDate: true,
+        })
+        .toArray();
 
-    $(`#radio-${resource.data.uid}-${this.location_id}`).click();
+      if (searched.length > 0) {
+        if (start < searched[0].start) this.end = searched[0].start;
+        else if (searched[0].end < end) this.start = searched[0].end;
+        $(`#radio-${resource.data.uid}-${this.location_id}`).click();
+      } else $(`#radio-${resource.data.uid}-${this.location_id}`).click();
+    }
 
     this._$calendar.fullCalendar('refetchEvents');
+  }
+
+  /**
+   *
+   * @param {external:moment} sd
+   * @param {external:moment} ed
+   * @param {{id:string}} rcs
+   * @returns {MelEnumerable}
+   */
+  search(start, end, rcs, { includesNonPlainDate = false } = {}) {
+    //Les dates sont formater puis convertit en string pour éviter les problèmes lié au timezone
+    const sd = moment(start.format('DD/MM/YYYY HH:mm'), 'DD/MM/YYYY HH:mm');
+    const ed = moment(end.format('DD/MM/YYYY HH:mm'), 'DD/MM/YYYY HH:mm');
+    return MelEnumerable.from(this._p_events)
+      .select((x) => {
+        return {
+          start: moment(x.start.format('DD/MM/YYYY HH:mm'), 'DD/MM/YYYY HH:mm'),
+          end: moment(x.end.format('DD/MM/YYYY HH:mm'), 'DD/MM/YYYY HH:mm'),
+          resourceId: x.resourceId,
+        };
+      })
+      .where((value) => {
+        return (
+          ((value.start.isBetween(sd, ed) && value.end.isBetween(sd, ed)) ||
+            (includesNonPlainDate &&
+              (value.start.isBetween(sd, ed) || value.end.isBetween(sd, ed))) ||
+            (sd.isBetween(value.start, value.end, undefined, '[]') &&
+              ed.isBetween(value.start, value.end, undefined, '[]'))) &&
+          value.resourceId === rcs.id
+        );
+      });
+    // .where((x) => {
+    //   if (includesNonPlainDate) {
+    //     return x.start.isBetween(sd, ed) || x.end.isBetween(sd, ed);
+    //   } else return true;
+    // });
   }
 
   /**
@@ -397,6 +454,10 @@ class ResourceBaseFunctions {
     this._functions.on_date_changed($(e.currentTarget), '.input-time-end');
   }
 }
+
+/**
+ * @typedef {ResourceEvent} _ResourceEvent
+ */
 
 /**
  * @class

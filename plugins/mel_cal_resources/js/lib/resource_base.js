@@ -108,12 +108,11 @@ class ResourcesBase extends MelObject {
 
     /**
      * Liste des évènements afficher dans l'agenda
-     * @type {ResourceEvent[]}
+     * @type {import('./resources_functions.js')._ResourceEvent}
      * @frommodule Resources/ResourceBaseFunctions/Functions
      * @protected
      */
     this._p_events = [];
-
     /**
      * @package
      * @type {Array<ResourceObject>}

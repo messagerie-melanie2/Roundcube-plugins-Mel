@@ -10,6 +10,11 @@ import { HTMLResourceElement } from './webcomponents/HTMLResourceElement.js';
 
 export { ResourceBaseFunctions };
 
+function start_debug(val) {
+  debugger;
+  return val;
+}
+
 /**
  * Ajoute une location à la liste de location d'un évènement
  * @module Resources/ResourceBaseFunctions/Functions
@@ -162,13 +167,22 @@ class ResourceBaseFunctions {
   }
 
   /**
-   *
-   * @param {external:moment} sd
-   * @param {external:moment} ed
-   * @param {{id:string}} rcs
-   * @returns {MelEnumerable}
+   * Recherche des évènements entre deux dates pour une ressource donnée
+   * @param {external:moment} sd Date de départ
+   * @param {external:moment} ed Date de fin
+   * @param {{id:string}} rcs Ressource
+   * @param {Object} [param3={}]
+   * @param {boolean} [param3.includesNonPlainDate=false] Si on doit inclure les évènement qui commence ou finissent entre les dates
+   * @param {boolean} [param3.ignoreMe=true] Si on doit ignorer les évènements de l'utilisateur
+   * @returns {MelEnumerable} Liste des évènements
+   * @this ResourcesBase
    */
-  search(start, end, rcs, { includesNonPlainDate = false } = {}) {
+  search(
+    start,
+    end,
+    rcs,
+    { includesNonPlainDate = false, ignoreMe = true } = {},
+  ) {
     //Les dates sont formater puis convertit en string pour éviter les problèmes lié au timezone
     const sd = moment(start.format('DD/MM/YYYY HH:mm'), 'DD/MM/YYYY HH:mm');
     const ed = moment(end.format('DD/MM/YYYY HH:mm'), 'DD/MM/YYYY HH:mm');
@@ -178,18 +192,38 @@ class ResourceBaseFunctions {
           start: moment(x.start.format('DD/MM/YYYY HH:mm'), 'DD/MM/YYYY HH:mm'),
           end: moment(x.end.format('DD/MM/YYYY HH:mm'), 'DD/MM/YYYY HH:mm'),
           resourceId: x.resourceId,
+          creatorId: x.creatorId,
         };
       })
       .where((value) => {
-        return (
-          ((value.start.isBetween(sd, ed) && value.end.isBetween(sd, ed)) ||
-            (includesNonPlainDate &&
-              (value.start.isBetween(sd, ed) || value.end.isBetween(sd, ed))) ||
-            (sd.isBetween(value.start, value.end, undefined, '[]') &&
-              ed.isBetween(value.start, value.end, undefined, '[]'))) &&
-          value.resourceId === rcs.id
-        );
-      });
+        /**
+         * Vérifie si l'évènement est entre les dates de début et de fin
+         * @type {boolean}
+         */
+        const eventBetweenStartAndEnd =
+          value.start.isBetween(sd, ed) && value.end.isBetween(sd, ed);
+        /**
+         * Vérifie si l'évènement commence ou fini entre les dates de début et de fin
+         * @type {boolean}
+         */
+        const eventStartOrEndBetween =
+          includesNonPlainDate &&
+          (value.start.isBetween(sd, ed) || value.end.isBetween(sd, ed));
+        /**
+         * Vérifie si les date choisie se trouvent à l'intérieur de l'évènement
+         * @type {boolean}
+         */
+        const eventStartAndEndBetween =
+          sd.isBetween(value.start, value.end, undefined, '[]') &&
+          ed.isBetween(value.start, value.end, undefined, '[]');
+        const eventValid =
+          eventBetweenStartAndEnd ||
+          eventStartOrEndBetween ||
+          eventStartAndEndBetween;
+        const isGoodResource = value.resourceId === rcs.id;
+        return eventValid && isGoodResource;
+      })
+      .where((x) => (ignoreMe ? x.creatorId !== rcmail.env.username : true));
   }
 
   /**
@@ -224,7 +258,12 @@ class ResourceBaseFunctions {
     const end = moment(this.end);
     if (
       this._functions
-        .search(start, end, { id: this.selected_resource.email })
+        .search(
+          start,
+          end,
+          { id: this.selected_resource.email },
+          { ignoreMe: true },
+        )
         .any()
     ) {
       BnumMessage.DisplayMessage(
@@ -241,6 +280,7 @@ class ResourceBaseFunctions {
           { id: this.selected_resource.email },
           {
             includesNonPlainDate: true,
+            ignoreMe: true,
           },
         )
         .toArray();
@@ -491,6 +531,7 @@ class ResourceEvent {
         ? MelObject.Empty().gettext('me', 'mel_cal_resources')
         : slot.creator.name) ||
       MelObject.Empty().gettext('busy', 'mel_cal_resources');
+    this.creatorId = slot.creator.id;
     /**
      * Date de début de l'évènement
      * @type {external:moment}

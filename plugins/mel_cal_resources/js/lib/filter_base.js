@@ -236,7 +236,6 @@ class FilterBase extends MelObject {
    */
   _generate_select(jshtml, ...args) {
     const [localities] = args;
-
     switch (this._input_type) {
       case 'multi-select':
       case 'select':
@@ -264,7 +263,7 @@ class FilterBase extends MelObject {
             .each(
               (jhtml, locality) => {
                 return jhtml
-                  .option({ value: locality.uid })
+                  .option({ value: locality.uid, 'data-description': locality.description })
                   .text(locality.name)
                   .end();
               },
@@ -439,4 +438,6 @@ class FilterBase extends MelObject {
   has_only_number_values() {
     return this._number;
   }
+
+  static ToUid(item) {}
 }

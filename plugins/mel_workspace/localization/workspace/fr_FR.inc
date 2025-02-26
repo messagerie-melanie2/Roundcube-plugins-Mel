@@ -9,3 +9,5 @@ $labels['tchap'] = 'Tchap';
 $labels['home'] = 'Accueil'; 
 $labels['wekan'] = 'Kanban';
 $labels['stockage'] = 'Documents';
+$labels['validation_join_public'] = 'Cet espace est public, cliquez sur "Ok" pour le rejoindre.';
+$labels['no_public_error'] = 'Cet espace n\'est pas publique, veuillez contactez un utilisateur pour vous ajouter. Redirection vers la liste des espaces....';

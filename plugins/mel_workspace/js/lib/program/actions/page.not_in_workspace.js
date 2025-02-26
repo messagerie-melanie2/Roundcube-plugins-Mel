@@ -25,9 +25,7 @@ export class NotInWorkspacePage extends WorkspaceObject {
     );
 
     if (this.workspace.isPublic) {
-      if (
-        confirm('Cet espace est public, cliquez sur "Ok" pour le rejoindre.')
-      ) {
+      if (confirm(this.gettext('validation_join_public', 'mel_workspace'))) {
         this._connect();
       } else {
         FramesManager.Instance.switch_frame('workspace', {
@@ -35,9 +33,7 @@ export class NotInWorkspacePage extends WorkspaceObject {
         });
       }
     } else {
-      alert(
-        "Cet espace n'est pas publique, veuillez contactez un utilisateur pour vous ajouter. Redirection vers la liste des espaces....",
-      );
+      alert(this.gettext('no_public_error', 'mel_workspace'));
 
       FramesManager.Instance.switch_frame('workspace', {
         args: { _action: 'index' },

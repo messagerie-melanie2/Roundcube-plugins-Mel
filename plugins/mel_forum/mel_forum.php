@@ -39,11 +39,7 @@ class mel_forum extends bnum_plugin
      */
     function init()
     {
-        // $this->rc()->output->send('mel_forum.forum');
-
-
-        // Chargement de la conf
-        // $this->load_config();
+        
         // Gestion des différentes langues
         $this->add_texts('localization/', true);
 
@@ -55,52 +51,57 @@ class mel_forum extends bnum_plugin
         $this->register_task('forum');
 
         if ($this->rc()->task === "forum") {
+            $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
+            if (driver_mel::gi()->getUser()->isWorkspaceMember($workspace_uid)) {
 
-            // Penser à modifier avec index au lieu de post pour afficher la page d'accueil
-            $this->register_action('index', [$this, 'index']);
-            //Affichage de la page d'un article
-            $this->register_action('post', [$this, 'post']);
-            // Affichage de la page qui permet de créer un article
-            $this->register_action('create_or_edit_post', [$this, 'create_or_edit_post']);
-            // Créer/Modifier un article
-            $this->register_action('add_post', array($this, 'add_post'));
-            //supprimer un article
-            $this->register_action('delete_post', array($this, 'delete_post'));
-            // Ajouter un commentaire ou une réponse
-            $this->register_action('create_comment', array($this, 'create_comment'));
-            // Modifier un commentaire ou une réponse
-            $this->register_action('update_comment', array($this, 'update_comment'));
-            // Supprimer un commentaire ou une réponse
-            $this->register_action('delete_comment', array($this, 'delete_comment'));
-            // Liker un commentaire ou une réponse
-            $this->register_action('like_comment', array($this, 'like_comment'));
-            //Lister les comments d'un Post
-            $this->register_action('get_all_comments_bypost', [$this, 'get_all_comments_bypost']);
-            //Gère la modification/création d'un post
-            $this->register_action('send_post', array($this, 'send_post'));
-            // Import une image sur le serveur
-            $this->register_action('upload_image', array($this, 'upload_image'));
-            // affiche une image chargé sur le serveur
-            $this->register_action('load_image', array($this, 'load_image'));
-            // ajoute un article aux favoris de l'utilisateur courant
-            $this->register_action('manage_favorite', array($this, 'manage_favorite'));
-            // récupérer des posts au format Json
-            $this->register_action('get_posts_data', array($this, 'get_posts_data'));
-            // gestion des réaction aux posts
-            $this->register_action('manage_reaction', array($this, 'manage_reaction'));
-            // Affichage des nouveaux posts
-            $this->register_action('new_posts', array($this, 'new_posts'));
-            //Affichage du post à la une
-            $this->register_action('front_page_post', array($this, 'front_page_post'));
-            //Reload du post à la une
-            $this->register_action('refresh_front_page_post', array($this, 'refresh_front_page_post'));
-            //Épingler un post
-            $this->register_action('pin_post', array($this, 'pin_post'));
-            // Conversion d'un article en Markdown
-            $this->register_action('convert_post_in_markdown', [$this, 'convert_post_in_markdown']);
-            $this->register_action('download_article', [$this, 'download_article']);
+                // Penser à modifier avec index au lieu de post pour afficher la page d'accueil
+                $this->register_action('index', [$this, 'index']);
+                //Affichage de la page d'un article
+                $this->register_action('post', [$this, 'post']);
+                // Affichage de la page qui permet de créer un article
+                $this->register_action('create_or_edit_post', [$this, 'create_or_edit_post']);
+                // Créer/Modifier un article
+                $this->register_action('add_post', array($this, 'add_post'));
+                //supprimer un article
+                $this->register_action('delete_post', array($this, 'delete_post'));
+                // Ajouter un commentaire ou une réponse
+                $this->register_action('create_comment', array($this, 'create_comment'));
+                // Modifier un commentaire ou une réponse
+                $this->register_action('update_comment', array($this, 'update_comment'));
+                // Supprimer un commentaire ou une réponse
+                $this->register_action('delete_comment', array($this, 'delete_comment'));
+                // Liker un commentaire ou une réponse
+                $this->register_action('like_comment', array($this, 'like_comment'));
+                //Lister les comments d'un Post
+                $this->register_action('get_all_comments_bypost', [$this, 'get_all_comments_bypost']);
+                //Gère la modification/création d'un post
+                $this->register_action('send_post', array($this, 'send_post'));
+                // Import une image sur le serveur
+                $this->register_action('upload_image', array($this, 'upload_image'));
+                // affiche une image chargé sur le serveur
+                $this->register_action('load_image', array($this, 'load_image'));
+                // ajoute un article aux favoris de l'utilisateur courant
+                $this->register_action('manage_favorite', array($this, 'manage_favorite'));
+                // récupérer des posts au format Json
+                $this->register_action('get_posts_data', array($this, 'get_posts_data'));
+                // gestion des réaction aux posts
+                $this->register_action('manage_reaction', array($this, 'manage_reaction'));
+                // Affichage des nouveaux posts
+                $this->register_action('new_posts', array($this, 'new_posts'));
+                //Affichage du post à la une
+                $this->register_action('front_page_post', array($this, 'front_page_post'));
+                //Reload du post à la une
+                $this->register_action('refresh_front_page_post', array($this, 'refresh_front_page_post'));
+                //Épingler un post
+                $this->register_action('pin_post', array($this, 'pin_post'));
+                // Conversion d'un article en Markdown
+                $this->register_action('convert_post_in_markdown', [$this, 'convert_post_in_markdown']);
+                $this->register_action('download_article', [$this, 'download_article']);
 
-            $this->register_action('create_zip_with_md_and_images', [$this, 'create_zip_with_md_and_images']);
+                $this->register_action('create_zip_with_md_and_images', [$this, 'create_zip_with_md_and_images']);
+            } else {
+                $this->_display_error_page();
+            }
         } else if ($this->get_current_task() === 'workspace') {
             $this->add_hook('workspace.services.set', [$this, 'workspace_services_set']);
             $this->add_hook('wsp.show', [$this, 'wsp_show']);
@@ -123,16 +124,12 @@ class mel_forum extends bnum_plugin
     public function index()
     {
         $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
-        if (driver_mel::gi()->getUser()->isWorkspaceMember($workspace_uid)) {
             $this->include_web_component()->Avatar();
             $this->load_script_module('forum');
             $this->_show_posts();
             $this->rc()->output->set_env('workspace_uid', $workspace_uid);
             $this->rc()->output->add_handlers(array('post_search' => array($this, '_show_search')));
             $this->rc()->output->send('mel_forum.forum');
-        } else {
-            $this->_display_error_page();
-        }
     }
 
     // Fonctions nécessaires à l'affichage d'un article

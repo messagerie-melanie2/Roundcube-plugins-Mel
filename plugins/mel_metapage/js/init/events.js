@@ -2330,6 +2330,7 @@ $(document).ready(() => {
         let task = null;
         let action = null;
         let othersParams = null;
+        let anchor = null;
         let after = null;
         let update = false;
 
@@ -2432,6 +2433,12 @@ $(document).ready(() => {
 
                 try {
                   let tmp_othersParams = url.split('/?_task=', 2)[1];
+
+                  if (tmp_othersParams.includes('#')) {
+                    const splited = tmp_othersParams.split('#');
+                    anchor = splited[1];
+                    tmp_othersParams = splited[0];
+                  }
 
                   if (tmp_othersParams.includes('&')) {
                     othersParams = Enumerable.from(tmp_othersParams.split('&'))
@@ -2536,7 +2543,7 @@ $(document).ready(() => {
           //   args: othersParams,
           // });
 
-          await PageManager.SwitchFrame(task, { args: othersParams });
+          await PageManager.SwitchFrame(task, { args: othersParams, anchor });
 
           if (after !== null) after();
 

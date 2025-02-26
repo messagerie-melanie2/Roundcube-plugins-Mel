@@ -202,10 +202,11 @@ class FrameData {
    * @param {boolean} [param0.changepage=true] Si la frame doit être chargée en arrière plan ou non.
    * @param {?Object<string, string>}  [param0.args=null] Les autres arguments pour le changement d'url.
    * @param {Array<any>} [param0.actions=[]] Mots clé à utiliser qui pourront être utiliser lors de différents callbacks
+   * @param {?string} [param0.anchor=null] Mots clé à utiliser qui pourront être utiliser lors de différents callbacks
    * @returns {____JsHtml}
    * @frommodulereturn {JsHtml}
    */
-  create({ changepage = true, args = null, actions = [] }) {
+  create({ changepage = true, args = null, anchor = null, actions = [] }) {
     /**
      * Si on ferme les balises iframes ou non
      * @type {boolean}
@@ -229,16 +230,20 @@ class FrameData {
     //Passer en mode iframe
     args[frameArg.key] = frameArg.value;
 
+    let src = FrameManager.Helper.url(this.task, {
+      params: args,
+    });
+
+    if (anchor) src += `#${anchor}`;
+
     let jFrame = MelHtml.start
       .iframe(
         {
+          src,
           id: `frame-${this.id}`,
           allow: 'clipboard-read; clipboard-write',
           title: `Page : ${this.name}`,
           class: `mm-frame ${this.task}-frame`,
-          src: FrameManager.Helper.url(this.task, {
-            params: args,
-          }),
           onload: this._onload.bind(this, { changepage, actions }),
           'data-frame-task': this.task,
         },
@@ -301,13 +306,25 @@ class FrameData {
    * @param {Object<string, string>} args Arguments. Ne pas mettre la tâche.
    * @returns {FrameData} Chaîne
    */
-  update_src(args) {
+  update_src(args, anchor = null) {
     let url = FrameManager.Helper.url(this.task, { params: args });
 
     if (!url.includes('_is_from=iframe')) url += '&_is_from=iframe';
 
+    if (anchor) url += `#${anchor}`;
+
     this.$frame.attr('src', url);
     url = null;
+    return this;
+  }
+
+  /**
+   * Met à jours la source de la frame via une ancre
+   * @param {string} anchor
+   * @returns {FrameData} Chaîne
+   */
+  setAnchor(anchor) {
+    this.$frame.attr('src', `${this.$frame.attr('src')}#${anchor}`);
     return this;
   }
 
@@ -651,13 +668,17 @@ class Window {
    * @param {Object} [options={}]
    * @param {boolean} [options.changepage=true] Si on charge la frame en arrière plan ou non
    * @param {?Object<string, string>} [options.args=null] Arguments - sauf la tâche - de la l'url à ajouter à la source de la frame
+   * @param {?string} [options.anchor=null] Ce qu'il y a dérrière un `#`
    * @param {string[]} [options.actions=[]] Mots clés qui pourront être utiliser dans différents callbacks
    * @returns {Mel_Promise<Window>}
    * @package
    * @async
    * @frommodulereturn Frames {@linkto Window}
    */
-  _create_frame(task, { changepage = true, args = null, actions = [] } = {}) {
+  _create_frame(
+    task,
+    { changepage = true, args = null, anchor = null, actions = [] } = {},
+  ) {
     return new Mel_Promise((promise) => {
       promise.start_resolving();
 
@@ -785,7 +806,12 @@ class Window {
       });
 
       //Création de la frame
-      let tmp_frame = current_frame.create({ changepage, args, actions });
+      let tmp_frame = current_frame.create({
+        changepage,
+        args,
+        anchor,
+        actions,
+      });
 
       //if (!changepage) tmp_frame.first().css('display', 'none');
 
@@ -814,25 +840,28 @@ class Window {
    * @param {string} task Frame à ouvrir
    * @param {Object}  [options={}]
    * @param {?Object<string, string>} [options.new_args=null] Nouveau arguments à ajouter à la frame. Si ils éxistent, force le rechargement de la frame.
+   * @param {?string} [options.anchor=null] Ce qu'il y a dérrière un `#`
    * @returns {Promise<Window>}
    * @async
    * @frommodulereturn Frames {@linkto Window}
    */
-  async _open_frame(task, { new_args = null } = {}) {
+  async _open_frame(task, { new_args = null, anchor = null } = {}) {
     //Ajoute à l'historique et cache l'ancienne frame
     this._history.add(this._current_frame.task);
     this._current_frame.hide();
     this._current_frame = this._frames.get(task);
 
     //Met à jour la source de la frame et attend qu'elle soit chargée
-    if (new_args && Object.keys(new_args).length > 0) {
+    if ((new_args && Object.keys(new_args).length > 0) || anchor) {
       await new Mel_Promise((promise) => {
         promise.start_resolving();
         this._current_frame.onload.add('src_updated', () => {
           this._current_frame.onload.remove('src_updated');
           promise.resolve(true);
         });
-        this._current_frame.update_src(new_args);
+        if (!new_args || Object.keys(new_args).length === 0)
+          this._current_frame.setAnchor(anchor);
+        else this._current_frame.update_src(new_args, anchor);
       });
     }
 
@@ -941,11 +970,15 @@ class Window {
    * @param {Object} [options={}]
    * @param {boolean} [options.changepage=true] Si on charge la frame en arrière plan ou non
    * @param {?Object<string, string>} [options.args=null] Arguments - sauf la tâche - de la l'url à ajouter à la source de la frame
+   * @param {?string} [options.anchor=null] Ce qu'il y a dérrière un `#`
    * @param {Array<string>} [options.actions=[]] Mot clés pouvant être utiliser lors des différents callbacks
    * @return {Promise}
    * @async
    */
-  async switch_frame(task, { changepage = true, args = null, actions = [] }) {
+  async switch_frame(
+    task,
+    { changepage = true, args = null, anchor = null, actions = [] },
+  ) {
     //Si la fenêtre est cachée et qu'on change de page, on l'affiche
     if (changepage && this.is_hidden()) this.show();
 
@@ -965,8 +998,9 @@ class Window {
     rcmail.triggerEvent('frames.attach.url');
 
     if (this._frames.has(task)) {
-      if (changepage) await this._open_frame(task, { new_args: args });
-    } else await this._create_frame(task, { changepage, args, actions });
+      if (changepage) await this._open_frame(task, { new_args: args, anchor });
+    } else
+      await this._create_frame(task, { changepage, args, anchor, actions });
 
     if (!break_next) {
       this.get_window()
@@ -1531,7 +1565,13 @@ class FrameManager {
    */
   async switch_frame(
     task,
-    { changepage = true, args = null, actions = [], wind = null } = {},
+    {
+      changepage = true,
+      args = null,
+      actions = [],
+      anchor = null,
+      wind = null,
+    } = {},
   ) {
     //Action à faire avant le changement de frame
     let quit =
@@ -1541,6 +1581,7 @@ class FrameManager {
         changepage,
         args,
         actions,
+        anchor,
         wind,
       ) === 'break';
 
@@ -1551,6 +1592,7 @@ class FrameManager {
       changepage,
       args,
       actions,
+      anchor,
       wind,
     });
 
@@ -1576,6 +1618,7 @@ class FrameManager {
         changepage,
         args,
         actions,
+        anchor,
       });
       this._selected_window.select();
 
@@ -1586,6 +1629,7 @@ class FrameManager {
         changepage,
         args,
         actions,
+        anchor,
         wind,
       });
 
@@ -1595,6 +1639,7 @@ class FrameManager {
         changepage,
         args,
         actions,
+        anchor,
         wind: this._selected_window?._id ?? 0,
       });
   }

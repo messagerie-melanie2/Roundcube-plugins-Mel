@@ -582,13 +582,13 @@ export class Forum extends MelObject {
 
     /**
      * Met à jour le title de la reaction
-     * @param {*} div élément html à mettre à jour
-     * @param {*} counter div du compteur de reaction
-     * @param {*} type type de la reaction (like ou dislike)
+     * @param {external:jQuery} div élément html à mettre à jour
+     * @param {external:jQuery} counter div du compteur de reaction
+     * @param {'like' | 'dislike'} type type de la reaction (like ou dislike)
      * @param {boolean} add booleen true si on ajoute une reaction false si on l'enlève
      */
     updateTitle(div, counter, type, add) {
-        let currentValue = parseInt(counter.text()) || 0;
+        let currentValue = +(counter.text() || 0);
         let newstring = div.attr('title');
         let dis = type === 'like' ? '' : 'dis';
         switch (currentValue) {
@@ -651,11 +651,7 @@ export class Forum extends MelObject {
                 let like_counter = like_div.find('span.ml-2');
                 let dislike_counter = dislike_div.find('span.ml-2');
 
-                if (type === 'like') {
-                    var opposite_type = 'dislike';
-                } else {
-                    var opposite_type = 'like';
-                }
+                let opposite_type = type=== 'like' ? 'dislike' : 'like';
                 let target_div = type === 'like' ? like_div : dislike_div;
                 let target_counter = type === 'like' ? like_counter : dislike_counter;
                 let opposite_div = type === 'like' ? dislike_div : like_div;
@@ -664,16 +660,19 @@ export class Forum extends MelObject {
                 if (target_div.hasClass('filled')) {
                     target_div.removeClass('filled');
                     this.updateCounter(target_counter, -1);
+                    // true signifie qu'on ajoute la réaction
                     this.updateTitle(target_div, target_counter, type, false);
 
                 } else {
                     target_div.addClass('filled');
                     this.updateCounter(target_counter, 1);
+                    // true signifie qu'on ajoute la réaction
                     this.updateTitle(target_div, target_counter, type, true);
 
                     if (opposite_div.hasClass('filled')) {
                         opposite_div.removeClass('filled');
                         this.updateCounter(opposite_counter, -1);
+                        // false signifie qu'on enlève la réaction
                         this.updateTitle(opposite_div, opposite_counter, opposite_type, false);
                     }
                 }

@@ -174,19 +174,8 @@ class mel_forum extends bnum_plugin
 
             $reactions = $this->current_post->listReactions();
 
-            $like_reactions = $this->current_post->listReactions('like');
-            $likes_name = [];
-            foreach($like_reactions as $like_reaction)
-            {
-                $likes_name[] = driver_mel::gi()->getUser($like_reaction->creator)->name;
-            }
-
-            $dislike_reactions = $this->current_post->listReactions('dislike');
-            $dislikes_name = [];
-            foreach($dislike_reactions as $dislike_reaction)
-            {
-                $dislikes_name[] = driver_mel::gi()->getUser($dislike_reaction->creator)->name;
-            }
+            $likes_name = $this->_get_names_by_reaction($this->current_post, 'like');
+            $dislikes_name = $this->_get_names_by_reaction($this->current_post, 'dislike');
 
 
             $this->rc()->output->add_handlers(['show_post_title' => [$this, 'show_post_title']]);
@@ -600,21 +589,9 @@ class mel_forum extends bnum_plugin
             $tags = $this->_get_all_tags_bypost($post);
             // Récupérer le nombre de likes
             $reactions = $post->listReactions();
-            $like_reactions = $post->listReactions('like');
-            $likes_name = [];
-            foreach($like_reactions as $like_reaction)
-            {
-                $likes_name[] = driver_mel::gi()->getUser($like_reaction->creator)->name;
-            }
-
+            $likes_name = $this->_get_names_by_reaction($post, 'like');
             $isliked = $this->_has_Reacted('like', $reactions);
-
-            $dislike_reactions = $post->listReactions('dislike');
-            $dislikes_name = [];
-            foreach($dislike_reactions as $dislike_reaction)
-            {
-                $dislikes_name[] = driver_mel::gi()->getUser($dislike_reaction->creator)->name;
-            }
+            $dislikes_name = $this->_get_names_by_reaction($post, 'dislike');
             $isdisliked = $this->_has_Reacted('dislike', $reactions);
             // Récupérer le nombre de commentaire
             $comment_count = $post->countComments();
@@ -1965,6 +1942,22 @@ class mel_forum extends bnum_plugin
             }
         }
         return false;
+    }
+
+    /**
+     * retourne un tableau avec les noms des personnes qui ont réagit au post passé en paramètre avec la réaction 
+     * @param \LibMelanie\Api\Defaut\Posts\Post $post objet post
+     * @param string $type type de la reaction
+     * 
+     */
+    protected function _get_names_by_reaction($post, $type) {
+        $type_reactions = $post->listReactions($type);
+        $type_name = [];
+        foreach($type_reactions as $type_reaction)
+        {
+            $type_name[] = driver_mel::gi()->getUser($type_reaction->creator)->name;
+        }
+        return $type_name;
     }
 
     #endregion

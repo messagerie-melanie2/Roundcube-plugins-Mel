@@ -59,6 +59,11 @@ class mce_driver_mel extends driver_mel {
    */
   protected $_restoration_jenkins_pipeline_name;
 
+   /**
+   * Prefix pour le formatage des numéros de téléphone
+   */
+  const PHONE_PREFIX = ["+33(0)","+33", "+590", "+594", "+596", "+262", "+508", "+681", "+689", "+687"];
+
   /**
    * Constructeur par défaut
    */
@@ -731,5 +736,33 @@ class mce_driver_mel extends driver_mel {
    */
   public function resources_materiel($locality_uid) {
     return [];
+  }
+
+    /**
+   * Formate un numéro de téléphone en supprimant les espaces et les tirets,
+   * puis en remplaçant le préfixe par un 0 si nécessaire, et enfin en ajoutant
+   * des espaces tous les deux chiffres.
+   *
+   * @param string $phoneNumber Le numéro de téléphone à formater.
+   * @return string Le numéro de téléphone formaté.
+   */
+  protected function formatPhoneNumber($phoneNumber)
+  {
+    if (isset($phoneNumber)) {
+      $phoneNumber = preg_replace('/\s+|-/', '', $phoneNumber); // Remplace un ou plusieurs espace | un tiret par un seul espace
+
+      foreach (static::PHONE_PREFIX as $format) {
+        if (strpos($phoneNumber, $format) === 0) // si le début d'une num de tel === un des format, alors il est remplacé par un unique 0
+        {
+          $phoneNumber = '0' . substr($phoneNumber, strlen($format));
+          break;
+        }
+      }
+
+      $lastEdit = preg_replace('/(..)/', '$1 ', $phoneNumber);
+      return $lastEdit;
+    } else {
+      return $phoneNumber;
+    }
   }
 }

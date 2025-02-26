@@ -498,7 +498,7 @@ class mtes_driver_mel extends mce_driver_mel
       [
         'href'    => 'tel:' . $val
       ],
-      rcube::Q($val)
+      rcube::Q($this->formatPhoneNumber($val))
     );
   }
 

@@ -510,6 +510,18 @@ class ResourceDialog extends MelObject {
       current_promise.start_resolving();
       this.dialog.show();
 
+      //On affiche la bonne localité si elle existe
+      let option = $(
+        `.mel-dialog-page select option[data-description="${this.get_env('user_location').toUpperCase()}"]`,
+      );
+
+      if (option.length) {
+        const value = option.attr('value');
+        option.parent().val(value).change();
+      }
+
+      option = null;
+
       if (this.dialog.page_manager?.get?.('index')?.observed) {
         for (const tab of this.dialog.page_manager.get('index').observed.tabs[0]
           .rawTabs) {

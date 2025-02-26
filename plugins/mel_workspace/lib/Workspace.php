@@ -379,7 +379,7 @@ class Workspace {
       $max = 30;
 
       mel_helper::load_helper()->include_utilities();
-      $text = mel_utils::replace_determinants(mel_utils::replace_special_char(mel_utils::remove_accents(strtolower($title))), "-");
+      $text = mel_utils::replace_determinants(mel_utils::replace_special_char(strtolower(mel_utils::remove_accents($title))), "-");
       $text = str_replace(" ", "-", $text);
       if (count($text) > $max)
       {

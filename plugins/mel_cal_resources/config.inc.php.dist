@@ -3,7 +3,7 @@ $config = [];
 
 //Ressources disponibles
 $config['rc_resources'] = [
-    //Clé de la ressource
+    //Clé de la ressource, doit ressembler au type de la ressource correspondante
     'flex-office' => [
         //Nom à afficher
         'name' => 'Flex-Office',

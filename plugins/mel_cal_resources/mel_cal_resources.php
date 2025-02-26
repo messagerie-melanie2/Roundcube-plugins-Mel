@@ -152,12 +152,18 @@ class mel_cal_resources extends bnum_plugin {
         exit;
     }
 
-    function load_favorites() {
-        include_once __DIR__.'/lib/Resource.php';
+    /**
+     * Chargement des favoris par ressources
+     * @return void
+     */
+    function load_favorites() : void {
         $favorites = [];
+        $rcs = strtoupper($this->get_input('_resources', rcube_utils::INPUT_GP));
         $config = $this->rc()->config->get(self::CONFIG_KEY_FAVORITE, []);
 
-        if (count($config) > 0) {
+        if (count($config) > 0 && $config[$rcs] !== null && count($config[$rcs]) > 0) {
+            $config = $config[$rcs];
+            //Récupération des ressources et mappage en id
             $config = mel_helper::Enumerable($config)->where(function ($k, $v) {
                                                         return strpos($k, '@') !== false && isset($v) && $v;
                                                     })->select(function($k, $v) {
@@ -166,23 +172,33 @@ class mel_cal_resources extends bnum_plugin {
             $favorites = driver_mel::gi()->resources(null, $config);
             unset($config);
 
-            if (count($favorites) > 0) $favorites = mel_helper::Enumerable($favorites)->select(function($key, $value) {
+            if (count($favorites) > 0) {
+                include_once __DIR__.'/lib/Resource.php';
+                $favorites = mel_helper::Enumerable($favorites)->select(function($key, $value) {
                                                         return new Resource($value);
                                                     })->toArray();
+            }
         }
 
         echo json_encode($favorites);
         exit;
     }
 
-    function change_favorite() {
+    /**
+     * Changement de l'état favoris d'une ressource
+     * @return void
+     */
+    function change_favorite() : void {
+        $rcs = strtoupper($this->get_input_post('_resource'));
         $uid = $this->get_input_post('_uid');
         $favorite = $this->get_input_post('_favorite');
         $favorite = $favorite === true || $favorite === 'true';
 
         $favs = $this->rc()->config->get(self::CONFIG_KEY_FAVORITE, []);
 
-        $favs[$uid] = $favorite;
+        $favs[$rcs] ??= [];
+
+        $favs[$rcs][$uid] = $favorite;
         $this->rc()->user->save_prefs([self::CONFIG_KEY_FAVORITE => $favs]);
 
         echo json_encode($favorite);

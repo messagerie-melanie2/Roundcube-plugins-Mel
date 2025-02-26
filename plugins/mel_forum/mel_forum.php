@@ -124,12 +124,12 @@ class mel_forum extends bnum_plugin
     public function index()
     {
         $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
-            $this->include_web_component()->Avatar();
-            $this->load_script_module('forum');
-            $this->_show_posts();
-            $this->rc()->output->set_env('workspace_uid', $workspace_uid);
-            $this->rc()->output->add_handlers(array('post_search' => array($this, '_show_search')));
-            $this->rc()->output->send('mel_forum.forum');
+        $this->include_web_component()->Avatar();
+        $this->load_script_module('forum');
+        $this->_show_posts();
+        $this->rc()->output->set_env('workspace_uid', $workspace_uid);
+        $this->rc()->output->add_handlers(array('post_search' => array($this, '_show_search')));
+        $this->rc()->output->send('mel_forum.forum');
     }
 
     // Fonctions nécessaires à l'affichage d'un article

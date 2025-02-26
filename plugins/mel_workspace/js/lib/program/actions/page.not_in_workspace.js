@@ -26,7 +26,7 @@ export class NotInWorkspacePage extends WorkspaceObject {
 
     if (this.workspace.isPublic) {
       if (
-        confirm('Cet espace est publique, cliquez sur "Ok" pour le rejoindre.')
+        confirm('Cet espace est public, cliquez sur "Ok" pour le rejoindre.')
       ) {
         this._connect();
       } else {

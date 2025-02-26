@@ -385,7 +385,13 @@ class ResourcesBase extends MelObject {
   _format_resources(resources, filters) {
     return MelEnumerable.from(resources)
       .where((x) => !MelEnumerable.from(filters).any((f) => !f.filter(x)))
-      .orderBy((x) => (this.get_env('fav_resources')?.[x.data.email] ? 0 : 1))
+      .orderBy((x) =>
+        this.get_env('fav_resources')?.[x.data.type.toUpperCase()]?.[
+          x.data.email
+        ]
+          ? 0
+          : 1,
+      )
       .toArray();
   }
 

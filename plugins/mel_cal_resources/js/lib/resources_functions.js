@@ -98,6 +98,7 @@ class ResourceBaseFunctions {
   on_star_clicked(e) {
     BnumMessage.SetBusyLoading();
 
+    const rcs = this._name.toUpperCase();
     const id = $(e.currentTarget).data('email');
     const favorite = !JSON.parse(
       $(e.currentTarget).attr('data-favorite') ?? 'false',
@@ -114,12 +115,13 @@ class ResourceBaseFunctions {
       params: {
         _favorite: favorite,
         _uid: id,
+        _resource: this._name,
       },
       on_success: (data) => {
-        if (!this.get_env('fav_resources'))
-          this.rcmail().env.fav_resources = [];
+        this.rcmail().env.fav_resources ??= [];
+        this.rcmail().env.fav_resources[rcs] ??= [];
+        this.rcmail().env.fav_resources[rcs][id] = favorite;
 
-        this.rcmail().env.fav_resources[id] = favorite;
         this._on_data_changed();
 
         data = JSON.parse(data);
@@ -327,7 +329,9 @@ class ResourceBaseFunctions {
       rcsId: data.uid,
       locationId: this.location_id,
       email: data.email,
-      favorite: this.get_env('fav_resources')[data.email] ?? false,
+      favorite:
+        this.get_env('fav_resources')[this._name.toUpperCase()]?.[data.email] ??
+        false,
       value: data.email,
     });
 

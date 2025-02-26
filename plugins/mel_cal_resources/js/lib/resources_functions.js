@@ -150,12 +150,75 @@ class ResourceBaseFunctions {
    * @frommodulethis Resources
    */
   on_selected_date(start, end, jsEvent, view, resource) {
+    start = moment(start.format('DD/MM/YYYY HH:mm'), 'DD/MM/YYYY HH:mm');
+    end = moment(end.format('DD/MM/YYYY HH:mm'), 'DD/MM/YYYY HH:mm');
+
     this.start = start;
     this.end = end;
 
     $(`#radio-${resource.data.uid}-${this.location_id}`).click();
 
     this._$calendar.fullCalendar('refetchEvents');
+  }
+
+  /**
+   * Recherche des évènements entre deux dates pour une ressource donnée
+   * @param {external:moment} sd Date de départ
+   * @param {external:moment} ed Date de fin
+   * @param {{id:string}} rcs Ressource
+   * @param {Object} [param3={}]
+   * @param {boolean} [param3.includesNonPlainDate=false] Si on doit inclure les évènement qui commence ou finissent entre les dates
+   * @param {boolean} [param3.ignoreMe=true] Si on doit ignorer les évènements de l'utilisateur
+   * @returns {MelEnumerable} Liste des évènements
+   * @this ResourcesBase
+   */
+  search(
+    start,
+    end,
+    rcs,
+    { includesNonPlainDate = false, ignoreMe = true } = {},
+  ) {
+    //Les dates sont formater puis convertit en string pour éviter les problèmes lié au timezone
+    const sd = moment(start.format('DD/MM/YYYY HH:mm'), 'DD/MM/YYYY HH:mm');
+    const ed = moment(end.format('DD/MM/YYYY HH:mm'), 'DD/MM/YYYY HH:mm');
+    return MelEnumerable.from(this._p_events)
+      .select((x) => {
+        return {
+          start: moment(x.start.format('DD/MM/YYYY HH:mm'), 'DD/MM/YYYY HH:mm'),
+          end: moment(x.end.format('DD/MM/YYYY HH:mm'), 'DD/MM/YYYY HH:mm'),
+          resourceId: x.resourceId,
+          creatorId: x.creatorId,
+        };
+      })
+      .where((value) => {
+        /**
+         * Vérifie si l'évènement est entre les dates de début et de fin
+         * @type {boolean}
+         */
+        const eventBetweenStartAndEnd =
+          value.start.isBetween(sd, ed) && value.end.isBetween(sd, ed);
+        /**
+         * Vérifie si l'évènement commence ou fini entre les dates de début et de fin
+         * @type {boolean}
+         */
+        const eventStartOrEndBetween =
+          includesNonPlainDate &&
+          (value.start.isBetween(sd, ed) || value.end.isBetween(sd, ed));
+        /**
+         * Vérifie si les date choisie se trouvent à l'intérieur de l'évènement
+         * @type {boolean}
+         */
+        const eventStartAndEndBetween =
+          sd.isBetween(value.start, value.end, undefined, '[]') &&
+          ed.isBetween(value.start, value.end, undefined, '[]');
+        const eventValid =
+          eventBetweenStartAndEnd ||
+          eventStartOrEndBetween ||
+          eventStartAndEndBetween;
+        const isGoodResource = value.resourceId === rcs.id;
+        return eventValid && isGoodResource;
+      })
+      .where((x) => (ignoreMe ? x.creatorId !== rcmail.env.username : true));
   }
 
   /**
@@ -168,6 +231,7 @@ class ResourceBaseFunctions {
   on_resource_selected(e) {
     e = $(e.currentTarget);
 
+    //Id de la ressource se trouve entre `radio-` et `-${this.location_id}`
     const id = e
       .attr('id')
       .replace('radio-', EMPTY_STRING)
@@ -177,10 +241,49 @@ class ResourceBaseFunctions {
       .where((x) => x.data.uid === id)
       .firstOrDefault()?.data;
 
+    //On selectionne la bon ne ressource et on décoche les autres
     for (let i = 0; i < this._p_resources.length; ++i) {
       if (this._p_resources[i].data.uid === id)
         this._p_resources[i].data.selected = true;
       else this._p_resources[i].data.selected = false;
+    }
+
+    //On vérifie si la ressource est déjà prise, et on empêche la sélection si c'est le cas
+    const start = moment(this.start);
+    const end = moment(this.end);
+    if (
+      this._functions
+        .search(
+          start,
+          end,
+          { id: this.selected_resource.email },
+          { ignoreMe: true },
+        )
+        .any()
+    ) {
+      BnumMessage.DisplayMessage(
+        'La ressource est déjà prise à cette date.',
+        'error',
+      );
+      this.selected_resource = null;
+      e[0].checked = false;
+    } else {
+      let searched = this._functions
+        .search(
+          start,
+          end,
+          { id: this.selected_resource.email },
+          {
+            includesNonPlainDate: true,
+            ignoreMe: true,
+          },
+        )
+        .toArray();
+
+      if (searched.length > 0) {
+        if (start < searched[0].start) this.end = searched[0].start;
+        else if (searched[0].end < end) this.start = searched[0].end;
+      }
     }
 
     //Met les dates aux heures de travail
@@ -399,6 +502,10 @@ class ResourceBaseFunctions {
 }
 
 /**
+ * @typedef {ResourceEvent} _ResourceEvent
+ */
+
+/**
  * @class
  * @classdesc Mise en forme des évènemant fullcalendar
  */
@@ -419,6 +526,7 @@ class ResourceEvent {
         ? MelObject.Empty().gettext('me', 'mel_cal_resources')
         : slot.creator.name) ||
       MelObject.Empty().gettext('busy', 'mel_cal_resources');
+    this.creatorId = slot.creator.id;
     /**
      * Date de début de l'évènement
      * @type {external:moment}

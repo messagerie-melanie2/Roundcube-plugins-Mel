@@ -145,8 +145,10 @@ export class Manager extends MelObject {
         task: 'forum',
         action: 'create_comment',
         params: {
+          _post_uid: this.post_uid,
           _post_id: this.post_id,
           _content: content,
+          _workspace_uid: this.get_env('workspace_uid'),
         },
       });
 

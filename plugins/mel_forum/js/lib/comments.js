@@ -402,6 +402,8 @@ class PostComment {
                     _post_id: this.post_id, // L'ID du post
                     _content: replyContent, // Le contenu de la réponse
                     _parent: this.parent, // ID du commentaire parent
+                    _workspace_uid: rcmail.env.workspace_uid,
+                    _post_uid: rcmail.env.post_uid,
                 },
             });
 

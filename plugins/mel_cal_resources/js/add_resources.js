@@ -25,6 +25,7 @@ import { Mel_Promise } from '../../mel_metapage/js/lib/mel_promise.js';
 import { FavoriteLoader } from './lib/favorite_loader.js';
 import { ResourcesBase } from './lib/resource_base.js';
 import { ResourceLocation } from './lib/resource_location.js';
+import Utils from './lib/utils.js';
 import { HTMLTabSelectElement } from './lib/webcomponents/HTMLTabSelectElement.js';
 
 export { ResourceDialog };
@@ -490,6 +491,22 @@ class ResourceDialog extends MelObject {
   }
 
   /**
+   * Selectionne automatiquement la valeur d'un filtre via la localité de l'utilisateur en cours
+   * @returns {void}
+   * @private
+   */
+  #_autoSelectOption() {
+    let option = Utils.GetOptionByDescription(this.get_env('user_location'));
+
+    if (option.length) {
+      const value = option.attr('value');
+      option.parent().val(value).change();
+    }
+
+    option = null;
+  }
+
+  /**
    * Affiche la dialog
    * @async
    * @returns {Mel_Promise}
@@ -511,16 +528,7 @@ class ResourceDialog extends MelObject {
       this.dialog.show();
 
       //On affiche la bonne localité si elle existe
-      let option = $(
-        `.mel-dialog-page select option[data-description="${this.get_env('user_location').toUpperCase()}"]`,
-      );
-
-      if (option.length) {
-        const value = option.attr('value');
-        option.parent().val(value).change();
-      }
-
-      option = null;
+      this.#_autoSelectOption();
 
       if (this.dialog.page_manager?.get?.('index')?.observed) {
         for (const tab of this.dialog.page_manager.get('index').observed.tabs[0]

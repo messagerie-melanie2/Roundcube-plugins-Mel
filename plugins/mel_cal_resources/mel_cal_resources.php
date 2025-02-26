@@ -33,12 +33,10 @@ class mel_cal_resources extends bnum_plugin {
                     ), 'toolbar');
                 }
                 
+                $this->_set_global_env();
                 $this->include_css('style.css');
                 $this->add_hook('send_page', [$this, 'render_page']);
-                $this->rc()->output->set_env('lang', $this->rc()->get_user_language());
-                $user = $this->get_user();
-                $user->load(['locality']);
-                $this->rc()->output->set_env('user_location', $user->locality);
+
             }
 
 
@@ -53,6 +51,17 @@ class mel_cal_resources extends bnum_plugin {
             $this->register_action('set_favorite', [$this, 'change_favorite']);
             $this->register_action('load_favorites', [$this, 'load_favorites']);  
         }
+    }
+
+    /**
+     * Met en place les variables d'environements globales pour le plugin
+     * @return void
+     */
+    private function _set_global_env() : void {
+        $user = $this->get_user();
+        $user->load(['locality']);
+        $this->rc()->output->set_env('user_location', $user->locality);
+        $this->rc()->output->set_env('lang', $this->rc()->get_user_language());
     }
 
     function load_data($waiting_script_name) {

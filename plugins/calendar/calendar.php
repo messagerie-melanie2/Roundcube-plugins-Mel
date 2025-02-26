@@ -3052,10 +3052,13 @@ $("#rcmfd_new_category").keypress(function(event) {
                         //     // can't get any worse :-)
                         //     break;
                         // }
-                        $max_freebusy = $this->compare_freebusy($status, $max_freebusy);
 
                         // PAMELA - Createur du freebusy
-                        $creator = $c;
+                        if ($status > $max_freebusy) {
+                            $creator = $c;
+                        }
+
+                        $max_freebusy = $this->compare_freebusy($status, $max_freebusy);
                     }
                 }
             }

@@ -61,39 +61,39 @@ class mel_forum extends bnum_plugin
                 // Affichage de la page qui permet de créer un article
                 $this->register_action('create_or_edit_post', [$this, 'create_or_edit_post']);
                 // Créer/Modifier un article
-                $this->register_action('add_post', array($this, 'add_post'));
+                $this->register_action('add_post', [$this, 'add_post']);
                 //supprimer un article
-                $this->register_action('delete_post', array($this, 'delete_post'));
+                $this->register_action('delete_post', [$this, 'delete_post']);
                 // Ajouter un commentaire ou une réponse
-                $this->register_action('create_comment', array($this, 'create_comment'));
+                $this->register_action('create_comment', [$this, 'create_comment']);
                 // Modifier un commentaire ou une réponse
-                $this->register_action('update_comment', array($this, 'update_comment'));
+                $this->register_action('update_comment', [$this, 'update_comment']);
                 // Supprimer un commentaire ou une réponse
-                $this->register_action('delete_comment', array($this, 'delete_comment'));
+                $this->register_action('delete_comment', [$this, 'delete_comment']);
                 // Liker un commentaire ou une réponse
-                $this->register_action('like_comment', array($this, 'like_comment'));
+                $this->register_action('like_comment', [$this, 'like_comment']);
                 //Lister les comments d'un Post
                 $this->register_action('get_all_comments_bypost', [$this, 'get_all_comments_bypost']);
                 //Gère la modification/création d'un post
-                $this->register_action('send_post', array($this, 'send_post'));
+                $this->register_action('send_post', [$this, 'send_post']);
                 // Import une image sur le serveur
-                $this->register_action('upload_image', array($this, 'upload_image'));
+                $this->register_action('upload_image', [$this, 'upload_image']);
                 // affiche une image chargé sur le serveur
-                $this->register_action('load_image', array($this, 'load_image'));
+                $this->register_action('load_image', [$this, 'load_image']);
                 // ajoute un article aux favoris de l'utilisateur courant
-                $this->register_action('manage_favorite', array($this, 'manage_favorite'));
+                $this->register_action('manage_favorite', [$this, 'manage_favorite']);
                 // récupérer des posts au format Json
-                $this->register_action('get_posts_data', array($this, 'get_posts_data'));
+                $this->register_action('get_posts_data', [$this, 'get_posts_data']);
                 // gestion des réaction aux posts
-                $this->register_action('manage_reaction', array($this, 'manage_reaction'));
+                $this->register_action('manage_reaction', [$this, 'manage_reaction']);
                 // Affichage des nouveaux posts
-                $this->register_action('new_posts', array($this, 'new_posts'));
+                $this->register_action('new_posts', [$this, 'new_posts']);
                 //Affichage du post à la une
-                $this->register_action('front_page_post', array($this, 'front_page_post'));
+                $this->register_action('front_page_post', [$this, 'front_page_post']);
                 //Reload du post à la une
-                $this->register_action('refresh_front_page_post', array($this, 'refresh_front_page_post'));
+                $this->register_action('refresh_front_page_post', [$this, 'refresh_front_page_post']);
                 //Épingler un post
-                $this->register_action('pin_post', array($this, 'pin_post'));
+                $this->register_action('pin_post', [$this, 'pin_post']);
                 // Conversion d'un article en Markdown
                 $this->register_action('convert_post_in_markdown', [$this, 'convert_post_in_markdown']);
                 $this->register_action('download_article', [$this, 'download_article']);
@@ -128,7 +128,7 @@ class mel_forum extends bnum_plugin
         $this->load_script_module('forum');
         $this->_show_posts();
         $this->rc()->output->set_env('workspace_uid', $workspace_uid);
-        $this->rc()->output->add_handlers(array('post_search' => array($this, '_show_search')));
+        $this->rc()->output->add_handlers(['post_search' => [$this, '_show_search']]);
         $this->rc()->output->send('mel_forum.forum');
     }
 
@@ -174,14 +174,14 @@ class mel_forum extends bnum_plugin
             $reactions = $this->current_post->listReactions();
 
 
-            $this->rc()->output->add_handlers(array('show_post_title' => array($this, 'show_post_title')));
-            $this->rc()->output->add_handlers(array('show_post_tags' => array($this, 'show_post_tags')));
-            $this->rc()->output->add_handlers(array('show_post_creator_name' => array($this, 'show_post_creator_name')));
-            $this->rc()->output->add_handlers(array('show_post_creator_email' => array($this, 'show_post_creator_email')));
-            $this->rc()->output->add_handlers(array('show_post_date' => array($this, 'show_post_date')));
-            $this->rc()->output->add_handlers(array('show_post_content' => array($this, 'show_post_content')));
-            $this->rc()->output->add_handlers(array('show_post_like' => array($this, 'show_post_like')));
-            $this->rc()->output->add_handlers(array('show_post_dislike' => array($this, 'show_post_dislike')));
+            $this->rc()->output->add_handlers(['show_post_title' => [$this, 'show_post_title']]);
+            $this->rc()->output->add_handlers(['show_post_tags' => [$this, 'show_post_tags']]);
+            $this->rc()->output->add_handlers(['show_post_creator_name' => [$this, 'show_post_creator_name']]);
+            $this->rc()->output->add_handlers(['show_post_creator_email' => [$this, 'show_post_creator_email']]);
+            $this->rc()->output->add_handlers(['show_post_date' => [$this, 'show_post_date']]);
+            $this->rc()->output->add_handlers(['show_post_content' => [$this, 'show_post_content']]);
+            $this->rc()->output->add_handlers(['show_post_like' => [$this, 'show_post_like']]);
+            $this->rc()->output->add_handlers(['show_post_dislike' => [$this, 'show_post_dislike']]);
 
             $this->rc()->output->set_env('post_uid', $this->current_post->uid);
             $this->rc()->output->set_env('post_id', $this->current_post->id);

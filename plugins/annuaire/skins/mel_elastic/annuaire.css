@@ -287,7 +287,6 @@ html.dark-mode-custom #annuaire-list .folder.addressbook {
 #listview-float-right #list-contacts .listsearchbox input {
 	height: 32px;
 	padding-left: 30px;
-	/* background: #fff; */
 	background-color: var(--searchbar-background-color);
 	border: solid thin var(--searchbar-border-color);
 	color: var(--searchbar-text-color);

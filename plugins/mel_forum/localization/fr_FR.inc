@@ -209,6 +209,11 @@ $labels['reaction_creation_failure'] = 'Echec de création de la réaction.';
 $labels['reaction_deleted'] = 'La réaction a été supprimée avec succès.';
 $labels['reaction_deleted_failure'] = 'Echec de suppression de la réaction.';
 $labels['reaction_saved'] = 'Réaction enregistrée.';
+$labels['liked_this_plural'] = ' ont aimé cet article';
+$labels['liked_this_sing'] = ' a aimé cet article';
+$labels['disliked_this_plural'] = ' n\'ont pas aimé cet article';
+$labels['disliked_this_sing'] = ' n\'a aimé pas cet article';
+
 
 #endregion
 #region IMAGES

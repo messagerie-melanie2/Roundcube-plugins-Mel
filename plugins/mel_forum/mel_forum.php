@@ -51,7 +51,7 @@ class mel_forum extends bnum_plugin
         $this->register_task('forum');
 
         if ($this->rc()->task === "forum") {
-            $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
+            $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GP);
             if (driver_mel::gi()->getUser()->isWorkspaceMember($workspace_uid)) {
 
                 // Penser à modifier avec index au lieu de post pour afficher la page d'accueil
@@ -128,6 +128,7 @@ class mel_forum extends bnum_plugin
         $this->load_script_module('forum');
         $this->_show_posts();
         $this->rc()->output->set_env('workspace_uid', $workspace_uid);
+        $this->rc()->output->set_env('user_fullname', driver_mel::gi()->getUser()->name);
         $this->rc()->output->add_handlers(['post_search' => [$this, '_show_search']]);
         $this->rc()->output->send('mel_forum.forum');
     }
@@ -173,6 +174,9 @@ class mel_forum extends bnum_plugin
 
             $reactions = $this->current_post->listReactions();
 
+            $likes_name = $this->_get_names_by_reaction($this->current_post, 'like');
+            $dislikes_name = $this->_get_names_by_reaction($this->current_post, 'dislike');
+
 
             $this->rc()->output->add_handlers(['show_post_title' => [$this, 'show_post_title']]);
             $this->rc()->output->add_handlers(['show_post_tags' => [$this, 'show_post_tags']]);
@@ -190,6 +194,11 @@ class mel_forum extends bnum_plugin
             $this->rc()->output->set_env('has_owner_rights', $this->_has_owner_rights($this->current_post, $workspace_uid));
             $this->rc()->output->set_env('has_liked', $this->_has_Reacted('like', $reactions));
             $this->rc()->output->set_env('has_disliked', $this->_has_Reacted('dislike', $reactions));
+            $this->rc()->output->set_env('like_reactions', $likes_name);
+            $this->rc()->output->set_env('like_count', $this->current_post->likes);
+            $this->rc()->output->set_env('dislike_reactions', $dislikes_name);
+            $this->rc()->output->set_env('dislike_count', $this->current_post->dislikes);
+            $this->rc()->output->set_env('user_fullname', driver_mel::gi()->getUser()->name);
 
             $this->rc()->output->send('mel_forum.post');
         } else {
@@ -580,7 +589,9 @@ class mel_forum extends bnum_plugin
             $tags = $this->_get_all_tags_bypost($post);
             // Récupérer le nombre de likes
             $reactions = $post->listReactions();
+            $likes_name = $this->_get_names_by_reaction($post, 'like');
             $isliked = $this->_has_Reacted('like', $reactions);
+            $dislikes_name = $this->_get_names_by_reaction($post, 'dislike');
             $isdisliked = $this->_has_Reacted('dislike', $reactions);
             // Récupérer le nombre de commentaire
             $comment_count = $post->countComments();
@@ -608,7 +619,9 @@ class mel_forum extends bnum_plugin
                 'creator_email' => $post_creator->email,
                 'tags' => $tags,
                 'summary' => $post->summary,
+                'like_reactions' => $likes_name,
                 'like_count' => $post->likes,
+                'dislike_reactions' => $dislikes_name,
                 'dislike_count' => $post->dislikes,
                 'comment_count' => $comment_count,
                 'favorite' => $is_fav,
@@ -1929,6 +1942,22 @@ class mel_forum extends bnum_plugin
             }
         }
         return false;
+    }
+
+    /**
+     * retourne un tableau avec les noms des personnes qui ont réagit au post passé en paramètre avec la réaction 
+     * @param \LibMelanie\Api\Defaut\Posts\Post $post objet post
+     * @param string $type type de la reaction
+     * 
+     */
+    protected function _get_names_by_reaction($post, $type) {
+        $type_reactions = $post->listReactions($type);
+        $type_name = [];
+        foreach($type_reactions as $type_reaction)
+        {
+            $type_name[] = driver_mel::gi()->getUser($type_reaction->creator)->name;
+        }
+        return $type_name;
     }
 
     #endregion

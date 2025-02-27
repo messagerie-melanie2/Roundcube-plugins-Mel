@@ -101,7 +101,7 @@ class mel_forum extends bnum_plugin
                 $this->register_action('download_article', [$this, 'download_article']);
 
                 $this->register_action('create_zip_with_md_and_images', [$this, 'create_zip_with_md_and_images']);
-            } elseif(! $this->rc()->action === 'load_image') {
+            } else if(!$this->rc()->action === 'load_image') {
                 $this->_display_error_page();
             }
         } else if ($this->get_current_task() === 'workspace') {

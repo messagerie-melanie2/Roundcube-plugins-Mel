@@ -51,6 +51,10 @@ class mel_forum extends bnum_plugin
         $this->register_task('forum');
 
         if ($this->rc()->task === "forum") {
+            //obligatoirement ici pour retrocompatibilité avec les images enregistrées avant la version 25.2
+            // affiche une image chargé sur le serveur
+            $this->register_action('load_image', [$this, 'load_image']);
+            
             $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GP);
             if (driver_mel::gi()->getUser()->isWorkspaceMember($workspace_uid)) {
 
@@ -78,8 +82,6 @@ class mel_forum extends bnum_plugin
                 $this->register_action('send_post', [$this, 'send_post']);
                 // Import une image sur le serveur
                 $this->register_action('upload_image', [$this, 'upload_image']);
-                // affiche une image chargé sur le serveur
-                $this->register_action('load_image', [$this, 'load_image']);
                 // ajoute un article aux favoris de l'utilisateur courant
                 $this->register_action('manage_favorite', [$this, 'manage_favorite']);
                 // récupérer des posts au format Json
@@ -99,7 +101,7 @@ class mel_forum extends bnum_plugin
                 $this->register_action('download_article', [$this, 'download_article']);
 
                 $this->register_action('create_zip_with_md_and_images', [$this, 'create_zip_with_md_and_images']);
-            } else {
+            } elseif(! $this->rc()->action === 'load_image') {
                 $this->_display_error_page();
             }
         } else if ($this->get_current_task() === 'workspace') {
@@ -1732,6 +1734,7 @@ class mel_forum extends bnum_plugin
             "_task" => "forum",
             "_action" => "load_image",
             "_image_uid" => $uid,
+            "_workspace_uid" => $this->get_input('_workspace_uid', rcube_utils::INPUT_GP),
         ), false, true, true);
         return $url;
     }

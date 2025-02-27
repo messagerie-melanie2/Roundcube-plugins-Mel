@@ -195,6 +195,7 @@ export class create_or_edit_post extends MelObject {
                     task: 'forum',
                     action: 'send_post',
                     params: {
+                        _workspace_uid: this.workspace,
                         _workspace: this.workspace,
                         _title: title,
                         _content: content,
@@ -263,7 +264,8 @@ export class create_or_edit_post extends MelObject {
                     task: 'forum',
                     action: 'delete_post',
                     params: {
-                        _uid: _uid
+                        _uid: _uid,
+                        _workspace_uid: this.workspace,
                     },
                     processData: false,
                     contentType: false,
@@ -336,7 +338,7 @@ export class create_or_edit_post extends MelObject {
                                     {
                                         task: 'forum',
                                         action: 'upload_image',
-                                        params: {_file: fileReader.result, _post_id: this.post_id}, 
+                                        params: {_file: fileReader.result, _post_id: this.post_id, _workspace_uid: this.workspace}, 
                                         processData: false, // Empêche jQuery de traiter les données
                                         contentType: false, // Empêche jQuery d'ajouter des headers incorrects
                                         on_success: (data) => {

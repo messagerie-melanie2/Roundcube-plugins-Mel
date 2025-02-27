@@ -254,16 +254,15 @@ html.dark-mode-custom #annuaire-list .folder.addressbook {
 	right: 0;
 	width: 386px;
 	bottom: 4px;
-  	box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
-  	border: solid 1px #979797;
-  	/* background-color: #fff; */
-  	/* background-color: var(--popup-bg-color); */
-	  background-color: #484D7A;
-	  color: white;
-  	z-index: 1000;
+	box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+	border: solid 1px #979797;
+	background-color: var(--primary-layout-sidebar-background-color);
+	color: var(--primary-layout-sidebar-text-color);
+	z-index: 1000;
 }
 
 #listview-float-right #list-contacts .boxtitle2 {
+	margin: 8px 0;
 	text-align: center;
 }
 
@@ -271,23 +270,27 @@ html.dark-mode-custom #annuaire-list .folder.addressbook {
 	position: absolute;
 	top: 5px;
 	right: 5px;
-	text-indent: -9999px;
-	background: url(../../../mel_larry/images/envoyer/fermer.png?v=e784.5000) center center no-repeat;
-	width: 20px;
-	height: 20px;
 	cursor: pointer;
+	opacity: 1;
+	color: var(--primary-layout-sidebar-text-color);
 }
 
 #listview-float-right #list-contacts .listsearchbox {
-	display: block;
-	padding: 6px 10px;
+	display: flex;
+	justify-content: center;
+}
+
+#listview-float-right #list-contacts .listsearchbox .iconbutton.reset {
+	display: none;
 }
 
 #listview-float-right #list-contacts .listsearchbox input {
 	height: 32px;
 	padding-left: 30px;
-	background: #fff;
-	background-color: var(--inputs-bg-color);
+	/* background: #fff; */
+	background-color: var(--searchbar-background-color);
+	border: solid thin var(--searchbar-border-color);
+	color: var(--searchbar-text-color);
 }
 
 #listview-float-right #list-contacts .listsearchbox #searchmenulink {
@@ -298,7 +301,7 @@ html.dark-mode-custom #annuaire-list .folder.addressbook {
 	background: #fff;
 	background-color: var(--main-content-bg-color);
 	bottom: 0px;
-    top: 77px;
+    top: 100px;
 }
 
 #listview-float-right #list-contacts .scroller.nosearch {

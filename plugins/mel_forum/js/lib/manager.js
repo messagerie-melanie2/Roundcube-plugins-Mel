@@ -672,7 +672,7 @@ export class Manager extends MelObject {
    * @param {number} value modification apportée au compteur
    */
   updateCounter(span, value) {
-    let currentValue = parseInt(span.text()) || 0; // Récupérer la valeur actuelle
+    let currentValue = +(span.text() || 0); // Récupérer la valeur actuelle
     let newValue = currentValue + value;
     span.text(newValue);
   }
@@ -731,7 +731,7 @@ export class Manager extends MelObject {
         let like_counter = like_div.find('span.ml-2');
         let dislike_counter = dislike_div.find('span.ml-2');
 
-        let opposite_type = type=== 'like' ? 'dislike' : 'like';
+        let opposite_type = type === 'like' ? 'dislike' : 'like';
         let target_div = type === 'like' ? like_div : dislike_div;
         let target_counter = type === 'like' ? like_counter : dislike_counter;
         let opposite_div = type === 'like' ? dislike_div : like_div;

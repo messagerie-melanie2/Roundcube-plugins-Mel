@@ -2322,6 +2322,7 @@ $(document).ready(() => {
         rcmail.env.enumerated_url_spies = true;
       }
 
+
       if (url !== undefined && url !== null) {
         //Initialisation
         let $querry;
@@ -2486,11 +2487,12 @@ $(document).ready(() => {
                   }
                 }
               }
+              
+              let open_modal = true;
 
               if (!url.includes('/?_task=') && !/^data:/i.test(url)) {
                 //On ouvre une modal pour prévenir d'un lien externe
                 let domain = new URL(url).hostname;
-                let open_modal = true;
                 let suspect_url = false;
 
                 rcmail.env.mel_suspect_url.forEach((item) => {
@@ -2513,7 +2515,18 @@ $(document).ready(() => {
                   event.preventDefault();
                   top.external_link_modal(url);
                 }
+              } else {
+                open_modal = false;
               }
+
+              if (!open_modal) {
+                
+                let abort = {signal:false}
+                rcmail.triggerEvent('a.clicked', {url, abort, e: event});
+                
+                if (abort) return;
+              }
+              
               break;
           }
         } while (reloop);

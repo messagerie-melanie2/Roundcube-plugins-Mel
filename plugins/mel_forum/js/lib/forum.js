@@ -28,7 +28,6 @@ export class Forum extends MelObject {
         this.initButtons();
         this.initSortSelect();
         this.initPostDisplay();
-
     }
 
     /**

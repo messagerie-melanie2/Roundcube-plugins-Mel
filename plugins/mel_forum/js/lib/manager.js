@@ -43,6 +43,13 @@ export class Manager extends MelObject {
     // Gestion du bouton d'action du post
     this.initButtons();
 
+    rcmail.addEventListener('a.clicked', (args) => {
+      if (!args.abort.signal && !args.url.includes('/?_task=')) {
+        args.e.preventDefault();
+        window.open(args.url, '_blank');
+      }
+    });
+
     // Charger l'ordre de tri depuis le LocalStorage, sinon utiliser 'date_desc' par défaut
     const savedSortOrder =
       localStorage.getItem('commentSortOrder') || 'date_asc';

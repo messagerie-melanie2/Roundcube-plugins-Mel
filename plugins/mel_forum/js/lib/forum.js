@@ -599,7 +599,7 @@ export class Forum extends MelObject {
   }
 
   /**
-   * Met à jour le compteur de like , si on est à 0 n'affiche rien
+   * Met à jour le compteur de like
    * @param {*} span élément html à mettre à jour
    * @param {*} value modification apportée au compteur
    */
@@ -607,6 +607,53 @@ export class Forum extends MelObject {
     let currentValue = parseInt(span.text()) || 0; // Récupérer la valeur actuelle
     let newValue = currentValue + value;
     span.text(newValue);
+  }
+
+  /**
+   * Met à jour le title de la reaction
+   * @param {external:jQuery} div élément html à mettre à jour
+   * @param {external:jQuery} counter div du compteur de reaction
+   * @param {'like' | 'dislike'} type type de la reaction (like ou dislike)
+   * @param {boolean} add booleen true si on ajoute une reaction false si on l'enlève
+   */
+  updateTitle(div, counter, type, add) {
+    let currentValue = +(counter.text() || 0);
+    let newstring = div.attr('title');
+    let dis = type === 'like' ? '' : 'dis';
+    switch (currentValue) {
+      case 0:
+        newstring = this.gettext('mel_forum.' + dis + 'like_action');
+        break;
+      case 1:
+        if (add) {
+          newstring =
+            this.get_env('user_fullname') +
+            this.gettext('mel_forum.' + dis + 'liked_this_sing');
+        } else {
+          newstring = newstring
+            .replace(this.get_env('user_fullname'), '')
+            .replace(', ', '')
+            .replace(
+              this.gettext('mel_forum.' + dis + 'liked_this_plural'),
+              this.gettext('mel_forum.' + dis + 'liked_this_sing'),
+            );
+        }
+        break;
+      default:
+        if (add) {
+          newstring =
+            this.get_env('user_fullname') +
+            ', ' +
+            newstring.replace(
+              this.gettext('mel_forum.' + dis + 'liked_this_sing'),
+              this.gettext('mel_forum.' + dis + 'liked_this_plural'),
+            );
+        } else {
+          newstring = newstring.replace(this.get_env('user_fullname'), '');
+        }
+        break;
+    }
+    div.attr('title', newstring);
   }
 
   /**
@@ -638,17 +685,19 @@ export class Forum extends MelObject {
       task: 'forum',
       action: 'manage_reaction',
       params: {
+        _workspace_uid: this.get_env('workspace_uid'),
         _post_id: post_id,
         _type: type,
       },
       processData: false,
       contentType: false,
-      on_success: () => {
+      on_success: (response) => {
         let like_div = $('#add_like-' + post_uid);
         let dislike_div = $('#add_dislike-' + post_uid);
         let like_counter = like_div.find('span.ml-2');
         let dislike_counter = dislike_div.find('span.ml-2');
 
+        let opposite_type = type === 'like' ? 'dislike' : 'like';
         let target_div = type === 'like' ? like_div : dislike_div;
         let target_counter = type === 'like' ? like_counter : dislike_counter;
         let opposite_div = type === 'like' ? dislike_div : like_div;
@@ -657,17 +706,28 @@ export class Forum extends MelObject {
         if (target_div.hasClass('filled')) {
           target_div.removeClass('filled');
           this.updateCounter(target_counter, -1);
+          // true signifie qu'on ajoute la réaction
+          this.updateTitle(target_div, target_counter, type, false);
         } else {
           target_div.addClass('filled');
           this.updateCounter(target_counter, 1);
+          // true signifie qu'on ajoute la réaction
+          this.updateTitle(target_div, target_counter, type, true);
 
           if (opposite_div.hasClass('filled')) {
             opposite_div.removeClass('filled');
             this.updateCounter(opposite_counter, -1);
+            // false signifie qu'on enlève la réaction
+            this.updateTitle(
+              opposite_div,
+              opposite_counter,
+              opposite_type,
+              false,
+            );
           }
         }
       },
-      on_error: () => {
+      on_error: (err) => {
         BnumMessage.DisplayMessage(
           rcmail.gettext('mel_forum.error_editing'),
           eMessageType.Error,
@@ -766,6 +826,20 @@ export class Forum extends MelObject {
                    </div>`
           : '', // Vide si aucune image n'est présente
         //POST_COUNT_REACTION: post.reaction,
+        POST_LIKE_NAMES:
+          post.like_reactions.join(', ') +
+          (post.like_count > 1
+            ? this.gettext('mel_forum.liked_this_plural')
+            : post.like_count === 1
+              ? this.gettext('mel_forum.liked_this_sing')
+              : this.gettext('mel_forum.like_action')),
+        POST_DISLIKE_NAMES:
+          post.dislike_reactions +
+          (post.dislike_count > 1
+            ? this.gettext('mel_forum.disliked_this_plural')
+            : post.dislike_count === 1
+              ? this.gettext('mel_forum.disliked_this_sing')
+              : this.gettext('mel_forum.dislike_action')),
         POST_THUMB_UP: post.like_count.toString(),
         POST_THUMB_DOWN: post.dislike_count.toString(),
         POST_COMMENTS: post.comment_count.toString(),

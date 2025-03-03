@@ -145,6 +145,9 @@ class FavoriteLoader extends MelObject {
       await this.http_internal_post({
         task: 'mel_cal_resources',
         action: 'load_favorites',
+        params: {
+          _resources: this._type,
+        },
         on_success: (rcs) => {
           if (typeof rcs === 'string') rcs = JSON.parse(rcs);
 

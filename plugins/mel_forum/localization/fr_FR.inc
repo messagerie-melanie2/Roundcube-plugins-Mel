@@ -209,6 +209,11 @@ $labels['reaction_creation_failure'] = 'Echec de création de la réaction.';
 $labels['reaction_deleted'] = 'La réaction a été supprimée avec succès.';
 $labels['reaction_deleted_failure'] = 'Echec de suppression de la réaction.';
 $labels['reaction_saved'] = 'Réaction enregistrée.';
+$labels['liked_this_plural'] = ' ont aimé cet article';
+$labels['liked_this_sing'] = ' a aimé cet article';
+$labels['disliked_this_plural'] = ' n\'ont pas aimé cet article';
+$labels['disliked_this_sing'] = ' n\'a aimé pas cet article';
+
 
 #endregion
 #region IMAGES
@@ -252,7 +257,17 @@ $labels['a_post_has_been_published'] = '📰 Un article a été publié dans vot
 
 #region NOTIFICATION
 
-$labels['post_published_message'] = 'Découvrez le nouvel article intitulé : "%s" en cliquant sur le lien ci-dessous.';
+$labels['notification_comment_message'] = 'Accédez au commentaire de : "%s" en cliquant sur le lien ci-dessous.';
+$labels['notification_comment_title'] = '%s a commenté votre article : "%s".';
+$labels['notification_response_message_for_author'] = 'Accédez à la réponse de %s au commentaire de %s en cliquant sur le lien ci-dessous.';
+$labels['notification_response_message_for_commenter'] = 'Accédez à la réponse de %s en cliquant sur le lien ci-dessous.';
+$labels['notification_response_title_for_author'] = '%s a répondu au commentaire de %s concernant votre article "%s".';
+$labels['notification_response_title_for_commenter'] = '%s a répondu à votre commentaire concernant l\'article "%s".';
 $labels['notification_title'] = '%s a publié un nouvel article dans l\'espace : %s';
+$labels['post_published_message'] = 'Découvrez le nouvel article intitulé : "%s" en cliquant sur le lien ci-dessous.';
 $labels['read_article'] = 'Lire l\'article';
 $labels['read_article_title'] = 'Cliquez pour lire l\'article';
+$labels['read_comment'] = 'Lire le commentaire';
+$labels['read_comment_title'] = 'Cliquez pour lire le commentaire';
+$labels['read_response'] = 'Lire la réponse';
+$labels['read_response_title'] = 'Cliquez pour lire la réponse';

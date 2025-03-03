@@ -108,12 +108,11 @@ class ResourcesBase extends MelObject {
 
     /**
      * Liste des évènements afficher dans l'agenda
-     * @type {ResourceEvent[]}
+     * @type {import('./resources_functions.js')._ResourceEvent}
      * @frommodule Resources/ResourceBaseFunctions/Functions
      * @protected
      */
     this._p_events = [];
-
     /**
      * @package
      * @type {Array<ResourceObject>}
@@ -386,7 +385,13 @@ class ResourcesBase extends MelObject {
   _format_resources(resources, filters) {
     return MelEnumerable.from(resources)
       .where((x) => !MelEnumerable.from(filters).any((f) => !f.filter(x)))
-      .orderBy((x) => (this.get_env('fav_resources')?.[x.data.email] ? 0 : 1))
+      .orderBy((x) =>
+        this.get_env('fav_resources')?.[x.data.type.toUpperCase()]?.[
+          x.data.email
+        ]
+          ? 0
+          : 1,
+      )
       .toArray();
   }
 

@@ -61,6 +61,8 @@ $labels['download_post_failure'] = 'Le téléchargement de l\'article a échoué
 $labels['edit_article'] = 'Modifier l\'article';
 $labels['pin_article'] = 'Épingler l\'article';
 $labels['unpin_article'] = 'Désépingler l\'article';
+$labels['view_history'] = 'Historique';
+
 
 #endregion
 #region Droits

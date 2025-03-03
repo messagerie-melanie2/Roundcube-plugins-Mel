@@ -14,8 +14,8 @@
       </div>
       <div class="forum-header col-10 col-sm-8">
         <div class="input-group mel-search-group mel-centered mel-max-width-500">
-          <input id="post-search-input" class="form-control mel-max-width-500" type="text" placeholder="Rechercher un article ..." value=<roundcube:object
-            name="post_search" />>
+          <input id="post-search-input" class="form-control mel-max-width-500" type="text"
+            placeholder="Rechercher un article ..." value=<roundcube:object name="post_search" />>
           <button id="clear-button" style="display: none;" title="Vider ">✖</button>
           <div class="input-group-append" role="button" id="post-search-button" tabindex="0"
             aria-label="Lancer la recherche" title="Rechercher">
@@ -24,13 +24,14 @@
         </div>
       </div>
       <div class="col-2 d-flex justify-content-start justify-content-md-end pl-0">
-        <button id="forum-button-add" class="mel-button btn btn-secondary" aria-label="rédiger un nouvel article" title=<roundcube:label name="mel_forum.create_article" />>
-          <span class="add d-none d-sm-block">
-            <roundcube:label name="mel_forum.add" />
-          </span>
-          <span class="material-symbols-outlined">
-            add_circle
-          </span>
+        <button id="forum-button-add" class="mel-button btn btn-secondary" aria-label="rédiger un nouvel article"
+          title=<roundcube:label name="mel_forum.create_article" />>
+        <span class="add d-none d-sm-block">
+          <roundcube:label name="mel_forum.add" />
+        </span>
+        <span class="material-symbols-outlined">
+          add_circle
+        </span>
         </button>
       </div>
     </div>
@@ -67,7 +68,8 @@
             <roundcube:label name="mel_forum.display_fav_only" />
           </div>
           <div class="d-block d-md-none d-flex align-items-center">
-            <i tabindex="0" title="Afficher uniquement mes favoris" class="material-symbols-outlined f-31">star_border</i>
+            <i tabindex="0" title="Afficher uniquement mes favoris"
+              class="material-symbols-outlined f-31">star_border</i>
           </div>
           <div class="custom-control custom-switch no-click-focus d-flex align-items-center">
             <input name="favoris" id="display-fav-only" type="checkbox"
@@ -94,59 +96,61 @@
     <a class="post-card" data-spied="false" href="%%POST_LINK%%">
       <div class="col-12">
         <div class="row">
-          
-            <div class="post-header d-block d-md-flex">
-              <div class="post-creator col-12 col-md-11">
-                <bnum-avatar class="author-image" style="background-color: var(--mel-button-background-color); display: flex align-items: center justify-content: center color: white" data-email="%%CREATOR_EMAIL%%"></bnum-avatar>
-                <div class="post-creator-name">%%POST_CREATOR%%</div>
-                <div class="post-date">
-                  <i class="material-symbols-outlined">access_time</i>
-                  <span class="ml-1">%%POST_DATE%%</span>
-                </div>
+
+          <div class="post-header d-block d-md-flex">
+            <div class="post-creator col-12 col-md-11">
+              <bnum-avatar class="author-image"
+                style="background-color: var(--mel-button-background-color); display: flex align-items: center justify-content: center color: white"
+                data-email="%%CREATOR_EMAIL%%"></bnum-avatar>
+              <div class="post-creator-name">%%POST_CREATOR%%</div>
+              <div class="post-date">
+                <i class="material-symbols-outlined">access_time</i>
+                <span class="ml-1">%%POST_DATE%%</span>
               </div>
-              <div class="post-actions col-12 col-md-1 justify-content-end">
-                <span class="more_action icon" id="more-%%UID%%" data-icon="more_vert" tabindex="0" role="button"
-                  title="Plus d'options" aria-label="Options supplémentaires pour l'article intitulé %%POST_TITLE%%"
-                  aria-haspopup="true" aria-expanded="false"></span>
-                <div id="post-context-menu-%%UID%%" class="forum-post-context-menu hidden" role="menu"
-                  aria-labelledby="trigger-%%UID%%" aria-hidden="true">
-                  <h3 id="aria-label-groupoptions-smallmenu" class="voice">Menu du post</h3>
-                  <button class="post-options-button copy-post" tabindex="0" role="menuitem"
-                    aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="copy_post_link"
-                    data-id="%%UID%%" title="<roundcube:label name=" mel_forum.copy_article" />" >
+            </div>
+            <div class="post-actions col-12 col-md-1 justify-content-end">
+              <span class="more_action icon" id="more-%%UID%%" data-icon="more_vert" tabindex="0" role="button"
+                title="Plus d'options" aria-label="Options supplémentaires pour l'article intitulé %%POST_TITLE%%"
+                aria-haspopup="true" aria-expanded="false"></span>
+              <div id="post-context-menu-%%UID%%" class="forum-post-context-menu hidden" role="menu"
+                aria-labelledby="trigger-%%UID%%" aria-hidden="true">
+                <h3 id="aria-label-groupoptions-smallmenu" class="voice">Menu du post</h3>
+                <button class="post-options-button copy-post" tabindex="0" role="menuitem"
+                  aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="copy_post_link" data-id="%%UID%%"
+                  title="<roundcube:label name='mel_forum.copy_article' />">
                   <span class="icon material-symbols-outlined post-options-icon" data-icon="content_copy"></span>
                   <span class="post-options-text" style="margin-left: 8px;">
                     <roundcube:label name="mel_forum.copy_article" />
                   </span>
-                  </button>
-                  <button class="post-options-button pin-post %%IS_ADMIN%%" tabindex="0" role="menuitem"
-                    aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="pin_post" id="pin_%%UID%%"
-                    data-id="%%UID%%" title="<roundcube:label name=" mel_forum.pin_article" />" >
+                </button>
+                <button class="post-options-button pin-post %%IS_ADMIN%%" tabindex="0" role="menuitem"
+                  aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="pin_post" id="pin_%%UID%%"
+                  data-id="%%UID%%" title="%%POST_PINNED_TEXT%%">
                   <span class="icon material-symbols-outlined post-options-icon"
                     data-icon="%%POST_PINNED_LOGO%%"></span>
                   <span class="post-options-text" style="margin-left: 8px;">%%POST_PINNED_TEXT%%</span>
-                  </button>
-                  <button class="post-options-button edit-post %%HAS_OWNER_RIGHTS%%" tabindex="0" role="menuitem"
-                    aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="modify_post" data-id="%%UID%%"
-                    title="<roundcube:label name=" mel_forum.edit_article" />" >
+                </button>
+                <button class="post-options-button edit-post %%HAS_OWNER_RIGHTS%%" tabindex="0" role="menuitem"
+                  aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="modify_post" data-id="%%UID%%"
+                  title="<roundcube:label name='mel_forum.edit_article' />">
                   <span class="icon material-symbols-outlined post-options-icon" data-icon="border_color"></span>
                   <span class="post-options-text" style="margin-left: 8px;">
                     <roundcube:label name="mel_forum.edit_article" />
                   </span>
-                  </button>
-                  <button class="post-options-button delete-post %%HAS_OWNER_RIGHTS%%" tabindex="0" role="menuitem"
-                    aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="delete_post" data-id="%%UID%%"
-                    title="<roundcube:label name=" mel_forum.delete_article" />" >
+                </button>
+                <button class="post-options-button delete-post %%HAS_OWNER_RIGHTS%%" tabindex="0" role="menuitem"
+                  aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="delete_post" data-id="%%UID%%"
+                  title="<roundcube:label name='mel_forum.delete_article' />">
                   <span class="icon material-symbols-outlined post-options-icon" data-icon="delete"></span>
                   <span class="post-options-text" style="margin-left: 8px;">
                     <roundcube:label name="mel_forum.delete_article" />
                   </span>
-                  </button>
-                </div>
-                %%POST_FAVORITE%%
+                </button>
               </div>
+              %%POST_FAVORITE%%
             </div>
-          
+          </div>
+
         </div>
         <div class="row">
           <div class="%%POST_CONTENT_CLASS%%">
@@ -166,11 +170,13 @@
                   <i class="material-symbols-outlined">add_reaction</i>
                   <span class="ml-2">%%POST_COUNT_REACTION%%</span>
                 </div> -->
-                <div id="add_like-%%UID%%" class="like hoverable %%POST_IS_LIKED%%" tabindex="0" role="button" title="%%POST_LIKE_NAMES%%">
+                <div id="add_like-%%UID%%" class="like hoverable %%POST_IS_LIKED%%" tabindex="0" role="button"
+                  title="%%POST_LIKE_NAMES%%">
                   <i class="material-symbols-outlined">thumb_up</i>
                   <span class="ml-2">%%POST_THUMB_UP%%</span>
                 </div>
-                <div id="add_dislike-%%UID%%" class="dislike hoverable %%POST_IS_DISLIKED%%" tabindex="0" role="button" title="%%POST_DISLIKE_NAMES%%">
+                <div id="add_dislike-%%UID%%" class="dislike hoverable %%POST_IS_DISLIKED%%" tabindex="0" role="button"
+                  title="%%POST_DISLIKE_NAMES%%">
                   <i class="material-symbols-outlined">thumb_down</i>
                   <span class="ml-2">%%POST_THUMB_DOWN%%</span>
                 </div>

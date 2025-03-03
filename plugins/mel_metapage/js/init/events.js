@@ -2524,7 +2524,7 @@ $(document).ready(() => {
                 let abort = {signal:false}
                 rcmail.triggerEvent('a.clicked', {url, abort, e: event});
                 
-                if (abort) return;
+                if (abort.signal) return;
               }
               
               break;

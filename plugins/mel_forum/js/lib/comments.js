@@ -37,7 +37,7 @@ class PostComment {
       children_number,
       current_user_reacted,
     );
-    this.isProcessing = false;  // Ajout de l'état de traitement
+    this.isProcessing = false; // Ajout de l'état de traitement
   }
 
   /**
@@ -141,9 +141,9 @@ class PostComment {
       if (this.isProcessing) {
         return; // Empêche les actions multiples simultanées
       }
-  
+
       this.isProcessing = true; // Indique qu'une action est en cours
-  
+
       // Fonction pour envoyer la requête
       const sendRequest = async (reactionType) =>
         await MelObject.Empty().http_internal_post({
@@ -155,34 +155,42 @@ class PostComment {
             _type: reactionType,
           },
         });
-  
+
       // Désactiver les boutons pour éviter les clics simultanés
       let likeActionElement = $('[data-like-uid="' + uid + '"]');
       let dislikeActionElement = $('[data-dislike-uid="' + uid + '"]');
       likeActionElement.prop('disabled', true);
       dislikeActionElement.prop('disabled', true);
-  
+
       // Envoie la requête avec le type de réaction (like ou dislike)
       let response = await sendRequest(type);
-  
+
       // Réactiver les boutons après la réponse
       likeActionElement.prop('disabled', false);
       dislikeActionElement.prop('disabled', false);
-  
+
       // Vérifier si la réponse contient un message
       if (response && response.message) {
-        let likeCounterElement = $('[data-like-uid="' + uid + '"]').siblings('span.ml-2');
-        let dislikeCounterElement = $('[data-dislike-uid="' + uid + '"]').siblings('span.ml-2');
-  
+        let likeCounterElement = $('[data-like-uid="' + uid + '"]').siblings(
+          'span.ml-2',
+        );
+        let dislikeCounterElement = $(
+          '[data-dislike-uid="' + uid + '"]',
+        ).siblings('span.ml-2');
+
         // Gestion de l'annulation d'une réaction
         if (response.message.includes('annulé')) {
           if (type === 'like') {
-            likeCounterElement.text(Math.max(0, parseInt(likeCounterElement.text()) - 1));
+            likeCounterElement.text(
+              Math.max(0, parseInt(likeCounterElement.text()) - 1),
+            );
             likeActionElement.parent().removeClass('active');
             this.current_user_reacted = ''; // Réinitialiser la réaction
           } else if (type === 'dislike') {
             // Réinitialiser l'état de `dislike`
-            dislikeCounterElement.text(Math.max(0, parseInt(dislikeCounterElement.text()) - 1));
+            dislikeCounterElement.text(
+              Math.max(0, parseInt(dislikeCounterElement.text()) - 1),
+            );
             dislikeActionElement.parent().removeClass('active');
             this.current_user_reacted = ''; // Réinitialiser la réaction
           }
@@ -191,38 +199,42 @@ class PostComment {
           if (type === 'like') {
             // Si un dislike est activé, on le retire
             if (dislikeActionElement.parent().hasClass('active')) {
-              dislikeCounterElement.text(Math.max(0, parseInt(dislikeCounterElement.text()) - 1));
+              dislikeCounterElement.text(
+                Math.max(0, parseInt(dislikeCounterElement.text()) - 1),
+              );
               dislikeActionElement.parent().removeClass('active');
             }
-  
+
             // Si un like n'est pas déjà activé, on l'ajoute
             if (!likeActionElement.parent().hasClass('active')) {
               likeCounterElement.text(parseInt(likeCounterElement.text()) + 1);
               likeActionElement.parent().addClass('active');
             }
-  
+
             this.current_user_reacted = 'like';
           } else if (type === 'dislike') {
             // Si un like est activé, on le retire
             if (likeActionElement.parent().hasClass('active')) {
-              likeCounterElement.text(Math.max(0, parseInt(likeCounterElement.text()) - 1));
+              likeCounterElement.text(
+                Math.max(0, parseInt(likeCounterElement.text()) - 1),
+              );
               likeActionElement.parent().removeClass('active');
             }
-  
+
             // Si un dislike n'est pas déjà activé, on l'ajoute
             if (!dislikeActionElement.parent().hasClass('active')) {
-              dislikeCounterElement.text(parseInt(dislikeCounterElement.text()) + 1);
+              dislikeCounterElement.text(
+                parseInt(dislikeCounterElement.text()) + 1,
+              );
               dislikeActionElement.parent().addClass('active');
             }
-  
+
             this.current_user_reacted = 'dislike';
           }
         }
-  
       } else {
         // Pas de message à afficher, aucune action supplémentaire ici
       }
-  
     } catch (error) {
       // Gestion des erreurs de requêtes
       rcmail.display_message(
@@ -240,7 +252,6 @@ class PostComment {
       }, 1000); // Augmentation du délai pour limiter les clics rapides
     }
   }
-  
 
   /**
    * Bascule l'affichage des réponses d'un commentaire et met à jour l'icône de basculement.
@@ -290,7 +301,6 @@ class PostComment {
 
       // Si le conteneur est caché, on veut l'afficher
       if (responseContainer.hasClass('hidden')) {
-
         CursorUtils.SetLoadingCursor();
 
         BnumMessage.SetBusyLoading();
@@ -386,147 +396,146 @@ class PostComment {
     this.post_id = rcmail.env.post_id;
 
     if (replyContent && replyContent.trim() !== '') {
-        // Vérifier si le commentaire n'est pas vide
+      // Vérifier si le commentaire n'est pas vide
 
-        submitButton.prop('disabled', true); // Désactiver le bouton de validation pour éviter les clics multiples
+      submitButton.prop('disabled', true); // Désactiver le bouton de validation pour éviter les clics multiples
 
-        CursorUtils.SetLoadingCursor();
+      CursorUtils.SetLoadingCursor();
 
-        BnumMessage.SetBusyLoading();
+      BnumMessage.SetBusyLoading();
 
-        try {
-            const response = await MelObject.Empty().http_internal_post({
-                task: 'forum',
-                action: 'create_comment',
-                params: {
-                    _post_id: this.post_id, // L'ID du post
-                    _content: replyContent, // Le contenu de la réponse
-                    _parent: this.parent, // ID du commentaire parent
-                },
-            });
+      try {
+        const response = await MelObject.Empty().http_internal_post({
+          task: 'forum',
+          action: 'create_comment',
+          params: {
+            _post_id: this.post_id, // L'ID du post
+            _content: replyContent, // Le contenu de la réponse
+            _parent: this.parent, // ID du commentaire parent
+          },
+        });
 
-            if (response.status === 'success') {
-                rcmail.display_message(response.message, 'confirmation');
+        if (response.status === 'success') {
+          rcmail.display_message(response.message, 'confirmation');
 
-                // Récupérer l'ID du commentaire créé
-                const newCommentId = response.comment.id; // Assurez-vous que l'ID est inclus dans `response.comment`
+          // Récupérer l'ID du commentaire créé
+          const newCommentId = response.comment.id; // Assurez-vous que l'ID est inclus dans `response.comment`
 
-                console.log('Nouveau commentaire ID :', newCommentId);
+          console.log('Nouveau commentaire ID :', newCommentId);
 
-                // Vider le textarea
-                $textarea.val('');
+          // Vider le textarea
+          $textarea.val('');
 
-                // Fermer le formulaire en ajoutant la classe 'hidden'
-                $('#reply-form-' + this.uid).addClass('hidden');
+          // Fermer le formulaire en ajoutant la classe 'hidden'
+          $('#reply-form-' + this.uid).addClass('hidden');
 
-                const parent_comment_id = this.parent; // ID du commentaire parent
-                let $responseContainer = $(
-                    `#toggle-response-container-${parent_comment_id}`
-                );
+          const parent_comment_id = this.parent; // ID du commentaire parent
+          let $responseContainer = $(
+            `#toggle-response-container-${parent_comment_id}`,
+          );
 
-                // Vérifier si le conteneur existe
-                if (!$responseContainer.length) {
-                    // Si le conteneur n'existe pas, le créer avec MelHtml
-                    this.children_number = 0;
-                    const reponseText = 'réponse';
-                    const newContainerHtml = MelHtml.start
-                        .div({
-                            id: 'toggle-response-container-' + parent_comment_id,
-                            class: 'forum-comment-response',
-                            'data-comment-id': parent_comment_id,
-                            tabindex: '0',
-                            role: 'button',
-                            title:
-                                this.children_number === 1
-                                    ? rcmail.gettext('mel_forum.see_response_singular')
-                                    : `${rcmail.gettext('mel_forum.see_the')} ${this.children_number} ${rcmail.gettext('mel_forum.response_plural')}`,
-                        })
-                        .span({
-                            id: 'toggle-icon-' + parent_comment_id,
-                            class: 'icon',
-                            'data-icon': 'arrow_drop_down',
-                        })
-                        .end('span')
-                        .span({ class: 'ml-2' })
-                        .text(this.children_number + ' ' + reponseText)
-                        .end('span')
-                        .end('div')
-                        .div({
-                            id: 'responses-' + parent_comment_id,
-                            class: 'responses ml-4 hidden',
-                        })
-                        .end('div')
-                        .generate_html(true);
+          // Vérifier si le conteneur existe
+          if (!$responseContainer.length) {
+            // Si le conteneur n'existe pas, le créer avec MelHtml
+            this.children_number = 0;
+            const reponseText = 'réponse';
+            const newContainerHtml = MelHtml.start
+              .div({
+                id: 'toggle-response-container-' + parent_comment_id,
+                class: 'forum-comment-response',
+                'data-comment-id': parent_comment_id,
+                tabindex: '0',
+                role: 'button',
+                title:
+                  this.children_number === 1
+                    ? rcmail.gettext('mel_forum.see_response_singular')
+                    : `${rcmail.gettext('mel_forum.see_the')} ${this.children_number} ${rcmail.gettext('mel_forum.response_plural')}`,
+              })
+              .span({
+                id: 'toggle-icon-' + parent_comment_id,
+                class: 'icon',
+                'data-icon': 'arrow_drop_down',
+              })
+              .end('span')
+              .span({ class: 'ml-2' })
+              .text(this.children_number + ' ' + reponseText)
+              .end('span')
+              .end('div')
+              .div({
+                id: 'responses-' + parent_comment_id,
+                class: 'responses ml-4 hidden',
+              })
+              .end('div')
+              .generate_html(true);
 
-                    // Localiser la section où insérer le conteneur
-                    const $responseSection = $(`#comment-id-${this.uid}`).find(
-                        '.forum-comment-responses'
-                    );
-                    $responseSection.html(newContainerHtml);
-
-                    // Re-sélectionner le conteneur après sa création
-                    $responseContainer = $(
-                        `#toggle-response-container-${parent_comment_id}`
-                    );
-                }
-
-                // Attacher directement l'événement de clic à cet élément
-                $responseContainer.on('click', () => {
-                  this.toggleResponses(parent_comment_id); // Appel de la méthode toggleResponses
-                });
-
-                // Insérer la nouvelle réponse dans le conteneur
-                await Manager.displaySingleComment(response.comment);
-
-                // Mettre à jour le nombre de réponses dans l'interface
-                const currentChildrenNumber = parseInt(this.children_number) + 1; // Incrémenter le nombre de réponses
-                this.children_number = currentChildrenNumber; // Mettre à jour localement le nombre de réponses
-                $('#comment-id-' + this.uid).data(
-                    'number-children',
-                    this.children_number
-                );
-
-                // Mettre à jour le texte du nombre de réponses
-                const reponseText =
-                    currentChildrenNumber === 1
-                        ? rcmail.gettext('mel_forum.response_singular')
-                        : rcmail.gettext('mel_forum.response_plural');
-                $responseContainer
-                    .find('span.ml-2')
-                    .text(currentChildrenNumber + ' ' + reponseText);
-
-                // Mettre à jour l'attribut `title`
-                $responseContainer.attr(
-                    'title',
-                    currentChildrenNumber === 1
-                        ? rcmail.gettext('mel_forum.see_response_singular')
-                        : `${rcmail.gettext('mel_forum.see_the')} ${currentChildrenNumber} ${rcmail.gettext('mel_forum.response_plural')}`
-                );
-            } else {
-                rcmail.display_message(response.message, 'error');
-            }
-        } catch (error) {
-            rcmail.display_message(
-                rcmail.gettext('mel_forum.reply_save_error'),
-                'error'
+            // Localiser la section où insérer le conteneur
+            const $responseSection = $(`#comment-id-${this.uid}`).find(
+              '.forum-comment-responses',
             );
-            console.error(rcmail.gettext('mel_forum.reply_save_failure'), error);
-        } finally {
-            BnumMessage.StopBusyLoading();
+            $responseSection.html(newContainerHtml);
 
-            CursorUtils.ResetCursor();
+            // Re-sélectionner le conteneur après sa création
+            $responseContainer = $(
+              `#toggle-response-container-${parent_comment_id}`,
+            );
+          }
 
-            // Réactiver le bouton de validation une fois la requête terminée
-            submitButton.prop('disabled', false);
+          // Attacher directement l'événement de clic à cet élément
+          $responseContainer.on('click', () => {
+            this.toggleResponses(parent_comment_id); // Appel de la méthode toggleResponses
+          });
+
+          // Insérer la nouvelle réponse dans le conteneur
+          await Manager.displaySingleComment(response.comment);
+
+          // Mettre à jour le nombre de réponses dans l'interface
+          const currentChildrenNumber = parseInt(this.children_number) + 1; // Incrémenter le nombre de réponses
+          this.children_number = currentChildrenNumber; // Mettre à jour localement le nombre de réponses
+          $('#comment-id-' + this.uid).data(
+            'number-children',
+            this.children_number,
+          );
+
+          // Mettre à jour le texte du nombre de réponses
+          const reponseText =
+            currentChildrenNumber === 1
+              ? rcmail.gettext('mel_forum.response_singular')
+              : rcmail.gettext('mel_forum.response_plural');
+          $responseContainer
+            .find('span.ml-2')
+            .text(currentChildrenNumber + ' ' + reponseText);
+
+          // Mettre à jour l'attribut `title`
+          $responseContainer.attr(
+            'title',
+            currentChildrenNumber === 1
+              ? rcmail.gettext('mel_forum.see_response_singular')
+              : `${rcmail.gettext('mel_forum.see_the')} ${currentChildrenNumber} ${rcmail.gettext('mel_forum.response_plural')}`,
+          );
+        } else {
+          rcmail.display_message(response.message, 'error');
         }
-    } else {
+      } catch (error) {
         rcmail.display_message(
-            rcmail.gettext('mel_forum.comment_content_empty'),
-            'error'
+          rcmail.gettext('mel_forum.reply_save_error'),
+          'error',
         );
-    }
-}
+        console.error(rcmail.gettext('mel_forum.reply_save_failure'), error);
+      } finally {
+        BnumMessage.StopBusyLoading();
 
+        CursorUtils.ResetCursor();
+
+        // Réactiver le bouton de validation une fois la requête terminée
+        submitButton.prop('disabled', false);
+      }
+    } else {
+      rcmail.display_message(
+        rcmail.gettext('mel_forum.comment_content_empty'),
+        'error',
+      );
+    }
+  }
 
   /**
    * Bascule l'affichage d'un menu contextuel et applique des actions spécifiques lorsque le menu devient visible.
@@ -637,7 +646,6 @@ class PostComment {
     const $textarea = $('#edit-comment-textarea-' + uid);
     const updatedContent = $textarea.val(); // Récupère le nouveau contenu du commentaire
     if (updatedContent && updatedContent.trim() !== '') {
-
       CursorUtils.SetLoadingCursor();
 
       BnumMessage.SetBusyLoading();
@@ -1101,7 +1109,6 @@ class PostCommentView {
    * @returns {Promise<Object>} - Les données du commentaire du post, après analyse de la réponse.
    */
   async getCommentByPost() {
-
     CursorUtils.SetLoadingCursor();
 
     BnumMessage.SetBusyLoading();

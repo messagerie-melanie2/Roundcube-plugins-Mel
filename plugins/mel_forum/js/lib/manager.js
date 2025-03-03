@@ -189,7 +189,6 @@ export class Manager extends MelObject {
    * @returns {Promise<void>} Retourne une promesse qui est résolue une fois que tous les commentaires sont affichés et que les événements sont attachés.
    */
   static async displayComments(order = 'date_desc', parent_comment_id = null) {
-
     CursorUtils.SetLoadingCursor;
 
     BnumMessage.SetBusyLoading();
@@ -541,7 +540,7 @@ export class Manager extends MelObject {
           );
         }
       },
-      on_error: (err) => {
+      on_error: () => {
         // Affichage du message d'erreur en cas de problème avec la requête
         BnumMessage.DisplayMessage(
           rcmail.gettext('mel_forum.delete_post_failure'),
@@ -594,6 +593,7 @@ export class Manager extends MelObject {
     let dialog = new MelDialog(
       new DialogPage('choose-download-format', {
         content: modalContent,
+        // eslint-disable-next-line quotes
         title: "Télécharger l'article",
         buttons: [
           new RcmailDialogButton('Annuler', {
@@ -693,7 +693,7 @@ export class Manager extends MelObject {
           }
         }
       },
-      on_error: (err) => {
+      on_error: () => {
         BnumMessage.DisplayMessage(
           rcmail.gettext('mel_forum.error_editing'),
           eMessageType.Error,

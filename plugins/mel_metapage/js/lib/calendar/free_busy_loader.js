@@ -78,6 +78,7 @@ class FreeBusyClassLoader extends MelObject {
             method: 'GET',
             on_success: (d) => {
               if (typeof d === 'string') d = JSON.parse(d);
+
               ok(new Slots(d));
             },
           });

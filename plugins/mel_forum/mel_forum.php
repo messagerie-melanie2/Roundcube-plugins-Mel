@@ -39,10 +39,7 @@ class mel_forum extends bnum_plugin
      */
     function init()
     {
-        // $this->rc()->output->send('mel_forum.forum');
-
-        // Chargement de la conf
-        // $this->load_config();
+        
         // Gestion des différentes langues
         $this->add_texts('localization/', true);
 
@@ -54,9 +51,13 @@ class mel_forum extends bnum_plugin
         $this->register_task('forum');
 
         if ($this->rc()->task === "forum") {
-            $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
-            if (driver_mel::gi()->getUser()->isWorkspaceMember($workspace_uid)) {
+            //obligatoirement ici pour retrocompatibilité avec les images enregistrées avant la version 25.2
+            // affiche une image chargé sur le serveur
+            $this->register_action('load_image', [$this, 'load_image']);
             
+            $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GP);
+            if (driver_mel::gi()->getUser()->isWorkspaceMember($workspace_uid)) {
+
                 // Penser à modifier avec index au lieu de post pour afficher la page d'accueil
                 $this->register_action('index', [$this, 'index']);
                 //Affichage de la page d'un article
@@ -64,44 +65,43 @@ class mel_forum extends bnum_plugin
                 // Affichage de la page qui permet de créer un article
                 $this->register_action('create_or_edit_post', [$this, 'create_or_edit_post']);
                 // Créer/Modifier un article
-                $this->register_action('add_post', array($this, 'add_post'));
+                $this->register_action('add_post', [$this, 'add_post']);
                 //supprimer un article
-                $this->register_action('delete_post', array($this, 'delete_post'));
+                $this->register_action('delete_post', [$this, 'delete_post']);
                 // Ajouter un commentaire ou une réponse
-                $this->register_action('create_comment', array($this, 'create_comment'));
+                $this->register_action('create_comment', [$this, 'create_comment']);
                 // Modifier un commentaire ou une réponse
-                $this->register_action('update_comment', array($this, 'update_comment'));
+                $this->register_action('update_comment', [$this, 'update_comment']);
                 // Supprimer un commentaire ou une réponse
-                $this->register_action('delete_comment', array($this, 'delete_comment'));
+                $this->register_action('delete_comment', [$this, 'delete_comment']);
                 // Liker un commentaire ou une réponse
-                $this->register_action('like_comment', array($this, 'like_comment'));
+                $this->register_action('like_comment', [$this, 'like_comment']);
                 //Lister les comments d'un Post
                 $this->register_action('get_all_comments_bypost', [$this, 'get_all_comments_bypost']);
                 //Gère la modification/création d'un post
-                $this->register_action('send_post', array($this, 'send_post'));
+                $this->register_action('send_post', [$this, 'send_post']);
                 // Import une image sur le serveur
-                $this->register_action('upload_image', array($this, 'upload_image'));
-                // affiche une image chargé sur le serveur
-                $this->register_action('load_image', array($this, 'load_image'));
+                $this->register_action('upload_image', [$this, 'upload_image']);
                 // ajoute un article aux favoris de l'utilisateur courant
-                $this->register_action('manage_favorite', array($this, 'manage_favorite'));
+                $this->register_action('manage_favorite', [$this, 'manage_favorite']);
                 // récupérer des posts au format Json
-                $this->register_action('get_posts_data', array($this, 'get_posts_data'));
+                $this->register_action('get_posts_data', [$this, 'get_posts_data']);
                 // gestion des réaction aux posts
-                $this->register_action('manage_reaction', array($this, 'manage_reaction'));
+                $this->register_action('manage_reaction', [$this, 'manage_reaction']);
                 // Affichage des nouveaux posts
-                $this->register_action('new_posts', array($this, 'new_posts'));
+                $this->register_action('new_posts', [$this, 'new_posts']);
                 //Affichage du post à la une
-                $this->register_action('front_page_post', array($this, 'front_page_post'));
+                $this->register_action('front_page_post', [$this, 'front_page_post']);
                 //Reload du post à la une
-                $this->register_action('refresh_front_page_post', array($this, 'refresh_front_page_post'));
+                $this->register_action('refresh_front_page_post', [$this, 'refresh_front_page_post']);
                 //Épingler un post
-                $this->register_action('pin_post', array($this, 'pin_post'));
+                $this->register_action('pin_post', [$this, 'pin_post']);
                 // Conversion d'un article en Markdown
                 $this->register_action('convert_post_in_markdown', [$this, 'convert_post_in_markdown']);
                 $this->register_action('download_article', [$this, 'download_article']);
+
                 $this->register_action('create_zip_with_md_and_images', [$this, 'create_zip_with_md_and_images']);
-            } else {
+            } else if(!$this->rc()->action === 'load_image') {
                 $this->_display_error_page();
             }
         } else if ($this->get_current_task() === 'workspace') {
@@ -130,7 +130,8 @@ class mel_forum extends bnum_plugin
         $this->load_script_module('forum');
         $this->_show_posts();
         $this->rc()->output->set_env('workspace_uid', $workspace_uid);
-        $this->rc()->output->add_handlers(array('post_search' => array($this, '_show_search')));
+        $this->rc()->output->set_env('user_fullname', driver_mel::gi()->getUser()->name);
+        $this->rc()->output->add_handlers(['post_search' => [$this, '_show_search']]);
         $this->rc()->output->send('mel_forum.forum');
     }
 
@@ -175,15 +176,18 @@ class mel_forum extends bnum_plugin
 
             $reactions = $this->current_post->listReactions();
 
+            $likes_name = $this->_get_names_by_reaction($this->current_post, 'like');
+            $dislikes_name = $this->_get_names_by_reaction($this->current_post, 'dislike');
 
-            $this->rc()->output->add_handlers(array('show_post_title' => array($this, 'show_post_title')));
-            $this->rc()->output->add_handlers(array('show_post_tags' => array($this, 'show_post_tags')));
-            $this->rc()->output->add_handlers(array('show_post_creator_name' => array($this, 'show_post_creator_name')));
-            $this->rc()->output->add_handlers(array('show_post_creator_email' => array($this, 'show_post_creator_email')));
-            $this->rc()->output->add_handlers(array('show_post_date' => array($this, 'show_post_date')));
-            $this->rc()->output->add_handlers(array('show_post_content' => array($this, 'show_post_content')));
-            $this->rc()->output->add_handlers(array('show_post_like' => array($this, 'show_post_like')));
-            $this->rc()->output->add_handlers(array('show_post_dislike' => array($this, 'show_post_dislike')));
+
+            $this->rc()->output->add_handlers(['show_post_title' => [$this, 'show_post_title']]);
+            $this->rc()->output->add_handlers(['show_post_tags' => [$this, 'show_post_tags']]);
+            $this->rc()->output->add_handlers(['show_post_creator_name' => [$this, 'show_post_creator_name']]);
+            $this->rc()->output->add_handlers(['show_post_creator_email' => [$this, 'show_post_creator_email']]);
+            $this->rc()->output->add_handlers(['show_post_date' => [$this, 'show_post_date']]);
+            $this->rc()->output->add_handlers(['show_post_content' => [$this, 'show_post_content']]);
+            $this->rc()->output->add_handlers(['show_post_like' => [$this, 'show_post_like']]);
+            $this->rc()->output->add_handlers(['show_post_dislike' => [$this, 'show_post_dislike']]);
 
             $this->rc()->output->set_env('post_uid', $this->current_post->uid);
             $this->rc()->output->set_env('post_id', $this->current_post->id);
@@ -192,6 +196,11 @@ class mel_forum extends bnum_plugin
             $this->rc()->output->set_env('has_owner_rights', $this->_has_owner_rights($this->current_post, $workspace_uid));
             $this->rc()->output->set_env('has_liked', $this->_has_Reacted('like', $reactions));
             $this->rc()->output->set_env('has_disliked', $this->_has_Reacted('dislike', $reactions));
+            $this->rc()->output->set_env('like_reactions', $likes_name);
+            $this->rc()->output->set_env('like_count', $this->current_post->likes);
+            $this->rc()->output->set_env('dislike_reactions', $dislikes_name);
+            $this->rc()->output->set_env('dislike_count', $this->current_post->dislikes);
+            $this->rc()->output->set_env('user_fullname', driver_mel::gi()->getUser()->name);
 
             $this->rc()->output->send('mel_forum.post');
         } else {
@@ -582,7 +591,9 @@ class mel_forum extends bnum_plugin
             $tags = $this->_get_all_tags_bypost($post);
             // Récupérer le nombre de likes
             $reactions = $post->listReactions();
+            $likes_name = $this->_get_names_by_reaction($post, 'like');
             $isliked = $this->_has_Reacted('like', $reactions);
+            $dislikes_name = $this->_get_names_by_reaction($post, 'dislike');
             $isdisliked = $this->_has_Reacted('dislike', $reactions);
             // Récupérer le nombre de commentaire
             $comment_count = $post->countComments();
@@ -610,7 +621,9 @@ class mel_forum extends bnum_plugin
                 'creator_email' => $post_creator->email,
                 'tags' => $tags,
                 'summary' => $post->summary,
+                'like_reactions' => $likes_name,
                 'like_count' => $post->likes,
+                'dislike_reactions' => $dislikes_name,
                 'dislike_count' => $post->dislikes,
                 'comment_count' => $comment_count,
                 'favorite' => $is_fav,
@@ -1065,6 +1078,8 @@ class mel_forum extends bnum_plugin
         $content = $this->get_input('_content', rcube_utils::INPUT_POST);
         $post = $this->get_input('_post_id', rcube_utils::INPUT_POST);
         $parent = $this->get_input('_parent', rcube_utils::INPUT_POST, true);
+        $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_POST);
+        $post_uid = $this->get_input('_post_uid', rcube_utils::INPUT_POST);
 
         // Validation des données
         if (empty($content)) {
@@ -1101,6 +1116,9 @@ class mel_forum extends bnum_plugin
                     'message' => $this->gettext("comment_creation_failed", "mel_forum")
                 ]);
             }
+            // Appel de la fonction de notification d'ajout d'un commentaire ou d'une réponse
+            $this->notify_comment($workspace_uid, $parent, $post_uid);
+
         } else {
             // Gestion d'une erreur de sauvegarde
             $this->sendEncodedExit([
@@ -1118,7 +1136,9 @@ class mel_forum extends bnum_plugin
             'creator' => $comment->creator,
             'post' => $comment->post,
             'parent' => !empty($comment->parent) ? $comment->parent : null,
-            'user_name' => $user->name
+            'user_name' => $user->name,
+            'workspace_uid' => $workspace_uid,
+            'post_uid' => $post_uid,
         ];
 
         // Réponse JSON avec succès
@@ -1714,6 +1734,7 @@ class mel_forum extends bnum_plugin
             "_task" => "forum",
             "_action" => "load_image",
             "_image_uid" => $uid,
+            "_workspace_uid" => $this->get_input('_workspace_uid', rcube_utils::INPUT_GP),
         ), false, true, true);
         return $url;
     }
@@ -1924,6 +1945,22 @@ class mel_forum extends bnum_plugin
             }
         }
         return false;
+    }
+
+    /**
+     * retourne un tableau avec les noms des personnes qui ont réagit au post passé en paramètre avec la réaction 
+     * @param \LibMelanie\Api\Defaut\Posts\Post $post objet post
+     * @param string $type type de la reaction
+     * 
+     */
+    protected function _get_names_by_reaction($post, $type) {
+        $type_reactions = $post->listReactions($type);
+        $type_name = [];
+        foreach($type_reactions as $type_reaction)
+        {
+            $type_name[] = driver_mel::gi()->getUser($type_reaction->creator)->name;
+        }
+        return $type_name;
     }
 
     #endregion
@@ -2762,6 +2799,126 @@ class mel_forum extends bnum_plugin
                             $user->user
                         );
                     }
+                }
+            }
+        }
+    }
+
+    /**
+     * Envoie une notification lors de l'ajout d'un commentaire ou d'une réponse à un commentaire.
+     *
+     * Cette fonction notifie les utilisateurs concernés lorsqu'un nouveau commentaire est ajouté à un post
+     * ou lorsqu'une réponse est faite à un commentaire existant. Les notifications sont envoyées au créateur
+     * du post et en cas de réponse, également au créateur du commentaire parent.
+     *
+     * @param string $workspace_uid L'identifiant unique de l'espace de travail.
+     * @param string|null $parent_id L'identifiant du commentaire parent (null si c'est un nouveau commentaire).
+     * @param string $post_uid L'identifiant unique du post associé au commentaire.
+     *
+     * @return void
+     */
+    public function notify_comment($workspace_uid, $parent_id, $post_uid) {
+        if (class_exists("mel_notification")) {
+            $post_id = rcube_utils::get_input_value('_post_id', rcube_utils::INPUT_POST);
+    
+            if ($workspace_uid !== null && $post_id !== null) {
+                $workspace = mel_workspace::Workspace($workspace_uid);
+                $current_user = driver_mel::gi()->getUser();
+    
+                // Récupérer les infos du post
+                $post = $this->_get_post($post_uid);
+                $post_title = $post->title;
+                $post_creator = $post->creator; // UID du créateur du post
+    
+                // Récupération du créateur du commentaire parent
+                $parent_creator = null;
+                if (!empty($parent_id)) {  // Vérifie si un parent existe
+                    $parent_comment = new LibMelanie\Api\Defaut\Posts\Comment();
+                    $parent_comment->id = $parent_id;
+                    $parent_comments = $parent_comment->getList();
+    
+                    if (count($parent_comments)) {  
+                        $parent_comment = array_pop($parent_comments);
+                        $parent_creator = $parent_comment->user_uid; // UID du créateur du commentaire parent
+                    }
+                }
+    
+                // Initialisation de la liste des utilisateurs à notifier
+                $users_to_notify = [];
+    
+                if (empty($parent_id)) {
+                    // *** NOUVEAU COMMENTAIRE sur l'article ***
+                    $notification_comment_title = sprintf(
+                        $this->gettext("mel_forum.notification_comment_title"),
+                        $current_user->name,
+                        $post_title
+                    );
+    
+                    $notification_comment_message = sprintf(
+                        $this->gettext("mel_forum.notification_comment_message"),
+                        $current_user->name
+                    );
+    
+                    // Ajouter le créateur du post à la liste des notifications (sauf si c'est lui qui commente)
+                    if ($post_creator !== $current_user->uid) {
+                        $users_to_notify[$post_creator] = [
+                            'title' => $notification_comment_title,
+                            'message' => $notification_comment_message
+                        ];
+                    }
+                } else {
+                    // *** RÉPONSE à un commentaire existant ***
+                    if (!empty($parent_creator)) {
+                        // Notification pour le créateur de l'article
+                        if ($post_creator !== $current_user->uid) {
+                            $users_to_notify[$post_creator] = [
+                                'title' => sprintf(
+                                    $this->gettext("mel_forum.notification_response_title_for_author"),
+                                    $current_user->name,
+                                    $parent_creator,
+                                    $post_title
+                                ),
+                                'message' => sprintf(
+                                    $this->gettext("mel_forum.notification_response_message_for_author"),
+                                    $current_user->name,
+                                    $parent_creator
+                                )
+                            ];
+                        }
+    
+                        // Notification pour le créateur du commentaire
+                        if ($parent_creator !== $current_user->uid) {
+                            $users_to_notify[$parent_creator] = [
+                                'title' => sprintf(
+                                    $this->gettext("mel_forum.notification_response_title_for_commenter"),
+                                    $current_user->name,
+                                    $post_title
+                                ),
+                                'message' => sprintf(
+                                    $this->gettext("mel_forum.notification_response_message_for_commenter"),
+                                    $current_user->name
+                                )
+                            ];
+                        }
+                    }
+                }
+    
+                // Envoyer les notifications uniquement aux utilisateurs concernés
+                foreach ($users_to_notify as $user_uid => $notification) {
+                    mel_notification::notify(
+                        'workspace',
+                        $notification['title'],
+                        $notification['message'],
+                        [
+                            [
+                                'href' => "./?_task=forum&_action=post&_uid=" . $post_uid . "&_workspace_uid=" . $workspace_uid . "#comment-section",
+                                'text' => $this->gettext("mel_forum.read_response"),
+                                'title' => $this->gettext("mel_forum.read_response_title"),
+                                'command' => "event.click"
+                            ]
+                        ],
+                        $user_uid
+                    );
                 }
             }
         }

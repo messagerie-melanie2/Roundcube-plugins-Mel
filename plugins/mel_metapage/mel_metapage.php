@@ -2052,8 +2052,9 @@ class mel_metapage extends bnum_plugin
             if ($config[$scrollbar_size] === null || $config[$scrollbar_size] === "" || $config[$scrollbar_size] === $this->gettext('auto', 'mel_metapage'))
                 $config[$scrollbar_size] = $this->gettext("default", "mel_metapage");
 
+            $user = driver_mel::gi()->getUser();
             foreach ($config as $key => $value) {
-                if ($key === $chat_placement) continue;
+                if ($key === $chat_placement || ($user->is_external && $key !== $scrollbar_size)) continue;
                 $args['blocks']['main']['options'][$key] = $this->create_pref_select($key, $value, $options[$key], ($key === $mel_column ? ["style" => "display:none;"] : null));
             }
 

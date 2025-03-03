@@ -2322,6 +2322,7 @@ $(document).ready(() => {
         rcmail.env.enumerated_url_spies = true;
       }
 
+
       if (url !== undefined && url !== null) {
         //Initialisation
         let $querry;
@@ -2330,6 +2331,7 @@ $(document).ready(() => {
         let task = null;
         let action = null;
         let othersParams = null;
+        let anchor = null;
         let after = null;
         let update = false;
 
@@ -2433,6 +2435,12 @@ $(document).ready(() => {
                 try {
                   let tmp_othersParams = url.split('/?_task=', 2)[1];
 
+                  if (tmp_othersParams.includes('#')) {
+                    const splited = tmp_othersParams.split('#');
+                    anchor = splited[1];
+                    tmp_othersParams = splited[0];
+                  }
+
                   if (tmp_othersParams.includes('&')) {
                     othersParams = Enumerable.from(tmp_othersParams.split('&'))
                       .where((x) => x.includes('='))
@@ -2479,11 +2487,12 @@ $(document).ready(() => {
                   }
                 }
               }
+              
+              let open_modal = true;
 
               if (!url.includes('/?_task=') && !/^data:/i.test(url)) {
                 //On ouvre une modal pour prévenir d'un lien externe
                 let domain = new URL(url).hostname;
-                let open_modal = true;
                 let suspect_url = false;
 
                 rcmail.env.mel_suspect_url.forEach((item) => {
@@ -2506,7 +2515,18 @@ $(document).ready(() => {
                   event.preventDefault();
                   top.external_link_modal(url);
                 }
+              } else {
+                open_modal = false;
               }
+
+              if (!open_modal) {
+                
+                let abort = {signal:false}
+                rcmail.triggerEvent('a.clicked', {url, abort, e: event});
+                
+                if (abort.signal) return;
+              }
+              
               break;
           }
         } while (reloop);
@@ -2536,7 +2556,7 @@ $(document).ready(() => {
           //   args: othersParams,
           // });
 
-          await PageManager.SwitchFrame(task, { args: othersParams });
+          await PageManager.SwitchFrame(task, { args: othersParams, anchor });
 
           if (after !== null) after();
 

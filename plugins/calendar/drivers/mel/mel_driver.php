@@ -2346,7 +2346,7 @@ class mel_driver extends calendar_driver {
       }
 
       // Créateur de la ressource
-      $_event['creator'] = driver_mel::gi()->getUser($event->owner)->name;
+      $_event['creator'] = $event->owner.'/'.driver_mel::gi()->getUser($event->owner)->name;
     }
     else {
       // Test si privé

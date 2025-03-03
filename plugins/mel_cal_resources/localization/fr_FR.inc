@@ -15,3 +15,4 @@ $labels['resarcs'] = 'Réserver une ressource';
 $labels['no-resources'] = 'Aucune ressources';
 $labels['busy'] = 'Occupé';
 $labels['automatic-resa-title'] = 'Réservation : %0';
+$labels['me'] = 'Moi';

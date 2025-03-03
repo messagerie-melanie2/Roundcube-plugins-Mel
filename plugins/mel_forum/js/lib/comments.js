@@ -150,6 +150,7 @@ class PostComment {
           task: 'forum',
           action: 'like_comment',
           params: {
+            _workspace_uid: rcmail.env.workspace_uid,
             _comment_id: this.id,
             _comment_uid: this.uid,
             _type: reactionType,
@@ -404,16 +405,18 @@ class PostComment {
 
       BnumMessage.SetBusyLoading();
 
-      try {
-        const response = await MelObject.Empty().http_internal_post({
-          task: 'forum',
-          action: 'create_comment',
-          params: {
-            _post_id: this.post_id, // L'ID du post
-            _content: replyContent, // Le contenu de la réponse
-            _parent: this.parent, // ID du commentaire parent
-          },
-        });
+        try {
+            const response = await MelObject.Empty().http_internal_post({
+                task: 'forum',
+                action: 'create_comment',
+                params: {
+                    _workspace_uid: rcmail.env.workspace_uid,
+                    _post_id: this.post_id, // L'ID du post
+                    _content: replyContent, // Le contenu de la réponse
+                    _parent: this.parent, // ID du commentaire parent
+                    _post_uid: rcmail.env.post_uid,
+                },
+            });
 
         if (response.status === 'success') {
           rcmail.display_message(response.message, 'confirmation');
@@ -655,6 +658,7 @@ class PostComment {
           task: 'forum',
           action: 'update_comment',
           params: {
+            _workspace_uid: rcmail.env.workspace_uid,
             _uid: uid, // L'ID du commentaire
             _content: updatedContent, // Le nouveau contenu
           },
@@ -725,6 +729,7 @@ class PostComment {
         task: 'forum',
         action: 'delete_comment',
         params: {
+          _workspace_uid: rcmail.env.workspace_uid,
           _uid: uid, // L'ID du commentaire à supprimer
           _parent: this.parent, // ID du commentaire parent
         },
@@ -1117,6 +1122,7 @@ class PostCommentView {
 
     // Préparer les données à envoyer
     let postData = {
+      _workspace_uid: rcmail.env.workspace_uid,
       _post_uid: this.post_uid,
       _sort_order: this.sort_order, // Envoi du paramètre 'sort_order' au serveur
     };

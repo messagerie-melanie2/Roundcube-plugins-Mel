@@ -19,10 +19,9 @@ export class New_posts extends MelObject {
   main() {
     super.main();
     this.workspace_uid = this.get_env('workspace_uid');
-    if(this.get_env('workspace_uid')){
-      $('#join-workspace').click(() =>
-        {
-          this.joinWorkspace()
+    if (this.get_env('workspace_uid')) {
+      $('#join-workspace').click(() => {
+        this.joinWorkspace();
       });
     } else {
       $('#join-workspace').hide();
@@ -35,11 +34,12 @@ export class New_posts extends MelObject {
           args: { _action: 'index' },
         });
       });
-    
   }
 
-  async joinWorkspace(){
-    await BnumConnector.connect(connectors.join_workspace, {params:{_uid:this.workspace_uid}});
+  async joinWorkspace() {
+    await BnumConnector.connect(connectors.join_workspace, {
+      params: { _uid: this.workspace_uid },
+    });
     FramesManager.Instance.switch_frame('workspace', {
       args: { _uid: this.workspace_uid, _action: 'workspace' },
     });

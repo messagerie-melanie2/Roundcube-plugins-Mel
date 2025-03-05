@@ -273,3 +273,7 @@ $labels['read_comment'] = 'Lire le commentaire';
 $labels['read_comment_title'] = 'Cliquez pour lire le commentaire';
 $labels['read_response'] = 'Lire la réponse';
 $labels['read_response_title'] = 'Cliquez pour lire la réponse';
+
+#region Historique
+$labels['article'] = 'Article';
+$labels['history_article'] = 'Historique de l\'article';

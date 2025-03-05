@@ -1,0 +1,42 @@
+<roundcube:include file="includes/layout.html" />
+
+<h1 class="voice">
+  <roundcube:label name="mel_forum" />
+</h1>
+
+<div id="layout-content" role="main">
+  <div class="content">
+    <div class="row return-header">
+      <div class="return" id="go-back-to-article" tabindex="0" role="button" title="Retour à l'article">
+        <i class="material-symbols-outlined">arrow_back</i>
+        <span class="ml-2">
+          <roundcube:label name="mel_forum.article" />
+        </span>
+      </div>
+    </div>
+
+    <div class="row forum-header">
+      <div class="text-header">
+        <h2 class="title">
+          <roundcube:label name="mel_forum.history_article" />
+        </h2>
+      </div>
+    </div>
+
+    <div class="row forum-content">
+      <div class="col-8">
+        <div class="history-container">
+          <!-- Historique des modifications -->
+          <ul id="history-list" class="history-list"></ul>
+
+          <!-- Message si aucun historique -->
+          <p id="no-history-message" class="no-history" style="display: none;">
+            <roundcube:label name="mel_forum.no_modifications_found" />
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<roundcube:include file="includes/footer.html" />

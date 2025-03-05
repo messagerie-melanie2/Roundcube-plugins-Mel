@@ -99,6 +99,8 @@ class mel_forum extends bnum_plugin
                 // Conversion d'un article en Markdown
                 $this->register_action('convert_post_in_markdown', [$this, 'convert_post_in_markdown']);
                 $this->register_action('download_article', [$this, 'download_article']);
+                // Affichage de l'historique d'un post
+                $this->register_action('history', [$this, 'history']);
 
                 $this->register_action('create_zip_with_md_and_images', [$this, 'create_zip_with_md_and_images']);
             } else if (!$this->rc()->action === 'load_image') {
@@ -853,73 +855,52 @@ class mel_forum extends bnum_plugin
 
     #region HISTORIQUE
 
-    public function get_post_history()
+    public function history()
     {
-        // Récupérer l'utilisateur
+        $uid = $this->get_input('_uid', rcube_utils::INPUT_GET);
+        $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
         $user = driver_mel::gi()->getUser();
 
-        // Récupérer la valeur du champ POST
-        $uid = $this->get_input('_uid', rcube_utils::INPUT_POST);
-
-        // Validation de la donnée UID
-        if (empty($uid)) {
-            $this->sendEncodedExit([
-                'status' => 'error',
-                'message' => $this->gettext("article_id_required", "mel_forum")
-            ]);
+        // Vérifier si l'utilisateur a les droits d'accès
+        if (!$user->isWorkspaceOwner($workspace_uid)) {
+            $this->_display_error_page();
+            return;
         }
 
         // Récupérer l'article existant
-        $post = new LibeMelanie\Api\Defaut\Posts\Post();
+        $post = new LibMelanie\Api\Defaut\Posts\Post();
         $post->uid = $uid;
 
-        // Vérifier si l'article existe
         if (!$post->load()) {
-            $this->sendEncodedExit([
-                'status' => 'error',
-                'message' => $this->gettext("article_unfindable", "mel_forum")
-            ]);
-        }
-
-        // Vérifier si l'utilisateur connecté a les droits (admin uniquement)
-        if (!$user->isWorkspaceOwner($post->workspace)) {
             $this->_display_error_page();
-            exit;
+            return;
         }
 
-        // Charger L'historique des modifications
-        $history = json_decode($post->history, true);
-
+        // Charger et vérifier l'historique des modifications
+        $history = json_decode($post->post_history, true);
         if (!is_array($history) || empty($history)) {
-            $this->sendEncodedExit([
-                'status' => 'error',
-                'message' => $this->gettext("no_modifications_found", "mel_forum")
-            ]);
+            $this->rc()->output->set_env('history', []);
+        } else {
+            $formatted_history = [];
+            foreach ($history as $entry) {
+                $timestamp = date("d/m/Y", strtotime($entry['timestamp']));
+                $fields = implode(", ", $entry['field']);
+                $user_name = $entry['user_id'];
+
+                $formatted_history[] = [
+                    'text' => "$user_name, le $timestamp, a modifié : $fields"
+                ];
+            }
+            $this->rc()->output->set_env('history', $formatted_history);
         }
 
-        // Formater l'historique pour l'affichage
-        $formatted_history = [];
-        foreach ($history as $entry) {
-            // Formatage de la date pour afficher sous la forme "20/01/2025"
-            $timestamp = date("d/m/Y", strtotime($entry['timestamp']));
+        // Charger le script post_history.js
+        $this->load_script_module('post_history');
 
-            // Préparer le texte des champs modifiés
-            $fields = implode(", ", $entry['field']); // Liste des champs modifiés (ex: "title, content, settings")
-
-            // Récupérer le nom de l'utilisateur
-            $user_name = $entry['user_id'];
-
-            // Créer la chaîne de texte formatée
-            $formatted_history[] = [
-                'text' => "$user_name, le $timestamp, à modifié : $fields"
-            ];
-        }
-
-        // Réponse JSON
-        $this->sendEncodedExit([
-            'status' => 'success',
-            'history' => $formatted_history
-        ]);
+        // Passer les variables nécessaires à la vue
+        $this->rc()->output->set_env('post_uid', $post->uid);
+        $this->rc()->output->set_env('workspace_uid', $workspace_uid);
+        $this->rc()->output->send('mel_forum.history');
     }
 
     #endregion

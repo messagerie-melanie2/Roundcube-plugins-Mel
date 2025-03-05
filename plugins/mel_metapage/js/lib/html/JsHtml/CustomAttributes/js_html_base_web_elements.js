@@ -1,7 +1,7 @@
 import { BaseStorage } from '../../../classes/base_storage.js';
 import { Random } from '../../../classes/random.js';
-import { EMPTY_STRING } from '../../../constants/constants.js';
 import { MaterialIcon } from '../../../icons.js';
+import { isNullOrUndefined } from '../../../mel.js';
 export {
   HtmlCustomTag,
   HtmlCustomDataTag,
@@ -189,6 +189,39 @@ class HtmlCustomTag extends HTMLElement {
    */
   removeClass(className) {
     if (this.hasClass(className)) this.classList.remove(className);
+
+    return this;
+  }
+
+  /**
+   * @overload
+   * Récupère la valeur d'un attribut
+   * @param {string} key Clé de l'attribut
+   * @returns {string} Valeur de l'attribut
+   * //**
+   * @overload
+   * Change la valeur d'un attribut.
+   * @param {string} key Clé de l'attribut
+   * @param {*} value Valeur à mettre
+   * @returns {this}
+   */
+  attr(key, value = null) {
+    if (isNullOrUndefined(value)) return this.getAttribute(key);
+    else {
+      this.setAttribute(key, value);
+      return this;
+    }
+  }
+
+  /**
+   * Ajoute plusieurs attributs à l'élément.
+   * @param {Object<string, string | number | boolean>} config
+   * @returns {this} Chaîne
+   */
+  attrs(config) {
+    for (const key in config) {
+      this.attr(key, config[key]);
+    }
 
     return this;
   }

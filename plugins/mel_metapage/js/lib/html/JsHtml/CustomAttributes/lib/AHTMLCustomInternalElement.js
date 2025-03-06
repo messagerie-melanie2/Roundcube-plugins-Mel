@@ -68,4 +68,24 @@ export default class AHTMLCustomInternalElement extends HtmlCustomDataTag {
     this.oninternalremoved.call(state, this);
     return this;
   }
+
+  /**
+   *
+   * @param {Object} [param0={}]
+   * @param {?HTMLElement} [param0.node=null]
+   * @returns
+   */
+  disable({ node = null } = {}) {
+    node = super.disable({ node });
+
+    this.setState('disabled');
+    return node;
+  }
+
+  enable({ node = null } = {}) {
+    node = super.enable({ node });
+
+    this.removeState('disabled');
+    return node;
+  }
 }

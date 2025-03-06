@@ -855,10 +855,28 @@ class mel_forum extends bnum_plugin
 
     #region HISTORIQUE
 
+    /**
+     * Affiche l'historique des modifications d'un post.
+     *
+     * Cette méthode récupère l'UID du post et de l'espace de travail depuis les paramètres GET.
+     * Elle vérifie ensuite si l'utilisateur a les droits nécessaires pour accéder à l'historique du post.
+     * Si l'utilisateur est autorisé, l'historique des modifications du post est récupéré et formaté avant d'être envoyé à la vue.
+     * Si aucune modification n'est trouvée, un tableau vide est renvoyé. 
+     * @return void
+     */
     public function history()
     {
         $uid = $this->get_input('_uid', rcube_utils::INPUT_GET);
         $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
+
+        // Récupérer le post
+        $this->current_post = $this->_get_post($uid);
+
+        if (is_null($this->current_post)) {
+            $this->_display_error_page();
+            return;
+        }
+
         $user = driver_mel::gi()->getUser();
 
         // Vérifier si l'utilisateur a les droits d'accès
@@ -867,30 +885,59 @@ class mel_forum extends bnum_plugin
             return;
         }
 
-        // Récupérer l'article existant
-        $post = new LibMelanie\Api\Defaut\Posts\Post();
-        $post->uid = $uid;
-
-        if (!$post->load()) {
-            $this->_display_error_page();
-            return;
-        }
+        // Ajouter le handler pour afficher le titre du post
+        $this->rc()->output->add_handlers(['show_post_title' => [$this, 'show_post_title']]);
 
         // Charger et vérifier l'historique des modifications
-        $history = json_decode($post->post_history, true);
+        $history = json_decode($this->current_post->post_history, true);
+
         if (!is_array($history) || empty($history)) {
             $this->rc()->output->set_env('history', []);
         } else {
+            // Dictionnaire de traduction des champs
+            $field_translations = [
+                'title' => 'titre',
+                'content' => 'contenu',
+                'settings' => 'paramètres'
+            ];
+
+            // Trier l'historique par ordre décroissant de date
+            usort($history, function ($a, $b) {
+                return strtotime($b['timestamp']) - strtotime($a['timestamp']);
+            });
+
+            // Stockage des noms des utilisateurs pour éviter les requêtes multiples
+            $user_names = [];
+
             $formatted_history = [];
             foreach ($history as $entry) {
-                $timestamp = date("d/m/Y", strtotime($entry['timestamp']));
-                $fields = implode(", ", $entry['field']);
-                $user_name = $entry['user_id'];
+                // Récupérer le nom complet de l'utilisateur
+                $user_id = $entry['user_id'];
+
+                if (!isset($user_names[$user_id])) {
+                    $user_obj = driver_mel::gi()->getUser($user_id); // Récupération de l'objet User
+                    $user_names[$user_id] = ($user_obj && isset($user_obj->name)) ? $user_obj->name : $user_id;
+                }
+
+                $user_name = $user_names[$user_id];
+
+                // Formater la date
+                $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::SHORT);
+                $timestamp = strtotime($entry['timestamp']);
+                $formatted_date = $formatter->format($timestamp);
+
+                // Traduire les champs modifiés
+                $translated_fields = array_map(function ($field) use ($field_translations) {
+                    return $field_translations[$field] ?? $field;
+                }, $entry['field']);
+
+                $fields = implode(", ", $translated_fields);
 
                 $formatted_history[] = [
-                    'text' => "$user_name, le $timestamp, a modifié : $fields"
+                    'text' => "Le $formatted_date, $user_name a modifié : $fields"
                 ];
             }
+
             $this->rc()->output->set_env('history', $formatted_history);
         }
 
@@ -898,7 +945,7 @@ class mel_forum extends bnum_plugin
         $this->load_script_module('post_history');
 
         // Passer les variables nécessaires à la vue
-        $this->rc()->output->set_env('post_uid', $post->uid);
+        $this->rc()->output->set_env('post_uid', $this->current_post->uid);
         $this->rc()->output->set_env('workspace_uid', $workspace_uid);
         $this->rc()->output->send('mel_forum.history');
     }

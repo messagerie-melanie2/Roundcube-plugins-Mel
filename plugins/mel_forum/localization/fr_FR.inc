@@ -276,4 +276,4 @@ $labels['read_response_title'] = 'Cliquez pour lire la réponse';
 
 #region Historique
 $labels['article'] = 'Article';
-$labels['history_article'] = 'Historique de l\'article';
+$labels['history_article'] = 'historique des modifications';

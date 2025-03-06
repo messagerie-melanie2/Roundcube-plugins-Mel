@@ -15,16 +15,20 @@
       </div>
     </div>
 
-    <div class="row forum-header">
+    <div class="row forum-header custom-border-bottom my-4">
       <div class="text-header">
-        <h2 class="title">
-          <roundcube:label name="mel_forum.history_article" />
-        </h2>
+        <div class="col-12 text-center">
+          <h2 class="title">
+            «
+            <roundcube:object name="show_post_title" /> » :
+            <roundcube:label name="mel_forum.history_article" />
+          </h2>
+        </div>
       </div>
     </div>
 
     <div class="row forum-content">
-      <div class="col-8">
+      <div class="col-12">
         <div class="history-container">
           <!-- Historique des modifications -->
           <ul id="history-list" class="history-list"></ul>
@@ -36,6 +40,7 @@
         </div>
       </div>
     </div>
+    <button id="backToTop" class="mel-button material-symbols-outlined hidden">keyboard_arrow_up</button>
   </div>
 </div>
 

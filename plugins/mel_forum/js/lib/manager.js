@@ -375,10 +375,11 @@ export class Manager extends MelObject {
     const button_add_like = $('#add_like');
     const button_add_dislike = $('#add_dislike');
 
-    //Ne pas afficher les boutons d'édition et supression si l'utilisateur n'a pas les droits suffisant
+    //Ne pas afficher les boutons d'édition, supression et historique si l'utilisateur n'a pas les droits suffisant
     if (!rcmail.env.has_owner_rights) {
       button_delete.toggleClass('hidden');
       button_edit.toggleClass('hidden');
+      button_history.toggleClass('hidden');
     }
 
     more_action.click(() => {

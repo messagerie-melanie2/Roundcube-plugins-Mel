@@ -1,4 +1,5 @@
 import { BaseStorage } from '../../../../classes/base_storage.js';
+import { HtmlCustomTag } from '../js_html_base_web_elements.js';
 
 /**
  * @class
@@ -55,5 +56,24 @@ export default class AHTMLComponent {
     }
 
     return returnValue;
+  }
+
+  /**
+   * @protected
+   * @param {string} key
+   * @param {any} value
+   * @returns {this}
+   */
+  _p_save_data(key, value) {
+    this.#_data.add(key, value);
+    return this;
+  }
+
+  disable() {
+    return HtmlCustomTag.Disable(this.#_parent);
+  }
+
+  enable() {
+    return HtmlCustomTag.Enable(this.#_parent);
   }
 }

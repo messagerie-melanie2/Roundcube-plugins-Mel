@@ -255,19 +255,13 @@ class HtmlCustomTag extends HTMLElement {
   disable({ node = null } = {}) {
     node ??= this;
 
-    node.setAttribute('disabled', 'disabled');
-    node.classList.add('disabled');
-
-    return node;
+    return HtmlCustomTag.Disable(node);
   }
 
   enable({ node = null } = {}) {
     node ??= this;
 
-    node.removeAttribute('disabled');
-    node.classList.remove('disabled');
-
-    return node;
+    return HtmlCustomTag.Enable(node);
   }
 
   /**
@@ -308,6 +302,32 @@ class HtmlCustomTag extends HTMLElement {
    */
   destroy() {
     return this;
+  }
+
+  /**
+   * Active un élément html, cad, supprime l'attribut `disabled` et la classe `disabled`.
+   * @param {TNode} node Node à activer
+   * @returns {TNode} Node activée
+   * @template {HTMLElement} TNode
+   */
+  static Enable(node) {
+    node.removeAttribute('disabled');
+    node.classList.remove('disabled');
+
+    return node;
+  }
+
+  /**
+   * Désactive un élément html, cad, ajoute l'attribut `disabled` et la classe `disabled`.
+   * @param {TNode} node Node à désactiver
+   * @returns {TNode} Node désactivée
+   * @template {HTMLElement} TNode
+   */
+  static Disable(node) {
+    node.setAttribute('disabled', 'disabled');
+    node.classList.add('disabled');
+
+    return node;
   }
 
   /**

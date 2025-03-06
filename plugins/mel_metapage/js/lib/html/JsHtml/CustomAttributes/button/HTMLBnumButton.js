@@ -1,12 +1,15 @@
 import { EMPTY_STRING } from '../../../../constants/constants.js';
+import { isNullOrUndefined } from '../../../../mel.js';
 import { EWebComponentMode } from '../js_html_base_web_elements';
 import AHTMLCustomInternalElement from '../lib/AHTMLCustomInternalElement.js';
 import { HTMLWrapperElement } from '../wrapper.js';
 import FormComponent, {
   CLASS_BUTTON,
+  EButtonType,
   ENABLE_CLASS_BUTTON,
   OLD_BNUM_MODE,
 } from './FormComponent.js';
+import IconComponent from './IconComponent.js';
 
 const ENABLE_EXTRA_CLASS_BUTTON = true;
 const EXTRA_CLASSES = ['no-margin-button', 'no-button-margin'];
@@ -28,7 +31,7 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
 
   constructor() {
     super({ mode: EWebComponentMode.inline_block });
-    this.#_components = [new FormComponent(this)];
+    this.#_components = [new FormComponent(this), new IconComponent(this)];
   }
 
   /**
@@ -38,6 +41,15 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
    */
   get #_formComponent() {
     return this.#_components[0];
+  }
+
+  /**
+   * @type {IconComponent}
+   * @readonly
+   * @private
+   */
+  get #_iconComponent() {
+    return this.#_components[1];
   }
 
   /**
@@ -59,16 +71,22 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
     return this.#_formComponent.variation;
   }
 
+  get icon() {
+    return this.#_iconComponent.icon;
+  }
+
+  set icon(value) {
+    this.#_iconComponent.icon = value;
+  }
+
   _p_main() {
     super._p_main();
 
-    this.#_set_mode().setAttribute('role', 'button');
+    this.#_set_mode().attr('role', 'button').attr('tabindex', '0');
 
     if (ENABLE_CLASS_BUTTON) this.addClass(CLASS_BUTTON);
 
     if (ENABLE_EXTRA_CLASS_BUTTON) this.addClass(...EXTRA_CLASSES);
-
-    this.setAttribute('tabindex', '0');
 
     let wrapper = HTMLWrapperElement.CreateNode();
     wrapper.addClass('internal__wrapper--main').append(...this.childNodes);
@@ -158,4 +176,127 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
 
     return this;
   }
+
+  static CreateNode(
+    content,
+    {
+      form = EButtonType.primary,
+      icon = null,
+      iconPos = 'right',
+      iconMarginLeft = null,
+      iconMarginRight = null,
+      disabled = false,
+    },
+  ) {
+    /**
+     * @type {HTMLBnumButton}
+     */
+    let node = document.createElement('mel-button');
+    node.appendChild(
+      typeof node === 'string' ? document.createTextNode(content) : content,
+    );
+
+    if (form) node.setAttribute('data-variation', EButtonType.toString(form));
+    if (icon) node.setAttribute('data-icon', icon);
+    if (iconMarginLeft)
+      node.setAttribute('data-icon-margin-left', iconMarginLeft);
+    if (iconMarginRight)
+      node.setAttribute('data-icon-margin-right', iconMarginRight);
+    if (disabled) node.disable();
+
+    node.setAttribute('data-icon-pos', iconPos);
+
+    return node;
+  }
+
+  /**
+   * @type {HTMLBnumButtonCreator}
+   * @readonly
+   */
+  static get Create() {
+    return new HTMLBnumButtonCreator();
+  }
+
+  /**
+   * @readonly
+   */
+  static get TAG() {
+    return 'mel-button';
+  }
 }
+
+class HTMLBnumButtonCreator {
+  /**
+   * @type {HTMLBnumButton}
+   */
+  #_node;
+  constructor() {
+    this.#_node = document.createElement(HTMLBnumButton.TAG);
+  }
+
+  /**
+   * @type {boolean}
+   * @readonly
+   */
+  get canSetup() {
+    return !isNullOrUndefined(this.#_node);
+  }
+
+  setContent(content) {
+    this.#_node.innerText = EMPTY_STRING;
+    this.#_node.appendChild(
+      typeof content === 'string' ? document.createTextNode(content) : content,
+    );
+    return this;
+  }
+
+  setVariation(variation) {
+    this.#_node.setAttribute('data-variation', EButtonType.toString(variation));
+    return this;
+  }
+
+  setPrimaryVariation() {
+    return this.setVariation(EButtonType.primary);
+  }
+
+  setSecondaryVariation() {
+    return this.setVariation(EButtonType.secondary);
+  }
+
+  setDangerVariation() {
+    return this.setVariation(EButtonType.danger);
+  }
+
+  setIcon(icon) {
+    this.#_node.setAttribute('data-icon', icon);
+    return this;
+  }
+
+  setIconPos(pos) {
+    this.#_node.setAttribute('data-icon-pos', pos);
+    return this;
+  }
+
+  setIconMargin(margin) {
+    this.#_node.setAttribute('data-icon-margin', margin);
+    return this;
+  }
+
+  setDisabled() {
+    this.#_node.disable();
+    return this;
+  }
+
+  setEnabled() {
+    this.#_node.enable();
+    return this;
+  }
+
+  generate() {
+    const node = this.#_node;
+    this.#_node = null;
+    return node;
+  }
+}
+
+HTMLBnumButton.TryDefine(HTMLBnumButton.TAG, HTMLBnumButton);

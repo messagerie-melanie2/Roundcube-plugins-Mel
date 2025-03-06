@@ -23,11 +23,9 @@ export class HTMLWrapperElement extends HtmlCustomTag {
     else if (typeof data === 'object') {
       this.innerHTML = EMPTY_STRING;
       if (data.generate_dom) this.appendChild(data.generate_dom());
-      else this.appendChild(data[0]);
-    } else {
-      this.innerHTML = EMPTY_STRING;
-      this.appendChild(data);
-    }
+      else if (data.length) this.appendChild(data[0]);
+      else this.appendChild(data);
+    } else this.appendChild(data);
 
     return this;
   }

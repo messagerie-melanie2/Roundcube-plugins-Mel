@@ -3,6 +3,10 @@ import { isNullOrUndefined } from '../../../../mel.js';
 import { EWebComponentMode } from '../js_html_base_web_elements';
 import AHTMLCustomInternalElement from '../lib/AHTMLCustomInternalElement.js';
 import { HTMLWrapperElement } from '../wrapper.js';
+import {
+  HTMLBnumButtonBaseCreator,
+  HTMLBnumButtonCreator,
+} from './ButtonCreator.js';
 import FormComponent, {
   CLASS_BUTTON,
   EButtonType,
@@ -238,7 +242,7 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
     /**
      * @type {HTMLBnumButton}
      */
-    let node = document.createElement('mel-button');
+    let node = document.createElement(this.tag);
     node.appendChild(
       typeof node === 'string' ? document.createTextNode(content) : content,
     );
@@ -260,7 +264,7 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
    * @type {HTMLBnumButtonCreator}
    * @readonly
    */
-  static get Create() {
+  static get StartCreate() {
     return new HTMLBnumButtonCreator();
   }
 
@@ -268,91 +272,7 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
    * @readonly
    */
   static get TAG() {
-    return 'mel-button';
-  }
-}
-
-class HTMLBnumButtonCreator {
-  /**
-   * @type {HTMLBnumButton}
-   */
-  #_node;
-  constructor() {
-    this.#_node = document.createElement(HTMLBnumButton.TAG);
-  }
-
-  /**
-   * @type {boolean}
-   * @readonly
-   */
-  get canSetup() {
-    return !isNullOrUndefined(this.#_node);
-  }
-
-  setContent(content) {
-    this.#_node.innerText = EMPTY_STRING;
-    this.#_node.appendChild(
-      typeof content === 'string' ? document.createTextNode(content) : content,
-    );
-    return this;
-  }
-
-  setVariation(variation) {
-    this.#_node.setAttribute('data-variation', EButtonType.toString(variation));
-    return this;
-  }
-
-  setPrimaryVariation() {
-    return this.setVariation(EButtonType.primary);
-  }
-
-  setSecondaryVariation() {
-    return this.setVariation(EButtonType.secondary);
-  }
-
-  setDangerVariation() {
-    return this.setVariation(EButtonType.danger);
-  }
-
-  setIcon(icon) {
-    this.#_node.setAttribute('data-icon', icon);
-    return this;
-  }
-
-  setIconPos(pos) {
-    this.#_node.setAttribute('data-icon-pos', pos);
-    return this;
-  }
-
-  setIconMargin(margin) {
-    this.#_node.setAttribute('data-icon-margin', margin);
-    return this;
-  }
-
-  setDisabled() {
-    this.#_node.disable();
-    return this;
-  }
-
-  setEnabled() {
-    this.#_node.enable();
-    return this;
-  }
-
-  setLoading() {
-    this.#_node.setAttribute('data-loading', 'loading');
-    return this;
-  }
-
-  setSquare() {
-    this.#_node.setAttribute('square', 'square');
-    return this;
-  }
-
-  generate() {
-    const node = this.#_node;
-    this.#_node = null;
-    return node;
+    return 'bnum-button';
   }
 }
 
@@ -371,6 +291,33 @@ export class HTMLBnumButtonPrimary extends HTMLBnumButton {
 
   _p_main() {
     super._p_main();
+  }
+
+  static CreateNode(
+    content,
+    {
+      icon = null,
+      iconPos = 'right',
+      iconMarginLeft = null,
+      iconMarginRight = null,
+      disabled = false,
+    },
+  ) {
+    super.CreateNode(content, {
+      icon,
+      iconPos,
+      iconMarginLeft,
+      iconMarginRight,
+      disabled,
+    });
+  }
+
+  /**
+   * @type {HTMLBnumButtonBaseCreator}
+   * @readonly
+   */
+  static get StartCreate() {
+    return new HTMLBnumButtonBaseCreator(this.TAG);
   }
 
   static get TAG() {
@@ -395,6 +342,34 @@ export class HTMLBnumButtonSecondary extends HTMLBnumButton {
     super._p_main();
   }
 
+  static CreateNode(
+    content,
+    {
+      icon = null,
+      iconPos = 'right',
+      iconMarginLeft = null,
+      iconMarginRight = null,
+      disabled = false,
+    },
+  ) {
+    super.CreateNode(content, {
+      icon,
+      iconPos,
+      iconMarginLeft,
+      iconMarginRight,
+      disabled,
+      form: EButtonType.secondary,
+    });
+  }
+
+  /**
+   * @type {HTMLBnumButtonBaseCreator}
+   * @readonly
+   */
+  static get StartCreate() {
+    return new HTMLBnumButtonBaseCreator(this.TAG);
+  }
+
   static get TAG() {
     return 'secondary-button';
   }
@@ -415,6 +390,34 @@ export class HTMLBnumButtonDanger extends HTMLBnumButton {
 
   _p_main() {
     super._p_main();
+  }
+
+  static CreateNode(
+    content,
+    {
+      icon = null,
+      iconPos = 'right',
+      iconMarginLeft = null,
+      iconMarginRight = null,
+      disabled = false,
+    },
+  ) {
+    super.CreateNode(content, {
+      icon,
+      iconPos,
+      iconMarginLeft,
+      iconMarginRight,
+      disabled,
+      form: EButtonType.danger,
+    });
+  }
+
+  /**
+   * @type {HTMLBnumButtonBaseCreator}
+   * @readonly
+   */
+  static get StartCreate() {
+    return new HTMLBnumButtonBaseCreator(this.TAG);
   }
 
   static get TAG() {

@@ -20,6 +20,9 @@ const ENABLE_EXTRA_CLASS_BUTTON = true;
 const EXTRA_CLASSES = ['no-margin-button', 'no-button-margin'];
 const OLD_BNUM_MODE = true;
 
+/**
+ * @deprecated
+ */
 class HTMLMelButton extends HtmlCustomDataTag {
   /**
    * @type {string[]}
@@ -336,7 +339,7 @@ class HTMLMelButton extends HtmlCustomDataTag {
   }
 
   static get TAG() {
-    return 'bnum-button';
+    return 'mel-button';
   }
 }
 
@@ -369,6 +372,9 @@ const EButtonType = Object.freeze({
 
 const CSS_DEFAULT_MARGIN = 'var(--custom-button-icon-margin)';
 
+/**
+ * @deprecated
+ */
 class HTMLIconMelButton extends HTMLMelButton {
   constructor() {
     super();

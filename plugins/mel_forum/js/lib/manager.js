@@ -43,6 +43,11 @@ export class Manager extends MelObject {
     // Gestion du bouton d'action du post
     this.initButtons();
 
+    //affichage du bandeau si on est en brouillon
+    if (this.get_env('is_draft')) {
+      $('#footer-draft').removeClass('hidden');
+    }
+
     rcmail.addEventListener('a.clicked', (args) => {
       if (!args.abort.signal && !args.url.includes('/?_task=')) {
         args.e.preventDefault();
@@ -374,11 +379,13 @@ export class Manager extends MelObject {
     const button_delete = $('#delete-post');
     const button_add_like = $('#add_like');
     const button_add_dislike = $('#add_dislike');
+    const button_edit_footer = $('#footer-edit-post');
 
     //Ne pas afficher les boutons d'édition, supression et historique si l'utilisateur n'a pas les droits suffisant
     if (!rcmail.env.has_owner_rights) {
       button_delete.toggleClass('hidden');
       button_edit.toggleClass('hidden');
+      button_edit_footer.toggleClass('hidden');
       button_history.toggleClass('hidden');
     }
 
@@ -431,6 +438,9 @@ export class Manager extends MelObject {
     });
     button_history.click(() => {
       this.historyPost();
+    });
+    button_edit_footer.click(() => {
+      this.editPost();
     });
 
     // Initialisation de l'affichage boutons like et dislike en fonction de l'utilisateur.

@@ -133,6 +133,7 @@ class mel_forum extends bnum_plugin
         $this->_show_posts();
         $this->rc()->output->set_env('workspace_uid', $workspace_uid);
         $this->rc()->output->set_env('user_fullname', driver_mel::gi()->getUser()->name);
+        $this->rc()->output->set_env('is_admin', driver_mel::gi()->getUser()->isWorkspaceOwner($workspace_uid));
         $this->rc()->output->add_handlers(['post_search' => [$this, '_show_search']]);
         $this->rc()->output->send('mel_forum.forum');
     }
@@ -203,6 +204,7 @@ class mel_forum extends bnum_plugin
             $this->rc()->output->set_env('dislike_reactions', $dislikes_name);
             $this->rc()->output->set_env('dislike_count', $this->current_post->dislikes);
             $this->rc()->output->set_env('user_fullname', driver_mel::gi()->getUser()->name);
+            $this->rc()->output->set_env('is_draft', $this->current_post->isdraft);
 
             $this->rc()->output->send('mel_forum.post');
         } else {
@@ -552,6 +554,13 @@ class mel_forum extends bnum_plugin
         // Charger tous les posts en utilisant la méthode listPosts
         $post = new LibMelanie\Api\Defaut\Posts\Post();
         $post->workspace = $workspace_uid;
+        $is_draft = $this->get_input('_draft', rcube_utils::INPUT_GET);
+        if ($is_draft !== 'false' && !is_null($is_draft)) {
+            $post->isdraft = true;
+            if ($is_draft !== 'all') {
+                $post->creator = driver_mel::gi()->getUser()->uid;
+            }
+        }
 
         // Appel de la méthode listPosts
         $posts = $post->listPosts($search, $tags, $orderby, $asc, $limit, $offset, $fav_posts_uid, $pins);
@@ -712,6 +721,7 @@ class mel_forum extends bnum_plugin
         // création du summary à l'aide d'une fonction qui récupère les 2 premières phrases du content
         $summary = $this->_create_summary_from_content($content);
         $settings = $this->get_input('_settings', rcube_utils::INPUT_POST);
+        $isdraft = $this->get_input('_isdraft', rcube_utils::INPUT_POST) === 'true';
 
         // Validation des données saisies
         if (empty($title) || empty($content) || empty($summary) || empty($settings)) {
@@ -749,6 +759,7 @@ class mel_forum extends bnum_plugin
         $post->modified = date('Y-m-d H:i:s');
         $post->settings = $settings;
         $post->workspace = $workspace_uid;
+        $post->isdraft = $isdraft;
 
         // Sauvegarde de l'article
         if (mel_logs::is(mel_logs::TRACE))

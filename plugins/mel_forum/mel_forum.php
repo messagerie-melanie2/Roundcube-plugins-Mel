@@ -896,9 +896,9 @@ class mel_forum extends bnum_plugin
         } else {
             // Dictionnaire de traduction des champs
             $field_translations = [
-                'title' => 'titre',
-                'content' => 'contenu',
-                'settings' => 'paramètres'
+                'title' => $this->gettext("mel_forum.title"),
+                'content' => $this->gettext("mel_forum.content"),
+                'settings' => $this->gettext("mel_forum.settings"),
             ];
 
             // Trier l'historique par ordre décroissant de date
@@ -906,7 +906,7 @@ class mel_forum extends bnum_plugin
                 return strtotime($b['timestamp']) - strtotime($a['timestamp']);
             });
 
-            // Stockage des noms d'utilisateurs pour éviter les requêtes multiples
+            // Stockage des noms des utilisateurs pour éviter les requêtes multiples
             $user_names = [];
 
             $formatted_history = [];
@@ -915,11 +915,16 @@ class mel_forum extends bnum_plugin
                 $user_id = $entry['user_id'];
 
                 if (!isset($user_names[$user_id])) {
-                    $user_obj = driver_mel::gi()->getUser($user_id); // Récupération de l'objet User
-                    $user_names[$user_id] = ($user_obj && isset($user_obj->name)) ? $user_obj->name : $user_id;
+                    $user_obj = driver_mel::gi()->getUser($user_id);
+                    // Ajouter à l'objet utilisateur l'adresse email pour l'affichage du title
+                    $user_names[$user_id] = [
+                        'name' => ($user_obj && isset($user_obj->name)) ? $user_obj->name : $user_id,
+                        'email' => ($user_obj && isset($user_obj->email)) ? $user_obj->email : ''
+                    ];
                 }
 
-                $user_name = $user_names[$user_id];
+                $user_name = $user_names[$user_id]['name'];
+                $user_email = $user_names[$user_id]['email'];
 
                 // Formater la date
                 $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::SHORT);
@@ -933,8 +938,17 @@ class mel_forum extends bnum_plugin
 
                 $fields = implode(", ", $translated_fields);
 
+                // Ajouter un title à l'élément pour l'email
                 $formatted_history[] = [
-                    'text' => "Le $formatted_date, $user_name a modifié : $fields"
+                    'text' => sprintf(
+                        "%s %s, <span title=\"%s\">%s</span> %s : %s",
+                        $this->gettext("mel_forum.the"),  // Localisation de "Le"
+                        $formatted_date,
+                        $user_email,
+                        $user_name,
+                        $this->gettext("mel_forum.at_modify"),  // Localisation de "a modifié"
+                        $fields
+                    )
                 ];
             }
 

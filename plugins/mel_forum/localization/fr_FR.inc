@@ -277,3 +277,9 @@ $labels['read_response_title'] = 'Cliquez pour lire la réponse';
 #region Historique
 $labels['article'] = 'Article';
 $labels['history_article'] = 'historique des modifications';
+$labels['title'] = 'titre';
+$labels['content'] = 'contenu';
+$labels['settings'] = 'paramètres';
+$labels['the'] = 'Le';
+$labels['at_modify'] = 'a modifié';
+$labels['return_to_post'] = 'Retour à l\'article';

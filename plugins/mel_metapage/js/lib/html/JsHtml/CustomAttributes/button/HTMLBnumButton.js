@@ -10,6 +10,10 @@ import FormComponent, {
   OLD_BNUM_MODE,
 } from './FormComponent.js';
 import IconComponent from './IconComponent.js';
+import LoadingComponent, {
+  CLASS_LOADING_RECEIVER,
+} from './LoadingComponent.js';
+import RoundShapeComment from './RoundShapeComponent.js';
 
 const ENABLE_EXTRA_CLASS_BUTTON = true;
 const EXTRA_CLASSES = ['no-margin-button', 'no-button-margin'];
@@ -20,7 +24,7 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
    * @readonly
    */
   static get observedAttributes() {
-    return ['data-loading'];
+    return ['data-loading', 'square'];
   }
 
   /**
@@ -31,7 +35,12 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
 
   constructor() {
     super({ mode: EWebComponentMode.inline_block });
-    this.#_components = [new FormComponent(this), new IconComponent(this)];
+    this.#_components = [
+      new FormComponent(this),
+      new IconComponent(this),
+      new RoundShapeComment(this),
+      new LoadingComponent(this),
+    ];
   }
 
   /**
@@ -50,6 +59,23 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
    */
   get #_iconComponent() {
     return this.#_components[1];
+  }
+
+  /**
+   * @type {LoadingComponent}
+   * @readonly
+   * @private
+   */
+  get #_loadComponent() {
+    return this.#_components[3];
+  }
+
+  get iconPos() {
+    return this.#_iconComponent.iconPos;
+  }
+
+  get iconMargin() {
+    return this.#_iconComponent.iconMargin;
   }
 
   /**
@@ -82,6 +108,10 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
   _p_main() {
     super._p_main();
 
+    // this.style.animation = 'none';
+    // this.style.display = 'none';
+    this._p_before();
+
     this.#_set_mode().attr('role', 'button').attr('tabindex', '0');
 
     if (ENABLE_CLASS_BUTTON) this.addClass(CLASS_BUTTON);
@@ -89,7 +119,9 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
     if (ENABLE_EXTRA_CLASS_BUTTON) this.addClass(...EXTRA_CLASSES);
 
     let wrapper = HTMLWrapperElement.CreateNode();
-    wrapper.addClass('internal__wrapper--main').append(...this.childNodes);
+    wrapper
+      .addClass('internal__wrapper--main', CLASS_LOADING_RECEIVER)
+      .append(...this.childNodes);
     wrapper.setAttribute('data-parent', this.internalId);
 
     this.appendChild(wrapper);
@@ -111,7 +143,12 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
     for (const component of this.#_components) {
       component.setup();
     }
+
+    this.style.animation = null;
+    this.style.display = null;
   }
+
+  _p_before() {}
 
   attributeChangedCallback(name, oldValue, newValue) {
     for (const component of this.#_components) {
@@ -174,6 +211,16 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
       }
     }
 
+    return this;
+  }
+
+  setLoadingMode() {
+    this.#_loadComponent.setLoadingMode();
+    return this;
+  }
+
+  stopLoadingMode() {
+    this.#_loadComponent.stopLoadingmode();
     return this;
   }
 
@@ -292,6 +339,16 @@ class HTMLBnumButtonCreator {
     return this;
   }
 
+  setLoading() {
+    this.#_node.setAttribute('data-loading', 'loading');
+    return this;
+  }
+
+  setSquare() {
+    this.#_node.setAttribute('square', 'square');
+    return this;
+  }
+
   generate() {
     const node = this.#_node;
     this.#_node = null;
@@ -300,3 +357,69 @@ class HTMLBnumButtonCreator {
 }
 
 HTMLBnumButton.TryDefine(HTMLBnumButton.TAG, HTMLBnumButton);
+
+export class HTMLBnumButtonPrimary extends HTMLBnumButton {
+  constructor() {
+    super();
+  }
+
+  _p_before() {
+    this.attrs({
+      'data-variation': EButtonType.toString(EButtonType.primary),
+    });
+  }
+
+  _p_main() {
+    super._p_main();
+  }
+
+  static get TAG() {
+    return 'primary-button';
+  }
+}
+
+HTMLBnumButton.TryDefine(HTMLBnumButtonPrimary.TAG, HTMLBnumButtonPrimary);
+
+export class HTMLBnumButtonSecondary extends HTMLBnumButton {
+  constructor() {
+    super();
+  }
+
+  _p_before() {
+    this.attrs({
+      'data-variation': EButtonType.toString(EButtonType.secondary),
+    });
+  }
+
+  _p_main() {
+    super._p_main();
+  }
+
+  static get TAG() {
+    return 'secondary-button';
+  }
+}
+
+HTMLBnumButton.TryDefine(HTMLBnumButtonSecondary.TAG, HTMLBnumButtonSecondary);
+
+export class HTMLBnumButtonDanger extends HTMLBnumButton {
+  constructor() {
+    super();
+  }
+
+  _p_before() {
+    this.attrs({
+      'data-variation': EButtonType.toString(EButtonType.danger),
+    });
+  }
+
+  _p_main() {
+    super._p_main();
+  }
+
+  static get TAG() {
+    return 'error-button';
+  }
+}
+
+HTMLBnumButton.TryDefine(HTMLBnumButtonDanger.TAG, HTMLBnumButtonDanger);

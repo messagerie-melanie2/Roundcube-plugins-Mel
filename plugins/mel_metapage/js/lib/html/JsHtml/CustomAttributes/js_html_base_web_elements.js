@@ -80,6 +80,15 @@ class HtmlCustomTag extends HTMLElement {
   }
 
   /**
+   * Si l'élément est chargé ou non
+   * @type {string}
+   * @readonly
+   */
+  get elementLoaded() {
+    return this.#loaded;
+  }
+
+  /**
    * Est appelé par le navigateur lorsque le composant est affiché.
    *
    * Gère dans un premier temps le mode puis appèle le setup enfant.

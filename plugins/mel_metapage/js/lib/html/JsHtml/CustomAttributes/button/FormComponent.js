@@ -25,7 +25,7 @@ export default class FormComponent extends AHTMLComponent {
    */
   get variation() {
     return EButtonType.fromString(
-      this.getData('variation') || EButtonType.fromString(EButtonType.primary),
+      this.getData('variation') || EButtonType.toString(EButtonType.primary),
     );
   }
 

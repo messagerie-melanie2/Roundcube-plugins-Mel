@@ -87,22 +87,7 @@ class HtmlCustomTag extends HTMLElement {
    */
   connectedCallback() {
     if (!this.#loaded) {
-      switch (this.#mode) {
-        case EWebComponentMode.div:
-          this.setAttribute('component-mode', 'div');
-          break;
-
-        case EWebComponentMode.flex:
-          this.setAttribute('component-mode', 'flex');
-          break;
-
-        case EWebComponentMode.inline_block:
-          this.setAttribute('component-mode', 'inline-block');
-          break;
-
-        default:
-          break;
-      }
+      this.setMode(this.#mode, { ignoreLoad: true });
 
       if (this._p_main) this._p_main();
 
@@ -146,6 +131,37 @@ class HtmlCustomTag extends HTMLElement {
    */
   shadowEnabled() {
     return this.data('shadow') === 'true';
+  }
+
+  /**
+   *
+   * @param {EWebComponentMode} mode
+   * @returns {this}
+   */
+  setMode(mode, { ignoreLoad = false } = {}) {
+    this.#mode = mode;
+
+    if (this.#loaded || ignoreLoad) {
+      switch (this.#mode) {
+        case EWebComponentMode.div:
+          this.setAttribute('component-mode', 'div');
+          break;
+
+        case EWebComponentMode.flex:
+          this.setAttribute('component-mode', 'flex');
+          break;
+
+        case EWebComponentMode.inline_block:
+          this.setAttribute('component-mode', 'inline-block');
+          break;
+
+        default:
+          this.removeAttribute('component-mode');
+          break;
+      }
+    }
+
+    return this;
   }
 
   /**

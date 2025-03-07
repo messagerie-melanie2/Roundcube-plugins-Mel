@@ -1,5 +1,8 @@
 import { Random } from '../../../../classes/random.js';
-import { BnumHtmlIcon } from '../js_html_base_web_elements.js';
+import {
+  BnumHtmlIcon,
+  EWebComponentMode,
+} from '../js_html_base_web_elements.js';
 import AHTMLComponent from '../lib/AHTMLComponent.js';
 import { HTMLWrapperElement } from '../wrapper.js';
 
@@ -113,7 +116,8 @@ export default class IconComponent extends AHTMLComponent {
           }
 
           if (style) bnumIcon.style[style] = styleValue;
-          debugger;
+          bnumIcon.style.verticalAlign = 'middle';
+
           {
             let loaders = this.#_parent.querySelectorAll('.loading-receiver');
             if (loaders.length) {
@@ -124,8 +128,8 @@ export default class IconComponent extends AHTMLComponent {
 
             let wrapper = this.#_parent.querySelectorAll('bnum-wrapper');
             if (wrapper.length) {
-              for (const element of loaders) {
-                element.setAttribute('component-mode', 'inline-block');
+              for (const element of wrapper) {
+                element.setMode(EWebComponentMode.inline_block);
               }
             }
           }
@@ -134,9 +138,20 @@ export default class IconComponent extends AHTMLComponent {
             contents: bnumIcon,
           })
             .addClass('loading-receiver')
-            .attr('component-mode', 'inline-block');
-          if (this.iconPos === 'right') this.#_parent.appendChild(bnumIcon);
-          else this.#_parent.prepend(bnumIcon);
+            .setMode(EWebComponentMode.inline_block);
+
+          let mainWrapper = HTMLWrapperElement.CreateNode()
+            .addClass('internal__wrapper--icon')
+            .setMode(EWebComponentMode.flex);
+
+          mainWrapper.style.alignItems = 'center';
+
+          mainWrapper.append(...this.#_parent.children);
+
+          if (this.iconPos === 'right') mainWrapper.appendChild(bnumIcon);
+          else mainWrapper.prepend(bnumIcon);
+          this.#_parent.appendChild(mainWrapper);
+          mainWrapper = null;
         } else bnumIcon.setAttribute('id', `icon-${this.id}`);
       }
 

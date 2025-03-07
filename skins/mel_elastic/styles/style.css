@@ -2810,6 +2810,10 @@ html.dark-mode #visio-right-pannel-util {
   transform: translate(-50%, -50%);
   text-align: center;
 }
+.spin {
+  animation: spin 0.75s linear infinite;
+  display: inline-block;
+}
 .loader-base {
   width: var(--loader-width);
   height: var(--loader-height);

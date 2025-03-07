@@ -50,9 +50,10 @@ export default class AHTMLComponent {
     const data = `data-${key}`;
     if (this.#_data.has(key)) returnValue = this.#_data.get(key);
     else if (this.#_parent.hasAttribute(data)) {
-      this.#_data.add(key, this.#_parent.attr(data));
+      const value = this.#_parent.getAttribute(data);
+      this.#_data.add(key, value);
       this.#_parent.removeAttribute(data);
-      returnValue = this.#_data.get(key);
+      returnValue = value;
     }
 
     return returnValue;

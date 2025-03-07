@@ -5,6 +5,7 @@ import {
 } from '../js_html_base_web_elements.js';
 import AHTMLComponent from '../lib/AHTMLComponent.js';
 import { HTMLWrapperElement } from '../wrapper.js';
+import { CLASS_LOADING_RECEIVER } from './LoadingComponent.js';
 
 const CSS_DEFAULT_MARGIN = 'var(--custom-button-icon-margin)';
 
@@ -67,7 +68,8 @@ export default class IconComponent extends AHTMLComponent {
     return (
       this.getData('icon') ??
       this.querySelector(`#icon-${this.id}`)?.icon ??
-      this.querySelector('bnum-icon')?.icon
+      this.querySelector('bnum-icon')?.icon ??
+      (this.querySelector('bnum-icon')?.innerText || null)
     );
   }
 
@@ -125,10 +127,12 @@ export default class IconComponent extends AHTMLComponent {
         bnumIcon.style.verticalAlign = 'middle';
 
         {
-          let loaders = this.#_parent.querySelectorAll('.loading-receiver');
+          let loaders = this.#_parent.querySelectorAll(
+            `.${CLASS_LOADING_RECEIVER}`,
+          );
           if (loaders.length) {
             for (const element of loaders) {
-              element.classList.remove('loading-receiver');
+              element.classList.remove(CLASS_LOADING_RECEIVER);
             }
           }
 
@@ -143,7 +147,7 @@ export default class IconComponent extends AHTMLComponent {
         bnumIcon = HTMLWrapperElement.CreateNode({
           contents: bnumIcon,
         })
-          .addClass('loading-receiver')
+          .addClass(CLASS_LOADING_RECEIVER)
           .setMode(EWebComponentMode.inline_block);
 
         let mainWrapper = HTMLWrapperElement.CreateNode()

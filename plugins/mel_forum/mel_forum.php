@@ -726,6 +726,12 @@ class mel_forum extends bnum_plugin
         $post->uid = $uid;
         $post->load();
 
+        //gestion de miniature url
+        preg_match_all('/<img[^>]+src="([^"]+)"[^>]*>/i', $content, $matches);
+        $settings = json_decode($settings);
+        $settings->miniature_url = $matches[1][0];
+        $settings = json_encode($settings);
+
         // Préparer les nouvelles données pour l'historique
         $new_data = [
             'title' => $title,
@@ -735,12 +741,6 @@ class mel_forum extends bnum_plugin
 
         // Enregistrer les modifications dans l'historique
         $this->_save_post_history($post, $post->user_uid, $new_data);
-
-        //gestion de miniature url
-        preg_match_all('/<img[^>]+src="([^"]+)"[^>]*>/i', $content, $matches);
-        $settings = json_decode($settings);
-        $settings->miniature_url = $matches[1][0];
-        $settings = json_encode($settings);
 
         //Définition des propriétés de l'article
         $post->title = $title;
@@ -906,7 +906,7 @@ class mel_forum extends bnum_plugin
                 return strtotime($b['timestamp']) - strtotime($a['timestamp']);
             });
 
-            // Stockage des noms des utilisateurs pour éviter les requêtes multiples
+            // Stockage des noms d'utilisateurs pour éviter les requêtes multiples
             $user_names = [];
 
             $formatted_history = [];

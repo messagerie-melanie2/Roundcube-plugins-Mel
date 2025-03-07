@@ -17,7 +17,7 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-class mel_elastic extends rcube_plugin
+class mel_elastic extends bnum_plugin
 {
     public const DEFAULT_THEME = 'default';
 
@@ -62,6 +62,7 @@ class mel_elastic extends rcube_plugin
             $this->include_script('../../skins/mel_elastic/dependencies/poppers.js');
             // $this->include_script('js/lib/html.js');
             $this->include_script('../../skins/mel_elastic/ui.js');
+            $this->include_module('elastic_ui.js', '../../skins/mel_elastic', 'foot');
             $this->include_script('../../skins/mel_elastic/jquery.datetimepicker.full.min.js');
             $this->rc->output->set_env('mel_themes', $this->mep_themes());
             $this->rc->output->set_env('mel_themes_pictures', Background::from_path($this->skinPath.'/images/backgrounds/backgrounds.json'));

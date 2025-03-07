@@ -39,3 +39,5 @@ export const REG_NUMBERS = /\d/g;
  */
 export const REG_ALPHANUM = /^[0-9a-zA-Z]+$/;
 export const ISO_FORMAT_REGEX = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
+export const REG_MAILTO = /^mailto:/;
+export const REG_MAIL_NAME_GLOBAL = /(^<|>$)/g;

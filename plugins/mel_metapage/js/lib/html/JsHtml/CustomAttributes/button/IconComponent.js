@@ -64,7 +64,11 @@ export default class IconComponent extends AHTMLComponent {
    * @type {?string}
    */
   get icon() {
-    return this.getData('icon') ?? this.querySelector(`#icon-${this.id}`)?.icon;
+    return (
+      this.getData('icon') ??
+      this.querySelector(`#icon-${this.id}`)?.icon ??
+      this.querySelector('bnum-icon')?.icon
+    );
   }
 
   set icon(value) {
@@ -94,65 +98,66 @@ export default class IconComponent extends AHTMLComponent {
       if (!bnumIcon) {
         bnumIcon = this.querySelector('bnum-icon');
 
-        if (!bnumIcon) {
-          bnumIcon = BnumHtmlIcon.Create({ icon: this.icon }).attr(
-            'id',
-            `icon-${this.id}`,
-          );
+        if (bnumIcon) {
+          if (bnumIcon.parentElement.childNodes[0] === bnumIcon)
+            this._p_save_data('icon-pos', 'left');
+          else this._p_save_data('icon-pos', 'right');
+        } else bnumIcon = BnumHtmlIcon.Create({ icon: this.icon });
 
-          let style = null;
-          let styleValue = this.iconMargin;
-          switch (this.iconPos) {
-            case 'right':
-              style = 'marginLeft';
-              break;
+        bnumIcon.attr('id', `icon-${this.id}`);
 
-            case 'left':
-              style = 'marginRight';
-              break;
+        let style = null;
+        let styleValue = this.iconMargin;
+        switch (this.iconPos) {
+          case 'right':
+            style = 'marginLeft';
+            break;
 
-            default:
-              break;
-          }
+          case 'left':
+            style = 'marginRight';
+            break;
 
-          if (style) bnumIcon.style[style] = styleValue;
-          bnumIcon.style.verticalAlign = 'middle';
+          default:
+            break;
+        }
 
-          {
-            let loaders = this.#_parent.querySelectorAll('.loading-receiver');
-            if (loaders.length) {
-              for (const element of loaders) {
-                element.classList.remove('loading-receiver');
-              }
-            }
+        if (style) bnumIcon.style[style] = styleValue;
+        bnumIcon.style.verticalAlign = 'middle';
 
-            let wrapper = this.#_parent.querySelectorAll('bnum-wrapper');
-            if (wrapper.length) {
-              for (const element of wrapper) {
-                element.setMode(EWebComponentMode.inline_block);
-              }
+        {
+          let loaders = this.#_parent.querySelectorAll('.loading-receiver');
+          if (loaders.length) {
+            for (const element of loaders) {
+              element.classList.remove('loading-receiver');
             }
           }
 
-          bnumIcon = HTMLWrapperElement.CreateNode({
-            contents: bnumIcon,
-          })
-            .addClass('loading-receiver')
-            .setMode(EWebComponentMode.inline_block);
+          let wrapper = this.#_parent.querySelectorAll('bnum-wrapper');
+          if (wrapper.length) {
+            for (const element of wrapper) {
+              element.setMode(EWebComponentMode.inline_block);
+            }
+          }
+        }
 
-          let mainWrapper = HTMLWrapperElement.CreateNode()
-            .addClass('internal__wrapper--icon')
-            .setMode(EWebComponentMode.flex);
+        bnumIcon = HTMLWrapperElement.CreateNode({
+          contents: bnumIcon,
+        })
+          .addClass('loading-receiver')
+          .setMode(EWebComponentMode.inline_block);
 
-          mainWrapper.style.alignItems = 'center';
+        let mainWrapper = HTMLWrapperElement.CreateNode()
+          .addClass('internal__wrapper--icon')
+          .setMode(EWebComponentMode.flex);
 
-          mainWrapper.append(...this.#_parent.children);
+        mainWrapper.style.alignItems = 'center';
 
-          if (this.iconPos === 'right') mainWrapper.appendChild(bnumIcon);
-          else mainWrapper.prepend(bnumIcon);
-          this.#_parent.appendChild(mainWrapper);
-          mainWrapper = null;
-        } else bnumIcon.setAttribute('id', `icon-${this.id}`);
+        mainWrapper.append(...this.#_parent.children);
+
+        if (this.iconPos === 'right') mainWrapper.appendChild(bnumIcon);
+        else mainWrapper.prepend(bnumIcon);
+        this.#_parent.appendChild(mainWrapper);
+        mainWrapper = null;
       }
 
       bnumIcon = null;

@@ -1277,17 +1277,13 @@
 .task-forum .radio-group input[type='radio'] {
   margin: 0;
 }
-.task-forum #footer-draft {
-  background-color: var(--tierciary-bckg-color);
-  color: var(--secondary-text-color);
-  position: fixed;
-  bottom: 20px;
+.task-forum #header-draft {
+  background-color: var(--box-information-background-color);
+  color: var(--box-information-text-color);
   padding: 5px;
 }
-.task-forum #footer-draft #footer-edit-post {
+.task-forum #header-draft #header-edit-post {
   margin-left: 5px;
-  background-color: var(--secondary-mel-button-background-color);
-  color: var(--secondary-mel-button-text-color);
 }
 .material-symbols-outlined.f-31 {
   font-size: 31px;

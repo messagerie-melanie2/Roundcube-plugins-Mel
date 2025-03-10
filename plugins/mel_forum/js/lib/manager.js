@@ -45,7 +45,7 @@ export class Manager extends MelObject {
 
     //affichage du bandeau si on est en brouillon
     if (this.get_env('is_draft')) {
-      $('#footer-draft').removeClass('hidden');
+      $('#header-draft').removeClass('hidden');
     }
 
     rcmail.addEventListener('a.clicked', (args) => {
@@ -379,7 +379,7 @@ export class Manager extends MelObject {
     const button_delete = $('#delete-post');
     const button_add_like = $('#add_like');
     const button_add_dislike = $('#add_dislike');
-    const button_edit_footer = $('#footer-edit-post');
+    const button_edit_footer = $('#header-edit-post');
 
     //Ne pas afficher les boutons d'édition, supression et historique si l'utilisateur n'a pas les droits suffisant
     if (!rcmail.env.has_owner_rights) {

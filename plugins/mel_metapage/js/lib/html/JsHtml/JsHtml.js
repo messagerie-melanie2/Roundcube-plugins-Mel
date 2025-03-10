@@ -434,7 +434,7 @@ class ____JsHtml {
 
       let tmp = `
       (() => {
-        class HTMLCreated${element.tag.toUpperCase()} extends HtmlCustomDataTag {
+        class HTMLCreated${element.tag.toUpperCase().replaceAll('-', '_')} extends HtmlCustomDataTag {
           constructor() {
             super();
           }
@@ -445,7 +445,7 @@ class ____JsHtml {
           }
         }
   
-        return HTMLCreated${element.tag.toUpperCase()};
+        return HTMLCreated${element.tag.toUpperCase().replaceAll('-', '_')};
   })();
         `;
 

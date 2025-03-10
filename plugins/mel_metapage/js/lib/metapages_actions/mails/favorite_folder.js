@@ -791,7 +791,7 @@ export class MailFavoriteFolder extends MailModule {
           if (have_child_len) {
             html = this._generate_html_tree(
               element,
-              html.placeholder(),
+              html.webcomponents().placeholder(),
               level + 1,
             );
           }

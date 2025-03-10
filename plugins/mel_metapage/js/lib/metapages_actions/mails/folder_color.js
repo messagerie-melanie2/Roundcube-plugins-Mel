@@ -2,7 +2,8 @@ import { Color } from '../../classes/color.js';
 import { MelEnumerable } from '../../classes/enum.js';
 import { BnumConnector } from '../../helpers/bnum_connections/bnum_connections.js';
 import { MelForLoopObject } from '../../helpers/loops.js';
-import { JsHtml } from '../../html/JsHtml/JsInputsHtml.js';
+import { MelJsHtml as JsHtml } from '../../html/JsHtml/JsMelHtml.js';
+
 import { AFolderModifier } from './afolder_modifier.js';
 
 export class FolderColor extends AFolderModifier {

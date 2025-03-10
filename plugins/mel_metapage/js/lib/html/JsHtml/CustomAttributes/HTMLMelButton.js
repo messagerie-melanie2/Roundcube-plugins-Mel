@@ -205,10 +205,9 @@ class HTMLMelButton extends HtmlCustomDataTag {
    * @private
    */
   #_getFontSize(element) {
-    const fonstSize =
+    const fontSize =
       element.style.fontSize ||
-      ((element) => {
-        const el = element;
+      ((el) => {
         const style = window
           .getComputedStyle(el, null)
           .getPropertyValue('font-size');
@@ -216,7 +215,7 @@ class HTMLMelButton extends HtmlCustomDataTag {
         return style;
       })(element);
 
-    return fonstSize;
+    return fontSize;
   }
 
   setloadingMode() {

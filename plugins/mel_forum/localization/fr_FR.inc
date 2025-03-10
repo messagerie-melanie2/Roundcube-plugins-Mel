@@ -61,6 +61,8 @@ $labels['download_post_failure'] = 'Le téléchargement de l\'article a échoué
 $labels['edit_article'] = 'Modifier l\'article';
 $labels['pin_article'] = 'Épingler l\'article';
 $labels['unpin_article'] = 'Désépingler l\'article';
+$labels['view_history'] = 'Historique';
+
 
 #endregion
 #region Droits
@@ -271,3 +273,13 @@ $labels['read_comment'] = 'Lire le commentaire';
 $labels['read_comment_title'] = 'Cliquez pour lire le commentaire';
 $labels['read_response'] = 'Lire la réponse';
 $labels['read_response_title'] = 'Cliquez pour lire la réponse';
+
+#region Historique
+$labels['article'] = 'Article';
+$labels['history_article'] = 'historique des modifications';
+$labels['title'] = 'titre';
+$labels['content'] = 'contenu';
+$labels['settings'] = 'paramètres';
+$labels['the'] = 'Le';
+$labels['at_modify'] = 'a modifié';
+$labels['return_to_post'] = 'Retour à l\'article';

@@ -369,15 +369,17 @@ export class Manager extends MelObject {
     const context_menu = $('#post-context-menu');
     const button_copy = $('#copy-post');
     const button_download = $('#download-post');
+    const button_history = $('#history-post');
     const button_edit = $('#edit-post');
     const button_delete = $('#delete-post');
     const button_add_like = $('#add_like');
     const button_add_dislike = $('#add_dislike');
 
-    //Ne pas afficher les boutons d'édition et supression si l'utilisateur n'a pas les droits suffisant
+    //Ne pas afficher les boutons d'édition, supression et historique si l'utilisateur n'a pas les droits suffisant
     if (!rcmail.env.has_owner_rights) {
       button_delete.toggleClass('hidden');
       button_edit.toggleClass('hidden');
+      button_history.toggleClass('hidden');
     }
 
     more_action.click(() => {
@@ -426,6 +428,9 @@ export class Manager extends MelObject {
     });
     button_download.click(() => {
       this.downloadPost();
+    });
+    button_history.click(() => {
+      this.historyPost();
     });
 
     // Initialisation de l'affichage boutons like et dislike en fonction de l'utilisateur.
@@ -591,6 +596,22 @@ export class Manager extends MelObject {
         );
 
         CursorUtils.ResetCursor();
+      },
+    });
+  }
+
+  /**
+   * Redirige vers la page d'historique de l'article.
+   */
+  historyPost() {
+    CursorUtils.SetLoadingCursor();
+
+    // Rediriger vers la page de l'historique avec l'UID du post
+    window.location.href = this.url('forum', {
+      action: 'history',
+      params: {
+        _uid: rcmail.env.post_uid,
+        _workspace_uid: rcmail.env.workspace_uid,
       },
     });
   }

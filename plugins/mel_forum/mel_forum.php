@@ -39,7 +39,7 @@ class mel_forum extends bnum_plugin
      */
     function init()
     {
-        
+
         // Gestion des différentes langues
         $this->add_texts('localization/', true);
 
@@ -54,7 +54,7 @@ class mel_forum extends bnum_plugin
             //obligatoirement ici pour retrocompatibilité avec les images enregistrées avant la version 25.2
             // affiche une image chargé sur le serveur
             $this->register_action('load_image', [$this, 'load_image']);
-            
+
             $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GP);
             if (driver_mel::gi()->getUser()->isWorkspaceMember($workspace_uid)) {
 
@@ -99,9 +99,11 @@ class mel_forum extends bnum_plugin
                 // Conversion d'un article en Markdown
                 $this->register_action('convert_post_in_markdown', [$this, 'convert_post_in_markdown']);
                 $this->register_action('download_article', [$this, 'download_article']);
+                // Affichage de l'historique d'un post
+                $this->register_action('history', [$this, 'history']);
 
                 $this->register_action('create_zip_with_md_and_images', [$this, 'create_zip_with_md_and_images']);
-            } else if(!$this->rc()->action === 'load_image') {
+            } else if (!$this->rc()->action === 'load_image') {
                 $this->_display_error_page();
             }
         } else if ($this->get_current_task() === 'workspace') {
@@ -724,6 +726,12 @@ class mel_forum extends bnum_plugin
         $post->uid = $uid;
         $post->load();
 
+        //gestion de miniature url
+        preg_match_all('/<img[^>]+src="([^"]+)"[^>]*>/i', $content, $matches);
+        $settings = json_decode($settings);
+        $settings->miniature_url = $matches[1][0];
+        $settings = json_encode($settings);
+
         // Préparer les nouvelles données pour l'historique
         $new_data = [
             'title' => $title,
@@ -733,12 +741,6 @@ class mel_forum extends bnum_plugin
 
         // Enregistrer les modifications dans l'historique
         $this->_save_post_history($post, $post->user_uid, $new_data);
-
-        //gestion de miniature url
-        preg_match_all('/<img[^>]+src="([^"]+)"[^>]*>/i', $content, $matches);
-        $settings = json_decode($settings);
-        $settings->miniature_url = $matches[1][0];
-        $settings = json_encode($settings);
 
         //Définition des propriétés de l'article
         $post->title = $title;
@@ -752,7 +754,6 @@ class mel_forum extends bnum_plugin
         if (mel_logs::is(mel_logs::TRACE))
             mel_logs::get_instance()->log(mel_logs::TRACE, "mel_forum:: post : $uid modified from workspace : $post->workspace by" . driver_mel::gi()->getUser()->uid);
         return $post->save();
-
     }
 
     /**
@@ -851,6 +852,120 @@ class mel_forum extends bnum_plugin
     }
 
     #endregion
+
+    #region HISTORIQUE
+
+    /**
+     * Affiche l'historique des modifications d'un post.
+     *
+     * Cette méthode récupère l'UID du post et de l'espace de travail depuis les paramètres GET.
+     * Elle vérifie ensuite si l'utilisateur a les droits nécessaires pour accéder à l'historique du post.
+     * Si l'utilisateur est autorisé, l'historique des modifications du post est récupéré et formaté avant d'être envoyé à la vue.
+     * Si aucune modification n'est trouvée, un tableau vide est renvoyé. 
+     * @return void
+     */
+    public function history()
+    {
+        $uid = $this->get_input('_uid', rcube_utils::INPUT_GET);
+        $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
+
+        // Récupérer le post
+        $this->current_post = $this->_get_post($uid);
+
+        if (is_null($this->current_post)) {
+            $this->_display_error_page();
+            return;
+        }
+
+        $user = driver_mel::gi()->getUser();
+
+        // Vérifier si l'utilisateur a les droits d'accès
+        if (!$user->isWorkspaceOwner($workspace_uid)) {
+            $this->_display_error_page();
+            return;
+        }
+
+        // Ajouter le handler pour afficher le titre du post
+        $this->rc()->output->add_handlers(['show_post_title' => [$this, 'show_post_title']]);
+
+        // Charger et vérifier l'historique des modifications
+        $history = json_decode($this->current_post->post_history, true);
+
+        if (!is_array($history) || empty($history)) {
+            $this->rc()->output->set_env('history', []);
+        } else {
+            // Dictionnaire de traduction des champs
+            $field_translations = [
+                'title' => $this->gettext("mel_forum.title"),
+                'content' => $this->gettext("mel_forum.content"),
+                'settings' => $this->gettext("mel_forum.settings"),
+            ];
+
+            // Trier l'historique par ordre décroissant de date
+            usort($history, function ($a, $b) {
+                return strtotime($b['timestamp']) - strtotime($a['timestamp']);
+            });
+
+            // Stockage des noms des utilisateurs pour éviter les requêtes multiples
+            $user_names = [];
+
+            $formatted_history = [];
+            foreach ($history as $entry) {
+                // Récupérer le nom complet de l'utilisateur
+                $user_id = $entry['user_id'];
+
+                if (!isset($user_names[$user_id])) {
+                    $user_obj = driver_mel::gi()->getUser($user_id);
+                    // Ajouter à l'objet utilisateur l'adresse email pour l'affichage du title
+                    $user_names[$user_id] = [
+                        'name' => ($user_obj && isset($user_obj->name)) ? $user_obj->name : $user_id,
+                        'email' => ($user_obj && isset($user_obj->email)) ? $user_obj->email : ''
+                    ];
+                }
+
+                $user_name = $user_names[$user_id]['name'];
+                $user_email = $user_names[$user_id]['email'];
+
+                // Formater la date
+                $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::SHORT);
+                $timestamp = strtotime($entry['timestamp']);
+                $formatted_date = $formatter->format($timestamp);
+
+                // Traduire les champs modifiés
+                $translated_fields = array_map(function ($field) use ($field_translations) {
+                    return $field_translations[$field] ?? $field;
+                }, $entry['field']);
+
+                $fields = implode(", ", $translated_fields);
+
+                // Ajouter un title à l'élément pour l'email
+                $formatted_history[] = [
+                    'text' => sprintf(
+                        "%s %s, <span title=\"%s\">%s</span> %s : %s",
+                        $this->gettext("mel_forum.the"),  // Localisation de "Le"
+                        $formatted_date,
+                        $user_email,
+                        $user_name,
+                        $this->gettext("mel_forum.at_modify"),  // Localisation de "a modifié"
+                        $fields
+                    )
+                ];
+            }
+
+            $this->rc()->output->set_env('history', $formatted_history);
+        }
+
+        // Charger le script post_history.js
+        $this->load_script_module('post_history');
+
+        // Passer les variables nécessaires à la vue
+        $this->rc()->output->set_env('post_uid', $this->current_post->uid);
+        $this->rc()->output->set_env('workspace_uid', $workspace_uid);
+        $this->rc()->output->send('mel_forum.history');
+    }
+
+    #endregion
+
     #region TAGS
 
     /**
@@ -1118,7 +1233,6 @@ class mel_forum extends bnum_plugin
             }
             // Appel de la fonction de notification d'ajout d'un commentaire ou d'une réponse
             $this->notify_comment($workspace_uid, $parent, $post_uid);
-
         } else {
             // Gestion d'une erreur de sauvegarde
             $this->sendEncodedExit([
@@ -1188,8 +1302,8 @@ class mel_forum extends bnum_plugin
         // Vérifier si l'utilisateur est bien l'auteur du commentaire
         if ($comment->user_uid !== $user->uid) { // Vérification si l'utilisateur est l'auteur
             $this->sendEncodedExit([
-            'status' => 'error',
-            'message' => $this->gettext("cannot_edit_comment", "mel_forum")
+                'status' => 'error',
+                'message' => $this->gettext("cannot_edit_comment", "mel_forum")
             ]);
         }
 
@@ -1216,7 +1330,7 @@ class mel_forum extends bnum_plugin
             $this->sendEncodedExit([
                 'status' => 'error',
                 'message' => $this->gettext("comment_updated_failure", "mel_forum")
-                ]);
+            ]);
         }
     }
 
@@ -1953,11 +2067,11 @@ class mel_forum extends bnum_plugin
      * @param string $type type de la reaction
      * 
      */
-    protected function _get_names_by_reaction($post, $type) {
+    protected function _get_names_by_reaction($post, $type)
+    {
         $type_reactions = $post->listReactions($type);
         $type_name = [];
-        foreach($type_reactions as $type_reaction)
-        {
+        foreach ($type_reactions as $type_reaction) {
             $type_name[] = driver_mel::gi()->getUser($type_reaction->creator)->name;
         }
         return $type_name;
@@ -2174,16 +2288,16 @@ class mel_forum extends bnum_plugin
     {
         // Remplacer les retours à la ligne multiples par un seul
         $content = preg_replace('/\n+/', "\n", $content);
-    
+
         // Ajouter un espace après les titres et entre les sections (avant les lignes de soulignement)
         $content = preg_replace('/([a-zA-Z0-9])(\n)([-=]+)(\n)/', '$1\n\n$3\n', $content);  // Assurer un bon espacement entre les sections
-    
+
         // Ajouter un saut de ligne entre chaque paragraphe
         $content = preg_replace('/([^\n])\n([^\n])/', "$1\n\n$2", $content);  // Ajoute un double saut de ligne entre les paragraphes
-    
+
         // Remplacer les lignes de séparation (---) qui suivent les titres de sections par un nombre fixe d'espaces
         $content = preg_replace('/^-{5,}/', '-----', $content);  // Unifié pour une séparation propre
-    
+
         return $content;
     }
 
@@ -2772,18 +2886,18 @@ class mel_forum extends bnum_plugin
                 $post_title = rcube_utils::get_input_value('_title', rcube_utils::INPUT_POST);
 
                 foreach ($users as $user) {
-                    if ($user->user !== $current_user->uid) { 
+                    if ($user->user !== $current_user->uid) {
                         $notification_title = sprintf(
                             $this->gettext("mel_forum.notification_title"),
                             $current_user->name,
                             $workspace->title()
                         );
-                
+
                         $notification_message = sprintf(
                             $this->gettext("mel_forum.post_published_message"),
                             $post_title
                         );
-                
+
                         mel_notification::notify(
                             'workspace',
                             $notification_title,
@@ -2817,35 +2931,36 @@ class mel_forum extends bnum_plugin
      *
      * @return void
      */
-    public function notify_comment($workspace_uid, $parent_id, $post_uid) {
+    public function notify_comment($workspace_uid, $parent_id, $post_uid)
+    {
         if (class_exists("mel_notification")) {
             $post_id = rcube_utils::get_input_value('_post_id', rcube_utils::INPUT_POST);
-    
+
             if ($workspace_uid !== null && $post_id !== null) {
                 $workspace = mel_workspace::Workspace($workspace_uid);
                 $current_user = driver_mel::gi()->getUser();
-    
+
                 // Récupérer les infos du post
                 $post = $this->_get_post($post_uid);
                 $post_title = $post->title;
                 $post_creator = $post->creator; // UID du créateur du post
-    
+
                 // Récupération du créateur du commentaire parent
                 $parent_creator = null;
                 if (!empty($parent_id)) {  // Vérifie si un parent existe
                     $parent_comment = new LibMelanie\Api\Defaut\Posts\Comment();
                     $parent_comment->id = $parent_id;
                     $parent_comments = $parent_comment->getList();
-    
-                    if (count($parent_comments)) {  
+
+                    if (count($parent_comments)) {
                         $parent_comment = array_pop($parent_comments);
                         $parent_creator = $parent_comment->user_uid; // UID du créateur du commentaire parent
                     }
                 }
-    
+
                 // Initialisation de la liste des utilisateurs à notifier
                 $users_to_notify = [];
-    
+
                 if (empty($parent_id)) {
                     // *** NOUVEAU COMMENTAIRE sur l'article ***
                     $notification_comment_title = sprintf(
@@ -2853,12 +2968,12 @@ class mel_forum extends bnum_plugin
                         $current_user->name,
                         $post_title
                     );
-    
+
                     $notification_comment_message = sprintf(
                         $this->gettext("mel_forum.notification_comment_message"),
                         $current_user->name
                     );
-    
+
                     // Ajouter le créateur du post à la liste des notifications (sauf si c'est lui qui commente)
                     if ($post_creator !== $current_user->uid) {
                         $users_to_notify[$post_creator] = [
@@ -2885,7 +3000,7 @@ class mel_forum extends bnum_plugin
                                 )
                             ];
                         }
-    
+
                         // Notification pour le créateur du commentaire
                         if ($parent_creator !== $current_user->uid) {
                             $users_to_notify[$parent_creator] = [
@@ -2902,7 +3017,7 @@ class mel_forum extends bnum_plugin
                         }
                     }
                 }
-    
+
                 // Envoyer les notifications uniquement aux utilisateurs concernés
                 foreach ($users_to_notify as $user_uid => $notification) {
                     mel_notification::notify(

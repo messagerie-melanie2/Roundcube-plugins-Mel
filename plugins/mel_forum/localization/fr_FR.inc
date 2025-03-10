@@ -111,7 +111,7 @@ $labels['sort_by'] = 'Trier par : ';
 $labels['workspace_news'] = 'Derniers articles';
 $labels['front_page'] = 'À la une';
 $labels['this_is_draft'] = 'Ceci est un brouillon';
-$labels['search_post'] = '"Rechercher un article ..."';
+$labels['search_post'] = 'Rechercher un article ...';
 
 #endregion
 #region Message

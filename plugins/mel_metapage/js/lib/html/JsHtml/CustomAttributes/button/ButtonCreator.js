@@ -15,7 +15,7 @@ export class HTMLBnumButtonBaseCreator {
   #_node;
   /**
    *
-   * @param {'bnum-button' | 'primary-button' | 'secondary-button' | 'error-button'} [tag=HTMLBnumButton.TAG] Tag du bouton
+   * @param {'bnum-button' | 'primary-button' | 'secondary-button' | 'error-button' | 'no-background-button'} [tag=HTMLBnumButton.TAG] Tag du bouton
    */
   constructor(tag = HTMLBnumButton.TAG) {
     this.#_node = document.createElement(tag);
@@ -178,5 +178,13 @@ export class HTMLBnumButtonCreator extends HTMLBnumButtonBaseCreator {
    */
   setDangerVariation() {
     return this.setVariation(EButtonType.danger);
+  }
+
+  /**
+   * Met la skin `no background` au bouton (variation => `nobackground`)
+   * @returns {this}
+   */
+  setNoBackgroundVariation() {
+    return this.setVariation(EButtonType.nobackground);
   }
 }

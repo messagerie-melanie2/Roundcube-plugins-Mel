@@ -444,19 +444,12 @@ export class HTMLBnumButtonSecondary extends HTMLBnumButton {
    */
   static CreateNode(
     content,
-    {
-      icon = null,
-      iconPos = 'right',
-      iconMarginLeft = null,
-      iconMarginRight = null,
-      disabled = false,
-    },
+    { icon = null, iconPos = 'right', iconMargin = null, disabled = false },
   ) {
     super.CreateNode(content, {
       icon,
       iconPos,
-      iconMarginLeft,
-      iconMarginRight,
+      iconMargin,
       disabled,
       form: EButtonType.secondary,
     });
@@ -522,19 +515,12 @@ export class HTMLBnumButtonDanger extends HTMLBnumButton {
    */
   static CreateNode(
     content,
-    {
-      icon = null,
-      iconPos = 'right',
-      iconMarginLeft = null,
-      iconMarginRight = null,
-      disabled = false,
-    },
+    { icon = null, iconPos = 'right', iconMargin = null, disabled = false },
   ) {
     super.CreateNode(content, {
       icon,
       iconPos,
-      iconMarginLeft,
-      iconMarginRight,
+      iconMargin,
       disabled,
       form: EButtonType.danger,
     });
@@ -559,3 +545,76 @@ export class HTMLBnumButtonDanger extends HTMLBnumButton {
 }
 
 HTMLBnumButton.TryDefine(HTMLBnumButtonDanger.TAG, HTMLBnumButtonDanger);
+
+/**
+ * @class
+ * @classdesc Bouton personalisé du Bnum, variation danger
+ * @extends HTMLBnumButton
+ */
+export class HTMLBnumButtonNoBackground extends HTMLBnumButton {
+  constructor() {
+    super();
+  }
+
+  /**
+   * Est appelé avant l'affichage
+   *
+   * Met la bonne variation
+   * @protected
+   * @override
+   */
+  _p_before() {
+    this.attrs({
+      'data-variation': EButtonType.toString(EButtonType.nobackground),
+    });
+  }
+
+  _p_main() {
+    super._p_main();
+  }
+
+  /**
+   * Génère un bouton
+   * @param {string | HTMLElement} content Contenu du bouton
+   * @param {Object} [options={}]
+   * @param {?string} [options.icon=null] Icône
+   * @param {'right' | 'left'} [options.iconPos='right'] Position de l'icône
+   * @param {string | 0 | null} [options.iconMargin=null] Margin de l'icône à gauche
+   * @param {boolean} [options.disabled=false] Désactive le bouton
+   * @returns {HTMLBnumButtonNoBackground}
+   */
+  static CreateNode(
+    content,
+    { icon = null, iconPos = 'right', iconMargin = null, disabled = false },
+  ) {
+    super.CreateNode(content, {
+      icon,
+      iconPos,
+      iconMargin,
+      disabled,
+      form: EButtonType.nobackground,
+    });
+  }
+
+  /**
+   * @type {HTMLBnumButtonBaseCreator}
+   * @readonly
+   */
+  static get StartCreate() {
+    return new HTMLBnumButtonBaseCreator(this.TAG);
+  }
+
+  /**
+   * @static
+   * @readonly
+   * @type {string}
+   */
+  static get TAG() {
+    return 'no-background-button';
+  }
+}
+
+HTMLBnumButton.TryDefine(
+  HTMLBnumButtonNoBackground.TAG,
+  HTMLBnumButtonNoBackground,
+);

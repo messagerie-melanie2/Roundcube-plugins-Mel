@@ -15,8 +15,9 @@
       <div class="forum-header col-10 col-sm-8">
         <div class="input-group mel-search-group mel-centered mel-max-width-500">
           <input id="post-search-input" class="form-control mel-max-width-500" type="text"
-            placeholder="Rechercher un article ..." value="<roundcube:object name='post_search'/>"">
-          <button id=" clear-button" style="display: none;" title="Vider ">✖</button>
+            placeholder="<roundcube:label name='mel_forum.search_post' />" value=<roundcube:object
+            name="post_search" />>
+          <button id="clear-button" style="display: none;" title="Vider ">✖</button>
           <div class="input-group-append" role="button" id="post-search-button" tabindex="0"
             aria-label="Lancer la recherche" title="Rechercher">
             <span class="icon-mel-search input-group-text"></span>
@@ -25,13 +26,13 @@
       </div>
       <div class="col-2 d-flex justify-content-start justify-content-md-end pl-0">
         <button id="forum-button-add" class="mel-button btn btn-secondary" aria-label="rédiger un nouvel article"
-          title=<roundcube:label name="mel_forum.create_article" />>
-        <span class="add d-none d-sm-block">
-          <roundcube:label name="mel_forum.add" />
-        </span>
-        <span class="material-symbols-outlined">
-          add_circle
-        </span>
+          title="<roundcube:label name='mel_forum.create_article' />">
+          <span class="add d-none d-sm-block">
+            <roundcube:label name="mel_forum.add" />
+          </span>
+          <span class="material-symbols-outlined">
+            add_circle
+          </span>
         </button>
       </div>
     </div>

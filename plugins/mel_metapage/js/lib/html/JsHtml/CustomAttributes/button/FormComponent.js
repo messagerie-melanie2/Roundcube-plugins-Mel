@@ -63,6 +63,11 @@ export default class FormComponent extends AHTMLComponent {
         this.#_parent.setState('danger');
         break;
 
+      case EButtonType.nobackground:
+        variationClass.push(OLD_BNUM_MODE ? 'bckg true' : '--nobackground');
+        this.#_parent.setState('nobackground');
+        break;
+
       default:
         throw new Error('Variation pas géré');
     }
@@ -81,12 +86,14 @@ export default class FormComponent extends AHTMLComponent {
  * @property {Symbol} primary
  * @property {Symbol} secondary
  * @property {Symbol} danger
+ * @property {Symbol} nobackground
  * @property {(sym:Symbol) => string} toString
  * @property {(str:string) => Symbol} fromString
  */
 export const EButtonType = Object.freeze({
   primary: Symbol('primary'),
   secondary: Symbol('secondary'),
+  nobackground: Symbol('nobackground'),
   danger: Symbol('danger'),
   toString(sym) {
     return Object.keys(this)

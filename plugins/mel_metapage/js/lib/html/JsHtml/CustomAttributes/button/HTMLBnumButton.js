@@ -137,7 +137,10 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
 
     this._p_before();
 
-    this.#_set_mode().attr('role', 'button').attr('tabindex', '0');
+    this.#_set_mode()
+      .attr('role', 'button')
+      .attr('tabindex', '0')
+      .setState('bnum-button');
 
     if (ENABLE_CLASS_BUTTON) this.addClass(CLASS_BUTTON);
 

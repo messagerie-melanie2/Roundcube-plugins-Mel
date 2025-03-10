@@ -505,3 +505,4 @@ $labels['note-delete-warning'] = 'Attention ! Vous allez supprimer votre note, s
 $labels['search_in_addressbook'] = 'Rechercher dans l\'annuaire';
 $labels['start_search'] = 'Lancer la recherche';
 $labels['erase_text'] = 'Effacer la saisie';
+$labels['add_users_not_added'] = 'Ajouter les utilisateurs qui n\'ont pas été ajoutés ?';

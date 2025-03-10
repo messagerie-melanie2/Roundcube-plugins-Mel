@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 /* eslint-disable vars-on-top */
 const enable_custom_uid = true;
 jQuery.fn.swap = function (b) {
@@ -1287,7 +1288,7 @@ async function m_mp_check_w(step, next) {
       let input = $('#_workspace-user-list');
       if (input.val().length > 0) users.push(input.val());
       if (users.length > 0) {
-        if (confirm("Ajouter les utilisateurs qui n'ont pas été ajouter ?")) {
+        if (confirm(rcmail.gettext('add_users_not_added', 'mel_metapage'))) {
           await m_mp_add_users();
         } else stop = true;
       }

@@ -288,6 +288,7 @@ class HTMLMelButton extends HtmlCustomDataTag {
    * @param {EWebComponentMode} [options.mode=EWebComponentMode.inline_block] Mode d'affichage du boutton
    * @param {null | ____JsHtml | Node | externa:jQuery} [options.contentsNode=null] Node enfant
    * @returns {HTMLMelButton}
+   * @deprecated
    */
   static CreateNode({
     mode = EWebComponentMode.inline_block,
@@ -314,6 +315,7 @@ class HTMLMelButton extends HtmlCustomDataTag {
 
         case 'inline_flex':
           modeSet = 'inline-flex';
+          break;
 
         default:
           break;
@@ -456,6 +458,9 @@ class HTMLIconMelButton extends HTMLMelButton {
     return 'inline-flex';
   }
 
+  /**
+   * @deprecated
+   */
   static CreateNode(
     icon,
     {

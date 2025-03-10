@@ -5,10 +5,14 @@ import {
 } from '../js_html_base_web_elements.js';
 import AHTMLComponent from '../lib/AHTMLComponent.js';
 import { HTMLWrapperElement } from '../wrapper.js';
+import { CSS_DEFAULT_MARGIN } from './constants.js';
 import { CLASS_LOADING_RECEIVER } from './LoadingComponent.js';
 
-const CSS_DEFAULT_MARGIN = 'var(--custom-button-icon-margin)';
-
+/**
+ * @class
+ * @classdesc Gère l'icône du bouton
+ * @extends AHTMLComponent
+ */
 export default class IconComponent extends AHTMLComponent {
   #_id;
   /**
@@ -25,6 +29,7 @@ export default class IconComponent extends AHTMLComponent {
   }
 
   /**
+   * Id interne
    * @type {string}
    * @readonly
    */
@@ -46,6 +51,7 @@ export default class IconComponent extends AHTMLComponent {
   }
 
   /**
+   * Position de l'icône
    * @type {'left' | 'right'}
    * @readonly
    */
@@ -54,6 +60,7 @@ export default class IconComponent extends AHTMLComponent {
   }
 
   /**
+   * Margin de l'icône
    * @type {string}
    * @readonly
    */
@@ -62,6 +69,7 @@ export default class IconComponent extends AHTMLComponent {
   }
 
   /**
+   * Icône
    * @type {?string}
    */
   get icon() {
@@ -78,6 +86,10 @@ export default class IconComponent extends AHTMLComponent {
     this.#_initIcon().querySelector(`#icon-${this.id}`).icon = value;
   }
 
+  /**
+   * Initialise le composant
+   * @override
+   */
   setup() {
     super.setup();
     this.#_initIcon();
@@ -93,6 +105,11 @@ export default class IconComponent extends AHTMLComponent {
     return this.#_parent.querySelector(selectors);
   }
 
+  /**
+   * Gère l'affichage de l'icône
+   * @returns {this}
+   * @private
+   */
   #_initIcon() {
     if (this.icon) {
       let bnumIcon = this.querySelector(`#icon-${this.id}`);
@@ -170,11 +187,19 @@ export default class IconComponent extends AHTMLComponent {
     return this;
   }
 
+  /**
+   * Active le bouton
+   * @returns {import('../lib/AHTMLCustomInternalElement').default}
+   */
   enable() {
     super.enable();
     return this.#_parent.removeState('disabled');
   }
 
+  /**
+   * Désactive le bouton
+   * @returns {import('../lib/AHTMLCustomInternalElement').default}
+   */
   disable() {
     super.disable();
     return this.#_parent.setState('disabled');

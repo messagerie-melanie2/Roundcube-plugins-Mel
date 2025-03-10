@@ -1,5 +1,4 @@
 import { EMPTY_STRING } from '../../../../constants/constants.js';
-import { isNullOrUndefined } from '../../../../mel.js';
 import { EWebComponentMode } from '../js_html_base_web_elements';
 import AHTMLCustomInternalElement from '../lib/AHTMLCustomInternalElement.js';
 import { HTMLWrapperElement } from '../wrapper.js';
@@ -7,25 +6,31 @@ import {
   HTMLBnumButtonBaseCreator,
   HTMLBnumButtonCreator,
 } from './ButtonCreator.js';
-import FormComponent, {
+import {
   CLASS_BUTTON,
-  EButtonType,
-  ENABLE_CLASS_BUTTON,
-  OLD_BNUM_MODE,
-} from './FormComponent.js';
-import IconComponent from './IconComponent.js';
-import LoadingComponent, {
   CLASS_LOADING_RECEIVER,
-} from './LoadingComponent.js';
-import RoundShapeComment from './RoundShapeComponent.js';
+  ENABLE_CLASS_BUTTON,
+  ENABLE_EXTRA_CLASS_BUTTON,
+  EXTRA_CLASSES,
+  OLD_BNUM_MODE,
+} from './constants.js';
+import FormComponent, { EButtonType } from './FormComponent.js';
+import IconComponent from './IconComponent.js';
+import LoadingComponent from './LoadingComponent.js';
+import RoundShapeComponent from './RoundShapeComponent.js';
 
-const ENABLE_EXTRA_CLASS_BUTTON = true;
-const EXTRA_CLASSES = ['no-margin-button', 'no-button-margin'];
-
+/**
+ * @class
+ * @classdesc Bouton personalisé du Bnum
+ * @extends AHTMLCustomInternalElement
+ */
 export default class HTMLBnumButton extends AHTMLCustomInternalElement {
   /**
+   * Attributs observés par le navigateur
    * @type {string[]}
    * @readonly
+   * @static
+   * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements}
    */
   static get observedAttributes() {
     return ['data-loading', 'square'];
@@ -42,7 +47,7 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
     this.#_components = [
       new FormComponent(this),
       new IconComponent(this),
-      new RoundShapeComment(this),
+      new RoundShapeComponent(this),
       new LoadingComponent(this),
     ];
   }
@@ -74,10 +79,20 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
     return this.#_components[3];
   }
 
+  /**
+   * Position de l'icône
+   * @type {'right' | 'left'}
+   * @readonly
+   */
   get iconPos() {
     return this.#_iconComponent.iconPos;
   }
 
+  /**
+   * Margin de l'icône
+   * @type {string}
+   * @readonly
+   */
   get iconMargin() {
     return this.#_iconComponent.iconMargin;
   }
@@ -101,6 +116,10 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
     return this.#_formComponent.variation;
   }
 
+  /**
+   * Icône
+   * @type {?string}
+   */
   get icon() {
     return this.#_iconComponent.icon;
   }
@@ -109,11 +128,13 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
     this.#_iconComponent.icon = value;
   }
 
+  /**
+   * Est appelé à l'affichage
+   * @override
+   */
   _p_main() {
     super._p_main();
 
-    // this.style.animation = 'none';
-    // this.style.display = 'none';
     this._p_before();
 
     this.#_set_mode().attr('role', 'button').attr('tabindex', '0');
@@ -152,14 +173,29 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
     this.style.display = null;
   }
 
+  /**
+   * Est appelé avant l'affichage
+   * @protected
+   * @abstract
+   */
   _p_before() {}
 
+  /**
+   * Est appelé quand un attribut de {@link observedAttributes} est modifié
+   * @param {string} name
+   * @param {string} oldValue
+   * @param {string} newValue
+   */
   attributeChangedCallback(name, oldValue, newValue) {
     for (const component of this.#_components) {
       component.attributeUpdated(name, newValue);
     }
   }
 
+  /**
+   * Désactive le bouton
+   * @returns {this}
+   */
   disable() {
     this.setAttribute('aria-disabled', true);
     this.setAttribute('disabled', 'disabled');
@@ -173,6 +209,10 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
     );
   }
 
+  /**
+   * Active le bouton
+   * @returns {this}
+   */
   enable() {
     this.removeAttribute('aria-disabled');
     this.removeAttribute('disabled');
@@ -186,6 +226,11 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
     );
   }
 
+  /**
+   * Mode d'affichage du bouont (display)
+   * @protected
+   * @returns {string}
+   */
   _p_mode() {
     return this._p_get_data('mode')?.toLowerCase?.();
   }
@@ -218,24 +263,42 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
     return this;
   }
 
+  /**
+   * Active l'apparance et le fonctionnement du mode "chargement"
+   * @returns {this}
+   */
   setLoadingMode() {
     this.#_loadComponent.setLoadingMode();
     return this;
   }
 
+  /**
+   * Désactive l'apparance et le fonctionnement du mode "chargement"
+   * @returns {this}
+   */
   stopLoadingMode() {
     this.#_loadComponent.stopLoadingmode();
     return this;
   }
 
+  /**
+   * Génère un bouton
+   * @param {string | HTMLElement} content Contenu du bouton
+   * @param {Object} [options={}]
+   * @param {EButtonType} [options.form=EButtonType.primary] Type de bouton
+   * @param {?string} [options.icon=null] Icône
+   * @param {'right' | 'left'} [options.iconPos='right'] Position de l'icône
+   * @param {string | 0 | null} [options.iconMargin=null] Margin de l'icône à gauche
+   * @param {boolean} [options.disabled=false] Désactive le bouton
+   * @returns {HTMLBnumButton}
+   */
   static CreateNode(
     content,
     {
       form = EButtonType.primary,
       icon = null,
       iconPos = 'right',
-      iconMarginLeft = null,
-      iconMarginRight = null,
+      iconMargin = null,
       disabled = false,
     },
   ) {
@@ -249,10 +312,8 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
 
     if (form) node.setAttribute('data-variation', EButtonType.toString(form));
     if (icon) node.setAttribute('data-icon', icon);
-    if (iconMarginLeft)
-      node.setAttribute('data-icon-margin-left', iconMarginLeft);
-    if (iconMarginRight)
-      node.setAttribute('data-icon-margin-right', iconMarginRight);
+    if (iconMargin) node.setAttribute('data-icon-margin', iconMargin);
+
     if (disabled) node.disable();
 
     node.setAttribute('data-icon-pos', iconPos);
@@ -261,6 +322,7 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
   }
 
   /**
+   * Commencer la création d'un bouton
    * @type {HTMLBnumButtonCreator}
    * @readonly
    */
@@ -270,6 +332,7 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
 
   /**
    * @readonly
+   * @type {string}
    */
   static get TAG() {
     return 'bnum-button';
@@ -278,11 +341,23 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
 
 HTMLBnumButton.TryDefine(HTMLBnumButton.TAG, HTMLBnumButton);
 
+/**
+ * @class
+ * @classdesc Bouton personalisé du Bnum, variation primaire, par défaut
+ * @extends HTMLBnumButton
+ */
 export class HTMLBnumButtonPrimary extends HTMLBnumButton {
   constructor() {
     super();
   }
 
+  /**
+   * Est appelé avant l'affichage
+   *
+   * Met la bonne variation
+   * @protected
+   * @override
+   */
   _p_before() {
     this.attrs({
       'data-variation': EButtonType.toString(EButtonType.primary),
@@ -293,26 +368,30 @@ export class HTMLBnumButtonPrimary extends HTMLBnumButton {
     super._p_main();
   }
 
+  /**
+   * Génère un bouton
+   * @param {string | HTMLElement} content Contenu du bouton
+   * @param {Object} [options={}]
+   * @param {?string} [options.icon=null] Icône
+   * @param {'right' | 'left'} [options.iconPos='right'] Position de l'icône
+   * @param {string | 0 | null} [options.iconMargin=null] Margin de l'icône à gauche
+   * @param {boolean} [options.disabled=false] Désactive le bouton
+   * @returns {HTMLBnumButtonPrimary}
+   */
   static CreateNode(
     content,
-    {
-      icon = null,
-      iconPos = 'right',
-      iconMarginLeft = null,
-      iconMarginRight = null,
-      disabled = false,
-    },
+    { icon = null, iconPos = 'right', iconMargin = null, disabled = false },
   ) {
     super.CreateNode(content, {
       icon,
       iconPos,
-      iconMarginLeft,
-      iconMarginRight,
+      iconMargin,
       disabled,
     });
   }
 
   /**
+   * Commencer la création d'un bouton
    * @type {HTMLBnumButtonBaseCreator}
    * @readonly
    */
@@ -320,6 +399,10 @@ export class HTMLBnumButtonPrimary extends HTMLBnumButton {
     return new HTMLBnumButtonBaseCreator(this.TAG);
   }
 
+  /**
+   * @readonly
+   * @type {string}
+   */
   static get TAG() {
     return 'primary-button';
   }
@@ -332,6 +415,13 @@ export class HTMLBnumButtonSecondary extends HTMLBnumButton {
     super();
   }
 
+  /**
+   * Est appelé avant l'affichage
+   *
+   * Met la bonne variation
+   * @protected
+   * @override
+   */
   _p_before() {
     this.attrs({
       'data-variation': EButtonType.toString(EButtonType.secondary),
@@ -342,6 +432,16 @@ export class HTMLBnumButtonSecondary extends HTMLBnumButton {
     super._p_main();
   }
 
+  /**
+   * Génère un bouton
+   * @param {string | HTMLElement} content Contenu du bouton
+   * @param {Object} [options={}]
+   * @param {?string} [options.icon=null] Icône
+   * @param {'right' | 'left'} [options.iconPos='right'] Position de l'icône
+   * @param {string | 0 | null} [options.iconMargin=null] Margin de l'icône à gauche
+   * @param {boolean} [options.disabled=false] Désactive le bouton
+   * @returns {HTMLBnumButtonSecondary}
+   */
   static CreateNode(
     content,
     {
@@ -365,11 +465,17 @@ export class HTMLBnumButtonSecondary extends HTMLBnumButton {
   /**
    * @type {HTMLBnumButtonBaseCreator}
    * @readonly
+   * @static
    */
   static get StartCreate() {
     return new HTMLBnumButtonBaseCreator(this.TAG);
   }
 
+  /**
+   * @static
+   * @readonly
+   * @type {string}
+   */
   static get TAG() {
     return 'secondary-button';
   }
@@ -377,11 +483,23 @@ export class HTMLBnumButtonSecondary extends HTMLBnumButton {
 
 HTMLBnumButton.TryDefine(HTMLBnumButtonSecondary.TAG, HTMLBnumButtonSecondary);
 
+/**
+ * @class
+ * @classdesc Bouton personalisé du Bnum, variation danger
+ * @extends HTMLBnumButton
+ */
 export class HTMLBnumButtonDanger extends HTMLBnumButton {
   constructor() {
     super();
   }
 
+  /**
+   * Est appelé avant l'affichage
+   *
+   * Met la bonne variation
+   * @protected
+   * @override
+   */
   _p_before() {
     this.attrs({
       'data-variation': EButtonType.toString(EButtonType.danger),
@@ -392,6 +510,16 @@ export class HTMLBnumButtonDanger extends HTMLBnumButton {
     super._p_main();
   }
 
+  /**
+   * Génère un bouton
+   * @param {string | HTMLElement} content Contenu du bouton
+   * @param {Object} [options={}]
+   * @param {?string} [options.icon=null] Icône
+   * @param {'right' | 'left'} [options.iconPos='right'] Position de l'icône
+   * @param {string | 0 | null} [options.iconMargin=null] Margin de l'icône à gauche
+   * @param {boolean} [options.disabled=false] Désactive le bouton
+   * @returns {HTMLBnumButtonDanger}
+   */
   static CreateNode(
     content,
     {
@@ -420,6 +548,11 @@ export class HTMLBnumButtonDanger extends HTMLBnumButton {
     return new HTMLBnumButtonBaseCreator(this.TAG);
   }
 
+  /**
+   * @static
+   * @readonly
+   * @type {string}
+   */
   static get TAG() {
     return 'error-button';
   }

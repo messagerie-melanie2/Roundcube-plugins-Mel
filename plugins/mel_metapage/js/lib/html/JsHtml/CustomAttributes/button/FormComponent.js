@@ -1,10 +1,16 @@
-import { EMPTY_STRING, SPACE } from '../../../../constants/constants';
-import AHTMLComponent from '../lib/AHTMLComponent';
+import { EMPTY_STRING, SPACE } from '../../../../constants/constants.js';
+import AHTMLComponent from '../lib/AHTMLComponent.js';
+import {
+  ENABLE_CLASS_BUTTON,
+  CLASS_BUTTON,
+  OLD_BNUM_MODE,
+} from './constants.js';
 
-export const ENABLE_CLASS_BUTTON = true;
-export const CLASS_BUTTON = 'mel-button';
-export const OLD_BNUM_MODE = true;
-
+/**
+ * @class
+ * @classdesc Gère les variations du bouton
+ * @extends AHTMLComponent
+ */
 export default class FormComponent extends AHTMLComponent {
   /**
    * @type {import('../lib/AHTMLCustomInternalElement').default}
@@ -20,6 +26,7 @@ export default class FormComponent extends AHTMLComponent {
   }
 
   /**
+   * Variation du bouton
    * @type {EButtonType}
    * @readonly
    */
@@ -29,6 +36,10 @@ export default class FormComponent extends AHTMLComponent {
     );
   }
 
+  /**
+   * Initialise le composant
+   * @override
+   */
   setup() {
     super.setup();
 

@@ -1114,6 +1114,26 @@ if (rcmail) {
         },
         true,
       );
+
+      rcmail.register_command(
+        'gotoaddressbook',
+        (...args) => {
+          rcmail.addEventListener('ui.mailtomenu.click', (obj) => {
+            const { tag, contact, mailto } = obj;
+            if (tag === 'gotoaddressbook') {
+              PageManager.SwitchFrame('addressbook', {
+                args: {
+                  _query: mailto,
+                  _open: true,
+                  _action: 'plugin.annuaire',
+                  _source: 'amande',
+                },
+              });
+            }
+          });
+        },
+        true,
+      );
     }
-  })(); //
+  })();
 }

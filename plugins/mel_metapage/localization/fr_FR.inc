@@ -510,3 +510,4 @@ $labels['add_users_not_added'] = 'Certains utilisateurs n\'ont pas encore été 
 $labels['return_to_creation_window'] = 'Retour à la fenêtre de création (email, espaces de travail, etc...)';
 $labels['return_to_creation_modal'] = 'Retour à la modale de création';
 $labels['create_workspace_title'] = 'Création d\'un espace de travail';
+$labels['gotoaddressbook'] = 'Afficher dans l\'annuaire';

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Annuaire
  * 
@@ -76,7 +77,7 @@ class annuaire extends rcube_plugin
         // hook for saving search
         $this->add_hook('saved_search_create', [$this, 'saved_search_create']);
         $this->add_hook('saved_search_delete', [$this, 'saved_search_delete']);
-        
+
         if ($this->rc->task == 'addressbook') {
             // Chargement de la conf
             $this->load_config();
@@ -87,6 +88,25 @@ class annuaire extends rcube_plugin
             if ($this->rc->action == 'plugin.annuaire') {
                 // register UI objects
                 $this->rc->output->add_handler('annuairesavedsearchlist', [$this, 'annuaire_savedsearch_list']);
+
+                // Recherche par email depuis le preview d'un mail
+                if (rcube_utils::get_input_value('_open', rcube_utils::INPUT_GPC) === 'true') {
+                    driver_annuaire::get_instance()->setBaseDn($this->rc->config->get('annuaire_base_dn', null));
+                    driver_annuaire::get_instance()->setSource($this->rc->config->get('annuaire_source', null));
+                    $query = rcube_utils::get_input_value('_query', rcube_utils::INPUT_GPC);
+
+                    driver_annuaire::get_instance()->get_filter_from_search($query);
+
+                    $fields = ['email'];
+
+                    $search_request = md5('addr'
+                        . (is_array($fields) ? implode(',', $fields) : $fields)
+                        . (is_array($query) ? implode(',', $query) : $query));
+                    $_SESSION['search_params'] = array('id' => $search_request, 'data' => array($fields, $query));
+
+                    $elements = driver_annuaire::get_instance()->get_elements(isset($query) && !empty($query) && strlen($query) >= 3);
+                    $this->rc->output->set_env('searched_email_dn', base64_encode($elements[0]['dn']));
+                }
             }
 
             // csv export
@@ -98,7 +118,7 @@ class annuaire extends rcube_plugin
                 // ]);
                 $this->rc->output->set_env('annuaire_export', true);
             }
-            
+
             $this->rc->output->set_env('annuaire_source', $this->rc->config->get('annuaire_source'));
 
             $this->include_script('directorylist.js');
@@ -156,8 +176,7 @@ class annuaire extends rcube_plugin
                     'annuaire_list'
                 )
             ));
-        }
-        else {
+        } else {
             $this->rc->output->add_handlers(array(
                 'annuaire_list' => array(
                     $this,
@@ -188,7 +207,7 @@ class annuaire extends rcube_plugin
     {
         // Chargement de la conf
         $this->load_config();
-        
+
         driver_annuaire::get_instance()->setBaseDn(rcube_utils::get_input_value('_base', rcube_utils::INPUT_GPC));
         driver_annuaire::get_instance()->setSource(rcube_utils::get_input_value('_source', rcube_utils::INPUT_GPC));
         driver_annuaire::get_instance()->setAlias(rcube_utils::get_input_value('_alias', rcube_utils::INPUT_GPC));
@@ -224,9 +243,9 @@ class annuaire extends rcube_plugin
             $writeable = 0;
             $count = 0;
             foreach ($js_list as $sid => $s) {
-                $count ++;
+                ++$count;
                 if (! $s['readonly']) {
-                    $writeable ++;
+                    ++$writeable;
                 }
                 // unset hidden sources
                 if ($s['hidden'] && $sid != $source) {
@@ -276,8 +295,8 @@ class annuaire extends rcube_plugin
                         $fields = ['name', 'email'];
                         // search request ID
                         $search_request = md5('addr'
-                            .(is_array($fields) ? implode(',', $fields) : $fields)
-                            .(is_array($search) ? implode(',', $search) : $search));
+                            . (is_array($fields) ? implode(',', $fields) : $fields)
+                            . (is_array($search) ? implode(',', $search) : $search));
                         $_SESSION['search_params'] = array('id' => $search_request, 'data' => array($fields, $search));
                     }
                     // Get elements
@@ -552,10 +571,18 @@ class annuaire extends rcube_plugin
             $attrib['id'] = 'rcmannuairesavedsearchlist';
 
         $out = '';
-        $line_templ = html::tag('li', array(
-            'id' => 'rcmli%s', 'class' => '%s'),
-            html::a(array('href' => '#', 'rel' => 'S%s',
-                'onclick' => "return ".rcmail_output::JS_OBJECT_NAME.".command('annuairelistsearch', '%s', this)"), '%s'));
+        $line_templ = html::tag(
+            'li',
+            array(
+                'id' => 'rcmli%s',
+                'class' => '%s'
+            ),
+            html::a(array(
+                'href' => '#',
+                'rel' => 'S%s',
+                'onclick' => "return " . rcmail_output::JS_OBJECT_NAME . ".command('annuairelistsearch', '%s', this)"
+            ), '%s')
+        );
 
         // Saved searches
         $sources = $this->rc->config->get('annuaire_saved_search', []);
@@ -567,11 +594,13 @@ class annuaire extends rcube_plugin
             if (!empty($source['class_name']))
                 $classes[] = $source['class_name'];
 
-            $out .= sprintf($line_templ,
-                rcube_utils::html_identifier('S'.$id, true),
+            $out .= sprintf(
+                $line_templ,
+                rcube_utils::html_identifier('S' . $id, true),
                 join(' ', $classes),
                 $id,
-                $js_id, rcube::Q($source['name'] ?: $id)
+                $js_id,
+                rcube::Q($source['name'] ?: $id)
             );
         }
 
@@ -580,21 +609,40 @@ class annuaire extends rcube_plugin
         return html::tag('ul', $attrib, $out, html::$common_attrib);
     }
 
+    function annuaire_search_from_mail()
+    {
+        driver_annuaire::get_instance()->setBaseDn($this->rc->config->get('annuaire_base_dn', null));
+        driver_annuaire::get_instance()->setSource($this->rc->config->get('annuaire_source', null));
+        $query = rcube_utils::get_input_value('_query', rcube_utils::INPUT_GPC);
+
+        driver_annuaire::get_instance()->get_filter_from_search($query);
+
+        $fields = ['email'];
+
+        $search_request = md5('addr'
+            . (is_array($fields) ? implode(',', $fields) : $fields)
+            . (is_array($query) ? implode(',', $query) : $query));
+        $_SESSION['search_params'] = array('id' => $search_request, 'data' => array($fields, $query));
+
+        $elements = driver_annuaire::get_instance()->get_elements(isset($query) && !empty($query) && strlen($query) >= 3);
+        $this->rc->output->set_env('searched_email_dn', base64_encode($elements[0]['dn']));
+    }
+
     /**
      * Enregistrement de la recherche dans les preferences si elle concerne l'annuaire
      * 
      * @param array $args
      * @return string
      */
-    function saved_search_create($args) {
+    function saved_search_create($args)
+    {
         $search = $args['data'];
         if (isset($search['data']['source']) && $search['data']['source'] == $this->rc->config->get('annuaire_source', null)) {
             $prefs = $this->rc->config->get('annuaire_saved_search', []);
             $id = rcube_utils::get_input_value('_search', rcube_utils::INPUT_POST);
             if (isset($prefs[$id])) {
                 $result = false;
-            }
-            else {
+            } else {
                 $prefs[$id] = $search;
                 uasort($prefs, function ($a, $b) {
                     return strnatcmp($a['name'], $b['name']);
@@ -604,10 +652,9 @@ class annuaire extends rcube_plugin
             if ($result) {
                 $this->rc->output->show_message('savedsearchcreated', 'confirmation');
                 $this->rc->output->command('annuaire_insert_saved_search', rcube::Q($search['name']), rcube::Q($result));
-            }
-            else
+            } else
                 $this->rc->output->show_message('savedsearchcreateerror', 'error');
-        
+
             $this->rc->output->send();
         }
         return $args;
@@ -619,7 +666,8 @@ class annuaire extends rcube_plugin
      * @param array $args
      * @return string
      */
-    function saved_search_delete($args) {
+    function saved_search_delete($args)
+    {
         $id = $args['id'];
         $prefs = $this->rc->config->get('annuaire_saved_search', []);
         if (isset($prefs[$id])) {
@@ -632,10 +680,9 @@ class annuaire extends rcube_plugin
                 // contact list will be cleared, clear also page counter
                 $this->rc->output->command('set_rowcount', $this->rc->gettext('nocontactsfound'));
                 $this->rc->output->set_env('pagecount', 0);
-            }
-            else
+            } else
                 $this->rc->output->show_message('savedsearchdeleteerror', 'error');
-        
+
             $this->rc->output->send();
         }
         return $args;

@@ -1,4 +1,6 @@
 <?php
+include_once __DIR__.'/../mel_metapage/bnum_plugin.php';
+
 /**
  * Plugin Mel Elastic
  *

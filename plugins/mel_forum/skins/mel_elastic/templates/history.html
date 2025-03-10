@@ -7,46 +7,47 @@
 <div id="layout-content" role="main">
   <div class="content">
     <div class="row return-header">
+      <!-- prettier-ignore -->
       <div class="return" id="go-back-to-article" tabindex="0" role="button" title="<roundcube:label
-        name='mel_forum.return_to_post' />">
-        <i class="material-symbols-outlined">arrow_back</i>
-        <span class="ml-2">
-          <roundcube:label name="mel_forum.article" />
-        </span>
-      </div>
+        name="mel_forum.return_to_post" />">
+      <i class="material-symbols-outlined">arrow_back</i>
+      <span class="ml-2">
+        <roundcube:label name="mel_forum.article" />
+      </span>
     </div>
-
-    <div class="row forum-header">
-      <div class="text-header">
-        <div class="col-12 text-center">
-          <h2 class="title">
-            «
-            <roundcube:object name="show_post_title" /> » :
-            <roundcube:label name="mel_forum.history_article" />
-          </h2>
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-11 custom-border-bottom my-4 ml-5"></div>
-    </div>
-
-    <div class="row forum-content">
-      <div class="col-12">
-        <div class="history-container">
-          <!-- Historique des modifications -->
-          <ul id="history-list" class="history-list"></ul>
-
-          <!-- Message si aucun historique -->
-          <p id="no-history-message" class="no-history" style="display: none;">
-            <roundcube:label name="mel_forum.no_modifications_found" />
-          </p>
-        </div>
-      </div>
-    </div>
-    <button id="backToTop" class="mel-button material-symbols-outlined hidden">keyboard_arrow_up</button>
   </div>
+
+  <div class="row forum-header">
+    <div class="text-header">
+      <div class="col-12 text-center">
+        <h2 class="title">
+          «
+          <roundcube:object name="show_post_title" /> » :
+          <roundcube:label name="mel_forum.history_article" />
+        </h2>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-11 custom-border-bottom my-4 ml-5"></div>
+  </div>
+
+  <div class="row forum-content">
+    <div class="col-12">
+      <div class="history-container">
+        <!-- Historique des modifications -->
+        <ul id="history-list" class="history-list"></ul>
+
+        <!-- Message si aucun historique -->
+        <p id="no-history-message" class="no-history" style="display: none;">
+          <roundcube:label name="mel_forum.no_modifications_found" />
+        </p>
+      </div>
+    </div>
+  </div>
+  <button id="backToTop" class="mel-button material-symbols-outlined hidden">keyboard_arrow_up</button>
+</div>
 </div>
 
 <roundcube:include file="includes/footer.html" />

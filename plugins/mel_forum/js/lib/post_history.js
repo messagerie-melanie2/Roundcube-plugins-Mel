@@ -1,6 +1,6 @@
-import { CursorUtils } from '../../../mel_metapage/js/lib/helpers/cursorUtils';
-import { JsHtml } from '../../../mel_metapage/js/lib/html/JsHtml/JsHtml';
-import { MelObject } from '../../../mel_metapage/js/lib/mel_object';
+import { CursorUtils } from '../../../mel_metapage/js/lib/helpers/cursorUtils.js';
+import { JsHtml } from '../../../mel_metapage/js/lib/html/JsHtml/JsHtml.js';
+import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 
 export class Post_history extends MelObject {
   constructor() {
@@ -39,8 +39,8 @@ export class Post_history extends MelObject {
     noHistoryMessage.hide();
 
     // Générer la liste des modifications
-    for (let entry of this.history) {
-      let listItem = JsHtml.start
+    for (const entry of this.history) {
+      const listItem = JsHtml.start
         .li({ class: 'history-entry' })
         .text(entry.text)
         .end();

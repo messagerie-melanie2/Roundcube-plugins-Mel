@@ -96,7 +96,7 @@ export default class LoadingComponent extends AHTMLComponent {
    * @private
    */
   #_getFontSize(element) {
-    const fonstSize =
+    const fontSize =
       element.style.fontSize ||
       ((el) => {
         const style = window
@@ -106,7 +106,7 @@ export default class LoadingComponent extends AHTMLComponent {
         return style;
       })(element);
 
-    return fonstSize;
+    return fontSize;
   }
 
   /**

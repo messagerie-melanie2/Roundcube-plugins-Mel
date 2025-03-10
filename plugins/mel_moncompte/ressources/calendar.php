@@ -243,7 +243,9 @@ class M2calendar {
       }
       if (in_array('p', $rights)) {
         // Droit privé
-        $share->acl |= LibMelanie\Api\Defaut\Share::ACL_PRIVATE;
+        $share->acl |= LibMelanie\Api\Defaut\Share::ACL_PRIVATE
+                    | LibMelanie\Api\Defaut\Share::ACL_READ
+                    | LibMelanie\Api\Defaut\Share::ACL_FREEBUSY;
       }
       $ret = $share->save();
       // Ajouter un hook lors du positionnement des ACLs

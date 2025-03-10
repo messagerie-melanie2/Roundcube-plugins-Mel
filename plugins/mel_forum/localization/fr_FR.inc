@@ -152,11 +152,13 @@ $labels['reply_save_error'] = 'Une erreur est survenue lors de la sauvegarde de 
 $labels['reply_save_failure'] = 'Erreur lors de la sauvegarde de la réponse.';
 $labels['saved'] = ' enregistré avec succès.';
 $labels['the_article'] = 'L\'article ';
+$labels['today'] = 'Aujourd\'hui';
 $labels['today_at'] = 'Aujourd\'hui à';
 $labels['toggle_replies_error'] = 'Erreur lors du basculement des réponses.';
 $labels['undislike'] = 'Dislike annulé avec succès.';
 $labels['unexpected_error'] = 'Une erreur inattendue est survenue.';
 $labels['unlike'] = 'Like annulé avec succès.';
+$labels['yesterday'] = 'Hier';
 $labels['yesterday_at'] = 'Hier à';
 $labels['fields_required'] = 'Les champs titre et contenu sont requis';
 

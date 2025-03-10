@@ -298,19 +298,24 @@ class mel_forum extends bnum_plugin
      */
     public function show_post_date()
     {
-
         $post_date = $this->current_post->created;
 
-        // Définir la locale en français pour le formatage de la date
-        $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
-
-        // Convertir la date du post en un timestamp Unix
+        // Convertir la date du post en timestamp Unix
         $timestamp = strtotime($post_date);
 
-        // Formater la date du post
-        $formatted_date = $formatter->format($timestamp);
+        // Obtenir la date actuelle
+        $today = strtotime(date('Y-m-d'));
+        $yesterday = strtotime(date('Y-m-d', strtotime('-1 day')));
 
-        return $formatted_date;
+        if ($timestamp >= $today) {
+            return "Aujourd'hui";
+        } elseif ($timestamp >= $yesterday) {
+            return "Hier";
+        } else {
+            // Formater la date en français pour les jours plus anciens
+            $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
+            return $formatter->format($timestamp);
+        }
     }
 
     /**

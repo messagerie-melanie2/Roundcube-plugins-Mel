@@ -2,6 +2,7 @@ import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { MelTemplate } from '../../../mel_metapage/js/lib/html/JsHtml/MelTemplate.js';
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { WorkspaceObject } from '../../../mel_workspace/js/lib/program/WorkspaceObject.js';
+import { formatPostDate } from './utils.js';
 
 export class Front_page_post extends MelObject {
   constructor() {
@@ -94,7 +95,7 @@ export class Front_page_post extends MelObject {
         POST_LINK: post.post_link,
         POST_CREATOR: post.post_creator,
         CREATOR_EMAIL: post.creator_email,
-        POST_DATE: post.creation_date,
+        POST_DATE: formatPostDate(post.creation_date),
         UID: post.uid,
         POST_CONTENT_CLASS: hasImage
           ? 'col-md-10 col-xl-10'

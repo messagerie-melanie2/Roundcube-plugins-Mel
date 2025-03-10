@@ -5,8 +5,7 @@ import {
 } from '../js_html_base_web_elements.js';
 import AHTMLComponent from '../lib/AHTMLComponent.js';
 import { HTMLWrapperElement } from '../wrapper.js';
-import { CSS_DEFAULT_MARGIN } from './constants.js';
-import { CLASS_LOADING_RECEIVER } from './LoadingComponent.js';
+import { CLASS_LOADING_RECEIVER, CSS_DEFAULT_MARGIN } from './constants.js';
 
 /**
  * @class

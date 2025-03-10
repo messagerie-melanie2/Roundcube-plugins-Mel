@@ -126,16 +126,15 @@ $(document).on('keyup', 'input#contactsearchbox', function (e) {
 });
 
 // register event handlers for UI elements
-$(document).on('click', '#annuaireselector a', function (e) {
-  if (
-    !$(this).parent().hasClass('inactive') &&
-    !$(this).parent().hasClass('selected')
-  ) {
+$(document).on('click', '#annuaireselector a', function () {
+  let $parent = $(this).parent();
+
+  if (!$parent.hasClass('inactive') && !$parent.hasClass('selected')) {
     window.annuaireSelector = this.href.replace(/^.*#/, '');
     $('#annuaireselector li.selected')
       .removeClass('selected')
       .attr('aria-checked', 'false');
-    $(this).parent().addClass('selected').attr('aria-checked', 'true');
+    $parent.addClass('selected').attr('aria-checked', 'true');
     rcmail.annuaire_filter_list();
   }
   return false;

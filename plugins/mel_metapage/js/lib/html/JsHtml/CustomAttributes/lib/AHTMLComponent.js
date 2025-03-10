@@ -70,10 +70,18 @@ export default class AHTMLComponent {
     return this;
   }
 
+  /**
+   * Désactive un élément
+   * @returns {import('../js_html_base_web_elements.js').HtmlCustomDataTag}
+   */
   disable() {
     return HtmlCustomTag.Disable(this.#_parent);
   }
 
+  /**
+   * Active un élément
+   * @returns {import('../js_html_base_web_elements.js').HtmlCustomDataTag}
+   */
   enable() {
     return HtmlCustomTag.Enable(this.#_parent);
   }

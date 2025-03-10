@@ -4,12 +4,41 @@ import {
   HtmlCustomDataTag,
 } from '../js_html_base_web_elements.js';
 
+/**
+ * @callback OnStatusUpdatedCallback
+ * @param {string} state
+ * @param {T} caller
+ * @returns {void}
+ * @template {AHTMLCustomInternalElement} T
+ */
+
+/**
+ * @class
+ * @classdesc Classe abstraite qui gère les états interne de l'élément html
+ * @extends HtmlCustomDataTag
+ * @abstract
+ */
 export default class AHTMLCustomInternalElement extends HtmlCustomDataTag {
   #_internals;
+  /**
+   *
+   * @param {Object} [options={}]
+   * @param {EWebComponentMode} [options.mode=EWebComponentMode.span]
+   */
   constructor({ mode = EWebComponentMode.span } = {}) {
     super({ mode });
     this.#_internals = this.attachInternals();
+    /**
+     * Est appelé lorsque qu'un état est ajouté
+     * @type {BnumEvent<OnStatusUpdatedCallback<this>>}
+     * @event
+     */
     this.oninternaladded = new BnumEvent();
+    /**
+     * Est appelé lorsque qu'un état est supprimé
+     * @type {BnumEvent<OnStatusUpdatedCallback<this>>}
+     * @event
+     */
     this.oninternalremoved = new BnumEvent();
 
     this.oninternaladded.add('default', (state, caller) => {
@@ -70,10 +99,11 @@ export default class AHTMLCustomInternalElement extends HtmlCustomDataTag {
   }
 
   /**
-   *
+   * Désactive une node
    * @param {Object} [param0={}]
-   * @param {?HTMLElement} [param0.node=null]
-   * @returns
+   * @param {?T} [param0.node=null]
+   * @returns {T | this}
+   * @template {HTMLElement} T
    */
   disable({ node = null } = {}) {
     node = super.disable({ node });
@@ -82,6 +112,13 @@ export default class AHTMLCustomInternalElement extends HtmlCustomDataTag {
     return node;
   }
 
+  /**
+   * Active une node
+   * @param {Object} [param0={}]
+   * @param {?T} [param0.node=null]
+   * @returns {T | this}
+   * @template {HTMLElement} T
+   */
   enable({ node = null } = {}) {
     node = super.enable({ node });
 

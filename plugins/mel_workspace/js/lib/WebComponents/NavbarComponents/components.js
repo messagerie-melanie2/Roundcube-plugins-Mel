@@ -10,7 +10,7 @@ export { WspNavBarDescription };
 
 /**
  * @class
- * @classdesc
+ * @classdesc Composant de la description de l'espace de travail
  * @extends NavBarComponent
  * @package
  */
@@ -46,6 +46,11 @@ class WspNavBarDescription extends NavBarComponent {
     return this.querySelector('.description');
   }
 
+  /**
+   * Appelé lorsque la navabar s'affiche
+   * @protected
+   * @override
+   */
   _p_main() {
     super._p_main();
 
@@ -80,10 +85,18 @@ class WspNavBarDescription extends NavBarComponent {
     descriptionContainer = null;
   }
 
+  /**
+   * On libère les données en mémoire
+   */
   destroy() {
     super.destroy();
   }
 
+  /**
+   * Action lorsque l'on clique sur la description.
+   *
+   * Lance une modale qui affiche la description en entier.
+   */
   action_description_clicked() {
     let dialog = MelDialog.Create('index', $(this.descriptionNode).clone(), {
       title: MelObject.Empty().gettext('wsp_desc', 'mel_workspace'),

@@ -29,6 +29,7 @@ export class Forum extends MelObject {
     this.handleScroll = this.checkScroll.bind(this);
     this.searchString = null;
     this.display_fav = false;
+    this.display_draft = false;
     this.initButtons();
     this.initSortSelect();
     this.initPostDisplay();
@@ -56,19 +57,6 @@ export class Forum extends MelObject {
         $(this).text('star_border');
       }
     });
-    //bouton voir les favoris
-    $('#display-fav-only').on('change', () => {
-      this.offset = 0;
-      if ($('#display-fav-only').is(':checked')) {
-        this.display_fav = true;
-      } else {
-        this.display_fav = false;
-      }
-      this.updateSort();
-      $('#post-area').empty();
-      this.loadPosts();
-    });
-    //
     //affichage de tout les brouillons pour les admins
     if (this.get_env('is_admin')) {
       $('#forum-sort-select');
@@ -188,18 +176,22 @@ export class Forum extends MelObject {
       case 'display_posts':
         this.draft = false;
         this.display_fav = false;
+        this.display_draft = false;
         break;
       case 'display_fav_only':
         this.draft = false;
         this.display_fav = true;
+        this.display_draft = false;
         break;
       case 'display_my_draft':
         this.draft = true;
         this.display_fav = false;
+        this.display_draft = true;
         break;
       case 'display_all_draft':
         this.draft = 'all';
         this.display_fav = false;
+        this.display_draft = true;
         break;
       default:
         console.log('Option non reconnue');
@@ -857,6 +849,14 @@ export class Forum extends MelObject {
 
       // Afficher uniquement les posts favoris
       posts = favoritePosts;
+    }
+    // Vérifier si l'utilisateur souhaite afficher uniquement les brouillons
+    if (this.display_draft) {
+      if (posts.length === 0) {
+        // Si aucun brouillon, afficher un message
+        this.displayNoDraft();
+        return; // Arrêter l'exécution ici
+      }
     }
 
     let post;

@@ -40,6 +40,7 @@ export class create_or_edit_post extends MelObject {
     });
     $('#go-back-to-articles').click(() => {
       CursorUtils.SetLoadingCursor();
+      $('#submit-post').click();
       $('#cancel-post').click();
       window.location.href = this.url('forum', {
         action: 'index',
@@ -68,6 +69,7 @@ export class create_or_edit_post extends MelObject {
     this.addTagListenner();
     this.removeTag();
     this.saveButton();
+    this.publishButton();
     this.cancelButton();
   }
 
@@ -218,6 +220,75 @@ export class create_or_edit_post extends MelObject {
             _title: title,
             _content: content,
             _uid: this.post_uid,
+            _isdraft: true,
+            _settings: JSON.stringify({
+              extwin: true,
+              comments: $('#enable_comment')[0].checked,
+            }),
+            _tags: this.tags,
+            _post_id: this.post_id,
+          },
+          processData: false,
+          contentType: false,
+          on_success: () => {
+            // Message différent selon le type d'action
+            const message = isModification
+              ? rcmail.gettext('mel_forum.edit_saved_success')
+              : rcmail.gettext('mel_forum.article_created_success');
+
+            BnumMessage.DisplayMessage(message, eMessageType.Success);
+            rcmail.triggerEvent('forum.post.updated');
+          },
+          on_error: () => {
+            BnumMessage.DisplayMessage(
+              rcmail.gettext('mel_forum.article_save_error'),
+              eMessageType.Error,
+            );
+            window.location.href = this.url('forum', {
+              action: 'post',
+              params: { _uid: postUid, _workspace_uid: this.workspace },
+            });
+          },
+        });
+      } else {
+        BnumMessage.DisplayMessage(
+          rcmail.gettext('mel_forum.fields_required'),
+          eMessageType.Error,
+        );
+      }
+    });
+  }
+
+  /**
+   * Publie le post.
+   *
+   * - Récupère les données du post (titre, contenu, tags, etc.) et vérifie si c'est une création ou une modification.
+   * - Envoie les données du post via une requête HTTP interne.
+   * - Affiche un message de succès ou d'erreur en fonction du résultat.
+   * - Redirige l'utilisateur vers la page appropriée en fonction de l'action effectuée (création ou modification).
+   *
+   * @returns {void}
+   */
+  publishButton() {
+    $('#publish-post').click(() => {
+      this.post_id = this.get_env('post').id;
+
+      // Vérifier s'il s'agit d'une création ou d'une modification
+      const isModification = !!this.post_id; // true si post_id est défini (modification)
+      let content = tinymce.activeEditor.getContent();
+      let title = $('#edit-title').val().trim();
+      if (title !== '' && content !== '') {
+        CursorUtils.SetLoadingCursor();
+        this.http_internal_post({
+          task: 'forum',
+          action: 'send_post',
+          params: {
+            _workspace_uid: this.workspace,
+            _workspace: this.workspace,
+            _title: title,
+            _content: content,
+            _uid: this.post_uid,
+            _isdraft: false,
             _settings: JSON.stringify({
               extwin: true,
               comments: $('#enable_comment')[0].checked,

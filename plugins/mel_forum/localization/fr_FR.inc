@@ -82,6 +82,9 @@ $labels['comment_menu'] = 'Menu du commentaire';
 $labels['delete_comment'] = 'Supprimer le commentaire';
 $labels['dislike_action'] = 'Je n\'aime pas';
 $labels['display_fav_only'] = 'Afficher uniquement les favoris';
+$labels['display_posts'] = 'Afficher les articles';
+$labels['display_my_draft'] = 'Afficher mes brouillons';
+$labels['display_draft'] = 'Afficher tous les brouillons';
 $labels['edit_comment'] = 'Modifier le commentaire';
 $labels['has_been_deleted'] = ' a été supprimé avec succès.';
 $labels['hide_items'] = 'Masquer les';
@@ -97,14 +100,18 @@ $labels['more_responses'] = 'Plus de réponses';
 $labels['newest'] = 'Plus récents';
 $labels['no_post'] = 'Cet espace ne contient aucun article pour le moment.';
 $labels['no_favorites'] = 'Vous n\'avez aucun article favori pour le moment.';
+$labels['no_draft'] = 'Vous n\'avez aucun brouillon pour le moment.';
 $labels['oldest'] = 'Plus anciens';
 $labels['respond'] = 'Répondre';
 $labels['save'] = 'Sauvegarder';
+$labels['publish'] = 'Publier';
 $labels['see_response_singular'] = 'Voir la réponse';
 $labels['see_the'] = 'Voir les';
 $labels['sort_by'] = 'Trier par : ';
 $labels['workspace_news'] = 'Derniers articles';
 $labels['front_page'] = 'À la une';
+$labels['this_is_draft'] = 'Ceci est un brouillon';
+$labels['search_post'] = 'Rechercher un article ...';
 
 #endregion
 #region Message

@@ -133,6 +133,7 @@ class mel_forum extends bnum_plugin
         $this->_show_posts();
         $this->rc()->output->set_env('workspace_uid', $workspace_uid);
         $this->rc()->output->set_env('user_fullname', driver_mel::gi()->getUser()->name);
+        $this->rc()->output->set_env('is_admin', driver_mel::gi()->getUser()->isWorkspaceOwner($workspace_uid));
         $this->rc()->output->add_handlers(['post_search' => [$this, '_show_search']]);
         $this->rc()->output->send('mel_forum.forum');
     }
@@ -203,6 +204,7 @@ class mel_forum extends bnum_plugin
             $this->rc()->output->set_env('dislike_reactions', $dislikes_name);
             $this->rc()->output->set_env('dislike_count', $this->current_post->dislikes);
             $this->rc()->output->set_env('user_fullname', driver_mel::gi()->getUser()->name);
+            $this->rc()->output->set_env('is_draft', $this->current_post->isdraft);
 
             $this->rc()->output->send('mel_forum.post');
         } else {
@@ -552,6 +554,13 @@ class mel_forum extends bnum_plugin
         // Charger tous les posts en utilisant la méthode listPosts
         $post = new LibMelanie\Api\Defaut\Posts\Post();
         $post->workspace = $workspace_uid;
+        $is_draft = $this->get_input('_draft', rcube_utils::INPUT_GET);
+        if ($is_draft !== 'false' && !is_null($is_draft)) {
+            $post->isdraft = true;
+            if ($is_draft !== 'all') {
+                $post->creator = driver_mel::gi()->getUser()->uid;
+            }
+        }
 
         // Appel de la méthode listPosts
         $posts = $post->listPosts($search, $tags, $orderby, $asc, $limit, $offset, $fav_posts_uid, $pins);
@@ -712,6 +721,7 @@ class mel_forum extends bnum_plugin
         // création du summary à l'aide d'une fonction qui récupère les 2 premières phrases du content
         $summary = $this->_create_summary_from_content($content);
         $settings = $this->get_input('_settings', rcube_utils::INPUT_POST);
+        $isdraft = $this->get_input('_isdraft', rcube_utils::INPUT_POST) === 'true';
 
         // Validation des données saisies
         if (empty($title) || empty($content) || empty($summary) || empty($settings)) {
@@ -749,6 +759,7 @@ class mel_forum extends bnum_plugin
         $post->modified = date('Y-m-d H:i:s');
         $post->settings = $settings;
         $post->workspace = $workspace_uid;
+        $post->isdraft = $isdraft;
 
         // Sauvegarde de l'article
         if (mel_logs::is(mel_logs::TRACE))
@@ -1288,7 +1299,7 @@ class mel_forum extends bnum_plugin
         if (!$comment->load()) {
             $this->sendEncodedExit([
                 'status' => 'error',
-                'message' => $this->gettext("comment_unfindable", "mel_forum")
+                'message' => $this->gettext('comment_unfindable', 'mel_forum')
             ]);
         }
 
@@ -1296,14 +1307,14 @@ class mel_forum extends bnum_plugin
         if (!$comment) {
             $this->sendEncodedExit([
                 'status' => 'error',
-                'message' => $this->gettext("comment_unfindable", "mel_forum")
+                'message' => $this->gettext('comment_unfindable', 'mel_forum')
             ]);
         }
         // Vérifier si l'utilisateur est bien l'auteur du commentaire
         if ($comment->user_uid !== $user->uid) { // Vérification si l'utilisateur est l'auteur
             $this->sendEncodedExit([
                 'status' => 'error',
-                'message' => $this->gettext("cannot_edit_comment", "mel_forum")
+                'message' => $this->gettext('cannot_edit_comment', 'mel_forum')
             ]);
         }
 
@@ -1323,13 +1334,13 @@ class mel_forum extends bnum_plugin
             // Réponse JSON avec les modifications apportées au commentaire
             $this->sendEncodedExit([
                 'status' => 'success',
-                'message' => $this->gettext("comment_updated", "mel_forum"),
+                'message' => $this->gettext('comment_updated', 'mel_forum'),
                 'comment' => $modifyData
             ]);
         } else {
             $this->sendEncodedExit([
                 'status' => 'error',
-                'message' => $this->gettext("comment_updated_failure", "mel_forum")
+                'message' => $this->gettext('comment_updated_failure', 'mel_forum')
             ]);
         }
     }
@@ -1356,7 +1367,7 @@ class mel_forum extends bnum_plugin
 
         // Validation de la donnée saisie
         if (empty($uid)) {
-            echo json_encode(['status' => 'error', 'message' => $this->gettext("comment_uid_required", "mel_forum")]);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext('comment_uid_required', 'mel_forum')]);
             exit;
         }
 
@@ -1371,22 +1382,22 @@ class mel_forum extends bnum_plugin
 
         // Vérifier si le commentaire existe
         if (!$comment->load()) {
-            echo json_encode(['status' => 'error', 'message' => $this->gettext("comment_unfindable", "mel_forum")]);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext('comment_unfindable', 'mel_forum')]);
             exit;
         }
 
         // Vérifier si l'utilisateur est bien l'auteur du commentaire
         if ($comment->user_uid !== $user->uid) { // Vérification si l'utilisateur est l'auteur
-            echo json_encode(['status' => 'error', 'message' => $this->gettext("cannot_delete_comment", "mel_forum")]);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext('cannot_delete_comment', 'mel_forum')]);
             exit;
         }
 
         // Supprimer le commentaire
         $ret = $comment->delete();
         if (!is_null($ret)) {
-            echo json_encode(['status' => 'success', 'message' => $this->gettext("comment_deleted", "mel_forum")]);
+            echo json_encode(['status' => 'success', 'message' => $this->gettext('comment_deleted', 'mel_forum')]);
         } else {
-            echo json_encode(['status' => 'error', 'message' => $this->gettext("comment_deleted_failure", "mel_forum")]);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext('comment_deleted_failure', 'mel_forum')]);
         }
 
         // Arrêt de l'exécution du script
@@ -1417,7 +1428,7 @@ class mel_forum extends bnum_plugin
 
         // Validation des données saisies
         if (empty($type) || empty($comment_id)) {
-            $this->sendEncodedExit(['status' => 'error', 'message' => $this->gettext("every_field_required", "mel_forum")]);
+            $this->sendEncodedExit(['status' => 'error', 'message' => $this->gettext('every_field_required', 'mel_forum')]);
         }
 
         // Charger le commentaire pour récupérer son id et son créateur
@@ -1425,7 +1436,7 @@ class mel_forum extends bnum_plugin
         $comment->uid = $comment_uid;
 
         if (!$comment->load()) {
-            $this->sendEncodedExit(['status' => 'error', 'message' => $this->gettext("comment_unfindable", "mel_forum")]);
+            $this->sendEncodedExit(['status' => 'error', 'message' => $this->gettext('comment_unfindable', 'mel_forum')]);
         }
 
         // Vérifier si un like ou dislike existe déjà
@@ -1443,11 +1454,11 @@ class mel_forum extends bnum_plugin
             // Si le type est le même, l'utilisateur essaie d'annuler sa réaction
             if ($type === 'like') {
                 $existing_reaction->delete();
-                $message = $this->gettext("unlike", "mel_forum");
+                $message = $this->gettext('unlike', 'mel_forum');
             } else {
                 // Sinon, l'utilisateur change de réaction (like -> dislike)
                 $existing_reaction->delete();
-                $message = $this->gettext("like_to_dislike", "mel_forum");
+                $message = $this->gettext('like_to_dislike', 'mel_forum');
 
                 $reaction = new LibMelanie\Api\Defaut\Posts\Comments\Like();
                 $reaction->comment = $comment_id;
@@ -1457,9 +1468,9 @@ class mel_forum extends bnum_plugin
                 // Sauvegarde de la nouvelle réaction
                 $ret = $reaction->save();
                 if (is_null($ret)) {
-                    $this->sendEncodedExit(['status' => 'error', 'message' => gettext("failed_to_save...", "mel_forum") . $type . '.']);
+                    $this->sendEncodedExit(['status' => 'error', 'message' => gettext('failed_to_save...', 'mel_forum') . $type . '.']);
                 }
-                $message = ucfirst($type) . gettext("...saved", "mel_forum");
+                $message = ucfirst($type) . gettext('...saved', 'mel_forum');
             }
         } else {
             // Si aucun like n'existe, tester pour le dislike
@@ -1468,11 +1479,11 @@ class mel_forum extends bnum_plugin
                 // Si le type est le même, l'utilisateur essaie d'annuler sa réaction
                 if ($type === 'dislike') {
                     $existing_reaction->delete();
-                    $message = gettext("undislike", "mel_forum");
+                    $message = gettext('undislike', 'mel_forum');
                 } else {
                     // Sinon, l'utilisateur change de réaction (dislike -> like)
                     $existing_reaction->delete();
-                    $message = gettext("dislike_to_like", "mel_forum");
+                    $message = gettext('dislike_to_like', 'mel_forum');
 
                     $reaction = new LibMelanie\Api\Defaut\Posts\Comments\Like();
                     $reaction->comment = $comment_id;
@@ -1482,9 +1493,9 @@ class mel_forum extends bnum_plugin
                     // Sauvegarde de la nouvelle réaction
                     $ret = $reaction->save();
                     if (is_null($ret)) {
-                        $this->sendEncodedExit(['status' => 'error', 'message' => gettext("failed_to_save...", "mel_forum") . $type . '.']);
+                        $this->sendEncodedExit(['status' => 'error', 'message' => gettext('failed_to_save...', 'mel_forum') . $type . '.']);
                     }
-                    $message = ucfirst($type) . $this->gettext("...saved", "mel_forum");
+                    $message = ucfirst($type) . $this->gettext('...saved', 'mel_forum');
                 }
             } else {
                 // Si aucune réaction n'existe, on va créer une nouvelle réaction
@@ -1496,9 +1507,9 @@ class mel_forum extends bnum_plugin
                 // Sauvegarde de la nouvelle réaction
                 $ret = $reaction->save();
                 if (is_null($ret)) {
-                    $this->sendEncodedExit(['status' => 'error', 'message' => gettext("failed_to_save...", "mel_forum") . $type . '.']);
+                    $this->sendEncodedExit(['status' => 'error', 'message' => gettext('failed_to_save...', 'mel_forum') . $type . '.']);
                 }
-                $message = ucfirst($type) . $this->gettext("...saved", "mel_forum");
+                $message = ucfirst($type) . $this->gettext('...saved', 'mel_forum');
             }
         }
 

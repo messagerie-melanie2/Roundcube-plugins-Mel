@@ -6,6 +6,7 @@ import {
 import { MelTemplate } from '../../../mel_metapage/js/lib/html/JsHtml/MelTemplate.js';
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { CursorUtils } from '../../../mel_metapage/js/lib/helpers/cursorUtils.js';
+import { JsHtml } from '../../../mel_metapage/js/lib/html/JsHtml/JsHtml.js';
 
 export class Forum extends MelObject {
   constructor() {
@@ -28,6 +29,7 @@ export class Forum extends MelObject {
     this.handleScroll = this.checkScroll.bind(this);
     this.searchString = null;
     this.display_fav = false;
+    this.display_draft = false;
     this.initButtons();
     this.initSortSelect();
     this.initPostDisplay();
@@ -55,18 +57,15 @@ export class Forum extends MelObject {
         $(this).text('star_border');
       }
     });
-    //bouton voir les favoris
-    $('#display-fav-only').on('change', () => {
-      this.offset = 0;
-      if ($('#display-fav-only').is(':checked')) {
-        this.display_fav = true;
-      } else {
-        this.display_fav = false;
-      }
-      this.updateSort();
-      $('#post-area').empty();
-      this.loadPosts();
-    });
+    //affichage de tout les brouillons pour les admins
+    if (this.get_env('is_admin')) {
+      $('#forum-sort-select');
+      let draftOption = JsHtml.start
+        .option({ value: 'display_all_draft' })
+        .text(rcmail.gettext('mel_forum.display_draft'))
+        .end();
+      $('#forum-display-select').append(draftOption.generate());
+    }
     //gestion du scroll sur la page
     document
       .querySelector('.content')
@@ -170,6 +169,36 @@ export class Forum extends MelObject {
   }
 
   /**
+   * met à jour les valeur de tri d'articles
+   */
+  updateDisplay() {
+    switch ($('#forum-display-select')[0].value) {
+      case 'display_posts':
+        this.draft = false;
+        this.display_fav = false;
+        this.display_draft = false;
+        break;
+      case 'display_fav_only':
+        this.draft = false;
+        this.display_fav = true;
+        this.display_draft = false;
+        break;
+      case 'display_my_draft':
+        this.draft = true;
+        this.display_fav = false;
+        this.display_draft = true;
+        break;
+      case 'display_all_draft':
+        this.draft = 'all';
+        this.display_fav = false;
+        this.display_draft = true;
+        break;
+      default:
+        console.log('Option non reconnue');
+    }
+  }
+
+  /**
    * Charge les posts en fonction du mode de tri de l'ordre et de l'offset
    */
   loadPosts() {
@@ -191,6 +220,7 @@ export class Forum extends MelObject {
         _tags: this.tags,
         _fav_only: this.display_fav,
         _pin: true,
+        _draft: this.draft,
       },
       processData: false,
       contentType: false,
@@ -233,6 +263,24 @@ export class Forum extends MelObject {
         .addEventListener('scroll', this.handleScroll);
 
       this.updateSort();
+      this.updateDisplay();
+      //vide l'affichage de posts actuel
+      $('#post-area').empty();
+      //on reset le offset car on recharge les posts du début
+      this.offset = 0;
+      this.loadPosts();
+    });
+    $('#forum-display-select').on('change', () => {
+      //on reset l'event listenner du scroll
+      document
+        .querySelector('.content')
+        .removeEventListener('scroll', this.handleScroll);
+      document
+        .querySelector('.content')
+        .addEventListener('scroll', this.handleScroll);
+
+      this.updateSort();
+      this.updateDisplay();
       //vide l'affichage de posts actuel
       $('#post-area').empty();
       //on reset le offset car on recharge les posts du début
@@ -250,6 +298,7 @@ export class Forum extends MelObject {
 
     if (scrollPos / scrollHeight >= this.scrollPercentage && !this.lock) {
       this.updateSort();
+      this.updateDisplay();
       this.loadPosts();
     }
   }
@@ -262,6 +311,7 @@ export class Forum extends MelObject {
     this.offset = 0;
     $('#post-area').empty();
     this.updateSort();
+    this.updateDisplay();
     this.loadPosts();
   }
 
@@ -592,6 +642,7 @@ export class Forum extends MelObject {
     this.tags.push(tag_id);
     $('#post-area').empty();
     this.updateSort();
+    this.updateDisplay();
     this.loadPosts();
     $('#post-search-input')
       .val('#' + tag_name)
@@ -798,6 +849,14 @@ export class Forum extends MelObject {
 
       // Afficher uniquement les posts favoris
       posts = favoritePosts;
+    }
+    // Vérifier si l'utilisateur souhaite afficher uniquement les brouillons
+    if (this.display_draft) {
+      if (posts.length === 0) {
+        // Si aucun brouillon, afficher un message
+        this.displayNoDraft();
+        return; // Arrêter l'exécution ici
+      }
     }
 
     let post;
@@ -1027,6 +1086,17 @@ export class Forum extends MelObject {
       .text(rcmail.gettext('mel_forum.no_favorites'))
       .end();
     $('#post-area').append(noFavoriteDiv.generate());
+  }
+
+  /**
+   * Affiche un message indiquant qu'il n'y a aucun brouillon
+   */
+  displayNoDraft() {
+    let noDraftDiv = MelHtml.start
+      .span({ class: 'ml-2' })
+      .text(rcmail.gettext('mel_forum.no_draft'))
+      .end();
+    $('#post-area').append(noDraftDiv.generate());
   }
 
   //endregion

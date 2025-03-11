@@ -107,7 +107,7 @@
 .task-forum .input-group {
   position: relative;
   flex: 1 1 auto;
-  width: 1%;
+  width: 2%;
   margin-bottom: 0;
 }
 .task-forum .forum-centered {
@@ -437,7 +437,8 @@
   padding-bottom: 5px;
   border-bottom: 0.5px solid var(--forum-border-bottom-color);
 }
-.task-forum .forum-sort #forum-sort-select {
+.task-forum .forum-sort #forum-sort-select,
+.task-forum .forum-sort #forum-display-select {
   min-width: 150px;
   background-color: transparent;
   border: transparent;
@@ -1275,6 +1276,14 @@
 }
 .task-forum .radio-group input[type='radio'] {
   margin: 0;
+}
+.task-forum #header-draft {
+  background-color: var(--box-information-background-color);
+  color: var(--box-information-text-color);
+  padding: 5px;
+}
+.task-forum #header-draft #header-edit-post {
+  margin-left: 5px;
 }
 .material-symbols-outlined.f-31 {
   font-size: 31px;

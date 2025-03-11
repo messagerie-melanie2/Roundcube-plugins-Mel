@@ -12,6 +12,15 @@
  */
 export const EMPTY_STRING = '';
 /**
+ * Représente un espace
+ *
+ * Améliore la lisibilité du code
+ * @constant
+ * @type {string}
+ * @default ' '
+ */
+export const SPACE = ' ';
+/**
  * @constant
  * @type {string}
  * @default 'string'

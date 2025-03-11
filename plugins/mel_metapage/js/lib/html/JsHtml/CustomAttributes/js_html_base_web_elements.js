@@ -1,7 +1,7 @@
 import { BaseStorage } from '../../../classes/base_storage.js';
 import { Random } from '../../../classes/random.js';
-import { EMPTY_STRING } from '../../../constants/constants.js';
 import { MaterialIcon } from '../../../icons.js';
+import { isNullOrUndefined } from '../../../mel.js';
 export {
   HtmlCustomTag,
   HtmlCustomDataTag,
@@ -80,6 +80,15 @@ class HtmlCustomTag extends HTMLElement {
   }
 
   /**
+   * Si l'élément est chargé ou non
+   * @type {string}
+   * @readonly
+   */
+  get elementLoaded() {
+    return this.#loaded;
+  }
+
+  /**
    * Est appelé par le navigateur lorsque le composant est affiché.
    *
    * Gère dans un premier temps le mode puis appèle le setup enfant.
@@ -87,22 +96,7 @@ class HtmlCustomTag extends HTMLElement {
    */
   connectedCallback() {
     if (!this.#loaded) {
-      switch (this.#mode) {
-        case EWebComponentMode.div:
-          this.setAttribute('component-mode', 'div');
-          break;
-
-        case EWebComponentMode.flex:
-          this.setAttribute('component-mode', 'flex');
-          break;
-
-        case EWebComponentMode.inline_block:
-          this.setAttribute('component-mode', 'inline-block');
-          break;
-
-        default:
-          break;
-      }
+      this.setMode(this.#mode, { ignoreLoad: true });
 
       if (this._p_main) this._p_main();
 
@@ -146,6 +140,37 @@ class HtmlCustomTag extends HTMLElement {
    */
   shadowEnabled() {
     return this.data('shadow') === 'true';
+  }
+
+  /**
+   *
+   * @param {EWebComponentMode} mode
+   * @returns {this}
+   */
+  setMode(mode, { ignoreLoad = false } = {}) {
+    this.#mode = mode;
+
+    if (this.#loaded || ignoreLoad) {
+      switch (this.#mode) {
+        case EWebComponentMode.div:
+          this.setAttribute('component-mode', 'div');
+          break;
+
+        case EWebComponentMode.flex:
+          this.setAttribute('component-mode', 'flex');
+          break;
+
+        case EWebComponentMode.inline_block:
+          this.setAttribute('component-mode', 'inline-block');
+          break;
+
+        default:
+          this.removeAttribute('component-mode');
+          break;
+      }
+    }
+
+    return this;
   }
 
   /**
@@ -194,6 +219,39 @@ class HtmlCustomTag extends HTMLElement {
   }
 
   /**
+   * @overload
+   * Récupère la valeur d'un attribut
+   * @param {string} key Clé de l'attribut
+   * @returns {string} Valeur de l'attribut
+   * //**
+   * @overload
+   * Change la valeur d'un attribut.
+   * @param {string} key Clé de l'attribut
+   * @param {*} value Valeur à mettre
+   * @returns {this}
+   */
+  attr(key, value = null) {
+    if (isNullOrUndefined(value)) return this.getAttribute(key);
+    else {
+      this.setAttribute(key, value);
+      return this;
+    }
+  }
+
+  /**
+   * Ajoute plusieurs attributs à l'élément.
+   * @param {Object<string, string | number | boolean>} config
+   * @returns {this} Chaîne
+   */
+  attrs(config) {
+    for (const key in config) {
+      this.attr(key, config[key]);
+    }
+
+    return this;
+  }
+
+  /**
    * Récupère un texte via une fonction de localisation, si elle existe.
    * @param {string} text Texte à afficher/à traduire
    * @returns {string} Si la fonction de localisation n'existe pas, le texte initial sera renvoyé.
@@ -222,19 +280,13 @@ class HtmlCustomTag extends HTMLElement {
   disable({ node = null } = {}) {
     node ??= this;
 
-    node.setAttribute('disabled', 'disabled');
-    node.classList.add('disabled');
-
-    return node;
+    return HtmlCustomTag.Disable(node);
   }
 
   enable({ node = null } = {}) {
     node ??= this;
 
-    node.removeAttribute('disabled');
-    node.classList.remove('disabled');
-
-    return node;
+    return HtmlCustomTag.Enable(node);
   }
 
   /**
@@ -275,6 +327,32 @@ class HtmlCustomTag extends HTMLElement {
    */
   destroy() {
     return this;
+  }
+
+  /**
+   * Active un élément html, cad, supprime l'attribut `disabled` et la classe `disabled`.
+   * @param {TNode} node Node à activer
+   * @returns {TNode} Node activée
+   * @template {HTMLElement} TNode
+   */
+  static Enable(node) {
+    node.removeAttribute('disabled');
+    node.classList.remove('disabled');
+
+    return node;
+  }
+
+  /**
+   * Désactive un élément html, cad, ajoute l'attribut `disabled` et la classe `disabled`.
+   * @param {TNode} node Node à désactiver
+   * @returns {TNode} Node désactivée
+   * @template {HTMLElement} TNode
+   */
+  static Disable(node) {
+    node.setAttribute('disabled', 'disabled');
+    node.classList.add('disabled');
+
+    return node;
   }
 
   /**

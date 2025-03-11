@@ -1,3 +1,4 @@
+//compress:false
 @width-correction: 30px;
 @height-correction: 100px;
 
@@ -147,7 +148,7 @@
 
   .description {
     overflow: hidden;
-    margin-bottom: 10px;
+    margin: 5px 0;
     text-align: center;
 
     &.threelines {
@@ -274,6 +275,14 @@
       background-color: var(--wsp-nav-button-hover-background-color);
       color: var(--wsp-nav-button-hover-text-color);
       border: var(--wsp-nav-button-hover-border);
+    }
+
+    &:state(bnum-button) {
+      justify-content: center !important;
+
+      &:state(nobackground) {
+        &:extend(:host .shadow-mel-button.transparent-bckg);
+      }
     }
   }
 

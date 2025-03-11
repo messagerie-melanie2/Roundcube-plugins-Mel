@@ -171,9 +171,6 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
     for (const component of this.#_components) {
       component.setup();
     }
-
-    this.style.animation = null;
-    this.style.display = null;
   }
 
   /**

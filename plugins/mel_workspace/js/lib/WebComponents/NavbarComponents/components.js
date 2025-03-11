@@ -71,6 +71,11 @@ class WspNavBarDescription extends NavBarComponent {
       .generate()
       .addClass('description-container', 'shadow-mel-button');
 
+    //Ne pas pouvoir cliquer sur le bouton si il n'y a pas de descriptions
+    if (!this.description || this.description.length === 0) {
+      descriptionContainer.style.display = 'none';
+    }
+
     descriptionContainer.addEventListener(
       'click',
       this.action_description_clicked.bind(this),

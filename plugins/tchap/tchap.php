@@ -68,6 +68,9 @@ class tchap extends bnum_plugin
             $this->load_script_module('bnum.js', '/');
             $rcmail->output->set_env('tchap_help_id', $this->get_config('tchap_help_id'));
         }
+        else if ($this->task === 'workspace') {
+            $this->register_action('change_tchap_room', [$this, 'change_tchap_room']);
+        }
 
         $tchap_url = $rcmail->config->get('tchap_url');
 
@@ -153,6 +156,41 @@ class tchap extends bnum_plugin
     }
 
     #region workspaces
+    function change_tchap_room()
+    {
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_GP);
+        $room_id = rcube_utils::get_input_value("_room_uid", rcube_utils::INPUT_GP);
+        $config = [
+            'id' => $room_id
+        ];
+
+        if(self::check_if_room_exist($room_id)){
+            $wsp = mel_workspace::Workspace($uid);
+            $this->sync_workspace_tchap($wsp, $room_id);
+            $wsp->objects()->set(self::KEY_FOR_WORKSPACE, $config);
+            $wsp->save();
+            $value = true;
+        } else {
+            $value = false;
+        }
+
+        //si non 
+        echo json_encode($value);
+        exit;
+    }
+
+    /**
+     * @param Workspace $wsp 
+     */
+    function sync_workspace_tchap($wsp, $room_id)
+    {
+        $users = $wsp->users();
+
+        foreach ($users as $user) {
+            self::invite_tchap_user($room_id, $user);
+        }
+    }
+
     /**
      * permet d'afficher ou non le plugin tchap dans la liste des applications
      * @param $args tableau contenant un string 'app' l'application en cours et un bool 'continue' si on arrête l'affichage

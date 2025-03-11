@@ -125,12 +125,13 @@ abstract class bnum_plugin extends rcube_plugin
      * The callback will be executed upon a request like /?_task=mail&_action=plugin.myaction
      *
      * @param string $action   Action name (should be unique)
-     * @param mixed  $callback Callback function as string
+     * @param callback  $callback Callback function as string
      *                         or array with object reference and method name
+     * @param ?string $current_task (optionnel) Tâche lié à l'action (par défaut, celle en cours)
      */
-    protected function force_register_action($action, $callback)
+    protected function force_register_action($action, $callback, $current_task = null)
     {
-        $this->api->register_action($action, $this->ID, $callback, $this->get_current_task());
+        $this->api->register_action($action, $this->ID, $callback, $current_task ?? $this->get_current_task());
     }
 
     protected function register_actions($array) {

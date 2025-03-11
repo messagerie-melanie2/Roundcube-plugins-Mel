@@ -4,6 +4,7 @@ import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constant
 import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';
 import { Mel_Promise } from '../../../../mel_metapage/js/lib/mel_promise.js';
 import { WspNavBar } from '../WebComponents/navbar.js';
+import { WorkspaceModuleBlock } from '../WebComponents/workspace_module_block.js';
 // import { WspNavBar } from './WebComponents/navbar.js';
 import { CurrentWorkspaceData, WorkspaceObject } from './WorkspaceObject.js';
 
@@ -158,6 +159,11 @@ export class NavBarManager {
     task,
     { event = null, workspace = null, manualConfig = null } = {},
   ) {
+    //Remettre les modules à la bonne taille
+    for (const element of document.querySelectorAll(WorkspaceModuleBlock.Tag)) {
+      element.classList.remove('hidden-because-other-in-fullscreen-mode');
+    }
+
     const raw_config =
       rcmail.triggerEvent('workspace.nav.beforeswitch', { task, event }) || {};
 
@@ -234,6 +240,9 @@ export class NavBarManager {
         break;
 
       default:
+        //On quitte si _break vaut 'true', c'est un comportement custom
+        if (raw_config._break === true) break;
+
         await FramesManager.Instance.switch_frame(task, {
           args: config,
           actions: ['workspace'],

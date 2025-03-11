@@ -20,6 +20,17 @@ import { NavBarManager } from '../program/navbar.generator.js';
  */
 export class WorkspaceModuleBlock extends HtmlCustomDataTag {
   /**
+   * Attributs observés par le navigateur
+   * @type {string[]}
+   * @readonly
+   * @static
+   * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements}
+   */
+  static get observedAttributes() {
+    return ['data-fullscreen'];
+  }
+
+  /**
    * Le composant se comporte de base comme une div.<br/>
    *
    * Liste des data du composant :
@@ -69,6 +80,10 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
 
   get hasRefresh() {
     return ['true', true, 1, '1'].includes(this._p_get_data('button-refresh'));
+  }
+
+  get isFullscreen() {
+    return this.hasAttribute('data-fullscreen');
   }
 
   /**
@@ -231,6 +246,35 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
     contents = null;
   }
 
+  /**
+   * Est appelé quand un attribut de {@link observedAttributes} est modifié
+   * @param {string} name
+   * @param {string} oldValue
+   * @param {string} newValue
+   */
+  attributeChangedCallback(name, oldValue, newValue) {
+    switch (name) {
+      case 'data-fullscreen':
+        if (newValue === null) {
+          this.content.style.minHeight = null;
+          this.style.height = null;
+          this.parentElement.style.height = null;
+          this.parentElement.parentElement.style.height = null;
+          this.style.boxShadow = null;
+        } else {
+          this.content.style.minHeight = '100%';
+          this.style.height = 'calc(100% - 30px)';
+          this.parentElement.style.height = '100%';
+          this.parentElement.parentElement.style.height = '100%';
+          this.style.boxShadow = 'unset';
+        }
+        break;
+
+      default:
+        break;
+    }
+  }
+
   disableRefreshButton() {
     let button = this.header.querySelector('.refresh-button');
 
@@ -356,11 +400,18 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
       height,
     });
   }
+
+  /**
+   * @readonly
+   */
+  static get Tag() {
+    return 'bnum-workspace-module';
+  }
 }
 
 //#region Tag Definition
 {
-  const TAG = 'bnum-workspace-module';
+  const TAG = WorkspaceModuleBlock.Tag;
   if (!customElements.get(TAG))
     customElements.define(TAG, WorkspaceModuleBlock);
 }

@@ -33,6 +33,10 @@ bnum-workspace-module {
       &:extend(bnum-workspace-module .module-block-content.mode-small);
     }
   }
+
+  &.hidden-because-other-in-fullscreen-mode {
+    display: none !important;
+  }
 }
 
 #app_store {
@@ -56,9 +60,9 @@ bnum-workspace-module {
     display: flex;
     flex: 4;
     justify-content: space-between;
-      
+
     @media (max-width: 600px) {
-        flex: 100%; /* Force les blocs à prendre toute la largeur */
+      flex: 100%; /* Force les blocs à prendre toute la largeur */
     }
   }
 
@@ -66,12 +70,11 @@ bnum-workspace-module {
     display: flex;
     flex: 1;
     justify-content: flex-end;
-   
+
     @media (max-width: 600px) {
       justify-content: center;
-   }
+    }
   }
-
 }
 
 bnum-searchbar {
@@ -121,8 +124,8 @@ bnum-separate {
 .mel-button.button-task {
   html@{touch} & {
     min-width: 80px;
-  .material-symbols-outlined {
-     display: none;
+    .material-symbols-outlined {
+      display: none;
     }
   }
 }

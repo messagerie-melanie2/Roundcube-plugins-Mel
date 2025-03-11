@@ -21,6 +21,7 @@ import {
 import { SearchBar } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/searchbar.js';
 import { MelHtml } from '../../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { BnumEvent } from '../../../../mel_metapage/js/lib/mel_events.js';
+import { PLANNING_HAVE_EVENT } from '../program/config.js';
 import {
   CONFIG_FIRST_LETTER,
   ID_RESOURCES_WSP,
@@ -127,11 +128,20 @@ export class Planning extends HtmlCustomDataTag {
     this.appendChild(header);
     header = null;
 
-    let topHeader = BnumHtmlFlexContainer.Create().addClass('planning-element', 'planning-top-header');
-    topHeader.setAttribute('id', `top-header-planning-${this.internalId}`); 
+    let topHeader = BnumHtmlFlexContainer.Create().addClass(
+      'planning-element',
+      'planning-top-header',
+    );
+    topHeader.setAttribute('id', `top-header-planning-${this.internalId}`);
     this.header.appendChild(topHeader);
-    let bottomHeader = BnumHtmlFlexContainer.Create().addClass('planning-element', 'planning-bottom-header');
-    bottomHeader.setAttribute('id', `bottom-header-planning-${this.internalId}`); 
+    let bottomHeader = BnumHtmlFlexContainer.Create().addClass(
+      'planning-element',
+      'planning-bottom-header',
+    );
+    bottomHeader.setAttribute(
+      'id',
+      `bottom-header-planning-${this.internalId}`,
+    );
     this.header.appendChild(bottomHeader);
 
     this._generate_date()
@@ -287,8 +297,13 @@ export class Planning extends HtmlCustomDataTag {
   }
 
   _generate_calendar() {
+    const BASE_SOURCES = ['resources'];
+    const EXTRA_SOURCES = ['events'];
     const settings = this.calSettings;
-    const sources = ['resources', 'events'];
+    let sources = BASE_SOURCES;
+
+    if (PLANNING_HAVE_EVENT) sources.push(...EXTRA_SOURCES);
+
     let calendar = FullCalendarElement.CreateNode(sources, {
       defaultView: 'timelineDay',
       height: 400,
@@ -363,27 +378,33 @@ export class Planning extends HtmlCustomDataTag {
     return data;
   }
 
+  /**
+   * Formate les utilisateurs pour les ressources de fullcalendar
+   * @returns {MelEnumerable}
+   */
+  #_get_users_resources() {
+    return MelEnumerable.from(this.workspace.users)
+      .where((x) => x?.external === false)
+      .select((x) => {
+        return {
+          id: x.email,
+          title: x?.name || x.email,
+        };
+      });
+  }
+
   _generate_resources() {
-    // debugger;
-    return MelEnumerable.from([
-      {
-        id: ID_RESOURCES_WSP,
-        title: this.workspace.title || 'test',
-      },
-    ])
-      .aggregate(
-        MelEnumerable.from(this.workspace.users)
-          .where(
-            (x) => x?.external === false, //rcmail.env.current_workspace_users?.[x]?.is_external === false,
-          )
-          .select((x) => {
-            return {
-              id: x.email,
-              title: x?.name || x.email,
-            };
-          }),
-      )
-      .orderBy(this._resources_order.bind(this));
+    let rcs = this.#_get_users_resources();
+
+    if (PLANNING_HAVE_EVENT) {
+      rcs = rcs.aggregate([
+        {
+          id: ID_RESOURCES_WSP,
+          title: this.workspace.title || 'test',
+        },
+      ]);
+    }
+    return rcs.orderBy(this._resources_order.bind(this));
   }
 
   /**

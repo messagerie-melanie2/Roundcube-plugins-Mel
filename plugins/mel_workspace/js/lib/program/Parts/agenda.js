@@ -1,11 +1,12 @@
 /* eslint-disable no-async-promise-executor */
 import { BnumMessage } from '../../../../../mel_metapage/js/lib/classes/bnum_message.js';
 import { EMPTY_STRING } from '../../../../../mel_metapage/js/lib/constants/constants.js';
-import { Mel_Promise } from '../../../../../mel_metapage/js/lib/mel_promise.js';
 import { WorkspaceObject } from '../WorkspaceObject.js';
 import { NavBarManager } from '../navbar.generator.js';
 import { Planning } from '../../WebComponents/planning.js';
 import { PLANNING_USE_MODULE_BLOCK } from '../config.js';
+import { BnumPromise } from '../../../../../mel_metapage/js/lib/BnumPromise.js';
+import { WorkspaceModuleBlock } from '../../WebComponents/workspace_module_block.js';
 
 class WorkspaceAgenda extends WorkspaceObject {
   constructor() {
@@ -27,7 +28,35 @@ class WorkspaceAgenda extends WorkspaceObject {
 
     // eslint-disable-next-line no-unused-vars
     new Promise(async (ok, nok) => {
-      await Mel_Promise.wait(() => !!NavBarManager.currentNavBar);
+      await BnumPromise.Wait(() => !!NavBarManager.currentNavBar);
+      NavBarManager.AddEventListener().OnBeforeSwitch((args) => {
+        const { task } = args;
+
+        let agenda = document.getElementById('module-agenda');
+        if (task === 'planning') {
+          //On cache tout les autres modules
+          for (const element of document.querySelectorAll(
+            WorkspaceModuleBlock.Tag,
+          )) {
+            element.classList.add('hidden-because-other-in-fullscreen-mode');
+          }
+
+          agenda.classList.remove('hidden-because-other-in-fullscreen-mode');
+          agenda.setAttribute('data-fullscreen', 'true');
+          agenda
+            .querySelector('bnum-planning')
+            .fullcalendar.option('height', 'auto');
+
+          return { _break: true };
+        } else if (agenda.hasAttribute('data-fullscreen')) {
+          agenda.removeAttribute('data-fullscreen');
+          agenda
+            .querySelector('bnum-planning')
+            .fullcalendar.option('height', 400);
+        }
+
+        agenda = null;
+      });
       NavBarManager.currentNavBar.onstatetoggle.push(async (...args) => {
         const [task, state, caller] = args;
         const loading = BnumMessage.DisplayMessage(

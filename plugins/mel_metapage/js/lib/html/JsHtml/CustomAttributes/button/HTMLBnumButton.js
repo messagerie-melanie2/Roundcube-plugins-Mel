@@ -1,5 +1,5 @@
 import { EMPTY_STRING } from '../../../../constants/constants.js';
-import { EWebComponentMode } from '../js_html_base_web_elements';
+import { EWebComponentMode } from '../js_html_base_web_elements.js';
 import AHTMLCustomInternalElement from '../lib/AHTMLCustomInternalElement.js';
 import { HTMLWrapperElement } from '../wrapper.js';
 import {

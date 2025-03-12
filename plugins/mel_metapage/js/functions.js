@@ -114,11 +114,7 @@ function m_mp_Create() {
       'icon-mel-videoconference',
       '(window?.create_popUp?.close?.(), window.webconf_helper.go())',
     ),
-    tache: get_action(
-      'mel_metapage.a_task',
-      'icon-mel-survey',
-      "m_mp_CreateOrOpenFrame('tasklist', () => m_mp_set_storage('task_create'), m_mp_NewTask)",
-    ),
+    tache: get_action('mel_metapage.a_task', 'icon-mel-survey', 'm_mp_Task()'),
     documents: get_action(
       'mel_metapage.a_document',
       'icon-mel-folder',
@@ -376,6 +372,16 @@ function m_mp_Create() {
       $('#open-created-popup').click();
     }, 1);
   }
+}
+
+/**
+ * Lance la frame des tâches et lance la commande pour créer une tâche.
+ * @return {Promise<void>}
+ * @async
+ */
+async function m_mp_Task() {
+  await PageManager.SwitchFrame('tasks', {});
+  PageManager.Instance.get_frame()[0].contentWindow.rcmail.command('newtask');
 }
 
 function m_mp_createworskpace_steps() {

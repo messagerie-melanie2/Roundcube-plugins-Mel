@@ -90,10 +90,10 @@ class annuaire extends rcube_plugin
                 $this->rc->output->add_handler('annuairesavedsearchlist', [$this, 'annuaire_savedsearch_list']);
 
                 // Recherche par email depuis le preview d'un mail
-                if (rcube_utils::get_input_value('_open', rcube_utils::INPUT_GPC) === 'true') {
+                if (rcube_utils::get_input_value('_open', rcube_utils::INPUT_GET) === 'true') {
                     driver_annuaire::get_instance()->setBaseDn($this->rc->config->get('annuaire_base_dn', null));
                     driver_annuaire::get_instance()->setSource($this->rc->config->get('annuaire_source', null));
-                    $query = rcube_utils::get_input_value('_query', rcube_utils::INPUT_GPC);
+                    $query = rcube_utils::get_input_value('_query', rcube_utils::INPUT_GET);
 
                     driver_annuaire::get_instance()->get_filter_from_search($query);
 
@@ -613,7 +613,7 @@ class annuaire extends rcube_plugin
     {
         driver_annuaire::get_instance()->setBaseDn($this->rc->config->get('annuaire_base_dn', null));
         driver_annuaire::get_instance()->setSource($this->rc->config->get('annuaire_source', null));
-        $query = rcube_utils::get_input_value('_query', rcube_utils::INPUT_GPC);
+        $query = rcube_utils::get_input_value('_query', rcube_utils::INPUT_GET);
 
         driver_annuaire::get_instance()->get_filter_from_search($query);
 

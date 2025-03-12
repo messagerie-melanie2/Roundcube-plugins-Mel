@@ -308,9 +308,9 @@ class mel_forum extends bnum_plugin
         $yesterday = strtotime(date('Y-m-d', strtotime('-1 day')));
 
         if ($timestamp >= $today) {
-            return "Aujourd'hui";
+            return $this->gettext('today', 'mel_forum');
         } elseif ($timestamp >= $yesterday) {
-            return "Hier";
+            return $this->gettext('yesterday', 'mel_forum');
         } else {
             // Formater la date en français pour les jours plus anciens
             $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);

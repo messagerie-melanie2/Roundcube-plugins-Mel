@@ -60,7 +60,7 @@ export class Forum extends MelObject {
     //affichage de tout les brouillons pour les admins
     if (this.get_env('is_admin')) {
       $('#forum-sort-select');
-      let draftOption = JsHtml.start
+      let draftOption = MelHtml.start
         .option({ value: 'display_all_draft' })
         .text(rcmail.gettext('mel_forum.display_draft'))
         .end();

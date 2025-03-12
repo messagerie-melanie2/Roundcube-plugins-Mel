@@ -74,6 +74,11 @@ class annuaire extends rcube_plugin
             'annuaire_actions'
         ]);
 
+        $this->register_action('plugin.is_in_annuaire', [
+            $this,
+            'action_is_in_annuaire'
+        ]);
+
         // hook for saving search
         $this->add_hook('saved_search_create', [$this, 'saved_search_create']);
         $this->add_hook('saved_search_delete', [$this, 'saved_search_delete']);
@@ -91,21 +96,7 @@ class annuaire extends rcube_plugin
 
                 // Recherche par email depuis le preview d'un mail
                 if (rcube_utils::get_input_value('_open', rcube_utils::INPUT_GET) === 'true') {
-                    driver_annuaire::get_instance()->setBaseDn($this->rc->config->get('annuaire_base_dn', null));
-                    driver_annuaire::get_instance()->setSource($this->rc->config->get('annuaire_source', null));
-                    $query = rcube_utils::get_input_value('_query', rcube_utils::INPUT_GET);
-
-                    driver_annuaire::get_instance()->get_filter_from_search($query);
-
-                    $fields = ['email'];
-
-                    $search_request = md5('addr'
-                        . (is_array($fields) ? implode(',', $fields) : $fields)
-                        . (is_array($query) ? implode(',', $query) : $query));
-                    $_SESSION['search_params'] = array('id' => $search_request, 'data' => array($fields, $query));
-
-                    $elements = driver_annuaire::get_instance()->get_elements(isset($query) && !empty($query) && strlen($query) >= 3);
-                    $this->rc->output->set_env('searched_email_dn', base64_encode($elements[0]['dn']));
+                    $this->annuaire_search_from_mail();
                 }
             }
 
@@ -611,6 +602,23 @@ class annuaire extends rcube_plugin
 
     function annuaire_search_from_mail()
     {
+        $element = $this->_is_in_annuaire();
+
+        if (isset($element)) {
+            $this->rc->output->set_env('searched_email_dn', base64_encode($element['dn']));
+        }
+    }
+
+    function action_is_in_annuaire()
+    {
+        $element = $this->_is_in_annuaire();
+
+        echo !!$element;
+        exit;
+    }
+
+    private function _is_in_annuaire()
+    {
         driver_annuaire::get_instance()->setBaseDn($this->rc->config->get('annuaire_base_dn', null));
         driver_annuaire::get_instance()->setSource($this->rc->config->get('annuaire_source', null));
         $query = rcube_utils::get_input_value('_query', rcube_utils::INPUT_GET);
@@ -625,7 +633,12 @@ class annuaire extends rcube_plugin
         $_SESSION['search_params'] = array('id' => $search_request, 'data' => array($fields, $query));
 
         $elements = driver_annuaire::get_instance()->get_elements(isset($query) && !empty($query) && strlen($query) >= 3);
-        $this->rc->output->set_env('searched_email_dn', base64_encode($elements[0]['dn']));
+
+        if ($elements[0]) {
+            return $elements[0];
+        } else {
+            return false;
+        }
     }
 
     /**

@@ -1153,7 +1153,11 @@ function m_mp_createworkspace() {
       },
     );
     create_popUp.editTitleAndSetBeforeTitle(
-      '<a href="javascript:void(0)" class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="m_mp_reinitialize_popup(() => {$(`#worspace-avatar-a`).css(`display`, `none`).appendTo($(`#layout`));})"><span class=sr-only>Retour à la modale de création</span></a>',
+      '<a href="javascript:void(0)" class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" ' +
+        'onclick="m_mp_reinitialize_popup(() => {$(`#worspace-avatar-a`).css(`display`, `none`).appendTo($(`#layout`));})" ' +
+        'onkeydown="if(event.key === \'Enter\') this.click();" role="button" tabindex="0" ' +
+        'title="Retour à la fenêtre de création (email, espaces de travail, etc...)">' +
+        '<span class="sr-only">Retour à la modale de création</span></a>',
       "Création d'un espace de travail",
     );
     create_popUp.modal.focus();

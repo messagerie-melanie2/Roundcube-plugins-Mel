@@ -1495,6 +1495,9 @@ body.task-mail .floating-action-buttons {
 .mel-return {
   transition: all 0.1s ease-in;
   cursor: pointer;
+  display: inline-block;
+  width: 50px;
+  padding: 8px 12px;
 }
 .mel-return:hover {
   color: var(--danger-color);

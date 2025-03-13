@@ -506,3 +506,7 @@ $labels['search_in_addressbook'] = 'Rechercher dans l\'annuaire';
 $labels['start_search'] = 'Lancer la recherche';
 $labels['erase_text'] = 'Effacer la saisie';
 $labels['add_users_not_added'] = 'Certains utilisateurs n\'ont pas encore été ajoutés à la liste des participants, les ajouter ?';
+
+$labels['return_to_creation_window'] = 'Retour à la fenêtre de création (email, espaces de travail, etc...)';
+$labels['return_to_creation_modal'] = 'Retour à la modale de création';
+$labels['create_workspace_title'] = 'Création d\'un espace de travail';

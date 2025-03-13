@@ -1153,12 +1153,17 @@ function m_mp_createworkspace() {
       },
     );
     create_popUp.editTitleAndSetBeforeTitle(
-      '<a href="javascript:void(0)" class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" ' +
-        'onclick="m_mp_reinitialize_popup(() => {$(`#worspace-avatar-a`).css(`display`, `none`).appendTo($(`#layout`));})" ' +
-        'onkeydown="if(event.key === \'Enter\') this.click();" role="button" tabindex="0" ' +
-        'title="Retour à la fenêtre de création (email, espaces de travail, etc...)">' +
-        '<span class="sr-only">Retour à la modale de création</span></a>',
-      "Création d'un espace de travail",
+      `<a href="#" class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" 
+         onclick="m_mp_reinitialize_popup(() => { 
+             $('#worspace-avatar-a').css('display', 'none').appendTo($('#layout')); 
+         })" 
+         onkeydown="if(event.key === 'Enter') this.click();" 
+         role="button" 
+         tabindex="0" 
+         title="${rcmail.gettext('return_to_creation_window', 'mel_metapage')}">
+          <span class="sr-only">${rcmail.gettext('return_to_creation_modal', 'mel_metapage')}</span>
+      </a>`,
+      rcmail.gettext('create_workspace_title', 'mel_metapage'),
     );
     create_popUp.modal.focus();
     create_popUp.show();

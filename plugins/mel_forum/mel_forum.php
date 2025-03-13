@@ -303,14 +303,18 @@ class mel_forum extends bnum_plugin
         // Convertir la date du post en timestamp Unix
         $timestamp = strtotime($post_date);
 
-        // Obtenir la date actuelle
+        // Obtenir la date actuelle et celle d'hier
         $today = strtotime(date('Y-m-d'));
         $yesterday = strtotime(date('Y-m-d', strtotime('-1 day')));
 
+        // Formatter la date complète avec l'heure
+        $formatter_full = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::SHORT);
+        $full_date = $formatter_full->format($timestamp);
+
         if ($timestamp >= $today) {
-            return $this->gettext('today', 'mel_forum');
+            return '<span title="' . htmlspecialchars($full_date) . '">' . $this->gettext('today', 'mel_forum') . '</span>';
         } elseif ($timestamp >= $yesterday) {
-            return $this->gettext('yesterday', 'mel_forum');
+            return '<span title="' . htmlspecialchars($full_date) . '">' . $this->gettext('yesterday', 'mel_forum') . '</span>';
         } else {
             // Formater la date en français pour les jours plus anciens
             $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
@@ -594,6 +598,7 @@ class mel_forum extends bnum_plugin
 
         // Définir la locale en français pour le formatage de la date
         $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
+        $full_date_formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::SHORT);
 
         $posts_data = [];
 
@@ -602,6 +607,9 @@ class mel_forum extends bnum_plugin
             $timestamp = strtotime($post->created);
             // Formate la date du post
             $formatted_date = $formatter->format($timestamp);
+
+            // Formater la date complète avec l'heure
+            $formatted_full_date = $full_date_formatter->format($timestamp);
 
             $post_creator = driver_mel::gi()->getUser($post->creator);
             $tags = $this->_get_all_tags_bypost($post);
@@ -633,6 +641,7 @@ class mel_forum extends bnum_plugin
                 'id' => $post->id,
                 'title' => $post->title,
                 'creation_date' => $formatted_date,
+                'formatted_full_date' => $formatted_full_date,
                 'post_creator' => $post_creator->name,
                 'creator_email' => $post_creator->email,
                 'tags' => $tags,

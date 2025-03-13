@@ -96,6 +96,7 @@ export class Front_page_post extends MelObject {
         POST_CREATOR: post.post_creator,
         CREATOR_EMAIL: post.creator_email,
         POST_DATE: formatPostDate(post.creation_date),
+        TITLE_FULL_DATE: post.formatted_full_date,
         UID: post.uid,
         POST_CONTENT_CLASS: hasImage
           ? 'col-md-10 col-xl-10'

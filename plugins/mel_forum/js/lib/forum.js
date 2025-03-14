@@ -6,7 +6,7 @@ import {
 import { MelTemplate } from '../../../mel_metapage/js/lib/html/JsHtml/MelTemplate.js';
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { CursorUtils } from '../../../mel_metapage/js/lib/helpers/cursorUtils.js';
-import { JsHtml } from '../../../mel_metapage/js/lib/html/JsHtml/JsHtml.js';
+import { formatPostDate } from './utils.js';
 
 export class Forum extends MelObject {
   constructor() {
@@ -60,7 +60,7 @@ export class Forum extends MelObject {
     //affichage de tout les brouillons pour les admins
     if (this.get_env('is_admin')) {
       $('#forum-sort-select');
-      let draftOption = JsHtml.start
+      let draftOption = MelHtml.start
         .option({ value: 'display_all_draft' })
         .text(rcmail.gettext('mel_forum.display_draft'))
         .end();
@@ -871,7 +871,8 @@ export class Forum extends MelObject {
         POST_LINK: post.post_link,
         POST_CREATOR: post.post_creator,
         CREATOR_EMAIL: post.creator_email,
-        POST_DATE: post.creation_date,
+        POST_DATE: formatPostDate(post.creation_date),
+        TITLE_FULL_DATE: post.formatted_full_date,
         UID: post.uid,
         POST_CONTENT_CLASS: hasImage
           ? 'col-md-8 col-xl-10'

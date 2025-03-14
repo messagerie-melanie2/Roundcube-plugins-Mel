@@ -1,10 +1,10 @@
 import { BnumMessage } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
-import { ISO_FORMAT_REGEX } from '../../../mel_metapage/js/lib/constants/regexp.js';
 import { CursorUtils } from '../../../mel_metapage/js/lib/helpers/cursorUtils.js';
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { MelTemplate } from '../../../mel_metapage/js/lib/html/JsHtml/MelTemplate.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { Manager } from './manager.js';
+import { formatCommentDate } from './utils.js';
 
 export { PostComment, PostCommentView };
 
@@ -405,18 +405,18 @@ class PostComment {
 
       BnumMessage.SetBusyLoading();
 
-        try {
-            const response = await MelObject.Empty().http_internal_post({
-                task: 'forum',
-                action: 'create_comment',
-                params: {
-                    _workspace_uid: rcmail.env.workspace_uid,
-                    _post_id: this.post_id, // L'ID du post
-                    _content: replyContent, // Le contenu de la réponse
-                    _parent: this.parent, // ID du commentaire parent
-                    _post_uid: rcmail.env.post_uid,
-                },
-            });
+      try {
+        const response = await MelObject.Empty().http_internal_post({
+          task: 'forum',
+          action: 'create_comment',
+          params: {
+            _workspace_uid: rcmail.env.workspace_uid,
+            _post_id: this.post_id, // L'ID du post
+            _content: replyContent, // Le contenu de la réponse
+            _parent: this.parent, // ID du commentaire parent
+            _post_uid: rcmail.env.post_uid,
+          },
+        });
 
         if (response.status === 'success') {
           rcmail.display_message(response.message, 'confirmation');
@@ -831,113 +831,6 @@ class PostComment {
       this.children_number > 1
         ? rcmail.gettext('mel_forum.response_plural')
         : rcmail.gettext('mel_forum.response_singular');
-
-    // Fonction pour parser une date en français
-    function parseFrenchDate(dateString) {
-      // Vérifiez si la date est au format ISO (ex: "2024-10-23 12:55:47")
-      const isoFormatRegex = ISO_FORMAT_REGEX;
-
-      if (isoFormatRegex.test(dateString)) {
-        // Convertir directement la chaîne ISO en objet Date
-        return new Date(dateString.replace(' ', 'T')); // Remplacer l'espace par 'T' pour le format ISO
-      }
-      const moisFrancais = {
-        janvier: 0,
-        février: 1,
-        mars: 2,
-        avril: 3,
-        mai: 4,
-        juin: 5,
-        juillet: 6,
-        août: 7,
-        septembre: 8,
-        octobre: 9,
-        novembre: 10,
-        décembre: 11,
-      };
-
-      // Séparer la date et l'heure si une heure est incluse
-      const [datePart, timePart] = dateString.split(' à ');
-
-      // Séparer la partie date en jour, mois et année
-      const dateParts = datePart.trim().split(' ');
-
-      if (dateParts.length !== 3) {
-        console.error(
-          rcmail.gettext('mel_forum.invalid_date_format'),
-          dateString,
-        );
-        return null;
-      }
-
-      const jour = parseInt(dateParts[0], 10);
-      const mois = dateParts[1].toLowerCase();
-      const annee = parseInt(dateParts[2], 10);
-
-      const moisIndex = moisFrancais[mois];
-
-      if (moisIndex === undefined) {
-        console.error(rcmail.gettext('mel_forum.invalid_date_month'), mois);
-        return null;
-      }
-
-      // Initialiser l'heure et les minutes à 0
-      let heures = 0,
-        minutes = 0;
-
-      // Si l'heure est présente, extraire l'heure et les minutes
-      if (timePart) {
-        const [heuresStr, minutesStr] = timePart.split(':');
-        heures = parseInt(heuresStr, 10) || 0;
-        minutes = parseInt(minutesStr, 10) || 0;
-      }
-
-      // Créer l'objet Date avec la date et l'heure
-      return new Date(annee, moisIndex, jour, heures, minutes);
-    }
-
-    // Fonction pour parser une date en français
-    function formatCommentDate(createdDate) {
-      const commentDate = parseFrenchDate(createdDate);
-
-      // Vérifier si la date est valide
-      if (!commentDate || isNaN(commentDate.getTime())) {
-        console.error(rcmail.gettext('mel_forum.invalid_date'), createdDate);
-        return rcmail.gettext('mel_forum.invalid_date_simple');
-      }
-
-      const currentDate = new Date();
-
-      // Ne comparer que les jours, mois, années (ignorer heures, minutes)
-      const commentDateOnly = new Date(
-        commentDate.getFullYear(),
-        commentDate.getMonth(),
-        commentDate.getDate(),
-      );
-      const currentDateOnly = new Date(
-        currentDate.getFullYear(),
-        currentDate.getMonth(),
-        currentDate.getDate(),
-      );
-
-      // Calculer la différence en jours uniquement
-      const diffTime = currentDateOnly.getTime() - commentDateOnly.getTime();
-      const diffDays = Math.floor(diffTime / (1000 * 3600 * 24));
-
-      const hours = commentDate.getHours().toString().padStart(2, '0');
-      const minutes = commentDate.getMinutes().toString().padStart(2, '0');
-      const timeString = `${hours}h${minutes}`;
-
-      if (diffDays === 0) {
-        return `${rcmail.gettext('mel_forum.today_at')} ${timeString}`;
-      } else if (diffDays === 1) {
-        return `${rcmail.gettext('mel_forum.yesterday_at')} ${timeString}`;
-      } else {
-        const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        const dateString = commentDate.toLocaleDateString('fr-FR', options);
-        return `${dateString}`;
-      }
-    }
 
     // Préparez les données à insérer dans le template
     const data = {

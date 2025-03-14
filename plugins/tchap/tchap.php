@@ -19,7 +19,7 @@
 
 class tchap extends bnum_plugin
 {
-    public const KEY_FOR_WORKSPACE = 'tchap-channel'; 
+    public const KEY_FOR_WORKSPACE = 'tchap-channel';
 
     /**
      *
@@ -67,9 +67,8 @@ class tchap extends bnum_plugin
         } else if ($this->is_bnum_task() && $this->is_index_action()) {
             $this->load_script_module('bnum.js', '/');
             $rcmail->output->set_env('tchap_help_id', $this->get_config('tchap_help_id'));
-        }
-        else if ($this->task === 'workspace') {
-            $this->register_action('change_tchap_room', [$this, 'change_tchap_room']);
+        } else if ($this->rc()->task === 'workspace') {
+            $this->force_register_action('change_tchap_room', [$this, 'change_tchap_room']);
         }
 
         $tchap_url = $rcmail->config->get('tchap_url');
@@ -156,7 +155,7 @@ class tchap extends bnum_plugin
     }
 
     #region workspaces
-    function change_tchap_room()
+    public function change_tchap_room()
     {
         $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_GP);
         $room_id = rcube_utils::get_input_value("_room_uid", rcube_utils::INPUT_GP);
@@ -164,10 +163,11 @@ class tchap extends bnum_plugin
             'id' => $room_id
         ];
 
-        if(self::check_if_room_exist($room_id)){
+        if (self::check_if_room_exist($room_id)) {
             $wsp = mel_workspace::Workspace($uid);
             $this->sync_workspace_tchap($wsp, $room_id);
             $wsp->objects()->set(self::KEY_FOR_WORKSPACE, $config);
+            $wsp->settings()->set('tchap_webhook', false);
             $wsp->save();
             $value = true;
         } else {
@@ -195,7 +195,8 @@ class tchap extends bnum_plugin
      * permet d'afficher ou non le plugin tchap dans la liste des applications
      * @param $args tableau contenant un string 'app' l'application en cours et un bool 'continue' si on arrête l'affichage
      */
-    public function workspace_params_services_show($args) {
+    public function workspace_params_services_show($args)
+    {
         if ($args['app'] === self::KEY_FOR_WORKSPACE) $args['continue'] = false;
 
         return $args;
@@ -204,32 +205,33 @@ class tchap extends bnum_plugin
     /**
      * supprime le service tchap du workspace
      */
-    public function workspace_service_delete($args) {
+    public function workspace_service_delete($args)
+    {
         if (class_exists('mel_workspace') && array_search(self::KEY_FOR_WORKSPACE, $args['services']) !== false) {
-             $can = true;
+            $can = true;
 
             try {
                 $can = !($args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE)->edited ?? false);
             } catch (\Throwable $th) {
                 //throw $th;
             }
-            if ($can)
-            {
-                if (class_exists('tchap'))tchap::delete_tchap_room($args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE)->id);
+            if ($can) {
+                if (class_exists('tchap')) tchap::delete_tchap_room($args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE)->id);
             }
         }
 
         return $args;
     }
-    
+
     /**
      * ajoute l'application tchap au workspace
      */
-    public function workspace_set_tchap($args) {
+    public function workspace_set_tchap($args)
+    {
         if (class_exists('mel_workspace')) {
             $workspace = $args['workspace'];
             $services = $args['services'];
-            $default_values= $args['default_values'];
+            $default_values = $args['default_values'];
 
             if ($default_values === '') $default_values = null;
 
@@ -241,7 +243,7 @@ class tchap extends bnum_plugin
                 $default_values_key = "tchap-channel";
                 if (!isset($default_values)) $default_values = [$default_values_key => ['mode' => 'default']];
                 else if (!isset($default_values[$default_values_key])) $default_values[$default_values_key] = ['mode' => 'default'];
-    
+
                 $uid = null;
                 $value = null;
                 $config = [];
@@ -251,12 +253,12 @@ class tchap extends bnum_plugin
                     case 'custom_name':
                         if (!isset($uid)) $uid = $default_values[$default_values_key]['value'];
                         $value = self::create_tchap_room($uid, $users);
-                        
+
                         break;
-    
+
                     case 'already_exist':
                         $value = $default_values[$default_values_key]['value']['id'];
-    
+
                         $config['edited'] = true;
                         break;
                     default:
@@ -264,17 +266,15 @@ class tchap extends bnum_plugin
                         $args['default_values'] = $default_values;
                         return $this->workspace_set_tchap($args);
                 }
-                mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create_tchap_channel]Valeur : ".json_encode($value));
-    
-                if (is_string($value))
-                {
+                mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create_tchap_channel]Valeur : " . json_encode($value));
+
+                if (is_string($value)) {
                     $config['id'] = $value;
-                }
-                else {
+                } else {
                     $value = $value["content"]["channel"];
                     $config['id'] = $value["_id"];
                 }
-    
+
                 //$this->save_object($workspace, self::TCHAP_CHANNEL, $config);
                 $workspace->objects()->set(self::KEY_FOR_WORKSPACE, $config);
 
@@ -283,10 +283,9 @@ class tchap extends bnum_plugin
                 unset($services[self::KEY_FOR_WORKSPACE]);
 
                 $args['services'] = $services;
-            }
-            else if ($workspace->objects()->get(self::KEY_FOR_WORKSPACE) && array_search(self::KEY_FOR_WORKSPACE, $services) !== false) {
-                $new_users= $args['new_users'];
-                
+            } else if ($workspace->objects()->get(self::KEY_FOR_WORKSPACE) && array_search(self::KEY_FOR_WORKSPACE, $services) !== false) {
+                $new_users = $args['new_users'];
+
                 if ($new_users && count($new_users) > 0) $users = mel_helper::Enumerable($new_users)->select(function ($k, $v) {
                     return $v->uid;
                 })->toArray();
@@ -301,7 +300,8 @@ class tchap extends bnum_plugin
     /**
      * permet de supprimer tout les utilisateurs de l'espaces
      */
-    public function workspace_users_services_delete($args) {
+    public function workspace_users_services_delete($args)
+    {
         if ($args['workspace']->hasService(self::KEY_FOR_WORKSPACE)) {
             self::kick_member($args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE)->id, $args['user']);
         }
@@ -312,7 +312,8 @@ class tchap extends bnum_plugin
     /**
      * hook pour quand on affiche le widget tchap
      */
-    public function on_show_workspace($args) {
+    public function on_show_workspace($args)
+    {
         if ($args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE) !== null) {
             $this->include_module('workspace.js', 'js/lib/workspace');
             $args['layout']->setNavBarSetting('tchap', ':nav:', false, 7);
@@ -324,18 +325,20 @@ class tchap extends bnum_plugin
     /**
      * récupère le service
      */
-    public function workspace_service_get($args) {
+    public function workspace_service_get($args)
+    {
         if ($args['services'][self::KEY_FOR_WORKSPACE] === null) $args['services'][self::KEY_FOR_WORKSPACE] = false;
 
         return $args;
     }
 
-    public function workspace_params_services_show_update($args) {
+    public function workspace_params_services_show_update($args)
+    {
         if ($args['app'] === self::KEY_FOR_WORKSPACE) {
             $room_id = $args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE)->id;
             $tchap_enabled = self::check_if_room_exist($room_id);
-            $args['html'].= '<span class="mel-message"> ('. self::get_room_name($room_id) .')</span>';
-            $args['html'].= html::tag("button", ["title" => ($tchap_enabled === false ? "Vous n'avez pas accès au canal courant ! Demandez à ce que l'on vous rajoute ou changez de canal avec ce bouton !" : "Choisissez un nouveau canal !"),  "id" => "update-tchap-channel-button","class" => "mel-button param-button ".($tchap_enabled === false ? "btn-danger btn" : "") ], "Changer de canal tchap".html::tag("span", ["class" => "plus icon-mel-pencil"]));
+            $args['html'] .= '<span class="mel-message"> (' . self::get_room_name($room_id) . ')</span>';
+            $args['html'] .= html::tag("button", ["title" => ($tchap_enabled === false ? "Vous n'avez pas accès au canal courant ! Demandez à ce que l'on vous rajoute ou changez de canal avec ce bouton !" : "Choisissez un nouveau canal !"),  "id" => "update-tchap-channel-button", "class" => "mel-button param-button " . ($tchap_enabled === false ? "btn-danger btn" : "")], "Changer de canal tchap" . html::tag("span", ["class" => "plus icon-mel-pencil"]));
         }
 
         return $args;
@@ -557,7 +560,8 @@ class tchap extends bnum_plugin
      * @param string $room_id id interne du salon tchap pour lequel on veut créer un webhook
      * @param string nom du workspace
      */
-    protected static function create_webhook($room_id, $workspace_name) {
+    protected static function create_webhook($room_id, $workspace_name)
+    {
         $rcmail = rcmail::get_instance();
         $token = self::get_tchap_token();
         $label = "EDT - " . $workspace_name;
@@ -583,25 +587,26 @@ class tchap extends bnum_plugin
      * 
      * @return bool réussite de l'envoie du message
      */
-    public static function send_message($wsp_uid, $message, $format = null, $raw = null) {
+    public static function send_message($wsp_uid, $message, $format = null, $raw = null)
+    {
         $rcmail = rcmail::get_instance();
         $workspace = mel_workspace::Workspace($wsp_uid);
-        if($workspace->settings()->get('tchap_notification') === '1'){
-            if (!is_null($workspace->objects()->get(self::KEY_FOR_WORKSPACE))){
+        if ($workspace->settings()->get('tchap_notification') === '1') {
+            if (!is_null($workspace->objects()->get(self::KEY_FOR_WORKSPACE))) {
                 $tchap_id = $workspace->objects()->get(self::KEY_FOR_WORKSPACE)->id;
                 if ($workspace->settings()->get('tchap_webhook') === null || $workspace->settings()->get('tchap_webhook') === false) {
                     $wsp_name = $workspace->title();
                     //pas de webhook enregistré on en créé un
                     $webhook = self::create_webhook($tchap_id, $wsp_name);
                     $workspace->settings()->set('tchap_webhook', $webhook);
-                    $workspace->save();                
+                    $workspace->save();
                 }
                 $webhook = $workspace->settings()->get('tchap_webhook');
                 $config = ['message' => $message];
-                if(!is_null($format)) {
+                if (!is_null($format)) {
                     $config['message_format'] = $format;
                 }
-                if(!is_null($raw)) {
+                if (!is_null($raw)) {
                     $config['message_raw'] = $raw;
                 }
                 $content = self::call_tchap_api($rcmail->config->get('post_webhook_endpoint') . $webhook, $config, 'POST');

@@ -809,27 +809,32 @@ function m_mp_step3_param(type) {
 
     case 'tchap-channel':
       {
+        //bouton principal tchap
         let $master_button = $('.doc-tchap-channel');
 
         if (!$master_button.hasClass('active')) $master_button.click();
 
+        //bouton de paramétrage associé
         let $param_button = $master_button.parent().find('.under-button');
         let custom_channel_datas = null;
+        // Définit la valeur par défaut du champ personnalisé selon les données disponibles
         const default_custom_value =
           have_datas && m_mp_step3_param.datas[type].mode === 'custom_name'
             ? (m_mp_step3_param?.datas[type]?.value ?? '')
             : null;
 
+        // Titre affiché en haut du formulaire
         const html_title =
           '<h3 class="span-mel t1 first">Paramètres du canal tchap</h3>';
 
+        // Création d'un élément <select> avec trois options pour le mode de création du canal
         let $select =
           $(`<select class="custom-calendar-option-select form-control input-mel custom-select pretty-select">
                     <option value="default">Un canal ayant comme nom l'id sera créé</option>
                     <option value="custom_name">Choisissez le nom du canal</option>
                     <option value="already_exist">Lié à un canal existant</option>
                 </select> `);
-
+        // Si des données existent déjà, on pré-sélectionne la bonne option
         if (have_datas) $select.val(m_mp_step3_param.datas[type].mode);
 
         let $custom_name_div = $(`
@@ -837,7 +842,7 @@ function m_mp_step3_param(type) {
                         <h3 class="span-mel t2 first">Nom personalisé du nouveau canal</h3>
                     </div>
                 `).css('display', 'none');
-
+        // Champ de saisie du nom personnalisé avec mise à jour en temps réel des données
         let $custom_name_input = $(`
                     <input class="form-control input-mel" value="${default_custom_value || wsp_uid || update_title(wsp_title)}" placeholder="Nom du canal" maxlength=30 /> 
                 `)
@@ -867,9 +872,9 @@ function m_mp_step3_param(type) {
             `,
         )
           .on('change', () => {
-            const val = custom_channel_datas[$linked_channel_uid.val()];
+            const val = $linked_channel_uid.val();
             m_mp_step3_param.datas[type].value = {
-              id: val?._id,
+              id: val,
             };
           })
           .appendTo($linked_channel_div);
@@ -906,36 +911,12 @@ function m_mp_step3_param(type) {
               $select.attr('disabled', 'disabled').addClass('disabled');
               rcmail.set_busy(true, 'loading');
 
-              mel_metapage.Functions.post(
-                mel_metapage.Functions.url('discussion', 'get_joined'),
-                {
-                  _moderator: true,
-                  _mode: $('#workspace-private')[0].checked ? 2 : 1,
-                },
-                (datas) => {
-                  //console.log('datas', JSON.parse(datas));
-                  custom_channel_datas = JSON.parse(datas);
-
-                  // for (const iterator of datas) {
-                  //     $linked_channel_select.append(`<option value="${JSON.stringify({id:iterator._id, name:iterator.name})}">${iterator.name}</option>`);
-                  // }
-                  for (const key in custom_channel_datas) {
-                    if (Object.hasOwnProperty.call(custom_channel_datas, key)) {
-                      const element = custom_channel_datas[key];
-                      $linked_channel_uid.append(
-                        `<option value="${key}" ${element._id === m_mp_step3_param.datas[type].value?.id && !!m_mp_step3_param.datas[type].value ? 'selected' : ''}>${element.name}</option>`,
-                      );
-                    }
-                  }
-
-                  $linked_channel_div.css('display', '');
-                  rcmail.clear_messages();
-                  $select
-                    .removeAttr('disabled', 'disabled')
-                    .removeClass('disabled');
-                },
-              );
-
+              $linked_channel_div.css('display', '');
+              m_mp_step3_param.datas[type].value = $linked_channel_div.val();
+              rcmail.clear_messages();
+              $select
+                .removeAttr('disabled', 'disabled')
+                .removeClass('disabled');
               break;
 
             default:

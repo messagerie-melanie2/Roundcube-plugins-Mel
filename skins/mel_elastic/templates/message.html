@@ -3,47 +3,71 @@
 
 <roundcube:object name="mailboxlist" folder_filter="mail" type="js" />
 
-<h1 class="voice"><roundcube:label name="arialabelmailpreviewframe" /></h1>
+<h1 class="voice">
+	<roundcube:label name="arialabelmailpreviewframe" />
+</h1>
 
 <div id="layout-content" class="selected">
 	<roundcube:if condition="!env:framed" />
-		<h2 id="aria-label-toolbar" class="voice"><roundcube:label name="arialabeltoolbar" /></h2>
-		<div class="header" role="toolbar" aria-labelledby="aria-label-toolbar">
-			<a class="button icon back-list-button" href="#back"><span class="inner"><roundcube:label name="back" /></span></a>
-			<span class="header-title"></span>
-			<roundcube:include file="includes/mail-menu.html" />
-		</div>
+	<h2 id="aria-label-toolbar" class="voice">
+		<roundcube:label name="arialabeltoolbar" />
+	</h2>
+	<div class="header" role="toolbar" aria-labelledby="aria-label-toolbar">
+		<a class="button icon back-list-button" href="#back"><span class="inner">
+				<roundcube:label name="back" />
+			</span></a>
+		<span class="header-title"></span>
+		<roundcube:include file="includes/mail-menu.html" />
+	</div>
 	<roundcube:endif />
 	<div class="content frame-content" role="main">
 		<roundcube:if condition="env:is_model" />
-		<div id="message-model"><h3 style="display: inline-block;"><roundcube:label name="mel_metapage.is_model" /></h3> <button onclick="return rcmail.command('edit','new',this,event)" class="mel-button no-button-margin" style="margin-left:15px"><roundcube:label name="mel_metapage.use" /> <span style="margin-left:10px" class="icon-mel-send"></span></button> <button onclick="return rcmail.command('edit_model','new',this,event)" class="mel-button no-button-margin" style="margin-left:15px"><roundcube:label name="edit" /> <span style="margin-left:10px" class="icon-mel-pencil"></span></button></div>
+		<div id="message-model">
+			<h3 style="display: inline-block;">
+				<roundcube:label name="mel_metapage.is_model" />
+			</h3> <button onclick="return rcmail.command('edit','new',this,event)" class="mel-button no-button-margin"
+				style="margin-left:15px">
+				<roundcube:label name="mel_metapage.use" /> <span style="margin-left:10px" class="icon-mel-send"></span>
+			</button> <button onclick="return rcmail.command('edit_model','new',this,event)"
+				class="mel-button no-button-margin" style="margin-left:15px">
+				<roundcube:label name="edit" /> <span style="margin-left:10px" class="icon-mel-pencil"></span>
+			</button>
+		</div>
 		<roundcube:endif />
 		<div id="message-header">
 			<h2 class="subject">
-				<span class="voice"><roundcube:label name="subject" />: </span>
+				<span class="voice">
+					<roundcube:label name="subject" />:
+				</span>
 				<roundcube:object name="messageHeaders" valueOf="subject" />
 				<roundcube:if condition="!env:message_context && !env:extwin">
-					<roundcube:button command="extwin" type="link" class="extwin" innerClass="inner"
-						label="openinextwin" title="openinextwin" data-hidden="small" />
-				<roundcube:endif />
+					<roundcube:button command="extwin" type="link" class="extwin" innerClass="inner" label="openinextwin"
+						title="openinextwin" data-hidden="small" />
+					<roundcube:endif />
 			</h2>
 			<div class="short-header">
 				<roundcube:object name="contactphoto" class="contactphoto" placeholder="/images/contactpic.svg" />
 				<div class="header-content">
 					<roundcube:object name="messageSummary" addicon="virtual" class="header-subject" />
 					<div class="message-partheaders">
-						<roundcube:object name="messageHeaders" class="headers-table" addicon="virtual" exclude="subject" max="10" />
-						<a href="#all-headers" class="headers" onclick="return UI.headers_dialog()"><roundcube:label name="allheaders" /></a>
+						<roundcube:object name="messageHeaders" class="headers-table" addicon="virtual" exclude="subject"
+							max="10" />
+						<a href="#all-headers" class="headers" onclick="return UI.headers_dialog()">
+							<roundcube:label name="allheaders" />
+						</a>
 					</div>
 					<div class="header-links">
-						<a href="#headers" id="mel-message-details" onclick="return UI.headers_show(this)"><span style="margin: 0 .25rem 0 0;" class="icon-mel-minus mel-d-icon"></span><roundcube:label name="details" /></a>
+						<a href="#headers" id="mel-message-details" onclick="return UI.headers_show(this)"><span
+								style="margin: 0 .25rem 0 0;" class="icon-mel-minus mel-d-icon"></span>
+							<roundcube:label name="details" />
+						</a>
 						<roundcube:add_label name="arialabelmessageheaders" />
 						<roundcube:if condition="env:optional_format=='text'" />
-							<roundcube:button command="change-format" prop="text" type="link" class="plain" innerClass="inner"
-								title="changeformattext" label="plaintoggle" />
+						<roundcube:button command="change-format" prop="text" type="link" class="plain" innerClass="inner"
+							title="changeformattext" label="plaintoggle" />
 						<roundcube:elseif condition="env:optional_format=='html'" />
-							<roundcube:button command="change-format" prop="html" type="link" class="html" innerClass="inner"
-								title="changeformathtml" label="htmltoggle" />
+						<roundcube:button command="change-format" prop="html" type="link" class="html" innerClass="inner"
+							title="changeformathtml" label="htmltoggle" />
 						<roundcube:endif />
 						<roundcube:container name="headerlinks" id="header-links" />
 					</div>
@@ -52,11 +76,15 @@
 		</div>
 		<div id="message-content">
 			<div class="leftcol" role="region" aria-labelledby="aria-label-messageattachments">
-				<h2 id="aria-label-messageattachments" class="voice"><roundcube:label name="attachments" /></h2>
+				<h2 id="aria-label-messageattachments" class="voice">
+					<roundcube:label name="attachments" />
+				</h2>
 				<roundcube:object name="messageAttachments" id="attachment-list" class="attachmentslist" />
 			</div>
 			<div class="rightcol" role="region" aria-labelledby="aria-label-messagebody">
-				<h2 id="aria-label-messagebody" class="voice"><roundcube:label name="arialabelmessagebody" /></h2>
+				<h2 id="aria-label-messagebody" class="voice">
+					<roundcube:label name="arialabelmessagebody" />
+				</h2>
 				<roundcube:object name="messageObjects" id="message-objects" />
 				<roundcube:object name="messageBody" id="messagebody" />
 			</div>
@@ -66,19 +94,32 @@
 
 <!-- popup menus -->
 <div id="attachmentmenu" class="popupmenu">
-	<h3 id="aria-label-attachmentmenu" class="voice"><roundcube:label name="arialabelattachmentmenu" /></h3>
+	<h3 id="aria-label-attachmentmenu" class="voice">
+		<roundcube:label name="arialabelattachmentmenu" />
+	</h3>
 	<ul class="menu listing" role="menu" aria-labelledby="aria-label-attachmentmenu">
-		<roundcube:button command="open-attachment" type="link-menuitem" id="attachmenuopen" label="open" class="extwin disabled" classAct="extwin active" />
-		<roundcube:button command="download-attachment" type="link-menuitem" id="attachmenudownload" label="download" class="download disabled" classAct="download active" />
+		<roundcube:button command="open-attachment" type="link-menuitem" id="attachmenuopen" label="open"
+			class="extwin disabled" classAct="extwin active" />
+		<roundcube:button command="download-attachment" type="link-menuitem" id="attachmenudownload" label="download"
+			class="download disabled" classAct="download active" />
 		<roundcube:container name="attachmentmenu" id="attachmentmenu" />
 	</ul>
 </div>
 
 <div id="mailto-menu" class="popupmenu">
-	<h3 id="aria-label-mailtomenu" class="voice"><roundcube:label name="arialabelmailtomenu" /></h3>
+	<h3 id="aria-label-mailtomenu" class="voice">
+		<roundcube:label name="arialabelmailtomenu" />
+	</h3>
 	<ul class="menu listing" role="menu" aria-labelledby="aria-label-mailtomenu">
-		<roundcube:button name="addtoaddressbook" type="link-menuitem" label="addtoaddressbook" class="addressbook" classAct="addressbook active" />
-		<roundcube:button name="composeto" data-spied="false" type="link-menuitem" label="composeto" class="compose" classAct="compose active" />
+		<roundcube:if condition="env:has_writeable_addressbook==true" />
+		<roundcube:button name="gotoaddressbook" type="link-menuitem"
+			label="mel_metapage.gotoaddressbook" class="gotoaddressbook" classAct="gotoaddressbook active"
+			data-tag="gotoaddressbook" data-spied="false" />
+		<roundcube:endif />
+		<roundcube:button name="addtoaddressbook" type="link-menuitem" label="addtoaddressbook" class="addressbook"
+			classAct="addressbook active" />
+		<roundcube:button name="composeto" data-spied="false" type="link-menuitem" label="composeto" class="compose"
+			classAct="compose active" />
 		<roundcube:container name="mailtomenu" id="mailto-menu" />
 	</ul>
 </div>

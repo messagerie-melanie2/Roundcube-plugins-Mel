@@ -64,8 +64,8 @@ abstract class bnum_plugin extends rcube_plugin
         $this->include_script_from_plugin($plugin, "$path/$name/scriptType:module", 'head');
     }
 
-    public function include_module($name, $path = 'js/lib') {
-        $this->include_script_from_plugin($this->ID, "$path/$name/scriptType:module", 'head');
+    public function include_module($name, $path = 'js/lib', $position = 'head') {
+        $this->include_script_from_plugin($this->ID, "$path/$name/scriptType:module", $position);
     }
 
     public function include_module_program($name, $path = null ) {

@@ -1,6 +1,6 @@
 import { BnumHtmlIcon } from '../js_html_base_web_elements.js';
 import AHTMLComponent from '../lib/AHTMLComponent.js';
-import { HTMLWrapperElement } from '../wrapper';
+import { HTMLWrapperElement } from '../wrapper.js';
 import { CLASS_LOADING_RECEIVER } from './constants.js';
 
 /**

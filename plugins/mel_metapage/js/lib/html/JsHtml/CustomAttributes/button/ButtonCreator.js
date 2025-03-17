@@ -1,6 +1,6 @@
 import { EMPTY_STRING } from '../../../../constants/constants.js';
-import { isNullOrUndefined } from '../../../../mel';
-import { EButtonType } from './FormComponent';
+import { isNullOrUndefined } from '../../../../mel.js';
+import { EButtonType } from './FormComponent.js';
 import HTMLBnumButton from './HTMLBnumButton.js';
 
 /**

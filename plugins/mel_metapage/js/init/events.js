@@ -81,6 +81,37 @@ if (rcmail && window.mel_metapage) {
     },
   );
 
+  rcmail.addEventListener('ui.mailtomenu.click', async (obj) => {
+    const { tag, mailto } = obj;
+    if (tag === 'gotoaddressbook') {
+      const manager = (await module_helper_mel.load_mel_object()).Empty();
+      manager.http_internal_get({
+        task: 'plugin.annuaire',
+        action: 'plugin.is_in_annuaire',
+        params: {
+          _query: mailto,
+        },
+        on_success: (data) => {
+          if (data) {
+            PageManager.SwitchFrame('addressbook', {
+              args: {
+                _query: mailto,
+                _open: true,
+                _action: 'plugin.annuaire',
+                _source: 'amande',
+              },
+            });
+          } else {
+            rcmail.display_message(
+              manager.gettext('noinaddressbook', 'mel_metapage'),
+              'error',
+            );
+          }
+        },
+      });
+    }
+  });
+
   rcmail.addEventListener(
     mel_metapage.EventListeners.calendar_updated.before,
     () => {
@@ -2322,7 +2353,6 @@ $(document).ready(() => {
         rcmail.env.enumerated_url_spies = true;
       }
 
-
       if (url !== undefined && url !== null) {
         //Initialisation
         let $querry;
@@ -2487,7 +2517,7 @@ $(document).ready(() => {
                   }
                 }
               }
-              
+
               let open_modal = true;
 
               if (!url.includes('/?_task=') && !/^data:/i.test(url)) {
@@ -2520,13 +2550,12 @@ $(document).ready(() => {
               }
 
               if (!open_modal) {
-                
-                let abort = {signal:false}
-                rcmail.triggerEvent('a.clicked', {url, abort, e: event});
-                
+                let abort = { signal: false };
+                rcmail.triggerEvent('a.clicked', { url, abort, e: event });
+
                 if (abort.signal) return;
               }
-              
+
               break;
           }
         } while (reloop);

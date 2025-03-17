@@ -54,16 +54,14 @@ $(document).ready(() => {
       }
 
       for (element of $('[data-tag]', obj)) {
-        element.addEventListener(
-          'click',
-          this._action_element_select.bind(
-            this,
-            contact,
-            mailto,
-            element.getAttribute('data-tag'),
-          ),
+        element.onclick = this._action_element_select.bind(
+          this,
+          contact,
+          mailto,
+          element.getAttribute('data-tag'),
         );
       }
+
       return ui_mailtomenu.call(this, obj, button, event, onclick);
     };
 

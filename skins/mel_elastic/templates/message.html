@@ -112,7 +112,7 @@
 	</h3>
 	<ul class="menu listing" role="menu" aria-labelledby="aria-label-mailtomenu">
 		<roundcube:if condition="env:has_writeable_addressbook==true" />
-		<roundcube:button command="gotoaddressbook" name="gotoaddressbook" type="link-menuitem"
+		<roundcube:button name="gotoaddressbook" type="link-menuitem"
 			label="mel_metapage.gotoaddressbook" class="gotoaddressbook" classAct="gotoaddressbook active"
 			data-tag="gotoaddressbook" data-spied="false" />
 		<roundcube:endif />

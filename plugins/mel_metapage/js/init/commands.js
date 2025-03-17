@@ -1114,44 +1114,6 @@ if (rcmail) {
         },
         true,
       );
-
-      rcmail.register_command(
-        'gotoaddressbook',
-        () => {
-          rcmail.addEventListener('ui.mailtomenu.click', async (obj) => {
-            const { tag, contact, mailto } = obj;
-            if (tag === 'gotoaddressbook') {
-              const manager = await load_helper();
-              manager.http_internal_get({
-                task: 'plugin.annuaire',
-                action: 'plugin.is_in_annuaire',
-                params: {
-                  _query: mailto,
-                },
-                on_success: (data) => {
-                  if (data) {
-                    PageManager.SwitchFrame('addressbook', {
-                      args: {
-                        _query: mailto,
-                        _open: true,
-                        _action: 'plugin.annuaire',
-                        _source: 'amande',
-                      },
-                    });
-                  } else {
-                    rcmail.display_message(
-                      // eslint-disable-next-line quotes
-                      "Le contact n'est pas dans l'annuaire",
-                      'error',
-                    );
-                  }
-                },
-              });
-            }
-          });
-        },
-        true,
-      );
     }
   })();
 }

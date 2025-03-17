@@ -511,3 +511,4 @@ $labels['return_to_creation_window'] = 'Retour à la fenêtre de création (emai
 $labels['return_to_creation_modal'] = 'Retour à la modale de création';
 $labels['create_workspace_title'] = 'Création d\'un espace de travail';
 $labels['gotoaddressbook'] = 'Afficher dans l\'annuaire';
+$labels['noinaddressbook'] = 'Le contact n\'est pas dans l\'annuaire';

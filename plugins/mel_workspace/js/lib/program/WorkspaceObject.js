@@ -272,6 +272,8 @@ class WorkspaceObject extends MelObject {
       _state: state,
     });
 
+    this.rcmail().env.workspace_modules_visibility[task] = state;
+
     BnumMessage.DisplayMessage(
       'Visibilitée changée avec succès',
       eMessageType.Confirmation,

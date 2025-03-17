@@ -17,12 +17,18 @@ class WorkspaceAgenda extends WorkspaceObject {
     return document.querySelector('#module-agenda');
   }
 
+  get visibilityButton() {
+    return $(NavBarManager.currentNavBar.mainDiv).find(
+      '[data-task="planning"] .visibility-icon',
+    );
+  }
+
   main() {
     super.main();
-    if (!this.loaded && !this.isDisabled('calendar')) {
+    if (!this.loaded && !this.isDisabled('planning')) {
       this.moduleContainer.style.display = EMPTY_STRING;
       this._main();
-    } else if (this.isDisabled('calendar')) {
+    } else if (this.isDisabled('planning')) {
       this.hideBlock(this.moduleContainer);
     }
 
@@ -41,6 +47,16 @@ class WorkspaceAgenda extends WorkspaceObject {
             element.classList.add('hidden-because-other-in-fullscreen-mode');
           }
 
+          if (this.visibilityButton.length)
+            this.visibilityButton
+              .addClass('disabled')
+              .attr('disabled', 'disabled');
+
+          if (!this.loaded) {
+            this.showBlock(agenda);
+            this._main();
+          }
+
           agenda.classList.remove('hidden-because-other-in-fullscreen-mode');
           agenda.setAttribute('data-fullscreen', 'true');
           agenda
@@ -49,10 +65,19 @@ class WorkspaceAgenda extends WorkspaceObject {
 
           return { _break: true };
         } else if (agenda.hasAttribute('data-fullscreen')) {
+          if (this.visibilityButton.length)
+            this.visibilityButton
+              .removeClass('disabled')
+              .removeAttr('disabled');
+
           agenda.removeAttribute('data-fullscreen');
           agenda
             .querySelector('bnum-planning')
             .fullcalendar.option('height', 400);
+
+          if (this.isDisabled('planning')) {
+            this.hideBlock(agenda);
+          }
         }
 
         agenda = null;
@@ -64,7 +89,7 @@ class WorkspaceAgenda extends WorkspaceObject {
           'loading',
         );
         $(caller).addClass('disabled').attr('disabled', 'disabled');
-        if (task === 'calendar') {
+        if (task === 'planning') {
           await this.switchState(task, state.newState, this.moduleContainer);
 
           if (!state.newState && !this.loaded) {

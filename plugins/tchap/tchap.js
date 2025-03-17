@@ -143,6 +143,7 @@ class tchap_manager extends MelObject {
    */
   async main() {
     super.main();
+    if (this.get_env('plugin_list_workspace')) this._try_observe_html();
 
     if ($('#wait_box').length) $('#wait_box').hide();
 
@@ -341,4 +342,37 @@ class tchap_manager extends MelObject {
   }
 
   // #endregion
+  _try_observe_html() {
+    // Selectionne le noeud dont les mutations seront observées
+    let targetNode = document.querySelector('html');
+
+    // Options de l'observateur (quelles sont les mutations à observer)
+    let config = { attributes: true, childList: false, subtree: false };
+
+    // Créé une instance de l'observateur lié à la fonction de callback
+    let observer = new MutationObserver((mutationsList) => {
+      for (const mutation of mutationsList) {
+        if (
+          mutation.type === 'attributes' &&
+          mutation.attributeName === 'class'
+        ) {
+          let style;
+          if (document.querySelector('html').classList.contains('mwsp'))
+            style = 'none';
+          else style = 'flex';
+
+          FramesManager.Instance.get_frame('tchap')[0]
+            .contentWindow.$('#tchap_frame')[0]
+            .contentWindow.document.querySelector(
+              '.mx_LeftPanel_wrapper',
+            ).style.display = style;
+          break;
+        }
+      }
+    });
+
+    observer.observe(targetNode, config);
+
+    return this;
+  }
 }

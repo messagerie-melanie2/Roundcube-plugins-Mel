@@ -432,7 +432,7 @@ if (rcmail && window.mel_metapage) {
         }
 
         let avatar = top.document.querySelector('#user-picture');
-        avatar.outerHTML = `<bnum-avatar id="user-picture"></bnum-avatar>`;
+        avatar.outerHTML = '<bnum-avatar id="user-picture"></bnum-avatar>';
         avatar = null;
       }
 

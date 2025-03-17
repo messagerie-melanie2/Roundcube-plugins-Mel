@@ -22,82 +22,8 @@
       pass,
       extra,
     });
-    // let config = {};
 
-    // if (key) config._key = key;
-    // if (wsp) config._wsp = wsp;
-    // if (locks) config._locks = locks;
-    // if (pass) config._pass = pass;
-    // if (extra) config._need_config = extra === 'need_config';
-
-    // window.mel_modules['FrameManager'].Instance.start_mode(
-    //   'visio',
-    //   null,
-    //   config,
-    // );
     return;
-
-    if (!webconf_is_active()) {
-      try {
-        top.m_mp_close_ariane();
-      } catch (error) {
-        console.warn('Impossible de fermer le tchat !');
-      }
-
-      if ((parent !== window ? parent : window).$('.webconf-frame').length > 0)
-        (parent !== window ? parent : window).$('.webconf-frame').remove();
-
-      let config = null;
-      if (
-        key !== null ||
-        wsp !== null ||
-        ariane !== null ||
-        show_config_popup
-      ) {
-        config = {};
-        if (key !== null) config['_key'] = key;
-
-        if (wsp !== null) {
-          if (wsp.includes(' (')) wsp = wsp.split(' (')[0];
-          config['_wsp'] = wsp;
-        } else if (ariane !== null) config['_ariane'] = ariane;
-
-        if (show_config_popup) config['_need_config'] = 1;
-
-        if (locks) {
-          config['_locks'] = locks;
-        }
-
-        if (pass) {
-          config['_pass'] = pass;
-        }
-
-        config[rcmail.env.mel_metapage_const.key] =
-          rcmail.env.mel_metapage_const.value;
-      }
-
-      mel_metapage.Functions.call(
-        'ArianeButton.default().hide_button()',
-        false,
-      );
-
-      mel_metapage.Functions.call(() => {
-        if (window.create_popUp !== undefined) window.create_popUp.close();
-      }, false);
-
-      if (extra && Object.keys(extra).length > 0) {
-        for (const iterator of Object.keys(extra)) {
-          config[`_${iterator}`] = extra[iterator];
-        }
-      }
-
-      await mel_metapage.Functions.change_frame('webconf', true, true, config);
-    } else {
-      rcmail.display_message(
-        rcmail.gettext('webconf_already_running', 'mel_metapage'),
-        'warning',
-      );
-    }
   }
 
   async function go_to_webconf_ex({

@@ -432,7 +432,7 @@ if (rcmail && window.mel_metapage) {
         }
 
         let avatar = top.document.querySelector('#user-picture');
-        avatar.outerHTML = `<bnum-avatar id="user-picture"></bnum-avatar>`;
+        avatar.outerHTML = '<bnum-avatar id="user-picture"></bnum-avatar>';
         avatar = null;
       }
 
@@ -2305,30 +2305,31 @@ $(document).ready(() => {
       //Vérification si on intercetpe le lien ou non
       const intercept = $target.data('spied');
 
-      if (
-        intercept !== undefined &&
-        intercept !== null &&
-        (intercept == 'false' || intercept === false)
-      )
-        return;
-      else if ($target.attr('href').includes('mailto:'))
-        return intercept_mailto(event);
-      else if (
-        $target.attr('onclick') !== undefined &&
-        !$target.attr('onclick').includes('event.click')
-      )
-        return;
-      else if (
-        !!Enumerable &&
-        !!$target.parent()[0] &&
-        Enumerable.from($target.parent()[0].classList).any((x) =>
-          x.includes('listitem'),
+      if ($target.attr('data-force') !== '1') {
+        if (
+          intercept !== undefined &&
+          intercept !== null &&
+          (intercept == 'false' || intercept === false)
         )
-      )
-        return;
-      else if ($target.parent().parent().parent().attr('id') === 'taskmenu')
-        return;
-      //else if ($target.attr('target') === '_blank') return;
+          return;
+        else if ($target.attr('href').includes('mailto:'))
+          return intercept_mailto(event);
+        else if (
+          $target.attr('onclick') !== undefined &&
+          !$target.attr('onclick').includes('event.click')
+        )
+          return;
+        else if (
+          !!Enumerable &&
+          !!$target.parent()[0] &&
+          Enumerable.from($target.parent()[0].classList).any((x) =>
+            x.includes('listitem'),
+          )
+        )
+          return;
+        else if ($target.parent().parent().parent().attr('id') === 'taskmenu')
+          return;
+      }
 
       //On ferme la modal
       $('#globalModal').modal('hide');

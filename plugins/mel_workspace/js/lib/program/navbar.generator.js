@@ -70,6 +70,34 @@ export class NavBarManager {
   }
 
   /**
+   * Switch de frame pour aller à l'accueil d'un espace
+   * @param {Object<string, any>} config
+   * @param {{uid:string}} workspace
+   * @returns {Promise<void>}
+   * @static
+   */
+  static async GoToHome(config, workspace) {
+    $('.wsp-params').css('display', 'none');
+    $('#main-content').css('display', EMPTY_STRING);
+    await FramesManager.Instance.switch_frame('workspace', {
+      args: config,
+      actions: ['workspace'],
+    });
+    top.history.replaceState(
+      {},
+      document.title,
+      MelObject.Empty().url('workspace', {
+        action: 'workspace',
+        params: {
+          _uid: workspace.uid,
+          _force_bnum: 1,
+        },
+        removeIsFromIframe: true,
+      }),
+    );
+  }
+
+  /**
    *
    * @param {CurrentWorkspaceData} workspace
    */
@@ -175,24 +203,7 @@ export class NavBarManager {
 
     switch (task) {
       case 'home':
-        $('.wsp-params').css('display', 'none');
-        $('#main-content').css('display', EMPTY_STRING);
-        await FramesManager.Instance.switch_frame('workspace', {
-          args: config,
-          actions: ['workspace'],
-        });
-        top.history.replaceState(
-          {},
-          document.title,
-          MelObject.Empty().url('workspace', {
-            action: 'workspace',
-            params: {
-              _uid: workspace.uid,
-              _force_bnum: 1,
-            },
-            removeIsFromIframe: true,
-          }),
-        );
+        await this.GoToHome(config, workspace);
         break;
 
       case 'settings':

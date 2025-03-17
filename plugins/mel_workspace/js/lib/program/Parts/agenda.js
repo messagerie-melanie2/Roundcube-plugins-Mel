@@ -35,53 +35,24 @@ class WorkspaceAgenda extends WorkspaceObject {
     // eslint-disable-next-line no-unused-vars
     new Promise(async (ok, nok) => {
       await BnumPromise.Wait(() => !!NavBarManager.currentNavBar);
-      NavBarManager.AddEventListener().OnBeforeSwitch((args) => {
-        const { task } = args;
+      await this._p_set_full_screen_listener(
+        'planning',
+        document.getElementById('module-agenda'),
+        this.visibilityButton,
+        {
+          onSetFullScreen(obj) {
+            obj.module
+              .querySelector('bnum-planning')
+              .fullcalendar.option('height', 'auto');
+          },
+          onUnsetFullScreen(obj) {
+            obj.module
+              .querySelector('bnum-planning')
+              .fullcalendar.option('height', 400);
+          },
+        },
+      );
 
-        let agenda = document.getElementById('module-agenda');
-        if (task === 'planning') {
-          //On cache tout les autres modules
-          for (const element of document.querySelectorAll(
-            WorkspaceModuleBlock.Tag,
-          )) {
-            element.classList.add('hidden-because-other-in-fullscreen-mode');
-          }
-
-          if (this.visibilityButton.length)
-            this.visibilityButton
-              .addClass('disabled')
-              .attr('disabled', 'disabled');
-
-          if (!this.loaded) {
-            this.showBlock(agenda);
-            this._main();
-          }
-
-          agenda.classList.remove('hidden-because-other-in-fullscreen-mode');
-          agenda.setAttribute('data-fullscreen', 'true');
-          agenda
-            .querySelector('bnum-planning')
-            .fullcalendar.option('height', 'auto');
-
-          return { _break: true };
-        } else if (agenda.hasAttribute('data-fullscreen')) {
-          if (this.visibilityButton.length)
-            this.visibilityButton
-              .removeClass('disabled')
-              .removeAttr('disabled');
-
-          agenda.removeAttribute('data-fullscreen');
-          agenda
-            .querySelector('bnum-planning')
-            .fullcalendar.option('height', 400);
-
-          if (this.isDisabled('planning')) {
-            this.hideBlock(agenda);
-          }
-        }
-
-        agenda = null;
-      });
       NavBarManager.currentNavBar.onstatetoggle.push(async (...args) => {
         const [task, state, caller] = args;
         const loading = BnumMessage.DisplayMessage(

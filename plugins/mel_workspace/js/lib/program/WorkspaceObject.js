@@ -13,6 +13,7 @@ import { NavBarManager } from './navbar.generator.js';
 import { WorkspaceModuleBlock } from '../WebComponents/workspace_module_block.js';
 import { BnumConnector } from '../../../../mel_metapage/js/lib/helpers/bnum_connections/bnum_connections.js';
 import { connectors } from '../connectors.js';
+import { BnumPromise } from '../../../../mel_metapage/js/lib/BnumPromise.js';
 
 export { WorkspaceObject, CurrentWorkspaceData };
 
@@ -105,6 +106,102 @@ class WorkspaceObject extends MelObject {
    */
   _p_module_block(id) {
     return document.querySelector(`#${id}`);
+  }
+
+  /**
+   * A ajouter dans un `NavBarManager.AddEventListener().OnBeforeSwitch`.
+   *
+   * Permet de passer un élément en mode plein écran
+   * @param {string} task Tâche passé par `OnBeforeSwitch`
+   * @param {string} askedTask Tâche que l'on souhaite gérer
+   * @param {import('../WebComponents/workspace_module_block.js').WorkspaceModuleBlock} module
+   * @param {?import('../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/pressed_button_web_element.js').PressedButton} visibilityButton
+   * @param {Object} [options={}]
+   * @param {?function} [options.onSetFullScreen=null] Appelé lorsqu'on passe en mode plein écran
+   * @param {?function} [options.onUnsetFullScreen=null] Appelé lorsqu'on quitte le mode plein écran
+   * @returns {Promise<{_break: boolean} | void>}
+   * @async
+   * @protected
+   */
+  async _p_set_full_screen_event(
+    task,
+    askedTask,
+    module,
+    visibilityButton,
+    { onSetFullScreen = null, onUnsetFullScreen = null } = {},
+  ) {
+    if (task === askedTask) {
+      //On cache tout les autres modules
+      for (const element of document.querySelectorAll(
+        WorkspaceModuleBlock.Tag,
+      )) {
+        element.classList.add('hidden-because-other-in-fullscreen-mode');
+      }
+
+      await NavBarManager.GoToHome({}, this.workspace);
+
+      if (visibilityButton.length)
+        visibilityButton.addClass('disabled').attr('disabled', 'disabled');
+
+      this.showBlock(module);
+
+      if (!this.loaded) this._main();
+
+      module.classList.remove('hidden-because-other-in-fullscreen-mode');
+      module.setAttribute('data-fullscreen', 'true');
+
+      if (onSetFullScreen)
+        onSetFullScreen({ module, task, askedTask, visibilityButton });
+
+      return { _break: true };
+    } else if (module.hasAttribute('data-fullscreen')) {
+      if (this.visibilityButton.length)
+        this.visibilityButton.removeClass('disabled').removeAttr('disabled');
+
+      module.removeAttribute('data-fullscreen');
+
+      if (onUnsetFullScreen)
+        onUnsetFullScreen({ module, task, askedTask, visibilityButton });
+
+      if (this.isDisabled(askedTask)) {
+        this.hideBlock(module);
+      }
+    }
+  }
+
+  /**
+   * Ajoute un listener qui gère lorsque l'on passe un élément en mode plein écran
+   * @param {string} askedTask Tâche que l'on souhaite gérer
+   * @param {import('../WebComponents/workspace_module_block.js').WorkspaceModuleBlock} module
+   * @param {?import('../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/pressed_button_web_element.js').PressedButton} visibilityButton
+   * @param {Object} [options={}]
+   * @param {?function} [options.onSetFullScreen=null] Appelé lorsqu'on passe en mode plein écran
+   * @param {?function} [options.onUnsetFullScreen=null] Appelé lorsqu'on quitte le mode plein écran
+   * @returns {Promise<void>}
+   * @async
+   * @protected
+   */
+  async _p_set_full_screen_listener(
+    askedTask,
+    module,
+    visibilityButton,
+    { onSetFullScreen = null, onUnsetFullScreen = null } = {},
+  ) {
+    await BnumPromise.Wait(() => !!NavBarManager.currentNavBar);
+    NavBarManager.AddEventListener().OnBeforeSwitch(async (args) => {
+      const { task } = args;
+
+      return await this._p_set_full_screen_event(
+        task,
+        askedTask,
+        module,
+        visibilityButton,
+        {
+          onSetFullScreen,
+          onUnsetFullScreen,
+        },
+      );
+    });
   }
 
   /**

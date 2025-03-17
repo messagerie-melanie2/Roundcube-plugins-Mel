@@ -529,16 +529,28 @@ class BnumHtmlIcon extends HtmlCustomTag {
     return node;
   }
 
+  /**
+   * @type {BnumHtmlIcon}
+   * @readonly
+   * @static
+   */
   static get Close() {
     return this.Create({ icon: 'close' });
   }
 
+  /**
+   * @type {BnumHtmlIcon}
+   * @readonly
+   * @static
+   */
   static get CalendarMonth() {
     return this.Create({ icon: 'calendar_month' });
   }
 
   /**
-   * @type {{right:BnumHtmlIcon, left:BnumHtmlIcon, down:BnumHtmlIcon}}
+   * @type {{right:Readonly<BnumHtmlIcon>, left:Readonly<BnumHtmlIcon>, down:Readonly<BnumHtmlIcon>}}
+   * @readonly
+   * @static
    */
   static get Chevron() {
     let obj = {};
@@ -559,7 +571,9 @@ class BnumHtmlIcon extends HtmlCustomTag {
   }
 
   /**
-   * @type {{right:BnumHtmlIcon, left:BnumHtmlIcon, down:BnumHtmlIcon}}
+   * @type {{right:Readonly<BnumHtmlIcon>, left:Readonly<BnumHtmlIcon>, down:Readonly<BnumHtmlIcon>}}
+   * @readonly
+   * @static
    */
   static get Arrow() {
     let obj = {};
@@ -577,6 +591,15 @@ class BnumHtmlIcon extends HtmlCustomTag {
     });
 
     return obj;
+  }
+
+  /**
+   * @type {BnumHtmlIcon}
+   * @readonly
+   * @static
+   */
+  static get Refresh() {
+    return this.Create({ icon: 'refresh' });
   }
 }
 

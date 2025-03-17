@@ -609,6 +609,9 @@ class annuaire extends rcube_plugin
         }
     }
 
+    /**
+     * Action pour vérifier si une personne est dans l'annuaire
+     */
     function action_is_in_annuaire()
     {
         $element = $this->_is_in_annuaire();
@@ -617,6 +620,10 @@ class annuaire extends rcube_plugin
         exit;
     }
 
+    /**
+     * Vérifie si une personne est dans l'annuaire
+     * @return boolean
+     */
     private function _is_in_annuaire()
     {
         driver_annuaire::get_instance()->setBaseDn($this->rc->config->get('annuaire_base_dn', null));

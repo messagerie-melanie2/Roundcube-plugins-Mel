@@ -11,6 +11,7 @@ export {
   BnumHtmlFlexContainer,
   BnumHtmlCenteredFlexContainer,
   EWebComponentMode,
+  HTMLBnumPlaceholder,
 };
 
 /**
@@ -653,6 +654,35 @@ class BnumHtmlCenteredFlexContainer extends BnumHtmlFlexContainer {
 
 BnumHtmlCenteredFlexContainer.TAG = 'bnum-centered-flex-container';
 
+/**
+ * @class
+ * @classdesc
+ * @extends HtmlCustomTag
+ */
+class HTMLBnumPlaceholder extends HtmlCustomTag {
+  constructor() {
+    super();
+  }
+
+  /**
+   * Permet de créer un élément de type HTMLBnumPlaceholder
+   * @returns {HTMLBnumPlaceholder}
+   * @static
+   */
+  static CreateNode() {
+    return document.createElement(this.TAG);
+  }
+
+  /**
+   * @type {string}
+   * @readonly
+   * @static
+   */
+  static get TAG() {
+    return 'bnum-placeholder';
+  }
+}
+
 {
   const TAGS = [
     { tag: BnumHtmlIcon.TAG, class: BnumHtmlIcon },
@@ -662,6 +692,10 @@ BnumHtmlCenteredFlexContainer.TAG = 'bnum-centered-flex-container';
     {
       tag: BnumHtmlCenteredFlexContainer.TAG,
       class: BnumHtmlCenteredFlexContainer,
+    },
+    {
+      tag: HTMLBnumPlaceholder.TAG,
+      class: HTMLBnumPlaceholder,
     },
   ];
 

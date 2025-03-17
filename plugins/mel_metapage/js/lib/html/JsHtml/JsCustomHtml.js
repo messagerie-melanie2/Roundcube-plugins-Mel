@@ -5,6 +5,7 @@ import {
   BnumHtmlIcon,
   BnumHtmlSeparate,
   BnumHtmlSrOnly,
+  HTMLBnumPlaceholder,
 } from './CustomAttributes/js_html_base_web_elements.js';
 import {
   HTMLTabContainer,
@@ -95,10 +96,7 @@ export class JsCustomHtml extends ABaseModulesJsHtml {
    * @returns {T}
    */
   placeholder(attribs = {}) {
-    return this._p_get().customElement(
-      { tag: 'bnum-placeholder', onconnected: () => {}, hasShadowDom: false },
-      attribs,
-    );
+    return this._p_get().customElement(HTMLBnumPlaceholder, attribs);
   }
 
   /**

@@ -95,16 +95,18 @@
           </div>
         </div>
         <div class="row d-flex justify-content-end align-items-center">
-          <button id="cancel-post" type="button"
-            class="modal-close-footer btn mel-button btn-danger mel-before-remover mr-2" data-dismiss="modal">
-            <roundcube:label name="mel_forum.cancel" /><span class="plus icon-mel-close"></span>
-          </button>
-          <button id="submit-post" type="button" class="modal-save-footer btn btn-secondary mel-button mr-2">
-            <roundcube:label name="mel_forum.save" /><span class="plus icon-mel-save"></span>
-          </button>
-          <button id="publish-post" type="button" class="modal-save-footer btn btn-secondary mel-button">
-            <roundcube:label name="mel_forum.publish" /><span class="plus icon-mel-arrow-right"></span>
-          </button>
+          <error-button id="cancel-post" class="modal-close-footer mr-2" data-dismiss="modal">
+            <roundcube:label name="mel_forum.cancel" />
+            <bnum-icon>cancel</bnum-icon>
+          </error-button>
+          <secondary-button id="submit-post" class="modal-save-footer mr-2">
+            <roundcube:label name="mel_forum.save" />
+            <bnum-icon>save</bnum-icon>
+          </secondary-button>
+          <primary-button id="publish-post" class="modal-save-footer">
+            <roundcube:label name="mel_forum.publish" />
+            <bnum-icon>arrow_right_alt</bnum-icon>
+          </primary-button>
         </div>
       </div>
     </div>

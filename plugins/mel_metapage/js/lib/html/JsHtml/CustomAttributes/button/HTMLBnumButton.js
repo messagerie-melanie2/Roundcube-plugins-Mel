@@ -33,7 +33,7 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
    * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements}
    */
   static get observedAttributes() {
-    return ['data-loading', 'square'];
+    return ['loading', 'square'];
   }
 
   /**

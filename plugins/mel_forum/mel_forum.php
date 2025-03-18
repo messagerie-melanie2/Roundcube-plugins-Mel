@@ -438,6 +438,8 @@ class mel_forum extends bnum_plugin
             ];
             $this->rc()->output->set_env('post', $post_data);
             $this->rc()->output->set_env('is_editing', $is_editing);
+            $this->include_web_component()->Base();
+            $this->include_web_component()->BnumButton();
 
             // Envoyer le template approprié
             $this->rc()->output->send('mel_forum.create-post');

@@ -78,7 +78,7 @@ export default class LoadingComponent extends AHTMLComponent {
     if (!this.#_getTargetWrapper() || !this.#_parent.elementLoaded) return;
 
     switch (name) {
-      case 'data-loading':
+      case 'loading':
         if (['loading', 'true', true, 1, '1'].includes(value))
           this.setLoadingMode();
         else this.stopLoadingmode();

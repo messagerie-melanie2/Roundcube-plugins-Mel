@@ -139,6 +139,19 @@ class WorkspaceObject extends MelObject {
       }
 
       await NavBarManager.GoToHome({}, this.workspace);
+      top.history.replaceState(
+        {},
+        document.title,
+        MelObject.Empty().url('workspace', {
+          action: 'workspace',
+          params: {
+            _uid: this.workspace.uid,
+            _page: task,
+            _force_bnum: 1,
+          },
+          removeIsFromIframe: true,
+        }),
+      );
 
       if (visibilityButton.length)
         visibilityButton.addClass('disabled').attr('disabled', 'disabled');

@@ -264,8 +264,7 @@ $labels['no_image_to_replace'] = "Aucune image à remplacer pour le post_id : ";
 #endregion
 #region MESSAGE TCHAP
 
-$labels['a_post'] = '📰 L\'article «';
-$labels['has_been_published'] = '» a été publié dans votre espace de travail.';
+$labels['a_post_has_been_published'] = '📰 L\'article « %s » a été publié dans votre espace de travail.';
 
 #region NOTIFICATION
 

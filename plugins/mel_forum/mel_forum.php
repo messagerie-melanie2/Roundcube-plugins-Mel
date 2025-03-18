@@ -709,7 +709,7 @@ class mel_forum extends bnum_plugin
             // Ensuite, passer à la gestion des tags
             $this->_manage_tags();
             //on notifie les utilisateur via le salon tchap associé si il éxiste
-            tchap::send_message($this->get_input('_workspace', rcube_utils::INPUT_POST), $this->gettext('a_post', 'mel_forum') . $this->get_input('_title', rcube_utils::INPUT_POST) . $this->gettext('has_been_published', 'mel_forum'));
+            tchap::send_message($this->get_input('_workspace', rcube_utils::INPUT_POST), sprintf($this->gettext('a_post_has_been_published', 'mel_forum'), $this->get_input('_title', rcube_utils::INPUT_POST)));
         } else {
             mel_logs::get_instance()->log(mel_logs::ERROR, 'mel_forum:: erreur de lors de la modification du post');
         }

@@ -206,14 +206,6 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
       let button = HTMLIconMelButton.CreateNode(this.buttonIcon, {
         content: this.createText(this.buttonText),
       }).addClass('white', 'button-task');
-      // let button = document.createElement('button');
-      // button.style.paddingTop = 0;
-      // button.style.paddingBottom = 0;
-      // button.classList.add(
-      //   'mel-button',
-      //   'no-margin-button',
-      //   'no-button-margin',
-      // );
 
       if (this.buttonIgnore !== 'default-actions') {
         button.onclick = () => {
@@ -223,21 +215,9 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
         };
       }
 
-      // let text = document.createElement('span');
-      // text.appendChild(this.createText(this.buttonText));
-      // text.style.verticalAlign = 'super';
-      // text.style.marginRight = '25px';
-
-      // let icon = document.createElement('bnum-icon');
-      // icon.setAttribute('data-icon', this.buttonIcon);
-
-      // button.append(text, icon);
-
       header.appendChild(button);
 
       button = null;
-      // text = null;
-      // icon = null;
     }
 
     this.append(header, contents);

@@ -74,6 +74,30 @@ class NextcloudModule extends WorkspaceObject {
   main() {
     super.main();
 
+    // Ajouter le listener pour le plein écran
+    await this._p_set_full_screen_listener(
+      'stockage', // La tâche concernée
+      document.getElementById('module-nc'), // Le conteneur du module
+      this.visibilityButton, // Le bouton de visibilité (optionnel)
+      {
+        onSetFullScreen(obj) {
+          // Personnaliser l'affichage en plein écran
+          obj.module
+            .querySelector('.module-block-content')
+            .style.height = 'auto';
+
+            this._on_refresh();
+        },
+
+        onUnsetFullScreen(obj) {
+          // Restaurer l'affichage normal
+          obj.module
+            .querySelector('.module-block-content')
+            .style.height = '400px'; // Rétablir la hauteur maximale
+        },
+      },
+    );
+
     NavBarManager.AddEventListener().OnAfterSwitch((args) => {
       const { task } = args;
       let nextCloudFrame = FramesManager.Instance.get_frame('stockage', {

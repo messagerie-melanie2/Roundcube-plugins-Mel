@@ -1,8 +1,6 @@
 import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
-import {
-  HTMLIconMelButton,
-  HTMLMelButton,
-} from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/HTMLMelButton.js';
+import { HTMLBnumButtonSecondary } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/button/HTMLBnumButton.js';
+import { HTMLIconMelButton } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/HTMLMelButton.js';
 import {
   BnumHtmlIcon,
   EWebComponentMode,
@@ -158,15 +156,18 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
     }
 
     if (this.hasRefresh) {
-      let buttonRefresh = HTMLMelButton.CreateNode({
-        contentsNode: BnumHtmlIcon.Create({ icon: 'refresh' }),
-      });
+      let buttonRefresh = HTMLBnumButtonSecondary.StartCreate.setContent(
+        BnumHtmlIcon.Refresh,
+      )
+        .setIconMargin(0)
+        .generate();
 
       buttonRefresh.classList.add('refresh-button', 'white');
 
       buttonRefresh.style.display = 'inline-flex';
       buttonRefresh.style.marginLeft = '10px';
       buttonRefresh.style.padding = '4px';
+      buttonRefresh.style.maxWidth = '34px';
 
       buttonRefresh.addEventListener('click', (e) => {
         this.onrefresh.call(e, this);

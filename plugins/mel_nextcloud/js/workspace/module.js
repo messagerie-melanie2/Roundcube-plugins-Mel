@@ -20,6 +20,7 @@ import { HTMLButtonGroup } from '../../../mel_metapage/js/lib/html/JsHtml/Custom
 import { WorkspaceModuleBlock } from '../../../mel_workspace/js/lib/WebComponents/workspace_module_block.js';
 import { WorkspaceObject } from '../../../mel_workspace/js/lib/program/WorkspaceObject.js';
 import { NavBarManager } from '../../../mel_workspace/js/lib/program/navbar.generator.js';
+import { BnumPromise } from '../../../mel_metapage/js/lib/BnumPromise.js';
 
 const ENABLE_DIRECT_SELECT = false;
 class NextcloudModule extends WorkspaceObject {
@@ -75,25 +76,23 @@ class NextcloudModule extends WorkspaceObject {
 
     NavBarManager.AddEventListener().OnAfterSwitch((args) => {
       const { task } = args;
+      let nextCloudFrame = FramesManager.Instance.get_frame('stockage', {
+        jquery: false,
+      }).contentWindow.document.getElementById('mel_nextcloud_frame');
 
       if (
         task === 'stockage' && // Si il s'agit de la tâche de stockage
         (!FramesManager.Instance.has_frame('stockage') || // Si la frame n'éxiste pas ou
           // Si l'id dans l'url n'est pas le bon
-          !FramesManager.Instance.get_frame(
-            'stockage',
-          )[0].contentWindow.location.href.includes(
+          !nextCloudFrame.contentWindow.location.href.includes(
             `dossiers-${this.workspace.uid}`,
           ))
       ) {
-        FramesManager.Instance.get_frame('stockage')[0].contentWindow.$(
-          '#mel_nextcloud_frame',
-        )[0].src =
-          `${Nextcloud.index_url}/apps/files?dir=/dossiers-${this.workspace.uid}`;
+        nextCloudFrame.src = `${Nextcloud.index_url}/apps/files?dir=/dossiers-${this.workspace.uid}`;
       }
     }, 'stockage');
 
-    new Promise(async (ok, nok) => {
+    BnumPromise.Start(async () => {
       await NavBarManager.WaitLoading();
       NavBarManager.currentNavBar.onstatetoggle.push(async (...args) => {
         const [task, state, caller] = args;
@@ -101,7 +100,9 @@ class NextcloudModule extends WorkspaceObject {
           this.gettext('loading'),
           'loading',
         );
-        $(caller).addClass('disabled').attr('disabled', 'disabled');
+        let $caller = $(caller);
+        $caller.addClass('disabled').attr('disabled', 'disabled');
+
         if (task === 'stockage') {
           await this.switchState(task, state.newState, this.moduleContainer);
 
@@ -115,10 +116,10 @@ class NextcloudModule extends WorkspaceObject {
             await this._main();
           }
         }
-        $(caller).removeClass('disabled').removeAttr('disabled');
+
+        $caller.removeClass('disabled').removeAttr('disabled');
         rcmail.hide_message(loading);
       });
-      ok();
     });
   }
 

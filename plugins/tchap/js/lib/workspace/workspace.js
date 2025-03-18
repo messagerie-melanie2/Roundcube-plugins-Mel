@@ -33,11 +33,6 @@ class TchapWorkspace extends WorkspaceObject {
               '#/room/' +
               this.workspace.services['tchap-channel']?.id,
           );
-        FramesManager.Instance.get_frame('tchap')[0]
-          .contentWindow.$('#tchap_frame')[0]
-          .contentWindow.document.querySelector(
-            '.mx_LeftPanel_wrapper',
-          ).style.display = 'none';
       } else {
         FramesManager.Instance.get_frame('tchap')[0]
           .contentWindow.$('#tchap_frame')[0]

@@ -6,29 +6,30 @@ import { NavBarManager } from '../navbar.generator.js';
 import { Planning } from '../../WebComponents/planning.js';
 import { PLANNING_USE_MODULE_BLOCK } from '../config.js';
 import { BnumPromise } from '../../../../../mel_metapage/js/lib/BnumPromise.js';
-import { WorkspaceModuleBlock } from '../../WebComponents/workspace_module_block.js';
 
-class WorkspaceAgenda extends WorkspaceObject {
+const MODULE_NAME = 'planning';
+
+class WorkspacePlanning extends WorkspaceObject {
   constructor() {
     super();
   }
 
   get moduleContainer() {
-    return document.querySelector('#module-agenda');
+    return document.querySelector(`#module-${MODULE_NAME}`);
   }
 
   get visibilityButton() {
     return $(NavBarManager.currentNavBar.mainDiv).find(
-      '[data-task="planning"] .visibility-icon',
+      `[data-task="${MODULE_NAME}"] .visibility-icon`,
     );
   }
 
   main() {
     super.main();
-    if (!this.loaded && !this.isDisabled('planning')) {
+    if (!this.loaded && !this.isDisabled(MODULE_NAME)) {
       this.moduleContainer.style.display = EMPTY_STRING;
       this._main();
-    } else if (this.isDisabled('planning')) {
+    } else if (this.isDisabled(MODULE_NAME)) {
       this.hideBlock(this.moduleContainer);
     }
 
@@ -36,8 +37,8 @@ class WorkspaceAgenda extends WorkspaceObject {
     new Promise(async (ok, nok) => {
       await BnumPromise.Wait(() => !!NavBarManager.currentNavBar);
       await this._p_set_full_screen_listener(
-        'planning',
-        document.getElementById('module-agenda'),
+        MODULE_NAME,
+        this.moduleContainer,
         this.visibilityButton,
         {
           onSetFullScreen(obj) {
@@ -60,7 +61,7 @@ class WorkspaceAgenda extends WorkspaceObject {
           'loading',
         );
         $(caller).addClass('disabled').attr('disabled', 'disabled');
-        if (task === 'planning') {
+        if (task === MODULE_NAME) {
           await this.switchState(task, state.newState, this.moduleContainer);
 
           if (!state.newState && !this.loaded) {
@@ -77,11 +78,10 @@ class WorkspaceAgenda extends WorkspaceObject {
 
   _main() {
     this.loadModule();
-    console.log('workspace', this.workspace);
     let planning = Planning.CreateNode({
       useHeaderModule: PLANNING_USE_MODULE_BLOCK,
     });
-    $('#module-agenda .module-block-content')
+    $('#module-planning .module-block-content')
       .css('max-height', '100%')
       .html(planning);
 
@@ -94,4 +94,4 @@ class WorkspaceAgenda extends WorkspaceObject {
   }
 }
 
-new WorkspaceAgenda();
+new WorkspacePlanning();

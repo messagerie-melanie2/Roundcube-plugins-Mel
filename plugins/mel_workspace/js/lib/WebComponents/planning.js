@@ -98,7 +98,7 @@ export class Planning extends HtmlCustomDataTag {
    * @type {WorkspaceModuleBlock}
    */
   get parentContainer() {
-    return document.querySelector('#module-agenda');
+    return document.querySelector('#module-planning');
   }
 
   get useHeaderBlock() {

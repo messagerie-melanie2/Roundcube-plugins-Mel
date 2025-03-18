@@ -4,6 +4,7 @@ import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constant
 import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';
 import { Mel_Promise } from '../../../../mel_metapage/js/lib/mel_promise.js';
 import { WspNavBar } from '../WebComponents/navbar.js';
+import { WorkspaceModuleBlock } from '../WebComponents/workspace_module_block.js';
 // import { WspNavBar } from './WebComponents/navbar.js';
 import { CurrentWorkspaceData, WorkspaceObject } from './WorkspaceObject.js';
 
@@ -66,6 +67,34 @@ export class NavBarManager {
    */
   static get currentNavBar() {
     return this.nav.document.querySelector('bnum-wsp-nav');
+  }
+
+  /**
+   * Switch de frame pour aller à l'accueil d'un espace
+   * @param {Object<string, any>} config
+   * @param {{uid:string}} workspace
+   * @returns {Promise<void>}
+   * @static
+   */
+  static async GoToHome(config, workspace) {
+    $('.wsp-params').css('display', 'none');
+    $('#main-content').css('display', EMPTY_STRING);
+    await FramesManager.Instance.switch_frame('workspace', {
+      args: config,
+      actions: ['workspace'],
+    });
+    top.history.replaceState(
+      {},
+      document.title,
+      MelObject.Empty().url('workspace', {
+        action: 'workspace',
+        params: {
+          _uid: workspace.uid,
+          _force_bnum: 1,
+        },
+        removeIsFromIframe: true,
+      }),
+    );
   }
 
   /**
@@ -158,6 +187,11 @@ export class NavBarManager {
     task,
     { event = null, workspace = null, manualConfig = null } = {},
   ) {
+    //Remettre les modules à la bonne taille
+    for (const element of document.querySelectorAll(WorkspaceModuleBlock.Tag)) {
+      element.classList.remove('hidden-because-other-in-fullscreen-mode');
+    }
+
     const raw_config =
       rcmail.triggerEvent('workspace.nav.beforeswitch', { task, event }) || {};
 
@@ -169,24 +203,7 @@ export class NavBarManager {
 
     switch (task) {
       case 'home':
-        $('.wsp-params').css('display', 'none');
-        $('#main-content').css('display', EMPTY_STRING);
-        await FramesManager.Instance.switch_frame('workspace', {
-          args: config,
-          actions: ['workspace'],
-        });
-        top.history.replaceState(
-          {},
-          document.title,
-          MelObject.Empty().url('workspace', {
-            action: 'workspace',
-            params: {
-              _uid: workspace.uid,
-              _force_bnum: 1,
-            },
-            removeIsFromIframe: true,
-          }),
-        );
+        await this.GoToHome(config, workspace);
         break;
 
       case 'settings':
@@ -234,6 +251,9 @@ export class NavBarManager {
         break;
 
       default:
+        //On quitte si _break vaut 'true', c'est un comportement custom
+        if (raw_config._break === true) break;
+
         await FramesManager.Instance.switch_frame(task, {
           args: config,
           actions: ['workspace'],

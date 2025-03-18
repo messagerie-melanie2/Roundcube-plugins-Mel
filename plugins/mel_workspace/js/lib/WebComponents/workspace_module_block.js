@@ -18,6 +18,17 @@ import { NavBarManager } from '../program/navbar.generator.js';
  */
 export class WorkspaceModuleBlock extends HtmlCustomDataTag {
   /**
+   * Attributs observés par le navigateur
+   * @type {string[]}
+   * @readonly
+   * @static
+   * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements}
+   */
+  static get observedAttributes() {
+    return ['data-fullscreen'];
+  }
+
+  /**
    * Le composant se comporte de base comme une div.<br/>
    *
    * Liste des data du composant :
@@ -67,6 +78,10 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
 
   get hasRefresh() {
     return ['true', true, 1, '1'].includes(this._p_get_data('button-refresh'));
+  }
+
+  get isFullscreen() {
+    return this.hasAttribute('data-fullscreen');
   }
 
   /**
@@ -192,14 +207,6 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
       let button = HTMLIconMelButton.CreateNode(this.buttonIcon, {
         content: this.createText(this.buttonText),
       }).addClass('white', 'button-task');
-      // let button = document.createElement('button');
-      // button.style.paddingTop = 0;
-      // button.style.paddingBottom = 0;
-      // button.classList.add(
-      //   'mel-button',
-      //   'no-margin-button',
-      //   'no-button-margin',
-      // );
 
       if (this.buttonIgnore !== 'default-actions') {
         button.onclick = () => {
@@ -209,27 +216,34 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
         };
       }
 
-      // let text = document.createElement('span');
-      // text.appendChild(this.createText(this.buttonText));
-      // text.style.verticalAlign = 'super';
-      // text.style.marginRight = '25px';
-
-      // let icon = document.createElement('bnum-icon');
-      // icon.setAttribute('data-icon', this.buttonIcon);
-
-      // button.append(text, icon);
-
       header.appendChild(button);
 
       button = null;
-      // text = null;
-      // icon = null;
     }
 
     this.append(header, contents);
 
     header = null;
     contents = null;
+  }
+
+  /**
+   * Est appelé quand un attribut de {@link observedAttributes} est modifié
+   * @param {string} name
+   * @param {string} oldValue
+   * @param {string} newValue
+   */
+  attributeChangedCallback(name, oldValue, newValue) {
+    switch (name) {
+      case 'data-fullscreen':
+        this.parentElement.parentElement.classList[
+          newValue === null ? 'remove' : 'add'
+        ]('module-block__parent__parent--fullscreen');
+        break;
+
+      default:
+        break;
+    }
   }
 
   disableRefreshButton() {
@@ -357,11 +371,18 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
       height,
     });
   }
+
+  /**
+   * @readonly
+   */
+  static get Tag() {
+    return 'bnum-workspace-module';
+  }
 }
 
 //#region Tag Definition
 {
-  const TAG = 'bnum-workspace-module';
+  const TAG = WorkspaceModuleBlock.Tag;
   if (!customElements.get(TAG))
     customElements.define(TAG, WorkspaceModuleBlock);
 }

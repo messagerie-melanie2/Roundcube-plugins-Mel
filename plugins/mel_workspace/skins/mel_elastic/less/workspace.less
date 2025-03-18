@@ -33,6 +33,10 @@ bnum-workspace-module {
       &:extend(bnum-workspace-module .module-block-content.mode-small);
     }
   }
+
+  &.hidden-because-other-in-fullscreen-mode {
+    display: none !important;
+  }
 }
 
 #app_store {
@@ -56,9 +60,9 @@ bnum-workspace-module {
     display: flex;
     flex: 4;
     justify-content: space-between;
-      
+
     @media (max-width: 600px) {
-        flex: 100%; /* Force les blocs à prendre toute la largeur */
+      flex: 100%; /* Force les blocs à prendre toute la largeur */
     }
   }
 
@@ -66,12 +70,11 @@ bnum-workspace-module {
     display: flex;
     flex: 1;
     justify-content: flex-end;
-   
+
     @media (max-width: 600px) {
       justify-content: center;
-   }
+    }
   }
-
 }
 
 bnum-searchbar {
@@ -121,8 +124,31 @@ bnum-separate {
 .mel-button.button-task {
   html@{touch} & {
     min-width: 80px;
-  .material-symbols-outlined {
-     display: none;
+    .material-symbols-outlined {
+      display: none;
+    }
+  }
+}
+
+.module-block {
+  &__parent {
+    &__parent {
+      &--fullscreen {
+        height: 100% !important;
+
+        > div {
+          height: 100% !important;
+
+          bnum-workspace-module {
+            height: calc(100% - 30px) !important;
+            box-shadow: unset !important;
+
+            .module-block-content {
+              min-height: 100%;
+            }
+          }
+        }
+      }
     }
   }
 }

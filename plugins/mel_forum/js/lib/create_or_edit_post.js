@@ -192,6 +192,26 @@ export class create_or_edit_post extends MelObject {
   // region Boutons principaux
 
   /**
+   * Met les boutons de sauvegarde, de publication et d'annulation en mode "chargement".
+   * @private
+   */
+  #_setButtonsLoading() {
+    $('#cancel-post').attr('loading', 1);
+    $('#submit-post').attr('loading', 1);
+    $('#publish-post').attr('loading', 1);
+  }
+
+  /**
+   * Désactive le mode "chargement" des boutons de sauvegarde, de publication et d'annulation.
+   * @private
+   */
+  #_unsetButtonLoading() {
+    $('#cancel-post').removeAttr('loading');
+    $('#submit-post').removeAttr('loading');
+    $('#publish-post').removeAttr('loading');
+  }
+
+  /**
    * Gère l'envoi du post, soit pour la création, soit pour la modification.
    *
    * - Récupère les données du post (titre, contenu, tags, etc.) et vérifie si c'est une création ou une modification.
@@ -211,6 +231,7 @@ export class create_or_edit_post extends MelObject {
       let title = $('#edit-title').val().trim();
       if (title !== '' && content !== '') {
         CursorUtils.SetLoadingCursor();
+        this.#_setButtonsLoading();
         this.http_internal_post({
           task: 'forum',
           action: 'send_post',
@@ -249,6 +270,8 @@ export class create_or_edit_post extends MelObject {
               params: { _uid: postUid, _workspace_uid: this.workspace },
             });
           },
+        }).always(() => {
+          this.#_unsetButtonLoading();
         });
       } else {
         BnumMessage.DisplayMessage(
@@ -279,6 +302,7 @@ export class create_or_edit_post extends MelObject {
       let title = $('#edit-title').val().trim();
       if (title !== '' && content !== '') {
         CursorUtils.SetLoadingCursor();
+        this.#_setButtonsLoading();
         this.http_internal_post({
           task: 'forum',
           action: 'send_post',
@@ -323,6 +347,8 @@ export class create_or_edit_post extends MelObject {
               params: { _uid: postUid, _workspace_uid: this.workspace },
             });
           },
+        }).always(() => {
+          this.#_unsetButtonLoading();
         });
       } else {
         BnumMessage.DisplayMessage(

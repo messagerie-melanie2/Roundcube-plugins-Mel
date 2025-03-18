@@ -296,8 +296,16 @@ class WebComponnents {
         $this->_include_component('searchbar.js');
     }
 
+    /**
+     * @deprecated
+     */
     public function MelButton() {
         $this->_include_component('HTMLMelButton.js');
+    }
+
+
+    public function BnumButton() {
+        $this->_include_component('HTMLBnumButton.js', 'js/lib/html/JsHtml/CustomAttributes/button');
     }
 
     public function ____METHODS____($what, ...$args) {

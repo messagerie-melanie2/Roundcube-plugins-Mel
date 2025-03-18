@@ -129,3 +129,26 @@ bnum-separate {
     }
   }
 }
+
+.module-block {
+  &__parent {
+    &__parent {
+      &--fullscreen {
+        height: 100% !important;
+
+        > div {
+          height: 100% !important;
+
+          bnum-workspace-module {
+            height: calc(100% - 30px) !important;
+            box-shadow: unset !important;
+
+            .module-block-content {
+              min-height: 100%;
+            }
+          }
+        }
+      }
+    }
+  }
+}

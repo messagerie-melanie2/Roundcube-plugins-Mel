@@ -255,19 +255,9 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
   attributeChangedCallback(name, oldValue, newValue) {
     switch (name) {
       case 'data-fullscreen':
-        if (newValue === null) {
-          this.content.style.minHeight = null;
-          this.style.height = null;
-          this.parentElement.style.height = null;
-          this.parentElement.parentElement.style.height = null;
-          this.style.boxShadow = null;
-        } else {
-          this.content.style.minHeight = '100%';
-          this.style.height = 'calc(100% - 30px)';
-          this.parentElement.style.height = '100%';
-          this.parentElement.parentElement.style.height = '100%';
-          this.style.boxShadow = 'unset';
-        }
+        this.parentElement.parentElement.classList[
+          newValue === null ? 'remove' : 'add'
+        ]('module-block__parent__parent--fullscreen');
         break;
 
       default:

@@ -130,6 +130,8 @@ class WorkspaceObject extends MelObject {
     visibilityButton,
     { onSetFullScreen = null, onUnsetFullScreen = null } = {},
   ) {
+    visibilityButton ??= { length: false };
+
     if (task === askedTask) {
       //On cache tout les autres modules
       for (const element of document.querySelectorAll(
@@ -166,10 +168,10 @@ class WorkspaceObject extends MelObject {
       if (onSetFullScreen)
         onSetFullScreen({ module, task, askedTask, visibilityButton });
 
-      return { _break: true };
+      return { _break: true, askedTask };
     } else if (module.hasAttribute('data-fullscreen')) {
-      if (this.visibilityButton.length)
-        this.visibilityButton.removeClass('disabled').removeAttr('disabled');
+      if (visibilityButton.length)
+        visibilityButton.removeClass('disabled').removeAttr('disabled');
 
       module.removeAttribute('data-fullscreen');
 
@@ -203,7 +205,6 @@ class WorkspaceObject extends MelObject {
     await BnumPromise.Wait(() => !!NavBarManager.currentNavBar);
     NavBarManager.AddEventListener().OnBeforeSwitch(async (args) => {
       const { task } = args;
-
       return await this._p_set_full_screen_event(
         task,
         askedTask,
@@ -214,7 +215,7 @@ class WorkspaceObject extends MelObject {
           onUnsetFullScreen,
         },
       );
-    });
+    }, askedTask);
   }
 
   /**

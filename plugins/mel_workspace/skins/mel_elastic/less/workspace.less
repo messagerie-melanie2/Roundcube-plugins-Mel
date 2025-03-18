@@ -137,7 +137,7 @@ bnum-separate {
         height: 100% !important;
 
         > div {
-          height: 100% !important;
+          display: none;
 
           bnum-workspace-module {
             height: calc(100% - 30px) !important;
@@ -149,6 +149,14 @@ bnum-separate {
           }
         }
       }
+    }
+
+    &--fullscreen {
+      height: 100% !important;
+      display: block !important;
+      max-width: 100% !important;
+      width: 100% !important;
+      flex: 1 !important;
     }
   }
 }

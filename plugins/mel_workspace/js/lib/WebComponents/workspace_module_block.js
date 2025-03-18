@@ -239,6 +239,9 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
         this.parentElement.parentElement.classList[
           newValue === null ? 'remove' : 'add'
         ]('module-block__parent__parent--fullscreen');
+        this.parentElement.classList[newValue === null ? 'remove' : 'add'](
+          'module-block__parent--fullscreen',
+        );
         break;
 
       default:

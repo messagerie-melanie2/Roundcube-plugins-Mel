@@ -191,9 +191,21 @@ export class NavBarManager {
     for (const element of document.querySelectorAll(WorkspaceModuleBlock.Tag)) {
       element.classList.remove('hidden-because-other-in-fullscreen-mode');
     }
-
-    const raw_config =
+    let raw_config =
       rcmail.triggerEvent('workspace.nav.beforeswitch', { task, event }) || {};
+
+    if (raw_config.then) raw_config = await raw_config;
+    else if (Array.isArray(raw_config)) {
+      let tempConf;
+      for (tempConf of raw_config) {
+        if (tempConf.then) tempConf = await tempConf;
+
+        if (tempConf?.askedTask === task) {
+          raw_config = tempConf;
+          break;
+        }
+      }
+    }
 
     const config =
       manualConfig || (Array.isArray(raw_config) ? raw_config[0] : raw_config);

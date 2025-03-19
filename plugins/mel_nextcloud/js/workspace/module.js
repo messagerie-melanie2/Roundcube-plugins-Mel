@@ -75,27 +75,10 @@ class NextcloudModule extends WorkspaceObject {
     super.main();
 
     // Ajouter le listener pour le plein écran
-    await this._p_set_full_screen_listener(
+    this._p_set_full_screen_listener(
       'stockage', // La tâche concernée
       document.getElementById('module-nc'), // Le conteneur du module
-      this.visibilityButton, // Le bouton de visibilité (optionnel)
-      {
-        onSetFullScreen(obj) {
-          // Personnaliser l'affichage en plein écran
-          obj.module
-            .querySelector('.module-block-content')
-            .style.height = 'auto';
-
-            this._on_refresh();
-        },
-
-        onUnsetFullScreen(obj) {
-          // Restaurer l'affichage normal
-          obj.module
-            .querySelector('.module-block-content')
-            .style.height = '400px'; // Rétablir la hauteur maximale
-        },
-      },
+      null, //this.visibilityButton, // Le bouton de visibilité (optionnel)
     );
 
     NavBarManager.AddEventListener().OnAfterSwitch((args) => {

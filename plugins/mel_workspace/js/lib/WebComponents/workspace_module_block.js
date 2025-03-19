@@ -1,5 +1,8 @@
 import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
-import { HTMLBnumButtonSecondary } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/button/HTMLBnumButton.js';
+import { EButtonType } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/button/FormComponent.js';
+import HTMLBnumButton, {
+  HTMLBnumButtonSecondary,
+} from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/button/HTMLBnumButton.js';
 import { HTMLIconMelButton } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/HTMLMelButton.js';
 import {
   BnumHtmlIcon,
@@ -43,6 +46,8 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
    *
    * data-button-ignore => "default-actions" => Ignore les actions par défaut
    *
+   * data-button-type => 'primary', 'secondary', 'error'. Type du bouton. 'secondary' par défaut.
+   *
    * data-small => 1 ou true. Réduit la taille du block si vrai.
    *
    */
@@ -50,6 +55,7 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
     super({ mode: EWebComponentMode.div });
 
     this.onrefresh = new BnumEvent();
+    this.ontitlebuttonclicked = new BnumEvent();
   }
 
   get headerTitle() {
@@ -66,6 +72,10 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
 
   get buttonIcon() {
     return this._p_get_data('button-icon') || 'arrow_right_alt';
+  }
+
+  get buttonType() {
+    return this._p_get_data('button-type') || 'secondary';
   }
 
   get buttonIgnore() {
@@ -177,7 +187,7 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
         .setIconMargin(0)
         .generate();
 
-      buttonRefresh.classList.add('refresh-button', 'white');
+      buttonRefresh.classList.add('refresh-button');
 
       buttonRefresh.style.display = 'inline-flex';
       buttonRefresh.style.marginLeft = '10px';
@@ -204,9 +214,13 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
     }
 
     if (this.buttonTask !== false) {
-      let button = HTMLIconMelButton.CreateNode(this.buttonIcon, {
-        content: this.createText(this.buttonText),
-      }).addClass('white', 'button-task');
+      let button = HTMLBnumButton.StartCreate.setContent(
+        this.createText(this.buttonText),
+      )
+        .setVariation(EButtonType.fromString(this.buttonType))
+        .setIconPos('right')
+        .setIcon(this.buttonIcon)
+        .generate();
 
       if (this.buttonIgnore !== 'default-actions') {
         button.onclick = () => {
@@ -214,6 +228,17 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
             background: false,
           });
         };
+      } else {
+        button.onclick = (e) =>
+          this.ontitlebuttonclicked.call({ e, block: this });
+
+        this.ontitlebuttonclicked.add('default', (obj) => {
+          this.dispatchEvent(
+            new CustomEvent('event:custom:action', {
+              detail: { baseEvent: obj.e, caller: obj.block },
+            }),
+          );
+        });
       }
 
       header.appendChild(button);
@@ -380,6 +405,17 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
    */
   static get Tag() {
     return 'bnum-workspace-module';
+  }
+
+  /**
+   *
+   * @param {WorkspaceModuleBlock} block
+   * @param {(e:{detail: {baseEvent: Event, caller: WorkspaceModuleBlock}}) => void} callback
+   * @static
+   */
+  static AddListenerAction(block, callback) {
+    block.addEventListener('event:custom:action', callback);
+    return block;
   }
 }
 

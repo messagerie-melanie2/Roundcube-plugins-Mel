@@ -264,7 +264,7 @@ export class NavBarManager {
 
       default:
         //On quitte si _break vaut 'true', c'est un comportement custom
-        if (raw_config._break === true) break;
+        if (raw_config?._break === true) break;
 
         await FramesManager.Instance.switch_frame(task, {
           args: config,

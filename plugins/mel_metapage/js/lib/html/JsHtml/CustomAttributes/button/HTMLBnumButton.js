@@ -137,10 +137,7 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
 
     this._p_before();
 
-    this.#_set_mode()
-      .attr('role', 'button')
-      .attr('tabindex', '0')
-      .setState('bnum-button');
+    HTMLBnumButton.ToButton(this).#_set_mode().setState('bnum-button');
 
     if (ENABLE_CLASS_BUTTON) this.addClass(CLASS_BUTTON);
 
@@ -153,18 +150,6 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
     wrapper.setAttribute('data-parent', this.internalId);
 
     this.appendChild(wrapper);
-
-    this.onkeydown = (e) => {
-      switch (e.key) {
-        case ' ':
-        case 'Enter':
-          this.click();
-          break;
-
-        default:
-          break;
-      }
-    };
 
     wrapper = null;
 
@@ -279,6 +264,31 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
   stopLoadingMode() {
     this.#_loadComponent.stopLoadingmode();
     return this;
+  }
+
+  /**
+   * Ajoute le rôle "bouton" et son fonctionnement à un élément
+   * @param {T} element
+   * @returns {T}
+   * @template {HTMLElement} T
+   * @static
+   */
+  static ToButton(element) {
+    element.onkeydown = (e) => {
+      switch (e.key) {
+        case ' ':
+        case 'Enter':
+          e.target.click();
+          break;
+
+        default:
+          break;
+      }
+    };
+
+    element.setAttribute('role', 'button');
+    element.setAttribute('tabindex', '0');
+    return element;
   }
 
   /**

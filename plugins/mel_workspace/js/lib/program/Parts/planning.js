@@ -81,9 +81,7 @@ class WorkspacePlanning extends WorkspaceObject {
     let planning = Planning.CreateNode({
       useHeaderModule: PLANNING_USE_MODULE_BLOCK,
     });
-    $('#module-planning .module-block-content')
-      .css('max-height', '100%')
-      .html(planning);
+    $('#module-planning .module-block-content').html(planning);
 
     if (window.planning_rendered && !this.rendered) {
       planning.render();

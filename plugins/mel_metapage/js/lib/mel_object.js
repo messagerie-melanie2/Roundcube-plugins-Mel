@@ -197,6 +197,12 @@ class MelObject {
     if (can_call) this._listener.add(key, callback, callback_key);
   }
 
+  remove_listener(key, callback_key) {
+    if (this._listener.has(key)) {
+      this._listener.remove_callback(key, callback_key);
+    }
+  }
+
   /**
    * Trigger un écouteur
    * @param {string} key Clé qui appelera tout les écouteurs lié à cette clé

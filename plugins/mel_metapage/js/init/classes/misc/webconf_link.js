@@ -37,9 +37,13 @@ class WebconfLink {
   }
 
   static create(event) {
-    if (rcube_calendar.is_desc_frame_webconf(event.location))
+    if (
+      rcube_calendar.is_desc_frame_webconf &&
+      rcube_calendar.is_desc_frame_webconf(event.location)
+    )
       return new IntegratedWebconfLink(event.location, event.categories);
     else if (
+      rcube_calendar.is_desc_bnum_webconf &&
       rcube_calendar.is_desc_bnum_webconf(event.location) &&
       !event.location.includes('#visio')
     )

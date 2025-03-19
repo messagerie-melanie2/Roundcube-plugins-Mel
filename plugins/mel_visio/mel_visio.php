@@ -3,15 +3,6 @@ use \Firebase\JWT\JWT;
 
 class mel_visio extends bnum_plugin
 {
-
-    public const PUBLIC_URL = 'webconf';
-    private const DEFAULT_VA_PARAM = 'large';
-    private const VA_PARAM = 'visio_audio_parameters';
-    private const ASK_ON_END_PARAM = 'visio_ask_on_end';
-    private const OLD = true;
-    private $tmp_key;
-
-
     /**
      * Contient la task associé au plugin
      * @var string
@@ -31,62 +22,56 @@ class mel_visio extends bnum_plugin
      */
     function init()
     {
-        if ('webconf' === $this->get_current_task()) {
-            $this->load_config();
-            include_once __DIR__.'/lib/data.php'; 
-            $this->data = new VisioParams();
-            $this->register_task('webconf');
-            $this->force_register_action('index', [$this, 'index']);
-            $this->force_register_action('jwt', [$this, 'get_jwt']);
-            $this->force_register_action('get_workspace_datas', [$this, 'get_workspace_datas']);
-            $this->force_register_action('onGo', [$this, 'onGo']);
-            $this->force_register_action('notify', [$this, 'notify']);
-        }
-        else if ('calendar' === $this->get_current_task()) {
-            $this->send_visio_config();
-        }
-        else if ('settings' === $this->get_current_task()) {
-            $askOnEnd = self::ASK_ON_END_PARAM;
-            $visio_audio_video_parameters = self::VA_PARAM;
-            $visio_audio_video_parameters_default = self::DEFAULT_VA_PARAM;
+        $this->add_texts('localization/', false);  
 
-            $this->add_parameters(function ($args) use($askOnEnd, $visio_audio_video_parameters, $visio_audio_video_parameters_default) {
-                if ($args['section'] == 'visio')
-                {
-                    $this->add_texts('localization/');
-                    $askOnEnd_config = $this->rc()->config->get($askOnEnd, true);
-                    $visio_audio_video_parameters_config = $this->rc()->config->get($visio_audio_video_parameters, $visio_audio_video_parameters_default);
-        
-                    $askOnEnd_check = new html_checkbox(['name' => $askOnEnd, 'id' => $askOnEnd, 'value' => 1]);
-                    $args['blocks']['general']['options'][$askOnEnd] = [
-                        'title'   => html::label($askOnEnd, rcube::Q($this->gettext($askOnEnd))),
-                        'content' => $askOnEnd_check->show($askOnEnd_config ? 1 : 0),
-                    ];
-                }
+        switch ($this->get_current_task()) {
+            case 'webconf':
+                include_once __DIR__.'/lib/data.php'; 
 
-                return $args;
-            }, function ($args) use($askOnEnd, $visio_audio_video_parameters, $visio_audio_video_parameters_default) {
-                if ($args['section'] == 'visio')
-                {
-                    $this->add_texts('localization/');
-                    $askOnEnd_config = $this->rc()->config->get($askOnEnd, true);
-                    $askOnEnd_config = rcube_utils::get_input_value($askOnEnd, rcube_utils::INPUT_POST) === '1';
-                    $args['prefs'][$askOnEnd] = $askOnEnd_config;
+                $this->data = new VisioParams();
 
-                    $visio_audio_video_parameters_config = $this->rc()->config->get($visio_audio_video_parameters, $visio_audio_video_parameters_default);
-                    $visio_audio_video_parameters_config = rcube_utils::get_input_value($visio_audio_video_parameters, rcube_utils::INPUT_POST);
-                    $args['prefs'][$visio_audio_video_parameters] = $visio_audio_video_parameters_config;
-                }
-                
-                return $args;
-            });
+                $this->load_config();
+                $this->register_task('webconf');
+                $this->force_register_action('index', [$this, 'index']);
+                $this->force_register_action('jwt', [$this, 'get_jwt']);
+                $this->force_register_action('get_workspace_datas', [$this, 'get_workspace_datas']);
+                $this->force_register_action('onGo', [$this, 'onGo']);
+                $this->force_register_action('notify', [$this, 'notify']);
+                break;
+
+            case 'calendar':
+                $this->send_visio_config();
+                break;
+
+            case 'bnum':              
+                $this->add_button(array(
+                    'command' => 'webconf',
+                    'class'	=> 'button-mel-webconf icon-mel-webconf webconf hidden',
+                    'classsel' => 'button-mel-webconf icon-mel-webconf webconf hidden selected',
+                    'innerclass' => 'button-inner inner',
+                    'label'	=> 'mel_visio.visio',
+                    'title' => 'mel_visio.visio',
+                    'type'       => 'link',
+                    'data-task' => 'webconf'
+                ), 'taskbar');
+
+                $this->include_css("main-nav.css");
+                $this->include_module('helper.js', 'js');
+                break;
+            
+            default:
+                break;
         }
     }
 
     function index() {
-        if (!$this->data->has_room() || $this->data->need_config()) $this->go_to_page('index');
-        else $this->go_to_page('visio');
-        
+        $page =  rcube_utils::get_input_value('_page', rcube_utils::INPUT_GET) ?? 'init';
+
+        if ($page === 'visio' || $page === 'index') {
+            if (!$this->data->has_room() || $this->data->need_config()) $this->go_to_page('index');
+            else $this->go_to_page('visio');
+        }
+        else $this->go_to_page($page);
     }
 
     function go_to_page($page) {
@@ -97,10 +82,32 @@ class mel_visio extends bnum_plugin
         }
     }
 
-    function page_index() {
-        if (self::OLD) return $this->go_to_page('visio');
+    function page_init() {
+        $this->setup_module();
+        
+        if (!$this->data->has_room()) {
+            return $this->page_index();
+        }
+        else {
+            $page = $this->data->has_room() ? 'visio' : null;
+            
+            $this->rc()->output->set_env('visio.data', $this->data->serialize());
+            $this->rc()->output->set_env('visio.init.page', $page);
 
-        if (class_exists('rocket_chat')) {
+            $this->include_script('js/caller.js');
+
+            $this->rc()->output->send('mel_metapage.empty');
+        }
+    }
+
+    function page_index() {
+        if (!$this->data->has_room()) 
+        {
+            $this->data->update_room($this->generate_key());
+            $this->add_handler("inputroom", [$this, "get_room_input"]);
+        }
+
+        if (false && class_exists('rocket_chat')) {
             $this->add_handler("selectrooms", [$this, "get_ariane_rooms"]);
             $this->rc()->output->set_env('visio.has_channel', true);
         }
@@ -131,157 +138,54 @@ class mel_visio extends bnum_plugin
     }
 
     function page_visio() {
-        if (!$this->old_visio()) {
-            $is_from_config = rcube_utils::get_input_value('_from_config', rcube_utils::INPUT_GET);
+        $path = __DIR__.'/config/toolbar.json';
+        $toolbar = file_get_contents($path, true);
+        $path = __DIR__.'/config/toolbar.more.json';
+        $more = file_get_contents($path, true);
+        $is_from_config = rcube_utils::get_input_value('_from_config', rcube_utils::INPUT_GET);
 
-            if ($is_from_config !== true) $is_from_config = $is_from_config === 'true';
+        if ($is_from_config !== true) $is_from_config = $is_from_config === 'true';
 
-            if (class_exists('mel_notification') && $is_from_config && !!$this->data->wsp()) {
-                //TODO Notify
-            }
-
-            $this->include_css("webconf.css");
-            $this->rc()->output->set_env('visio.data', $this->data->serialize());  
-            $this->send_visio_config();
-
-            $this->rc()->output->send('mel_visio.visio');
-        }
-    }
-
-    protected function get_input($key, $type = rcube_utils::INPUT_GPC) {
-        return rcube_utils::get_input_value($key, $type);
-    }
-
-    protected function set_env_var($key, $item)
-    {
-        $this->rc()->output->set_env($key, $item);
-    }
-
-    protected function send($html, $plugin = "mel_visio")
-    {
-        $this->rc()->output->send("$plugin.$html");
-    }
-
-    protected function add_parameters($onLoad, $onSave)
-    {
-        $this->add_hook('preferences_list', $onLoad);
-        $this->add_hook('preferences_save', $onSave);
-    }
-
-    protected function get_config($key, $default = null)
-    {
-        if ($default === null)
-            return $this->rc()->config->get($key);
-        else
-            return $this->rc()->config->get($key, $default);
-    }
-
-    protected function parse($html, $plugin = "mel_visio", $exit = false, $write = false)
-    {
-        return $this->rc()->output->parse("$plugin.$html", $exit, $write);
-    }
-
-
-    protected function include_js($path)
-    {
-        $this->include_script("js/$path");
-    }
-
-    private function old_visio() {
-        $this->setup_module();
-        $key_invalid = false;
-        $need_config = $this->get_input("_need_config") ?? false;
-        $locks = $this->get_input("_locks") ?? [];
-
-        if (is_string($locks))
-        {
-            if (strpos($locks, ',') !== false) $locks = mel_helper::Enumerable(explode(',', $locks))->select(function ($k, $v) {
-                return intval($v);
-            })->toArray();
-            else $locks = [intval($locks)];
+        if (class_exists('mel_notification') && $is_from_config && !!$this->data->wsp()) {
+            //TODO Notify
         }
 
-        $key = $this->get_input("_key");
-        $this->tmp_key = $key;// ?? $this->generate_key();
-        $this->set_env_var("webconf.key", $key);
-        $wsp = $this->get_input("_wsp");// ?? "webconf-1";
-        $ariane = null;
-
-        if ($wsp === null)
-        {
-                $ariane = $this->get_input("_ariane") ?? '@home';
-                $this->set_env_var("webconf.ariane", $ariane);
-        }
-        else
-        {
-            $workspace = $this->workspace($wsp);
-            $wsp = [
-            "objects" => json_decode($workspace->objects), 
-            "datas" => ["logo" => $workspace->logo,"ispublic" => $workspace->ispublic, 'uid' => $wsp, "allow_ariane" => $workspace->ispublic || mel_workspace::is_in_workspace($workspace)
-                ,"title" => $workspace->title,
-                "color" => json_decode($workspace->settings)->color
-                ]
-            ];
-            $this->set_env_var("webconf.wsp", $wsp);
-        }
-
-        $pass = $this->get_input("_pass");
-        if ($pass) {
-            $this->set_env_var("webconf.pass", $pass);
-        }
-
-        $user = driver_mel::gi()->getUser();
-        $this->set_env_var("webconf.user_datas", [
-            "name" => $user->name,
-            "email" => $user->email
-        ]);
-        $this->set_env_var("webconf.bar", $this->parse("webconf_bar"));
-
-        //check if key is valid
-        if ($need_config != 1 && $key !== null && $key !== '' && !$this->check_key_validity($key)) {
-            $key_invalid = true;
-            $need_config = 1;
-        }
-
-        if ($need_config == 1 || $key === null || $key === '')
-        {
-            $this->add_handler("roomkey", [$this, "get_key"]);
-            $this->add_handler("selectrooms", [$this, "get_ariane_rooms"]);
-            $this->add_handler("selectwsp", [$this, "get_all_workspaces"]);
-
-            if (!$key_invalid) $this->set_env_var("webconf.need_config", true);
-            $this->set_env_var("webconf.locks", $locks);
-        }
-        else if ($key !== null && ($wsp !== null || $ariane !== null))
-        {
-            $this->log_webconf($key);
-            $this->set_env_var("already_logged", "logged");
-        }
-
-        $this->set_env_var("webconf.public_url", self::PUBLIC_URL);
-
-        $this->set_env_var("webconf.feedback_url", $this->get_config("webconf_feedback_url"));
-        $this->set_env_var("webconf.have_feed_back", $this->get_config("visio_ask_on_end", true));
-        $this->set_env_var("webconf.audio_style_params", $this->get_config(self::VA_PARAM, self::DEFAULT_VA_PARAM));
-        $this->rc()->output->set_pagetitle("Visioconférence");
-        $this->include_js("../../rocket_chat/favico.js");
-        $this->include_js("../../rocket_chat/rocket_chat.js");
-        $this->include_js("webconf_audio_visualiser.js");
-        $this->include_js("webconf_video_manager.js");
-        $this->include_js("visio.js");
         $this->include_css("webconf.css");
-        $this->send("visio");
+        $this->rc()->output->set_env('visio.data', $this->data->serialize());  
+        $this->rc()->output->set_env('visio.toolbar', $toolbar); 
+        $this->rc()->output->set_env('visio.toolbar.more', $more); 
+        // $base_src = $this->rc()->config->get('annuaire_source');
+        // $contacts = $this->rc()->get_address_book($base_src)->search('email', driver_mel::gi()->getUser()->email);
+
+        // if (count($contacts) > 0) {
+        //     $cid = $contacts->first()['ID'];
+        //     $this->rc()->output->set_env('cid', $cid);
+        // }
+
+        unset($contacts);
+
+        $this->send_visio_config();
+        $this->load_script_module('visio');
+        $this->api->output->add_header('<script src="'.$this->rc()->config->get("web_conf").'/external_api.js"></script>');
+
+        $this->rc()->output->send('mel_visio.visio');
+        
+    }
+
+    function log_webconf($id)
+    {
+        mel_logs::get_instance()->log(mel_logs::INFO, "[Webconf]La webconf $id a été rejoint");
+    }
+
+    private function workspace($uid)
+    {
+        return mel_workspace::get_workspace($uid);
     }
 
     public function send_visio_config() {
         $this->rc()->output->set_env('visio.voxify_indicatif', $this->rc()->config->get('webconf_voxify_indicatif', 'FR'));
         $this->rc()->output->set_env('visio.voxify_url', $this->rc()->config->get('voxify_url'));   
         $this->rc()->output->set_env('visio.url', $this->rc()->config->get('visio_url'));     
-    }
-
-    function log_webconf($id)
-    {
-        mel_logs::get_instance()->log(mel_logs::INFO, "[Webconf]La webconf $id a été rejoint");
     }
 
     public function get_ariane_rooms($classes = "", $ownerOnly = false, $only = 0)
@@ -341,8 +245,8 @@ class mel_visio extends bnum_plugin
         if (class_exists("mel_workspace"))
         {
             $plugin = $this->rc()->plugins->get_plugin("mel_workspace");
-            $plugin->load_workspaces();
-            $workspaces = $plugin->workspaces;
+            $plugin->include_workspace_object();
+            $workspaces = Workspace::Workspaces();
         }
         else {
             $workspaces = [];
@@ -351,11 +255,18 @@ class mel_visio extends bnum_plugin
         $html = '<select class="wsp_select input-mel">';
 
         foreach ($workspaces as $workspace) {
-            $html .= '<option '.($this->data->wsp() !== null && $this->data->wsp() === $workspace->uid ? "selected" : "" ).' value="'.$workspace->uid.'">'.$workspace->title.'</option>';
+            $html .= '<option '.($this->data->wsp() !== null && $this->data->wsp() === $workspace->uid() ? "selected" : "" ).' value="'.$workspace->uid().'">'.$workspace->title().'</option>';
         }
         $html .= "</select>";
 
         return $html;
+    }
+
+    public function get_room_input() {
+        $this->require_plugin('mel_helper');
+        $input = mel_helper::Parse('mel_visio.block/input_room');
+        $input->value = $this->data->room();
+        return $input->parse();
     }
 
     public function get_jwt()
@@ -364,35 +275,6 @@ class mel_visio extends bnum_plugin
         echo json_encode(self::jwt());
         exit;
     }
-
-    /**
-     * Génère le code jwt
-     */
-    public static function jwt() {
-        $rcmail = rcmail::get_instance();
-        $room = rcube_utils::get_input_value('_room', rcube_utils::INPUT_GET);
-        $unlock = rcube_utils::get_input_value('_unlock', rcube_utils::INPUT_GPC);
-        $payload = $rcmail->config->get('webconf_jwt_payload', null);
-
-        $result = null;
-        if (isset($payload)) {
-            $payload['room'] = $room;
-            $payload['exp'] = time() + 12*60*60; // Expiration dans 12h
-            $key = $rcmail->config->get('webconf_jwt_key', null);
-
-            $jwt = JWT::encode($payload, $key);
-            $result = array(
-                'action'  => 'jwt',
-                'id'      => "webconf",
-                'room'    => $room,
-                'jwt'     => $jwt,
-                'unlock'  => $unlock,
-            );
-        }
-        return $result;
-    }
-
-    ////////////
     
     public function get_workspace_datas()
     {
@@ -409,26 +291,7 @@ class mel_visio extends bnum_plugin
         exit;
     }
 
-    public function onGo()
-    {
-        if (rcube_utils::get_input_value('_alreadyLogged', rcube_utils::INPUT_POST) === null)
-        {
-            $room = rcube_utils::get_input_value('_room', rcube_utils::INPUT_POST);
-            $this->log_webconf($room);
-        }
-
-        echo 0;
-        exit;
-    }
-
-    public function check_key_validity($key)
-    {
-        return strlen($key) >= 10 && mel_helper::Enumerable($key)->where(function ($k, $v) {
-            return preg_match("/\d/", $v) === 1;
-        })->count() >= 3 && preg_match("/^[0-9a-zA-Z]+$/", $key);
-    }
-
-        public function notify()
+    public function notify()
     {
         if (class_exists("mel_notification"))
         {
@@ -462,12 +325,34 @@ class mel_visio extends bnum_plugin
         }
     }
 
-    public function get_key()
-    {
-        return $this->tmp_key;
+     /**
+     * Génère le code jwt
+     */
+    public static function jwt() {
+        $rcmail = rcmail::get_instance();
+        $room = rcube_utils::get_input_value('_room', rcube_utils::INPUT_GET);
+        $unlock = rcube_utils::get_input_value('_unlock', rcube_utils::INPUT_GPC);
+        $payload = $rcmail->config->get('webconf_jwt_payload', null);
+
+        $result = null;
+        if (isset($payload)) {
+            $payload['room'] = $room;
+            $payload['exp'] = time() + 12*60*60; // Expiration dans 12h
+            $key = $rcmail->config->get('webconf_jwt_key', null);
+
+            $jwt = JWT::encode($payload, $key);
+            $result = array(
+                'action'  => 'jwt',
+                'id'      => "webconf",
+                'room'    => $room,
+                'jwt'     => $jwt,
+                'unlock'  => $unlock,
+            );
+        }
+        return $result;
     }
 
-        private function generate_key($size = null)
+    private function generate_key($size = null)
     {
         if ($size === null)
             $size = rand(10 , 20);
@@ -505,16 +390,6 @@ class mel_visio extends bnum_plugin
         } 
 
         return $key;
-    }
-
-    private function workspace($uid)
-    {
-        return mel_workspace::get_workspace($uid);
-    }
-
-    private function webconf_base_url()
-    {
-        return $this->get_config("web_conf");
     }
 
 }

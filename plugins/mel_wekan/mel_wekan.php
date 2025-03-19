@@ -1,6 +1,7 @@
 <?php
-class mel_wekan extends rcube_plugin
+class mel_wekan extends bnum_plugin
 {
+    public const KEY_FOR_WORKSPACE = 'wekan';
     /**
      * @var string
      */
@@ -47,15 +48,15 @@ class mel_wekan extends rcube_plugin
 
         $need_button = 'taskbar';
         if (class_exists("mel_metapage")) {
-          $need_button = $this->rc->plugins->get_plugin('mel_metapage')->is_app_enabled('app_kanban') ? $need_button : 'otherappsbar';
+            $need_button = $this->rc->plugins->get_plugin('mel_metapage')->is_app_enabled('app_kanban') ? $need_button : 'otherappsbar';
         }
 
         $button_config = array(
             'command' => 'wekan',
-            'class'	=> 'button-mel-wekan icon-mel-trello wekan',
+            'class'    => 'button-mel-wekan icon-mel-trello wekan',
             'classsel' => 'button-mel-wekan button-selected icon-mel-trello wekan',
             'innerclass' => 'button-inner inner',
-            'label'	=> 'mel_wekan.kanban',
+            'label'    => 'mel_wekan.kanban',
             'title' => 'mel_wekan.kanban',
             'type'       => 'link'
         );
@@ -70,7 +71,7 @@ class mel_wekan extends rcube_plugin
         if (isset($params) && isset($params->button)) $button_config = $params->button;
 
         if ($need_button) $this->add_button($button_config, $need_button);
-        
+
         unset($button_config);
         unset($params);
         unset($need_button);
@@ -78,15 +79,25 @@ class mel_wekan extends rcube_plugin
         $this->rc->output->set_env("wekan_base_url", $this->wekan_url(false));
         if (class_exists("mel_metapage")) mel_metapage::add_url_spied($this->wekan_url(false), 'kanban');
 
+        if ($this->rc->task === 'workspace') {
+            $this->add_hook('wsp.show', [$this, 'wsp_block']);
+            $this->add_hook('workspace.services.set', [$this, 'workspace_services_set']);
+            $this->add_hook('workspace.services.set.role', [$this, 'workspace_services_set_role']);
+            $this->add_hook('workspace.users.services.delete', [$this, 'workspace_users_services_delete']);
+            $this->add_hook('workspace.params.services.show.update', [$this, 'workspace_params_services_show_update']);
+            $this->add_hook('workspace.service.get', [$this, 'workspace_service_get']);
+            $this->add_hook('workspace.service.delete', [$this, 'workspace_service_delete']);
+        }
     }
 
     function index()
     {
 
-        $startupUrl =  rcube_utils::get_input_value("_url", rcube_utils::INPUT_GPC); 
+        $startupUrl =  rcube_utils::get_input_value("_url", rcube_utils::INPUT_GPC);
         if ($startupUrl !== null && $startupUrl !== "") $this->rc->output->set_env("wekan_startup_url", $startupUrl);
 
         $this->rc->output->set_env("wekan_storage_end", $this->rc->config->get("wekan_storage_end"));
+        $this->ignore_footer();
 
         $this->rc->output->set_pagetitle("Kanban");
         $this->rc->output->send('mel_wekan.wekan');
@@ -100,12 +111,12 @@ class mel_wekan extends rcube_plugin
     function load_lib()
     {
         mel_helper::load_helper($this->rc)->include_amel_lib();
- 
-        $files = scandir(__DIR__."/lib");
+
+        $files = scandir(__DIR__ . "/lib");
         $size = count($files);
-        for ($i=0; $i < $size; ++$i) { 
+        for ($i = 0; $i < $size; ++$i) {
             if (strpos($files[$i], ".php") !== false)
-                include_once "lib/".$files[$i];
+                include_once "lib/" . $files[$i];
         }
     }
 
@@ -115,13 +126,13 @@ class mel_wekan extends rcube_plugin
      * @return void
      */
     public function login()
-    {        
+    {
         $currentUser = rcube_utils::get_input_value("currentUser", rcube_utils::INPUT_GPC) ?? false;
 
         mel_logs::get_instance()->log(mel_logs::INFO, "[wekan/login]Login de wekan... Utilisteur courant ? $currentUser");
         $result = !$currentUser ? $this->wekanApi->login() : $this->wekanApi->create_token(driver_mel::gi()->getUser()->uid);
 
-        mel_logs::get_instance()->log(mel_logs::INFO, '[wekan/login]Résultat ? '.json_encode($result));
+        mel_logs::get_instance()->log(mel_logs::INFO, '[wekan/login]Résultat ? ' . json_encode($result));
 
         echo json_encode($result);
         exit;
@@ -164,12 +175,10 @@ class mel_wekan extends rcube_plugin
     {
         $board = $this->create_board($title, $isPublic, $color);
 
-        if ($board["httpCode"] == 200)
-        {
+        if ($board["httpCode"] == 200) {
             $content = json_decode($board["content"]);
 
-            if ($content->_id !== null)
-            {
+            if ($content->_id !== null) {
                 $board = [
                     "httpCode" => 200,
                     "board_id" => $content->_id,
@@ -186,7 +195,6 @@ class mel_wekan extends rcube_plugin
                     $b = $this->wekanApi->delete_swimline($content->_id, $content->defaultSwimlaneId);
                 }
             }
-
         }
 
         return $board;
@@ -295,13 +303,13 @@ class mel_wekan extends rcube_plugin
         $board_exist = false;
         $board = $this->check_board($board);
 
-        if($board["httpCode"] !== null && $board["httpCode"] == 200 && $board["content"] !== "{}" && !empty($board["content"])
-        || $board["httpCode"] !== null && $board["httpCode"] != 200) 
-        {
+        if (
+            $board["httpCode"] !== null && $board["httpCode"] == 200 && $board["content"] !== "{}" && !empty($board["content"])
+            || $board["httpCode"] !== null && $board["httpCode"] != 200
+        ) {
             $board_exist = true;
-        }
-        else {
-            mel_logs::get_instance()->log(mel_logs::WARN, "/!\\[mel_wekan->board_exist|".driver_mel::gi()->getUser()->uid."]Recréation d'un board ! : ".json_encode($board));
+        } else {
+            mel_logs::get_instance()->log(mel_logs::WARN, "/!\\[mel_wekan->board_exist|" . driver_mel::gi()->getUser()->uid . "]Recréation d'un board ! : " . json_encode($board));
         }
 
         return $board_exist;
@@ -322,7 +330,6 @@ class mel_wekan extends rcube_plugin
             $archived = json_decode($board["content"])->archived;
 
         return $archived;
-
     }
 
     public function add_tag($board, $label)
@@ -367,30 +374,219 @@ class mel_wekan extends rcube_plugin
         $list = mel_helper::Enumerable($list);
 
         switch ($mode) {
-            case 1://public
+            case 1: //public
                 $perm = 'public';
-            case 2://private
+            case 2: //private
                 if ($mode === 2) $perm = 'private';
             case 3:
-                $list = $list->where(function ($k, $v) use($perm) {
+                $list = $list->where(function ($k, $v) use ($perm) {
                     return $v->permission === $perm;
                 });
                 break;
-            
+
             default:
                 break;
         }
 
-        if ($only_title_and_id) $list = $list->select(function ($k, $v){
+        if ($only_title_and_id) $list = $list->select(function ($k, $v) {
             return [
-                'title' => $v->get_value()->title,
-                'id' => $v->get_value()->id
+                'title' => $v->title,
+                'id' => $v->id
             ];
         });
 
-        echo json_encode($list->toArray());
+        echo $list = json_encode($list->toArray());
+
         exit;
     }
+
+    function add_users_to_wekan_board($workspace, $users, $board_id = null, $wekan = null, $current_user = null)
+    {
+        if (!isset($current_user)) $current_user = driver_mel::gi()->getUser()->uid;
+        if (!isset($wekan)) $wekan = $this;
+
+        if (!isset($board_id)) $board_id = $workspace->objects()->get(self::KEY_FOR_WORKSPACE)->id;
+
+        $return = ['users' => []];
+
+        foreach ($users as $key => $value) {
+            $value = $key;
+            if (!$wekan->check_if_user_exist($board_id, $value))
+            {
+                try {
+                    $return['users'][$value] = $wekan->add_member($board_id, $value, $workspace->isAdmin($value));
+                    $wekan->update_user_status($board_id, $value, $workspace->isAdmin($value));
+                } catch (\Throwable $th) {
+                    //throw $th;
+                }
+            }
+        }
+
+        return $return;
+    }
+
+    #region Workspace
+    function create_workspace_wekan($workspace, $title, $isPublic, $color, $list, $users)
+    {
+        $wekan = $this;
+        $return = [
+            "board" => $wekan->create_board_with_inital_lists($title, $isPublic, $color, $list),
+            "users" => []
+        ];
+
+        if ($return["board"]["httpCode"] == 200)
+        {
+            $current_user = driver_mel::gi()->getUser()->uid;
+            $board_id = $return["board"]["board_id"] !== null ? $return["board"]["board_id"] : json_decode($return["board"]["content"])->_id;
+
+            $return['users'] = $this->add_users_to_wekan_board($workspace, $users, $board_id, $wekan, $current_user)['users'];
+
+            $return["board_id"] = $board_id;
+            $return["board_title"] = null;//$return["board"]["board_title"] !== null ? $return["board"]["board_title"] : json_decode($return["board"]["content"])->title;
+        }
+
+        return $return;
+    }
+
+    public function workspace_service_delete($args) {
+        $key = array_search(mel_workspace::KEY_TASK, $args['services']);
+
+        if (isset($key) && $key !== false) {
+            $wekan = $args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE);//$this->get_object($workspace, self::WEKAN);
+            if ($wekan->updated !== true) $this->delete_board($wekan->id);
+        }
+
+        return $args;
+    }
+
+    public function workspace_services_set($args) {
+        $key = array_search(mel_workspace::KEY_TASK, $args['services']);
+
+        if (isset($key) && $key !== false) {
+            /**
+             * @var Workspace
+             */
+            $workspace = $args['workspace'];
+            $default_value = $args['default_values'];
+            //Verifier si le wekan existe
+            $board_id = $workspace->objects()->get(self::KEY_FOR_WORKSPACE)->id;//$this->get_object($workspace, self::WEKAN);
+            
+            if ($board_id === null)
+            {
+                $object = ["id" => '', "title" => ''];
+                $index = 'tasks';
+
+                if (!isset($default_value) || !isset($default_value[$index]))
+                {
+                    if (!isset($default_value) || $default_value === '') $default_value = [];
+
+                    $default_value[$index] = [
+                        'mode' => 'default'
+                    ];
+                }
+
+                switch ($default_value[$index]['mode']) {
+                    case 'default':
+                        $title = $workspace->title();
+                    case 'custom_name':
+                        if ($default_value[$index]['mode'] === 'custom_name') $title = $default_value[$index]['value'];
+                    case 'create':
+                        $board_id = $this->create_workspace_wekan($workspace, $title ?? $workspace->title(), $workspace->isPublic() === false ? false: true, null, [
+                            $this->rc->gettext("wekan_todo", "mel_workspace"),
+                            $this->rc->gettext("wekan_in_progress", "mel_workspace"),
+                            $this->rc->gettext("wekan_do", "mel_workspace")
+                        ], $workspace->users());
+                        break;
+                    case 'already_exist':
+                        $board_id = [
+                            'board_id' => $default_value[$index]['value'],
+                            'board_title' => $this->wekanApi->get_board($default_value[$index]['value']),
+                        ];
+                        $board_id["board_title"] = ($board_id["board_title"]['httpCode'] === 200 ? json_decode($board_id["board_title"]['content'])->title : null) ?? '';
+                        $object['updated'] = true;
+                        break;
+                    
+                    default:
+                        return;
+                } 
+
+                $object['id'] = $board_id['board_id'];
+                $object['title'] = $board_id['board_title'];
+
+                $workspace->objects()->set(self::KEY_FOR_WORKSPACE, $object);
+                //$this->save_object($workspace, self::WEKAN, $object);
+                $args['default_values'] = $default_value;
+                $args['workspace'] = $workspace;
+            }
+            else {
+                foreach ($workspace->users() as $key => $value) {
+                    if (!$this->check_if_user_exist($board_id, $key))
+                    {
+                        try {
+                            $this->add_member($board_id, $value);
+                        } catch (\Throwable $th) {
+                            throw $th;
+                        }
+                    }
+                }
+
+                $args['workspace'] = $workspace;
+            }
+        }
+
+        return $args;
+    }
+
+    public function workspace_services_set_role($args) {
+        if ($args['workspace']->hasService(self::KEY_FOR_WORKSPACE)) {
+            $new_right = $args['new_right'];
+            $this->update_user_status($args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE)->id, $args['user'], !($new_right === $args['rights']['user']));
+        }
+
+        return $args;
+    }
+
+    public function workspace_users_services_delete($args) {
+        if ($args['workspace']->hasService(self::KEY_FOR_WORKSPACE)) {
+            $board_id = $args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE)->id; 
+
+            if ($this->check_if_user_exist($board_id, $args['user']))
+            {
+                try {
+                    $this->remove_user($board_id, $args['user']);
+                } catch (\Throwable $th) {
+                    throw $th;
+                }
+            }   
+        }
+
+        return $args;
+    }
+
+    public function workspace_params_services_show_update($args) {
+        if ($args['app'] === mel_workspace::KEY_TASK) {
+            $args['html'] .= html::tag("button", ["title" => "Choisissez un nouveau tableau !",  "id" => "update-wekan-button","class" => "mel-button param-button " ], "Changer de tableau".html::tag("span", ["class" => "plus icon-mel-pencil"]));
+        }
+
+        return $args;
+    }
+
+    public function wsp_block($args) {
+        if ($args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE) !== null) {
+            $args['plugin']->include_workspace_module('mel_wekan', 'workspace.js', 'js');
+            $args['layout']->setNavBarSetting('wekan', 'view_kanban', false, 4);
+        }
+
+        return $args;
+    }
+
+    public function workspace_service_get($args) {
+        if ($args['services'][self::KEY_FOR_WORKSPACE]) $args['services'][self::KEY_FOR_WORKSPACE] = $args['services'][mel_workspace::KEY_TASK] ?? false;
+
+        return $args;
+    }
+
+    #endregion
 
     public function __api()
     {

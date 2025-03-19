@@ -67,7 +67,7 @@ class mtes_driver_mel extends mce_driver_mel
   /**
    * Dossier pour l'utilisation des fichiers pour le unexpunge
    */
-  protected static $_unexpungeFolder = '/var/pamela/unexpunge/';
+  protected static $_unexpungeFolder = '/m2-new-nfs/pamela/unexpunge/';
 
   /**
    * Liste des valeurs pour un groupe de workspace
@@ -202,6 +202,18 @@ class mtes_driver_mel extends mce_driver_mel
   }
 
   /**
+   * Récupération de la cible de restauration en fonction de la boite
+   * 
+   * @param string $mbox Identifiant de la boite concernée par la restauration
+   * 
+   * @return string Cible de restauration
+   */
+  protected function get_restoration_target($mbox) {
+    $target = $this->get_restoration_host($mbox);
+    return explode('.', $target, 2)[0];
+  }
+
+  /**
    * Positionne des headers pour un message avant de l'envoyer
    * 
    * @param array $headers Liste des headers a fournir au message
@@ -262,6 +274,7 @@ class mtes_driver_mel extends mce_driver_mel
       && !mel::is_auth_strong()
       && class_exists('mel_doubleauth')
       && !mel_doubleauth::is_double_auth_enable()
+      && !mel_doubleauth::date_grace_enabled()
     ) {
       $hasAccess = false;
     }
@@ -615,6 +628,12 @@ class mtes_driver_mel extends mce_driver_mel
     if (!$this->valid_external_domain($email)) {
       // Si le domaine est interne on ne fait rien
       mel_logs::get_instance()->log(mel_logs::ERROR, "[driver_mel] mtes::create_external_user($email) : Domaine interne");
+      return false;
+    }
+
+    // 0008651: Externes - Valider l'adresse email
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+      mel_logs::get_instance()->log(mel_logs::ERROR, "[driver_mel] mtes::create_external_user($email) : Email invalide");
       return false;
     }
 

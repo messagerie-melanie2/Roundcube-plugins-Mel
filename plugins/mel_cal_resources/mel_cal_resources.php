@@ -33,8 +33,10 @@ class mel_cal_resources extends bnum_plugin {
                     ), 'toolbar');
                 }
                 
+                $this->_set_global_env();
                 $this->include_css('style.css');
                 $this->add_hook('send_page', [$this, 'render_page']);
+
             }
 
 
@@ -49,6 +51,17 @@ class mel_cal_resources extends bnum_plugin {
             $this->register_action('set_favorite', [$this, 'change_favorite']);
             $this->register_action('load_favorites', [$this, 'load_favorites']);  
         }
+    }
+
+    /**
+     * Met en place les variables d'environements globales pour le plugin
+     * @return void
+     */
+    private function _set_global_env() : void {
+        $user = $this->get_user();
+        $user->load(['locality']);
+        $this->rc()->output->set_env('user_location', $user->locality);
+        $this->rc()->output->set_env('lang', $this->rc()->get_user_language());
     }
 
     function load_data($waiting_script_name) {
@@ -139,12 +152,18 @@ class mel_cal_resources extends bnum_plugin {
         exit;
     }
 
-    function load_favorites() {
-        include_once __DIR__.'/lib/Resource.php';
+    /**
+     * Chargement des favoris par ressources
+     * @return void
+     */
+    function load_favorites() : void {
         $favorites = [];
+        $rcs = strtoupper($this->get_input('_resources', rcube_utils::INPUT_GP));
         $config = $this->rc()->config->get(self::CONFIG_KEY_FAVORITE, []);
 
-        if (count($config) > 0) {
+        if (count($config) > 0 && $config[$rcs] !== null && count($config[$rcs]) > 0) {
+            $config = $config[$rcs];
+            //Récupération des ressources et mappage en id
             $config = mel_helper::Enumerable($config)->where(function ($k, $v) {
                                                         return strpos($k, '@') !== false && isset($v) && $v;
                                                     })->select(function($k, $v) {
@@ -153,23 +172,33 @@ class mel_cal_resources extends bnum_plugin {
             $favorites = driver_mel::gi()->resources(null, $config);
             unset($config);
 
-            if (count($favorites) > 0) $favorites = mel_helper::Enumerable($favorites)->select(function($key, $value) {
+            if (count($favorites) > 0) {
+                include_once __DIR__.'/lib/Resource.php';
+                $favorites = mel_helper::Enumerable($favorites)->select(function($key, $value) {
                                                         return new Resource($value);
                                                     })->toArray();
+            }
         }
 
         echo json_encode($favorites);
         exit;
     }
 
-    function change_favorite() {
+    /**
+     * Changement de l'état favoris d'une ressource
+     * @return void
+     */
+    function change_favorite() : void {
+        $rcs = strtoupper($this->get_input_post('_resource'));
         $uid = $this->get_input_post('_uid');
         $favorite = $this->get_input_post('_favorite');
         $favorite = $favorite === true || $favorite === 'true';
 
         $favs = $this->rc()->config->get(self::CONFIG_KEY_FAVORITE, []);
 
-        $favs[$uid] = $favorite;
+        $favs[$rcs] ??= [];
+
+        $favs[$rcs][$uid] = $favorite;
         $this->rc()->user->save_prefs([self::CONFIG_KEY_FAVORITE => $favs]);
 
         echo json_encode($favorite);

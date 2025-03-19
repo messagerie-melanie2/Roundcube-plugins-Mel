@@ -50,6 +50,7 @@ class Workspaces extends Module
     $this->edit_row_size(12);
     $this->edit_order(6);
     $this->set_use_custom_style(true);
+    mel_metapage::IncludeAvatar();
 
     // $it = 0;
     // foreach ($this->workspaces as $key => $value) {
@@ -65,6 +66,27 @@ class Workspaces extends Module
 }
 
   function generate_html()
+  {
+    $workspaces = mel_workspace::LoadFavoriteWorkspaces(5, null, true);//mel_workspace::LoadWorkspaces(1, 5);
+    // $nb = $workspaces->count();
+
+    // if ($nb < 4) $workspaces = mel_helper::Enumerable($workspaces)->aggregate(mel_workspace::LoadWorkspaces(1, 5 - $nb));
+
+    // unset($nb);
+
+    $html = mel_workspace::IncludeWorkspacesBlocks($workspaces);
+    unset($workspaces);
+
+    $title = html::div(
+      ['style' => 'display: flex;justify-content: space-between;border-bottom: solid thin #e0e0e0;padding-bottom: 5px;margin-bottom: 15px;margin-left: 14px;'],
+      html::tag("h2", ["style" => "float:left;margin-top:15px;margin-bottom: -5px;"], html::a(['class' => 'melv2-card-title'], $this->text("workspaces"))) .
+        html::tag("button", ["id" => "wsp-see-all", "title" => "Afficher la liste des espaces de travail", "class" => "mel-button", "style" => "float:right;"], html::tag("span", [], "Voir tout") . html::tag("span", ["class" => "icon-mel-arrow-right plus"]))
+    );
+
+    return $title . html::div(["class" => '--row workspace-list'], $html);
+  }
+
+  function _generate_html()
   {
     // return '';
     $html = "";
@@ -127,12 +149,12 @@ class Workspaces extends Module
           break;
         }
         
-        if (!$this->rc->plugins->get_plugin('mel_metapage')->get_picture_mode())
+        if (false && !$this->rc->plugins->get_plugin('mel_metapage')->get_picture_mode())
         {
           $html_tmp .= '<div data-user="' . $s->user . '" class="dwp-circle dwp-user"><span style=color:"'. $ws->get_badge_text_color($workspace) .">" . substr($s->user, 0, 2) . '</span></div>';
         }
         else {
-          $html_tmp .= '<div data-user="' . $s->user . '" class="dwp-circle dwp-user"><img alt="" src="' . $this->rc->config->get('rocket_chat_url') . 'avatar/' . $s->user . '" /></div>';
+          $html_tmp .= '<div data-user="' . $s->user . '" class="dwp-circle dwp-user"><bnum-avatar data-f100="true" data-email="'.driver_mel::gi()->getUser($s->user)->email.'"></bnum-avatar></div>';//<img alt="" src="' . $this->rc->config->get('rocket_chat_url') . 'avatar/' . $s->user . '" /></div>';
         }
         ++$it;
       }

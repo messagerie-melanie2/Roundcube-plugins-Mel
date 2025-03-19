@@ -16,6 +16,40 @@
       this.init_params_buttons();
     }
 
+    /**
+     * @return {Promise<NavBarManager>}
+     */
+    async NavBarManager() {
+      const { NavBarManager } = await loadJsModule(
+        'mel_workspace',
+        'navbar.generator',
+        '/js/lib/program/',
+      );
+
+      return NavBarManager;
+    }
+
+    async reload_page() {
+      const NavBarManager = await this.NavBarManager();
+
+      if (NavBarManager.currentNavBar) {
+        NavBarManager.Kill(NavBarManager.currentNavBar.uid);
+      }
+
+      $('#layout-content').remove();
+      rcmail.set_busy(true, 'loading');
+
+      window.location.href = mel_metapage.Functions.url(
+        'workspace',
+        'workspace',
+        {
+          _uid: this.uid,
+          _page: 'settings',
+          _is_form: 'iframe',
+        },
+      );
+    }
+
     init_params_buttons() {
       if ($('#update-channel-button').length > 0)
         $('#update-channel-button').on('click', () => {
@@ -143,54 +177,148 @@
           _uid: this.uid,
         },
         () => {
-          $('.dwp-round').css('background-color', color);
-          this.update_home();
+          this.NavBarManager().then((manager) => {
+            manager.currentNavBar.color = color;
+          });
+          // $('.dwp-round').css('background-color', color);
+          // this.update_home();
         },
       ).always(() => {
         this.busy(false);
       });
     }
 
-    async add_user() {
-      if (this.is_busy()) return;
-
-      if (Workspace_Param.PopUp !== undefined) delete Workspace_Param.PopUp;
-
-      const config = new GlobalModalConfig(
-        'Ajouter un utilisateur',
-        'default',
-        MEL_ELASTIC_UI.get_input_mail_search('tmp-id-wsp'),
-        null,
-        'default',
-        'default',
-        () => {
-          let tmp = new Workspace_Param(rcmail.env.current_workspace_uid);
-          tmp.save_users();
-        },
+    async modal() {
+      const { MelDialog, DialogPage, RcmailDialogButton } = await loadJsModule(
+        'mel_metapage',
+        'modal',
+        '/js/lib/classes/',
       );
 
-      if ($('#globalModal .modal-close-footer').length == 0)
-        await GlobalModal.resetModal();
-
-      Workspace_Param.PopUp = new GlobalModal('globalModal', config, true);
-      Workspace_Param.PopUp.input = $('#tmp-id-wsp');
-      rcmail.init_address_input_events($('#tmp-id-wsp'));
+      return { MelDialog, DialogPage, RcmailDialogButton };
     }
 
-    save_users() {
+    async add_user({ context = window } = {}) {
+      if (this.is_busy()) return;
+
+      if (Workspace_Param.PopUp !== undefined) {
+        try {
+          Workspace_Param.PopUp?.destroy?.();
+        } catch (error) {
+          //TODO : Avoid try/catch
+        }
+        delete Workspace_Param.PopUp;
+      }
+
+      const { MelDialog, RcmailDialogButton } = await this.modal();
+      const { HTMLWrapperElement } = await context.loadJsModule(
+        'mel_metapage',
+        'wrapper',
+        '/js/lib/html/JsHtml/CustomAttributes/',
+      );
+
+      const { BnumHtmlIcon } = await context.loadJsModule(
+        'mel_metapage',
+        'js_html_base_web_elements',
+        '/js/lib/html/JsHtml/CustomAttributes/',
+      );
+
+      let save = RcmailDialogButton.ButtonSave({
+        classes: 'param-save-button',
+        text: 'Ajouter',
+        click: function (calledWindow) {
+          this.save_users({ context: calledWindow });
+        }.bind(this, context),
+        options: {
+          icon: 'ui-icon-arrow-1-e',
+          iconPosition: 'end',
+        },
+      });
+
+      let modal = MelDialog.Create(
+        'index',
+        HTMLWrapperElement.CreateNode({
+          contents: MEL_ELASTIC_UI.get_input_mail_search('tmp-id-wsp', {
+            inputTabIndex: 0,
+            contactTabIndex: 0,
+          }),
+          context: context.document,
+        }).$,
+        {
+          title: 'Ajouter un utilisateur',
+          options: { height: 150 },
+          buttons: [
+            RcmailDialogButton.ButtonCancel({
+              click: () => {
+                Workspace_Param.PopUp.destroy();
+              },
+              classes: 'param-cancel-button',
+              options: {
+                icon: 'ui-icon-close',
+                iconPosition: 'end',
+              },
+            }),
+            save,
+          ],
+        },
+      );
+      modal.show({ context });
+      modal.dialogContainer
+        .find('.param-save-button')
+        .css({ display: 'flex', 'align-items': 'center' })
+        .append(
+          BnumHtmlIcon.Create({
+            icon: 'arrow_right_alt',
+            context: context.document,
+          }).addClass('plus'),
+        );
+      modal.dialogContainer
+        .find('.param-cancel-button')
+        .css({ display: 'flex', 'align-items': 'center' })
+        .append(
+          BnumHtmlIcon.Create({
+            icon: 'close',
+            context: context.document,
+          }).addClass('plus'),
+        );
+      Workspace_Param.PopUp = modal;
+      Workspace_Param.PopUp.input = context.$('#tmp-id-wsp');
+      context.rcmail.init_address_input_events(Workspace_Param.PopUp.input);
+    }
+
+    async get_new_members() {
+      //get_members
+      return await this.ajax(
+        this.url('get_members'),
+        {
+          _uid: this.uid,
+        },
+        (data) => {
+          data = JSON.parse(data);
+
+          if (data === 'denied')
+            rcmail.display_message('Accès interdit !', 'error');
+          else {
+            rcmail.env.current_workspace_users = data;
+          }
+        },
+      );
+    }
+
+    save_users({ context = window } = {}) {
       this.busy();
       let users = [];
       let input = Workspace_Param.PopUp.input;
 
       if (input.val() !== '') {
         input.val(input.val() + ',');
-        m_mp_autocoplete(input[0]);
+        context.m_mp_autocoplete(input[0]);
       }
-      $('.workspace-recipient').each((i, e) => {
-        users.push($(e).find('.email').html());
+      context.$('.workspace-recipient').each((i, e) => {
+        users.push(context.$(e).find('.email').html());
       });
 
-      Workspace_Param.PopUp.close();
+      Workspace_Param.PopUp.destroy();
       delete Workspace_Param.PopUp;
 
       return this.ajax(
@@ -239,7 +367,7 @@
         top.rcmail
           .triggerEvent(mel_metapage.EventListeners.workspaces_updated.get)
           .then(() => {
-            window.location.reload();
+            this.reload_page();
           });
       });
     }
@@ -282,6 +410,11 @@
         },
         (datas) => {
           this.update_table(datas);
+          this.NavBarManager().then(async (manager) => {
+            await this.get_new_members();
+            manager.currentNavBar.onuserchanged.call();
+            manager.currentNavBar.tryUpdateSendButton();
+          });
         },
       ).always(() => {
         func();
@@ -312,7 +445,7 @@
           $('.btn-u-r').removeClass('disabled').removeAttr('disabled');
           switch (datas) {
             case 'reload':
-              window.location.reload();
+              this.reload_page();
               return;
             case 'error':
               $('.btn-u-r').each((i, e) => {
@@ -464,14 +597,35 @@
           } else {
             switch (config.type) {
               case 'title':
-                $('.wsp-head .header-wsp').html(val);
+                // $('.wsp-head .header-wsp').html(val);
                 config.input.attr('placeholder', val);
                 this.titleUpdated(empty);
+                this.NavBarManager().then((manager) => {
+                  manager.currentNavBar.title = val;
+                });
                 break;
 
               default:
-                if (config.action !== null)
+                if (config.action !== null) {
                   config.action(datas, config, val, empty);
+
+                  switch (config.type) {
+                    case 'desc':
+                      this.NavBarManager().then((manager) => {
+                        manager.currentNavBar.description = val;
+                      });
+                      break;
+
+                    case 'hashtag':
+                      this.NavBarManager().then((manager) => {
+                        manager.currentNavBar.hashtag = val;
+                      });
+                      break;
+
+                    default:
+                      break;
+                  }
+                }
                 break;
             }
 
@@ -512,23 +666,26 @@
               'error',
             );
           } else {
-            if (new_logo === 'false') {
-              $('#worspace-avatar-b').html(
-                `<span>${$('.wsp-head h1.header-wsp').html().slice(0, 3)}</span>`,
-              );
-              $('.dwp-round.wsp-picture').html(
-                `<span>${$('.wsp-head h1.header-wsp').html().slice(0, 3)}</span>`,
-              );
-            } else {
-              $('#worspace-avatar-b').html(`<img src="${new_logo}" />`);
-              $('.dwp-round.wsp-picture').html(`<img src="${new_logo}" />`);
-            }
+            // if (new_logo === 'false') {
+            //   $('#worspace-avatar-b').html(
+            //     `<span>${$('.wsp-head h1.header-wsp').html().slice(0, 3)}</span>`,
+            //   );
+            //   $('.dwp-round.wsp-picture').html(
+            //     `<span>${$('.wsp-head h1.header-wsp').html().slice(0, 3)}</span>`,
+            //   );
+            // } else {
+            //   $('#worspace-avatar-b').html(`<img src="${new_logo}" />`);
+            //   $('.dwp-round.wsp-picture').html(`<img src="${new_logo}" />`);
+            // }
 
             $('#wsp-param-chg-button-plz')
               .attr('disabled', 'disabled')
               .addClass('disabled');
 
-            this.update_home();
+            //this.update_home();
+            this.NavBarManager().then((manager) => {
+              manager.currentNavBar.picture = new_logo;
+            });
           }
         },
       ).always(() => {
@@ -625,6 +782,16 @@
           (msg) => {
             this.busy(false);
             switch (msg) {
+              case 'yourealoneupgrade':
+                if (
+                  confirm(
+                    "Vous êtes la seul personne dans cet espace et vous n'êtes pas administrateur. Si vous quittez l'espace, celui-ci sera supprimé, cliquez sur ''ok'' si vous souhaitez continuer.",
+                  )
+                ) {
+                  this.delete();
+                }
+
+                break;
               case 'yourealone':
                 rcmail.display_message(
                   'Vous êtes la seule personne de cet espace, si vous souhaitez le quitter, supprimer le.',
@@ -692,17 +859,28 @@
 
     update_app(app) {
       this.busy();
-      return this.ajax(this.url('PARAMS_update_app'), {
-        _uid: this.uid,
-        _app: app,
-      })
+      return this.ajax(
+        this.url('PARAMS_update_app'),
+        {
+          _uid: this.uid,
+          _app: app,
+        },
+        (d) => {
+          if (d === 'error') {
+            parent.rcmail.display_message(
+              'Impossible de créer le service pour le moment.',
+              'error',
+            );
+          }
+        },
+      )
         .always(() => {
           return this.update_app_table(() => {
             this.change_icons();
           });
         })
         .always(async () => {
-          if (true || app === 'doc') this.reload();
+          if (true || app === 'doc') this.reload_page();
           else {
             await this.ajax(
               this.url('PARAMS_update_services'),
@@ -804,7 +982,7 @@
 
       if (
         await MelDialog.Confirm(
-          `Êtes-vous sûr de vouloir supprimer l'espace de travail : ${$('.header-wsp').text()} ? <br/> Attention, cette action sera irréversible !`,
+          `Êtes-vous sûr de vouloir supprimer l'espace de travail : ${rcmail.env.current_workspace_title} ? <br/> Attention, cette action sera irréversible !`,
           {
             waiting_button_enabled: 5,
             title: 'Confirmation',
@@ -857,6 +1035,8 @@
           null,
           true,
           [1],
+          null,
+          'need_config',
         );
     }
 
@@ -970,7 +1150,7 @@
                       _uid: this.uid,
                     },
                     (datas) => {
-                      window.location.reload();
+                      this.reload_page();
                     },
                     (a, b, c) => {
                       console.error(
@@ -1142,7 +1322,7 @@
                       _wsp: this.uid,
                     },
                     (datas) => {
-                      window.location.reload();
+                      this.reload_page();
                     },
                     (a, b, c) => {
                       console.error(
@@ -1418,7 +1598,7 @@
           },
           (datas) => {
             if (archive) this.quit();
-            else window.location.reload();
+            else this.reload_page();
           },
           (a, b, c) => {
             this.busy(false);
@@ -1435,11 +1615,7 @@
     quit() {
       this.busy();
       this.set_body_loading();
-      window.location.href =
-        rcmail.env.current_workspace_back === undefined ||
-        rcmail.env.current_workspace_back === null
-          ? this.url()
-          : rcmail.env.current_workspace_back;
+      this.NavBarManager().then((manager) => manager.currentNavBar.quit());
     }
 
     endDateChanged() {
@@ -1487,7 +1663,65 @@
     value: Symbol('null'),
   });
 
+  async function setup_avatars() {
+    const tmp = (img) => {
+      img = img.split('.');
+
+      if (img.length > 1) img[img.length - 1] = '';
+
+      img = img.join('.');
+      img = img.slice(0, img.length - 1);
+
+      return img;
+    };
+
+    let html = EMPTY_STRING;
+    if (rcmail.env.mel_metapage_workspace_logos.length > 0) {
+      html +=
+        '<li role=menuitem><a title="" aria-disabled=true href=# tabindex=-1 class="active" id="" href="#" onclick="m_wp_change_picture(null)"><img src="' +
+        rcmail.env.mel_metapage_workspace_logos[0].path +
+        '" class="menu-image invisible">Aucune image</a></li>';
+
+      for (
+        let index = 0;
+        index < rcmail.env.mel_metapage_workspace_logos.length;
+        index++
+      ) {
+        const element = rcmail.env.mel_metapage_workspace_logos[index];
+        html +=
+          `<li role=menuitem><a aria-disabled=true href=# alt="${Enumerable.from(element.path.replace('.png', '').replace('.jpg', '').replace('.PNG', '').split('/')).last()}" title="" class="active" id="" tabindex=-1 href="#" onclick="m_wp_change_picture('` +
+          element.path +
+          '\')"><img src="' +
+          element.path +
+          '" class=menu-image>' +
+          tmp(element.name) +
+          '</a></li>';
+      }
+    }
+    $('#ul-wsp-params').html(html);
+  }
+
+  async function m_wp_change_picture(img) {
+    if (img === null) {
+      const manager = await rcmail.env.WSP_Param.NavBarManager();
+      $('#spaceLogo').html(
+        `<span>${manager.currentNavBar.workspace.title.slice(0, 3)}</span>`,
+      );
+    } else
+      $('#spaceLogo').html(
+        `<img alt="${Enumerable.from(img.replace('.png', '').replace('.PNG', '').split('/')).last()}" src="${img}" /><p class="sr-only"> - Changer d'avatar</p>`,
+      );
+
+    $('#wsp-param-chg-button-plz')
+      .removeAttr('disabled')
+      .removeClass('disabled');
+  }
+
+  window.m_wp_change_picture = m_wp_change_picture;
+
   $(document).ready(() => {
+    setup_avatars();
+
     rcmail.env.WSP_Param = new Workspace_Param(
       rcmail.env.current_workspace_uid,
     );
@@ -1689,7 +1923,7 @@
             let $querry = $('.wsp-head .col-10');
             let $span = $querry.children()[0];
 
-            if ($span.nodeName === 'SPAN') $span = $($span);
+            if (false && $span?.nodeName === 'SPAN') $span = $($span);
             else $span = false;
 
             const hashtag =

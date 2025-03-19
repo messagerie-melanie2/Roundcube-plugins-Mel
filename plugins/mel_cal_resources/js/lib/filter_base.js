@@ -37,6 +37,7 @@ const eInputType = {
  * @extends MelObject
  */
 class FilterBase extends MelObject {
+  #_row_name = EMPTY_STRING;
   /**
    * Constructeur du filtre
    * @param {string} name Nom du filtre
@@ -57,6 +58,7 @@ class FilterBase extends MelObject {
       input_type = eInputType.select,
       icon = EMPTY_STRING,
       number = false,
+      rowname = null,
     },
   ) {
     super();
@@ -68,6 +70,7 @@ class FilterBase extends MelObject {
       input_type,
       icon,
       number,
+      rowname,
     );
   }
 
@@ -183,6 +186,7 @@ class FilterBase extends MelObject {
     input_type,
     icon,
     number,
+    rowname,
   ) {
     this._name = name;
     this._size = size;
@@ -191,6 +195,7 @@ class FilterBase extends MelObject {
     this._input_type = input_type;
     this._icon = icon;
     this._number = number;
+    this.#_row_name = rowname;
 
     Object.defineProperty(this, 'name', {
       value: rcmail.gettext(name, 'mel_cal_resources'),
@@ -231,38 +236,37 @@ class FilterBase extends MelObject {
    */
   _generate_select(jshtml, ...args) {
     const [localities] = args;
-
     switch (this._input_type) {
       case 'multi-select':
       case 'select':
+        //prettier-ignore
         return jshtml
           .select({
             class: localities.length ? 'placeholder' : 'disabled',
             onchange: this.on_select_change.bind(this),
-          })
-          .addClass('fo-select')
-          .attr(
-            this._input_type === 'multi-select' ? 'multiple' : 'single',
-            true,
-          )
-          .attr('data-fname', this.name)
-          .addClass('pretty-select')
-          .attr(
-            localities.length ? 'enabled' : 'disabled',
-            localities.length ? 'enabled' : 'disabled',
-          )
-          .option({ value: '' })
-          .css('display', 'none')
-          .text(rcmail.gettext(this._name, 'mel_cal_resources'))
-          .end()
-          .attr('id', `filter-${this._id}`)
-          .each(
-            (jhtml, locality) => {
-              return jhtml
-                .option({ value: locality.uid })
-                .text(locality.name)
-                .end();
-            },
+          }).addClass('fo-select')
+            .attr(
+              this._input_type === 'multi-select' ? 'multiple' : 'single',
+              true,
+            )
+            .attr('data-fname', this.name)
+            .attr('data-row-name', this.rowName)
+            .addClass('pretty-select')
+            .attr(
+              localities.length ? 'enabled' : 'disabled',
+              localities.length ? 'enabled' : 'disabled',
+            )
+            .option({ value: '' }).css('display', 'none')
+              .text(rcmail.gettext(this._name, 'mel_cal_resources'))
+            .end()
+            .attr('id', `filter-${this._id}`)
+            .each(
+              (jhtml, locality) => {
+                return jhtml
+                  .option({ value: locality.uid, 'data-description': locality.description })
+                  .text(locality.name)
+                  .end();
+              },
             ...MelEnumerable.from(localities).orderBy((x) => x.name),
           )
           .end();
@@ -273,6 +277,14 @@ class FilterBase extends MelObject {
           id: `filter-${this._id}`,
         });
     }
+  }
+
+  /**
+   * @type {string}
+   * @readonly
+   */
+  get rowName() {
+    return this.#_row_name || 'default-row';
   }
 
   /**
@@ -318,7 +330,6 @@ class FilterBase extends MelObject {
         _function: this._load_data_on_start,
       },
       on_success: (data) => {
-        // console.log('_load_first_data', data);
         if (typeof data === 'string') data = JSON.parse(data);
 
         return_data = data;
@@ -344,7 +355,6 @@ class FilterBase extends MelObject {
         _value: this.value,
       },
       on_success: (data) => {
-        // console.log('_load_data', data);
         if (typeof data === 'string') data = JSON.parse(data);
 
         return_data = data;
@@ -361,21 +371,23 @@ class FilterBase extends MelObject {
    *
    * Récupère les valeurs du select en base si elles n'éxistent pas.
    * @async
+   * @param {FilterBase[]} filters
    * @returns {Promise<____JsHtml>}
    * @frommodulereturn {JsHtml} {@linkto ____JsHtml}
    */
-  async generate() {
+  async generate(filters) {
     const localities = this._load_data_on_start
       ? await this._load_first_data()
       : [];
+
+    //prettier-ignore
     return MelHtml.start
-      .div({ class: `col-${this._size}` })
-      .div()
-      .css({ width: '100%', position: 'relative' })
-      .icon(this._icon || 'filter_alt', { class: 'fo-filter-icon' })
-      .end()
-      .action(this._generate_select.bind(this), localities)
-      .end()
+      .div({ class: `col-${(this._size === 'eq' ? 12/filters.filter(x => x.rowName === this.rowName).length : this._size)}` })
+        .div().css({ width: '100%', position: 'relative' })
+          .icon(this._icon || 'filter_alt', { class: 'fo-filter-icon' })
+        .end()
+        .action(this._generate_select.bind(this), localities)
+        .end()
       .end();
   }
 
@@ -426,4 +438,6 @@ class FilterBase extends MelObject {
   has_only_number_values() {
     return this._number;
   }
+
+  static ToUid(item) {}
 }

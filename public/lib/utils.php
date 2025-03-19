@@ -654,6 +654,25 @@ class utils
     return strtoupper(md5(time() . uniqid(rand())) . '-' . substr(md5($_user), 0, 16));
   }
 
+  public static function getDirPath($type) {
+    global $config;
+
+    if ($config['DEV']) {
+      $dir = str_replace("/public/$type", '', dirname($_SERVER['SCRIPT_FILENAME']));
+    }
+    else if ($config['DOCKER_DEV']) {
+      $dir = str_replace("/public/$type", '', dirname($_SERVER['SCRIPT_FILENAME'])) . '/bnum';
+    }
+    else if ($config['DOCKER']) {
+      $dir = __DIR__ . '/../../bnum';
+    }
+    else {
+      $dir = __DIR__ . '/../..';
+    }
+
+    return $dir;
+  }
+
   /******** PRIVATE **********/
   /**
    * Retourne l'adresse ip

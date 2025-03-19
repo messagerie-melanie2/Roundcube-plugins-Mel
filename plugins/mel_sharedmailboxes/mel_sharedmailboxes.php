@@ -793,9 +793,14 @@ class mel_sharedmailboxes extends rcube_plugin {
                 $args['result'] = $trash_mbox;
                 break;
             case 'models_mbox':
+                $drafts_mbox = $args['result'];
                 $models_mbox = rcube_charset::convert($args['result'], RCUBE_CHARSET, 'UTF7-IMAP');
                 if (!empty($args['result']) && !empty($this->get_account) && $this->get_account != $this->rc->user->get_username()) {
                     $models_mbox = driver_mel::gi()->getBalpLabel() . $_SESSION['imap_delimiter'] . $this->mel->get_user_bal() . $_SESSION['imap_delimiter'] . $models_mbox;
+                }
+                else if (!empty($args['result']) && isset($_POST['_store_target']) && strpos($_POST['_store_target'], driver_mel::gi()->getBalpLabel()) === 0) {
+                    $_target = explode($_SESSION['imap_delimiter'], rcube_utils::get_input_value('_store_target', rcube_utils::INPUT_POST), 3);
+                    $models_mbox = implode($_SESSION['imap_delimiter'], [$_target[0], $_target[1], $models_mbox]);
                 }
                 $args['result'] = $models_mbox;
                 break;

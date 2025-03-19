@@ -12,6 +12,8 @@ $labels["contacts_organization"] = "Gestion des Annuaires";
 $labels["last_frame_opened"] = "Revenir à";
 $labels["nothing"] = "Aucun";
 $labels["empty_nothing"] = "Rien";
+$labels['tchap'] = 'Tchap';
+$labels['avatar_error_color'] = 'Couleur d\'arrière plan de l\'avatar si non défini';
 
 $labels["nextcloud_connection_error"] = "Impossible de récupérer les documents, l'authentification a échoué ou le plugin n'est pas bien configuré.";
 $labels["a_worspace"] = "Un espace de travail";
@@ -22,6 +24,7 @@ $labels["a_web_conf"] = "Une web-conférence";
 $labels["a_document"] = "Un document";
 $labels["a_wordpad"] = "Une note";
 $labels["a_survey"] = "Un sondage Pégase";
+
 
 $labels["h_general"] = "Aide générale";
 $labels["h_video"] = "Voir les vidéos";
@@ -200,6 +203,9 @@ $labels["yes"] = "Oui";
 $labels["no"] = "Non";
 $labels["up"] = "En haut";
 $labels["down"] = "En bas";
+$labels["full"] = "Complet";
+$labels["service"] = "Nom et service";
+$labels["name"] = "Nom";
 
 $labels["mel-icon-size"] = "Mail - Taille des icônes en tête";
 $labels["mel-icon-size-nomail"] = "Taille des icônes en tête";
@@ -210,6 +216,7 @@ $labels["mel-message-space-nomail"] = "Espacement des messages";
 $labels["mel-chat-placement"] = "Placement de la bulle";
 $labels["mel-calendar-space"] = "Espacement des agendas";
 $labels["mel-folder-grouping"] = "Regroupement des dossiers";
+$labels["mel-clear-headers"] = "Affichage du nom d'expéditeur";
 
 $labels["hide_bubble"] = "Cacher la bulle de discussion";
 $labels["show_bubble"] = "Afficher la bulle de discussion";
@@ -401,7 +408,8 @@ $labels['informations'] = 'Informations';
 $labels['double_authentication'] = 'Authentification';
 $labels['download_application'] = 'Télécharger l\'application';
 $labels['double_authentication_notification'] = 'Configurez l\'authentification à deux facteurs pour sécuriser votre accès au Bnum';
-$labels['introduction_text'] = 'À partir de %%date%%, un renforcement de la sécurité de votre compte deviendra obligatoire pour accéder au Bnum.';
+$labels['introduction_text'] = 'Dans %%date%% jours, un renforcement de la sécurité de votre compte deviendra obligatoire pour accéder au Bnum. Configurez l\'authentification à deux facteurs pour sécuriser votre accès au Bnum.';
+$labels['introduction_deadline_passed_text'] = 'Votre accès au Bnum depuis Internet n\'est plus possible, car vous n\'avez pas effectué les actions nécessaires avant la date limite. Pour rétablir votre accès depuis Internet : \nConfigurez votre authentification à deux facteurs (2FA), ou désactivez définitivement l\'accès depuis Internet dans vos paramètres.';
 $labels['secondary_email_text'] = 'Pour pouvoir récupérer votre code au cas où vous perdez votre téléphone par exemple, veuillez entrer une adresse e-mail de récupération :';
 $labels['different_email'] = 'L\'email de récupération doit être distinct de l\'email professionnel.';
 $labels['verification_email_text'] = 'Saisissez le code de vérification reçu par mail';
@@ -479,7 +487,7 @@ $labels['req_guest'] = 'Participants obligatoires';
 $labels['error_empty_event_visio_room'] = 'Le nom de la visioconférence ne doit être vide !';
 $labels['error_too_small_event_visio_room'] = 'Le nom de la visioconférence doit avoir au moins 10 charactères !';
 $labels['error_less_number_event_visio_room'] = 'Le nom de la visioconférence doit avoir au moins 3 chiffres !';
-$labels['unknown_error'] = 'Erruer inconnue !';
+$labels['unknown_error'] = 'Erreur inconnue !';
 $labels['error_empty_event_audio'] = 'Le numéro de téléphone ne doit être vide !';
 
 $labels['found_audio_date'] = 'Réserver une audio-conférence';
@@ -488,5 +496,9 @@ $labels['delete'] = 'Supprimer';
 
 $labels['external_user_name'] = "Utilisateur externe au Bnum";
 $labels['external_user_title'] = "Cet utilisateur n'a pas encore été créé dans le Bnum. À la création de l'espace, il recevra un courriel pour initialiser son compte.";
+$labels['pad'] = 'Pad';
 
 $labels['login_da'] = "Si vous êtes sur internet et n'avez pas activé l'authentification à double facteur vous ne pouvez pas vous connecter.<br/>Vous devez passer par le VPN pour vous connecter et ainsi activer l'authentification à deux facteurs";
+
+$labels['compose-mail'] = 'Composer un email';
+$labels['note-delete-warning'] = 'Attention ! Vous allez supprimer votre note, si vous êtes sûr, appuyez sur "ok".';

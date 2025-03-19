@@ -8,7 +8,9 @@ export {
   Classes,
   toHex,
   isDecimal,
+  capitalize,
   getRelativePos,
+  isAsync,
 };
 
 /**
@@ -39,6 +41,7 @@ function isArrayLike(item) {
   return (
     !!item &&
     typeof item === 'object' &&
+    // eslint-disable-next-line no-prototype-builtins
     item.hasOwnProperty('length') &&
     typeof item.length === 'number' &&
     item.length > 0 &&
@@ -73,7 +76,7 @@ function toHex(number) {
  * @param  {...Classes} mixins Autres classes
  * @returns {}
  */
-var Classes = (baseClass, ...mixins) => {
+const Classes = (baseClass, ...mixins) => {
   class base extends baseClass {
     constructor(...args) {
       super(...args);
@@ -107,6 +110,13 @@ var Classes = (baseClass, ...mixins) => {
   return base;
 };
 
+function capitalize(s) {
+  if (typeof s !== 'string') return '';
+
+  s = s.toLowerCase();
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
 function getRelativePos(elm) {
   let pPos = elm.parentNode.getBoundingClientRect(), // parent pos
     cPos = elm.getBoundingClientRect(), // target pos
@@ -118,4 +128,8 @@ function getRelativePos(elm) {
     (pos.left = cPos.left - pPos.left);
 
   return pos;
+}
+
+function isAsync(func) {
+  return func.constructor.name === 'AsyncFunction';
 }

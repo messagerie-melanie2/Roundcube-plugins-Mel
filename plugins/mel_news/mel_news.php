@@ -34,7 +34,7 @@ class mel_news extends rcube_plugin {
   /**
    * Met en place le plugin.
    *
-   * @return void
+   * @return mel_news
    */
   function setup_plugin()
   {
@@ -70,7 +70,7 @@ class mel_news extends rcube_plugin {
   /**
    * Met en place la tâche lié au plugin.
    *
-   * @return void
+   * @return mel_news
    */
   function setup_task()
   {
@@ -97,6 +97,7 @@ class mel_news extends rcube_plugin {
 
       //$this->register_action('setFilter', array($this, 'set_filter'));
       $this->include_stylesheet($this->local_skin_path() . '/news.css');
+      $this->include_stylesheet($this->local_skin_path() . '/layout.css');
       mel_helper::load_editor_addon($this->rc);
     }
     return $this;

@@ -1,0 +1,1281 @@
+.task-forum {
+  /* Styles pour le conteneur avec une barre de défilement */
+  /* Assure que le contenu n'est pas coupé et qu'une barre de défilement est visible si nécessaire */
+  /* Icône dans l'input */
+  /* Style de l'input */
+}
+.task-forum .scrollable-container {
+  overflow-y: auto;
+  /* Ajoute une barre de défilement verticale */
+  max-height: 100vh;
+  /* Assure que le conteneur ne dépasse pas la hauteur de la vue */
+}
+.task-forum .content {
+  padding: 20px;
+  /* Ajoute du padding pour éviter que le contenu ne touche les bords */
+  box-sizing: border-box;
+  /* Inclut le padding dans la largeur totale */
+}
+.task-forum #refresh {
+  padding: 0;
+  margin-top: 0;
+}
+.task-forum #refresh:hover {
+  color: inherit;
+  background-color: inherit;
+}
+.task-forum pre {
+  background-color: var(--main-background-color) !important;
+  color: var(--main-text-color) !important;
+}
+.task-forum #forum-button-add {
+  margin-top: 0;
+  margin-right: 20px;
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+}
+.task-forum #forum-button-view {
+  margin-top: 0;
+  display: inline-flex;
+  gap: 30px;
+  align-items: center;
+}
+.task-forum .forum-button {
+  background-color: #363a5b;
+  color: #ffffff;
+  border-color: var(--barup-create-button-background-color);
+  width: fit-content;
+  border-radius: 50px;
+  padding: 5px 10px;
+  vertical-align: middle;
+}
+.task-forum #layout-content {
+  overflow: auto;
+}
+.task-forum .flex {
+  display: flex;
+}
+.task-forum .align-items-center {
+  align-items: center;
+}
+.task-forum .header-content {
+  display: flex;
+  align-items: center;
+}
+.task-forum .title-wsp {
+  margin: 0 10px;
+  /* Ajustez la marge horizontale selon vos besoins */
+}
+.task-forum .options {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.task-forum .options .margin-top-5 {
+  margin-top: 5px;
+}
+.task-forum .margin-left-5 {
+  margin-left: 5px;
+}
+.task-forum .margin-left-10 {
+  margin-left: 10px;
+}
+.task-forum .margin-right-15 {
+  margin-right: 15px;
+}
+.task-forum .mel-search-group > input {
+  border-color: var(--searchbar-alternate-border-color);
+}
+.task-forum .mel-search-group .input-group-append > .input-group-text {
+  border-color: var(--searchbar-alternate-border-color);
+}
+.task-forum .mel-search-group .icon-mel-search {
+  border: 1px solid var(--searchbar-alternate-border-color);
+  border-bottom-right-radius: 15px;
+  border-top-right-radius: 15px;
+}
+.task-forum .mel-search-group .icon-mel-search:hover {
+  border-color: var(--popover-focus-border-color);
+  box-shadow: 0 0 0 0.2rem var(--secondary-focus);
+}
+.task-forum .forum-search-group {
+  border-color: #363a5b;
+  border-bottom-left-radius: 15px;
+  border-top-left-radius: 15px;
+}
+.task-forum .input-group {
+  position: relative;
+  flex: 1 1 auto;
+  width: 1%;
+  margin-bottom: 0;
+}
+.task-forum .forum-centered {
+  justify-content: center;
+}
+.task-forum .forum-max-width-500 {
+  max-width: 500px;
+}
+.task-forum .input-group-append {
+  margin-left: -1px;
+  display: flex;
+}
+.task-forum .cursor-pointer {
+  cursor: pointer;
+}
+.task-forum .font-size-14 {
+  font-size: 14px;
+}
+.task-forum .full-height {
+  height: 100%;
+}
+.task-forum .flex-column {
+  flex-direction: column;
+}
+.task-forum .flex-wrap {
+  flex-wrap: wrap;
+  margin: 5px;
+}
+.task-forum .headlines-by {
+  margin-right: 5px;
+}
+.task-forum .rounded-none {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.task-forum .height-300 {
+  height: 300px;
+}
+.task-forum .reactions {
+  margin-top: 10px;
+}
+.task-forum .separator {
+  border-bottom: 2px solid #b2ebf2;
+  margin: 10px 0;
+}
+.task-forum .row-forum {
+  margin-top: 0;
+  /* Réduit l'espace au-dessus de chaque ligne */
+  margin-bottom: 0;
+  /* Réduit l'espace en dessous de chaque ligne */
+}
+.task-forum .row-forum + .row-forum {
+  margin-top: 0;
+  /* Réduit l'espace au-dessus des lignes suivantes */
+}
+.task-forum .posts {
+  padding-left: 0;
+  padding-right: 0;
+}
+.task-forum .contents {
+  padding: 0;
+  /* Réduit le padding à l'intérieur des éléments */
+}
+.task-forum .headlines-title,
+.task-forum .headlines-contents {
+  margin: 0;
+  /* Assure qu'il n'y a pas de marges supplémentaires */
+}
+.task-forum .image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: auto;
+  margin-right: 10px;
+}
+.task-forum .image-container img {
+  max-height: 100px;
+  max-width: 100px;
+}
+.task-forum .post-header-custom {
+  position: relative;
+  /* Permet la position absolue des enfants */
+}
+.task-forum .icon-container-custom {
+  position: absolute;
+  left: 10px;
+  /* Ajustez selon vos besoins */
+  top: 10px;
+  /* Ajustez selon vos besoins */
+}
+.task-forum .keyboard-icon-custom {
+  cursor: pointer;
+  font-size: 24px;
+  /* Taille de l'icône */
+}
+.task-forum .header-content-custom {
+  width: 100%;
+  text-align: center;
+}
+.task-forum .title-wsp-custom {
+  margin: 0 auto;
+  /* Centre le h2 horizontalement */
+  width: fit-content;
+}
+.task-forum .centered-title-custom {
+  max-width: 700px;
+  margin: 0 auto;
+  /* Center the h2 horizontally */
+  text-align: center;
+  /* Center the text within the h2 */
+}
+.task-forum .author-info-custom .d-flex {
+  display: flex;
+  align-items: center;
+}
+.task-forum .author-info-custom > div {
+  text-align: center;
+}
+.task-forum .author-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.task-forum .ml-2 {
+  margin-left: 8px;
+}
+.task-forum .mt-2 {
+  margin-top: 4px;
+}
+.task-forum .separator-custom {
+  max-width: 900px;
+}
+.task-forum .content-container-custom {
+  text-align: center;
+  margin-top: 20px;
+  /* Ajustez la marge selon vos besoins */
+}
+.task-forum .article-image-custom {
+  max-width: 900px;
+  max-height: 300px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+.task-forum .article-content-custom {
+  max-width: 900px;
+  margin: 20px auto;
+  /* Ajoute une marge supérieure et inférieure */
+  text-align: left;
+  /* Ajuste selon tes besoins */
+}
+.task-forum .top-section-custom {
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+  /* Ajustez la marge selon vos besoins */
+  margin-left: 20px;
+  /* Ajustez la marge selon vos besoins */
+}
+.task-forum .comment-section-custom {
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+  /* Ajustez la marge selon vos besoins */
+}
+.task-forum .comments-container {
+  margin-top: 20px;
+}
+.task-forum .comment-item-custom {
+  margin-bottom: 20px;
+  /* Espace entre les commentaires */
+}
+.task-forum .comment-author-custom {
+  font-weight: bold;
+  margin-right: 10px;
+  /* Espace entre le nom et les autres éléments */
+}
+.task-forum .comment-image-container {
+  text-align: left;
+  width: 100%;
+}
+.task-forum .comment-image-custom {
+  max-width: 400px;
+  max-height: 300px;
+  object-fit: cover;
+  margin-top: 10px;
+  border-radius: 5px;
+}
+.task-forum .reply-container {
+  margin-left: 75px;
+}
+.task-forum .sub-reply-container {
+  margin-left: 150px;
+  padding-left: 15px;
+}
+.task-forum .forum-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.task-forum .forum-header #clear-button {
+  position: absolute;
+  top: 50%;
+  right: 40px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--main-text-color);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  z-index: 4;
+  width: 30px;
+  height: 100%;
+}
+.task-forum .forum-header #clear-button:hover {
+  color: var(--hover-close-color);
+}
+.task-forum .forum-header .title {
+  font-size: 28px;
+  font-weight: bold;
+}
+.task-forum .return-header {
+  justify-content: space-between;
+}
+.task-forum .return-header .return {
+  display: flex;
+  align-items: center;
+  padding: 6px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, border-radius 0.3s ease;
+}
+.task-forum .return-header .return span {
+  font-size: 20px;
+}
+.task-forum .return-header .return:hover {
+  background-color: var(--hover-background-color);
+}
+.task-forum .return-header .icon {
+  color: var(--main-text-color);
+}
+.task-forum .return-header .icon::before {
+  font-family: 'Material Symbols Outlined';
+  content: attr(data-icon);
+  font-size: 24px;
+  font-variation-settings: 'wght' 300;
+  display: inline-block;
+  vertical-align: middle;
+  color: inherit;
+}
+.task-forum .return-header .more_actions_area {
+  position: relative;
+  margin: 10px 50px 0 0;
+}
+.task-forum .return-header .more_action {
+  display: flex;
+  align-items: center;
+  /* Centre l'icône verticalement */
+  justify-content: center;
+  /* Centre l'icône horizontalement */
+  width: 35px;
+  /* Taille fixe pour le carré */
+  height: 35px;
+  /* Hauteur fixe pour le carré */
+  padding: 0;
+  /* Évitez le padding qui pourrait décaler l'icône */
+  border-radius: 5px;
+  /* Coins arrondis */
+  transition: background-color 0.3s ease, color 0.3s ease;
+  margin-right: 3px;
+}
+.task-forum .return-header .more_action .icon {
+  font-size: 24px;
+  /* Ajustez la taille de l'icône si nécessaire */
+  line-height: 1;
+  /* Empêche les décalages verticaux */
+  color: inherit;
+  /* Assure que la couleur s’adapte */
+}
+.task-forum .return-header .more_action:hover {
+  background-color: var(--hover-background-color);
+  cursor: pointer;
+}
+.task-forum .return-header .more_action:hover .icon::before {
+  font-variation-settings: 'wght' 400, 'FILL' 1;
+  color: var(--forum-hover-text-color);
+}
+.task-forum .return-header .more_action.active .icon::before {
+  font-variation-settings: 'FILL' 1;
+}
+.task-forum .return-header .forum-post-context-menu {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 5px;
+  position: absolute;
+  top: 40px;
+  left: -180px;
+  transform: translateX(-10px);
+  border-radius: 10px;
+  background-color: var(--bureau-card-background-color);
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.5);
+  color: var(--main-text-color);
+  z-index: 200;
+}
+.task-forum .return-header .forum-post-context-menu .post-options-button {
+  display: flex;
+  align-items: center;
+  border: none;
+  outline: none;
+  background-color: var(--bureau-card-background-color);
+  cursor: pointer;
+  color: inherit;
+  border-radius: 5px;
+}
+.task-forum .return-header .forum-post-context-menu .post-options-button:hover {
+  background-color: var(--hover-background-color);
+}
+.task-forum .return-header .forum-post-context-menu .post-options-button .post-options-icon {
+  font-size: 17px !important;
+}
+.task-forum .forum-sort {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 20px;
+  padding-bottom: 5px;
+  border-bottom: 0.5px solid var(--forum-border-bottom-color);
+}
+.task-forum .forum-sort #forum-sort-select {
+  min-width: 150px;
+  background-color: transparent;
+  border: transparent;
+}
+.task-forum .forum-comment {
+  margin-top: 15px;
+}
+.task-forum .forum-comment .forum-comment-profile-image {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
+}
+.task-forum .forum-comment .forum-comment-input {
+  width: 100%;
+  background-color: var(--input-background-color);
+  color: var(--input-text-color);
+  border: solid thin var(--input-border-color);
+  padding: 8px 10px;
+  outline: none;
+  border-radius: 5px;
+  overflow-y: hidden;
+  resize: none;
+}
+.task-forum .forum-comment .forum-comment-sort {
+  padding-bottom: 5px;
+  border-bottom: 0.5px solid var(--forum-border-bottom-color);
+}
+.task-forum .forum-comment .forum-comment-sort #forum-comment-select {
+  max-width: 150px;
+  background-color: transparent;
+  border: transparent;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.task-forum .forum-comment .forum-comment-sort #forum-comment-select:hover {
+  background-color: var(--hover-background-color);
+}
+.task-forum .forum-comment .comment {
+  display: flex;
+  /* Aligne les éléments en ligne */
+  align-items: center;
+  /* Aligne les éléments verticalement au centre */
+  margin-bottom: 20px;
+}
+.task-forum .forum-comment .comment .forum-comment-date {
+  display: flex;
+  align-items: center;
+  /* Aligne l'icône et le texte de la date au centre */
+}
+.task-forum .forum-comment .comment .forum-comment-author {
+  font-weight: bold;
+  margin-right: 5px;
+}
+.task-forum .forum-comment .comment .forum-comment-date span {
+  font-size: 12px;
+}
+.task-forum .forum-comment .comment .forum-comment-date .icon::before {
+  font-family: 'Material Symbols Outlined';
+  content: attr(data-icon);
+  /* Utilisation de l'attribut data-icon pour afficher l'icône */
+  font-size: 20px;
+  /* Taille de l'icône */
+  font-variation-settings: 'wght' 300;
+  /* Poids de l'icône */
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 5px;
+}
+.task-forum .forum-comment .comment .forum-comment-text {
+  margin-top: 5px;
+  margin-left: 40px;
+}
+.task-forum .forum-comment .comment .forum-comment-reactions {
+  margin-left: 40px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.task-forum .forum-comment .comment .forum-comment-reactions .icon {
+  color: inherit;
+  /* Couleur uniforme pour toutes les icônes */
+}
+.task-forum .forum-comment .comment .forum-comment-reactions .icon::before {
+  font-family: 'Material Symbols Outlined';
+  content: attr(data-icon);
+  font-size: 19px;
+  font-variation-settings: 'wght' 400;
+  display: inline-block;
+  vertical-align: middle;
+  color: var(--main-text-color);
+}
+.task-forum .forum-comment .comment .forum-comment-reactions .reaction-item {
+  display: flex;
+  align-items: center;
+  padding: 6px 6px;
+  border-radius: 5px;
+  /* Forme allongée avec extrémités arrondies */
+  transition: background-color 0.3s ease, color 0.3s ease;
+  /* Transition fluide pour le hover */
+  margin-right: 3px;
+}
+.task-forum .forum-comment .comment .forum-comment-reactions .reaction-item span {
+  font-size: 12px;
+}
+.task-forum .forum-comment .comment .forum-comment-reactions .reaction-item:hover {
+  background-color: var(--hover-background-color);
+  /* Couleur de fond au survol */
+  cursor: pointer;
+}
+.task-forum .forum-comment .comment .forum-comment-reactions .reaction-item:hover .icon::before {
+  font-variation-settings: 'wght' 400, 'FILL' 1;
+  /* Remplir l'icône lors du survol */
+  color: var(--main-text-color);
+}
+.task-forum .forum-comment .comment .forum-comment-reactions .reaction-item.active .icon::before {
+  font-family: 'Material Symbols Outlined';
+  content: attr(data-icon);
+  font-size: 19px;
+  font-variation-settings: 'wght' 400;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 5px;
+  color: var(--main-text-color);
+  font-variation-settings: 'FILL' 1;
+}
+.task-forum .forum-comment .comment .forum-comment-reactions .reaction-item.response .icon::before {
+  font-family: 'Material Symbols Outlined';
+  content: attr(data-icon);
+  font-size: 19px;
+  font-variation-settings: 'wght' 300;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+.task-forum .forum-comment .comment .forum-comment-reactions .reaction-item.response span {
+  color: var(--main-text-color);
+}
+.task-forum .forum-comment #submit-comment {
+  margin-right: 50px;
+}
+.task-forum .forum-comment #submit-comment .save-comment-button {
+  margin-left: 15px;
+}
+.task-forum .forum-content-author {
+  font-weight: bold;
+}
+.task-forum .forum-comment-response {
+  display: flex;
+  /* Pour aligner les éléments horizontalement */
+  align-items: center;
+  /* Aligne les éléments verticalement au centre */
+  margin-left: 29px;
+  /* Ajuste la marge pour s'aligner avec les autres éléments */
+  padding: 6px 12px;
+  /* Espace autour du contenu */
+  border-radius: 5px;
+  /* Forme allongée */
+  max-width: 140px;
+  /* Limite de largeur maximale */
+  overflow: hidden;
+  /* Cache tout ce qui dépasse les 100px */
+  transition: background-color 0.3s ease, color 0.3s ease;
+  /* Transition fluide pour le hover */
+  background-color: transparent;
+  /* Fond transparent par défaut */
+  white-space: nowrap;
+  /* Empêche le retour à la ligne */
+}
+.task-forum .forum-comment-response:hover {
+  background-color: var(--hover-background-color);
+  /* Fond plus clair au survol */
+}
+.task-forum .forum-comment-response .icon::before {
+  font-family: 'Material Symbols Outlined';
+  content: attr(data-icon);
+  font-size: 19px;
+  font-variation-settings: 'wght' 400;
+  display: inline-block;
+  vertical-align: middle;
+  color: var(--main-text-color);
+  transition: color 0.3s ease;
+  /* Transition fluide pour la couleur au hover */
+}
+.task-forum .forum-comment-response .ml-2 {
+  font-size: 12px;
+  /* Ajuste la taille du texte pour correspondre au design */
+  color: var(--main-text-color);
+  transition: color 0.3s ease;
+  /* Transition fluide pour la couleur au hover */
+}
+.task-forum .hidden {
+  display: none;
+}
+.task-forum .responses {
+  margin-left: 20px;
+  /* Ajustez cette valeur selon vos besoins */
+  padding-left: 10px;
+  /* Ajustez pour un espacement intérieur si nécessaire */
+  border-left: 1px solid #ddd;
+  /* Optionnel : ligne verticale pour indiquer les réponses */
+}
+.task-forum .forum-content {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+.task-forum .forum-content .tox-tinymce {
+  width: 100%;
+}
+.task-forum .forum-content .post-reaction {
+  display: flex;
+  margin: 10px 0;
+}
+.task-forum .forum-content .post-reaction .reaction {
+  display: flex;
+  align-items: center;
+  margin: 0 5px;
+  padding: 2px 10px;
+  border-radius: 5px;
+  background-color: var(--card-background-color);
+}
+.task-forum #add_like {
+  margin-left: -15px;
+}
+.task-forum .title-input {
+  height: 50px;
+}
+.task-forum .tag-clickable:hover,
+.task-forum .tag-clickable:focus {
+  text-decoration: underline;
+}
+.task-forum .tag-list {
+  max-width: 100%;
+  overflow: auto;
+  padding-bottom: 3px;
+  margin-bottom: 3px;
+  margin-left: 15px !important;
+}
+.task-forum .tag {
+  background-color: var(--forum-tag-background-color);
+  color: var(--forum-tag-text-color);
+  border-radius: 5px;
+  padding: 2px 8px;
+  margin-right: 5px;
+  font-size: 14px;
+}
+.task-forum .tag:hover .icon-remove-tag,
+.task-forum .tag:focus .icon-remove-tag {
+  display: inline-block;
+}
+.task-forum .tag .icon-remove-tag::before {
+  font-family: 'Material Symbols Outlined';
+  content: '\e5cd';
+  font-size: 19px;
+  font-variation-settings: 'wght' 400;
+  display: inline-block;
+  vertical-align: middle;
+  color: #ff3c38;
+}
+.task-forum .add-circle-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  /* Taille de l'icône */
+  color: var(--forum-tag-text-color);
+  /* Couleur de l'icône */
+}
+.task-forum #add-tag {
+  background-color: var(--forum-tag-background-color);
+  color: var(--forum-tag-text-color);
+  border-radius: 5px;
+  padding: 2px 8px;
+  padding-left: 40px;
+  /* Crée de l'espace à gauche pour l'icône */
+  margin-right: 5px;
+  font-size: 14px;
+}
+.task-forum .author-infos {
+  display: flex;
+  flex-direction: column;
+  align-items: baseline;
+}
+.task-forum .author-infos .author-name-custom {
+  font-size: 17px;
+}
+.task-forum .custom-border-bottom {
+  padding-bottom: 10px;
+  border-bottom: 0.5px solid var(--forum-border-bottom-color);
+}
+.task-forum .post {
+  margin: 10px 20px;
+  background-color: var(--bureau-card-background-color);
+  box-shadow: 0 1px 7px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+}
+.task-forum .post.post_pinned {
+  border: solid 1px var(--main-border-color);
+}
+.task-forum .post .post-header {
+  width: 100%;
+  margin: 10px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.task-forum .post .post-header .post-creator {
+  display: flex;
+  align-items: center;
+}
+.task-forum .post .post-header .post-creator .author-image {
+  width: 30px;
+  height: 30px;
+}
+.task-forum .post .post-header .post-creator .post-creator-name {
+  font-size: 17px;
+  margin-left: 5px;
+}
+.task-forum .post .post-header .post-creator .post-date {
+  display: flex;
+  align-items: center;
+  margin-left: 5px;
+  font-size: 13px;
+}
+.task-forum .post .post-header .post-creator .post-date i {
+  font-size: 17px !important;
+}
+.task-forum .post .post-header .post-actions {
+  position: relative;
+  display: flex;
+  align-items: center;
+  color: var(--main-text-color);
+}
+.task-forum .post .post-header .post-actions i {
+  font-size: 24px;
+  font-variation-settings: 'wght' 300;
+}
+.task-forum .post .post-header .post-actions i:hover {
+  font-variation-settings: 'wght' 300, 'FILL' 1;
+}
+.task-forum .post .post-header .post-actions .icon {
+  color: var(--main-text-color);
+}
+.task-forum .post .post-header .post-actions .icon::before {
+  font-family: 'Material Symbols Outlined';
+  content: attr(data-icon);
+  font-size: 24px;
+  font-variation-settings: 'wght' 300;
+  display: inline-block;
+  vertical-align: middle;
+  color: inherit;
+}
+.task-forum .post .post-header .post-actions .icon.favorite {
+  color: var(--main-text-color);
+  /* Couleur par défaut */
+}
+.task-forum .post .post-header .post-actions .icon.favorite.filled {
+  color: #ffdd67;
+  /* Couleur jaune pour l'état filled */
+}
+.task-forum .post .post-header .post-actions .more_action {
+  display: flex;
+  align-items: center;
+  /* Centre l'icône verticalement */
+  justify-content: center;
+  /* Centre l'icône horizontalement */
+  width: 35px;
+  /* Taille fixe pour le carré */
+  height: 35px;
+  /* Hauteur fixe pour le carré */
+  padding: 0;
+  /* Évitez le padding qui pourrait décaler l'icône */
+  border-radius: 5px;
+  /* Coins arrondis */
+  transition: background-color 0.3s ease, color 0.3s ease;
+  margin-right: 3px;
+}
+.task-forum .post .post-header .post-actions .more_action .icon {
+  font-size: 24px;
+  /* Ajustez la taille de l'icône si nécessaire */
+  line-height: 1;
+  /* Empêche les décalages verticaux */
+  color: inherit;
+  /* Assure que la couleur s’adapte */
+}
+.task-forum .post .post-header .post-actions .more_action:hover {
+  background-color: var(--hover-background-color);
+  cursor: pointer;
+}
+.task-forum .post .post-header .post-actions .more_action:hover .icon::before {
+  font-variation-settings: 'wght' 400, 'FILL' 1;
+  color: var(--forum-hover-text-color);
+}
+.task-forum .post .post-header .post-actions .more_action.active .icon::before {
+  font-variation-settings: 'FILL' 1;
+}
+.task-forum .post .post-header .post-actions .forum-post-context-menu {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 5px;
+  position: absolute;
+  top: 20px;
+  left: -133px;
+  transform: translateX(-10px);
+  border-radius: 10px;
+  background-color: var(--bureau-card-background-color);
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.5);
+  color: var(--main-text-color);
+  z-index: 200;
+}
+@media (max-width: 576px) {
+  .task-forum .post .post-header .post-actions .forum-post-context-menu {
+    left: 0;
+  }
+}
+.task-forum .post .post-header .post-actions .forum-post-context-menu .post-options-button {
+  display: flex;
+  align-items: center;
+  border: none;
+  outline: none;
+  background-color: var(--bureau-card-background-color);
+  cursor: pointer;
+  color: inherit;
+  border-radius: 5px;
+}
+.task-forum .post .post-header .post-actions .forum-post-context-menu .post-options-button:hover {
+  background-color: var(--hover-background-color);
+}
+.task-forum .post .post-header .post-actions .forum-post-context-menu .post-options-button .post-options-icon {
+  font-size: 17px !important;
+}
+.task-forum .post:hover {
+  background-color: var(--forum-list-hover-background-color);
+  border-radius: 5px;
+}
+.task-forum .post .post-content .post-title {
+  font-weight: 600;
+  font-size: 18px;
+  margin-top: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.task-forum .post .post-content .post-tags {
+  line-height: 1.8;
+}
+.task-forum .post .post-content .post-summary {
+  margin-top: 5px;
+}
+.task-forum .post .post-image {
+  max-width: 150px;
+  max-height: 100px;
+  border-radius: 5px;
+}
+.task-forum .post .post-footer .post-reaction {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+}
+.task-forum .post .post-footer .post-reaction .reaction {
+  background-color: var(--card-background-color);
+  padding: 0 8px;
+  border-radius: 5px;
+  margin-right: 5px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+}
+.task-forum .post .post-footer .post-reaction .reaction i {
+  font-size: 20px;
+}
+.task-forum .post .post-footer .post-reaction .like {
+  background-color: var(--card-background-color);
+  padding: 0 8px;
+  border-radius: 5px;
+  margin-right: 5px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+}
+.task-forum .post .post-footer .post-reaction .like i {
+  font-size: 20px;
+}
+.task-forum .post .post-footer .post-reaction .dislike {
+  background-color: var(--card-background-color);
+  padding: 0 8px;
+  border-radius: 5px;
+  margin-right: 5px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+}
+.task-forum .post .post-footer .post-reaction .dislike i {
+  font-size: 20px;
+}
+.task-forum .post .post-footer .post-reaction .comment {
+  background-color: var(--card-background-color);
+  padding: 0 8px;
+  border-radius: 5px;
+  margin-right: 5px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+}
+.task-forum .post .post-footer .post-reaction .comment i {
+  font-size: 20px;
+}
+.task-forum .post .post-footer .pin {
+  font-size: 25px !important;
+  font-variation-settings: 'FILL' 1;
+}
+.task-forum #post-content {
+  max-width: 100%;
+}
+.task-forum #post-content img {
+  max-width: 100%;
+}
+.task-forum .forum-comment-context-menu {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 5px;
+  position: absolute;
+  bottom: -50px;
+  width: 198px;
+  height: 60px;
+  border-radius: 10px;
+  background-color: var(--bureau-card-background-color);
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.5);
+  z-index: 200;
+}
+.task-forum .comment-options-button {
+  display: flex;
+  align-items: center;
+  border: none;
+  outline: none;
+  background-color: var(--bureau-card-background-color);
+  /* Appliquer la même couleur de fond */
+  cursor: pointer;
+  color: inherit;
+  /* Conserver la couleur de texte définie par parent */
+  border-radius: 5px;
+  /* Modifier l'apparence au survol des boutons */
+}
+.task-forum .comment-options-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  /* Légère modification au survol */
+}
+.task-forum .forum-comment-input {
+  margin-top: 5px;
+}
+.task-forum [role='button'] {
+  cursor: pointer;
+}
+.task-forum #go-back-to-articles:hover {
+  color: var(--input-mel-text-color);
+  cursor: pointer;
+}
+.task-forum .close-button:focus {
+  color: red !important;
+}
+.task-forum .editor-toolbar {
+  background-color: white;
+}
+.task-forum a.post-card {
+  text-decoration: none;
+  color: inherit;
+  display: contents;
+}
+.task-forum .filled {
+  font-variation-settings: 'FILL' 1, 'wght' 300 !important;
+}
+.task-forum .filled:hover {
+  font-variation-settings: 'FILL' 0, 'wght' 300 !important;
+}
+.task-forum .hoverable:hover {
+  background-color: var(--hover-background-color);
+  /* Couleur de fond au survol */
+  font-variation-settings: 'FILL' 1, 'wght' 300;
+  /* Remplir l'icône au survol */
+}
+.task-forum .favorite {
+  display: inline-flex;
+  /* Défini dès le départ */
+  justify-content: center;
+  align-items: center;
+  width: 35px;
+  /* Dimensions fixes dès le départ */
+  height: 35px;
+  padding: 0;
+  /* Éviter tout changement de padding */
+  margin: 0;
+  /* Éviter tout changement de margin */
+  font-variation-settings: 'FILL' 0, 'wght' 300;
+  /* État par défaut */
+  border-radius: 5px;
+  background-color: transparent;
+  /* Pas de couleur de fond par défaut */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.task-forum .no-image-padding {
+  padding-right: 89px;
+}
+.task-forum .error-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 18%;
+}
+.task-forum .new_posts .forum-content {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+.task-forum .new_posts .content {
+  padding: 0 5px 0 5px;
+  overflow-x: hidden !important;
+}
+.dark-mode .task-forum .new_posts .content,
+.dark-mode-custom .task-forum .new_posts .content {
+  --layout-content-background-color: var(--bureau-card-background-color);
+}
+.task-forum .new_posts .post {
+  margin: 5px 10px;
+  padding-bottom: 0px;
+  box-shadow: none;
+  border-radius: 0px;
+  transition: var(--transition-all, none);
+  border-radius: 5px;
+  background-color: var(--bureau-card-content-background-color);
+}
+.task-forum .new_posts .post:hover {
+  background-color: var(--forum-list-hover-background-color);
+  border-radius: 5px;
+}
+.task-forum .new_posts .post:last-child {
+  border-bottom: none;
+}
+.task-forum .new_posts .post .post-header {
+  margin: 5px 0;
+}
+.task-forum .new_posts .post .post-header .post-date {
+  font-size: 13px;
+}
+.task-forum .new_posts .post .post-header .post-date i {
+  font-size: 17px !important;
+}
+.task-forum .new_posts .post .post-tags {
+  text-align: end;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+@media (max-width: 768px) {
+  .task-forum .new_posts .post .post-tags {
+    display: none;
+  }
+}
+.task-forum .new_posts .post .post-footer .post-reaction {
+  margin: 5px 0 5px;
+}
+.task-forum .new_posts .post .post-footer .post-reaction .filled {
+  font-variation-settings: 'FILL' 1, 'wght' 300 !important;
+}
+.task-forum .new_posts .post .post-footer .post-reaction .filled:hover {
+  font-variation-settings: 'FILL' 1, 'wght' 300 !important;
+}
+.task-forum .new_posts .post .post-footer .post-reaction .post-reaction-info {
+  background-color: none;
+  padding: 0 8px;
+  margin-right: 5px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+}
+.task-forum .new_posts .post .post-footer .post-reaction .post-reaction-info i {
+  font-size: 20px !important;
+}
+.task-forum .new_posts .post .post-content .post-title {
+  white-space: nowrap;
+  /* Pas de retour à la ligne */
+  overflow: hidden;
+  /* Cache le contenu débordant */
+  text-overflow: ellipsis;
+  /* Ajoute "..." pour le texte tronqué */
+  display: block;
+  /* Affichage en bloc */
+  max-width: 100%;
+  /* S'adapte à la largeur du parent */
+}
+.task-forum .front_page_post .forum-content {
+  display: flex;
+  justify-content: center;
+  margin-top: 0px;
+}
+.task-forum .front_page_post .content {
+  padding: 0 5px 0 5px;
+  overflow-x: hidden !important;
+}
+.dark-mode .task-forum .front_page_post .content,
+.dark-mode-custom .task-forum .front_page_post .content {
+  --layout-content-background-color: var(--bureau-card-background-color);
+}
+.task-forum .front_page_post #pin_post-area {
+  height: 100%;
+}
+.task-forum .front_page_post .post {
+  height: 100%;
+  box-shadow: none;
+  margin: 0;
+  transition: var(--transition-all, none);
+}
+.dark-mode .task-forum .front_page_post .post,
+.dark-mode-custom .task-forum .front_page_post .post {
+  border-radius: 5px;
+  --layout-content-background-color: var(--bureau-card-content-background-color);
+}
+.task-forum .front_page_post .post:hover {
+  background-color: var(--forum-list-hover-background-color);
+  border-radius: 5px;
+}
+.task-forum .front_page_post .post:last-child {
+  border-bottom: none;
+}
+.task-forum .front_page_post .post .post-header {
+  margin: 5px 0;
+}
+.task-forum .front_page_post .post .post-header .post-date {
+  font-size: 13px;
+}
+.task-forum .front_page_post .post .post-header .post-date i {
+  font-size: 17px !important;
+}
+.task-forum .front_page_post .post .post-tags {
+  display: flex;
+  justify-content: start;
+  align-items: baseline;
+}
+.task-forum .front_page_post .post .post-footer .post-reaction {
+  margin: 5px 0 5px;
+}
+.task-forum .front_page_post .post .post-footer .post-reaction .filled {
+  font-variation-settings: 'FILL' 1, 'wght' 300 !important;
+}
+.task-forum .front_page_post .post .post-footer .post-reaction .filled:hover {
+  font-variation-settings: 'FILL' 1, 'wght' 300 !important;
+}
+.task-forum .front_page_post .post .post-footer .post-reaction .post-reaction-info {
+  background-color: none;
+  padding: 0 8px;
+  margin-right: 5px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+}
+.task-forum .front_page_post .post .post-footer .post-reaction .post-reaction-info i {
+  font-size: 20px !important;
+}
+.task-forum .front_page_post .post .post-content .post-title {
+  white-space: nowrap;
+  /* Pas de retour à la ligne */
+  overflow: hidden;
+  /* Cache le contenu débordant */
+  text-overflow: ellipsis;
+  /* Ajoute "..." pour le texte tronqué */
+  display: block;
+  /* Affichage en bloc */
+  max-width: 100%;
+  /* S'adapte à la largeur du parent */
+}
+.task-forum .front_page_post .post .post-image {
+  max-width: 190px;
+}
+.task-forum #backToTop {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 5px 5px;
+  font-size: 25px;
+  background-color: var(--layout-content-background-color);
+  color: var(--main-text-color);
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+@media (max-width: 768px) {
+  .task-forum {
+    /* ou une autre largeur en pixels correspondant au mobile */
+  }
+  .task-forum #layout > div > .footer {
+    display: none;
+    /* Cache complètement la div */
+  }
+}
+.task-forum .title {
+  font-weight: 600;
+  font-size: 25px;
+  margin-left: 20px;
+}
+.task-forum.action-none #layout,
+.task-forum.action-index #layout,
+.task-forum.action-post #layout,
+.task-forum.action-front_page_post #layout,
+.task-forum.action-create_or_edit_post #layout,
+.task-forum.action-new_posts #layout {
+  background-color: var(--bureau-card-background-color);
+}
+.task-forum.action-none #layout #layout-content .content,
+.task-forum.action-index #layout #layout-content .content,
+.task-forum.action-post #layout #layout-content .content,
+.task-forum.action-front_page_post #layout #layout-content .content,
+.task-forum.action-create_or_edit_post #layout #layout-content .content,
+.task-forum.action-new_posts #layout #layout-content .content {
+  border-radius: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+}
+.task-forum .radio-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 5px;
+}
+.task-forum .radio-group label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: -5px;
+  margin-left: 50px;
+}
+.task-forum .radio-group input[type='radio'] {
+  margin: 0;
+}
+.material-symbols-outlined.f-31 {
+  font-size: 31px;
+}

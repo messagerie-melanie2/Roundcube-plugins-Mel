@@ -8,14 +8,25 @@
  * @module Tchap
  */
 
+import { FramesManager } from '../mel_metapage/js/lib/classes/frame_manager.js';
 import { MainNav } from '../mel_metapage/js/lib/classes/main_nav.js';
 import {
   EMPTY_STRING,
   TCHAT_UNREAD,
 } from '../mel_metapage/js/lib/constants/constants.js';
 import { MelObject } from '../mel_metapage/js/lib/mel_object.js';
-import { Mel_Promise } from '../mel_metapage/js/lib/mel_promise.js';
 export { tchap_manager };
+
+const SETTING_BUTTON = 'mx_UserMenu_contextMenuButton';
+const PARAMS_BUTTON = 'mx_UserMenu_iconSettings';
+const DISCONNECT_BUTTON = 'mx_UserMenu_iconSignOut';
+const LEFT_PANEL = 'mx_SpacePanel';
+const CONTEXTUAL_MENU = 'mx_ContextualMenu';
+const THEME_BUTTON = 'mx_UserMenu_contextMenu_themeButton';
+const CURRENT_THEME_BODY_CLASS = 'cpd-theme-light';
+const CONTEXTUAL_MENU_BACKGROUND = 'mx_ContextualMenu_background';
+const SLEEP_ON_TASK = 2500;
+const SLEEP_OUTSIDE = 30000;
 
 /**
  * @class
@@ -27,6 +38,105 @@ class tchap_manager extends MelObject {
     super();
   }
 
+  // #region ReadOnlyVar
+  /**
+   * Document de la frame de tchap
+   * @type {Document}
+   * @readonly
+   */
+  get tchapContext() {
+    return this.tchap_frame()[0].contentWindow.document;
+  }
+
+  /**
+   * Badge qui contient si il y a des messages non-lu
+   * @type {HTMLElement}
+   * @readonly
+   */
+  get badge() {
+    return this.tchapContext.querySelector(
+      '.mx_SpaceButton_home .mx_SpacePanel_badgeContainer .mx_NotificationBadge_count',
+    );
+  }
+
+  /**
+   * Bouton qui ouvre le menu des paramètres
+   * @type {HTMLElement}
+   * @readonly
+   */
+  get settingMenuButton() {
+    return this.tchapContext.querySelector(`.${SETTING_BUTTON}`);
+  }
+
+  /**
+   * Ouvre le menu des paramètres puis récupère le bouton qui ouvre les paramètres.
+   * @type {HTMLElement}
+   * @readonly
+   */
+  get settingButton() {
+    this.settingMenuButton.click();
+    //On récupère l'icône puis l'élément parent, car l'icône est pour le moment, le seul moyen de retrouver le bouton dans la liste
+    return this.tchapContext.querySelector(
+      `.${CONTEXTUAL_MENU}  .${PARAMS_BUTTON}`,
+    ).parentElement;
+  }
+
+  /**
+   * Ouvre le menu des paramètres puis récupère le bouton de déconnexion.
+   * @type {HTMLElement}
+   * @readonly
+   */
+  get disconnectButton() {
+    this.settingMenuButton.click();
+    //On récupère l'icône puis l'élément parent, car l'icône est pour le moment, le seul moyen de retrouver le bouton dans la liste
+    return this.tchapContext.querySelector(
+      `.${CONTEXTUAL_MENU}  .${DISCONNECT_BUTTON}`,
+    ).parentElement;
+  }
+
+  /**
+   * Panneau de gauche
+   * @type {HTMLElement}
+   * @readonly
+   */
+  get leftPanel() {
+    return this.tchapContext.querySelector(`.${LEFT_PANEL}`);
+  }
+
+  /**
+   * Div en arrière plan lorsque le menu des paramètres est ouvert.
+   * @type {HTMLElement}
+   * @readonly
+   */
+  get contextualMenuBackground() {
+    return this.tchapContext.querySelector(`.${CONTEXTUAL_MENU_BACKGROUND}`);
+  }
+
+  /**
+   * Ouvre le menu des paramètres puis récupère le bouton de thème.
+   * @type {HTMLElement}
+   * @readonly
+   */
+  get themeButton() {
+    this.settingMenuButton.click();
+    return this.tchapContext.querySelector(`.${THEME_BUTTON}`);
+  }
+
+  /**
+   * Messages non-lu
+   * @type {string | number}
+   * @readonly
+   */
+  get unread() {
+    if (!this.badge) return null;
+
+    const val = +(this.badge.textContent || 'user_defined_unread');
+
+    return isNaN(val) ? TCHAT_UNREAD : val;
+  }
+  // #endregion
+
+  // #region Main
   /**
    * @async
    * @package
@@ -45,11 +155,7 @@ class tchap_manager extends MelObject {
      */
     this._tchap_mobile_mode_removed = false;
 
-    const url =
-      rcmail.env.tchap_startup_url !== null &&
-      rcmail.env.tchap_startup_url !== undefined
-        ? rcmail.env.tchap_startup_url
-        : rcmail.env.tchap_url;
+    const url = this.get_env('tchap_startup_url') || this.get_env('tchap_url');
     let $tchap = $('#tchap_frame').attr('src', url);
 
     if (navigator.appName === 'Microsoft Internet Explorer')
@@ -61,21 +167,26 @@ class tchap_manager extends MelObject {
       $('#tchap_mobile').show();
     } else {
       this._tchap_mobile_mode_removed = true;
-      // const loader = MEL_ELASTIC_UI.create_loader('tchaploader', true);
-      // $('body').append(loader);
     }
 
-    await Mel_Promise.wait(
-      () =>
-        this.tchap_frame().querySelector('.mx_QuickSettingsButton') !== null,
-      60,
-    );
+    {
+      const CONNECTED_SELECTOR = `.${SETTING_BUTTON}`;
+      await this.wait_something(
+        () => this.tchapContext.querySelector(CONNECTED_SELECTOR) !== null,
+        60,
+      );
 
-    if (this.tchap_frame().querySelector('.mx_QuickSettingsButton') !== null) {
-      this.change_theme();
+      if (this.tchapContext.querySelector(CONNECTED_SELECTOR) !== null) {
+        try {
+          this.change_theme();
+        } catch (error) {
+          console.warn(
+            '/!\\[tchamanager]Erreur lors du premier changement de thème',
+            error,
+          );
+        }
+      }
     }
-
-    //$('#tchaploader').hide();
 
     if (this._tchap_mobile_mode_removed) {
       window.addEventListener('resize', () => {
@@ -110,33 +221,32 @@ class tchap_manager extends MelObject {
     );
     this._notificationhandler();
 
-    if (rcmail.env.display_tchap_sidebar === 'false')
-      this.tchap_frame().querySelector('.mx_SpacePanel').style.display = 'none';
+    if (this.get_env('display_tchap_sidebar') === 'false')
+      this.leftPanel.style.display = 'none';
 
     //Mettre à jours les messages quand on vient sur le frame.
     const is_top = true;
 
-    this.rcmail(is_top).addEventListener(
-      'frame_loaded',
-      (eClass, changepage, isAriane, querry, id, first_load) => {
-        if (eClass === 'tchap') this.update_badge();
-      },
-    );
+    this.rcmail(is_top).addEventListener('frame_loaded', (eClass) => {
+      if (eClass === 'tchap') this.update_badge();
+    });
   }
-
+  //#endregion
+  // #region private
   /**
    * Gestion des notifications sur la barre de gauche
    * @private
    * @return {Promise<void>}
    */
   async _notificationhandler() {
-    this.update_badge();
-
     while (true) {
-      if (this.get_env('current_frame_name') === 'tchap') await delay(10000);
-      else await delay(30000);
+      this.update_badge(); //this._update_badge();
 
-      this._update_badge();
+      await this.sleep(
+        FramesManager.Instance.currentTask === 'tchap'
+          ? SLEEP_ON_TASK
+          : SLEEP_OUTSIDE,
+      );
     }
   }
 
@@ -145,29 +255,15 @@ class tchap_manager extends MelObject {
    * @private
    */
   _update_badge() {
-    if (
-      this.tchap_frame().querySelector('.mx_NotificationBadge_count') !==
-        null &&
-      this.tchap_frame().querySelector('.mx_NotificationBadge_count')
-        .innerHTML !== EMPTY_STRING
-    ) {
-      MainNav.update_badge(
-        +this.tchap_frame().querySelector('.mx_NotificationBadge_count')
-          .innerHTML,
-        'tchap_badge',
-      );
-    } else if (
-      this.tchap_frame().querySelector('.mx_NotificationBadge_visible') !==
-        null &&
-      this.tchap_frame()
-        .querySelector('.mx_NotificationBadge_visible')
-        .getAttribute('tabindex') !== '-1'
-    ) {
-      MainNav.update_badge_text(TCHAT_UNREAD, 'tchap_badge');
+    const val = this.unread;
+    if (val) {
+      MainNav.update_badge(val, 'tchap_badge');
     } else {
       MainNav.update_badge(0, 'tchap_badge');
     }
   }
+  // #endregion
+  // #region publics
 
   /**
    * Met à jour le badge de notification du bouton lié à ce plugin de la barre de navigation principale.
@@ -182,10 +278,10 @@ class tchap_manager extends MelObject {
   /**
    * Retourne la frame de tchap
    * @public
-   * @returns {Document}
+   * @returns {external:Jquery}
    */
   tchap_frame() {
-    return $('#tchap_frame')[0].contentWindow.document;
+    return $('#tchap_frame');
   }
 
   /**
@@ -194,16 +290,18 @@ class tchap_manager extends MelObject {
    * @method
    */
   change_theme() {
-    let frame_doc = $('#tchap_frame')[0].contentWindow.document;
-    frame_doc.querySelector('.mx_QuickSettingsButton').click();
-    frame_doc
-      .querySelector('.mx_QuickThemeSwitcher .mx_Dropdown_input')
-      .click();
-    frame_doc
-      .querySelector(
-        `#mx_QuickSettingsButton_themePickerDropdown__${this.get_skin().color_mode()}`,
-      )
-      .click();
+    const color = this.get_skin().color_mode();
+    const tchap_color = this.tchapContext
+      .querySelector('body')
+      .classList.contains(CURRENT_THEME_BODY_CLASS)
+      ? 'light'
+      : 'dark';
+
+    if (color !== tchap_color) {
+      this.themeButton.click();
+
+      if (this.contextualMenuBackground) this.contextualMenuBackground.click();
+    }
   }
 
   /**
@@ -212,13 +310,7 @@ class tchap_manager extends MelObject {
    * @method
    */
   tchap_options() {
-    let frame_doc = $('#tchap_frame')[0].contentWindow.document;
-    frame_doc.querySelector('.mx_QuickSettingsButton').click();
-    frame_doc
-      .querySelector(
-        '.mx_ContextualMenu > div > .mx_AccessibleButton_kind_primary_outline',
-      )
-      .click();
+    this.settingButton.click();
     top.m_mp_ToggleGroupOptionsUser();
   }
 
@@ -228,17 +320,14 @@ class tchap_manager extends MelObject {
    * @method
    */
   tchap_sidebar() {
-    let mavaleur = top.$('#tchap_sidebar').prop('checked');
+    let checked = top.$('#tchap_sidebar').prop('checked');
     this.http_internal_post({
       task: 'tchap',
       action: 'sidebar',
-      params: { _showsidebar: mavaleur },
+      params: { _showsidebar: checked },
     });
-    if (mavaleur) {
-      this.tchap_frame().querySelector('.mx_SpacePanel').style.display = 'flex';
-    } else {
-      this.tchap_frame().querySelector('.mx_SpacePanel').style.display = 'none';
-    }
+
+    this.leftPanel.style.display = checked ? EMPTY_STRING : 'none';
   }
 
   /**
@@ -247,9 +336,9 @@ class tchap_manager extends MelObject {
    * @method
    */
   tchap_disconnect() {
-    let frame_doc = $('#tchap_frame')[0].contentWindow.document;
-    frame_doc.querySelector('.mx_UserMenu_contextMenuButton').click();
-    frame_doc.querySelector('.mx_UserMenu_iconSignOut').click();
+    this.disconnectButton.click();
     top.m_mp_ToggleGroupOptionsUser();
   }
+
+  // #endregion
 }

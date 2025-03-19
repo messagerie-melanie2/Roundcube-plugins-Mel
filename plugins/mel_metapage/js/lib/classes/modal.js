@@ -75,10 +75,19 @@ class RcmailDialogButton extends NotifierObject {
       hover = null,
       mouseenter = null,
       mouseleave = null,
+      options = null,
     },
   ) {
     super();
-    this._init()._setup(text, classes, click, hover, mouseenter, mouseleave);
+    this._init()._setup(
+      text,
+      classes,
+      click,
+      hover,
+      mouseenter,
+      mouseleave,
+      options,
+    );
   }
 
   _init() {
@@ -113,10 +122,16 @@ class RcmailDialogButton extends NotifierObject {
      */
     this.mouseleave = new BnumEvent();
 
+    /**
+     * Options en plus du bouton
+     * @type {?Object<string, *>}
+     */
+    this.options = null;
+
     return this;
   }
 
-  _setup(text, classes, click, hover, mouseenter, mouseleave) {
+  _setup(text, classes, click, hover, mouseenter, mouseleave, options) {
     this._p_addProp('text', { value: text });
 
     if (click) this.click.push(click);
@@ -135,6 +150,8 @@ class RcmailDialogButton extends NotifierObject {
       },
     });
 
+    this.options = options;
+
     return this;
   }
 
@@ -143,7 +160,7 @@ class RcmailDialogButton extends NotifierObject {
    * @returns {DialogButtonConfig}
    */
   generate() {
-    return {
+    let generated = {
       text: this.text,
       class: this.classes,
       click: this.click.call.bind(this.click),
@@ -151,6 +168,17 @@ class RcmailDialogButton extends NotifierObject {
       mouseenter: this.mouseenter.call.bind(this.mouseenter),
       mouseleave: this.mouseleave.call.bind(this.mouseleave),
     };
+
+    if (this.options) {
+      for (const key in this.options) {
+        if (Object.prototype.hasOwnProperty.call(this.options, key)) {
+          const element = this.options[key];
+          generated[key] = element;
+        }
+      }
+    }
+
+    return generated;
   }
 
   /**
@@ -165,29 +193,35 @@ class RcmailDialogButton extends NotifierObject {
    */
   static ButtonSave({
     text = 'Enregistrer',
+    classes = EMPTY_STRING,
     click = null,
     mouseenter = null,
     mouseleave = null,
-  }) {
+    options = null,
+  } = {}) {
     return new RcmailDialogButton(text, {
-      classes: 'mel-button no-button-margin no-margin-button',
+      classes: `mel-button no-button-margin no-margin-button ${classes}`,
       click: click?.call?.bind?.(click),
       mouseenter: mouseenter?.call?.bind?.(mouseenter),
       mouseleave: mouseleave?.call?.bind?.(mouseleave),
+      options,
     });
   }
 
   static ButtonCancel({
     text = 'Annuler',
+    classes = EMPTY_STRING,
     click = null,
     mouseenter = null,
     mouseleave = null,
-  }) {
+    options = null,
+  } = {}) {
     return new RcmailDialogButton(text, {
-      classes: 'mel-button no-button-margin no-margin-button btn btn-danger',
+      classes: `mel-button no-button-margin no-margin-button btn btn-danger ${classes}`,
       click: click?.call?.bind?.(click),
       mouseenter: mouseenter?.call?.bind?.(mouseenter),
       mouseleave: mouseleave?.call?.bind?.(mouseleave),
+      options,
     });
   }
 }
@@ -503,8 +537,8 @@ class DialogPage {
   _init() {
     /**
      * Contenu de la dialog
-     * @type {?____JsHtml}
-     * @frommodule JsHtml {@linkto ____JsHtml}
+     * @type {?import('../html/JsHtml/JsHtml.js')._JsHtml}
+     * @frommodule JsHtml {@linkto _JsHtml}
      */
     this.content = null;
     /**
@@ -538,7 +572,7 @@ class DialogPage {
    * Permet de modifier le contenu de la dialog
    * @param {Object} param0
    * @param {!boolean} param0.force_restart Si on recommence l'écriture de la page ou non
-   * @returns {____JsHtml}
+   * @returns {import('../html/JsHtml/JsHtml.js')._JsHtml}
    * @frommodulereturn JsHtml
    */
   start_update_content({ force_restart = false }) {
@@ -733,7 +767,7 @@ class DialogPageManager {
   _init() {
     /**
      * Pages de la dialog
-     * @type {module:BaseStorage~BaseStorage<DialogPage>}
+     * @type {BaseStorage<DialogPage>}
      * @package
      * @frommodule Modal {@linkto DialogPage}
      */
@@ -756,6 +790,10 @@ class DialogPageManager {
   _setup(...pages) {
     this.add_pages(...pages);
     return this;
+  }
+
+  get(pageName) {
+    return this._pages.get(pageName);
   }
 
   _add_page(page) {
@@ -884,7 +922,7 @@ class MelDialog {
   }
 
   _main() {
-    this.page_manager.onswitchpage.push(this._update_page.bind(this));
+    this.page_manager.onswitchpage.add('default', this._update_page.bind(this));
   }
 
   /**
@@ -915,14 +953,22 @@ class MelDialog {
     return this._$dialog.find(`#${name}`);
   }
 
+  get dialog() {
+    return this._$dialog;
+  }
+
+  get dialogContainer() {
+    return this.dialog.parent();
+  }
+
   /**
    * Affiche la dialogue
    */
-  show() {
+  show({ context = window } = {}) {
     if (!this._$dialog) {
       if (!this.options.close) this.options.close = () => {};
 
-      this._$dialog = rcmail.show_popup_dialog(
+      this._$dialog = context.rcmail.show_popup_dialog(
         $('<div>').attr('id', this.options?.id || 'mel-dialog')[0],
         EMPTY_STRING,
         [],

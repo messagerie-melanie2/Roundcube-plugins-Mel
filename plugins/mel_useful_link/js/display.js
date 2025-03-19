@@ -1,9 +1,9 @@
 /**
-   * Affiche la première lettre si l'image n'est pas trouvée
-   * @param {string} iconId Id de l'image
-   * @param {string} iconId Id de l'overlay si l'image n'est pas chargée
-   * @param {string} title Titre du lien
-   */
+ * Affiche la première lettre si l'image n'est pas trouvée
+ * @param {string} iconId Id de l'image
+ * @param {string} iconId Id de l'overlay si l'image n'est pas chargée
+ * @param {string} title Titre du lien
+ */
 function imgError(iconId = null, noImageId = null, title) {
   let iconImage = $('#' + iconId);
   let noImage = $('#' + noImageId);

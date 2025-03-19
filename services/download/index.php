@@ -43,7 +43,7 @@ else {
 // Inclusion de l'ORM
 @include_once 'includes/libm2.php';
 // Inclusion des vendors (pour l'ORM)
-require_once $dir.'/vendor/autoload.php';
+require_once $dir.'/bnum/vendor/autoload.php';
 
 if (!is_internal()) {
   header('HTTP/1.0 403 Forbidden');
@@ -52,7 +52,7 @@ if (!is_internal()) {
 }
 else {
   // Positionner le path de la sesion
-  session_save_path(SESSION_PATH);
+  // session_save_path(SESSION_PATH);
 
   // Démarrage de session
   session_start();

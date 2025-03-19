@@ -35,20 +35,24 @@
           color: var(--main-text-color);
         }
       }
+
+      > .material-symbols-outlined {
+        vertical-align: middle;
+      }
     }
   }
 }
 
 .fo-filter-icon {
-	position: absolute;
-	top: 6px;
-	left: 7px;
-	font-size: 20px;
+  position: absolute;
+  top: 6px;
+  left: 7px;
+  font-size: 20px;
   z-index: 1;
 }
 
 .fo-select {
-  padding-left:25px;
+  padding-left: 25px;
 }
 
 .rc-page-filters {
@@ -60,15 +64,25 @@
 }
 
 .rc-page-cal {
+  min-height: 100px;
+
   .fc-header-toolbar {
     display: none;
   }
 }
 
 .mel-dialog-page {
+  height: 100%;
+
+  .multi-page & {
+    height: 94%;
+  }
+
   .fc {
+    flex: 1;
+
     table {
-      margin-bottom:0;
+      margin-bottom: 0;
     }
   }
 
@@ -80,10 +94,17 @@
   }
 }
 
-.multiselect{
-text-align: left !important;
+.rcs-page-content {
+  margin: 0 10px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 
-  &.form-control{
+.multiselect {
+  text-align: left !important;
+
+  &.form-control {
     &.input-mel {
       width: 100%;
       border-radius: 50px;
@@ -93,4 +114,46 @@ text-align: left !important;
       }
     }
   }
+}
+
+//Custom FullCalendar
+.cfc-resource {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 !important;
+
+  .fc-cell-text {
+    margin: 0 0 0 5px;
+    padding: 0;
+  }
+}
+
+//selector
+bnum-resource-selector {
+  flex: 1;
+  align-items: center;
+}
+
+bnum-tabs-select {
+  height: 95%;
+
+  .mel-ui-tab-system {
+    padding: 0 10px;
+    margin-bottom: 10px;
+  }
+
+  .pannels-contents {
+    height: 100%;
+
+    bnum-wrapper {
+      height: 100%;
+    }
+  }
+}
+
+html .multipage-footer {
+  position: absolute;
+  bottom: 10px;
+  right: 15px;
 }

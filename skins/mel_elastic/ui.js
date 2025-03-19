@@ -599,7 +599,8 @@ $(document).ready(() => {
         .init_theme($(`#theme-panel .${tabs[ID_THEME_CONTENT].id}`))
         .init_theme_pictures({
           picturePannel: `#theme-panel .${tabs[ID_PICTURES_CONTENT].id}`,
-        });
+        })
+        .init_footer();
     }
 
     /**
@@ -711,6 +712,18 @@ $(document).ready(() => {
           delete: 46,
         },
       });
+
+      return this;
+    }
+
+    /**
+     * Ajoute la classe `ignore` si la variable d'environement `ui_ignore_footer` existe.
+     * @returns {Mel_Elastic}
+     */
+    init_footer() {
+      if (rcmail.env.ui_ignore_footer) {
+        $('.footer').addClass('ignore');
+      }
 
       return this;
     }
@@ -946,6 +959,19 @@ $(document).ready(() => {
               'data-name': iterator.value.id,
               'aria-pressed': iterator.value.id === this.theme,
             });
+
+            html_theme.onkeydown.push((e) => {
+              switch (e.originalEvent.code) {
+                case 'Enter':
+                case ' ':
+                  $(e.currentTarget).click();
+                  break;
+
+                default:
+                  break;
+              }
+            });
+
             //Action à faire au clique
             html_theme.onclick.push((e) => {
               let dosomething = callback_click ? callback_click(e) : true;
@@ -1336,6 +1362,20 @@ $(document).ready(() => {
         } else if (iterator.value.title) {
           $item.setAttr('title', iterator.value.title);
         }
+
+        $item.setAttr('tabindex', 0);
+        $item.addClass('mel-focus');
+        $item.onkeydown.push((e) => {
+          switch (e.originalEvent.code) {
+            case 'Enter':
+            case ' ':
+              $(e.currentTarget).click();
+              break;
+
+            default:
+              break;
+          }
+        });
 
         //Ajout des classes et du fonctionnement des boutons
         $item.addClass(THEME_CLASSES);
@@ -1827,7 +1867,7 @@ $(document).ready(() => {
           $('.btn.btn-primary.send').remove();
           $('#toolbar-menu').prepend(`
                         <li role="menuitem">
-                            <a class="send" href=# onclick="return rcmail.command('send','',this,event)"><span class="inner">Envoyer</span></a>
+                            <a class="send" href="#" tabindex="0" onclick="return rcmail.command('send','',this,event)"><span class="inner">Envoyer</span></a>
                         </li>
                     `);
         } else if (rcmail.env.action === '' || rcmail.env.action === 'index') {
@@ -2264,10 +2304,6 @@ $(document).ready(() => {
           }
         }
 
-        if (top !== window) {
-          $('#toolbar-menu a.send').removeAttr('href');
-        }
-
         if (window === top && rcmail.env.extwin !== 1) {
           let $tmp_quit = $(
             '<a style="margin-right:15px" class="back" href="#" >Messages</a>',
@@ -2530,8 +2566,6 @@ $(document).ready(() => {
                     }
                   },
                 );
-
-                frame_context.$('#toolbar-menu a.send').removeAttr('href');
 
                 if (frame_context.rcmail.env.is_model)
                   box.close.data('force', '1');
@@ -3412,23 +3446,22 @@ $(document).ready(() => {
      * @param {string} id Id de l'input
      * @returns {string} html
      */
-    get_input_mail_search(id = '') {
+    get_input_mail_search(
+      id = '',
+      { inputTabIndex = 1, contactTabIndex = 1 } = {},
+    ) {
       let html = 'Participants<span class=red-star></span>';
       html += '<div class="input-group">';
       html +=
         '<textarea name="_to_workspace" spellcheck="false" id="to-workspace" tabindex="-1" data-recipient-input="true" style="position: absolute; opacity: 0; left: -5000px; width: 10px;" autocomplete="off" aria-autocomplete="list" aria-expanded="false" role="combobox"></textarea>';
       html +=
         '<ul id="wspf" class="form-control recipient-input ac-input rounded-left">';
-      /* <li class="recipient">
-                                    <span class="name">delphin.tommy@gmail.com</span>
-                                    <span class="email">,</span>
-                                    <a class="button icon remove"></a></li> */
       html +=
         '<li class="input"><input id="' +
         id +
-        '" onchange="m_mp_autocoplete(this)" oninput="m_mp_autocoplete(this)" type="text" tabindex="1" autocomplete="off" aria-autocomplete="list" aria-expanded="false" role="combobox"></li></ul>';
+        `" onchange="m_mp_autocoplete(this)" oninput="m_mp_autocoplete(this)" type="text" tabindex="${inputTabIndex}" autocomplete="off" aria-autocomplete="list" aria-expanded="false" role="combobox"></li></ul>`;
       html += '<span class="input-group-append">';
-      html += `<a href="#add-contact" onclick="m_mp_openTo(this, '${id}')" class="input-group-text icon add recipient" title="Ajouter un contact" tabindex="1"><span class="inner">Ajouter un contact</span></a>`;
+      html += `<a href="#add-contact" onclick="m_mp_openTo(this, '${id}')" class="input-group-text icon add recipient" title="Ajouter un contact" tabindex="${contactTabIndex}"><span class="inner">Ajouter un contact</span></a>`;
       html += '			</span>';
       html += '			</div>';
       return html;

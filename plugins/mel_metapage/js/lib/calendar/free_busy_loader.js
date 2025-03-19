@@ -1,3 +1,4 @@
+import { WrapperObject } from '../BaseObjects/WrapperObject.js';
 import { MelEnumerable } from '../classes/enum.js';
 import {
   DATE_FORMAT,
@@ -5,7 +6,7 @@ import {
   DATE_TIME_FORMAT,
 } from '../constants/constants.dates.js';
 import { EMPTY_STRING } from '../constants/constants.js';
-import { MelObject, WrapperObject } from '../mel_object.js';
+import { MelObject } from '../mel_object.js';
 import { CalendarLoader } from './calendar_loader.js';
 import { Slots } from './event/parts/guestspart.free_busy.js';
 export { wrapper as FreeBusyLoader };

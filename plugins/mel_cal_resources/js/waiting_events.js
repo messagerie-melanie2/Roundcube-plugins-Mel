@@ -6,6 +6,16 @@ rcmail.register_command(
   },
   true,
 );
+//On redimensionne les modales ressources
+$(window).on('resize', () => {
+  for (const dialog of document.querySelectorAll('.ui-dialog')) {
+    if (dialog && dialog.querySelector('.rc-page-cal')) {
+      $(dialog.querySelector('.popup'))
+        .dialog('option', 'width', window.innerWidth - 90)
+        .dialog('option', 'height', window.innerHeight - 90);
+    }
+  }
+});
 
 $(document).ready(() => {
   try {

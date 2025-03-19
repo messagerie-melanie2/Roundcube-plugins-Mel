@@ -273,6 +273,11 @@ ul.treelist li.selected > div > a,
   button {
     color: var(--barup-icon-color) !important;
 
+    &.abs-btn-save,
+    &.abs-btn-back {
+      color: var(--default-text-color) !important;
+    }
+
     .barup-picture & {
       --barup-icon-color: var(--barup-icon-color-picture);
     }
@@ -308,7 +313,10 @@ ul.treelist li.selected > div > a,
     }
 
     .notifications-header {
-      border-bottom: var(--main-separator-border);
+      // border-bottom: var(--user-menu-separator-border);
+    }
+    .user-menu-controls-group {
+      border-bottom: var(--user-menu-separator-border);
     }
 
     .dropdown-item:focus,
@@ -600,10 +608,10 @@ button.btn.mel-tab {
 }
 
 .popover {
-  background-color: var(--popover-background-color);
-  color: var(--popover-text-color);
-  border: var(--popover-border);
-  box-shadow: var(--popover-box-shadow);
+  background-color: var(--popover-background-color) !important;
+  color: var(--popover-text-color) !important;
+  border: var(--popover-border) !important;
+  box-shadow: var(--popover-box-shadow) !important;
 
   &.menu a:not(.disabled):focus,
   .menu a:not(.disabled):hover,
@@ -612,6 +620,10 @@ button.btn.mel-tab {
     background-color: var(--popover-hover-background-color) !important;
     color: var(--popover-hover-text-color) !important;
     --popover-text-color: var(--popover-hover-text-color);
+  }
+
+  .listing li {
+    border: none !important;
   }
 
   .listing li a,

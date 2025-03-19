@@ -1,19 +1,25 @@
-<button id="button-settings" class="transparent-icon-button barup-icons-button fill-on-hover"
-  onclick="m_mp_ToggleGroupOptionsUser(this);" title="<roundcube:label name='mel_metapage.settings_help' />">
-  <span class="material-symbols-outlined">
-    settings
-  </span>
+<button
+  id="button-settings"
+  class="transparent-icon-button barup-icons-button fill-on-hover"
+  onclick="m_mp_ToggleGroupOptionsUser(this);"
+  title="<roundcube:label name='mel_metapage.settings_help' />"
+>
+  <span class="material-symbols-outlined"> settings </span>
 </button>
 
-<div id="groupoptions-user" style="z-index: 1000;">
+<div id="groupoptions-user" style="z-index: 1000">
   <div class="scroll-content">
     <div class="container menu" role="menu" aria-labelledby="user-up-panel">
       <div class="row">
-        <div class="col-12 d-flex justify-content-between align-items-center my-3 " title='Paramètres'>
-          <div class="option-menu-title">
-            Paramètres
-          </div>
-          <span class="material-symbols-outlined option-menu-close" onclick="m_mp_ToggleGroupOptionsUser(this);">
+        <div
+          class="col-12 d-flex justify-content-between align-items-center my-3"
+          title="Paramètres"
+        >
+          <div class="option-menu-title">Paramètres</div>
+          <span
+            class="material-symbols-outlined option-menu-close"
+            onclick="m_mp_ToggleGroupOptionsUser(this);"
+          >
             close
           </span>
         </div>
@@ -24,50 +30,68 @@
             <div class="title mb-4">Thèmes</div>
           </div>
         </div>
-        <div class="contents">
-        </div>
+        <div class="contents"></div>
       </div>
       <div class="options">
         <div class="row my-3">
           <div class="col-12">
-            <button class="option-menu-button" onclick="return rcmail.command('refreshFrame', '',this,event) ">
-            <div class="d-flex justify-content-center align-items-center">
-              <span class="material-symbols-outlined mr-3">
-                refresh
-              </span>
-              <roundcube:label name='mel_metapage.refresh' />
-            </div>
-          </button>
+            <button
+              id="refresh-current-window-frame"
+              class="option-menu-button"
+              onclick="return rcmail.command('refreshFrame', '',this,event) "
+            >
+              <div class="d-flex justify-content-center align-items-center">
+                <span class="material-symbols-outlined mr-3"> refresh </span>
+                <roundcube:label name="mel_metapage.refresh" />
+              </div>
+            </button>
           </div>
         </div>
         <div class="row">
-          <div class="col-12 d-flex justify-content-between align-items-center mt-2">
+          <div
+            class="col-12 d-flex justify-content-between align-items-center mt-2"
+          >
             <div>Mode sombre</div>
-            <button title="<roundcube:label name='mel_metapage.change_theme' />"
+            <button
+              title="<roundcube:label name='mel_metapage.change_theme' />"
               class="mel-focus theme-mode-switch btn btn-primary btn-block no-click-focus"
-              onclick="MEL_ELASTIC_UI.switch_color()"></button>
+              onclick="MEL_ELASTIC_UI.switch_color()"
+            ></button>
           </div>
         </div>
         <div class="row">
-          <div class="col-12 d-flex justify-content-between align-items-center mt-2">
+          <div
+            class="col-12 d-flex justify-content-between align-items-center mt-2"
+          >
             <div class="option-max-width">
-              <roundcube:label name='mel_metapage.disable-animations' />
-              <span class="material-symbols-outlined options-help ml-2" title="<roundcube:label name='mel_metapage.disable-animations-helper' />">
+              <roundcube:label name="mel_metapage.disable-animations" />
+              <span
+                class="material-symbols-outlined options-help ml-2"
+                title="<roundcube:label name='mel_metapage.disable-animations-helper' />"
+              >
                 help
               </span>
             </div>
             <div class="custom-control custom-switch no-click-focus">
-              <input name="_toggle_animations" id="rcmfd-toggle-anims" value="1" type="checkbox"
-                class="form-check-input custom-control-input no-click-focus" onchange="return rcmail.command('toggleAnimations', '',this,event) ">
-              <label for="rcmfd-toggle-anims" class="custom-control-label option-switch no-click-focus">
+              <input
+                name="_toggle_animations"
+                id="rcmfd-toggle-anims"
+                value="1"
+                type="checkbox"
+                class="form-check-input custom-control-input no-click-focus"
+                onchange="return rcmail.command('toggleAnimations', '',this,event) "
+              />
+              <label
+                for="rcmfd-toggle-anims"
+                class="custom-control-label option-switch no-click-focus"
+              >
               </label>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="options-custom">
-    </div>
+    <div class="options-custom"></div>
     <div class="bottom-option text-center">
       <a href="./?_task=settings">Voir toutes les options</a>
     </div>

@@ -16,13 +16,17 @@
         let index = 0,
           len = keys.length,
           key = keys[index],
-          callback = this._handlers_ex[main_key][key];
+          callback = this._handlers_ex[main_key][key],
+          value = null;
         index < len;
         ++index
       ) {
-        return_data.push(callback(...args));
         key = keys[index];
         callback = this._handlers_ex[main_key][key];
+        value = callback(...args);
+        if (value !== undefined) {
+          return_data.push(value);
+        }
       }
     }
 
@@ -50,8 +54,8 @@
 
   const old = rcube_webmail.prototype.triggerEvent;
   function rcmail_trigger_event_new(evt, e) {
-    const ret = old.call(this, evt, e);
-    this.trigger_event_ex(evt, e);
+    let ret = old.call(this, evt, e);
+    ret ??= this.trigger_event_ex(evt, e) ?? ret;
 
     return ret;
   }

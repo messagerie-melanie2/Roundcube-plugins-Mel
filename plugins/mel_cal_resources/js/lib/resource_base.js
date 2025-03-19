@@ -64,13 +64,15 @@ export { ResourcesBase, ResourceSettings };
  * @extends MelObject
  */
 class ResourcesBase extends MelObject {
+  #_startRender;
   /**
    * Constructeur de la classe
    * @param {string} name Id de la ressource
    * @param {FilterConfig[]} filters Liste des filtres de la ressource. Ils seront convertit en {@link FilterBase}
    */
-  constructor(name, filters) {
+  constructor(name, filters, { startRender = true } = {}) {
     super(name, filters);
+    this.#_startRender = startRender;
   }
 
   /**
@@ -106,12 +108,11 @@ class ResourcesBase extends MelObject {
 
     /**
      * Liste des évènements afficher dans l'agenda
-     * @type {ResourceEvent[]}
+     * @type {import('./resources_functions.js')._ResourceEvent}
      * @frommodule Resources/ResourceBaseFunctions/Functions
      * @protected
      */
     this._p_events = [];
-
     /**
      * @package
      * @type {Array<ResourceObject>}
@@ -221,6 +222,7 @@ class ResourcesBase extends MelObject {
         input_type: x.type,
         icon: x.icon,
         number: x.number,
+        rowname: x?.rowname,
       })
         .push_event(this._on_data_loaded.bind(this))
         .push_event_data_changed(this._on_data_changed.bind(this)),
@@ -280,6 +282,18 @@ class ResourcesBase extends MelObject {
   }
 
   /**
+   * Renvoie une heure au format HH:mm
+   * @param {number} hour
+   * @returns {string} format HH:mm
+   * @private
+   */
+  #_set_buisness_hour(hour) {
+    if (hour < 10) hour = `0${hour}`;
+
+    return `${hour}:00`;
+  }
+
+  /**
    * Génère l'agenda avec fullcalendar
    * @package
    * @param {external:jQuery} $fc Div qui contient le fullcalendar
@@ -297,16 +311,17 @@ class ResourcesBase extends MelObject {
       resourceRender: this._functions.resource_render,
       defaultView: 'timelineDay',
       schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
-      height: 200,
+      height: () => this._$calendar.height(),
       firstHour: settings.first_hour,
+      minTime: this.#_set_buisness_hour(settings.work_start),
+      maxTime: this.#_set_buisness_hour(settings.work_end),
       scrollTime: { hours: settings.first_hour },
-      slotDuration: { minutes: 60 / settings.timeslots },
+      slotDuration: { minutes: 60 },
       locale: 'fr',
       axisFormat: DATE_HOUR_FORMAT,
       slotLabelFormat: DATE_HOUR_FORMAT,
       selectable: true,
       selectHelper: true,
-      //stickyFooterScrollbar:true,
       slotWidth: 50,
       defaultDate: this.start,
       select: this._functions.on_selected_date,
@@ -319,9 +334,8 @@ class ResourcesBase extends MelObject {
     };
     try {
       $fc.css('width', '100%').fullCalendar(config);
-      $fc.fullCalendar('render');
-      //$fc.fullCalendar('option', 'height', 200);
-      //$fc.fullCalendar('render');
+
+      if (this.#_startRender) $fc.fullCalendar('render');
     } catch (error) {
       console.error(error);
     }
@@ -371,8 +385,47 @@ class ResourcesBase extends MelObject {
   _format_resources(resources, filters) {
     return MelEnumerable.from(resources)
       .where((x) => !MelEnumerable.from(filters).any((f) => !f.filter(x)))
-      .orderBy((x) => (this.get_env('fav_resources')?.[x.data.email] ? 0 : 1))
+      .orderBy((x) =>
+        this.get_env('fav_resources')?.[x.data.type.toUpperCase()]?.[
+          x.data.email
+        ]
+          ? 0
+          : 1,
+      )
       .toArray();
+  }
+
+  /**
+   * Met les input en rouge si la date n'est pas bonne
+   * @private
+   */
+  _set_validity() {
+    if (!$('.input-time-end')[0].checkValidity())
+      $('.input-time-end').addClass('is-invalid');
+    else $('.input-time-end').removeClass('is-invalid');
+
+    if (!$('.input-time-start')[0].checkValidity())
+      $('.input-time-start').addClass('is-invalid');
+    else $('.input-time-start').removeClass('is-invalid');
+
+    if (this._has_invalid()) {
+      $('.ui-dialog .save-btn')
+        .addClass('disabled')
+        .attr('disabled', 'disabled');
+    } else {
+      $('.ui-dialog .save-btn').removeClass('disabled').removeAttr('disabled');
+    }
+  }
+
+  /**
+   * Check si les input de temps sont valides ou non
+   * @returns {boolean}
+   */
+  _has_invalid() {
+    return (
+      !$('.input-time-end')[0].checkValidity() ||
+      !$('.input-time-start')[0].checkValidity()
+    );
   }
 
   /**
@@ -389,6 +442,13 @@ class ResourcesBase extends MelObject {
     if ($fc.length) this._$calendar = this._generate_ui($fc);
 
     this.refresh_calendar_date();
+
+    this.wait_something(
+      () =>
+        $('.input-time-end').length > 0 && $('.ui-dialog .save-btn').length > 0,
+    ).then(() => {
+      this._set_validity();
+    });
 
     return $rtn;
   }
@@ -520,6 +580,9 @@ class ResourcesBase extends MelObject {
     const button_save = RcmailDialogButton.ButtonSave({
       click: this.event_on_save,
     });
+
+    button_save.classes += ' save-btn';
+
     const button_cancel = RcmailDialogButton.ButtonCancel({
       click: () => {
         let $parent = this._$calendar;
@@ -532,22 +595,29 @@ class ResourcesBase extends MelObject {
         } else $('.ui-dialog-titlebar-close').click();
       },
     });
+
     let page = new DialogPage(this._name, {
       title: this._name,
       buttons: [button_cancel, button_save],
     });
 
-    page = template_resource.get_page(
-      page,
-      (await Promise.allSettled(this._p_filters.map((x) => x.generate()))).map(
-        (x) => x.value,
-      ),
-      this,
-    );
+    page = await this._p_get_page(page);
     this._last_get = page.get.bind(page);
     page.get = this._get.bind(this, this._last_get);
 
     return page;
+  }
+
+  async _p_get_page(page) {
+    return template_resource.get_page(
+      page,
+      (
+        await Promise.allSettled(
+          this._p_filters.map((x) => x.generate(this._p_filters)),
+        )
+      ).map((x) => x.value),
+      this,
+    );
   }
 
   /**
@@ -604,6 +674,10 @@ class ResourcesBase extends MelObject {
    */
   render() {
     this._$calendar.fullCalendar('rerender');
+  }
+
+  rerender() {
+    $(window).trigger('resize');
   }
 }
 

@@ -146,6 +146,11 @@ class M2mailbox {
     }
     $user = $_user->uid;
 
+    // 0008506: On peut s'autopartager son calendrier ou sa boite en passant par l'adresse email
+    if ($user == $this->mbox) {
+      return false;
+    }
+
     // Modification des droits
     $acl = strtoupper($rights[0]);
     if (in_array($acl, $_mbox->supported_shares)) {

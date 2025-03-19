@@ -17,16 +17,7 @@
             /></span>
             <br />
             <div class="form-floating pixel-correction">
-              <input
-                id="webconf-room-name"
-                type="text"
-                style="background-clip: unset"
-                required
-                class="form-control input-mel"
-              />
-              <label for="webconf-room-name"
-                >10 caractères alphanumérique avec au moins 3 chiffres</label
-              >
+              <roundcube:object name="inputroom" />
             </div>
             <div class="webconf-error-text" style="display: none">
               <roundcube:label name="mel_metapage.webconf_saloon_name_error" />
@@ -136,6 +127,7 @@
             onclick="mel_metapage.Functions.frame_back(true, 'home')"
             style="position: absolute; top: 0; right: 12px; cursor: pointer"
             class="icon-mel-close card-close"
+            id="quit-modal"
           ></span>
         </div>
       </div>

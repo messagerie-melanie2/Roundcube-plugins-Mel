@@ -602,16 +602,38 @@ class mel_driver extends calendar_driver {
       }
 
       // Chargement des calendriers si besoin
-      if (! isset($this->calendars)) {
+      if (!isset($this->calendars)) {
         $this->_read_calendars();
       }
       if (isset($prop['id'])) {
         $id = driver_mel::gi()->rcToMceId($prop['id']);
-        if (isset($this->calendars[$id])) {
+
+        if (isset($this->calendars[$id]) && $this->calendars[$id]->owner == $this->user->uid) {
           $cal = $this->calendars[$id];
-          if (isset($prop['name']) && $cal->owner != $cal->id && $cal->owner == $this->user->uid && $prop['name'] != "" && $prop['name'] != $cal->name) {
+        }
+        //Si agenda partagé
+        else {
+          $cal = driver_mel::gi()->calendar();
+          $cal->id = $id;
+          if ($cal->load()) {
+            $mailbox = driver_mel::gi()->getUser($cal->owner);
+            //On laisse la possibilité à l'utilisateur de modifier la couleur d'un agenda partagé
+            if (!isset($prop['color'])) {
+              //Si l'utilisateur n'à pas les droits d'admin sur l'agenda partagé
+              if (!isset($mailbox->shares[$this->rc->get_user_name()]) || !($mailbox->shares[$this->rc->get_user_name()]->type == \LibMelanie\Api\Defaut\Users\Share::TYPE_ADMIN)) {
+                $this->rc->output->show_message($this->rc->gettext('calendar.aclnorights'), 'error');
+                return false;
+              }
+            }
+          } else {
+            return false;
+          }
+        }
+        if (isset($cal)) {
+          if (isset($prop['name']) && $prop['name'] != "" && $prop['name'] != $cal->name && $cal->owner != $cal->id ) {
             $cal->name = $prop['name'];
             $cal->save();
+            \mel::unsetCache('users');
           }
           // Récupération des préférences de l'utilisateur
           $color_calendars = $this->rc->config->get('color_calendars', array());
@@ -621,16 +643,16 @@ class mel_driver extends calendar_driver {
             $color_calendars[$cal->id] = $prop['color'];
             $param_change = true;
           }
-          if (isset($prop['showalarms'])) {
-            if (!isset($alarm_calendars[$cal->id]) && $prop['showalarms'] == 1) {
-              $alarm_calendars[$cal->id] = 1;
-              $param_change = true;
-            }
-            elseif (isset($alarm_calendars[$cal->id]) && $prop['showalarms'] == 0) {
-              unset($alarm_calendars[$cal->id]);
-              $param_change = true;
-            }
+
+          if (!isset($alarm_calendars[$cal->id]) && $prop['showalarms'] == 1) {
+            $alarm_calendars[$cal->id] = 1;
+            $param_change = true;
           }
+          else if (isset($alarm_calendars[$cal->id]) && $prop['showalarms'] == 0) {
+            unset($alarm_calendars[$cal->id]);
+            $param_change = true;
+          }
+          
           if ($param_change) {
             $this->rc->user->save_prefs(array('color_calendars' => $color_calendars,'alarm_calendars' => $alarm_calendars));
           }
@@ -937,7 +959,7 @@ class mel_driver extends calendar_driver {
         $exceptions[$recid] = $this->_write_postprocess($_exception, $event, true);
 
         // Gérer la sequence
-        $this->_sequence_process($event, $_exception);
+        $this->_sequence_process($event, $_exception, $new);
 
         $_event->exceptions = $exceptions;
         $_event->modified = time();
@@ -961,7 +983,7 @@ class mel_driver extends calendar_driver {
           // Converti les données de l'évènement en évènement Mél
           $_event = $this->_write_postprocess($_event, $event, false);
 
-          $this->_sequence_process($event, $_event);
+          $this->_sequence_process($event, $_event, $new);
         }
         else {
           $enddate->sub(new DateInterval('P1D'));
@@ -1002,7 +1024,7 @@ class mel_driver extends calendar_driver {
         // Converti les données de l'évènement en évènement Mél
         $_event = $this->_write_postprocess($_event, $event, $new);
 
-        $this->_sequence_process($event, $_event);
+        $this->_sequence_process($event, $_event, $new);
 
         // Supprime le tag que l'alarme a été repoussé
         if ($_event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_LASTACK) !== null)
@@ -1052,15 +1074,14 @@ class mel_driver extends calendar_driver {
    * @param event event properties
    * @param _event évènement Mél
    */
-  protected function _sequence_process($event, &$_event)
+  protected function _sequence_process($event, &$_event, $new)
   {
-
     $useless_fields = ["attendees", "alarm", "modified", "modified_json"];
     $modified_fields = $_event->getObjectMelanie()->fieldsHasChanged();
 
     if (isset($event['sequence'])) {
       $_event->sequence = $event['sequence'];
-    } else if (is_int($_event->sequence)) {
+    } else if (is_int($_event->sequence) && !$new) {
       if (!empty(array_diff($modified_fields, $useless_fields))) {
         $_event->sequence = $_event->sequence + 1;
       }
@@ -1494,12 +1515,23 @@ class mel_driver extends calendar_driver {
         if (isset($event_attendee['role']) && $event_attendee['role'] == 'ORGANIZER') {
           if (count($event['attendees']) != 1) {
             $organizer = driver_mel::gi()->organizer([$_event]);
-            if (isset($event_attendee['email'])) {
-              $organizer->email = $event_attendee['email'];
-            }
+            
             if (isset($event_attendee['name'])) {
               $organizer->name = $event_attendee['name'];
             }
+            if (isset($event_attendee['email'])) {
+              $organizer->email = $event_attendee['email'];
+
+              // Est-ce qu'on est dans le cas ou on organise sur une réunion dans un autre agenda ?
+              if ($this->calendars[$event['calendar']]->owner != $this->rc->get_user_name() 
+                  && !isset($_event->organizer)
+                  && $organizer->uid == $this->calendars[$event['calendar']]->owner) {
+                $organizer->owner_email = $organizer->email;
+                $organizer->email = driver_mel::gi()->getUser()->email;
+                $organizer->uid = driver_mel::gi()->getUser()->uid;
+              }
+            }
+            
             $_event->organizer = $organizer;
           }
         }
@@ -1598,6 +1630,15 @@ class mel_driver extends calendar_driver {
       }
       if ($event['_savemode'] == 'current') {
         if ($_event->load()) {
+          // Test si privé
+          if (($_event->class == \LibMelanie\Api\Defaut\Event::CLASS_PRIVATE 
+                || $_event->class == \LibMelanie\Api\Defaut\Event::CLASS_CONFIDENTIAL) 
+              && $this->calendars[$_event->calendar]->owner != $this->user->uid 
+              && $_event->owner != $this->user->uid 
+              && !$this->calendars[$_event->calendar]->asRight(\LibMelanie\Config\ConfigMelanie::PRIV)) {
+            return false;
+          }
+          
           $_exception = driver_mel::gi()->exception([$_event, $this->user, $this->calendars[$event['calendar']]]);
           // Converti les données de l'évènement en exception Mél
           $exceptions = $_event->exceptions;
@@ -1645,6 +1686,15 @@ class mel_driver extends calendar_driver {
       }
       elseif ($event['_savemode'] == 'future') {
         if ($_event->load()) {
+          // Test si privé
+          if (($_event->class == \LibMelanie\Api\Defaut\Event::CLASS_PRIVATE 
+                || $_event->class == \LibMelanie\Api\Defaut\Event::CLASS_CONFIDENTIAL) 
+              && $this->calendars[$_event->calendar]->owner != $this->user->uid 
+              && $_event->owner != $this->user->uid 
+              && !$this->calendars[$_event->calendar]->asRight(\LibMelanie\Config\ConfigMelanie::PRIV)) {
+            return false;
+          }
+
           // Positionnement de la recurrence_id et de l'uid
           $recid = explode('@DATE-', $event['id'])[1];
           $_event->recurrence->enddate = date(self::SHORT_DB_DATE_FORMAT, intval($recid));
@@ -1662,6 +1712,15 @@ class mel_driver extends calendar_driver {
       else {
         // 0005105: La suppression d'un événement simple ne le charge pas
         if ($_event->load()) {
+          // Test si privé
+          if (($_event->class == \LibMelanie\Api\Defaut\Event::CLASS_PRIVATE 
+                || $_event->class == \LibMelanie\Api\Defaut\Event::CLASS_CONFIDENTIAL) 
+              && $this->calendars[$_event->calendar]->owner != $this->user->uid 
+              && $_event->owner != $this->user->uid 
+              && !$this->calendars[$_event->calendar]->asRight(\LibMelanie\Config\ConfigMelanie::PRIV)) {
+            return false;
+          }
+          
           // MANTIS 0006615: L'exception d'une invitation est toujours présente sur le téléphone après suppression de la récurrence complète
           foreach ($_event->exceptions as $exception) {
             $exception_uid = $exception->uid;
@@ -2285,6 +2344,9 @@ class mel_driver extends calendar_driver {
           $_event['recurrence'] = $this->_read_event_exceptions($event, $recurrence);
         }
       }
+
+      // Créateur de la ressource
+      $_event['creator'] = $event->owner.'/'.driver_mel::gi()->getUser($event->owner)->name;
     }
     else {
       // Test si privé
@@ -2889,7 +2951,7 @@ class mel_driver extends calendar_driver {
             $from = strtotime($event['start']->format(self::DB_DATE_FORMAT));
             $to = strtotime($event['end']->format(self::DB_DATE_FORMAT));
           }
-          $result[] = array($from,$to,isset($fbtypemap[$event['free_busy']]) ? $fbtypemap[$event['free_busy']] : calendar::FREEBUSY_BUSY);
+          $result[] = array($from,$to,isset($fbtypemap[$event['free_busy']]) ? $fbtypemap[$event['free_busy']] : calendar::FREEBUSY_BUSY,$event['creator']);
         }
         return $result;
       }

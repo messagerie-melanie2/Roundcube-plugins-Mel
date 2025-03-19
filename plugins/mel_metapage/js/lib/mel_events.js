@@ -141,10 +141,16 @@ class RotomecaEvent {
     if (keys.length !== 0) {
       for (let index = 0, len = keys.length; index < len; ++index) {
         const key = keys[index];
-        const { args, callback } = this.events[key];
 
-        if (callback)
-          results[key] = this._call_callback(callback, ...[...args, ...params]);
+        if (this.events[key]) {
+          const { args, callback } = this.events[key];
+
+          if (callback)
+            results[key] = this._call_callback(
+              callback,
+              ...[...args, ...params],
+            );
+        }
       }
     }
 
@@ -184,7 +190,16 @@ class RotomecaEvent {
       }
     }
 
-    await Promise.allSettled(asyncs);
+    const results = (await Promise.allSettled(asyncs)).map((x) => x.value);
+
+    switch (results.length) {
+      case 0:
+        return null;
+      case 1:
+        return results[Object.keys(results)[0]];
+      default:
+        return results;
+    }
   }
 
   /**

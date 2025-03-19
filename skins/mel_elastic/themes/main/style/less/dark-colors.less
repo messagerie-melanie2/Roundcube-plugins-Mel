@@ -1,5 +1,6 @@
 html.dark-mode-custom:root {
   // Main background colors
+  /*root*/
   --main-bckg-color: #1f2933;
   --secondary-bckg-color: #1f2933;
   --tierciary-bckg-color: #323f4b;
@@ -11,6 +12,7 @@ html.dark-mode-custom:root {
   --body-background-color: var(--default-bckg-color);
   --secondary-nav-background-color: #181c28;
   --background-color-dialog-message: #d7bd8a;
+  --box-information-background-color: var(--tierciary-bckg-color);
 
   //Main text colors
   --main-text-color: #96b9e7;
@@ -23,6 +25,8 @@ html.dark-mode-custom:root {
   --default-placeholder-text-color: #96845f;
   --hint-text-color: #8ba3a7;
   --active-button-text-color: var(--tierciary-text-color);
+  --box-information-text-color: var(--main-text-color);
+  --invitebox-label-text-color: var(--box-information-text-color);
 
   //Border colors
   --main-border-color: var(--default-text-color);
@@ -33,6 +37,7 @@ html.dark-mode-custom:root {
   --alt-default-border-color: var(--main-text-color);
   --calendar-table-border: #64666e;
   --main-border-color-transparent: var(--default-text-color);
+  --user-menu-separator-border-color: var(--main-separator-border-color);
 
   //Main border radius
   --main-border-radius: 0px;
@@ -75,6 +80,23 @@ html.dark-mode-custom:root {
   --nav-item-hover-border-bottom: solid thin var(--main-border-color);
 
   //Buttons
+  --workspace-favorite-button-text-color: var(--input-button-text-color);
+  --workspace-favorite-button-pressed-text-color: var(--main-bckg-color);
+  --workspace-favorite-button-hover-text-color: var(
+    --workspace-favorite-button-pressed-text-colorBourgoin-Jallieu, 38300
+  );
+
+  --wsp-nav-button-invisible-background-color: var(--invisible);
+  --wsp-nav-button-invisible-text-color: var(--mel-button-text-color);
+  --wsp-nav-button-background-color-invisible-active: var(
+    --mel-button-hover-background-color
+  );
+  --wsp-nav-color-invisible-active: var(--wsp-nav-button-invisible-text-color);
+  --wsp-nav-button-border-color-invisible-active: var(
+    --wsp-nav-button-invisible-text-color
+  );
+  --wsp-list-hover-background-color: var(--bureau-card-content-hover-background-color);
+
   --mel-button-background-color: var(--main-bckg-color);
   --mel-button-hover-background-color: var(--hover-background-color);
   --mel-button-border-color: var(--main-border-color);
@@ -108,6 +130,11 @@ html.dark-mode-custom:root {
 
   --barup-icon-color: var(--input-button-text-color);
   --barup-icon-color-picture: var(--input-button-text-color);
+
+  --wsp-nav-button-invisible-text-color: var(--wsp-nav-button-text-color);
+
+  //Pressed button list
+  --pressed-list-button-color: var(--input-button-text-color);
 
   //Calendar
   --calendar-list-item-hover-background-color: var(--main-bckg-color);
@@ -364,6 +391,14 @@ html.dark-mode-custom:root {
   --link-context-menu-hover-background-color: var(
     --bureau-card-content-hover-background-color
   );
+
+  //Forum
+  --forum-border-bottom-color: rgba(225, 197, 143, 0.5);
+  --forum-tag-text-color: var(--default-text-color);
+  --forum-active-text-color: var(--forum-tag-text-color);
+  --forum-tag-background-color: var(--main-bckg-color);
+  --forum-list-hover-background-color: #161d24;
+  --forum-list-border-color: transparent;
 }
 
 html.dark-mode,

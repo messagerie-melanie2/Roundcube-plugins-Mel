@@ -273,18 +273,18 @@ class roundcube_auth extends rcube_plugin
                 // OIDC query
                 $oidc = $this->oidc_keyword . "=1";
                 // Query content if not empty
-                //$query = !empty($query) ? $prefixQuery . $query : $emptyQuery;
+                $query = !empty($query) ? $prefixQuery . $query : $emptyQuery;
                 // 
-                $finalQuery = $location . $oidc;// . $query;
+                $finalQuery = $location . $oidc . $query;
             break;
 
             case RedirectTypeEnum::KERBEROS:
                 // OIDC query
                 $kerb = $this->kerb_keyword . "=1";
-                // Query content if not empty
-                //$query = !empty($query) ? $prefixQuery . $query : $emptyQuery;
-                // 
-                $finalQuery = $location . $kerb;// . $query;
+                //Query content if not empty
+                $query = !empty($query) ? $prefixQuery . $query : $emptyQuery;
+                
+                $finalQuery = $location . $kerb . $query;
             break;
         }
         
@@ -593,12 +593,12 @@ class roundcube_auth extends rcube_plugin
                 {   
                     case AuthTypeEnum::KERBEROS:
                         // mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Redirection vers $kerb_keyword=$enabled");
-                        $this->redirect("", RedirectTypeEnum::KERBEROS, $rcmail); // todo add task login ?
+                        $this->redirect($_SERVER['QUERY_STRING'], RedirectTypeEnum::KERBEROS, $rcmail); // todo add task login ?
                     break;
 
                     case AuthTypeEnum::OIDC:
                         // mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Redirection vers $oidc_keyword=$enabled");
-                        $this->redirect("", RedirectTypeEnum::OIDC, $rcmail); // todo add task login ?
+                        $this->redirect($_SERVER['QUERY_STRING'], RedirectTypeEnum::OIDC, $rcmail); // todo add task login ?
                     break;
 
                     case AuthTypeEnum::PASSWORD:

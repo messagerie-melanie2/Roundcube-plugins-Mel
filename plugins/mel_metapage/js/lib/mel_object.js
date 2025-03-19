@@ -4,10 +4,11 @@
  * @property {MelObject} MelObject
  */
 
-export { MelObject, WrapperObject };
-import { Mel_Ajax } from '../../../mel_metapage/js/lib/mel_promise.js';
+export { MelObject };
+import { BnumPromise } from './BnumPromise.js';
 import { BaseStorage } from './classes/base_storage.js';
 import { Cookie } from './classes/cookies.js';
+import { FramesManager } from './classes/frame_manager.js';
 import { EMPTY_STRING } from './constants/constants.js';
 import { isNullOrUndefined } from './mel.js';
 import { Top } from './top.js';
@@ -107,6 +108,7 @@ class MelObject {
     /**
      * @type {{task:string}}
      * @package
+     * @deprecated Renverra forcément `undefined`, utilisez plutôt {@link FramesManager.Instance.currentTask}
      */
     this.rc_data = { task: '' };
     Object.defineProperties(this, {
@@ -158,6 +160,15 @@ class MelObject {
    */
   rcmail(top = false) {
     return top && !!Top.top()?.rcmail ? Top.top().rcmail : window.rcmail;
+  }
+
+  open_compose_step({ to = undefined, subject = undefined } = {}) {
+    let config = {};
+
+    if (to) config.to = to;
+    if (subject) config.subject = subject;
+
+    this.rcmail().open_compose_step(config);
   }
 
   /**
@@ -281,28 +292,39 @@ class MelObject {
    * @param {Object} param1
    * @param {?string} param1.action Action de la page
    * @param {Object<string, string>} param1.params Paramètres additionnels de la page
-   * @param {!boolean} param1.update
-   * @param {!boolean} param1.force_update
+   * @param {!boolean} param1.update {@deprecated}
+   * @param {!boolean} param1.force_update {@deprecated}
    * @async
    * @protected
    * @return {Promise<void>}
-   * @deprecated
+   * @deprecated Utilisez plutôt {@link switch_frame}
    */
   async change_frame(
     frame,
     { action = null, params = {}, update = true, force_update = false },
   ) {
-    await mel_metapage.Functions.change_page(
-      frame,
-      action,
-      params,
-      update,
-      force_update,
-    );
+    if (action && (update || force_update)) params['_action'] = action;
+
+    await this.switch_frame(frame, {
+      changepage: true,
+      args: params,
+    });
   }
 
-  async switch_frame(task, { changepage = true, args = null }) {
-    await mel_metapage.Functions.change_frame(task, changepage, true, args);
+  /**
+   * Change de frame
+   * @param {string} task Nom de la tâche
+   * @param {Object} options
+   * @param {boolean} [options.changepage=true] Si l'on change de page ou si la frame reste caché pendant le chargement.
+   * @param {?Object<string, *>} [options.args=null] Options du changement de frame. Si la frame est déjà ouverte, force le changement d'url.
+   * @async
+   * @returns {Promise}
+   */
+  async switch_frame(task, { changepage = true, args = null } = {}) {
+    await FramesManager.Instance.switch_frame(task, {
+      changepage,
+      args,
+    });
   }
 
   /**
@@ -312,7 +334,7 @@ class MelObject {
    * @protected
    */
   have_frame(frame) {
-    return this.select_frame(frame).length > 0;
+    return FramesManager.Instance.get_window().has_frame(frame);
   }
 
   /**
@@ -353,20 +375,53 @@ class MelObject {
    * @returns {string}
    * @protected
    */
-  url(task, { action = EMPTY_STRING, params = null }) {
-    return mel_metapage.Functions.url(task, action, params);
+  url(
+    task,
+    { action = EMPTY_STRING, params = null, removeIsFromIframe = false },
+  ) {
+    const IFRAME = Object.freeze({ KEY: '_is_from', VALUE: 'iframe' });
+    let url = task;
+
+    if (!!action && action !== EMPTY_STRING) url += `&_action=${action}`;
+
+    if (
+      !removeIsFromIframe &&
+      (window !== parent ||
+        window.location.href.includes(`${IFRAME.KEY}=${IFRAME.VALUE}`))
+    ) {
+      if (!params || !Object.keys(params).length) params = {};
+
+      params[IFRAME.KEY] = IFRAME.VALUE;
+    }
+
+    if (!!params && Object.keys(params).length) {
+      for (const key of Object.keys(params)) {
+        url += `&${key}=${params[key]}`;
+      }
+    }
+
+    // if (removeIsFromIframe && url.includes('&_is_from=iframe'))
+    //   url = url.replace('&_is_from=iframe', EMPTY_STRING);
+
+    return this.rcmail().get_task_url(
+      url,
+      window.location.origin + window.location.pathname,
+    );
   }
 
   /**
    * Effectue un appel ajax avec les options spécifiées.
    * @param {Object} options - Les options pour l'appel HTTP.
    * @param {string} options.url - L'URL à appeler.
-   * @param {function} [options.on_success=() => {}] - La fonction à appeler en cas de succès.
-   * @param {function} [options.on_error=(...args) => {console.error('###[http_call]', ...args)}] - La fonction à appeler en cas d'erreur.
+   * @param {(data:T) => Y} [options.on_success=() => {}] - La fonction à appeler en cas de succès.
+   * @param {(...args:any[]) => any[]} [options.on_error=(...args) => {console.error('###[http_call]', ...args)}] - La fonction à appeler en cas d'erreur.
    * @param {Object} [options.params=null] - Les paramètres à envoyer dans la requête.
-   * @param {string} [options.type='POST'] - Le type de requête HTTP à effectuer.
-   * @returns {Mel_Ajax}
+   * @param {string | BnumPromise.Ajax.EAjaxMethod} [options.type=BnumPromise.Ajax.EAjaxMethod.post] - Le type de requête HTTP à effectuer.
+   * @returns {BnumPromise<Y>}
+   * @frommodulereturn BnumPromise
    * @protected
+   * @template T
+   * @template Y
    */
   http_call({
     url,
@@ -375,14 +430,13 @@ class MelObject {
       console.error('###[http_call]', ...args);
     },
     params = null,
-    type = 'POST',
+    type = BnumPromise.Ajax.EAjaxMethod.post,
   }) {
-    return new Mel_Ajax({
+    return BnumPromise.Ajax.Call(url, {
       type,
-      url,
       success: on_success,
       failed: on_error,
-      datas: params,
+      data: params,
     });
   }
 
@@ -391,12 +445,15 @@ class MelObject {
    * @param {Object} options - Les options pour l'appel HTTP.
    * @param {string} options.task - Tache
    * @param {string} options.action - Action
-   * @param {function} [options.on_success=() => {}] - La fonction à appeler en cas de succès.
-   * @param {function} [options.on_error=(...args) => {console.error('###[http_call]', ...args)}] - La fonction à appeler en cas d'erreur.
+   * @param {(data:T) => Y} [options.on_success=() => {}] - La fonction à appeler en cas de succès.
+   * @param {(...args:any[]) => any[]} [options.on_error=(...args) => {console.error('###[http_call]', ...args)}] - La fonction à appeler en cas d'erreur.
    * @param {Object} [options.params=null] - Les paramètres à envoyer dans la requête.
-   * @param {string} [options.type='POST'] - Le type de requête HTTP à effectuer.
-   * @returns {Mel_Ajax}
+   * @param {string | BnumPromise.Ajax.EAjaxMethod} [options.type=BnumPromise.Ajax.EAjaxMethod.post] - Le type de requête HTTP à effectuer.
+   * @returns {BnumPromise<Y>}
    * @protected
+   * @frommodulereturn BnumPromise
+   * @template T
+   * @template Y
    */
   http_internal_call({
     task,
@@ -406,16 +463,17 @@ class MelObject {
       console.error('###[http_internal_call]', ...args);
     },
     params = null,
-    type = 'POST',
+    type = BnumPromise.Ajax.EAjaxMethod.post,
   }) {
+    const isGet = ['GET', BnumPromise.Ajax.EAjaxMethod.get].includes(type);
     return this.http_call({
       type,
       on_error,
       on_success,
-      params: type === 'GET' ? null : params,
+      params: isGet ? null : params,
       url: this.url(task, {
         action: action,
-        params: type === 'GET' ? params : null,
+        params: isGet ? params : null,
       }),
     });
   }
@@ -425,11 +483,14 @@ class MelObject {
    * @param {Object} options - Les options pour l'appel HTTP.
    * @param {string} options.task - Tache
    * @param {string} options.action - Action
-   * @param {function} [options.on_success=() => {}] - La fonction à appeler en cas de succès.
-   * @param {function} [options.on_error=(...args) => {console.error('###[http_call]', ...args)}] - La fonction à appeler en cas d'erreur.
+   * @param {(data:T) => Y} [options.on_success=() => {}] - La fonction à appeler en cas de succès.
+   * @param {(...args:any[]) => any[]} [options.on_error=(...args) => {console.error('###[http_call]', ...args)}] - La fonction à appeler en cas d'erreur.
    * @param {Object} [options.params=null] - Les paramètres à envoyer dans la requête.
-   * @returns {Mel_Ajax}
+   * @returns {BnumPromise<Y>}
    * @protected
+   * @frommodulereturn BnumPromise
+   * @template T
+   * @template Y
    */
   http_internal_post({
     task,
@@ -455,11 +516,14 @@ class MelObject {
    * @param {Object} options - Les options pour l'appel HTTP.
    * @param {string} options.task - Tache
    * @param {string} options.action - Action
-   * @param {function} [options.on_success=() => {}] - La fonction à appeler en cas de succès.
-   * @param {function} [options.on_error=(...args) => {console.error('###[http_call]', ...args)}] - La fonction à appeler en cas d'erreur.
+   * @param {(data:T) => Y} [options.on_success=() => {}] - La fonction à appeler en cas de succès.
+   * @param {(...args:any[]) => any[]} [options.on_error=(...args) => {console.error('###[http_call]', ...args)}] - La fonction à appeler en cas d'erreur.
    * @param {Object} [options.params=null] - Les paramètres à envoyer dans la requête.
-   * @returns {Mel_Ajax}
+   * @returns {BnumPromise<Y>}
    * @protected
+   * @frommodulereturn BnumPromise
+   * @template T
+   * @template Y
    */
   http_internal_get({
     task,
@@ -505,6 +569,10 @@ class MelObject {
     } catch (error) {
       return default_value;
     }
+  }
+
+  load_without_parsing(key, default_value = null) {
+    return mel_metapage.Storage.get(key) ?? default_value;
   }
 
   /**
@@ -556,13 +624,28 @@ class MelObject {
   }
 
   /**
-   * Copy un texte dans le press(papier)
-   * @param {!string} text Texte à mettre dans le presse papier
-   * @returns {MelObject} Chaînage
+   * Copie un texte dans le press(papier)
+   * @param {string} elementToCopy Texte à mettre dans le presse papier
+   * @param {Object} [options={}]
+   * @param {?string} [options.text=null] Texte à afficher lorsque la copie a été effectuée
    * @protected
    */
-  copy_to_clipboard(text) {
-    mel_metapage.Functions.copy(text);
+  copy_to_clipboard(elementToCopy, { text = null } = {}) {
+    function copyOnClick(val) {
+      var tempInput = document.createElement('input');
+      tempInput.value = val;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+    }
+
+    copyOnClick(elementToCopy);
+    rcmail.display_message(
+      text || `${elementToCopy} copier dans le presse-papier.`,
+      'confirmation',
+    );
+
     return this;
   }
 
@@ -644,57 +727,569 @@ class MelObject {
   }
 
   /**
+   * (async) Créer une promesse "Mel" qui contient des fonctionnalités en plus
+   * @param {import('./BnumPromise.js').PromiseCallback<T> | import('./BnumPromise.js').PromiseCallbackAsync<T>} callback Peut être asynchrone. Fonction qui sera appelé.
+   * @param  {...any} args Arguments du callback
+   * @returns {BnumPromise<T>}
+   * @async
+   * @template T
+   * @frommodulereturn BnumPromise
+   */
+  create_promise(callback, ...args) {
+    return new BnumPromise(callback, ...args);
+  }
+
+  /**
+   * (async) Attend qu'une condtion soit valide
+   * @param {import('../../../mel_metapage/js/lib/mel_promise.js').WaitCallback | import('../../../mel_metapage/js/lib/mel_promise.js').WaitCallbackAsync} callback Function qui est appelé à chaque tick. Lorsque "true" est renvoyé, la boucle s'arrête
+   * @param {Object} [options={}]
+   * @param {number} [options.timeout=5] Au bout de combien de secondes la boucle s'arrête
+   * @returns {BnumPromise<{ resolved: boolean; msg: (string | undefined); }>}
+   * @async
+   */
+  wait_something(callback, { timeout = 5 } = {}) {
+    return BnumPromise.Wait(callback, { timeout });
+  }
+
+  /**
+   * (async) Attend x millisecondes
+   * @param {number} ms Temps en millisecondes
+   * @returns {BnumPromise<void>}
+   * @async
+   */
+  sleep(ms) {
+    return BnumPromise.Sleep(ms);
+  }
+
+  /**
    * Envoie un MelObject vide.
-   * @returns {MelObject}
+   * @returns {EmptyMelObject}
    * @static
    */
   static Empty() {
-    return new MelObject();
+    if (!this.Empty.obj) this.Empty.obj = Object.freeze(new EmptyMelObject());
+
+    return this.Empty.obj;
+  }
+
+  /**
+   * Récupère une url à partir d'une tâche et d'une action
+   * @param {string} task Nom de la tâche
+   * @param {Object} [param1={}] action => Nom de l'action ('index' si non renseigné), params => Autres paramètres
+   * @param {!string} [param1.action=''] => Nom de l'action (index si non renseigné)
+   * @param {?Object<string, string>} [param1.params=null] Autres paramètres
+   * @param {boolean} [removeIsFromIframe=false] Si on supprime `is_from=iframe` qui correspond à l'url à l'intérieur des frames
+   * @returns {string}
+   * @static
+   */
+  static Url(
+    task,
+    { action = EMPTY_STRING, params = null, removeIsFromIframe = false } = {},
+  ) {
+    return this.Empty().url(task, { action, params, removeIsFromIframe });
   }
 }
 
 /**
  * @class
- * @classdesc Contient une instance d'un objet, utile pour la création d'un singleton.
- * @template {!Tt} T
+ * @classdesc Donne divers fonction d'aide pour programmer.
+ * @extends MelObject
  */
-class WrapperObject {
+class EmptyMelObject extends MelObject {
   /**
    * Constructeur de la classe
-   * @param {typeof T} TypeOfItem Classe
-   * @param  {...any} args Argument pour instancier la classe
    */
-  constructor(TypeOfItem, ...args) {
-    /**
-     * Instance de la classe
-     * @private
-     * @type {?T}
-     */
-    let _instance = null;
-    /**
-     * Renvoie un instance de classe
-     * @type {T}
-     * @member
-     */
-    this.Instance = null;
+  constructor() {
+    super();
+  }
 
-    Object.defineProperty(this, 'Instance', {
-      get() {
-        if (!_instance) _instance = new TypeOfItem(...args);
+  /**
+   * Récupère "rcmail" | les fonctions utiles à roundcube
+   * @param {boolean} top Si on doit récupérer rcmail sur frame principale ou non
+   * @returns {rcube_webmail}
+   * @public
+   */
+  rcmail(top = false) {
+    return super.rcmail(top);
+  }
 
-        return _instance;
-      },
+  /**
+   * Récupère une clé sous forme de texte.
+   * @param {string} key_text Clé
+   * @param {!string} plugin Plugin d'où provient le texte traduit
+   * @returns {string}
+   * @public
+   */
+  gettext(key_text, plugin = '') {
+    return super.gettext(key_text, plugin);
+  }
+
+  /**
+   * Ajoute un écouteur qui pourra être appelé plus tard.
+   * @param {string} key Clé qui permettra d'appeller l'écouteur
+   * @param {function} callback Fonction qui sera appelée
+   * @param {Object} param2 Si on doit récupérer rcmail sur frame principale ou non
+   * @param {?string} param2.callback_key Clé du callback
+   * @param {!boolean} param2.condition Si on doit éxécuter ou non le listener
+   * @public
+   */
+  add_event_listener(
+    key,
+    callback,
+    { callback_key = null, condition = true } = {},
+  ) {
+    return super.add_event_listener(key, callback, { callback_key, condition });
+  }
+
+  /**
+   * Trigger un écouteur
+   * @param {string} key Clé qui appelera tout les écouteurs lié à cette clé
+   * @param {any} args  Arguments qui sera donnée aux écouteurs
+   * @returns {MelEventManager}
+   * @public
+   */
+  trigger_event(key, args) {
+    return super.trigger_event(key, args);
+  }
+
+  /**
+   * Action à faire lorsqu'une frame est chargée
+   * @param {function} callback Function à éffectuer
+   * @param {Object} options Options de la fonction
+   * @param {?string} options.frame any pour toute n'importe quelle frame, sinon mettre le nom de la frame
+   * @param {?function} options.condition Condition custom pour charger la frame
+   * @public
+   */
+  on_frame_loaded(
+    callback,
+    { callback_key = null, frame = 'any', condition = null } = {},
+  ) {
+    return super.on_frame_loaded(callback, { callback_key, frame, condition });
+  }
+
+  /**
+   * Ajoute une action à faire lors du refresh du bnum
+   * @param {Function} callback Fonction à appeller
+   * @param {Object} options Options de la fonction
+   * @param {?string} options.callback_key clé qui permet de supprimer/remettre la fonction au refresh d'une frame
+   * @public
+   */
+  on_refresh(callback, { callback_key = null } = {}) {
+    return super.on_refresh(callback, { callback_key });
+  }
+
+  /**
+   * Ajoute une action à faire lorsqu'une frame est mise à jours
+   * @param {function} callback Callback a=à appelé au refresh
+   * @param {string} frame Nom de la frame
+   * @param {Object} param2
+   * @param {?string} options.callback_key clé qui permet de supprimer/remettre la fonction au refresh d'une frame
+   * @public
+   */
+  on_frame_refresh(callback, frame, { callback_key = null } = {}) {
+    super.on_frame_refresh(callback, frame, { callback_key });
+  }
+
+  /**
+   * Récupère une variable d'environnement de roundcube
+   * @param {string} key Nom de la variable
+   * @returns {?any}
+   * @public
+   */
+  get_env(key) {
+    return super.get_env(key);
+  }
+
+  /**
+   * Change de page
+   * @param {string} frame Nom de la page
+   * @param {Object} param1
+   * @param {?string} param1.action Action de la page
+   * @param {Object<string, string>} param1.params Paramètres additionnels de la page
+   * @param {!boolean} param1.update {@deprecated}
+   * @param {!boolean} param1.force_update {@deprecated}
+   * @async
+   * @public
+   * @return {Promise<void>}
+   * @deprecated Utilisez plutôt {@link switch_frame}
+   */
+  async change_frame(
+    frame,
+    { action = null, params = {}, update = true, force_update = false } = {},
+  ) {
+    return await super.change_frame(frame, {
+      action,
+      params,
+      update,
+      force_update,
     });
   }
 
   /**
-   * Contient une instance d'un objet, utile pour la création d'un singleton.
-   * @static
-   * @param {typeof T} typeofitem
-   * @param  {...any} args
-   * @returns {WrapperObject<T>}
+   * Change de frame
+   * @param {string} task Nom de la tâche
+   * @param {Object} options
+   * @param {boolean} [options.changepage=true] Si l'on change de page ou si la frame reste caché pendant le chargement.
+   * @param {?Object<string, *>} [options.args=null] Options du changement de frame. Si la frame est déjà ouverte, force le changement d'url.
+   * @async
+   * @returns {Promise}
    */
-  static Create(typeofitem, ...args) {
-    return new WrapperObject(typeofitem, ...args);
+  async switch_frame(task, { changepage = true, args = null } = {}) {
+    await super.switch_frame(task, { changepage, args });
+  }
+
+  /**
+   * Vérifie si une frame est déjà chargée ou non
+   * @param {string} frame Nom de la frame
+   * @returns {boolean}
+   * @public
+   */
+  have_frame(frame) {
+    return super.have_frame(frame);
+  }
+
+  /**
+   * Selectionne une frame
+   * @param {string} frame Nom de la frame
+   * @returns {external:jQuery}
+   * @public
+   */
+  select_frame(frame) {
+    return super.select_frame(frame);
+  }
+
+  /**
+   * Selectionne toutes les frames qui ne sont pas parmis les frames définie en arguments
+   * @param  {...string} frames Frames à écarter
+   * @generator
+   * @yield {Node}
+   * @return {Generator<Node>}
+   * @public
+   */
+  *select_frame_except(...frames) {
+    yield* super.select_frame_except(...frames);
+  }
+
+  /**
+   * Récupère une url à partir d'une tâche et d'une action
+   * @param {string} task Nom de la tâche
+   * @param {Object} param1 action => Nom de l'action ('index' si non renseigné), params => Autres paramètres
+   * @param {!string} param1.action => Nom de l'action (index si non renseigné)
+   * @param {?Object<string, string>} Autres paramètres
+   * @returns {string}
+   * @public
+   */
+  url(
+    task,
+    { action = EMPTY_STRING, params = null, removeIsFromIframe = false } = {},
+  ) {
+    return super.url(task, { action, params, removeIsFromIframe });
+  }
+
+  /**
+   * Effectue un appel ajax avec les options spécifiées.
+   * @param {Object} options - Les options pour l'appel HTTP.
+   * @param {string} options.url - L'URL à appeler.
+   * @param {function} [options.on_success=() => {}] - La fonction à appeler en cas de succès.
+   * @param {function} [options.on_error=(...args) => {console.error('###[http_call]', ...args)}] - La fonction à appeler en cas d'erreur.
+   * @param {Object} [options.params=null] - Les paramètres à envoyer dans la requête.
+   * @param {string} [options.type='POST'] - Le type de requête HTTP à effectuer.
+   * @returns {Mel_Ajax}
+   * @public
+   */
+  http_call({
+    url,
+    on_success = () => {},
+    on_error = (...args) => {
+      console.error('###[http_call]', ...args);
+    },
+    params = null,
+    type = 'POST',
+  }) {
+    return super.http_call({ url, on_success, on_error, params, type });
+  }
+
+  /**
+   * Effectue un appel ajax vers les serveurs de l'application
+   * @param {Object} options - Les options pour l'appel HTTP.
+   * @param {string} options.task - Tache
+   * @param {string} options.action - Action
+   * @param {function} [options.on_success=() => {}] - La fonction à appeler en cas de succès.
+   * @param {function} [options.on_error=(...args) => {console.error('###[http_call]', ...args)}] - La fonction à appeler en cas d'erreur.
+   * @param {Object} [options.params=null] - Les paramètres à envoyer dans la requête.
+   * @param {string} [options.type='POST'] - Le type de requête HTTP à effectuer.
+   * @returns {Mel_Ajax}
+   * @public
+   */
+  http_internal_call({
+    task,
+    action,
+    on_success = () => {},
+    on_error = (...args) => {
+      console.error('###[http_internal_call]', ...args);
+    },
+    params = null,
+    type = 'POST',
+  }) {
+    return super.http_internal_call({
+      task,
+      action,
+      on_success,
+      on_error,
+      params,
+      type,
+    });
+  }
+
+  /**
+   * Effectue un appel ajax POST vers les serveurs de l'application
+   * @param {Object} options - Les options pour l'appel HTTP.
+   * @param {string} options.task - Tache
+   * @param {string} options.action - Action
+   * @param {function} [options.on_success=() => {}] - La fonction à appeler en cas de succès.
+   * @param {function} [options.on_error=(...args) => {console.error('###[http_call]', ...args)}] - La fonction à appeler en cas d'erreur.
+   * @param {Object} [options.params=null] - Les paramètres à envoyer dans la requête.
+   * @returns {Mel_Ajax}
+   * @public
+   */
+  http_internal_post({
+    task,
+    action,
+    on_success = () => {},
+    on_error = (...args) => {
+      console.error('###[http_internal_post]', ...args);
+    },
+    params = null,
+  }) {
+    return super.http_internal_post({
+      task,
+      action,
+      on_success,
+      on_error,
+      params,
+    });
+  }
+
+  /**
+   * Effectue un appel ajax GET vers les serveurs de l'application
+   * @param {Object} options - Les options pour l'appel HTTP.
+   * @param {string} options.task - Tache
+   * @param {string} options.action - Action
+   * @param {function} [options.on_success=() => {}] - La fonction à appeler en cas de succès.
+   * @param {function} [options.on_error=(...args) => {console.error('###[http_call]', ...args)}] - La fonction à appeler en cas d'erreur.
+   * @param {Object} [options.params=null] - Les paramètres à envoyer dans la requête.
+   * @returns {Mel_Ajax}
+   * @public
+   */
+  http_internal_get({
+    task,
+    action,
+    on_success = () => {},
+    on_error = (...args) => {
+      console.error('###[http_internal_post]', ...args);
+    },
+    params = null,
+  }) {
+    return super.http_internal_get({
+      task,
+      action,
+      on_success,
+      on_error,
+      params,
+    });
+  }
+
+  /**
+   * Sauvegarde des données dans le stockage local
+   * @param {string} key Clé qui permettra de retrouver les données sauvegarder
+   * @param {*} contents Données qui seront sauvegarder
+   * @returns {MelObject} Chaînage
+   * @public
+   */
+  save(key, contents) {
+    return super.save(key, contents);
+  }
+
+  /**
+   * Charge des données dans le stockage local
+   * @param {string} key Clé qui permet de retrouver les données
+   * @param {?any} default_value Valeur par défaut si la donnée n'éxiste pas
+   * @returns {?any}
+   * @public
+   */
+  load(key, default_value = null) {
+    return super.load(key, default_value);
+  }
+
+  load_without_parsing(key, default_value = null) {
+    return super.load_without_parsing(key, default_value);
+  }
+
+  /**
+   * Décharge une donnée dans le stockage local
+   * @param {string} key clé dans le stockage
+   * @public
+   */
+  unload(key) {
+    return super.unload(key);
+  }
+
+  /**
+   * Récupère l'objet UI de la skin elastic
+   * @returns {Mel_Elastic}
+   * @public
+   */
+  get_skin() {
+    return super.get_skin();
+  }
+
+  /**
+   * Récupère un objet Mel_CSS_Style_Sheet pour ajouter du css custom
+   * @returns {Mel_CSS_Style_Sheet}
+   * @public
+   */
+  get_custom_rules() {
+    return super.get_custom_rules();
+  }
+
+  /**
+   * Génère un loader du bnum
+   * @param {string} id id du loader
+   * @param {!boolean} absoluteCentered Centrer verticalement et horizontalement ?
+   * @returns {mel_html}
+   * @public
+   */
+  generate_loader(id, absoluteCentered = true) {
+    return super.generate_loader(id, absoluteCentered);
+  }
+
+  /**
+   * Séléctionne un document dom au format jquery
+   * @param {string} selector Selecteur au format jquery
+   * @returns {external:jQuery}
+   * @public
+   */
+  select(selector) {
+    return super.select(selector);
+  }
+
+  /**
+   * Copie un texte dans le press(papier)
+   * @param {string} elementToCopy Texte à mettre dans le presse papier
+   * @param {Object} [options={}]
+   * @param {?string} [options.text=null] Texte à afficher lorsque la copie a été effectuée
+   * @returns {EmptyMelObject} Chaînage
+   * @public
+   * @override
+   */
+  copy_to_clipboard(elementToCopy, { text = null } = {}) {
+    return super.copy_to_clipboard(elementToCopy, { text });
+  }
+
+  /**
+   * Insert un cookie
+   * @param {string} key Clé qui permet d'identifier la données mise en cookie
+   * @param {string} name Donnée à mettre en cookie
+   * @param {Date | false} expire Date d'expiration, false pour aucune
+   * @returns {Cookie} Cookie créer
+   * @frommodulereturn Cookies {@membertype .}
+   * @public
+   */
+  cookie_set(key, name, expire = false) {
+    return super.cookie_set(key, name, expire);
+  }
+
+  /**
+   * Récupère un cookie
+   * @param {string} key Indentifiant de la donnée
+   * @returns {Cookie}
+   * @frommodulereturn Cookies {@membertype .}
+   * @public
+   */
+  cookie_get(key) {
+    return super.cookie_get(key);
+  }
+
+  /**
+   * Supprime un cookie
+   * @param {string} key Indentifiant du cookie à supprimer
+   * @returns {Cookie} Cookie supprimer
+   * @frommodulereturn Cookies {@membertype .}
+   * @public
+   */
+  cookie_remove(key) {
+    return super.cookie_remove(key);
+  }
+
+  /**
+   * Renvoie vrai si la variable vaut `null` ou `undefined`.
+   * @param {?any} item Variable à tester
+   * @returns {boolean}
+   * @public
+   */
+  isNullOrUndefined(item) {
+    return super.isNullOrUndefined(item);
+  }
+
+  /**
+   * Envoie une notification BNUM
+   * @param {*} notification
+   * @public
+   */
+  send_notification(notification) {
+    return super.send_notification(notification);
+  }
+
+  switch_url(url) {
+    return super.switch_url(url);
+  }
+
+  switch_task(task, { action = null, params = {} } = {}) {
+    return super.switch_task(task, { action, params });
+  }
+
+  export(name = null) {
+    return super.export(name);
+  }
+
+  delete_export(name = null) {
+    return super.delete_export(name);
+  }
+
+  get_class_name() {
+    return this.constructor.name;
+  }
+
+  /**
+   * (async) Créer une promesse "Mel" qui contient des fonctionnalités en plus
+   * @param {import('../../../mel_metapage/js/lib/mel_promise.js').MelPromiseCallback} callback Peut être asynchrone. Fonction qui sera appelé.
+   * @param  {...any} args Arguments du callback
+   * @returns {Mel_Promise}
+   * @async
+   */
+  create_promise(callback, ...args) {
+    return super.create_promise(callback, ...args);
+  }
+
+  /**
+   * (async) Attend qu'une condtion soit valide
+   * @param {import('../../../mel_metapage/js/lib/mel_promise.js').WaitCallback | import('../../../mel_metapage/js/lib/mel_promise.js').WaitCallbackAsync} callback Function qui est appelé à chaque tick. Lorsque "true" est renvoyé, la boucle s'arrête
+   * @param {Object} [options={}]
+   * @param {number} [options.timeout=5] Au bout de combien de secondes la boucle s'arrête
+   * @returns {WaitSomething | WaitSomethingAsync}
+   * @async
+   */
+  wait_something(callback, { timeout = 5 } = {}) {
+    return super.wait_something(callback, { timeout });
+  }
+
+  /**
+   * (async) Attend x millisecondes
+   * @param {number} ms Temps en millisecondes
+   * @returns {Mel_Promise}
+   * @async
+   */
+  sleep(ms) {
+    return super.sleep(ms);
   }
 }

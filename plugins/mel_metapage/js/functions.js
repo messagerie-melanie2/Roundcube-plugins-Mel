@@ -1,3 +1,4 @@
+/* eslint-disable vars-on-top */
 const enable_custom_uid = true;
 jQuery.fn.swap = function (b) {
   b = jQuery(b)[0];
@@ -77,15 +78,15 @@ function m_mp_Create() {
   FullscreenItem.close_if_exist();
   m_mp_step3_param.datas = null;
 
-  if (
-    ($('#otherapps a.wekan').length || $('#taskmenu a.wekan').length) &&
-    !$('.wekan-frame').length
-  )
-    m_mp_Create.current_promise = mel_metapage.Functions.change_frame(
-      'wekan',
-      false,
-      true,
-    );
+  // if (
+  //   ($('#otherapps a.wekan').length || $('#taskmenu a.wekan').length) &&
+  //   !$('.wekan-frame').length
+  // )
+  //   m_mp_Create.current_promise = mel_metapage.Functions.change_frame(
+  //     'wekan',
+  //     false,
+  //     true,
+  //   );
 
   //window.create_popUp = undefined;
   //Si problème de configuration, on gère.
@@ -110,13 +111,9 @@ function m_mp_Create() {
     visio: get_action(
       'mel_metapage.a_web_conf',
       'icon-mel-videoconference',
-      'window.webconf_helper.go()',
+      '(window?.create_popUp?.close?.(), window.webconf_helper.go())',
     ),
-    tache: get_action(
-      'mel_metapage.a_task',
-      'icon-mel-survey',
-      "m_mp_CreateOrOpenFrame('tasklist', () => m_mp_set_storage('task_create'), m_mp_NewTask)",
-    ),
+    tache: get_action('mel_metapage.a_task', 'icon-mel-survey', 'm_mp_Task()'),
     documents: get_action(
       'mel_metapage.a_document',
       'icon-mel-folder',
@@ -350,7 +347,10 @@ function m_mp_Create() {
   }
 
   if (isSmall) {
-    if (!$('#groupoptions-createthings').hasClass('initialized')) {
+    if (!$('#groupoptions-createthings').hasClass('create-initialized')) {
+      $('#ul-createthings').empty();
+      $('#groupoptions-createthings').removeClass('help-initialized');
+
       for (const key in actions) {
         if (Object.hasOwnProperty.call(actions, key)) {
           const element = actions[key];
@@ -363,8 +363,7 @@ function m_mp_Create() {
                     `);
         }
       }
-
-      $('#groupoptions-createthings').addClass('initialized');
+      $('#groupoptions-createthings').addClass('create-initialized');
     }
     window.create_popUp.close();
 
@@ -372,6 +371,16 @@ function m_mp_Create() {
       $('#open-created-popup').click();
     }, 1);
   }
+}
+
+/**
+ * Lance la frame des tâches et lance la commande pour créer une tâche.
+ * @return {Promise<void>}
+ * @async
+ */
+async function m_mp_Task() {
+  await PageManager.SwitchFrame('tasks', {});
+  PageManager.Instance.get_frame()[0].contentWindow.rcmail.command('newtask');
 }
 
 function m_mp_createworskpace_steps() {
@@ -434,6 +443,10 @@ function m_mp_createworskpace_steps() {
         }
 
         html += '<div class="col-md-4" style="position:relative;">';
+        //debugger;
+        let icon = element.material
+          ? null
+          : m_mp_CreateDocumentIconContract(element.icon);
         html +=
           '<button type=button aria-pressed=false data-type="' +
           element.type +
@@ -442,8 +455,10 @@ function m_mp_createworskpace_steps() {
           ' btn-template-doc btn btn-block btn-secondary btn-mel" onclick="m_mp_UpdateWorkspace_type(this, `' +
           JSON.stringify(element).replace(/"/g, '¤¤¤') +
           '`)"><span style="display:block;margin-right:0px" class="' +
-          m_mp_CreateDocumentIconContract(element.icon) +
-          '"></span>' +
+          (icon ?? 'material-symbols-outlined') +
+          '">' +
+          (icon ? '' : element.icon) +
+          '</span>' +
           rcmail.gettext(element.name) +
           '</button>';
 
@@ -506,7 +521,7 @@ function m_mp_step3_param(type) {
         let custom_channel_datas = null;
         const default_custom_value =
           have_datas && m_mp_step3_param.datas[type].mode === 'custom_name'
-            ? m_mp_step3_param?.datas[type]?.value ?? ''
+            ? (m_mp_step3_param?.datas[type]?.value ?? '')
             : null;
 
         const html_title =
@@ -655,7 +670,7 @@ function m_mp_step3_param(type) {
         let $param_button = $master_button.parent().find('.under-button');
         const default_custom_value =
           have_datas && m_mp_step3_param.datas[type].mode === 'custom_name'
-            ? m_mp_step3_param?.datas[type]?.value ?? ''
+            ? (m_mp_step3_param?.datas[type]?.value ?? '')
             : null;
 
         const html_title =
@@ -730,7 +745,7 @@ function m_mp_step3_param(type) {
             case 'already_exist':
               $param_button.addClass('selected');
               $select.attr('disabled', 'disabled').addClass('disabled');
-              rcmail.set_busy(true, 'loading');
+              const busy = rcmail.set_busy(true, 'loading');
               $custom_name_div.css('display', 'none');
               mel_metapage.Functions.post(
                 mel_metapage.Functions.url('wekan', 'get_user_board'),
@@ -754,7 +769,18 @@ function m_mp_step3_param(type) {
                     .removeAttr('disabled', 'disabled')
                     .removeClass('disabled');
                 },
-              );
+                (err) => {
+                  rcmail.display_message(
+                    'Erreur lors de la récupération des tableaux',
+                    'error',
+                  );
+                },
+              ).always(() => {
+                rcmail.set_busy(false, 'loading', busy);
+                $select
+                  .removeAttr('disabled', 'disabled')
+                  .removeClass('disabled');
+              });
 
               break;
 
@@ -797,7 +823,7 @@ function m_mp_step3_param(type) {
         let custom_channel_datas = null;
         const default_custom_value =
           have_datas && m_mp_step3_param.datas[type].mode === 'custom_name'
-            ? m_mp_step3_param?.datas[type]?.value ?? ''
+            ? (m_mp_step3_param?.datas[type]?.value ?? '')
             : null;
 
         const html_title =
@@ -1225,7 +1251,8 @@ async function m_mp_check_w(step, next) {
           },
           url: mel_metapage.Functions.url('workspace', 'check_uid'),
           success: function (ariane) {
-            if (ariane !== 'uid_ok') {
+            ariane = +ariane;
+            if (ariane !== 1) {
               stop = true;
               $(input_uid).css('border-color', 'red');
               if ($('#wsptuid').length === 0)
@@ -1234,11 +1261,10 @@ async function m_mp_check_w(step, next) {
                   .append(
                     '<span id=wsptuid class=input-error-r style=color:red></span>',
                   );
-              if (ariane === 'uid_exists')
-                $('#wsptuid').html("* L'id existe déjà !");
-              else if (ariane === 'uid_not_ok')
+              if (ariane === 0) $('#wsptuid').html("* L'id existe déjà !");
+              else if (ariane === 3)
                 $('#wsptuid').html("* L'id n'est pas valide !");
-              else if (ariane === 'ui_empty')
+              else if (ariane === 2)
                 $('#wsptuid').html("* L'id ne doit pas être vide !");
               else $('#wsptuid').html('* Erreur inconnue !');
               $('#wsptuid').css('display', '');
@@ -1320,7 +1346,6 @@ async function m_mp_CreateWorkSpace() {
   $('#worspace-avatar-a').css('display', 'none').appendTo($('#layout'));
   create_popUp.contents.html('<span class=spinner-border></span>');
   create_popUp.editTitle('<h2 class=""><span>Chargement...</span></h2>');
-
   if (m_mp_Create.current_promise) {
     await m_mp_Create.current_promise;
     m_mp_Create.current_promise = null;
@@ -1328,7 +1353,7 @@ async function m_mp_CreateWorkSpace() {
     ($('#otherapps a.wekan').length || $('#taskmenu a.wekan').length) &&
     !$('.wekan-frame').length
   ) {
-    await mel_metapage.Functions.change_frame('wekan', false, true);
+    await FramesHelper.switch_frame('wekan', { changepage: false }); //mel_metapage.Functions.change_frame('wekan', false, true);
   }
 
   $.ajax({
@@ -1347,6 +1372,16 @@ async function m_mp_CreateWorkSpace() {
         rcmail.display_message(
           "impossible d'ajouter " + element + " à l'espace de travail !",
         );
+      }
+
+      for (const element of data?.uncreated_services ?? []) {
+        if (element === 'tasks') {
+          parent.rcmail.display_message(
+            'La création du service "Kanban" n\'a pas été possible, le service des tâche a donc été désactivé et doit être activé manuellement.',
+            'error',
+          );
+          break;
+        }
       }
 
       const action = {
@@ -1373,31 +1408,40 @@ async function m_mp_CreateWorkSpace() {
         mel_metapage.EventListeners.workspaces_updated.get,
       );
 
-      if (
-        $('.workspace-frame').length > 0 &&
-        $('iframe.workspace-frame').length === 0
-      )
-        window.location.href = action.url;
-      else if ($('iframe.workspace-frame').length === 0) {
-        mel_metapage.Functions.change_frame('wsp', true, true, {
+      FramesHelper.switch_frame('workspace', {
+        args: {
           _action: 'workspace',
           _uid: data.workspace_uid,
-        });
-      } else if ($('iframe.workspace-frame').length === 1) {
-        mel_metapage.Functions.change_frame('wsp', true, true).then(() => {
-          let config = {
-            _uid: data.workspace_uid,
-          };
-          config[rcmail.env.mel_metapage_const.key] =
-            rcmail.env.mel_metapage_const.value;
+        },
+      });
 
-          $('iframe.workspace-frame')[0].src = mel_metapage.Functions.url(
-            'workspace',
-            'workspace',
-            config,
-          );
-        });
-      } else window.location.href = action.url;
+      // if (
+      //   $('.workspace-frame').length > 0 &&
+      //   $('iframe.workspace-frame').length === 0
+      // )
+      //   window.location.href = action.url;
+      // else if ($('iframe.workspace-frame').length === 0) {
+      //   mel_metapage.Functions.change_frame('workspace', true, true, {
+      //     _action: 'workspace',
+      //     _uid: data.workspace_uid,
+      //   });
+      // } else if ($('iframe.workspace-frame').length === 1) {
+      //   mel_metapage.Functions.change_frame('workspace', true, true).then(
+      //     () => {
+      //       let config = {
+      //         _uid: data.workspace_uid,
+      //       };
+      //       config[rcmail.env.mel_metapage_const.key] =
+      //         rcmail.env.mel_metapage_const.value;
+
+      //       $('iframe.workspace-frame')[0].src = mel_metapage.Functions.url(
+      //         'workspace',
+      //         'workspace',
+      //         config,
+      //       );
+      //     },
+      //   );
+      // } else window.location.href = action.url;
 
       m_mp_step3_param.datas = null;
     },
@@ -1483,7 +1527,9 @@ async function m_mp_get_all_hashtag(
 
     await mel_promise
       .create_ajax_get_request({
-        url: mel_metapage.Functions.url('workspace', 'hashtag'),
+        url: mel_metapage.Functions.url('workspace', 'hashtag', {
+          _hashtag: val,
+        }),
         success: (datas) => {
           try {
             if (mel_promise.isCancelled()) return;
@@ -1507,6 +1553,14 @@ async function m_mp_get_all_hashtag(
               );
             }
           } catch (error) {}
+        },
+        failed: (...args) => {
+          if (mel_promise.isCancelled()) return;
+
+          querry.html(
+            'Une erreur est survenue !<br/>Veuillez contacter un administrateur !',
+          );
+          console.error('###[m_mp_get_all_hashtag]', ...args);
         },
       })
       .always(() => {
@@ -1692,82 +1746,96 @@ function m_mp_autocoplete(element, action_after = null, append = true) {
   let val = $(element).val();
 
   if (val.includes(',')) {
-    val = val.replace(',', '');
-    let html = '<li class="recipient workspace-recipient">';
-    if (val.includes('<') && val.includes('>')) {
-      let _enum = Enumerable.from(val);
-      let index1 = val.indexOf('<');
-      let index2 = val.indexOf('>');
-      //console.log(val, _enum);
-      //.where((x, i) => i > index2).toArray().splice(1).join("").replace(",", "")
-      html +=
-        '<span class="email">' +
-        _enum
-          .where((x, i) => index1 < i && i < index2)
-          .toArray()
-          .join('') +
-        '</span>'; //.join("")
-      html +=
-        '<span class="name">' +
-        _enum
-          .where((x, i) => i < index1)
-          .toArray()
-          .join('')
-          .replace(',', '') +
-        '</span>';
-    } else {
-      html += '<span class="name">' + val + '</span>';
-      html += '<span class="email">' + val + '</span>';
-    }
-    html += '<a class="button icon remove" onclick=m_mp_remove_li(this)></a>';
-    html += '</li>';
+    {
+      const REG_BETWEEN_PARENTHESIS = /\((.*?)\)/gi;
+      const match = val.match(REG_BETWEEN_PARENTHESIS);
 
-    if (append === true) {
-      $('#wspf').append(html);
-      $(element).val('');
-      //console.log("html", $($("#wspf").children()[$("#wspf").children().length-1])[0].outerHTML,     $(element).parent()[0].outerHTML);
-      html = $(element).parent()[0].outerHTML;
-      console.log($(element).parent());
-      //$(element).parent().remove();
-      rcmail.init_address_input_events($(element));
-      $(element).focus();
+      if (!!match && match.length > 0) {
+        for (const iterator of match) {
+          val = val.replaceAll(iterator, iterator.replace(',', '¤'));
+        }
+      }
     }
 
-    //console.log("auto", $(element).val(), html, append, element);
-    if (append === true) {
-      $('#wspf').append(html);
-      $(element).val('');
+    const splited = val.replaceAll(' ', '').split(',');
+    for (val of splited) {
+      if (!(val || false) || val === ' ') continue;
 
-      html = $(element).parent()[0].outerHTML;
+      val = val.replaceAll('¤', ',');
 
-      $(element).parent().remove();
-      rcmail.init_address_input_events($(element));
-      $(element).focus();
-    }
+      var html = '<li class="recipient workspace-recipient">';
+      if (val.includes('<') && val.includes('>')) {
+        var _enum = Enumerable.from(val);
+        var index1 = val.indexOf('<');
+        var index2 = val.indexOf('>');
+        //console.log(val, _enum);
+        //.where((x, i) => i > index2).toArray().splice(1).join("").replace(",", "")
+        html +=
+          '<span class="email">' +
+          _enum
+            .where((x, i) => index1 < i && i < index2)
+            .toArray()
+            .join('') +
+          '</span>'; //.join("")
+        html +=
+          '<span class="name">' +
+          _enum
+            .where((x, i) => i < index1)
+            .toArray()
+            .join('')
+            .replace(',', '') +
+          '</span>';
+      } else {
+        html += '<span class="name">' + val + '</span>';
+        html += '<span class="email">' + val + '</span>';
+      }
+      html += '<a class="button icon remove" onclick=m_mp_remove_li(this)></a>';
+      html += '</li>';
 
-    if (action_after !== null) {
-      action_after({
-        $element: $(element),
-        val,
-      });
+      if (append === true) {
+        $('#wspf').append(html);
+        $(element).val('');
+        //console.log("html", $($("#wspf").children()[$("#wspf").children().length-1])[0].outerHTML,     $(element).parent()[0].outerHTML);
+        html = $(element).parent()[0].outerHTML;
+        console.log($(element).parent());
+        //$(element).parent().remove();
+        rcmail.init_address_input_events($(element));
+        $(element).focus();
+      }
+
+      //console.log("auto", $(element).val(), html, append, element);
+      if (append === true) {
+        $('#wspf').append(html);
+        $(element).val('');
+
+        html = $(element).parent()[0].outerHTML;
+
+        $(element).parent().remove();
+        rcmail.init_address_input_events($(element));
+        $(element).focus();
+      }
+
+      if (action_after !== null) {
+        action_after({
+          $element: $(element),
+          val,
+        });
+      }
     }
   }
 }
 
-function m_mp_add_users() {
+function m_mp_add_users(args = null) {
   let users = [];
   $('#wspf .workspace-recipient').each((i, e) => {
     users.push($(e).find('.email').html());
   });
 
-  let input = $('#_workspace-user-list');
+  let input = args?.$element ?? $('#_workspace-user-list');
+  const val = args?.val ?? input.val();
 
-  if (input.val().length > 0)
-    users.push(
-      input.val().includes('<')
-        ? input.val().split('<')[1].split('>')[0]
-        : input.val(),
-    );
+  if (val.length > 0)
+    users.push(val.includes('<') ? val.split('<')[1].split('>')[0] : val);
 
   input.val('');
 
@@ -1798,7 +1866,7 @@ function m_mp_add_users() {
           html = '<li>';
           html += '<div class="row" style="margin-top:15px">';
           html += '<div class="col-2">';
-          html += `<div class="dwp-round" style="background-color:transparent"><img alt="" src="${rcmail.env.rocket_chat_url}avatar/${element.uid}" /></div>`;
+          html += `<div class="dwp-round" style="background-color:var(--mel-button-background-color)"><bnum-avatar data-shadow="true" style="width:100%; height:100%;" data-email="${element.email}" data-forceload="true"></bnum-avatar></div>`;
           html += '</div>';
           html += `<div class="col-10 workspace-users-added" ${element.title ? `title="${element.title}"` : ''}>`;
           html += `<span class="name">${element.name}</span><br/>`;
@@ -2172,10 +2240,11 @@ function m_mp_Help() {
     help_popUp.contents
       .find('#helppage_suggestion button')
       .click(() => {
-        mel_metapage.Functions.change_page(
-          rcmail.env.help_suggestion_url.task,
-          rcmail.env.help_suggestion_url.action,
-        );
+        PageManager.SwitchFrame(rcmail.env.help_suggestion_url.task, {
+          args: {
+            _action: rcmail.env.help_suggestion_url.action,
+          },
+        });
         help_popUp.close();
       })
       .removeClass('disabled')
@@ -2192,7 +2261,10 @@ function m_mp_Help() {
   }
 
   if (isSmall) {
-    if (!$('#groupoptions-createthings').hasClass('initialized')) {
+    if (!$('#groupoptions-createthings').hasClass('help-initialized')) {
+      $('#ul-createthings').empty();
+      $('#groupoptions-createthings').removeClass('create-initialized');
+
       for (const key in actions) {
         if (Object.hasOwnProperty.call(actions, key)) {
           //On cache l'onboarding sur mobile
@@ -2209,7 +2281,7 @@ function m_mp_Help() {
         }
       }
 
-      $('#groupoptions-createthings').addClass('initialized');
+      $('#groupoptions-createthings').addClass('help-initialized');
     }
     window.help_popUp.close();
 
@@ -2933,15 +3005,21 @@ async function m_mp_sondage() {
   //     });
   // }
 
-  await mel_metapage.Functions.change_page(
-    'sondage',
-    null,
-    {
+  await FramesHelper.switch_frame('sondage', {
+    args: {
       _url: encodeURIComponent(rcmail.env.sondage_create_sondage_url),
     },
-    true,
-    true,
-  );
+  });
+
+  // await mel_metapage.Functions.change_page(
+  //   'sondage',
+  //   null,
+  //   {
+  //     _url: encodeURIComponent(rcmail.env.sondage_create_sondage_url),
+  //   },
+  //   true,
+  //   true,
+  // );
 }
 
 /**
@@ -3247,7 +3325,10 @@ function open_task(id, config = {}) {
   if (event !== undefined) event.preventDefault();
 
   mel_metapage.Storage.set('task_to_open', id);
-  mel_metapage.Functions.change_frame('tasklist', true, false, config);
+  //mel_metapage.Functions.change_frame('tasklist', true, false, config);
+  FramesHelper.switch_frame('tasks', {
+    args: config,
+  });
 
   if ($('iframe.tasks-frame').length > 0)
     $('iframe.tasks-frame')[0].contentWindow.rcmail.triggerEvent(
@@ -3287,12 +3368,16 @@ async function m_mp_ToggleGroupOptionsUser(opener) {
 
     await mel_metapage.Functions.get(
       mel_metapage.Functions.url('mel_settings', 'load'),
-      { _option: rcmail.env.current_frame_name },
+      { _option: await PageManager.Instance.currentTask },
       (data) => {
         data = JSON.parse(data);
         $('.options-custom').html(data.html);
+        data.html = null;
         for (const [key, value] of Object.entries(data.settings)) {
           $input = $(`[name="${key}"]`);
+
+          if (!$input.length) continue;
+
           switch ($input[0].nodeName) {
             case 'INPUT':
               switch ($input.attr('type')) {
@@ -3317,7 +3402,8 @@ async function m_mp_ToggleGroupOptionsUser(opener) {
               break;
 
             default:
-              throw 'error';
+              break;
+            //throw 'error';
           }
         }
       },
@@ -3326,7 +3412,7 @@ async function m_mp_ToggleGroupOptionsUser(opener) {
 
   rcmail.triggerEvent('toggle-quick-options.after', {
     hidden: state,
-    frame: rcmail.env.current_frame_name,
+    frame: await PageManager.Instance.currentTask, //rcmail.env.current_frame_name,
   });
 
   $goupoptions_user = null;

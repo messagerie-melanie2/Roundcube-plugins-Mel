@@ -259,10 +259,13 @@ if (rcmail && window.mel_metapage) {
         const task =
           rcmail.env['bnum.init_task'] === 'chat'
             ? 'rocket'
-            : top.mm_st_ClassContract(rcmail.env['bnum.init_task']);
-        mel_metapage.Functions.change_frame(task, true, true, urls);
+            : rcmail.env['bnum.init_task'];
+        //mel_metapage.Functions.change_frame(task, true, true, urls);
+        FramesHelper.switch_frame(task, {
+          args: Object.keys(urls).length === 1 && !!urls._task ? null : urls,
+        });
       } catch (error) {
-        mel_metapage.Functions.change_frame('bureau', true, true);
+        FramesHelper.switch_frame('bureau', {});
       }
     }
   });
@@ -382,6 +385,26 @@ if (rcmail && window.mel_metapage) {
     });
 
     if (rcmail.env.task === 'settings') {
+      if (
+        top.rcmail.env.avatar_background_color !==
+        rcmail.env.avatar_background_color
+      ) {
+        top.rcmail.env.avatar_background_color =
+          rcmail.env.avatar_background_color;
+
+        for (const key of Object.keys(
+          mel_metapage.Storage._getDataStore().store,
+        )) {
+          if (key.includes('avatar_')) {
+            mel_metapage.Storage.remove(key);
+          }
+        }
+
+        let avatar = top.document.querySelector('#user-picture');
+        avatar.outerHTML = `<bnum-avatar id="user-picture"></bnum-avatar>`;
+        avatar = null;
+      }
+
       if (
         rcmail.env.mel_metapage_mail_configs['mel-chat-placement'] !==
         parent.parent.rcmail.env.mel_metapage_mail_configs['mel-chat-placement']
@@ -664,11 +687,11 @@ if (rcmail && window.mel_metapage) {
 
   if (rcmail.env.task === 'calendar') {
     rcmail.addEventListener('calendar.renderEvent', (args) => {
-      if ($('html').hasClass('mwsp'))
+      if (top.$('html').hasClass('mwsp'))
         return (
           args.eventDatas.categories !== undefined &&
           args.eventDatas.categories[0] ===
-            `ws#${mel_metapage.Storage.get('current_wsp')}`
+            `ws#${JSON.parse(mel_metapage.Storage.get('current_wsp'))}`
         );
 
       if (args.eventDatas.allDay === true) {
@@ -725,7 +748,7 @@ if (rcmail && window.mel_metapage) {
   });
 
   function on_switched_color_mode(color_mode) {
-    const dark_logo = 'skins/mel_elastic/images/taskbar-logo.svg';
+    const dark_logo = 'skins/mel_elastic/images/logo-dark.png';
     const element_data_name = 'initsrc';
 
     let $logo = $('.logo-mel');
@@ -976,7 +999,7 @@ if (rcmail && window.mel_metapage) {
           numbers = Enumerable.from(Chat.unreads[Symbol.iterator]())
             .where((x) => x.key !== 'haveSomeUnreads')
             .sum((x) =>
-              typeof x.value === 'string' ? parseInt(x.value) : x?.value ?? 0,
+              typeof x.value === 'string' ? parseInt(x.value) : (x?.value ?? 0),
             );
 
           if (numbers === 0 && Chat.unreads.haveUnreads() === true) {
@@ -998,7 +1021,9 @@ if (rcmail && window.mel_metapage) {
             numbers = Enumerable.from(Chat.unreads[Symbol.iterator]())
               .where((x) => x.key !== 'haveSomeUnreads')
               .sum((x) =>
-                typeof x.value === 'string' ? parseInt(x.value) : x?.value ?? 0,
+                typeof x.value === 'string'
+                  ? parseInt(x.value)
+                  : (x?.value ?? 0),
               );
 
             if (numbers === 0 && Chat.unreads.haveUnreads() === true)
@@ -2241,7 +2266,7 @@ $(document).ready(() => {
     return retour;
   }
 
-  function intercept_click(event) {
+  async function intercept_click(event) {
     var Enumerable = Enumerable || top.Enumerable;
 
     try {
@@ -2297,6 +2322,7 @@ $(document).ready(() => {
         rcmail.env.enumerated_url_spies = true;
       }
 
+
       if (url !== undefined && url !== null) {
         //Initialisation
         let $querry;
@@ -2305,6 +2331,7 @@ $(document).ready(() => {
         let task = null;
         let action = null;
         let othersParams = null;
+        let anchor = null;
         let after = null;
         let update = false;
 
@@ -2408,6 +2435,12 @@ $(document).ready(() => {
                 try {
                   let tmp_othersParams = url.split('/?_task=', 2)[1];
 
+                  if (tmp_othersParams.includes('#')) {
+                    const splited = tmp_othersParams.split('#');
+                    anchor = splited[1];
+                    tmp_othersParams = splited[0];
+                  }
+
                   if (tmp_othersParams.includes('&')) {
                     othersParams = Enumerable.from(tmp_othersParams.split('&'))
                       .where((x) => x.includes('='))
@@ -2454,11 +2487,12 @@ $(document).ready(() => {
                   }
                 }
               }
+              
+              let open_modal = true;
 
               if (!url.includes('/?_task=') && !/^data:/i.test(url)) {
                 //On ouvre une modal pour prévenir d'un lien externe
                 let domain = new URL(url).hostname;
-                let open_modal = true;
                 let suspect_url = false;
 
                 rcmail.env.mel_suspect_url.forEach((item) => {
@@ -2481,31 +2515,61 @@ $(document).ready(() => {
                   event.preventDefault();
                   top.external_link_modal(url);
                 }
+              } else {
+                open_modal = false;
               }
+
+              if (!open_modal) {
+                
+                let abort = {signal:false}
+                rcmail.triggerEvent('a.clicked', {url, abort, e: event});
+                
+                if (abort.signal) return;
+              }
+              
               break;
           }
         } while (reloop);
 
         if (task !== null) {
-          top.mel_metapage.Functions.change_page(
-            task,
-            action,
-            othersParams === null ? {} : othersParams,
-            update,
-          ).then(() => {
-            if (after !== null) after();
-          });
+          event.preventDefault();
+          // top.mel_metapage.Functions.change_page(
+          //   task,
+          //   action,
+          //   othersParams === null ? {} : othersParams,
+          //   update,
+          // ).then(() => {
+          //   if (after !== null) after();
+          // });
+          // const { FramesManager } = await loadJsModule(
+          //   'mel_metapage',
+          //   'frame_manager',
+          //   '/js/lib/classes/',
+          // );
+
+          if (!!action && !othersParams?._action) {
+            othersParams ??= {};
+            othersParams._action = action;
+          }
+
+          // await FramesManager.Instance.switch_frame(task, {
+          //   args: othersParams,
+          // });
+
+          await PageManager.SwitchFrame(task, { args: othersParams, anchor });
+
+          if (after !== null) after();
+
           rcmail.triggerEvent('intercept.click.ok', {
             task,
             action,
             othersParams,
             update,
           });
-          event.preventDefault();
         }
       }
     } catch (error) {
-      //console.error("###[DEBUG][ONCLICK]", error);
+      console.error('###[DEBUG][ONCLICK]', error);
     }
   }
 
@@ -2560,11 +2624,9 @@ function sendMessageToAriane(data) {
     //Evènement venant d'une visio
     if (event.origin.includes(rcmail.env['webconf.base_url'])) {
       const datas_accepted = 'feedbackSubmitted';
-      let $querry = $('.webconf-frame');
 
-      if (event.data === datas_accepted && $querry.length > 0) {
-        $querry.remove();
-        mel_metapage.Frames.back();
+      if (event.data === datas_accepted) {
+        PageManager.Instance.get_window().back({ defaultFrame: 'bureau' });
       }
     } else if (chat_urls_origin.includes(event.origin)) {
       //Evènement venant du chat

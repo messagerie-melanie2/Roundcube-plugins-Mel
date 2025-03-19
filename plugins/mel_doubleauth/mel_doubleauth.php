@@ -87,11 +87,14 @@ class mel_doubleauth extends bnum_plugin {
 
         $user = driver_mel::gi()->getUser();
         if ($user) {
-          $user->load(['double_authentification_forcee', 'double_authentification_date_butoir']);
+          $user->load(['double_authentification_forcee', 'double_authentification_date_butoir','internet_access_enable']);
+          $this->rc->output->set_env("internet_access_enable", $user->internet_access_enable);
           if ($user->double_authentification_forcee) {
-            if (!$this->__isActivated()) {
-            $this->rc->output->set_env("double_authentification_forcee", $user->double_authentification_forcee);
-            $this->rc->output->set_env("double_authentification_date_butoir", $user->double_authentification_date_butoir);
+            $config_2FA = $this->__get2FAconfig();
+        
+            if (!$config_2FA['activate']) {
+                $this->rc->output->set_env("double_authentification_forcee", $user->double_authentification_forcee);
+                $this->rc->output->set_env("double_authentification_date_butoir", $user->double_authentification_date_butoir);
             }
           }
         }
@@ -205,7 +208,14 @@ class mel_doubleauth extends bnum_plugin {
         return $return;
     }
 
-    private function _date_grace_enabled($user = null) {
+    /**
+     * Vérifie si une date de grace est activé pour l'utilisateur
+     * 
+     * @param User $user
+     * 
+     * @return bool
+     */
+    public static function date_grace_enabled($user = null) {
         $return = false;
         $user = $user ?? driver_mel::gi()->getUser();
 
@@ -430,13 +440,11 @@ class mel_doubleauth extends bnum_plugin {
             $bouton_active = new html_inputfield(['name' => $field_id, 'id' => $field_id, 'type' => 'button', 'class' => 'button mainaction', 'value' => $this->gettext('activate')]);
 
             $div_container .= row(
-                col(html::span(['class' => 'cercle'], '1'), 'col-sm-1 my-auto') . 
                 col(html::label($field_id, $this->Q($this->gettext('label_activate'))), 'col-sm-2 my-auto') .
                 col($bouton_active->show(), 'col-sm-3')
             );
 
             $div_container .= row(
-                col(' ', 'col-sm-1') . 
                 col($this->gettext('info_activer'))
             );
             
@@ -623,7 +631,7 @@ class mel_doubleauth extends bnum_plugin {
         mel_helper::include_mail_body();
         $otp = rand(100000, 999999) + '';
         $expire = $this->rc->config->get('code_expiration', 30*60);
-        $cid = 'bnumlogo';
+        // $cid = 'bnumlogo';
         driver_mel::gi()->getUser()->token_otp = $otp;
         driver_mel::gi()->getUser()->token_otp_expire = time() + $expire;
         driver_mel::gi()->getUser()->double_authentification_adresse_valide = false;
@@ -637,11 +645,9 @@ class mel_doubleauth extends bnum_plugin {
             'logobnum' => __DIR__.'/skins/mel_elastic/pictures/logobnum.png'//MailBody::load_image(__DIR__.'/skins/elastic/pictures/logobnum.png', 'png')
         ]);
 
-        $subject = $bodymail->subject();
-        $message = $bodymail->body();
-
-        $is_html = true;
-        $sent = mel_helper::send_mail($subject, $message, driver_mel::gi()->getUser()->email, ['email' => $mail, 'name' => driver_mel::gi()->getUser()->name], $is_html, [['path' => __DIR__.'/skins/mel_elastic/pictures/logobnum.png', 'id' => $cid, 'type' => 'image/png']]);
+       // $sent = mel_helper::send_mail($subject, $message, driver_mel::gi()->getUser()->email, ['email' => $mail, 'name' => driver_mel::gi()->getUser()->name], $is_html, [['path' => __DIR__.'/skins/mel_elastic/pictures/logobnum.png', 'id' => $cid, 'type' => 'image/png']]);
+        
+        $sent = \LibMelanie\Mail\Mail::Send('bnum', $mail, $bodymail->subject(), $bodymail->body());
         
         echo json_encode(isset($mail) ? $sent : -1);
         exit;
@@ -885,7 +891,7 @@ class mel_doubleauth extends bnum_plugin {
      */
     private function __isActivated()
     {
-        mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__isActivated()");
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_doubleauth::__isActivated()");
         // Gérer le mode bouchon
         if ($this->rc->config->get('dynalogin_mode_bouchon', false)) {
             return $this->rc->config->get('dynalogin_bouchon_isActivated', true);
@@ -1123,7 +1129,7 @@ class mel_doubleauth extends bnum_plugin {
      */
     private function is_auth_strong() 
     {
-      return $this->_date_grace_enabled() || (mel::is_auth_strong() && $this->rc->config->get('is_auth_strong', true));
+      return self::date_grace_enabled() || (mel::is_auth_strong() && $this->rc->config->get('is_auth_strong', true));
     }
     
     /**

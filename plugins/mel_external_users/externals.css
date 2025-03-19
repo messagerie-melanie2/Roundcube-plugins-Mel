@@ -5,6 +5,10 @@
 #taskmenu .button-mail,
 #taskmenu .button-calendar,
 #taskmenu .button-contacts,
+#otherapps .button-home,
+#otherapps .button-mail,
+#otherapps .button-calendar,
+#otherapps .button-contacts,
 #sections-table #rcmrowmailbox,
 #sections-table #rcmrowmailview,
 #sections-table #rcmrowcompose,
@@ -25,6 +29,8 @@
 #rcmrowaccesinternet,
 #rcmrowgestionnairelistes,
 #rcmrowsuspectsurls,
+#rcmrowmel_news_flux,
+#news-button-add,
 #settingstabpluginmelroadmap {
   display: none !important;
 }

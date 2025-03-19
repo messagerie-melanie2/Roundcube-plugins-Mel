@@ -18,6 +18,7 @@
   table.messagelist {
     tr@{name} {
       &.message {
+        position: relative;
         span.attachment span::before {
           color: @subject-color;
         }
@@ -30,6 +31,14 @@
           td {
             color: @address-color;
           }
+        }
+
+        span.size {
+          display: block;
+          position: absolute;
+          right: 35px;
+          bottom: 7px;
+          font-size: 85%;
         }
 
         &:hover {
@@ -48,6 +57,10 @@
             span.size,
             a {
               color: @subject-color-hover !important;
+            }
+
+            span.date {
+              display: block;
             }
           }
 

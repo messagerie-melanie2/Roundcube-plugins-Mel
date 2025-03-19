@@ -1,0 +1,291 @@
+//compress:true
+@border-size: 3px;
+
+:root {
+  --wsp-round-border-size: @border-size;
+}
+
+.workspace-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+  .mode-list & {
+    justify-content: initial;
+
+    .workspace-block-item {
+      width: 100%;
+      height: unset;
+      flex-direction: row;
+      justify-content: unset;
+      max-height: 154px;
+
+      .workspace-block-item-picture {
+        height: 100%;
+
+        .no-picture,
+        img {
+          align-self: center;
+        }
+
+        html.layout-phone & {
+          display: none;
+        }
+      }
+
+      .workspace-block-item-users {
+        html.layout-phone & {
+          display: none;
+        }
+      }
+
+      bnum-button-icon {
+        max-width: 82px;
+      }
+
+      .workspace-block-item-title {
+        html.layout-phone & {
+          max-width: 200px;
+        }
+      }
+
+      .workspace-block-item-main {
+        display: flex;
+        width: 100%;
+        flex: 100%;
+      }
+
+      .workspace-block-item-bottom {
+        width: 100%;
+        height: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+        margin-left: 50px;
+        margin-right: 50px;
+
+        html.layout-phone & {
+          margin-left: 0;
+        }
+
+        div {
+          text-align: left;
+
+          &.workspace-block-item-tag,
+          &.workspace-block-item-description {
+            height: fit-content;
+          }
+        }
+      }
+
+      .workspace-block-item-bottom-title {
+        &:extend(.mode-list
+          .workspace-list
+          .workspace-block-item
+          .workspace-block-item-data);
+        max-width: 90%;
+      }
+
+      .workspace-block-item-data {
+        justify-content: center;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .workspace-block-item-lock {
+        top: unset;
+        left: unset;
+        right: 25px;
+        bottom: 25px;
+      }
+    }
+  }
+
+  .workspace-block-item {
+    box-shadow: var(--bureau-card-box-shadow);
+    border-radius: var(--bureau-card-border-radius);
+    background-color: var(--bureau-card-background-color);
+    padding: 22px;
+    // margin-right: 50px;
+    margin-top: 5px;
+    margin-bottom: 20px;
+
+    width: 380px;
+    height: 380px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    cursor: pointer;
+
+    position: relative;
+
+    html.layout-phone & {
+      width: 320px;
+    }
+
+    .workspace-block-item-picture {
+      height: 123px;
+      display: flex;
+      justify-content: center;
+
+      .no-picture {
+        width: 110px;
+        height: 110px;
+        border-radius: 100%;
+        line-height: 64px;
+        font-size: x-large;
+        position: relative;
+      }
+
+      img {
+        width: 110px;
+        height: 110px;
+        border-radius: 100%;
+        border: solid thick;
+      }
+    }
+
+    .workspace-block-item-bottom {
+      height: 199px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+
+      div {
+        text-align: center;
+      }
+
+      .workspace-block-item-tag {
+        height: 21px;
+      }
+
+      .workspace-block-item-description {
+        // height: 63px;
+        overflow: hidden;
+      }
+    }
+
+    .workspace-block-item-favorite {
+      position: absolute;
+      top: 25px;
+      right: 25px;
+    }
+
+    .workspace-block-item-lock {
+      &:extend(.workspace-list
+        .workspace-block-item
+        .workspace-block-item-favorite);
+      right: unset;
+      left: 25px;
+    }
+
+    .workspace-block-item-users {
+      display: flex;
+      justify-content: center;
+    }
+
+    .workspace-block-item-user {
+      margin-left: -20px;
+
+      .no-picture {
+        &:extend(.workspace-list
+          .workspace-block-item
+          .workspace-block-item-picture
+          .no-picture);
+
+        display: inline-block;
+        width: 42px;
+        height: 42px;
+        font-size: medium;
+      }
+
+      .workspace-block-item-user-number {
+        &:extend(.workspace-list
+          .workspace-block-item
+          .workspace-block-item-user
+          .no-picture);
+
+        background-color: var(--roundbadge-default-bckg-color);
+        border: solid 2px var(--bureau-card-background-color);
+      }
+
+      bnum-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 100%;
+        background-size: cover;
+        background-position: center;
+        border: solid 2px var(--bureau-card-background-color);
+        filter: blur(0em);
+        transition: filter 0.5s;
+        object-fit: cover;
+        overflow: hidden;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        &[data-needcreation] {
+          filter: blur(0.2em);
+          background-color: white;
+        }
+      }
+    }
+  }
+
+  bnum-favorite-button {
+    bnum-icon {
+      color: var(
+        --workspace-favorite-button-text-color,
+        var(--secondary-mel-button-text-color, var(--main-text-color, black))
+      );
+
+      &:hover {
+        color: var(
+          --workspace-favorite-button-hover-text-color,
+          var(
+            --workspace-favorite-button-text-color,
+            var(
+              --secondary-mel-button-text-color,
+              var(--main-text-color, black)
+            )
+          )
+        );
+      }
+    }
+
+    &[aria-pressed='true'] {
+      bnum-icon {
+        color: var(
+          --workspace-favorite-button-pressed-text-color,
+          var(
+            --workspace-favorite-button-text-color,
+            var(
+              --secondary-mel-button-text-color,
+              var(--main-text-color, black)
+            )
+          )
+        );
+      }
+    }
+  }
+}
+
+[data-pannel-namespace='archived'],
+[data-pannel-namespace='publics'] {
+  bnum-favorite-button {
+    display: none;
+  }
+}
+
+bnum-workspace-block-item {
+  &.hoverable {
+    &:hover {
+      // box-shadow: 0 0 0 0.2rem var(--windows-like-popup-button-focus);
+      background-color: var(--wsp-list-hover-background-color);
+    }
+  }
+}

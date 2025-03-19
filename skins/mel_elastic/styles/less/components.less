@@ -1,0 +1,46 @@
+//compress:true
+bnum-searchbar {
+  .input-group-prepend,
+  .input-group-append {
+    > .input-group-text {
+      border-color: var(--input-mel-border-color);
+      background-color: var(--input-mel-background-color);
+      color: var(--input-mel-text-color);
+      padding: 0 5px;
+      display: flex;
+      border-radius: 0;
+
+      &:last-of-type {
+        border-top-right-radius: 15px;
+        border-bottom-right-radius: 15px;
+      }
+    }
+
+    > .mel-button {
+      margin-top: 0;
+      padding: 0 5px;
+      display: flex;
+      align-items: center;
+
+      &:last-of-type {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+    }
+  }
+
+  .input-group-prepend {
+    > .mel-button,
+    > .input-group-text {
+      &:first-of-type {
+        border-top-left-radius: 15px;
+        border-bottom-left-radius: 15px;
+      }
+
+      &:last-of-type {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+    }
+  }
+}

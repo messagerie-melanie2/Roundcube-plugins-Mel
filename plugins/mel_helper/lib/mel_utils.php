@@ -757,6 +757,9 @@ class mel_utils
 
   }
 
+  public static function for_data_html($string) {
+    return str_replace('"', '\'\'', $string);
+  }
 
   public static function string_to_number($string)
   {
@@ -764,7 +767,7 @@ class mel_utils
     {
       $value = 0;
       foreach ($string as $key => $value) {
-        $value += char_to_number($value);
+        $value += self::char_to_number($value);
       }
       return $value;
     }
@@ -772,7 +775,7 @@ class mel_utils
       return 0;
   }
 
-  public static function char_to_number($char)
+  public static function char_to_number($dest)
   {
     if ($dest)
         return ord(strtolower($dest)) - 96;
@@ -792,27 +795,28 @@ class mel_utils
   {
     try {
       // Récupère la liste des catégories
-      $value = driver_mel::gi()->getUser($username)->getDefaultPreference("categories");
+      $user = driver_mel::gi()->getUser($username);
+      if ($user !== null && !$user->is_external)
+      {
+        $value = $user->getDefaultPreference("categories");
 
-      if (isset($value) && strpos($value, $name) !== false)
-        return true;
-
-      $value = (isset($value) ? $value."|" : "") . "$name";
-      driver_mel::gi()->getUser($username)->saveDefaultPreference("categories", $value);
-
-      // Récupère la liste des couleurs des catégories (sic)
-      $value = driver_mel::gi()->getUser($username)->getDefaultPreference("category_colors");
-
-      if (strpos($color, "#") === false)
-        $color = "#$color";
-
-      $value = (isset($value) ? $value."|" : "") . "$name:$color";
-      driver_mel::gi()->getUser($username)->saveDefaultPreference("category_colors", $value);
+        if (isset($value) && strpos($value, $name) !== false)
+          return true;
+  
+        $value = (isset($value) ? $value."|" : "") . "$name";
+        $user->saveDefaultPreference("categories", $value);
+  
+        // Récupère la liste des couleurs des catégories (sic)
+        $value = $user->getDefaultPreference("category_colors");
+  
+        if (strpos($color, "#") === false)
+          $color = "#$color";
+  
+        $value = (isset($value) ? $value."|" : "") . "$name:$color";
+        $user->saveDefaultPreference("category_colors", $value);
+      }
+      return false;
     }
-    // catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
-    //   //mel_logs::get_instance()->log(mel_logs::ERROR, "[mel_utils]cal_add_category() Melanie2DatabaseException");
-    //   return false;
-    // }
     catch (\Exception $ex) {
       return false;
     }
@@ -822,29 +826,40 @@ class mel_utils
   public static function cal_update_color($username, $name, $color)
   {
     try {
-      $value = driver_mel::gi()->getUser($username)->getDefaultPreference("category_colors");
-      if (!isset($value))
-        return self::cal_add_category($username, $name, $color);
-      $_categories_color = explode('|', $value);
-      if (strpos($color, "#") === false)
-        $color = "#$color";
-      foreach ($_categories_color as $key => $_category_color) {
-        // Sépare les couleurs dans les paramètres de horde
-        $c = explode(':', $_category_color);
-        if (isset($c[0]) && $c[0] == $name && $_category_color != "$name:#$color") {
-          $_categories_color[$key] = "$name:#$color";
-          break;
+      $user = driver_mel::gi()->getUser($username);
+
+      if ($user !== null && !$user->is_external) {
+        $value = $user->getDefaultPreference("category_colors");
+
+        if (!isset($value))
+          return self::cal_add_category($username, $name, $color);
+
+        $_categories_color = explode('|', $value);
+
+        if (strpos($color, "#") === false)
+
+          $color = "#$color";
+        foreach ($_categories_color as $key => $_category_color) {
+          // Sépare les couleurs dans les paramètres de horde
+          $c = explode(':', $_category_color);
+
+          if (isset($c[0]) && $c[0] == $name && $_category_color != "$name:#$color") {
+            $_categories_color[$key] = "$name:#$color";
+            break;
+          }
         }
+
+        $value = implode('|', $_categories_color);
+        $user->saveDefaultPreference("category_colors", $value);
       }
-      $value = implode('|', $_categories_color);
-      driver_mel::gi()->getUser($username)->saveDefaultPreference("category_colors", $value);
+      else return false;
     } catch (\Throwable $th) {
       return false;
     }
     return true;
   }
 
-  public static function cal_check_category($category)
+  public static function cal_check_category($category, $username = null)
   {
     try {
       

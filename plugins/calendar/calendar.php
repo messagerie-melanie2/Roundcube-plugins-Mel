@@ -2813,7 +2813,7 @@ $("#rcmfd_new_category").keypress(function(event) {
         }
 
         // compose multipart message using PEAR:Mail_Mime
-        $method  = $action == 'remove' ? 'CANCEL' : 'REQUEST';
+        $method  = $is_cancelled ? 'CANCEL' : 'REQUEST';
         $message = $itip->compose_itip_message($event, $method, $rsvp);
 
         // PAMELA 
@@ -2835,6 +2835,11 @@ $("#rcmfd_new_category").keypress(function(event) {
         $orga = null;
         $array_attendees = [];
         foreach ((array) $event['attendees'] as $attendee) {
+            // PAMELA - Pas de notification pour l'organisateur ?
+            if ($attendee['role'] == 'ORGANIZER') {
+                continue;
+            }
+
             // 0007053: MAJ Occurrence: Ajout d'un participant à une occurrence entraine la réception d'une notif d'annulation aux participants
             $current[] = strtolower($attendee['email']);
 
@@ -3003,8 +3008,14 @@ $("#rcmfd_new_category").keypress(function(event) {
             $dts->setTimezone($this->timezone);
         }
 
+        date_default_timezone_set($this->timezone->getName());
+
         $fblist = $this->driver->get_freebusy_list($email, $start, $end);
         $slots  = '';
+
+        // PAMELA - Createur du freebusy
+        $creator = '';
+        $creators = [];
 
         // prepare freebusy list before use (for better performance)
         if (is_array($fblist)) {
@@ -3032,7 +3043,8 @@ $("#rcmfd_new_category").keypress(function(event) {
                 $status = self::FREEBUSY_FREE;
 
                 foreach ($fblist as $slot) {
-                    list($from, $to, $type) = $slot;
+                    // PAMELA - Createur du freebusy
+                    list($from, $to, $type, $c) = $slot;
 
                     if ($from < $t_end && $to > $t) {
                         $status = isset($type) ? $type : self::FREEBUSY_BUSY;
@@ -3040,6 +3052,12 @@ $("#rcmfd_new_category").keypress(function(event) {
                         //     // can't get any worse :-)
                         //     break;
                         // }
+
+                        // PAMELA - Createur du freebusy
+                        if ($status > $max_freebusy) {
+                            $creator = $c;
+                        }
+
                         $max_freebusy = $this->compare_freebusy($status, $max_freebusy);
                     }
                 }
@@ -3050,6 +3068,10 @@ $("#rcmfd_new_category").keypress(function(event) {
 
             $status = $max_freebusy;
             $max_freebusy = self::FREEBUSY_FREE;
+
+            // PAMELA - Createur du freebusy
+            $creators[] = $creator;
+            $creator = '';
 
             // use most compact format, assume $status is one digit/character
             $slots .= $status;
@@ -3070,6 +3092,8 @@ $("#rcmfd_new_category").keypress(function(event) {
             'end'   => $dte->format('c'),
             'interval' => $interval,
             'slots' => $slots,
+            // PAMELA - Createur du freebusy
+            'creators' => $creators,
         ]);
         exit;
     }
@@ -3122,8 +3146,8 @@ $("#rcmfd_new_category").keypress(function(event) {
     public static function event_diff($a, $b)
     {
         $diff   = [];
-        //PAMELA - 0007779: MAJ event: Lorsque l'organisateur ajoute un rappel sur l'évènement, l'implanter dans agenda sans transmission de notif mail
-        $ignore = ['changed' => 1, 'attachments' => 1,'x_alarm_minutes' => 1, 'alarms' => 1, 'valarms' => 1, 'alarm_dismissed' => 1, 'x_moz_lastack' => 1, 'x_moz_snooze_time' => 1];
+        //PAMELA - 0007779: MAJ event: Lorsque l'organisateur ajoute un rappel sur l'évènement, l'implanter dans agenda sans transmission de notif mail + 0008049
+        $ignore = ['calendar_token' => 1, 'changed' => 1, 'attachments' => 1,'x_alarm_minutes' => 1, 'alarms' => 1, 'valarms' => 1, 'alarm_dismissed' => 1, 'x_moz_lastack' => 1, 'x_moz_snooze_time' => 1];
 
         foreach (array_unique(array_merge(array_keys($a), array_keys($b))) as $key) {
             if (empty($ignore[$key]) && $key[0] != '_') {

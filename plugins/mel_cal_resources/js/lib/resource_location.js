@@ -164,8 +164,34 @@ class ResourceLocation extends AExternalLocationPart {
     return this;
   }
 
+  /**
+   * Action du bouton pour ouvrir l'agenda de ressource.
+   *
+   * Sera utilisé par le bouton dans le template {@link ResourceLocation.page}
+   * @return {Promise<void>}
+   * @async
+   */
+  async action_rcs_button_click() {
+    await (await this.dialog.try_init()).show();
+    this.onclickafter.call();
+  }
+
+  /**
+   * Ouvre l'agenda de ressource
+   *
+   * Invoke {@link ResourceLocation.action_rcs_button_click} mais le thisargs est la page car c'est la page qui contient la dialog.
+   * @return {Promise<void>}
+   * @async
+   * @private
+   */
+  async #_rcs_button_action() {
+    return await this.action_rcs_button_click.call(this.page);
+  }
+
   changed_to_this() {
-    if (!window.start_planify) this.force_click();
+    if (!window.start_planify) {
+      this.#_rcs_button_action();
+    }
   }
 
   /**
@@ -385,8 +411,12 @@ class ResourceLocation extends AExternalLocationPart {
             ResourceLocation,
           );
           tmp.resource_type = key;
+          tmp.rcs_labels = iterator.labels;
           tmp.OptionValue = function () {
             return this.resource_type;
+          }.bind(tmp);
+          tmp.CustomText = function () {
+            return this.rcs_labels?.[rcmail.env.lang.toLowerCase()];
           }.bind(tmp);
           tmp.Has = function (event) {
             return (
@@ -417,10 +447,16 @@ class ResourceLocation extends AExternalLocationPart {
     }
   }
 }
-
+rcmail.env.cal_resources.enable_all = true;
 if (!window.mel_cal_resource_loaded) {
-  if (rcmail.env.cal_resources.enable_all)
-    //Ajoute les resources au select
+  if (
+    rcmail.env.cal_resources.enable_all &&
+    Object.keys(rcmail.env.cal_resources.resources).length > 0 &&
+    MelEnumerable.from(rcmail.env.cal_resources.resources)
+      .where((x) => x.value.is_option !== true)
+      .any()
+  )
+    //Ajoute les resources au select, seulement si il y en a
     LocationPartManager.AddExtraLocationType(ResourceLocation);
 
   ResourceLocation.GenerateUniqueResources();

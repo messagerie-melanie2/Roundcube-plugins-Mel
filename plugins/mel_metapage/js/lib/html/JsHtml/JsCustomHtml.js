@@ -1,81 +1,169 @@
-import { BnumHtmlCenteredFlexContainer, BnumHtmlFlexContainer, BnumHtmlIcon, BnumHtmlSeparate, BnumHtmlSrOnly, HtmlCustomTag } from "./CustomAttributes/classes.js";
-import { JsHtml } from "./JsHtml.js";
-export { JsHtml };
+import { ABaseModulesJsHtml } from './ABaseModulesJsHtml.js';
+import {
+  BnumHtmlCenteredFlexContainer,
+  BnumHtmlFlexContainer,
+  BnumHtmlIcon,
+  BnumHtmlSeparate,
+  BnumHtmlSrOnly,
+} from './CustomAttributes/js_html_base_web_elements.js';
+import {
+  HTMLTabContainer,
+  HTMLTabReceiver,
+} from './CustomAttributes/tabs/HTMLTabContainerAndReceiver.js';
+import { HTMLTabsElement } from './CustomAttributes/tabs/HTMLTabElement.js';
+import { HTMLWrapperElement } from './CustomAttributes/wrapper.js';
 
+/**
+ * @class
+ * @classdesc
+ * @extends ABaseModulesJsHtml<T>
+ * @template {import('./JsHtml.js')._JsHtml} T
+ */
+export class JsCustomHtml extends ABaseModulesJsHtml {
+  constructor(jshtml) {
+    super(jshtml);
+  }
 
-JsHtml.create_custom_tag =  function (name, {
-    already_existing_class = null,
-    one_line = false,
-    generate_callback = null,
-    extend = null
-}) {
-    const tag = `bnum-${name}`;
-    if (!customElements.get(tag)) {
-        let config = {};
-
-        if (!!extend) config.extends = extend;
-
-        customElements.define(tag, already_existing_class ?? HtmlCustomTag, config);
-
-        JsHtml.create_alias(name.replaceAll('-', '_'), {
-            tag,
-            generate_callback,
-            online:one_line,
-            after_callback: (html) => {
-                return html.attr('data-custom-tag', name);
-            }
-        });
-
-        return true;
-    }
-
-    return false;
-};
-
-JsHtml.create_custom_tag('icon', {
-    already_existing_class:BnumHtmlIcon,
-});
-
-JsHtml.update('icon', function(self, old, icon, attribs = {}) {
+  /**
+   * @param {string} icon
+   * @param {import('./JsHtml.js').Attribs} [attribs={}]
+   * @returns {T}
+   */
+  icon(icon, attribs = {}) {
     if (typeof icon !== 'string') {
-        attribs = icon;
-        icon = null;
+      attribs = icon ?? {};
+      icon = null;
     }
 
-    let html =  old.call(self, attribs);//.attr('data-icon', icon);
+    return this._p_get()
+      .customElement(BnumHtmlIcon, attribs)
+      .resolveNow((jshtml) => (icon ? jshtml.attr('data-icon', icon) : jshtml));
+  }
 
-    if (!!icon) {
-        html = html.attr('data-icon', icon);
-    }
+  /**
+   *
+   * @param {import('./JsHtml.js').Attribs} [attribs={}]
+   * @returns {T}
+   */
+  screen_reader(attribs = {}) {
+    return this._p_get().customElement(BnumHtmlSrOnly, attribs);
+  }
 
-    return html;
-});
-
-JsHtml.create_custom_tag('screen-reader', {
-    already_existing_class:BnumHtmlSrOnly
-});
-
-JsHtml.extend('sr', function (attribs = {}) {
+  /**
+   *
+   * @param {import('./JsHtml.js').Attribs} [attribs={}]
+   * @returns {T}
+   */
+  sr(attribs = {}) {
     return this.screen_reader(attribs);
-});
+  }
 
-JsHtml.create_custom_tag('separate', {
-    already_existing_class:BnumHtmlSeparate,
-    one_line:true
-});
+  /**
+   *
+   * @param {import('./JsHtml.js').Attribs} [attribs={}]
+   * @returns {T}
+   */
+  separate(attribs = {}) {
+    return this._p_get().customElement(BnumHtmlSeparate, attribs).end();
+  }
 
-JsHtml.create_custom_tag('flex-container', {
-    already_existing_class:BnumHtmlFlexContainer
-});
+  /**
+   *
+   * @param {import('./JsHtml.js').Attribs} [attribs={}]
+   * @returns {T}
+   */
+  flex_container(attribs = {}) {
+    return this._p_get()
+      .customElement(BnumHtmlFlexContainer, attribs)
+      .css('display', 'flex');
+  }
 
-JsHtml.update('flex_container', function(self, old, attribs = {}) {
-    let html =  old.call(self, attribs);
+  /**
+   *
+   * @param {import('./JsHtml.js').Attribs} [attribs={}]
+   * @returns {T}
+   */
+  centered_flex_container(attribs = {}) {
+    return this._p_get()
+      .customElement(BnumHtmlCenteredFlexContainer, attribs)
+      .css('display', 'flex');
+  }
 
-    return html.css('display', 'flex');
-});
+  /**
+   *
+   * @param {import('./JsHtml.js').Attribs} [attribs={}]
+   * @returns {T}
+   */
+  placeholder(attribs = {}) {
+    return this._p_get().customElement(
+      { tag: 'bnum-placeholder', onconnected: () => {}, hasShadowDom: false },
+      attribs,
+    );
+  }
 
-JsHtml.create_custom_tag('centered-flex-container', {
-    already_existing_class:BnumHtmlCenteredFlexContainer
-});
+  /**
+   *
+   * @param {import('./JsHtml.js').Attribs} attribs
+   * @returns {T}
+   */
+  wrapper(attribs = {}) {
+    return this._p_get().customElement(HTMLWrapperElement, attribs);
+  }
 
-JsHtml.create_custom_tag('placeholder', {});
+  /**
+   * Génère une liste d'onglets et son fonctionnement.
+   *
+   * Utilisez {@link tab_receiver} pour définir où se trouve les onglets (optionnels).
+   *
+   * Celui-ci doit se trouver dans un {@link tab_container}.
+   *
+   * Utilisez {@link tab_panel} pour définir les différents panneaux liés aux onglets.
+   *
+   * @param {string} navs Liste des onglets, séparé par une virgule.
+   * @param {string} desc Description du groupe d'onglets
+   * @param {Object} [options={}]
+   * @param {import('./JsHtml.js').Attribs} [options.attribs={}]
+   * @param {string | null | undefined} [options.pluginText=null] Plugin du texte des onglets
+   * @returns {T}
+   */
+  tabs(navs, desc, { attribs = {}, pluginText = null } = {}) {
+    attribs ??= {};
+    attribs['data-navs'] = navs;
+    attribs['data-description'] = desc;
+
+    if (pluginText) attribs['data-ex-label'] = pluginText;
+
+    return this._p_get().customElement(HTMLTabsElement, attribs);
+  }
+
+  /**
+   *
+   * @param {import('./JsHtml.js').Attribs} attribs
+   * @returns {T}
+   */
+  tab_container(attribs = {}) {
+    return this._p_get().customElement(HTMLTabContainer, attribs);
+  }
+
+  /**
+   *
+   * @param {import('./JsHtml.js').Attribs} attribs
+   * @returns {T}
+   */
+  tab_receiver(attribs = {}) {
+    return this._p_get().customElement(HTMLTabReceiver, attribs);
+  }
+
+  /**
+   *
+   * @param {string} linkedNav
+   * @param {import('./JsHtml.js').Attribs} attribs
+   * @returns {T}
+   */
+  tab_panel(linkedNav, attribs = {}) {
+    attribs ??= {};
+    attribs['data-linked-to'] = linkedNav;
+
+    return this.wrapper(attribs);
+  }
+}

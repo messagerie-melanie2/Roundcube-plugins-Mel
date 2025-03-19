@@ -1,23 +1,26 @@
 <?php
+
 /**
  * Plugin Tchap
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License version 2
-* as published by the Free Software Foundation.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License along
-* with this program; if not, write to the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 
 class tchap extends bnum_plugin
 {
+    public const KEY_FOR_WORKSPACE = 'tchap-channel'; 
+
     /**
      *
      * @var string
@@ -30,6 +33,12 @@ class tchap extends bnum_plugin
      */
     function init()
     {
+        if ($this->get_current_task() === 'bnum' && $this->get_input('_initial_task', rcube_utils::INPUT_GET) === 'chat') {
+            $this->rc()->output->redirect([
+                '_task' => 'tchap',
+            ]);
+        }
+
         $rcmail = rcmail::get_instance();
 
         // Chargement de la conf
@@ -37,12 +46,12 @@ class tchap extends bnum_plugin
         $this->add_texts('localization/', true);
 
         // Ajout du css
-        $this->include_stylesheet($this->local_skin_path().'/tchap.css');
+        $this->include_stylesheet($this->local_skin_path() . '/tchap.css');
 
         // ajout de la tache
         $this->register_task('tchap');
 
-        if ($rcmail->task === "tchap"){
+        if ($rcmail->task === "tchap") {
             $this->register_action('index', [
                 $this,
                 'action'
@@ -55,34 +64,41 @@ class tchap extends bnum_plugin
                 $this,
                 'avatar_url'
             ]);
-        }
-        else if ($this->is_bnum_task() && $this->is_index_action()) {
+        } else if ($this->is_bnum_task() && $this->is_index_action()) {
             $this->load_script_module('bnum.js', '/');
+            $rcmail->output->set_env('tchap_help_id', $this->get_config('tchap_help_id'));
         }
-        
+
         $tchap_url = $rcmail->config->get('tchap_url');
-    	
+
         $rcmail->output->set_env('tchap_url', $tchap_url);
-        
+
         if (class_exists("mel_metapage")) mel_metapage::add_url_spied($tchap_url, 'tchap');
         // Ajoute le bouton en fonction de la skin
         $need_button = 'taskbar';
         if (class_exists("mel_metapage")) {
-          $need_button = $rcmail->plugins->get_plugin('mel_metapage')->is_app_enabled('app_tchap', true) ? $need_button : 'otherappsbar';
+            $need_button = $rcmail->plugins->get_plugin('mel_metapage')->is_app_enabled('app_tchap', true) ? $need_button : 'otherappsbar';
         }
 
-        if ($need_button)
-        {
+        if ($need_button) {
             $this->add_button(array(
                 'command' => 'tchap',
-                'class'	=> 'button-tchap icon-tchap tchap',
+                'class'    => 'button-tchap icon-tchap tchap',
                 'classsel' => 'button-tchap button-selected icon-tchap tchap',
                 'innerclass' => 'button-inner inner',
-                'label'	=> 'tchap.task',
+                'label'    => 'tchap.task',
                 'title' => 'tchap.tchap_title',
                 'type' => 'link',
             ), $need_button);
         }
+
+        $this->add_hook('workspace.services.set', [$this, 'workspace_set_tchap']);
+        $this->add_hook('wsp.show', [$this, 'on_show_workspace']);
+        $this->add_hook('workspace.users.services.delete', [$this, 'workspace_users_services_delete']);
+        $this->add_hook('workspace.params.services.show', [$this, 'workspace_params_services_show']);
+        $this->add_hook('workspace.params.services.show.update', [$this, 'workspace_params_services_show_update']);
+        $this->add_hook('workspace.service.get', [$this, 'workspace_service_get']);
+        $this->add_hook('workspace.service.delete', [$this, 'workspace_service_delete']);
     }
 
     function action()
@@ -90,10 +106,10 @@ class tchap extends bnum_plugin
         $rcmail = rcmail::get_instance();
         // register UI objects
         $rcmail->output->add_handlers(array(
-        		'tchap_frame'    => array($this, 'tchap_frame'),
+            'tchap_frame'    => array($this, 'tchap_frame'),
         ));
 
-        $startupUrl =  rcube_utils::get_input_value("_url", rcube_utils::INPUT_GPC); 
+        $startupUrl =  rcube_utils::get_input_value("_url", rcube_utils::INPUT_GPC);
         if ($startupUrl !== null && $startupUrl !== "") $rcmail->output->set_env("tchap_startup_url", $startupUrl);
 
         // Chargement du template d'affichage
@@ -110,22 +126,23 @@ class tchap extends bnum_plugin
      */
     function tchap_frame($attrib)
     {
-    	if (!$attrib['id'])
-    		$attrib['id'] = 'rcmtchapframe';
+        if (!$attrib['id'])
+            $attrib['id'] = 'rcmtchapframe';
 
-    	$rcmail = rcmail::get_instance();
+        $rcmail = rcmail::get_instance();
 
-    	$attrib['name'] = $attrib['id'];
+        $attrib['name'] = $attrib['id'];
 
-    	$rcmail->output->set_env('contentframe', $attrib['name']);
-    	$rcmail->output->set_env('blankpage', $attrib['src'] ?
-        $rcmail->output->abs_url($attrib['src']) : 'program/resources/blank.gif');
+        $rcmail->output->set_env('contentframe', $attrib['name']);
+        $rcmail->output->set_env('blankpage', $attrib['src'] ?
+            $rcmail->output->abs_url($attrib['src']) : 'program/resources/blank.gif');
         $rcmail->output->set_env('display_tchap_sidebar', $rcmail->config->get('display_tchap_sidebar', null));
 
-    	return $rcmail->output->frame($attrib);
+        return $rcmail->output->frame($attrib);
     }
 
-    public function avatar_url() {
+    public function avatar_url()
+    {
         $user = driver_mel::gi()->getUser();
         $name = explode(' ', $user->name);
         $fname = $name[1] === null ? '' : "$name[1].";
@@ -135,12 +152,165 @@ class tchap extends bnum_plugin
         exit;
     }
 
+    #region workspaces
+    /**
+     * permet d'afficher ou non le plugin tchap dans la liste des applications
+     * @param $args tableau contenant un string 'app' l'application en cours et un bool 'continue' si on arrête l'affichage
+     */
+    public function workspace_params_services_show($args) {
+        if ($args['app'] === self::KEY_FOR_WORKSPACE) $args['continue'] = false;
+
+        return $args;
+    }
+
+    /**
+     * supprime le service tchap du workspace
+     */
+    public function workspace_service_delete($args) {
+        if (class_exists('mel_workspace') && array_search(self::KEY_FOR_WORKSPACE, $args['services']) !== false) {
+             $can = true;
+
+            try {
+                $can = !($args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE)->edited ?? false);
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+            if ($can)
+            {
+                if (class_exists('tchap'))tchap::delete_tchap_room($args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE)->id);
+            }
+        }
+
+        return $args;
+    }
+    
+    /**
+     * ajoute l'application tchap au workspace
+     */
+    public function workspace_set_tchap($args) {
+        if (class_exists('mel_workspace')) {
+            $workspace = $args['workspace'];
+            $services = $args['services'];
+            $default_values= $args['default_values'];
+
+            if ($default_values === '') $default_values = null;
+
+            $users = mel_helper::Enumerable($workspace->users())->select(function ($k, $v) {
+                return $v->user;
+            })->toArray();
+
+            if (!$workspace->objects()->get(self::KEY_FOR_WORKSPACE) && array_search(self::KEY_FOR_WORKSPACE, $services) !== false) {
+                $default_values_key = "tchap-channel";
+                if (!isset($default_values)) $default_values = [$default_values_key => ['mode' => 'default']];
+                else if (!isset($default_values[$default_values_key])) $default_values[$default_values_key] = ['mode' => 'default'];
+    
+                $uid = null;
+                $value = null;
+                $config = [];
+                switch ($default_values[$default_values_key]['mode']) {
+                    case 'default':
+                        $uid = $workspace->uid();
+                    case 'custom_name':
+                        if (!isset($uid)) $uid = $default_values[$default_values_key]['value'];
+                        $value = self::create_tchap_room($uid, $users);
+                        
+                        break;
+    
+                    case 'already_exist':
+                        $value = $default_values[$default_values_key]['value']['id'];
+    
+                        $config['edited'] = true;
+                        break;
+                    default:
+                        unset($default_values[$default_values_key]);
+                        $args['default_values'] = $default_values;
+                        return $this->workspace_set_tchap($args);
+                }
+                mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create_tchap_channel]Valeur : ".json_encode($value));
+    
+                if (is_string($value))
+                {
+                    $config['id'] = $value;
+                }
+                else {
+                    $value = $value["content"]["channel"];
+                    $config['id'] = $value["_id"];
+                }
+    
+                //$this->save_object($workspace, self::TCHAP_CHANNEL, $config);
+                $workspace->objects()->set(self::KEY_FOR_WORKSPACE, $config);
+
+                $args['workspace'] = $workspace;
+
+                unset($services[self::KEY_FOR_WORKSPACE]);
+
+                $args['services'] = $services;
+            }
+            else if ($workspace->objects()->get(self::KEY_FOR_WORKSPACE) && array_search(self::KEY_FOR_WORKSPACE, $services) !== false) {
+                $new_users= $args['new_users'];
+                
+                if ($new_users && count($new_users) > 0) $users = mel_helper::Enumerable($new_users)->select(function ($k, $v) {
+                    return $v->uid;
+                })->toArray();
+
+                self::invite_tchap_user($workspace->objects()->get(self::KEY_FOR_WORKSPACE)->id, $users);
+            }
+        }
+
+        return $args;
+    }
+
+    /**
+     * permet de supprimer tout les utilisateurs de l'espaces
+     */
+    public function workspace_users_services_delete($args) {
+        if ($args['workspace']->hasService(self::KEY_FOR_WORKSPACE)) {
+            self::kick_member($args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE)->id, $args['user']);
+        }
+
+        return $args;
+    }
+
+    /**
+     * hook pour quand on affiche le widget tchap
+     */
+    public function on_show_workspace($args) {
+        if ($args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE) !== null) {
+            $this->include_module('workspace.js', 'js/lib/workspace');
+            $args['layout']->setNavBarSetting('tchap', ':nav:', false, 7);
+        }
+
+        return $args;
+    }
+
+    /**
+     * récupère le service
+     */
+    public function workspace_service_get($args) {
+        if ($args['services'][self::KEY_FOR_WORKSPACE] === null) $args['services'][self::KEY_FOR_WORKSPACE] = false;
+
+        return $args;
+    }
+
+    public function workspace_params_services_show_update($args) {
+        if ($args['app'] === self::KEY_FOR_WORKSPACE) {
+            $room_id = $args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE)->id;
+            $tchap_enabled = self::check_if_room_exist($room_id);
+            $args['html'].= '<span class="mel-message"> ('. self::get_room_name($room_id) .')</span>';
+            $args['html'].= html::tag("button", ["title" => ($tchap_enabled === false ? "Vous n'avez pas accès au canal courant ! Demandez à ce que l'on vous rajoute ou changez de canal avec ce bouton !" : "Choisissez un nouveau canal !"),  "id" => "update-tchap-channel-button","class" => "mel-button param-button ".($tchap_enabled === false ? "btn-danger btn" : "") ], "Changer de canal tchap".html::tag("span", ["class" => "plus icon-mel-pencil"]));
+        }
+
+        return $args;
+    }
+    #endregion
+
     /**
      * Bloquer les refresh
      * @param array $args
      */
-    function refresh($args) {
-      return array('abort' => true);
+    function refresh($args)
+    {
+        return array('abort' => true);
     }
     function sidebar()
     {
@@ -154,20 +324,21 @@ class tchap extends bnum_plugin
      * @param array $users
      * @param bool $is_private
      */
-    public static function create_tchap_room($room_name, $users) {
+    public static function create_tchap_room($room_name, $users)
+    {
         $rcmail = rcmail::get_instance();
         $token = self::get_tchap_token();
         $mail_user = [];
-        foreach($users as $user) {
+        foreach ($users as $user) {
             $mail_user[] = strtolower(driver_mel::gi()->getUser($user)->email);
         }
-        $config = ['token'=> $token, 'room_name'=> $room_name, 'is_private'=> true, 'users_list'=> $mail_user];
-        $content = self::call_tchap_api ($rcmail->config->get('migrate_channel_endpoint'), $config, 'POST');
-        if($content["httpCode"] === 200) {
-            mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->create_tchap_room]Valeur retour de l'api : ".json_encode($content));
+        $config = ['token' => $token, 'room_name' => $room_name, 'is_private' => true, 'users_list' => $mail_user];
+        $content = self::call_tchap_api($rcmail->config->get('migrate_channel_endpoint'), $config, 'POST');
+        if ($content["httpCode"] === 200) {
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->create_tchap_room]Valeur retour de l'api : " . json_encode($content));
             return (json_decode($content['content'])->room_id);
         } else {
-            mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->create_tchap_room]Valeur retour de l'api : ".json_encode($content));
+            mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->create_tchap_room]Valeur retour de l'api : " . json_encode($content));
             return false;
         }
     }
@@ -177,24 +348,25 @@ class tchap extends bnum_plugin
      * @param $room_id
      * @param array $users
      */
-    public static function invite_tchap_user($room_id, $users) {
+    public static function invite_tchap_user($room_id, $users)
+    {
         $rcmail = rcmail::get_instance();
         $token = self::get_tchap_token();
         $mail_user = [];
-        foreach($users as $user) {
+        foreach ($users as $user) {
             $email = strtolower(driver_mel::gi()->getUser($user)->email);
 
             if (isset($email) && is_string($email) && strpos($email, '@') !== false) {
                 $mail_user[] = $email;
             }
         }
-        $config = ['token'=> $token, 'room_id'=> $room_id, 'users_list'=> $mail_user];
-        $content = self::call_tchap_api ($rcmail->config->get('invite_endpoint'), $config, 'POST');
-        if($content["httpCode"] === 200) {
-            mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->invite_tchap_user]Valeur retour de l'api : ".json_encode($content));
+        $config = ['token' => $token, 'room_id' => $room_id, 'users_list' => $mail_user];
+        $content = self::call_tchap_api($rcmail->config->get('invite_endpoint'), $config, 'POST');
+        if ($content["httpCode"] === 200) {
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->invite_tchap_user]Valeur retour de l'api : " . json_encode($content));
             return true;
         } else {
-            mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->invite_tchap_user]Valeur retour de l'api : ".json_encode($content));
+            mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->invite_tchap_user]Valeur retour de l'api : " . json_encode($content));
             return false;
         }
     }
@@ -203,17 +375,18 @@ class tchap extends bnum_plugin
      * kick tout les users non admin (plus proche de la supression possible dans tchap)
      * @param $room_id
      */
-    public static function delete_tchap_room($room_id) {
+    public static function delete_tchap_room($room_id)
+    {
         $rcmail = rcmail::get_instance();
         $token = self::get_tchap_token();
-        $config = ['token'=> $token, 'room_id'=> $room_id];
+        $config = ['token' => $token, 'room_id' => $room_id];
         $url = $rcmail->config->get('tchap_bot_url') . $rcmail->config->get('delete_room_endpoint');
-        $content = self::call_tchap_api ($rcmail->config->get('delete_room_endpoint'), $config, 'DELETE');
-        if($content["httpdCode"] === 200) {
-            mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->delete_tchap_room]Valeur retour de l'api : ".json_encode($content));
+        $content = self::call_tchap_api($rcmail->config->get('delete_room_endpoint'), $config, 'DELETE');
+        if ($content["httpdCode"] === 200) {
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->delete_tchap_room]Valeur retour de l'api : " . json_encode($content));
             return true;
         } else {
-            mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->delete_tchap_room]Valeur retour de l'api : ".json_encode($content));
+            mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->delete_tchap_room]Valeur retour de l'api : " . json_encode($content));
             return false;
         }
     }
@@ -224,17 +397,18 @@ class tchap extends bnum_plugin
      * @param $user_id
      * @return boolean
      */
-    public static function is_member($room_id, $user_id) {
+    public static function is_member($room_id, $user_id)
+    {
         $rcmail = rcmail::get_instance();
         $token = self::get_tchap_token();
         $user_id = strtolower(driver_mel::gi()->getUser($user_id)->email);
-        $config = ['token'=> $token, 'room_id'=> $room_id, 'user_id'=> $user_id];
-        $content = self::call_tchap_api ($rcmail->config->get('ismember_endpoint'), $config, 'POST');
-        if($content["httpCode"] === 200) {
-            mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->is_member]Valeur retour de l'api : ".json_encode($content));
+        $config = ['token' => $token, 'room_id' => $room_id, 'user_id' => $user_id];
+        $content = self::call_tchap_api($rcmail->config->get('ismember_endpoint'), $config, 'POST');
+        if ($content["httpCode"] === 200) {
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->is_member]Valeur retour de l'api : " . json_encode($content));
             return true;
         } else {
-            mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->is_member]Valeur retour de l'api : ".json_encode($content));
+            mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->is_member]Valeur retour de l'api : " . json_encode($content));
             return false;
         }
     }
@@ -243,16 +417,17 @@ class tchap extends bnum_plugin
      * vérifie si un canal existe
      * @param $room_id
      */
-    public static function check_if_room_exist($room_id) {
+    public static function check_if_room_exist($room_id)
+    {
         $rcmail = rcmail::get_instance();
         $token = self::get_tchap_token();
-        $config = ['token'=> $token, 'room_id'=> $room_id];
+        $config = ['token' => $token, 'room_id' => $room_id];
         $content = self::call_tchap_api($rcmail->config->get('get_room_name_endpoint'), $config, 'POST');
-        if($content["httpCode"] === 200) {
-            mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->check_if_room_exist]Valeur retour de l'api : ".json_encode($content));
+        if ($content["httpCode"] === 200) {
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->check_if_room_exist]Valeur retour de l'api : " . json_encode($content));
             return true;
         } else {
-            mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->check_if_room_exist]Valeur retour de l'api : ".json_encode($content));
+            mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->check_if_room_exist]Valeur retour de l'api : " . json_encode($content));
             return false;
         }
     }
@@ -261,16 +436,17 @@ class tchap extends bnum_plugin
      * vérifie si un canal existe
      * @param $room_id
      */
-    public static function get_room_name($room_id) {
+    public static function get_room_name($room_id)
+    {
         $rcmail = rcmail::get_instance();
         $token = self::get_tchap_token();
-        $config = ['token'=> $token, 'room_id'=> $room_id];
+        $config = ['token' => $token, 'room_id' => $room_id];
         $content = self::call_tchap_api($rcmail->config->get('get_room_name_endpoint'), $config, 'POST');
-        if($content["httpCode"] === 200) {
-            mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->get_room_name]Valeur retour de l'api : ".json_encode($content));
+        if ($content["httpCode"] === 200) {
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->get_room_name]Valeur retour de l'api : " . json_encode($content));
             return json_decode($content['content'])->room_name;
         } else {
-            mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->get_room_name]Valeur retour de l'api : ".json_encode($content));
+            mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->get_room_name]Valeur retour de l'api : " . json_encode($content));
             return false;
         }
     }
@@ -280,66 +456,139 @@ class tchap extends bnum_plugin
      * @param $room_id
      * @param $user_id 
      */
-    public static function kick_member($room_id, $user_id) {
+    public static function kick_member($room_id, $user_id)
+    {
         $rcmail = rcmail::get_instance();
         $token = self::get_tchap_token();
         $user_id = strtolower(driver_mel::gi()->getUser($user_id)->email);
         $user_uid = self::get_user_tchap_id($user_id);
-        $config = ['token'=> $token, 'room_id'=> $room_id, 'user_id'=> $user_uid];
-        $content = self::call_tchap_api ($rcmail->config->get('kick_user_endpoint'), $config, 'DELETE');
-        if($content["httpdCode"] === 200) {
-            mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->kick_member]Valeur retour de l'api : ".json_encode($content));
+        $config = ['token' => $token, 'room_id' => $room_id, 'user_id' => $user_uid];
+        $content = self::call_tchap_api($rcmail->config->get('kick_user_endpoint'), $config, 'DELETE');
+        if ($content["httpdCode"] === 200) {
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->kick_member]Valeur retour de l'api : " . json_encode($content));
             return true;
         } else {
-            mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->kick_member]Valeur retour de l'api : ".json_encode($content));
+            mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->kick_member]Valeur retour de l'api : " . json_encode($content));
             return false;
         }
     }
 
     /**
+     * Renvoie un utilisateur à partir de son mail
      * @param $user_mail mail de lutilisateur à chercher
      */
-    private static function get_user_tchap_id ($user_mail) {
+    private static function get_user_tchap_id($user_mail)
+    {
         $rcmail = rcmail::get_instance();
         $token = self::get_tchap_token();
-        $config = ['token'=> $token, 'user_mail'=> $user_mail];
+        $config = ['token' => $token, 'user_mail' => $user_mail];
         $content = self::call_tchap_api($rcmail->config->get('get_user_uid'), $config, 'POST');
 
-        if($content["httpCode"] === 200) {
+        if ($content["httpCode"] === 200) {
             $content = json_decode($content['content']);
-            mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->get_user_tchap_id]Valeur retour de l'api : ".json_encode($content));
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->get_user_tchap_id]Valeur retour de l'api : " . json_encode($content));
             return $content->user_id;
         } else {
-            mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->get_user_tchap_id]Valeur retour de l'api : ".json_encode($content));
+            mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->get_user_tchap_id]Valeur retour de l'api : " . json_encode($content));
             return false;
         }
     }
 
-    private static function search_user($user) {
+    /**
+     * retourne un utilisateur tchap en fonction de son id
+     */
+    private static function search_user($user)
+    {
         $rcmail = rcmail::get_instance();
         $token = self::get_tchap_token();
-        $config = ['token'=> $token, 'term'=> $user];
+        $config = ['token' => $token, 'term' => $user];
         $content = self::call_tchap_api($rcmail->config->get('get_user'), $config, 'POST');
 
-        if($content["httpCode"] === 200) {
+        if ($content["httpCode"] === 200) {
             $content = json_decode($content['content']);
-            mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->search_user]Valeur retour de l'api : ".json_encode($content));
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->search_user]Valeur retour de l'api : " . json_encode($content));
             return $content;
         } else {
-            mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->search_user]Valeur retour de l'api : ".json_encode($content));
+            mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->search_user]Valeur retour de l'api : " . json_encode($content));
             return false;
+        }
+    }
+
+    /**
+     * créé un webhook
+     * @param string $room_id id interne du salon tchap pour lequel on veut créer un webhook
+     * @param string nom du workspace
+     */
+    protected static function create_webhook($room_id, $workspace_name) {
+        $rcmail = rcmail::get_instance();
+        $token = self::get_tchap_token();
+        $label = "EDT - " . $workspace_name;
+        $config = ['token' => $token, 'room' => $room_id, 'label' => $label];
+        $content = self::call_tchap_api($rcmail->config->get('create_webhook_endpoint'), $config, 'POST');
+
+        if ($content["httpCode"] === 200) {
+            $content = json_decode($content['content']);
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->create_webhook]Valeur retour de l'api : " . json_encode($content));
+            return $content->webhook_id;
+        } else {
+            mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->search_user]Valeur retour de l'api : " . json_encode($content));
+            return false;
+        }
+    }
+
+    /**
+     * Envoi un message dans le salon tchap associé au workspace
+     * @param string $wsp_uid uid du workspace où on veut envoyer le message
+     * @param string $message message à envoyer
+     * @param string $format optionnel, peut prendre les valeurs suivantes : html|md|markdown
+     * @param string $raw optionnel, permet de fournir une alternative texte brut au message si un format est spécifié
+     * 
+     * @return bool réussite de l'envoie du message
+     */
+    public static function send_message($wsp_uid, $message, $format = null, $raw = null) {
+        $rcmail = rcmail::get_instance();
+        $workspace = mel_workspace::Workspace($wsp_uid);
+        if($workspace->settings()->get('tchap_notification') === '1'){
+            if (!is_null($workspace->objects()->get(self::KEY_FOR_WORKSPACE))){
+                $tchap_id = $workspace->objects()->get(self::KEY_FOR_WORKSPACE)->id;
+                if ($workspace->settings()->get('tchap_webhook') === null || $workspace->settings()->get('tchap_webhook') === false) {
+                    $wsp_name = $workspace->title();
+                    //pas de webhook enregistré on en créé un
+                    $webhook = self::create_webhook($tchap_id, $wsp_name);
+                    $workspace->settings()->set('tchap_webhook', $webhook);
+                    $workspace->save();                
+                }
+                $webhook = $workspace->settings()->get('tchap_webhook');
+                $config = ['message' => $message];
+                if(!is_null($format)) {
+                    $config['message_format'] = $format;
+                }
+                if(!is_null($raw)) {
+                    $config['message_raw'] = $raw;
+                }
+                $content = self::call_tchap_api($rcmail->config->get('post_webhook_endpoint') . $webhook, $config, 'POST');
+                if ($content['httpCode'] === 200) {
+                    mel_logs::get_instance()->log(mel_logs::DEBUG, '[tchap->create_webhook]message envoyé dans le salon : ' . $tchap_id);
+                    return true;
+                } else {
+                    mel_logs::get_instance()->log(mel_logs::ERROR, '[tchap->search_user]Valeur retour de l\'api : ' . $content);
+                    return false;
+                }
+            }
         }
     }
 
     /**
      * retourne le token à utiliser pour l'api tchap
      */
-    private static function get_tchap_token() {
+    private static function get_tchap_token()
+    {
         $rcmail = rcmail::get_instance();
         return hash('sha512', date('d/m/Y') . '-' . $rcmail->config->get('tchap_bot_token'));
     }
 
-    public static function get_avatar_url($user_id) {
+    public static function get_avatar_url($user_id)
+    {
         $user = self::search_user($user_id);
 
         if ($user) return $user->avatar_url;
@@ -348,16 +597,18 @@ class tchap extends bnum_plugin
 
 
     /**
+     * Envoie une requête à l'api du tchap bot
      * @param $endpoint
-     * @param $config
-     * @param $type POST ou DELETE
+     * @param $config paramètres à passer
+     * @param $type POST, DELETE, PUT ou GET 
      */
-    private static function call_tchap_api ($endpoint, $config, $type) {
-        if(class_exists('mel_helper')) {
+    private static function call_tchap_api($endpoint, $config, $type)
+    {
+        if (class_exists('mel_helper')) {
             $rcmail = rcmail::get_instance();
             $url = strpos($endpoint, 'https') !== false ? $endpoint : $rcmail->config->get('tchap_bot_url') . $endpoint;
             $headers = [0 => 'Content-Type: application/json'];
-            if($rcmail->config->get('http_proxy') !== '') {
+            if ($rcmail->config->get('http_proxy') !== '') {
                 $headers[CURLOPT_PROXY] = $rcmail->config->get('http_proxy');
             }
             switch ($type) {
@@ -380,8 +631,5 @@ class tchap extends bnum_plugin
         } else {
             return false;
         }
-
     }
-
-
 }

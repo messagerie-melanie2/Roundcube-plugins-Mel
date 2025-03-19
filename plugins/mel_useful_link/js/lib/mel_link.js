@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { BnumEvent } from '../../../mel_metapage/js/lib/mel_events.js';
+import { LinkManager } from './manager.js';
 
 export { MelLink, MelFolderLink, MelLinkVisualizer, MelStoreLink };
 
@@ -274,16 +275,14 @@ class MelFolderLink extends MelBaseLink {
   }
 
   toggleMultilink() {
-    if (!this.isOpen) 
-      this.openMultilink();
-    else
-      this.closeMultilink();    
+    if (!this.isOpen) this.openMultilink();
+    else this.closeMultilink();
   }
 
   /**
    * Ouvre un dossier
    */
-  openMultilink() {    
+  openMultilink() {
     //Si un autre dossier est déjà ouvert
     if (MelFolderLink.folderOpen) {
       this.closeMultilink(MelFolderLink.folderOpen.id);
@@ -387,6 +386,10 @@ MelFolderLink.folderOpen = false;
 
 class MelLinkVisualizer extends MelLink {
   constructor(id, title, link, image, inFolder = false, icon = null) {
+    if (icon && icon.includes('https://')) {
+      link = icon;
+      icon = null;
+    }
     super(id, title, link, inFolder);
     this._setup_image(image);
     this._setup_icon(icon);
@@ -618,13 +621,14 @@ class MelLinkVisualizer extends MelLink {
       .img({
         id: 'link-block-icon-image-' + this.id,
         class: `link-icon-image ${this.icon ? 'hidden' : ''}`,
-        src: this.image,
-        onerror:
-          'imgError(this.id, `no-image-' +
-          this.id +
-          '`, `' +
-          this.title[0] +
-          '`)',
+        // src: './skins/mel_elastic/images/taskbar-logo.png',
+        'data-src': this.image || './empty.png',
+        onerror: this.icon ? () => {} : LinkManager.imgError.bind(LinkManager),
+        // 'imgError(this.id, `no-image-' +
+        // this.id +
+        // '`, `' +
+        // this.title[0] +
+        // '`)',
       })
       .span({
         id: 'no-image-' + this.id,
@@ -643,7 +647,16 @@ class MelLinkVisualizer extends MelLink {
       .end('li')
       .end('div');
 
-    return html.generate();
+    html = html.generate();
+
+    if (window.linksPicturesLoaded) {
+      let $tmp = html.find('[data-src]');
+      $tmp.attr('src', $tmp.attr('data-src'));
+      $tmp.removeAttr('data-src');
+      $tmp = null;
+    }
+
+    return html;
   }
 
   /**
@@ -709,13 +722,14 @@ class MelLinkVisualizer extends MelLink {
       .img({
         id: 'link-block-icon-image-' + this.id,
         class: `link-icon-image ${this.icon ? 'hidden' : ''}`,
-        src: this.image,
-        onerror:
-          'imgError(this.id, `no-image-' +
-          this.id +
-          '`, `' +
-          this.title[0] +
-          '`)',
+        'data-src': this.image || './empty.png',
+        // src: './skins/mel_elastic/images/taskbar-logo.png',
+        onerror: this.icon ? () => {} : LinkManager.imgError.bind(LinkManager),
+        // 'imgError(this.id, `no-image-' +
+        // this.id +
+        // '`, `' +
+        // this.title[0] +
+        // '`)',
       })
       .span({
         id: 'no-image-' + this.id,
@@ -737,23 +751,33 @@ class MelLinkVisualizer extends MelLink {
 }
 
 class MelStoreLink extends MelLinkVisualizer {
-  constructor(id, title, link, icon, description, inLinks = false) {
-    super(id, title, link, null, null, icon);
-    this._setup_vars(description, link, inLinks);
+  constructor(
+    id,
+    title,
+    link,
+    icon,
+    description,
+    inLinks = false,
+    image = null,
+  ) {
+    super(id, title, link, null, null, icon, image);
+    this._setup_vars(description, link, inLinks, image);
   }
 
   _init() {
     super._init();
     this.description = '';
     this.inLinks = false;
+    this.image = null;
 
     return this;
   }
 
-  _setup_vars(description, link, inLinks) {
+  _setup_vars(description, link, inLinks, image) {
     super._setup_vars(link, false);
     this.description = description;
     this.inLinks = inLinks;
+    this.image = image;
 
     return this;
   }
@@ -762,16 +786,27 @@ class MelStoreLink extends MelLinkVisualizer {
    * Affiche un lien dans la modale de bibliothèque d'application
    */
   displayStoreLink() {
-    return MelHtml.start
+    let html = MelHtml.start
       .li({
         id: 'store-link-block-' + this.id,
         title: this.title,
         class: 'store-link-block',
         'data-id': this.id,
       })
-      .div({ class: 'store-link-icon-container' })
-      .icon(this.icon, { id: 'link-icon-' + this.id, class: 'link-with-icon' })
-      .end('icon')
+      .div({ class: 'store-link-icon-container' });
+
+    if (this.image) {
+      html = html.img({ src: this.image ?? '' });
+    } else if (this.icon) {
+      html = html
+        .icon(this.icon, {
+          id: 'link-icon-' + this.id,
+          class: 'link-with-icon',
+        })
+        .end('icon');
+    }
+
+    html = html
       .end('div')
       .div({ class: 'store-link-text' })
       .a({
@@ -802,5 +837,7 @@ class MelStoreLink extends MelLinkVisualizer {
       .end('button')
       .end('li')
       .generate();
+
+    return html;
   }
 }

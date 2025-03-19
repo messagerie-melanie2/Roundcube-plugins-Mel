@@ -1,0 +1,185 @@
+import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
+import { MelTemplate } from '../../../mel_metapage/js/lib/html/JsHtml/MelTemplate.js';
+import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
+import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
+import { WorkspaceObject } from '../../../mel_workspace/js/lib/program/WorkspaceObject.js';
+
+export class New_posts extends MelObject {
+  constructor() {
+    super();
+  }
+
+  /**
+   * Point d'entrée principal de l'application.
+   * Appelle la méthode principale de la classe parente,
+   * initialise les propriétés et configure les éléments de l'interface utilisateur.
+   * @returns {void}
+   */
+  main() {
+    super.main();
+
+    this.tags = [];
+    this.initButtons();
+    this.initNewPostsDisplay();
+    WorkspaceObject.SendToParent('loaded', true);
+
+    //Recharge les données au refresh
+    this.rcmail().addEventListener('mel_metapage_refresh', () => {
+      this.http_internal_get({
+        task: 'forum',
+        action: 'get_posts_data',
+        params: {
+          _workspace_uid: this.get_env('workspace_uid'),
+          _limit: 3,
+          _pin: false,
+        },
+        on_success: (data) => {
+          $('#new_post-area').text(EMPTY_STRING);
+          this.rcmail().env.posts_data = JSON.parse(data);
+          this.initNewPostsDisplay();
+        },
+      });
+    });
+  }
+
+  /**
+   * Initialise les gestionnaires d'événements pour les boutons.
+   * Configure l'action du bouton de vue du forum pour rediriger vers la page du forum.
+   *
+   * @returns {void}
+   */
+  initButtons() {
+    $('#forum-button-view').click(() => {
+      window.location.href = this.url('forum', { action: 'index' });
+    });
+  }
+
+  /**
+   * Initialise l'affichage des nouveaux posts.
+   * Récupère les données des posts depuis l'environnement et détermine
+   * s'il faut afficher un message d'absence de posts ou les nouveaux posts.
+   *
+   * @returns {void}
+   */
+  initNewPostsDisplay() {
+    const posts = this.get_env('posts_data');
+    if (posts.length === 0) {
+      this.displayNoPost();
+    }
+    this.displayNewPosts(posts);
+  }
+
+  /**
+   * Affiche les nouveaux posts en utilisant les données fournies.
+   * Génère dynamiquement le contenu des posts à partir des modèles,
+   * rend les posts accessibles via le clavier, et ajoute des gestionnaires d'événements
+   * pour les clics et interactions associées.
+   *
+   * @param {Object} posts - Objet contenant les données des posts, indexé par ID de post.
+   * @returns {void}
+   */
+  displayNewPosts(posts) {
+    let post;
+    let data;
+    for (let postId in posts) {
+      post = posts[postId];
+      data = {
+        POST_LINK: post.post_link,
+        POST_CREATOR: post.post_creator,
+        CREATOR_EMAIL: post.creator_email,
+        POST_DATE: post.creation_date,
+        UID: post.uid,
+        POST_TITLE: post.title,
+        //POST_COUNT_REACTION: post.reaction,
+        POST_THUMB_UP: post.like_count.toString(),
+        POST_THUMB_DOWN: post.dislike_count.toString(),
+        POST_COMMENTS: post.comment_count.toString(),
+        POST_IS_LIKED: post.isliked ? 'filled' : '',
+        POST_IS_DISLIKED: post.isdisliked ? 'filled' : '',
+        COMMENTS_ENABLED: post.settings?.comments ? '' : 'hidden',
+      };
+
+      let template = new MelTemplate()
+        .setTemplateSelector('#new_post_template')
+        .setData(data);
+      // .addEvent('#more-'+post.uid, 'click', this.toggleMenuPost.bind(this, post.uid))
+      //.addEvent(balise, action, fonction)
+
+      $('#new_post-area').append(...template.render());
+
+      // Rendre chaque post cliquable au clavier
+      const postElement = document.getElementById(`post-${post.uid}`);
+      postElement.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          const link = postElement.querySelector('.post-card');
+          if (link) {
+            link.click(); // Simule un clic sur le lien
+          }
+        }
+      });
+
+      // Ajout du gestionnaire de clic pour envoyer l'événement "postClicked"
+      const postLink = document.querySelector(`#post-${post.uid} a.post-card`);
+      if (postLink) {
+        postLink.setAttribute('data-spied', false);
+        postLink.addEventListener(
+          'click',
+          function (uid, event) {
+            event.preventDefault();
+            // Envoi des données au parent avec les informations du post
+            WorkspaceObject.SendToParent('postClicked', {
+              _uid: uid,
+            });
+          }.bind(this, post.uid),
+        );
+      }
+
+      let count = 0;
+      for (let tag in post.tags) {
+        if (count >= 3) break;
+        let tag_data = {
+          TAG_NAME: '#' + post.tags[tag].name,
+          TAG_ID: post.tags[tag].id,
+        };
+        let tag_template = new MelTemplate()
+          .setTemplateSelector('#new_tag_template')
+          .setData(tag_data)
+          .addEvent(
+            '.tag-' + post.tags[tag].id,
+            'click',
+            this.searchPostByTag.bind(this, post.tags[tag].name),
+          );
+
+        $('#new-tag-area-' + post.uid).append(...tag_template.render());
+
+        count++;
+      }
+      this.offset++;
+    }
+  }
+
+  /**
+   * Affiche les posts le tag sur lequel on a cliqué
+   * @param {string} tag_name
+   * @param {Event} event
+   */
+  searchPostByTag(tag_name, event) {
+    event.preventDefault();
+    event.stopPropagation();
+    WorkspaceObject.SendToParent('tagClicked', {
+      _tag_name: urlencode('#' + tag_name),
+    });
+  }
+
+  /**
+   * Affiche un message indiquant qu'il n'y a aucun post dans l'espace de travail
+   */
+  displayNoPost() {
+    let noPostDiv = MelHtml.start
+      .span()
+      .text(rcmail.gettext('mel_forum.no_post'))
+      .end();
+    $('#new_post-area').append(noPostDiv.generate());
+  }
+}

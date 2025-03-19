@@ -18,8 +18,11 @@ class Core {
             if ($config['DEV']) {
                 $dir = str_replace(['/public/welcome', '/public/reinit'], ['', ''], dirname($_SERVER['SCRIPT_FILENAME']));
             }
+            else if ($config['DOCKER']) {
+                $dir = __DIR__.'/../../../bnum';
+            }
             else {
-                $dir = __DIR__.'/../../../';
+                $dir = __DIR__.'/../../..';
             }
 
             require_once $dir . '/vendor/autoload.php';
@@ -165,8 +168,11 @@ class Core {
             if ($config['DEV']) {
                 $dir = str_replace('/public/forgotten', '', dirname($_SERVER['SCRIPT_FILENAME']));
             }
+            else if ($config['DOCKER']) {
+                $dir = __DIR__.'/../../../bnum';
+            }
             else {
-                $dir = __DIR__.'/../../../';
+                $dir = __DIR__.'/../../..';
             }
 
             require_once $dir . '/vendor/autoload.php';
@@ -233,7 +239,7 @@ class Core {
             ];
 
             // Envoi du mail
-            require_once __DIR__ . '/../../../plugins/mel_helper/lib/mel_mail.php';
+            require_once $dir . '/plugins/mel_helper/lib/mel_mail.php';
 
             // Chargement du body
             $body = file_get_contents(__DIR__ . '/../../forgotten/mail/email_external_reinit.html');
@@ -245,7 +251,7 @@ class Core {
                 '{{documentation.url}}',
                 '{{bnum.base_url}}',
             ],[
-                MailBody::load_image(__DIR__ . '/../../../plugins/mel_workspace/skins/elastic/pictures/logobnum.png', 'png'),
+                MailBody::load_image($dir . '/plugins/mel_workspace/skins/elastic/pictures/logobnum.png', 'png'),
                 utils::url('public/reinit/?_h=' . base64_encode(serialize($hash))),
                 'https://fabrique-numerique.gitbook.io/bnum/ressources/guide-des-fonctionnalites/espaces-de-travail',
                 'http://mtes.fr/2',

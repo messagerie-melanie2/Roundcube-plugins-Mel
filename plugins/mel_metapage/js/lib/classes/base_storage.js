@@ -12,7 +12,7 @@ export { BaseStorage };
  * Représente un dictionnaire avec les fonctions de base
  * @class
  * @classdesc Représente un dictionnaire avec les fonctions de base de celui-ci. Le stockage est privée est n'est accéssible que via l'itérateur.
- * @template {T}
+ * @template T
  */
 class BaseStorage {
   constructor() {
@@ -62,6 +62,26 @@ class BaseStorage {
       storage = {};
       return this;
     };
+
+    /**
+     * Taille du dictionnaire
+     * @readonly
+     * @type {Number}
+     */
+    this.length = null;
+    this.keys = null;
+
+    Object.defineProperty(this, 'length', {
+      get() {
+        return Object.keys(storage).length;
+      },
+    });
+
+    Object.defineProperty(this, 'keys', {
+      get() {
+        return Object.keys(storage);
+      },
+    });
 
     /**
      * Itérateur sur le dictionnaire

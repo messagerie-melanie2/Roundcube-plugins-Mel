@@ -1,11 +1,22 @@
+import { BnumPromise } from '../../BnumPromise.js';
 import { BnumLog } from '../../classes/bnum_log.js';
 import { EMPTY_STRING } from '../../constants/constants.js';
 import { MelObject } from '../../mel_object.js';
-import { Mel_Promise } from '../../mel_promise.js';
 export { Connector };
 
 /**
+ * @template {Object<string, string | number | boolean>} T
+ * @template Y
+ * @callback PostProcessCallback
+ * @param {{datas: Y | null, has_error: boolean, error: any | null}} data
+ * @param {Connector<T, Y>} caller
+ * @return {{datas: Y | any | null, has_error: boolean, error: any | null}}
+ */
+
+/**
  * Représente un connecteur avec le back-end
+ * @template {Object<string, string | number | boolean>} T Objet à envoyer au serveur
+ * @template Y Réponse attendu
  */
 class Connector {
   /**
@@ -15,8 +26,8 @@ class Connector {
    * @param {Object} param2
    * @param {Symbol} param2.type Type de la requête (Connector.enums.type)
    * @param {any | {} | null} param2.params Paramètres de la requête
-   * @param {null | function} param2.moulinette Action à faire une fois les données récupérés
-   * @param {{} | JSON} param2.needed Paramètres à mettre dans `connect` et à compléter pour que ça fonctionne
+   * @param {null | PostProcessCallback<T, Y>} param2.postProcess Action à faire une fois les données récupérés
+   * @param {?T} param2.needed Paramètres à mettre dans `connect` et à compléter pour que ça fonctionne
    */
   constructor(
     task,
@@ -24,7 +35,7 @@ class Connector {
     {
       type = Connector.enums.type.get,
       params = null,
-      moulinette = null,
+      postProcess = null,
       needed = {},
     },
   ) {
@@ -34,6 +45,9 @@ class Connector {
     this.type = Connector.enums.type.get;
     this.params = null;
     this.on_success = null;
+    /**
+     * @type {T}
+     */
     this.needed = null;
     //Getter des variables privés
     Object.defineProperties(this, {
@@ -63,7 +77,7 @@ class Connector {
       },
       on_success: {
         get: function () {
-          return moulinette;
+          return postProcess;
         },
         configurable: false,
       },
@@ -81,9 +95,9 @@ class Connector {
    *
    * Récupère ou envoi des données au serveur
    * @param {Object} param0
-   * @param {*} param0.params Paramètres additionnels
+   * @param {?T} param0.params Paramètres additionnels
    * @param {*} param0.default_return Valeur de retour par défaut
-   * @returns {Promise<{datas: any | null, has_error: boolean, error: any | null}>} Retourne les données récupérés ou null si il y a une erreur
+   * @returns {Promise<{datas: Y | null, has_error: boolean, error: any | null}>} Retourne les données récupérés ou null si il y a une erreur
    */
   async connect({ params = null, default_return = null }) {
     let return_datas = null;
@@ -115,65 +129,77 @@ class Connector {
         }
       }
 
+      /**
+       * @type {?BnumPromise<void>}
+       * @package
+       */
+      let promise;
       switch (this.type) {
         case Connector.enums.type.get:
-          await new Mel_Promise(() => {}).create_ajax_get_request({
-            url: MelObject.Empty().url(this.task, {
+          promise = BnumPromise.Ajax.Get(
+            MelObject.Empty().url(this.task, {
               action: this.action,
               params: url_parameters,
             }),
-            success: (datas) => {
-              try {
-                if (typeof datas === 'string') datas = JSON.parse(datas);
-              } catch (error) {
-                BnumLog.debug('connect', 'datas', datas, error);
-              }
+            {
+              success: (datas) => {
+                try {
+                  if (typeof datas === 'string') datas = JSON.parse(datas);
+                } catch (error) {
+                  BnumLog.debug('connect', 'datas', datas, error);
+                }
 
-              return_datas = datas;
+                return_datas = datas;
 
-              BnumLog.info('connect', 'Connected !');
+                BnumLog.info('connect', 'Connected !');
+              },
+              failed: (...args) => {
+                error_datas.has_error = true;
+                error_datas.error = args;
+                BnumLog.error(
+                  'connect',
+                  `${this.task}/${this.action}`,
+                  'Connexion failed !',
+                  ...args,
+                );
+              },
             },
-            failed: (...args) => {
-              error_datas.has_error = true;
-              error_datas.error = args;
-              BnumLog.error(
-                'connect',
-                `${this.task}/${this.action}`,
-                'Connexion failed !',
-                ...args,
-              );
-            },
-          });
+          );
           break;
         case Connector.enums.type.post:
-          await new Mel_Promise(() => {}).create_ajax_post_request({
-            url: MelObject.Empty().url(this.task, { action: this.action }),
-            datas: url_parameters,
-            success: (datas) => {
-              try {
-                if (typeof datas === 'string') datas = JSON.parse(datas);
-              } catch (error) {
-                BnumLog.debug('connect', 'datas', datas, error);
-              }
+          promise = BnumPromise.Ajax.Post(
+            MelObject.Empty().url(this.task, { action: this.action }),
+            {
+              data: url_parameters,
+              success: (datas) => {
+                try {
+                  if (typeof datas === 'string') datas = JSON.parse(datas);
+                } catch (error) {
+                  BnumLog.debug('connect', 'datas', datas, error);
+                }
 
-              return_datas = datas;
-              BnumLog.info('connect', 'Connected !');
+                return_datas = datas;
+                BnumLog.info('connect', 'Connected !');
+              },
+              failed: (...args) => {
+                error_datas.has_error = true;
+                error_datas.error = args;
+                BnumLog.error(
+                  'connect',
+                  `${this.task}/${this.action}`,
+                  'Connexion failed !',
+                  ...args,
+                );
+              },
             },
-            failed: (...args) => {
-              error_datas.has_error = true;
-              error_datas.error = args;
-              BnumLog.error(
-                'connect',
-                `${this.task}/${this.action}`,
-                'Connexion failed !',
-                ...args,
-              );
-            },
-          });
+          );
+
           break;
         default:
           throw new Error('Unknown connector type');
       }
+
+      await promise;
     }
 
     return_datas = {
@@ -206,9 +232,9 @@ class Connector {
    *
    * Récupère ou envoi des données au serveur, ignore les erreurs.
    * @param {Object} param0
-   * @param {*} param0.params Paramètres additionnels
+   * @param {?T} param0.params Paramètres additionnels
    * @param {*} param0.default_return Valeur de retour par défaut
-   * @returns {Promise<{datas: any | null, has_error: boolean, error: any | null}>} Retourne les données récupérés
+   * @returns {Promise<{datas: Y | null, has_error: boolean, error: any | null}>} Retourne les données récupérés
    */
   async force_connect({ params = null, default_return = null }) {
     return (
@@ -234,11 +260,11 @@ class Connector {
     {
       type = Connector.enums.type.get,
       params = null,
-      moulinette = null,
+      postProcess = null,
       needed = {},
     },
   ) {
-    return new Connector(task, action, { type, params, moulinette, needed });
+    return new Connector(task, action, { type, params, postProcess, needed });
   }
 }
 

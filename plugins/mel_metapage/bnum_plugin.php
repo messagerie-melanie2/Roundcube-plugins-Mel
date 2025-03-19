@@ -11,18 +11,24 @@ abstract class bnum_plugin extends rcube_plugin
         $this->load_script_module_from_plugin($this->ID, $name, $path, $save_in_memory);
     }
 
-    protected function load_script_module_from_plugin($plugin, $name = self::BASE_MODULE_NAME, $path = self::BASE_MODULE_PATH, $save_in_memory = false) {
+    protected function load_script_module_from_plugin($plugin, $name = self::BASE_MODULE_NAME, $path = self::BASE_MODULE_PATH, $save_in_memory = false, $where = 'docready') {
         $this->setup_module();
 
         $args = "'$plugin', '$name', '$path', $save_in_memory";
         
         if ($this->api->output !== null) {
             try {
-                $this->api->output->add_script("runModule($args)", 'docready');
+                $this->api->output->add_script("runModule($args);", $where);
             } catch (\Throwable $th) {
                 return null;
             }
         }
+    }
+
+    protected function include_script_frame_manager() {
+        $this->setup_module();
+
+        $this->include_script_from_plugin('mel_metapage', 'js/scripting_frame_manager.js');
     }
 
     protected function load_js_page($name) {
@@ -52,23 +58,48 @@ abstract class bnum_plugin extends rcube_plugin
         }
     }
 
+    public function include_component($name, $path = (self::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes') , $plugin = 'mel_metapage') {
+        if ($path[0] === '/') $path = substr($path, 1);
+
+        $this->include_script_from_plugin($plugin, "$path/$name/scriptType:module", 'head');
+    }
+
+    public function include_module($name, $path = 'js/lib') {
+        $this->include_script_from_plugin($this->ID, "$path/$name/scriptType:module", 'head');
+    }
+
+    public function include_module_program($name, $path = null ) {
+        $path = $path === null ? '' : "/$path";
+        $this->include_module($name, "js/lib/program$path");
+    }
+
+    public function include_module_action($name, $path = null ) {
+        $path = $path === null ? '' : "/$path";
+        $this->include_module($name, "js/lib/program/actions$path");
+    }
+
+    public function include_module_addon($name, $path = null ) {
+        $path = $path === null ? '' : "/$path";
+        $this->include_module($name, "js/lib/program/addons$path");
+    }
+
     protected function break_initial_fonctionality($key) {
         $this->add_script("rcmail.addEventListener('$key', function break_fonctionality () {return {break:true}; });");
     }
 
     protected function setup_module() {
         if (!self::$module_loaded) {
-            $this->include_script_from_plugin('mel_metapage', 'js/always_load/load_module.js');
+            $this->include_script_from_plugin('mel_metapage', 'js/always_load/load_module.js', 'head');
             self::$module_loaded = true;
         }
     }
 
-    public function include_script_from_plugin($plugin, $fn)
+    public function include_script_from_plugin($plugin, $fn, $pos = 'head_bottom')
     {
         $ID = rcmail::get_instance()->plugins->get_plugin($plugin)->ID;
         if (is_object($this->api->output) && $this->api->output->type == 'html') {
-            $src = $this->resource_url_from_plugin($fn, $ID);
-            $this->api->include_script($src, 'head_bottom', false);
+            $src = $this->resource_url_from_plugin($fn, "plugins/$ID");
+            $this->rc()->output->include_script($src, $pos, false);
         }
     }
 
@@ -102,6 +133,12 @@ abstract class bnum_plugin extends rcube_plugin
         $this->api->register_action($action, $this->ID, $callback, $this->get_current_task());
     }
 
+    protected function register_actions($array) {
+        foreach ($array as $key => $action) {
+            $this->register_action($key, $action);
+        }
+    }
+
     protected function rc() {
         return rcmail::get_instance();
     }
@@ -132,6 +169,10 @@ abstract class bnum_plugin extends rcube_plugin
         return rcube_utils::get_input_value($arg, rcube_utils::INPUT_POST);
     }
 
+    protected function get_config($key, $default_value = null) {
+        return $this->rc()->config->get($key, $default_value);
+    }
+
     protected function include_css($path, $local = false)
     {
         if ($local)
@@ -140,11 +181,31 @@ abstract class bnum_plugin extends rcube_plugin
             $this->include_stylesheet($this->local_skin_path()."/$path");
     }
 
+    protected function exec_hook($hook, $args = []) {
+        return $this->rc()->plugins->exec_hook($hook, $args);
+    }
+
     protected function add_handler($name, $callback)
     {
         $this->rc()->output->add_handlers(array(
             $name    => $callback,
         ));
+    }
+
+    protected function redirect($task, $action = null, $params = null) {
+        $args = [
+            '_task' => $task
+        ];
+
+        if (isset($action)) $args['_action'] = $action;
+
+        if (isset($params) && count($params) > 0) {
+            foreach ($params as $key => $value) {
+                $args[$key] = $value;
+            }
+        }
+ 
+        $this->rc()->output->redirect($args);
     }
 
     protected function is_bnum_task() {
@@ -159,4 +220,102 @@ abstract class bnum_plugin extends rcube_plugin
         return  driver_mel::gi()->getUser(null, true, false, null, $email);
     }
 
+    /**
+     * indique au footer que le footer doit être caché
+     */
+    protected function ignore_footer() {
+        mel_elastic::IgnoreFooter();
+    }
+
+    protected function sendExit($item, $headers = []) {
+        if (count($headers) > 0) {
+            foreach ($headers as $header) {
+                header($header);
+            }
+        }
+
+        echo $item;
+        exit;
+    }
+
+    protected function sendEncodedExit($item, $headers = ['Content-Type: application/json']) {
+        $this->sendExit(json_encode($item), $headers);
+    }
+    
+    protected function include_web_component() {
+        return WebComponnents::Instance();
+    } 
+
+    public function ____METHODS____($what, ...$args) {
+        switch ($what) {
+            case 'include_component':
+                $this->include_component(...$args);
+                break;
+            
+            default:
+                # code...
+                break;
+        }
+    }
+}
+
+class WebComponnents {
+    private $plugin;
+    private static $_instance;
+
+    private function __construct() {
+        $this->plugin = rcmail::get_instance()->plugins->get_plugin('mel_metapage');
+    }
+
+    private function _include_component($name, $path = (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes') , $plugin = 'mel_metapage') {
+        return $this->plugin->____METHODS____('include_component', $name, $path, $plugin);
+    }
+
+    public function Base() {
+        $this->_include_component('js_html_base_web_elements.js');
+    }
+
+    public function Tabs() {
+        $this->_include_component('tab_web_element.js');
+    }
+
+    public function PressedButton() {
+        $this->_include_component('pressed_button_web_element.js');
+    }
+
+    public function InfiniteScrollContainer() {
+        $this->_include_component('infinite_scroll_container.js');
+    }
+
+    public function Avatar() {
+        $this->_include_component('avatar.js');
+    }
+
+    public function SearchBar() {
+        $this->_include_component('searchbar.js');
+    }
+
+    public function MelButton() {
+        $this->_include_component('HTMLMelButton.js');
+    }
+
+    public function ____METHODS____($what, ...$args) {
+        switch ($what) {
+            case '_include_component':
+                $name = $args[0];
+                $path = $args[1] ?? bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes/';
+                $plugin = $args[2] ?? 'mel_metapage';
+                return $this->_include_component($name, $path, $plugin);
+            
+            default:
+                # code...
+                break;
+        }
+    }
+
+    public static function Instance() {
+        if (!isset(self::$_instance)) self::$_instance = new WebComponnents();
+
+        return self::$_instance;
+    }
 }

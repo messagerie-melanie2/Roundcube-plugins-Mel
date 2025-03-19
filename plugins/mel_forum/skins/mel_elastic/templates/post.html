@@ -1,0 +1,219 @@
+<roundcube:include file="includes/layout.html" />
+
+<h1 class="voice">
+  <roundcube:label name="mel_forum" />
+</h1>
+
+<div id="layout-content" role="main">
+  <div class="content">
+    <div class="row return-header">
+      <div id="return-homepage" class="return" tabindex="0" role="button" title="Retour à la page des articles">
+        <i class="material-symbols-outlined">arrow_back</i>
+        <span class="ml-2"><roundcube:label name="mel_forum.articles" /></span>
+      </div>
+      <div class=" more_actions_area">
+        <span class="more_action icon" id="more-action" data-icon="more_vert" tabindex="0" role="button" title="Plus d'options" aria-label="Options supplémentaires" aria-haspopup="true" aria-expanded="false"></span>
+        <div id="post-context-menu" class="forum-post-context-menu hidden" role="menu" aria-hidden="true">
+          <h3 id="aria-label-groupoptions-smallmenu" class="voice">Menu du post</h3>
+          <button id="copy-post" class="post-options-button copy-post" tabindex="0" role="menuitem" data-action="copy_post_link" title="<roundcube:label name="mel_forum.copy_article" />" >
+            <span class="icon material-symbols-outlined post-options-icon" data-icon="content_copy"></span>
+            <span class="post-options-text" style="margin-left: 8px;"><roundcube:label name="mel_forum.copy_article" /></span>
+          </button>
+          <button id="download-post" class="post-options-button download-post" tabindex="0" role="menuitem" data-action="download_post" title="<roundcube:label name="mel_forum.download_article" />">
+            <span class="icon material-symbols-outlined post-options-icon" data-icon="download"></span>
+            <span class="post-options-text" style="margin-left: 8px;"><roundcube:label name="mel_forum.download_article" /></span>
+          </button>
+          <button id="edit-post" class="post-options-button edit-post %%HAS_OWNER_RIGHTS%%" tabindex="0" role="menuitem"  data-action="modify_post" title="<roundcube:label name="mel_forum.edit_article" />" >
+            <span class="icon material-symbols-outlined post-options-icon" data-icon="border_color"></span>
+            <span class="post-options-text" style="margin-left: 8px;"><roundcube:label name="mel_forum.edit_article" /></span>
+          </button>
+          <button id="delete-post" class="post-options-button delete-post %%HAS_OWNER_RIGHTS%%" tabindex="0" role="menuitem" data-action="delete_post" title="<roundcube:label name="mel_forum.delete_article" />" >
+            <span class="icon material-symbols-outlined post-options-icon" data-icon="delete"></span>
+            <span class="post-options-text" style="margin-left: 8px;"><roundcube:label name="mel_forum.delete_article" /></span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="row forum-header">
+      <div class="col-12">
+        <div class="row">
+          <div class="col-12 text-center">
+            <h2 class="title">
+              <roundcube:object name="show_post_title" />
+            </h2>
+          </div>
+        </div>
+        <div class="row d-flex justify-content-center align-items-center mt-3">
+          <div class="d-flex justify-content-center align-items-center">
+            <bnum-avatar  class="author-image" style="background-color: var(--mel-button-background-color); display: flex; align-items: center; justify-content: center; color: white" data-email="<roundcube:object name="show_post_creator_email" />" data-forceload="true"></bnum-avatar>  
+            <div class="ml-2 author-infos">
+              <div class="author-name-custom ml-1">
+                <roundcube:object name="show_post_creator_name" />
+              </div>
+              <div class="d-flex justify-content-center align-items-center">
+                <i class="material-symbols-outlined">access_time</i>
+                <span class="ml-2">
+                  <roundcube:object name="show_post_date" />
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row forum-content">
+      <div class="col-12 col-md-10">
+        <div class="row custom-border-bottom my-4">
+          <roundcube:object name="show_post_tags" />
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <div id="post-content" class="post-content">
+              <roundcube:object name="show_post_content" />
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 post-reaction">
+            <div id="add_like" class="reaction like hoverable" tabindex="0" role="button" title="J'aime">
+              <i class="material-symbols-outlined">thumb_up</i>
+              <span class="ml-2"><roundcube:object name="show_post_like" /></span>
+            </div>
+            <div id="add_dislike" class="reaction dislike hoverable" tabindex="0" role="button" title="Je n'aime pas">
+              <i class="material-symbols-outlined">thumb_down</i>
+              <span class="ml-2"><roundcube:object name="show_post_dislike" /></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <roundcube:if condition="env:show_comments === true"/>
+    <div id="comment-section" class="row forum-comment d-flex justify-content-center">
+      <div class="col-12">
+        <div class="row forum-comment-sort">
+          <div class="input-group mel-group">
+            <select title="Trier par : " id="forum-comment-select" class="form-control input-mel mel-input custom-select"
+              data-original-title="Trier par : ">
+              <option value="Plus récents"><roundcube:label name="mel_forum.newest" /></option>
+              <option value="date_asc"><roundcube:label name="mel_forum.oldest" /></option>
+              <option value="reactions"><roundcube:label name="mel_forum.more_reactions" /></option>
+              <option value="replies"><roundcube:label name="mel_forum.more_responses" /></option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row my-4 d-flex align-items-center">
+          <div class="col-auto pr-0">
+            <bnum-avatar  class="forum-comment-profile-image" style="background-color: var(--mel-button-background-color); display: flex; align-items: center; justify-content: center; color: white" data-id="%%POST_CREATOR%%" data-forceload="true"></bnum-avatar>
+          </div>
+          <div class="col pl-0">
+            <textarea id="new-comment-textarea" class="forum-comment-input" placeholder="Ajouter un commentaire" rows="1"></textarea>
+          </div>
+          <div id="buttons-container" class="col-12 d-flex justify-content-end align-items-center" hidden>
+            <button
+              id="cancel-comment"
+              type="button"
+              class="modal-close-footer btn mel-button btn-danger mel-before-remover mr-2"
+              data-dismiss="modal"
+            >
+            <roundcube:label name="mel_forum.cancel" /><span class="plus icon-mel-close"></span>
+            </button>
+            <button
+              id="submit-comment"
+              type="button"
+              class="modal-save-footer btn btn-secondary mel-button"
+            >
+            <roundcube:label name="mel_forum.save" /><span class="save-comment-button icon-mel-arrow-right"></span>
+            </button>
+          </div>
+        </div>
+
+        <div id="comment-area"></div>
+
+
+        <template id="comment-template">
+          <div class="comment-container">
+
+            <div id="comment-id-%%UID%%" data-number-children="%%NUMBER_CHILDREN%%" class="row comment">
+              <div class="col-12">
+                <div class="forum-comment flex align-items-center">
+                  <bnum-avatar class="forum-comment-profile-image" style="background-color: var(--mel-button-background-color); display: flex align-items: center justify-content: center color: white" data-email="%%USER_EMAIL%%" data-forceload="true"></bnum-avatar>
+                  <span class="forum-content-author">%%USER_NAME%%</span>
+                  <div class="forum-comment-date d-flex">
+                    <span class="icon" data-icon="access_time"></span>
+                    <span class="ml-1">%%COMMENT_DATE%%</span>
+                  </div>
+                </div>
+          
+                <div class="forum-comment-text" id="comment-text-%%UID%%">
+                  <p>%%COMMENT_CONTENT%%</p>
+                </div>
+          
+                <div class="forum-comment-edit hidden" id="edit-comment-%%UID%%">
+                  <textarea id="edit-comment-textarea-%%UID%%" class="forum-comment-input" rows="1">%%COMMENT_CONTENT%%</textarea>
+                  <div id="buttons-container" class="col-12 d-flex justify-content-end align-items-center">
+                    <button id="cancel-modify-comment" type="button" class="modal-close-footer btn mel-button btn-danger mel-before-remover mr-2"><roundcube:label name="mel_forum.cancel" /><span class="plus icon-mel-close"></span></button>
+                    <button id="submit-modify-comment" type="button" class="modal-save-footer btn btn-secondary mel-button"><roundcube:label name="mel_forum.save" /><span class="plus icon-mel-arrow-right"></span></button>
+                  </div>
+                </div>
+          
+                <div class="forum-comment-reactions">
+                  <div class="%%LIKE_CLASS%%" tabindex="0" role="button"  title="<roundcube:label name="mel_forum.like_action" />">
+                    <span class="icon material-symbols-outlined" data-like-uid="%%UID%%" data-icon="thumb_up"></span>
+                    <span class="ml-2">%%LIKES%%</span>
+                  </div>
+                  <div class="%%DISLIKE_CLASS%%" tabindex="0" role="button"  title="<roundcube:label name="mel_forum.dislike_action" />">
+                    <span class="icon material-symbols-outlined" data-dislike-uid="%%UID%%" data-icon="thumb_down"></span>
+                    <span class="ml-2">%%DISLIKES%%</span>
+                  </div>
+                  <div class="reaction-item mr-3 response" tabindex="0" role="button" title="<roundcube:label name="mel_forum.respond" />">
+                    <span class="icon" data-icon="mode_comment"></span>
+                    <span class="ml-2"><roundcube:label name="mel_forum.respond" /></span>
+                  </div>
+                  <div class="reaction-item">
+                    <span class="icon" data-icon="more_horiz" tabindex="0" role="button" title="<roundcube:label name="mel_forum.more_options" />"></span>
+                    <div id="context-menu-%%UID%%" class="forum-comment-context-menu hidden">
+                      <h3 id="aria-label-groupoptions-smallmenu" class="voice"><roundcube:label name="mel_forum.comment_menu" /></h3>
+                      <button class="comment-options-button edit-comment" title="<roundcube:label name="mel_forum.edit_comment" />" aria-labelledby="aria-label-comment-options-menu-%%UID%%" data-action="modify_comment" data-id="%%UID%%">
+                        <span class="icon material-symbols-outlined" data-icon="border_color"></span>
+                        <span class="comment-options-text" style="margin-left: 8px;"><roundcube:label name="mel_forum.edit_comment" /></span>
+                      </button>
+                      <button class="comment-options-button delete-comment" title="<roundcube:label name="mel_forum.delete_comment" />" aria-labelledby="aria-label-comment-options-menu-%%UID%%" data-action="cancel_comment" data-id="%%UID%%">
+                        <span class="icon material-symbols-outlined" data-icon="delete"></span>
+                        <span class="comment-options-text" style="margin-left: 8px;"><roundcube:label name="mel_forum.delete_comment" /></span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+            
+          
+                <div id="reply-form-%%UID%%" class="row my-4 d-flex align-items-center hidden">
+                  <div class="col-auto pr-0">
+                    <bnum-avatar class="forum-comment-profile-image" style="background-color: var(--mel-button-background-color); display: flex; align-items: center; justify-content: center; color: white" data-forceload="true"></bnum-avatar>
+                  </div>
+                  <div class="col pl-0" style="margin-bottom: 1rem;">
+                    <textarea id="new-response-textarea-%%UID%%" class="forum-comment-input" placeholder="<roundcube:label name="mel_forum.respond" />" rows="1"></textarea>
+                  </div>
+                  <div id="buttons-container" class="col-12 d-flex justify-content-end align-items-center">
+                    <button id="cancel-reply" type="button" class="modal-close-footer btn mel-button btn-danger mel-before-remover mr-2"><roundcube:label name="mel_forum.cancel" /><span class="plus icon-mel-close"></span></button>
+                    <button id="submit-reply" type="button" class="modal-save-footer btn btn-secondary mel-button"><roundcube:label name="mel_forum.save" /><span class="plus icon-mel-arrow-right"></span></button>
+                  </div>
+                </div>
+            
+                <div class="forum-comment-responses">
+                  %%RESPONSE_SECTION%%
+                </div>
+              </div>
+            </div>
+          </div>
+        </template>      
+      </div>
+    </div>
+    <roundcube:endif/>
+    <button id="backToTop" class="mel-button material-symbols-outlined hidden" title="Haut de page">keyboard_arrow_up</button>
+  </div>
+</div>
+
+<roundcube:include file="includes/footer.html" />
+

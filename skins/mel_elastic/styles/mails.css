@@ -53,6 +53,17 @@ html.layout-large .task-mail #layout-sidebar > .header {
 .task-mail.action-compose #layout #layout-content > .header span {
   color: var(--layout-content-header-text-color);
 }
+.task-mail.action-preview .ui.alert.boxinformation {
+  color: var(--box-information-text-color);
+  background-color: var(--box-information-background-color);
+}
+.task-mail.action-preview .calendar-agenda-preview .event-row.current {
+  color: var(--box-information-text-color);
+}
+.task-mail.action-preview .invitebox td.label,
+.task-mail.action-preview .invitebox .rsvp-status.hint {
+  color: var(--invitebox-label-text-color);
+}
 .task-mail #messagelist-content {
   background-color: var(--layout-content-background-color) !important;
 }
@@ -325,6 +336,7 @@ table.messagelist td.subject span.msgicon::before {
 }
 table.messagelist td.subject span.subject {
   padding-left: 2rem;
+  padding-right: 50px;
 }
 html body div#layout-list table.messagelist td.subject a {
   color: var(--main-text-color);
@@ -1275,6 +1287,15 @@ a.button.icon.toolbar-list-button::before {
 }
 a.button.icon.folders::before {
   content: "\e2c8" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48, 'FILL' 1 !important;
+}
+a.button.icon.calendars::before {
+  content: "\ebcc" !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;

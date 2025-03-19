@@ -1,6 +1,8 @@
 import { BnumLog } from '../../../../mel_metapage/js/lib/classes/bnum_log.js';
 import { MelEnumerable } from '../../../../mel_metapage/js/lib/classes/enum.js';
+import { FramesManager } from '../../../../mel_metapage/js/lib/classes/frame_manager.js';
 import { Look } from '../../../../mel_metapage/js/lib/classes/metrics.js';
+import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
 import { MelFor } from '../../../../mel_metapage/js/lib/helpers/loops.js';
 import { MaterialSymbolHtml } from '../../../../mel_metapage/js/lib/html/html_icon.js';
 import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';

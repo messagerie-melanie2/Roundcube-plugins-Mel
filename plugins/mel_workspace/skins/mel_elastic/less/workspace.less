@@ -1,0 +1,128 @@
+@import '../../../../../skins/mel_elastic/styles/less/variables/screen_size.less';
+
+bnum-workspace-module {
+  padding: 20px;
+  margin: 10px;
+
+  &.melv2-card {
+    &:extend(bnum-workspace-module);
+
+    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.2);
+    background-color: var(--bureau-card-background-color);
+  }
+
+  .module-block-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .module-block-content {
+    max-height: 350px;
+    min-height: 350px;
+    overflow: auto;
+
+    &.mode-small {
+      max-height: 150px;
+      min-height: 150px;
+    }
+  }
+
+  &.mode-small {
+    .module-block-content {
+      &:extend(bnum-workspace-module .module-block-content.mode-small);
+    }
+  }
+}
+
+#app_store {
+  display: none;
+}
+
+#planning-date-container {
+  display: flex;
+  align-items: center;
+  // padding: 5px 0;
+}
+
+.planning-header {
+  margin: 5px 0;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  flex-wrap: wrap;
+
+  .planning-top-header {
+    display: flex;
+    flex: 4;
+    justify-content: space-between;
+      
+    @media (max-width: 600px) {
+        flex: 100%; /* Force les blocs à prendre toute la largeur */
+    }
+  }
+
+  .planning-bottom-header {
+    display: flex;
+    flex: 1;
+    justify-content: flex-end;
+   
+    @media (max-width: 600px) {
+      justify-content: center;
+   }
+  }
+
+}
+
+bnum-searchbar {
+  flex: 0.5;
+}
+
+bnum-separate {
+  &.from-params-page {
+    margin: 15px 50px;
+    width: auto;
+    background-color: var(--main-border-color-transparent);
+  }
+}
+
+.avatar-wsp {
+  bnum-avatar {
+    border-radius: 100%;
+  }
+}
+
+.row {
+  &.member {
+    padding: 10px;
+  }
+}
+
+#module-ul {
+  .module-block-content {
+    max-height: unset;
+
+    html@{touch} & {
+      overflow: auto !important;
+      max-height: 200px;
+    }
+  }
+}
+
+.footer {
+  display: none !important;
+}
+
+.wsp-quit-button {
+  padding: 2.5px 5px !important;
+  gap: 8px;
+}
+
+.mel-button.button-task {
+  html@{touch} & {
+    min-width: 80px;
+  .material-symbols-outlined {
+     display: none;
+    }
+  }
+}

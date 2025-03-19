@@ -74,6 +74,22 @@
       }
     }
 
+    &.action-preview {
+        .ui.alert.boxinformation {
+            color: var(--box-information-text-color);
+            background-color: var(--box-information-background-color);
+        }
+        .calendar-agenda-preview .event-row.current {
+            color: var(--box-information-text-color);
+        }
+        .invitebox {
+            td.label,
+            .rsvp-status.hint {
+                color: var(--invitebox-label-text-color);
+            }
+        }
+    }
+
     #messagelist-content{
         background-color: var(--layout-content-background-color)!important;
     }
@@ -526,6 +542,7 @@ table.messagelist{
 
                 &.subject{
                     padding-left: 2rem;
+                    padding-right: 50px;
                 }
             }
 
@@ -1624,6 +1641,13 @@ a{
             &.folders{
                 &::before{
                   content: "\e2c8"!important;
+                  ._material-icon-barup()!important;
+                  font-variation-settings: 'wght' 300, 'opsz' 48, 'FILL' 1 !important;
+                }
+            }
+            &.calendars{
+                &::before{
+                  content: "\ebcc"!important;
                   ._material-icon-barup()!important;
                   font-variation-settings: 'wght' 300, 'opsz' 48, 'FILL' 1 !important;
                 }

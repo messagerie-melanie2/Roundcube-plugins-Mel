@@ -1,5 +1,6 @@
 import { DATE_FORMAT, DATE_HOUR_FORMAT } from '../../../../mel_metapage/js/lib/constants/constants.dates.js';
 import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
+import { HTMLWrapperElement } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/wrapper.js';
 
 /**
  * Récupère la page d'une ressource
@@ -14,12 +15,43 @@ import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constant
  * @memberof Plugins.MelCalResource.exports.template_resource
  */
 function get_page(page, filters, resource) {
+    const settings = window.cal?.settings || top.cal.settings;
     const date = (resource.start ?? moment().startOf('day'));
     const end_date = (resource.end ?? moment());
 
+    const business_hour = function(time) {
+        if (+time < 9) time = `0${time}`;
+
+        return `${time}:00`;
+    };
+
     page
     .start_update_content({ force_restart: true })
-    .div({ style:'margin:10px' }).attr('data-resourcetype', resource._name)
+    .tag('template', { id: 'mel-cal-resources-template' })
+        .input_radio({  
+            class: 'resource-radio',
+            id: 'radio-%0-%1',
+            value: '%0',
+            name: 'resa',
+            'data-email': '%0',
+            'data-template-namespace': 'radio',
+            'data-template-elements': 'id,value,data-email,onclick'
+        })
+        .customElement(HTMLWrapperElement, {class:'rcs-label-wrapper', 'data-template-content':'true', 'data-template-namespace': 'label'}).end()
+        .div({ class: 'star-button-parent' })
+            .button({
+                class: 'star-button',
+                id: 'button-%0-%1',
+                'data-favorite': '%0',
+                'data-email': '%0',
+                'data-template-elements': 'id,data-favorite,data-email,onclick',
+                'data-template-namespace': 'button',
+            })
+            .webcomponents().icon('star').end()
+            .end()
+        .end()
+    .end()
+    .div().attr('data-resourcetype', resource._name).addClass('rcs-page-content')
         .div({ class: 'rc-page-filters row' })
             .each((jhtml, filter) => {
                 return jhtml.add_child(filter);
@@ -47,7 +79,7 @@ function get_page(page, filters, resource) {
                         .icon('schedule').end()
                     .end()
                     .input_text({ class:'input-date-start', datepicker: true, value:date.format(DATE_FORMAT), onchange:resource._functions.on_date_start_changed }).css('margin-right', '5px')
-                    .input_time({ class:'input-time-start', value:date.format(DATE_HOUR_FORMAT), onchange:resource._functions.on_time_start_changed }).css('display', resource.all_day ? 'none' : EMPTY_STRING).css('margin-right', '5px')
+                    .input_time({ class:'input-time-start',min: business_hour(settings.work_start), max:business_hour(settings.work_end),value:date.format(DATE_HOUR_FORMAT), onchange:resource._functions.on_time_start_changed }).css('display', resource.all_day ? 'none' : EMPTY_STRING).css('margin-right', '5px')
                 .end()
                 .col_6()
                     .div({ class:'custom-control custom-switch' })
@@ -76,7 +108,7 @@ function get_page(page, filters, resource) {
                         .icon('schedule').css('opacity', 0).end()
                     .end()
                     .input_text({ class:'input-date-end', datepicker: true, value:end_date.format(DATE_FORMAT), onchange:resource._functions.on_date_end_changed }).css('margin-right', '5px')
-                    .input_time({ class:'input-time-end', value:end_date.format(DATE_HOUR_FORMAT), onchange:resource._functions.on_time_end_changed }).css('display', resource.all_day ? 'none' : EMPTY_STRING).css('margin-right', '5px')
+                    .input_time({ class:'input-time-end',min: business_hour(settings.work_start), max:business_hour(settings.work_end), value:end_date.format(DATE_HOUR_FORMAT), onchange:resource._functions.on_time_end_changed }).css('display', resource.all_day ? 'none' : EMPTY_STRING).css('margin-right', '5px')
                 .end()
                 .col_6()
                 .end()

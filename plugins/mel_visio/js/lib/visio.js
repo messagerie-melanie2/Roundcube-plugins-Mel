@@ -1,0 +1,799 @@
+import {
+  BnumMessage,
+  eMessageType,
+} from '../../../mel_metapage/js/lib/classes/bnum_message.js';
+import { MelEnumerable } from '../../../mel_metapage/js/lib/classes/enum.js';
+import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager.js';
+import { MelPopover } from '../../../mel_metapage/js/lib/classes/mel_popover.js';
+import { Toolbar } from '../../../mel_metapage/js/lib/classes/toolbar.js';
+import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
+import { BnumConnector } from '../../../mel_metapage/js/lib/helpers/bnum_connections/bnum_connections.js';
+import { InternetNavigator } from '../../../mel_metapage/js/lib/helpers/InternetNavigator.js';
+import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
+import { capitalize } from '../../../mel_metapage/js/lib/mel.js';
+import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
+import { VisioHelper } from '../helper.js';
+//import { Drive } from '../../../mel_metapage/js/lib/nextcloud/drive.js';
+import { JitsiAdaptor } from './classes/visio/jitsii.js';
+import { VisioLoader } from './classes/visio/loader.js';
+import { ToolbarFunctions, VisioToolbar } from './classes/visio/toolbar.js';
+import { VisioConnectors } from './connectors.js';
+import { VisioFunctions } from './helpers.js';
+export { Visio };
+
+const ENABLE_CALL_DATA = false;
+
+/**
+ * Gère la visio
+ * @module Visio/Core
+ * @local CallData
+ * @local Visio
+ * @local IconCallback
+ */
+
+/**
+ * @typedef CallData
+ * @property {string} pin Code pin pour rejoindre de la visio
+ * @property {string} number Numéro de téléphone de la visio
+ */
+
+/**
+ * @callback IconCallback
+ * @param {string} icon Icône récupérer des data du bouton
+ * @param {boolean} disabled Si l'élément est désactivé ou non
+ * @param {ToolbarItem} button Bouton séléctionné
+ * @param {Visio} caller Objet parent
+ * @return {string}
+ */
+
+/**
+ * @class
+ * @classdesc Créer la visio, et gère chaque fonctionnalités
+ * @hideconstructor
+ */
+class Visio extends MelObject {
+  constructor() {
+    super();
+  }
+
+  /**
+   * Ajoute les listeners, initialise les variables et assigne les variables
+   * @override
+   */
+  main() {
+    super.main();
+
+    (top ?? parent ?? window).$('html').addClass('fullscreen-visio');
+
+    //Modifie l'url lors du switch de frames
+    this.rcmail(true).add_event_listener_ex(
+      'frames.attach.url',
+      'visio',
+      () => {
+        const use_top = true;
+        FramesManager.Helper.window_object.UpdateNavUrl(
+          this.get_visio_url(),
+          use_top,
+        );
+
+        FramesManager.Helper.window_object.UpdateDocumentTitle(
+          'Visioconférence',
+          use_top,
+        );
+      },
+    );
+
+    //Ignore le changement de titre par défaut
+    this.rcmail(true).add_event_listener_ex(
+      'frames.attach.url.before',
+      'visio',
+      () => 'break',
+    );
+
+    //Actions à faire lors du changement de frame
+    this.rcmail(true).add_event_listener_ex('switch_frame', 'visio', (args) => {
+      const { task } = args;
+
+      if (task === 'webconf') {
+        top
+          .$('#visio-back-button')
+          .attr('title', 'Minimiser la visioconférence')
+          .find('bnum-icon')
+          .text('fullscreen_exit');
+        FramesManager.Instance.get_window()._history.add(
+          FramesManager.Instance.get_window()._current_frame.task,
+        );
+
+        FramesManager.Instance.get_window().hide();
+
+        //this.toolbar.toolbar().find('button').first().focus();
+
+        top.rcmail.triggerEvent('visio.back');
+
+        (top ?? parent ?? window)
+          .$('html')
+          .addClass('fullscreen-visio')
+          .removeClass('visio-minimised');
+
+        return 'break';
+      } else
+        top
+          .$('#visio-back-button')
+          .attr('title', 'Maximiser la visioconférence')
+          .find('bnum-icon')
+          .text('fullscreen');
+
+      (top ?? parent ?? window)
+        .$('html')
+        .removeClass('fullscreen-visio')
+        .addClass('visio-minimised');
+    });
+
+    this._init()._setup().start();
+  }
+  /**
+   * @private
+   */
+  _init() {
+    /**
+     * Données de la visio
+     * @type {VisioData}
+     * @readonly
+     * @frommodule Visio/Pages/Index
+     */
+    this.data = null;
+
+    /**
+     * Loader de la visio
+     * @type {VisioLoader}
+     * @frommodule Visio/Loader
+     */
+    this.loader = null;
+
+    /**
+     * Lien avec Jitsi
+     * @type {JitsiAdaptor}
+     * @frommodule Visio/Jitsi
+     */
+    this.jitsii = null;
+    /**
+     * Toolbar de la visio
+     * @type {VisioToolbar}
+     * @frommodule Visio/Toolbar
+     */
+    this.toolbar = null;
+
+    /**
+     * Token jwt
+     * @type {Promise<{datas: ?any, has_error: boolean, error: ?any}>}
+     * @package
+     */
+    this._token = null;
+
+    /**
+     * Données pour rejoindre la visio via téléphone
+     * @type {Promise<CallData>}
+     * @package
+     * @frommodule Visio/Core {@linkto CallData}
+     */
+    this._call_datas = null;
+
+    return this;
+  }
+
+  /**
+   * @private
+   */
+  _setup() {
+    for (const key in rcmail.env['visio.data']) {
+      if (Object.prototype.hasOwnProperty.call(rcmail.env['visio.data'], key)) {
+        const element = rcmail.env['visio.data'][key];
+
+        if (element === 'null') rcmail.env['visio.data'][key] = null;
+      }
+    }
+
+    Object.defineProperty(this, 'data', {
+      get() {
+        return rcmail.env['visio.data'];
+      },
+    });
+
+    this.loader = new VisioLoader('#mm-webconf .loading-visio-text');
+    this.jitsii = null;
+
+    if (ENABLE_CALL_DATA)
+      this._call_datas = VisioHelper.Instance.getWebconfPhone(this.data.room); //webconf_helper.phone.getAll(this.data.wsp);
+
+    this._token = this._get_jwt();
+    this._toolbar = null;
+
+    return this;
+  }
+
+  /**
+   * Récupère les données d'appels
+   * @returns {Promise<CallData>}
+   * @async
+   * @frommodulereturn Visio/Core {@linkto CallData}
+   */
+  async get_call_data() {
+    return await this._call_datas;
+  }
+
+  /**
+   * Démarre la visio
+   * @returns {Promise<void>}
+   * @async
+   */
+  async start() {
+    if (!VisioFunctions.CheckKeyIsValid(this.data.room)) {
+      //FramesManager.Instance.start_mode('reinit_visio');
+      VisioHelper.Instance.reinitVisio();
+    } else {
+      const domain = rcmail.env['webconf.base_url']
+        .replace('http://', '')
+        .replace('https://', '');
+
+      //Si on est sous ff, avertir que c'est pas ouf d'utiliser ff
+      await this.navigatorWarning();
+
+      this.loader.update_text('Récupération du jeton...');
+      const token = await this._token;
+      if (token.has_error) {
+        BnumMessage.DisplayMessage(
+          'Impossible de lancer la visio !',
+          eMessageType.Error,
+        );
+        console.error(token);
+        return;
+      }
+
+      {
+        const use_top = true;
+        FramesManager.Helper.window_object.UpdateNavUrl(
+          this.get_visio_url(),
+          use_top,
+        );
+      }
+
+      let user = null;
+
+      if (rcmail.env.current_user?.name && rcmail.env.current_user?.lastname)
+        user = `${rcmail.env.current_user.name} ${rcmail.env.current_user.lastname}`;
+      else user = rcmail.env.mel_metapage_user_emails[0];
+
+      await top.loadJsModule(
+        'mel_metapage',
+        'js_html_base_web_elements',
+        '/js/lib/html/JsHtml/CustomAttributes/',
+      );
+
+      const options = {
+        jwt: token.datas.jwt, //Récupère le token jwt pour pouvoir lancer la visio
+        roomName: this.data.room,
+        width: '100%',
+        height: '100%',
+        parentNode: document.querySelector('#mm-webconf'),
+        onload: async () => {
+          let avatar_url = null;
+          if (this.get_env('avatar_url'))
+            avatar_url = this.get_env('avatar_url');
+          else {
+            avatar_url = top.document.querySelector('#user-picture');
+            if (avatar_url) {
+              if (!avatar_url.state) await avatar_url.waitLoading();
+              avatar_url = avatar_url.getData();
+            } else {
+              avatar_url = this.url('mel_metapage', {
+                action: 'avatar',
+                params: { _email: rcmail.env.current_user.email },
+              });
+            }
+          }
+
+          if (avatar_url) {
+            this.jitsii.change_avatar(avatar_url); //.executeCommand('avatarUrl', avatar_url);
+          }
+
+          if (this.loader) {
+            this.loader = this.loader.destroy();
+            this._init_listeners();
+            this._create_ui();
+
+            if (this.data.password) {
+              this.jitsii.set_password(this.data.password);
+            }
+          }
+        },
+        configOverwrite: {
+          hideLobbyButton: true,
+          startWithAudioMuted: false,
+          startWithVideoMuted: true,
+          prejoinConfig: {
+            enabled: false,
+          },
+          // toolbarButtons: [
+          //   'filmstrip',
+          //   // 'microphone', 'camera', 'closedcaptions', 'desktop', 'embedmeeting', 'fullscreen',
+          //   // 'fodeviceselection', 'hangup', 'profile', 'chat', 'recording',
+          //   // 'livestreaming', 'etherpad', 'sharedvideo', 'shareaudio', 'settings', 'raisehand',
+          //   // 'videoquality', 'filmstrip', 'invite', 'feedback', 'stats', 'shortcuts',
+          //   // 'tileview', 'select-background', 'download', 'help', 'mute-everyone', 'mute-video-everyone', 'security'
+          // ],
+        },
+        interfaceConfigOverwrite: {
+          // INITIAL_TOOLBAR_TIMEOUT:1,
+          // TOOLBAR_TIMEOUT:-1,
+          HIDE_INVITE_MORE_HEADER: true,
+          //TOOLBAR_BUTTONS : [""]
+        },
+        userInfo: {
+          email: rcmail.env.mel_metapage_user_emails[0],
+          displayName: user,
+        },
+      };
+
+      this.loader.update_text('Connexion à la visioconférence...');
+
+      await wait(() => window.JitsiMeetExternalAPI === undefined);
+
+      this.loader.update_text('Chargement de la visioconférence...');
+
+      this.jitsii = new JitsiAdaptor(new JitsiMeetExternalAPI(domain, options));
+
+      window.visio = this;
+    }
+  }
+
+  /**
+   * Récupère l'url de la visio
+   * @returns {string}
+   */
+  get_visio_url() {
+    const params = {
+      _key: this.data.room,
+    };
+
+    if (this.data.wsp) params['_wsp'] = this.data.wsp;
+
+    return this.url('webconf', {
+      params,
+    }).replace('&_is_from=iframe', EMPTY_STRING);
+  }
+
+  /**
+   * Paramètres de la visio pour l'url
+   * @returns {Object<string, string>}
+   */
+  visio_config() {
+    const params = {
+      _key: this.data.room,
+    };
+
+    if (this.data.wsp) params['_wsp'] = this.data.wsp;
+
+    return params;
+  }
+
+  /**
+   * Récupère le token jwt
+   * @returns {Promise<Promise<{datas: ?any, has_error: boolean, error: ?any}>>}
+   * @async
+   * @package
+   */
+  async _get_jwt() {
+    let params = VisioConnectors.jwt.needed;
+    params._room = this.data.room;
+    return await BnumConnector.force_connect(VisioConnectors.jwt, { params });
+  }
+
+  /**
+   * Affiche un message si l'utilisateur est sous FF
+   * @return {Promise<void>}
+   * @async
+   */
+  async navigatorWarning() {
+    if (InternetNavigator.IsFirefox()) {
+      let misc_urls = {
+        _key: this.key,
+      };
+
+      if (this.wsp) misc_urls['_wsp'] = this.wsp.uid;
+      // else if (ariane) misc_urls['_ariane'] = this.chat.room;
+
+      //Création de l'alerte
+      let $ff;
+
+      try {
+        $ff = $(`
+              <div class="alert alert-warning" role="alert" style="
+                  position: absolute;
+                  z-index:9999;
+                  text-align: center;">
+                  Attention ! Vous utilisez un navigateur qui dégrade la qualité de la visioconférence.
+                  <br/>
+                  Nous vous conseillons d'utiliser un autre <a href="microsoft-edge:${mel_metapage.Functions.url('webconf', null, misc_urls)}">navigateur</a> ou rejoignez depuis votre <a href="tel:${this.key};${await window.webconf_helper.phone.pin(this.key)}#">téléphone</a>.
+                  <button style="margin-top:-12px" type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+                  <div class="progress" style="    position: absolute;
+                      bottom: 0;
+                      width: 100%;
+                      left: 0;
+                      height: 0.3rem;
+                  ">
+                      <div class="progress-bar bg-warning" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+              </div>`);
+      } catch (error) {
+        $ff = $(`
+                  <div class="alert alert-warning" role="alert" style="
+                      position: absolute;
+                      z-index:9999;
+                      text-align: center;">
+                      Attention ! Vous utilisez un navigateur qui dégrade la qualité de la visioconférence.
+                      <br/>
+                      Nous vous conseillons d'utiliser un autre <a href="microsoft-edge:${mel_metapage.Functions.url('webconf', null, misc_urls)}">navigateur</a> ou rejoignez depuis votre téléphone.
+                      <button style="margin-top:-12px" type="button" class="close" data-dismiss="alert" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                      </button>
+                      <div class="progress" style="    position: absolute;
+                          bottom: 0;
+                          width: 100%;
+                          left: 0;
+                          height: 0.3rem;
+                      ">
+                          <div class="progress-bar bg-warning" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                      </div>
+                  </div>`);
+      }
+
+      //Gestion des attributs css
+      let width = '100%';
+      let top = 0;
+      let left = 0;
+
+      if (parent === window) {
+        //Prendre en compte les barres de navigatios
+        top = left = '60px';
+        width = `calc(100% - ${left})`;
+      }
+
+      $ff.css('width', width).css('top', top).css('left', left); //Ajout des attributs css
+
+      $('body').append($ff); //Ajout au body
+
+      let value = 100; //La barre disparaît après ~10 secondes
+      const inter = setInterval(() => {
+        try {
+          value -= 2;
+          $ff
+            .find('.progress-bar')
+            .css('width', `${value}%`)
+            .attr('aria-valuenow', value);
+
+          if (value <= 0) {
+            clearInterval(inter);
+            setTimeout(() => {
+              // Laisser la barre finir
+              try {
+                $ff.remove();
+              } catch (error) {}
+            }, 200);
+          }
+        } catch (error) {
+          clearInterval(inter);
+        }
+      }, 100);
+    } //Fin si firefox
+  }
+
+  /**
+   * Créer la toolbar de la visio
+   * @returns {Toolbar}
+   * @package
+   */
+  _create_toolbar() {
+    let toolbar = Toolbar.FromConfig(
+      JSON.parse(this.get_env('visio.toolbar')),
+      VisioToolbar,
+    );
+
+    toolbar.width = EMPTY_STRING;
+    toolbar.x = '50%';
+
+    this.rcmail().env['visio.toolbar'] = null;
+
+    for (let element of toolbar) {
+      if (element.attribs['data-inactive']) {
+        toolbar.remove_item(element.id);
+        continue;
+      }
+
+      switch (element.id) {
+        case 'share_screen':
+          if (InternetNavigator.IsFirefox()) {
+            toolbar.remove_item(element.id);
+            continue;
+          }
+          break;
+
+        case 'documents':
+        case 'pad':
+          if (!this.data.wsp) toolbar.remove_item(element.id);
+          break;
+
+        default:
+          break;
+      }
+
+      if (element.get) {
+        for (let sub_element of element) {
+          if (sub_element.attribs['data-inactive']) {
+            element.remove_button(sub_element.id);
+
+            if (
+              MelEnumerable.from(element)
+                .where((x) => !x.attribs.removed)
+                .count() === 1
+            ) {
+              element.attribs['data-solo'] = true;
+            }
+
+            continue;
+          }
+
+          if (ToolbarFunctions[capitalize(sub_element.id.replace('-', '_'))])
+            sub_element.add_action(
+              ToolbarFunctions[
+                capitalize(sub_element.id.replace('-', '_'))
+              ].bind(ToolbarFunctions, this),
+            );
+        }
+      } else if (ToolbarFunctions[capitalize(element.id)])
+        element.add_action(
+          ToolbarFunctions[capitalize(element.id)].bind(ToolbarFunctions, this),
+        );
+    }
+
+    toolbar.generate(top.$('body'), {}, top);
+
+    toolbar
+      .toolbar()
+      .addClass('white-toolbar')
+      .addClass('visio-toolbar')
+      .prepend(
+        //prettier-ignore
+        MelHtml.start
+          .button({ class:'visio-button', title:'Cacher la barre de navigation' })
+            .attr('onclick', () => {
+              toolbar.toolbar().css('display', 'none');
+            })
+            .icon('visibility_off', { class:'absolute-center' }).end()
+          .end()
+          .generate({ context:top }),
+      );
+
+    // toolbar
+    //   .get_button('more')
+    //   .$item.attr('data-toggle', 'popover')
+    //   .popover({
+    //     html: true,
+    //     content: '<p>yolo</p><br/><br/><i>yolo</i>',
+    //     placement: 'top',
+    //     container: top.$('body')[0],
+    //   });
+    // this.popover = new bootstrap.Popover(toolbar.get_button('more').$item[0], {
+    //   html: true,
+    //   content: '<p>yolo</p><br/><br/><i>yolo</i>',
+    //   placement: 'top',
+    //   container: top.$('body')[0],
+    //   trigger: 'manual',
+    // });
+    const raw_actions = JSON.parse(this.get_env('visio.toolbar.more'));
+    const pop_actions = MelHtml.start
+      .btn_group_vertical()
+      .each(
+        (self, item) => {
+          return self
+            .button({ class: 'mel-popover-button' })
+            .attr(
+              'onclick',
+              ToolbarFunctions[`Action_${item}`]
+                ? ToolbarFunctions[`Action_${item}`].bind(
+                    ToolbarFunctions,
+                    this,
+                  )
+                : () => {},
+            )
+            .icon(raw_actions[item].icon)
+            .end()
+            .span()
+            .text(raw_actions[item].text)
+            .end()
+            .end();
+        },
+        ...Object.keys(raw_actions),
+      )
+      .end();
+
+    this.popover = new MelPopover(
+      toolbar.get_button('more').$item,
+      pop_actions,
+      { config: { placement: 'top' }, container: top.$('body'), context: top },
+    );
+
+    // $(this.popover._pop.element.popper)
+    //   .find('.bnum-popover-content')
+    //   .css('padding', 0);
+    this.rcmail().env['visio.toolbar.more'] = null;
+
+    return toolbar;
+  }
+
+  /**
+   * Génère les boutons supplémentaires de la visio, notemment le bouton retour, minimise ou maximise.
+   * @package
+   */
+  _create_ui() {
+    top.$('body').append(
+      //prettier-ignore
+      MelHtml.start
+        .button( { id:'visio-back-button', class:'visio-back-button not-busy-only', title:'Minimiser la visioconférence' } )
+        .attr('onclick', () => {
+          if (top.$('#visio-back-button').find('bnum-icon').text() === 'fullscreen_exit') {
+            if (FramesManager.Instance.get_window()._history._history.length) FramesManager.Instance.get_window()._history.back();
+            else FramesManager.Instance.switch_frame('bureau', {});
+
+            top.$('#visio-back-button').attr('title', 'Maximiser la visioconférence').find('bnum-icon').text('fullscreen');
+          }
+          else { 
+            FramesManager.Instance.switch_frame('webconf', {});
+            top.$('#visio-back-button').attr('title', 'Minimiser la visioconférence').find('bnum-icon').text('fullscreen_exit');
+          }
+        })
+          .icon('fullscreen_exit').end()
+        .end().generate({ context:top }),
+    );
+  }
+
+  /**
+   * Initialise les écouteurs de la visio
+   * @package
+   */
+  _init_listeners() {
+    this.jitsii.on_video_conference_left.push(() => {
+      ToolbarFunctions.Hangup(this);
+    });
+
+    return;
+  }
+
+  /**
+   * Change l'icône du bouton de la toolbar lorsque le micro est coupé/activé
+   * @param {MutedStatus} state Nouvel état du micro
+   * @package
+   * @frommoduleparam Visio/Jitsi state
+   */
+  _event_on_audio_change(state) {
+    this._update_icon_state(state.muted, 'mic');
+  }
+
+  /**
+   * Change l'icône du bouton de la toolbar lorsque la caméra est coupé/activé
+   * @param {MutedStatus} state Nouvel état de la caméra
+   * @package
+   * @frommoduleparam Visio/Jitsi state
+   */
+  _event_on_video_change(state) {
+    this._update_icon_state(state.muted, 'camera');
+  }
+
+  /**
+   * Action lorsque l'état du flimstrip change
+   * @param {VisibilityStatus} state Nouvel état du filmstrip
+   * @returns {boolean}
+   * @package
+   * @frommoduleparam Visio/Jitsi state
+   */
+  _event_on_filmstrip_state_changed(state) {
+    state = state.visible;
+    return state;
+  }
+
+  /**
+   * Change l'icône "chat" sur la toolbar et gère le focus
+   * @param {ChatUpdated} state Etats du chat
+   * @package
+   * @frommoduleparam Visio/Jitsi state
+   */
+  _event_on_chat_updated(state) {
+    this._update_icon_state(!state.isOpen, 'chat', (icon, disabled, button) => {
+      if (state.unreadCount > 0) {
+        icon = disabled
+          ? button.$item.attr('data-has-unread-disabled-icon')
+          : button.$item.attr('has-unread-icon');
+      }
+
+      if (state.isOpen) this.jitsii.get_frame({ jquery: false }).focus();
+      else this.toolbar.get_button('chat').$item.focus();
+
+      return icon;
+    });
+  }
+
+  /**
+   * Change l'icône "tileview" de la barre d'outil lorsque la tileview est activé ou non
+   * @param {EnabledStatus} state Etat de la tileview
+   * @package
+   * @frommoduleparam Visio/Jitsi state
+   */
+  _event_on_tileview_updated(state) {
+    this._update_icon_state(!state.enabled, 'moz');
+  }
+
+  /**
+   * Change l'icône "main" de la barre d'outil si la main a été levé ou non
+   * @param {RaiseHand} state
+   * @return {Promise<void>}
+   * @package
+   * @async
+   * @frommoduleparam Visio/Jitsi state
+   */
+  async _event_on_raise_hand_updated(state) {
+    const id = await this.jitsii.get_user_id();
+
+    if (state.id === id)
+      this._update_icon_state(state.handRaised === 0, 'handup');
+  }
+
+  /**
+   * Change l'icône "Partage d'écran" lorsque celui est activé ou désactivé
+   * @param {ScreenSharingObject} data Données du partage d'écran
+   * @package
+   * @frommoduleparam Visio/Jitsi data
+   */
+  _event_on_share_screen_status_changed(data) {
+    this._update_icon_state(!data.on, 'share_screen');
+  }
+
+  /**
+   * Change une icône en fonction si un élément est désactivé ou non.
+   * @param {boolean} disabled Si l'élément est désactvé ou non
+   * @param {string} button_id Id du bouton qui contient l'image
+   * @param {?IconCallback} [callback_icon_ex=null]
+   * @returns {boolean} Inverse de disabled
+   * @package
+   * @frommoduleparam Visio/Core callback_icon_ex
+   */
+  _update_icon_state(disabled, button_id, callback_icon_ex = null) {
+    const button = this.toolbar.get_button(button_id);
+
+    if (button.$item.attr('data-disabled-icon')) {
+      if (!(button.$item.attr('data-default-icon') || false))
+        button.$item.attr(
+          'data-default-icon',
+          button.$item.children().first().text(),
+        );
+
+      const icon = !disabled
+        ? button.$item.attr('data-default-icon')
+        : button.$item.attr('data-disabled-icon');
+
+      button.$item
+        .children()
+        .first()
+        .text(
+          callback_icon_ex
+            ? callback_icon_ex(icon, disabled, button, this)
+            : icon,
+        );
+    }
+
+    const state_active = !disabled;
+    this.toolbar.updateToolbarStateFromButton(state_active, button);
+
+    return state_active;
+  }
+}

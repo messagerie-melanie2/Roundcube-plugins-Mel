@@ -112,9 +112,9 @@ class mel_helper extends rcube_plugin
      * @param rcmail $rc
      * @return mel_helper
      */
-    public static function load_helper($rc)
+    public static function load_helper($rc = null)
     {
-        return self::get_rc_plugin($rc, "mel_helper");
+        return self::get_rc_plugin($rc ?? rcmail::get_instance(), "mel_helper");
     }
     
     public static function stockage_active()

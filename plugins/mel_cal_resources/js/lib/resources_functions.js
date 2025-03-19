@@ -3,9 +3,10 @@ import { BnumMessage } from '../../../mel_metapage/js/lib/classes/bnum_message.j
 import { MelEnumerable } from '../../../mel_metapage/js/lib/classes/enum.js';
 import { DATE_TIME_FORMAT } from '../../../mel_metapage/js/lib/constants/constants.dates.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
-import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
+import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { FavoriteLoader } from './favorite_loader.js';
 import { ResourcesBase } from './resource_base.js';
+import { HTMLResourceElement } from './webcomponents/HTMLResourceElement.js';
 
 export { ResourceBaseFunctions };
 
@@ -97,6 +98,7 @@ class ResourceBaseFunctions {
   on_star_clicked(e) {
     BnumMessage.SetBusyLoading();
 
+    const rcs = this._name.toUpperCase();
     const id = $(e.currentTarget).data('email');
     const favorite = !JSON.parse(
       $(e.currentTarget).attr('data-favorite') ?? 'false',
@@ -113,12 +115,13 @@ class ResourceBaseFunctions {
       params: {
         _favorite: favorite,
         _uid: id,
+        _resource: this._name,
       },
       on_success: (data) => {
-        if (!this.get_env('fav_resources'))
-          this.rcmail().env.fav_resources = [];
+        this.rcmail().env.fav_resources ??= [];
+        this.rcmail().env.fav_resources[rcs] ??= [];
+        this.rcmail().env.fav_resources[rcs][id] = favorite;
 
-        this.rcmail().env.fav_resources[id] = favorite;
         this._on_data_changed();
 
         data = JSON.parse(data);
@@ -149,12 +152,75 @@ class ResourceBaseFunctions {
    * @frommodulethis Resources
    */
   on_selected_date(start, end, jsEvent, view, resource) {
+    start = moment(start.format('DD/MM/YYYY HH:mm'), 'DD/MM/YYYY HH:mm');
+    end = moment(end.format('DD/MM/YYYY HH:mm'), 'DD/MM/YYYY HH:mm');
+
     this.start = start;
     this.end = end;
 
     $(`#radio-${resource.data.uid}-${this.location_id}`).click();
 
     this._$calendar.fullCalendar('refetchEvents');
+  }
+
+  /**
+   * Recherche des évènements entre deux dates pour une ressource donnée
+   * @param {external:moment} sd Date de départ
+   * @param {external:moment} ed Date de fin
+   * @param {{id:string}} rcs Ressource
+   * @param {Object} [param3={}]
+   * @param {boolean} [param3.includesNonPlainDate=false] Si on doit inclure les évènement qui commence ou finissent entre les dates
+   * @param {boolean} [param3.ignoreMe=true] Si on doit ignorer les évènements de l'utilisateur
+   * @returns {MelEnumerable} Liste des évènements
+   * @this ResourcesBase
+   */
+  search(
+    start,
+    end,
+    rcs,
+    { includesNonPlainDate = false, ignoreMe = true } = {},
+  ) {
+    //Les dates sont formater puis convertit en string pour éviter les problèmes lié au timezone
+    const sd = moment(start.format('DD/MM/YYYY HH:mm'), 'DD/MM/YYYY HH:mm');
+    const ed = moment(end.format('DD/MM/YYYY HH:mm'), 'DD/MM/YYYY HH:mm');
+    return MelEnumerable.from(this._p_events)
+      .select((x) => {
+        return {
+          start: moment(x.start.format('DD/MM/YYYY HH:mm'), 'DD/MM/YYYY HH:mm'),
+          end: moment(x.end.format('DD/MM/YYYY HH:mm'), 'DD/MM/YYYY HH:mm'),
+          resourceId: x.resourceId,
+          creatorId: x.creatorId,
+        };
+      })
+      .where((value) => {
+        /**
+         * Vérifie si l'évènement est entre les dates de début et de fin
+         * @type {boolean}
+         */
+        const eventBetweenStartAndEnd =
+          value.start.isBetween(sd, ed) && value.end.isBetween(sd, ed);
+        /**
+         * Vérifie si l'évènement commence ou fini entre les dates de début et de fin
+         * @type {boolean}
+         */
+        const eventStartOrEndBetween =
+          includesNonPlainDate &&
+          (value.start.isBetween(sd, ed) || value.end.isBetween(sd, ed));
+        /**
+         * Vérifie si les date choisie se trouvent à l'intérieur de l'évènement
+         * @type {boolean}
+         */
+        const eventStartAndEndBetween =
+          sd.isBetween(value.start, value.end, undefined, '[]') &&
+          ed.isBetween(value.start, value.end, undefined, '[]');
+        const eventValid =
+          eventBetweenStartAndEnd ||
+          eventStartOrEndBetween ||
+          eventStartAndEndBetween;
+        const isGoodResource = value.resourceId === rcs.id;
+        return eventValid && isGoodResource;
+      })
+      .where((x) => (ignoreMe ? x.creatorId !== rcmail.env.username : true));
   }
 
   /**
@@ -167,6 +233,7 @@ class ResourceBaseFunctions {
   on_resource_selected(e) {
     e = $(e.currentTarget);
 
+    //Id de la ressource se trouve entre `radio-` et `-${this.location_id}`
     const id = e
       .attr('id')
       .replace('radio-', EMPTY_STRING)
@@ -176,36 +243,102 @@ class ResourceBaseFunctions {
       .where((x) => x.data.uid === id)
       .firstOrDefault()?.data;
 
+    //On selectionne la bon ne ressource et on décoche les autres
     for (let i = 0; i < this._p_resources.length; ++i) {
       if (this._p_resources[i].data.uid === id)
         this._p_resources[i].data.selected = true;
       else this._p_resources[i].data.selected = false;
     }
 
+    //On vérifie si la ressource est déjà prise, et on empêche la sélection si c'est le cas
+    const start = moment(this.start);
+    const end = moment(this.end);
+    if (
+      this._functions
+        .search(
+          start,
+          end,
+          { id: this.selected_resource.email },
+          { ignoreMe: true },
+        )
+        .any()
+    ) {
+      BnumMessage.DisplayMessage(
+        'La ressource est déjà prise à cette date.',
+        'error',
+      );
+      this.selected_resource = null;
+      e[0].checked = false;
+    } else {
+      let searched = this._functions
+        .search(
+          start,
+          end,
+          { id: this.selected_resource.email },
+          {
+            includesNonPlainDate: true,
+            ignoreMe: true,
+          },
+        )
+        .toArray();
+
+      if (searched.length > 0) {
+        if (start < searched[0].start) this.end = searched[0].start;
+        else if (searched[0].end < end) this.start = searched[0].end;
+      }
+    }
+
+    //Met les dates aux heures de travail
+    const settings = window.cal?.settings || top.cal.settings;
+
+    if (+this.start.format('HH') < settings.work_start) {
+      $('.input-time-start')
+        .val(
+          `${settings.work_start < 9 ? `0${settings.work_start}` : settings.work_start}:00`,
+        )
+        .change();
+    }
+
+    if (+this.end.format('HH') > settings.work_end) {
+      if (+this.start.format('HH') >= settings.work_end) {
+        const start = settings.work_end - 1;
+        $('.input-time-start')
+          .val(`${start < 9 ? `0${start}` : start}:00`)
+          .change();
+      }
+
+      $('.input-time-end')
+        .val(
+          `${settings.work_end < 9 ? `0${settings.work_end}` : settings.work_end}:00`,
+        )
+        .change();
+    }
+
     this._$calendar.fullCalendar('refetchEvents');
   }
 
   /**
-   * Action lorsqu'un label de ressource est cliqué
-   * @param {Event} e
+   * Génère le radio pour séléctionner la ressource.
+   * @param {import('./resource_base.js').ResourceData} data Donnée de la ressource
+   * @returns {HTMLResourceElement}
    * @this ResourcesBase
-   * @see {@link ResourceBaseFunctions.resource_render}
-   * @frommodulethis Resources
-   * @deprecated
    */
-  on_resource_label_clicked(e) {
-    // for (let i = 0; i < this._p_resources.length; ++i) {
-    //   this._p_resources[i].data.selected = false;
-    // }
-    // e = $(e.currentTarget);
-    // if (!e.attr('for'))
-    //   e = $(`label[for="${e.attr('id').replace('radio', EMPTY_STRING)}"`);
-    // const id = e.data('id');
-    // const index = MelEnumerable.from(this._p_resources)
-    //   .select((x, i) => ({ x, i }))
-    //   .where((x) => x.x.id === id)
-    //   .first().i;
-    // this._p_resources[index].data.selected = true;
+  resource_render_element(data) {
+    let node = HTMLResourceElement.CreateNode({
+      selected: data.selected,
+      rcsId: data.uid,
+      locationId: this.location_id,
+      email: data.email,
+      favorite:
+        this.get_env('fav_resources')[this._name.toUpperCase()]?.[data.email] ??
+        false,
+      value: data.email,
+    });
+
+    node.onradioclicked.push(this._functions.on_resource_selected);
+    node.onfavoriteclicked.push(this._functions.on_star_clicked);
+
+    return node;
   }
 
   /**
@@ -219,51 +352,9 @@ class ResourceBaseFunctions {
   resource_render(resourceObj, labelTds) {
     if (resourceObj.id !== 'resources') {
       labelTds
-        .css('display', 'flex')
-        .prepend(
-          $(
-            `<input type="radio" class="resource-radio" data-email="${resourceObj.data.email}" id="radio-${resourceObj.data.uid}-${this.location_id}" value="${resourceObj.data.email}" name="resa" ${resourceObj.data.selected ? 'checked' : EMPTY_STRING} />`,
-          ).click(this._functions.on_resource_selected),
-        )
-        .append(
-          MelHtml.start
-            .div({ class: 'star-button-parent' })
-            .button({
-              class: 'star-button',
-              id: `button-${resourceObj.data.uid}-${this.location_id}`,
-              onclick: this._functions.on_star_clicked,
-              'data-favorite':
-                this.get_env('fav_resources')[resourceObj.data.email] ?? false,
-              'data-email': resourceObj.data.email,
-            })
-            .icon('star')
-            .end()
-            .end()
-            .end()
-            .generate(),
-        );
-
-      labelTds = labelTds.find('.fc-cell-text');
-      let parent = labelTds.parent();
-      let text = labelTds.text();
-      labelTds.remove();
-      parent
-        .html(
-          $(
-            `<label for="radio-${resourceObj.data.uid}-${this.location_id}"></label>`,
-          )
-            .data('id', resourceObj.data.uid)
-            .text(text)
-            .css('margin', '0 0 0 5px')
-            .css('padding', 0)
-            .click(this._functions.on_resource_label_clicked),
-        )
-        .css({
-          height: '100%',
-          display: 'flex',
-          'align-items': 'center',
-          padding: 0,
-        });
+        .find('.fc-cell-content')
+        .addClass('cfc-resource')
+        .append(this._functions.resource_render_element(resourceObj.data));
     }
   }
 
@@ -321,18 +412,26 @@ class ResourceBaseFunctions {
       }
     }
 
-    callback(
-      MelEnumerable.from(this._p_events)
-        .aggregate({
-          title: 'Moi',
-          start: this.start,
-          end: this.end,
-          allDay: this.all_day,
-          resourceId: this.selected_resource?.email,
-          color: 'green',
-        })
-        .toArray(),
-    );
+    let rcs = MelEnumerable.from(this._p_events)
+      .aggregate({
+        title: 'Moi',
+        start: this.start,
+        end: this.end,
+        allDay: this.all_day,
+        resourceId: this.selected_resource?.email,
+        color: 'green',
+      })
+      .toArray();
+
+    callback(rcs);
+
+    if (!this.itemloaded && this._p_events.length) {
+      this.itemloaded = true;
+
+      setTimeout(() => {
+        this._$calendar.fullCalendar('refetchEvents');
+      }, 100);
+    }
   }
 
   /**
@@ -360,6 +459,8 @@ class ResourceBaseFunctions {
     this._$calendar.fullCalendar('gotoDate', this.start);
     this._$calendar.fullCalendar('refetchEvents');
 
+    this._set_validity();
+
     this.refresh_calendar_date();
   }
 
@@ -370,7 +471,7 @@ class ResourceBaseFunctions {
    * @param {Event} e Reçu lors du changement de date
    */
   on_date_start_changed(e) {
-    this._functions.on_date_changed($(e.currentTarget), '.input-date-start');
+    this._functions.on_date_changed($(e.currentTarget), '.input-date-start', e);
   }
 
   /**
@@ -405,22 +506,31 @@ class ResourceBaseFunctions {
 }
 
 /**
+ * @typedef {ResourceEvent} _ResourceEvent
+ */
+
+/**
  * @class
  * @classdesc Mise en forme des évènemant fullcalendar
  */
 class ResourceEvent {
   /**
    * Constructeur de la classe
-   * @param {Slot} slot Slot qui contient les données
+   * @param {import('../../../mel_metapage/js/lib/calendar/event/parts/guestspart.free_busy.js').Slot} slot Slot qui contient les données
    * @param {string} email Email qui correspond à l'id
    */
   constructor(slot, email) {
     /**
-     * Titre de l'évènement
+     * Titre de l'évènement, occupé si on ne connaît pas l'organisateur
      * @type {string}
      * @default 'Occupé'
      */
-    this.title = rcmail.gettext('mel_cal_resources.busy');
+    this.title =
+      (slot.creator.id === MelObject.Empty().get_env('username')
+        ? MelObject.Empty().gettext('me', 'mel_cal_resources')
+        : slot.creator.name) ||
+      MelObject.Empty().gettext('busy', 'mel_cal_resources');
+    this.creatorId = slot.creator.id;
     /**
      * Date de début de l'évènement
      * @type {external:moment}
@@ -436,5 +546,11 @@ class ResourceEvent {
      * @type {string}
      */
     this.resourceId = email;
+
+    //Diff' entre les autres utilisateurs et l'utilisateur en cours.
+    if (slot.creator.id === MelObject.Empty().get_env('username')) {
+      this.borderColor = 'rouge';
+      this.backgroundColor = 'green';
+    }
   }
 }

@@ -216,8 +216,8 @@ class mel_workspace extends bnum_plugin
     
             $this->workspacePageLayout = $plugin['layout'] ?? new WorkspacePageLayout();
     
-            $this->workspacePageLayout->fourthRow()->append(6, $this->workspacePageLayout->htmlModuleBlock(['id' => 'module-planning','data-title' => 'Planning des membres']));
-            $this->workspacePageLayout->fourthRow()->append(6, $this->workspacePageLayout->htmlModuleBlock(['id' => 'module-agenda','data-title' => 'Agenda de l\'espace', 'data-button' => 'calendar', 'data-button-text' => 'Créer', 'data-button-icon' => 'add_circle', 'data-button-ignore' => 'default-actions', 'data-button-type' => 'primary']));
+            $this->workspacePageLayout->fourthRow()->append(8, $this->workspacePageLayout->htmlModuleBlock(['id' => 'module-planning','data-title' => 'Planning des membres']));
+            $this->workspacePageLayout->fourthRow()->append(4, $this->workspacePageLayout->htmlModuleBlock(['id' => 'module-agenda','data-title' => 'Agenda de l\'espace', 'data-button' => 'calendar', 'data-button-text' => 'Créer', 'data-button-icon' => 'add_circle', 'data-button-ignore' => 'default-actions', 'data-button-type' => 'primary']));
             $this->workspacePageLayout->setNavBarSetting('home', 'home', false, 0);
             $this->workspacePageLayout->setNavBarSetting('mel_metapage.calendar', 'calendar_month', true, 1);
             $this->workspacePageLayout->setNavBarSetting('mel_workspace.planning', 'calendar_view_week', true, 1);

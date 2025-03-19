@@ -214,9 +214,6 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
     }
 
     if (this.buttonTask !== false) {
-      // let button = HTMLIconMelButton.CreateNode(this.buttonIcon, {
-      //   content: this.createText(this.buttonText),
-      // }).addClass('white', 'button-task');
       let button = HTMLBnumButton.StartCreate.setContent(
         this.createText(this.buttonText),
       )

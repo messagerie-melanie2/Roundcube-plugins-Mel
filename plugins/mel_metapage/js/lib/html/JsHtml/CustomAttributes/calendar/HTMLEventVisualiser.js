@@ -7,10 +7,20 @@ import {
   HtmlCustomDataTag,
 } from '../js_html_base_web_elements.js';
 
+/**
+ * @class
+ * @classdesc Visxualise un évènement
+ * @extends HtmlCustomDataTag
+ */
 export default class HTMLEventVisualiser extends HtmlCustomDataTag {
   #_event;
   constructor() {
     super({ mode: EWebComponentMode.div });
+    /**
+     * Fonctionnement custom du clique sur un évènement
+     * @type {BnumEvent<(args: { date: Date, source: string, event: any }) => void>}
+     * @event
+     */
     this.oncustomswitch = new BnumEvent();
     this.oncustomswitch.add('default', (args) => {
       this.dispatchEvent(
@@ -19,6 +29,10 @@ export default class HTMLEventVisualiser extends HtmlCustomDataTag {
     });
   }
 
+  /**
+   * @readonly
+   * @type {boolean}
+   */
   get customSwitch() {
     return ['1', 1, true, 'true'].includes(this._p_get_data('custom-switch'));
   }
@@ -29,6 +43,11 @@ export default class HTMLEventVisualiser extends HtmlCustomDataTag {
     if (this.#_event) this.#_loadEvent();
   }
 
+  /**
+   * Visualise un évènement
+   * @param {*} event
+   * @returns {this}
+   */
   setEvent(event) {
     this.#_event = event;
 
@@ -36,6 +55,10 @@ export default class HTMLEventVisualiser extends HtmlCustomDataTag {
     return this;
   }
 
+  /**
+   * Charge l'évènement et l'affiche
+   * @private
+   */
   #_loadEvent() {
     this.innerText = EMPTY_STRING;
     // eslint-disable-next-line new-cap
@@ -48,7 +71,7 @@ export default class HTMLEventVisualiser extends HtmlCustomDataTag {
          * @this {html_events}
          */
         function (visualiser) {
-          const date = this.date; //.toDate().getTime() / 1000.0;
+          const date = this.date;
           const source = this.event.calendar;
           const event = this.event;
 
@@ -61,8 +84,10 @@ export default class HTMLEventVisualiser extends HtmlCustomDataTag {
   }
 
   /**
-   *
-   * @param {*} event
+   * Créer une node
+   * @param {*} event Evènement de l'agenda
+   * @param {Object} [param1={}]
+   * @param {?(args: { date: Date, source: string, event: any }) => void} [param1.customClick=null]
    * @returns {HTMLEventVisualiser}
    * @static
    */
@@ -77,6 +102,11 @@ export default class HTMLEventVisualiser extends HtmlCustomDataTag {
     return node.setEvent(event);
   }
 
+  /**
+   * @readonly
+   * @type {string}
+   * @static
+   */
   static get TAG() {
     return 'bnum-event-visualiser';
   }

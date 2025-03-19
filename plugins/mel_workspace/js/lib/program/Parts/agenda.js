@@ -6,6 +6,11 @@ import { WorkspaceModuleBlock } from '../../WebComponents/workspace_module_block
 import { NavBarManager } from '../navbar.generator.js';
 import { WorkspaceObject } from '../WorkspaceObject.js';
 
+/**
+ * @default 'workspace_agenda'
+ * @type {string}
+ * @constant
+ */
 const KEY_LISTENER = 'workspace_agenda';
 
 export class WorkspaceAgenda extends WorkspaceObject {
@@ -57,6 +62,10 @@ export class WorkspaceAgenda extends WorkspaceObject {
     return this.moduleContainer.querySelector('.module-block-content');
   }
 
+  /**
+   * Charge les données depuis le stockage local
+   * @returns {MelEnumerable}
+   */
   #_load_storage() {
     return MelEnumerable.from(
       this.load(WorkspaceAgenda.KEY_ALL_EVENT) ?? [],
@@ -65,6 +74,10 @@ export class WorkspaceAgenda extends WorkspaceObject {
     );
   }
 
+  /**
+   * Récupère les donnée depuis le stockage local, si elles n'existent pas, les charge depuis le serveur
+   * @returns {AsyncGenerator<*, void, *>}
+   */
   async *check_storage_datas() {
     let storage = this.#_load_storage();
     if (!storage.any()) {
@@ -79,6 +92,7 @@ export class WorkspaceAgenda extends WorkspaceObject {
   main() {
     super.main();
 
+    //Action à faire lorsque l'on clique sur le bouton "Créer"
     WorkspaceModuleBlock.AddListenerAction(this.moduleContainer, (e) => {
       const event = {
         categories: ['ws#' + this.workspace.uid],
@@ -98,6 +112,7 @@ export class WorkspaceAgenda extends WorkspaceObject {
         : this.rcmail().command('addevent', EMPTY_STRING, e.target, e);
     });
 
+    //Action à faire lorsque l'agenda est mis à jours
     this.add_event_listener(
       WorkspaceAgenda.KEY_CALENDAR_UPDATED,
       () => {
@@ -115,6 +130,11 @@ export class WorkspaceAgenda extends WorkspaceObject {
     });
   }
 
+  /**
+   * Charge le contenu de l'agenda
+   * @private
+   * @returns {Promise<void>}
+   */
   async #_load_content() {
     this.content.textContent = EMPTY_STRING;
     let has = false;

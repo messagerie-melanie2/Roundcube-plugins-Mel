@@ -169,12 +169,15 @@ export class FullCalendarElement extends HtmlCustomDataTag {
   _p_main() {
     super._p_main();
 
+    const settings = window.cal?.settings || top.cal.settings;
     let config = {
       schedulerLicenseKey: this.licenseKey,
       resourceRender: this.onresourcerender.call.bind(this.onresourcerender),
       eventRender: this.oneventrender.call.bind(this.oneventrender),
       dayRender: this.ondayrender.call.bind(this.ondayrender),
       slotWidth: 30,
+      minTime: this.#_set_buisness_hour(settings.work_start),
+      maxTime: this.#_set_buisness_hour(settings.work_end),
     };
 
     if (!isNullOrUndefined(this.slotSize)) config.slotSize = this.slotSize;
@@ -334,6 +337,18 @@ export class FullCalendarElement extends HtmlCustomDataTag {
 
   fetch() {
     this.calendar.refetchEvents();
+  }
+
+  /**
+   * Renvoie une heure au format HH:mm
+   * @param {number} hour
+   * @returns {string} format HH:mm
+   * @private
+   */
+  #_set_buisness_hour(hour) {
+    if (hour < 10) hour = `0${hour}`;
+
+    return `${hour}:00`;
   }
 
   /**

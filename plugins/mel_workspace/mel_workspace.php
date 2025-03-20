@@ -1654,8 +1654,8 @@ class mel_workspace extends bnum_plugin
         }
         else {
             mel_helper::include_mail_body();
-            include_once 'lib/wsp_mail_body.php';
-            $email = 'bnum';//$this->get_worskpace_services($workspace)[self::EMAIL] ? (self::get_wsp_mail($workspace_id) ?? driver_mel::gi()->getUser()->email) : driver_mel::gi()->getUser()->email;
+            include_once 'lib/WspMailBody.php';
+            $email = 'bnum';
 
             $bodymail = new WspMailBody('mel_workspace.email');
 
@@ -1675,7 +1675,7 @@ class mel_workspace extends bnum_plugin
             $i = 0;
             foreach ($shares as $user) {
                 if ($i++ < 2) {
-                    $image = MailBody::load_image($this->rc->config->get('rocket_chat_url').'avatar/'.$user->user_uid);
+                    $image = MailBody::load_image($this->rc()->config->get('rocket_chat_url').'avatar/'.$user->user_uid);
 
                     if (MailBody::image_loaded()) $div[] = "<img src=\"$image\" style=\"width:36px;height:36px;border-radius:100%;margin-left:-15px;border: solid thick white;\" />";
                     else $div[] = "<div style=\"text-align: center;line-height: 25px;display:inline-block;width:36px;height:36px;border-radius:100%;background-color:#7DD0C2;margin-left:-15px;border: solid thick white;\"><span>".substr(driver_mel::gi()->getUser($user->user_uid)->name, 0, 2)."</span></div>";
@@ -1699,9 +1699,7 @@ class mel_workspace extends bnum_plugin
             $subject = $bodymail->subject();
             $message = $bodymail->body();
 
-            $is_html = true;
-            $sent = \LibMelanie\Mail\Mail::Send($email, driver_mel::gi()->getUser($userid)->email, $subject, $body);
-            //mel_helper::send_mail($subject, $message, $email, ['email' => driver_mel::gi()->getUser($userid)->email, 'name' => driver_mel::gi()->getUser($userid)->name], $is_html);
+            $sent = \LibMelanie\Mail\Mail::Send($email, driver_mel::gi()->getUser($userid)->email, $subject, $message);
         }
     }
         #region private/register_actions

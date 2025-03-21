@@ -1,113 +1,150 @@
-class Wekan{
+import { FrameManager } from '../../mel_metapage/js/lib/classes/frame_manager.js';
 
-    constructor()
-    {
-        this.tokenName = `Meteor.loginToken:/:/${rcmail.env.wekan_storage_end}`;
-        this.tokenId = `Meteor.userId:/:/${rcmail.env.wekan_storage_end}`;
-    }
+class Wekan {
+  constructor() {
+    this.tokenName = `Meteor.loginToken:/:/${rcmail.env.wekan_storage_end}`;
+    this.tokenId = `Meteor.userId:/:/${rcmail.env.wekan_storage_end}`;
+  }
 
-    login()
-    {
-        return mel_metapage.Functions.post(
-            this.url("login"),
-            {
-                currentUser:true
-            },
-            (datas) => {
-                try {
-                    datas = JSON.parse(datas);
-                    datas = JSON.parse(datas.content);
-                    const token = this.tokenName;
+  login() {
+    return mel_metapage.Functions.post(
+      this.url('login'),
+      {
+        currentUser: true,
+      },
+      (datas) => {
+        try {
+          datas = JSON.parse(datas);
+          datas = JSON.parse(datas.content);
+          const token = this.tokenName;
 
-                    //mel_metapage.Storage.set(token, datas.authToken, false);
-                    localStorage.setItem(token, datas.authToken);
-                } catch (error) {
-                }
-            }
-        ).then(e => JSON.parse(e).httpCode === 200 && localStorage.getItem(this.tokenName) !== null);
-    }
+          //mel_metapage.Storage.set(token, datas.authToken, false);
+          localStorage.setItem(token, datas.authToken);
+        } catch (error) {}
+      },
+    ).then(
+      (e) =>
+        JSON.parse(e).httpCode === 200 &&
+        localStorage.getItem(this.tokenName) !== null,
+    );
+  }
 
-    isLogged()
-    {
-        return localStorage.getItem(this.tokenName) !== null;
-    }
+  isLogged() {
+    return localStorage.getItem(this.tokenName) !== null;
+  }
 
-    create_board(title, isPublic, color = null)
-    {
-        return mel_metapage.Functions.post(
-            this.url("create_board"),
-            {
-                _title:title,
-                _isPublic:isPublic,
-                _color:color
-            },
-            (datas) => {
-                //console.log("wekan", datas);
-            }
-        )
-    }
+  create_board(title, isPublic, color = null) {
+    return mel_metapage.Functions.post(
+      this.url('create_board'),
+      {
+        _title: title,
+        _isPublic: isPublic,
+        _color: color,
+      },
+      (datas) => {
+        //console.log("wekan", datas);
+      },
+    );
+  }
 
-    update_user_status()
-    {
-        return mel_metapage.Functions.post(
-            this.url("update_user_status"),
-            (datas) => {
-                //console.log("wekan", datas);
+  update_user_status() {
+    return mel_metapage.Functions.post(
+      this.url('update_user_status'),
+      (datas) => {
+        //console.log("wekan", datas);
+      },
+    );
+  }
 
-                
-            }
-        );
-    }
+  check_board() {
+    return mel_metapage.Functions.post(
+      this.url('check_board'),
+      {
+        _board: 'pSSkHJ6wb64ZS2gxE',
+      },
+      (datas) => {
+        //console.log("wekan", JSON.parse(datas));
+      },
+    );
+  }
 
-    check_board()
-    {
-        return mel_metapage.Functions.post(
-            this.url("check_board"),
-            {
-                _board:"pSSkHJ6wb64ZS2gxE"
-            },
-            (datas) => {
-                //console.log("wekan", JSON.parse(datas));
+  url(task) {
+    return mel_metapage.Functions.url('wekan', task);
+  }
 
+  _try_observe_html() {
+    // Selectionne le noeud dont les mutations seront observées
+    let targetNode = document.querySelector('html');
 
+    // Options de l'observateur (quelles sont les mutations à observer)
+    let config = { attributes: true, childList: false, subtree: false };
 
-            }
-        );
-    }
+    // Création d'un observateur de mutations
+    let observer = new MutationObserver((mutationsList) => {
+      for (const mutation of mutationsList) {
+        if (
+          mutation.type === 'attributes' &&
+          mutation.attributeName === 'class'
+        ) {
+          let style;
+          if (document.querySelector('html').classList.contains('mwsp'))
+            style = 'none';
+          else style = 'flex';
 
-    url(task)
-    {
-        return mel_metapage.Functions.url("wekan", task);
-    }
+          FrameManager.Instance.get_frame('wekan')[0]
+            .contentWindow.$('#wekan_frame')[0]
+            .contentWindow.document.querySelector(
+              '#header-quick-access',
+            ).style.display = style;
+          break;
+        }
+      }
+    });
 
+    observer.observe(targetNode, config);
+
+    return this;
+  }
 }
 
 window.wekan = new Wekan();
 
 $(document).ready(async () => {
+  if (this.get_env('plugin_list_workspace')) this._try_observe_html();
 
-    if (rcmail.env.task === "wekan" && (rcmail.env.action === "" || rcmail.env.action === "index"))
-    {
+  if (
+    rcmail.env.task === 'wekan' &&
+    (rcmail.env.action === '' || rcmail.env.action === 'index')
+  ) {
+    $('#wekan-iframe')[0].src =
+      rcmail.env.wekan_startup_url != null &&
+      rcmail.env.wekan_startup_url !== undefined
+        ? rcmail.env.wekan_startup_url
+        : rcmail.env.wekan_base_url;
 
-        $("#wekan-iframe")[0].src = rcmail.env.wekan_startup_url != null && rcmail.env.wekan_startup_url !== undefined ? rcmail.env.wekan_startup_url : rcmail.env.wekan_base_url;
+    if (!wekan.isLogged()) {
+      if (await wekan.login()) {
+        window.addEventListener('storage', (e) => {
+          if (e.key === wekan.tokenId) {
+            if (
+              rcmail.env.wekan_startup_url != null &&
+              rcmail.env.wekan_startup_url !== undefined
+            )
+              $('#wekan-iframe')[0].src = rcmail.env.wekan_startup_url;
+            else $('#wekan-iframe')[0].contentWindow.location.reload();
+          }
+        });
 
-        if (!wekan.isLogged())
-        {
-            if (await wekan.login())
-            {             
-                window.addEventListener('storage', (e) => {
-                    if (e.key === wekan.tokenId)
-                    {
-                        if (rcmail.env.wekan_startup_url != null && rcmail.env.wekan_startup_url !== undefined) $("#wekan-iframe")[0].src = rcmail.env.wekan_startup_url;
-                        else $("#wekan-iframe")[0].contentWindow.location.reload();
-                    }
-                  });
-
-                  if (rcmail.env.wekan_startup_url != null && rcmail.env.wekan_startup_url !== undefined) $("#wekan-iframe")[0].src = rcmail.env.wekan_startup_url;
-            }
-            else
-                rcmail.display_message("Impossible de se connecter au kanban !", "error");
-        }
+        if (
+          rcmail.env.wekan_startup_url != null &&
+          rcmail.env.wekan_startup_url !== undefined
+        )
+          $('#wekan-iframe')[0].src = rcmail.env.wekan_startup_url;
+      } else
+        rcmail.display_message(
+          'Impossible de se connecter au kanban !',
+          'error',
+        );
     }
-
+  }
 });

@@ -21,14 +21,25 @@ import { WorkspaceModuleBlock } from '../../../mel_workspace/js/lib/WebComponent
 import { WorkspaceObject } from '../../../mel_workspace/js/lib/program/WorkspaceObject.js';
 import { NavBarManager } from '../../../mel_workspace/js/lib/program/navbar.generator.js';
 import { BnumPromise } from '../../../mel_metapage/js/lib/BnumPromise.js';
+import { MelEnumerable } from '../../../mel_metapage/js/lib/classes/enum.js';
+import { HTMLAlternateDropDownElement } from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/dropdown/HTMLDropDownElement.js';
+import HTMLBnumButton from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/button/HTMLBnumButton.js';
 
 const ENABLE_DIRECT_SELECT = false;
+
+/**
+ * Classe représentant le module Nextcloud.
+ * @class
+ * @extends WorkspaceObject
+ */
 class NextcloudModule extends WorkspaceObject {
   constructor() {
     super();
 
     if (!this.loaded && !this.isDisabled('stockage')) {
       let loader = BootstrapLoader.Create({ mode: 'block', center: true });
+      this.dropdown.disable();
+
       let contents = this.moduleContainer.querySelector(
         '.module-block-content',
       );
@@ -50,6 +61,7 @@ class NextcloudModule extends WorkspaceObject {
   }
 
   /**
+   * Retourne le conteneur du module.
    * @type {WorkspaceModuleBlock}
    * @readonly
    */
@@ -57,6 +69,20 @@ class NextcloudModule extends WorkspaceObject {
     return document.querySelector('#module-nc');
   }
 
+  /**
+   * Retourne le dropdown du module.
+   * @type {HTMLAlternateDropDownElement}
+   * @readonly
+   */
+  get dropdown() {
+    return this.moduleContainer.querySelector(HTMLAlternateDropDownElement.TAG);
+  }
+
+  /**
+   * Retourne la date de création du workspace.
+   * @type {external:Moment}
+   * @readonly
+   */
   get createdDate() {
     if (this.get_env('current_workspace_nc_start'))
       return moment(this.get_env('current_workspace_nc_start'));
@@ -71,14 +97,18 @@ class NextcloudModule extends WorkspaceObject {
     return `nc_join_${this.workspace.uid}`;
   }
 
+  /**
+   * Méthode principale du module.
+   * @override
+   */
   main() {
     super.main();
 
     // Ajouter le listener pour le plein écran
     this._p_set_full_screen_listener(
-      'stockage', // La tâche concernée
-      document.getElementById('module-nc'), // Le conteneur du module
-      null, //this.visibilityButton, // Le bouton de visibilité (optionnel)
+      'stockage',
+      document.getElementById('module-nc'),
+      null, //TODO
     );
 
     NavBarManager.AddEventListener().OnAfterSwitch((args) => {
@@ -125,24 +155,26 @@ class NextcloudModule extends WorkspaceObject {
         }
 
         $caller.removeClass('disabled').removeAttr('disabled');
-        rcmail.hide_message(loading);
+        this.rcmail().hide_message(loading);
       });
     });
   }
 
   /**
-   *
-   * @param {?BootstrapLoader} loader
+   * Méthode principale asynchrone du module.
+   * @param {?BootstrapLoader} loader Loader pré-éxistant
    */
   async _main(loader = null) {
     var continueExec = true;
     this.loadModule();
+    this.#_setupDropDown();
 
     if (loader) {
       loader.remove();
       loader = null;
     }
 
+    this.dropdown.disable();
     loader = BootstrapLoader.Create({ mode: 'block', center: true });
     const folder = `/dossiers-${this.workspace.uid}`;
     let roundrive = new Roundrive(folder);
@@ -183,7 +215,6 @@ class NextcloudModule extends WorkspaceObject {
             loader.remove();
             loader = null;
           }
-
           contents.appendChild(NextcloudModule.CreateRoundriveTag(element));
 
           if (!continueExec) continueExec = true;
@@ -207,29 +238,132 @@ class NextcloudModule extends WorkspaceObject {
       loader = null;
     }
 
+    this.dropdown.enable();
+
     roundrive = null;
     contents = null;
   }
 
-  // load() {
-  //   super.load();
+  #_setupDropDown() {
+    this.dropdown.addEventListener('custom:event:change', (e) => {
+      const { value } = e.detail;
 
-  //   this._main();
-  // }
+      let pan = this.moduleContainer.querySelector('.module-block-favorite');
+      switch (value) {
+        case 'favorites':
+          this.moduleContainer.content.style.display = 'none';
+          if (pan) {
+            pan.style.display = null;
+          } else {
+            this.dropdown.disable();
+            this.moduleContainer.disableRefreshButton();
+            pan = document.createElement('div');
+            pan.classList.add(
+              'module-block-favorite',
+              'module-block-content-alt',
+            );
+            pan.appendChild(
+              BootstrapLoader.Create({ mode: 'block', center: true }),
+            );
+            this.moduleContainer.appendChild(pan);
+            this.#_appendFavorites(pan).then(() => {
+              pan.querySelector(BootstrapLoader.TAG).remove();
+              this.dropdown.enable();
+              this.moduleContainer.enableRefreshButton();
+            });
+          }
 
+          break;
+
+        default:
+          this.moduleContainer.content.style.display = null;
+          if (pan) pan.style.display = 'none';
+          break;
+      }
+    });
+  }
+
+  /**
+   * Charge les favoris.
+   * @param {?Generator<RoundriveFile | RoundriveFolder, void, RoundriveFile | RoundriveFolder>} additionnalGenerator
+   * @returns {AsyncGenerator<RoundriveFile | RoundriveFolder, void, RoundriveFile | RoundriveFolder>}
+   * @async
+   */
+  async *#_loadFavorites(additionnalGenerator = null) {
+    let favorites;
+    await this.http_internal_post({
+      task: 'roundrive',
+      action: 'get_favorites',
+      params: {
+        _directory: 'dossiers-' + this.workspace.uid,
+      },
+      on_success(response) {
+        if (typeof response === 'string') response = JSON.parse(response);
+        favorites = response;
+      },
+    });
+
+    if (favorites) {
+      yield* MelEnumerable.from(favorites).select((x) => {
+        x.favorite = true;
+        return x.type === 'dir' ? new RoundriveFolder(x) : new RoundriveFile(x);
+      });
+    }
+
+    if (additionnalGenerator) yield* additionnalGenerator;
+  }
+
+  /**
+   * Ajoute les éléments favoris à un élément
+   * @param {T} parentElement
+   * @returns {Promise<T>}
+   * @private
+   * @template {HTMLElement} T
+   */
+  async #_appendFavorites(parentElement) {
+    for await (const element of this.#_loadFavorites()) {
+      parentElement.appendChild(NextcloudModule.CreateRoundriveTag(element));
+    }
+
+    return parentElement;
+  }
+
+  /**
+   * Tente de rafraîchir les éléments favoris.
+   *
+   * Si le dropdown est sur "favorites", recharge les favoris et les ajoute au conteneur.
+   *
+   * Sinon, supprime le conteneur des favoris s'il existe.
+   *
+   * @private
+   * @async
+   * @returns {Promise<void>}
+   */
+  async #_tryRefreshFavorites() {
+    let contents = this.moduleContainer.querySelector('.module-block-favorite');
+
+    if (this.dropdown.value === 'favorites') {
+      await this.#_appendFavorites($(contents).html(EMPTY_STRING)[0]);
+      contents.querySelector(BootstrapLoader.TAG)?.remove?.();
+    } else if (contents) contents.remove();
+  }
+
+  /**
+   * Rafraîchit le module.
+   * @returns {Promise<void>}
+   */
   async _on_refresh() {
     this.moduleContainer.disableRefreshButton();
+    this.dropdown.disable();
     const folder = `/dossiers-${this.workspace.uid}`;
     let drive = new Roundrive(folder);
 
     try {
+      let favoritePromise = this.#_tryRefreshFavorites();
       await drive.load();
       this.unload(this.storageKey);
 
       let documents = document.createElement('div');
-      /**
-       * @type {RoundriveFile | RoundriveFolder}
-       */
       for (const element of drive) {
         if (
           element.data.name.filename !== EMPTY_STRING &&
@@ -246,6 +380,9 @@ class NextcloudModule extends WorkspaceObject {
 
       documents.remove();
 
+      await favoritePromise;
+
+      favoritePromise = null;
       contents = null;
       documents = null;
     } catch (error) {
@@ -253,8 +390,13 @@ class NextcloudModule extends WorkspaceObject {
     }
 
     this.moduleContainer.enableRefreshButton();
+    this.dropdown.enable();
   }
 
+  /**
+   * Gère les erreurs de chargement.
+   * @private
+   */
   _on_error() {
     let contents = this.moduleContainer.querySelector('.module-block-content');
     contents.innerHTML = EMPTY_STRING;
@@ -277,6 +419,12 @@ class NextcloudModule extends WorkspaceObject {
     }
   }
 
+  /**
+   * Crée un tag Roundrive.
+   * @param {RoundriveFile | RoundriveFolder} element - L'élément Roundrive.
+   * @returns {FolderTag | FileTag} Le tag créé.
+   * @static
+   */
   static CreateRoundriveTag(element) {
     let node;
 
@@ -295,14 +443,29 @@ class NextcloudModule extends WorkspaceObject {
     return node;
   }
 
+  /**
+   * Retourne un objet Workspace vide.
+   * @type {WorkspaceObject}
+   * @readonly
+   * @static
+   */
   static get EmptyWorkspaceObject() {
     return new WorkspaceObject();
   }
 
+  /**
+   * Retourne les données de l'espace en cours
+   * @returns {WorkspaceObject}
+   * @static
+   */
   static Workspace() {
     return new WorkspaceObject().workspace;
   }
 
+  /**
+   * Démarre le module Nextcloud.
+   * @returns {NextcloudModule} Une instance de NextcloudModule.
+   */
   static Start() {
     return new NextcloudModule();
   }
@@ -676,17 +839,12 @@ class FileTag extends AActionNextcloudTag {
     /**
      * @type {PressedButton}
      */
-    let container = HTMLMelButton.CreateNode();
+    let container = HTMLBnumButton.StartCreate.setNoBackgroundVariation()
+      .setIconMargin(0)
+      .setIconPos('right')
+      .setSquare()
+      .generate();
     container.setAttribute('title', `Ouvrir le fichier "${this.filename}"`);
-    container.classList.add(
-      'mel-button',
-      'no-margin-button',
-      'no-button-margin',
-      'bckg',
-      'true',
-    );
-
-    container.style.borderRadius = '5px';
 
     container.onclick = () => {
       NextcloudModule.EmptyWorkspaceObject.switch_workspace_page(
@@ -696,7 +854,7 @@ class FileTag extends AActionNextcloudTag {
           .contentWindow.$('iframe')
           .attr(
             'src',
-            `${rcmail.env.nextcloud_url}/apps/files?dir=/${this.itemData.data.dirname}&openfile=${this.itemData.data.uid}`,
+            `${MelObject.Empty().get_env('nextcloud_url')}/apps/files?dir=/${this.itemData.data.dirname}&openfile=${this.itemData.data.uid}`,
           );
       });
     };

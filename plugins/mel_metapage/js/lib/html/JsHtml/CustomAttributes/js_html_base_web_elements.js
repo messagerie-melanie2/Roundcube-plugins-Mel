@@ -1,12 +1,16 @@
 import { BaseStorage } from '../../../classes/base_storage.js';
 import { Random } from '../../../classes/random.js';
+import { BnumModules } from '../../../helpers/dynamic_load_modules.js';
 import { MaterialIcon } from '../../../icons.js';
 import { isNullOrUndefined } from '../../../mel.js';
+import { MelObject } from '../../../mel_object.js';
 export {
   HtmlCustomTag,
   HtmlCustomDataTag,
   BnumHtmlIcon,
+  BnumHtmlShadowIcon,
   BnumHtmlSrOnly,
+  BnumVoice as BnumHtmlVoiceElement,
   BnumHtmlSeparate,
   BnumHtmlFlexContainer,
   BnumHtmlCenteredFlexContainer,
@@ -131,8 +135,9 @@ class HtmlCustomTag extends HTMLElement {
    * @protected
    * @returns {ShadowRoot | this}
    */
-  _p_start_construct() {
-    return this.shadowEnabled() ? this.attachShadow({ mode: 'open' }) : this;
+  _p_start_construct({ shadowConfig = {} } = {}) {
+    shadowConfig['mode'] = 'open';
+    return this.shadowEnabled() ? this.attachShadow(shadowConfig) : this;
   }
 
   /**
@@ -502,7 +507,7 @@ class BnumHtmlIcon extends HtmlCustomTag {
   }
 
   set icon(value) {
-    this.innerText = value;
+    this.#_update_icon(value);
   }
 
   /**
@@ -512,17 +517,24 @@ class BnumHtmlIcon extends HtmlCustomTag {
    * @protected
    */
   _p_main() {
-    if (!this.getAttribute('class'))
-      this.setAttribute('class', BnumHtmlIcon.HTML_CLASS);
+    if (this._p_override_main() === false) {
+      if (!this.classList.contains(BnumHtmlIcon.HTML_CLASS))
+        this.classList.add(BnumHtmlIcon.HTML_CLASS);
 
-    if (!this.classList.contains(BnumHtmlIcon.HTML_CLASS))
-      this.classList.add(BnumHtmlIcon.HTML_CLASS);
+      this.#_update_icon(this.icon);
+    }
+  }
 
-    this.icon = this.icon;
+  _p_override_main() {
+    return false;
+  }
+
+  #_update_icon(icon) {
+    this.innerText = icon;
   }
 
   static Create({ icon = null, context = document } = {}) {
-    let node = context.createElement(BnumHtmlIcon.TAG);
+    let node = context.createElement(this.TAG);
 
     if (icon) node.setAttribute('data-icon', icon);
 
@@ -603,6 +615,104 @@ class BnumHtmlIcon extends HtmlCustomTag {
   }
 }
 
+class BnumHtmlShadowIcon extends BnumHtmlIcon {
+  #_icon;
+  constructor() {
+    super();
+  }
+
+  /**
+   * @type {BnumHtmlIcon}
+   * @readonly
+   * @private
+   */
+  get #_shadowIcon() {
+    return this.navigator.querySelector('bnum-icon');
+  }
+
+  get icon() {
+    const icon = this.data('icon') || this.#_icon;
+
+    if (!this.#_icon) this.#_icon = icon;
+
+    if (this.hasAttribute('data-icon')) this.removeAttribute('data-icon');
+
+    return icon;
+  }
+
+  set icon(value) {
+    this.#_shadowIcon.icon = value;
+    this.#_icon = value;
+  }
+
+  _p_main() {
+    super._p_main();
+    let root = this._p_start_construct();
+
+    root.append(this.#_loadStyle(), BnumHtmlIcon.Create({ icon: this.icon }));
+
+    root = null;
+  }
+
+  async #_saveStyle() {
+    if (BnumHtmlShadowIcon._style_in_save) return;
+
+    BnumHtmlShadowIcon._style_in_save = true;
+    await MelObject.Empty().http_call({
+      url: `${window.location.origin + window.location.pathname}skins/mel_elastic/material-symbols.css?v=${BnumModules.VERSION}`,
+      on_success: (loaded) => {
+        MelObject.Empty().save(
+          'shadow-icon-material-symbol-version',
+          BnumModules.VERSION,
+        );
+        MelObject.Empty().save('shadow-icon-material-symbol', loaded);
+      },
+    });
+
+    BnumHtmlShadowIcon._style_in_save = false;
+  }
+
+  #_loadStyle() {
+    let style;
+    let loaded_style = MelObject.Empty().load('shadow-icon-material-symbol');
+
+    if (!loaded_style) {
+      this.#_saveStyle();
+      style = document.createElement('link');
+      style.rel = 'stylesheet';
+      style.href = `skins/mel_elastic/material-symbols.css?v=${BnumModules.VERSION}`;
+    } else if (
+      (MelObject.Empty().load('shadow-icon-material-symbol-version') || true) &&
+      MelObject.Empty().load('shadow-icon-material-symbol-version') !==
+        BnumModules.VERSION
+    ) {
+      MelObject.Empty().save('shadow-icon-material-symbol', null);
+      style = this.#_loadStyle();
+    } else {
+      style = document.createElement('style');
+      style.appendChild(document.createTextNode(loaded_style));
+    }
+
+    return style;
+  }
+
+  shadowEnabled() {
+    return true;
+  }
+
+  _p_override_main() {
+    return true;
+  }
+
+  /**
+   * @readonly
+   * @type {string}
+   */
+  static get TAG() {
+    return 'bnum-shadow-icon';
+  }
+}
+
 /**
  * Classe de la balise bnum-icon
  * @static
@@ -612,7 +722,6 @@ class BnumHtmlIcon extends HtmlCustomTag {
  */
 BnumHtmlIcon.HTML_CLASS = MaterialIcon.html_class;
 BnumHtmlIcon.TAG = 'bnum-icon';
-
 class BnumHtmlSrOnly extends HtmlCustomTag {
   constructor() {
     super();
@@ -630,6 +739,83 @@ class BnumHtmlSrOnly extends HtmlCustomTag {
   }
 }
 BnumHtmlSrOnly.TAG = 'bnum-screen-reader';
+
+class BnumVoice extends BnumHtmlSrOnly {
+  /**
+   * Attributs observés par le navigateur
+   * @type {string[]}
+   * @readonly
+   * @static
+   * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements}
+   */
+  static get observedAttributes() {
+    return ['for'];
+  }
+
+  constructor() {
+    super();
+  }
+
+  _p_main() {
+    super._p_main();
+
+    let root = this._p_start_construct();
+    let label = document.createElement('label');
+
+    if (this.hasAttribute('for'))
+      label.setAttribute('for', this.getAttribute('for'));
+
+    label.appendChild(...this.childNodes);
+    let style = document.createElement('style');
+    style.appendChild(
+      document.createTextNode(`
+        :host {
+        border: 0;
+  clip: rect(0,0,0,0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+  }
+        `),
+    );
+
+    root.append(style, label);
+
+    label = null;
+    style = null;
+    root = null;
+  }
+
+  /**
+   * Est appelé quand un attribut de {@link observedAttributes} est modifié
+   * @param {string} name
+   * @param {string} oldValue
+   * @param {string} newValue
+   */
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === 'for' && newValue !== null && this.elementLoaded) {
+      this.navigator.querySelector('label').setAttribute('for', newValue);
+    }
+  }
+
+  shadowEnabled() {
+    return true;
+  }
+
+  static Create(text) {
+    let node = document.createElement('bnum-voice');
+    node.appendChild(document.createTextNode(text));
+
+    return node;
+  }
+
+  static get TAG() {
+    return 'bnum-voice';
+  }
+}
 
 class BnumHtmlSeparate extends HtmlCustomTag {
   constructor({ mode = EWebComponentMode.span } = {}) {
@@ -709,8 +895,10 @@ class HTMLBnumPlaceholder extends HtmlCustomTag {
 {
   const TAGS = [
     { tag: BnumHtmlIcon.TAG, class: BnumHtmlIcon },
+    { tag: BnumHtmlShadowIcon.TAG, class: BnumHtmlShadowIcon },
     { tag: BnumHtmlFlexContainer.TAG, class: BnumHtmlFlexContainer },
     { tag: BnumHtmlSrOnly.TAG, class: BnumHtmlSrOnly },
+    { tag: BnumVoice.TAG, class: BnumVoice },
     { tag: BnumHtmlSeparate.TAG, class: BnumHtmlSeparate },
     {
       tag: BnumHtmlCenteredFlexContainer.TAG,

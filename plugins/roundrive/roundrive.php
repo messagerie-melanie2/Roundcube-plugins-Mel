@@ -83,6 +83,7 @@ class roundrive extends rcube_plugin
         $this->register_action('folder_list_items', array($this, 'actions'));//folder_list_all_items
         $this->register_action('folder_list_all_items', array($this, 'actions'));
         $this->register_action('folder_get_metadatas', array($this, "actions"));
+        $this->register_action('get_favorites', [$this, 'actions']);
 
         // Load UI from startup hook
         $this->add_hook('startup', array($this, 'startup'));

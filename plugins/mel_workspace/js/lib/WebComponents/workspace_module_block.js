@@ -14,6 +14,37 @@ import { BnumEvent } from '../../../../mel_metapage/js/lib/mel_events.js';
 import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';
 import { NavBarManager } from '../program/navbar.generator.js';
 
+export class WorkspaceModuleBlockTitle extends HtmlCustomDataTag {
+  constructor() {
+    super({ mode: EWebComponentMode.div });
+  }
+
+  _p_main() {
+    super._p_main();
+
+    if (
+      this.style.display === 'flex' ||
+      this.getAttribute('data-end-display') === 'flex'
+    )
+      this.style.alignItems = 'center';
+  }
+
+  /**
+   * @default 'bnum-workspace-module-title'
+   * @type {string}
+   * @readonly
+   * @static
+   */
+  static get TAG() {
+    return 'bnum-workspace-module-title';
+  }
+}
+
+WorkspaceModuleBlockTitle.TryDefine(
+  WorkspaceModuleBlockTitle.TAG,
+  WorkspaceModuleBlockTitle,
+);
+
 /**
  * @class
  * @classdesc Représention html d'un block d'un espace de travail.
@@ -180,6 +211,13 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
       title = null;
     }
 
+    let customTitle = contents.querySelector(WorkspaceModuleBlockTitle.TAG);
+    if (customTitle) {
+      header.appendChild(customTitle);
+      customTitle.style.display = null;
+      customTitle = null;
+    }
+
     if (this.hasRefresh) {
       let buttonRefresh = HTMLBnumButtonSecondary.StartCreate.setContent(
         BnumHtmlIcon.Refresh,
@@ -193,6 +231,8 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
       buttonRefresh.style.marginLeft = '10px';
       buttonRefresh.style.padding = '4px';
       buttonRefresh.style.maxWidth = '34px';
+      buttonRefresh.style.width = '34px';
+      buttonRefresh.style.height = '34px';
 
       buttonRefresh.addEventListener('click', (e) => {
         this.onrefresh.call(e, this);
@@ -206,9 +246,11 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
         );
       });
 
-      (header.querySelector('.title-container') ?? header).appendChild(
-        buttonRefresh,
-      );
+      (
+        header.querySelector('.title-container') ??
+        header.querySelector(WorkspaceModuleBlockTitle.TAG) ??
+        header
+      ).appendChild(buttonRefresh);
 
       buttonRefresh = null;
     }
@@ -246,6 +288,15 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
       button = null;
     }
 
+    header.querySelectorAll('[data-end-display]').forEach((el) => {
+      el.style.display = el.getAttribute('data-end-display');
+      el.removeAttribute('data-end-display');
+    });
+    contents.querySelectorAll('[data-end-display]').forEach((el) => {
+      el.style.display = el.getAttribute('data-end-display');
+      el.removeAttribute('data-end-display');
+    });
+
     this.append(header, contents);
 
     header = null;
@@ -278,7 +329,7 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
     let button = this.header.querySelector('.refresh-button');
 
     if (button) {
-      button.disable();
+      button.setAttribute('loading', 'loading');
       button = null;
     }
 
@@ -289,7 +340,7 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
     let button = this.header.querySelector('.refresh-button');
 
     if (button) {
-      button.enable();
+      button.removeAttribute('loading');
       button = null;
     }
 

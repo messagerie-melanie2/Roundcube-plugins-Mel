@@ -699,7 +699,7 @@ class mel_forum extends bnum_plugin
      * Traite l'envoi d'un article (création ou édition) et notifie les utilisateurs si c'est une nouvelle publication.
      *
      * Cette méthode :
-     * - Détermine si l'action est une édition via le flag `_is_editing`
+     * - Détermine si l'action est une publication ou un brouillon, via `_isdraft`
      * - Sauvegarde l'article via `_add_post()`
      * - Envoie des notifications aux utilisateurs (uniquement pour les nouvelles publications)
      * - Gère les tags associés à l'article
@@ -711,9 +711,9 @@ class mel_forum extends bnum_plugin
      */
     public function send_post()
     {
-        $is_editing = $this->get_input('_is_editing', rcube_utils::INPUT_POST) === 'true';
+        $is_draft = $this->get_input('_isdraft', rcube_utils::INPUT_POST) === 'true';
         $result = $this->_add_post();
-        if ($result !== null && !$is_editing) {
+        if ($result !== null && !$is_draft) {
             // Notifier les utilisateurs, seulement si c'est une création
             $this->notify();  // Appel à la fonction de notification
 

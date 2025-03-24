@@ -696,14 +696,25 @@ class mel_forum extends bnum_plugin
     #region Enregistrement
 
     /**
-     * Gère l'enregistrement d'un article et des tags qui lui sont associés
+     * Traite l'envoi d'un article (création ou édition) et notifie les utilisateurs si c'est une nouvelle publication.
+     *
+     * Cette méthode :
+     * - Détermine si l'action est une édition via le flag `_is_editing`
+     * - Sauvegarde l'article via `_add_post()`
+     * - Envoie des notifications aux utilisateurs (uniquement pour les nouvelles publications)
+     * - Gère les tags associés à l'article
+     * - Notifie via Tchap si configuré
+     * - Logge les erreurs éventuelles
+     *
      * @return void
+     * 
      */
     public function send_post()
     {
+        $is_editing = $this->get_input('_is_editing', rcube_utils::INPUT_POST) === 'true';
         $result = $this->_add_post();
-        if ($result !== null) {
-            // Le post est créé, notifier les utilisateurs
+        if ($result !== null && !$is_editing) {
+            // Notifier les utilisateurs, seulement si c'est une création
             $this->notify();  // Appel à la fonction de notification
 
             // Ensuite, passer à la gestion des tags

@@ -71,7 +71,13 @@ export class Forum extends MelObject {
       .querySelector('.content')
       .addEventListener('scroll', this.handleScroll);
     //gestion de la recherche
+
     $('#post-search-input').on('keydown', (event) => {
+      this.autocomplete(
+        '#post-search-input',
+        '#suggestions',
+        this.get_env('wsp_tags').map((str) => '#' + str),
+      );
       if (event.keyCode === 13) {
         this.searchPosts();
       }
@@ -313,6 +319,44 @@ export class Forum extends MelObject {
     this.updateSort();
     this.updateDisplay();
     this.loadPosts();
+  }
+
+  /**
+   * Autocomplétion pour la recherche d'article
+   * @param {string} inputSelector selecteur jquery de l'input
+   * @param {string} suggestionsSelector selecteur jquery de la div de suggestion
+   * @param {string[]} dataList tableau de référence
+   */
+  autocomplete(inputSelector, suggestionsSelector, dataList) {
+    const input = $(inputSelector);
+    const suggestion = $(suggestionsSelector);
+    const self = this;
+
+    input.on('input', function () {
+      const query = $(this).val().toLowerCase().trim();
+      suggestion.empty().hide();
+
+      if (query) {
+        const filtered = dataList.filter((item) =>
+          item.toLowerCase().startsWith(query),
+        );
+
+        if (filtered.length > 0) {
+          filtered.forEach((item) => {
+            const div = document.createElement('div');
+            div.textContent = item;
+            div.addEventListener('click', () => {
+              input.val(item);
+              suggestion.empty().hide();
+              self.searchPosts();
+            });
+            suggestion.append(div);
+          });
+
+          suggestion.css('display', 'block');
+        }
+      }
+    });
   }
 
   /**

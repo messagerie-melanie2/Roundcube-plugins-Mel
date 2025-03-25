@@ -1444,6 +1444,32 @@
     font-size: 25px;
     margin-left: 20px;
   }
+  .autocomplete-list {
+    position: absolute;
+    background-color: var(--popover-background-color) !important;
+    color: var(--popover-text-color) !important;
+    border: var(--popover-border) !important;
+    box-shadow: var(--popover-box-shadow) !important;
+    width: 100%;
+    max-height: 150px;
+    overflow-y: auto;
+    display: none;
+    top: 34px;
+    z-index: 1;
+    border-bottom-right-radius: 15px;
+    border-bottom-left-radius: 15px;
+    div {
+      padding: 8px;
+      cursor: pointer;
+      &:hover {
+        background: #f0f0f0;
+      }
+    }
+  }
+  .rounded-end-important {
+    border-bottom-right-radius: 15px !important;
+    border-top-right-radius: 15px !important;
+  }
 }
 
 .task-forum {

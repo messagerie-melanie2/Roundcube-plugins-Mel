@@ -53,8 +53,9 @@
             <div class="border-bottom-input-icon position-relative">
               <span id="add-tag-button" role="button"
                 class="material-symbols-outlined add-circle-icon">add_circle</span>
-              <input type="text" placeholder="Ajouter un tag" class="form-control input-mel border-bottom-input"
+              <input list="suggestions" placeholder="Ajouter un tag" class="form-control input-mel border-bottom-input"
                 name="add-tag" id="add-tag" maxlength="25" />
+              <datalist id="suggestions" class="autocomplete-list"></datalist>
               <!-- <button
                 id="reset-tag-button"
                 class="border-bottom-input-button close-button btn btn-secondary"

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Mél Moncompte
  *
@@ -25,7 +26,8 @@ use LibMelanie\Api\Defaut\ObjectShare;
  *
  * @author Thomas Payen <thomas.payen@i-carre.net> / PNE Messagerie MEDDE
  */
-class M2mailbox {
+class M2mailbox
+{
   /**
    *
    * @var LibMelanie\Api\Defaut\User Utilisateur Mél
@@ -48,7 +50,8 @@ class M2mailbox {
    * @param string $user
    * @param string $mbox
    */
-  public function __construct($user = null, $mbox = null) {
+  public function __construct($user = null, $mbox = null)
+  {
     // Chargement de l'instance rcmail
     $this->rc = rcmail::get_instance();
 
@@ -67,18 +70,20 @@ class M2mailbox {
    *
    * @return array
    */
-  public function getAcl() {
+  public function getAcl()
+  {
     $_mbox = driver_mel::gi()->getUser($this->mbox, true, true, null, null, 'webmail.moncompte.mailbox');
     // Récupération de la boite
     if ($_mbox->is_objectshare) {
       $_mbox = $_mbox->objectshare->mailbox;
-    }
-    else if (!$_mbox->load()) {
+    } else if (!$_mbox->load()) {
       return false;
     }
-    if ($this->rc->get_user_name() != $_mbox->uid 
-        && (!isset($_mbox->shares[$this->rc->get_user_name()]) 
-          || $_mbox->shares[$this->rc->get_user_name()]->type != \LibMelanie\Api\Defaut\Users\Share::TYPE_ADMIN)) {
+    if (
+      $this->rc->get_user_name() != $_mbox->uid
+      && (!isset($_mbox->shares[$this->rc->get_user_name()])
+        || $_mbox->shares[$this->rc->get_user_name()]->type != \LibMelanie\Api\Defaut\Users\Share::TYPE_ADMIN)
+    ) {
       // L'utilisateur n'est pas gestionnaire de la boite
       // Il ne peut pas afficher les droits de la boite
       return false;
@@ -103,8 +108,9 @@ class M2mailbox {
    * @param array $rights
    * @return boolean
    */
-  public function setAcl($user, $rights) {
-    mel_logs::get_instance()->log(mel_logs::INFO, "[Resources] mailbox::setAcl($user, $rights) mbox = " . $this->mbox);
+  public function setAcl($user, $rights)
+  {
+    mel_logs::get_instance()->log(mel_logs::INFO, "[Resources] mailbox::setAcl($user, " . implode(' ', $rights) . ") mbox = " . $this->mbox);
     // Ajouter un hook lors du positionnement des ACLs
     $data = $this->rc->plugins->exec_hook('mce.setAcl_before', [
       'type' => 'mailbox',
@@ -121,14 +127,15 @@ class M2mailbox {
     // Récupération de la boite
     if ($_mbox->is_objectshare) {
       $_mbox = $_mbox->objectshare->mailbox;
-    }
-    else if (!$_mbox->load()) {
+    } else if (!$_mbox->load()) {
       return false;
     }
     // Vérification des droits gestionnaires
-    if ($this->rc->get_user_name() != $_mbox->uid 
-        && (!isset($_mbox->shares[$this->rc->get_user_name()]) 
-          || $_mbox->shares[$this->rc->get_user_name()]->type != \LibMelanie\Api\Defaut\Users\Share::TYPE_ADMIN)) {
+    if (
+      $this->rc->get_user_name() != $_mbox->uid
+      && (!isset($_mbox->shares[$this->rc->get_user_name()])
+        || $_mbox->shares[$this->rc->get_user_name()]->type != \LibMelanie\Api\Defaut\Users\Share::TYPE_ADMIN)
+    ) {
       // L'utilisateur n'est pas gestionnaire de la boite
       // Il ne peut pas modifier les droits de la boite
       return false;
@@ -160,8 +167,7 @@ class M2mailbox {
       $share->user = $user;
       $shares[$user] = $share;
       $_mbox->shares = $shares;
-    }
-    else {
+    } else {
       return false;
     }
     $ret = $_mbox->save();
@@ -182,7 +188,8 @@ class M2mailbox {
    * @param string $user
    * @return boolean
    */
-  public function deleteAcl($user) {
+  public function deleteAcl($user)
+  {
     mel_logs::get_instance()->log(mel_logs::INFO, "[Resources] mailbox::deleteAcl($user) mbox = " . $this->mbox);
     // Ajouter un hook lors du positionnement des ACLs
     $data = $this->rc->plugins->exec_hook('mce.deleteAcl_before', [
@@ -199,14 +206,15 @@ class M2mailbox {
     // Récupération de la boite
     if ($_mbox->is_objectshare) {
       $_mbox = $_mbox->objectshare->mailbox;
-    }
-    else if (!$_mbox->load()) {
+    } else if (!$_mbox->load()) {
       return false;
     }
     // Vérification des droits gestionnaires
-    if ($this->rc->get_user_name() != $_mbox->uid 
-        && (!isset($_mbox->shares[$this->rc->get_user_name()]) 
-          || $_mbox->shares[$this->rc->get_user_name()]->type != \LibMelanie\Api\Defaut\Users\Share::TYPE_ADMIN)) {
+    if (
+      $this->rc->get_user_name() != $_mbox->uid
+      && (!isset($_mbox->shares[$this->rc->get_user_name()])
+        || $_mbox->shares[$this->rc->get_user_name()]->type != \LibMelanie\Api\Defaut\Users\Share::TYPE_ADMIN)
+    ) {
       // L'utilisateur n'est pas gestionnaire de la boite
       // Il ne peut pas modifier les droits de la boite
       return false;
@@ -240,7 +248,8 @@ class M2mailbox {
    * @param array $attrib
    * @return string
    */
-  public function resources_elements_list($attrib) {
+  public function resources_elements_list($attrib)
+  {
     // add id to message list table if not specified
     if (! strlen($attrib['id']))
       $attrib['id'] = 'rcmresourceselementslist';
@@ -270,15 +279,14 @@ class M2mailbox {
       ];
       if (($order = array_search(driver_mel::gi()->mceToRcId($object_id), $sort_bal)) !== false) {
         $mailboxes[$object_id]['order'] = $order;
-      }
-      else {
+      } else {
         $mailboxes[$object_id]['order'] = $object_id == $this->user->uid ? 1000 : 2000;
       }
     }
 
     // Objet HTML
     $table = new html_table();
-    $checkbox_subscribe = new html_checkbox(array('name' => '_show_resource_rc[]','title' => $this->rc->gettext('changesubscription'),'onclick' => "rcmail.command(this.checked ? 'show_resource_in_roundcube' : 'hide_resource_in_roundcube', this.value, 'mailboxe')"));
+    $checkbox_subscribe = new html_checkbox(array('name' => '_show_resource_rc[]', 'title' => $this->rc->gettext('changesubscription'), 'onclick' => "rcmail.command(this.checked ? 'show_resource_in_roundcube' : 'hide_resource_in_roundcube', this.value, 'mailboxe')"));
 
     // sort mailboxes
     uasort($mailboxes, function ($a, $b) {
@@ -292,7 +300,7 @@ class M2mailbox {
     foreach ($mailboxes as $object_id => $value) {
       $name = $value['name'];
       $id = $value['id'];
-      $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id),'class' => 'mailbox','foldername' => driver_mel::gi()->mceToRcId($id)));
+      $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id), 'class' => 'mailbox', 'foldername' => driver_mel::gi()->mceToRcId($id)));
 
       $table->add('name', $name);
 
@@ -309,26 +317,28 @@ class M2mailbox {
   /**
    * Handler to render ACL form for a calendar folder
    */
-  public function acl_template() {
-    $this->rc->output->add_handler('folderacl', array($this,'acl_form'));
+  public function acl_template()
+  {
+    $this->rc->output->add_handler('folderacl', array($this, 'acl_form'));
     $this->rc->output->send('mel_moncompte.acl_frame');
   }
 
   /**
    * Handler for ACL form template object
    */
-  public function acl_form() {
+  public function acl_form()
+  {
     $balid = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
-    $options = array('type' => 'm2mailbox','name' => $balid,'attributes' => array(0 => '\\HasNoChildren'),'namespace' => 'personal','special' => false,'rights' => array(0 => 'l',1 => 'r',2 => 's',3 => 'w',4 => 'i',5 => 'p',6 => 'k',7 => 'x',8 => 't',9 => 'e',10 => 'c',11 => 'd',12 => 'a'),'norename' => false,'noselect' => false,'protected' => true);
+    $options = array('type' => 'm2mailbox', 'name' => $balid, 'attributes' => array(0 => '\\HasNoChildren'), 'namespace' => 'personal', 'special' => false, 'rights' => array(0 => 'l', 1 => 'r', 2 => 's', 3 => 'w', 4 => 'i', 5 => 'p', 6 => 'k', 7 => 'x', 8 => 't', 9 => 'e', 10 => 'c', 11 => 'd', 12 => 'a'), 'norename' => false, 'noselect' => false, 'protected' => true);
 
     $form = [];
     // Allow plugins to modify the form content (e.g. with ACL form)
-    $plugin = $this->rc->plugins->exec_hook('acl_form_mel', array('form' => $form,'options' => $options,'name' => $balid));
+    $plugin = $this->rc->plugins->exec_hook('acl_form_mel', array('form' => $form, 'options' => $options, 'name' => $balid));
 
     if (! $plugin['form']['sharing']['content']) {
       $plugin['form']['sharing']['content'] = html::div('hint', $this->rc->gettext('aclnorights'));
     }
-      
+
 
     return $plugin['form']['sharing']['content'];
   }
@@ -339,13 +349,14 @@ class M2mailbox {
    * @param array $attrib
    * @return string
    */
-  public function acl_frame($attrib) {
+  public function acl_frame($attrib)
+  {
     $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
     if (!$attrib['id']) {
       $attrib['id'] = 'rcmusersaclframe';
     }
     $attrib['name'] = $attrib['id'];
-    $attrib['src'] = $this->rc->url(array('_action' => 'plugin.mel_mailbox_acl','id' => $id,'framed' => 1));
+    $attrib['src'] = $this->rc->url(array('_action' => 'plugin.mel_mailbox_acl', 'id' => $id, 'framed' => 1));
     $attrib['width'] = '100%';
     $attrib['height'] = 275;
     $attrib['border'] = 0;
@@ -359,13 +370,14 @@ class M2mailbox {
    * 
    * @return string $html HTML à afficher pour la restauration des boites
    */
-  public function restore_bal($attrib) {
+  public function restore_bal($attrib)
+  {
     $id = driver_mel::gi()->rcToMceId(rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC));
     // Récupération de la boite a restaurer
     $mbox = driver_mel::gi()->getUser($id, false);
     // sam: test si BAlP autorisé
-    if (!$this->rc->config->get('mel_sharedmailboxes_bal_partage_enabled', true)){
-        return "<div>".$this->rc->gettext("acces_balp_disabled")."</div>";
+    if (!$this->rc->config->get('mel_sharedmailboxes_bal_partage_enabled', true)) {
+      return "<div>" . $this->rc->gettext("acces_balp_disabled") . "</div>";
     }
     if ($mbox->is_objectshare) {
       $mbox = $mbox->objectshare->mailbox;
@@ -373,27 +385,24 @@ class M2mailbox {
     }
     $folders = [];
     $imap = $this->rc->get_storage();
-    
+
     // Si c'est la boite de l'utilisateur connecté
     if ($id == $this->rc->get_user_name()) {
       $host = $this->rc->user->get_username('domain');
-    }
-    else {
+    } else {
       // Récupération de la configuration de la boite pour l'affichage
       $host = driver_mel::gi()->getRoutage($mbox, 'restore_bal');
     }
     if (driver_mel::gi()->isSsl($host)) {
       $res = $imap->connect($host, $id, $this->rc->get_user_password(), 993, 'ssl');
-    }
-    else {
+    } else {
       $res = $imap->connect($host, $id, $this->rc->get_user_password(), $this->rc->config->get('default_port', 143));
     }
 
     // Récupération des folders
     if ($res) {
       $folders = $imap->list_folders_direct();
-    }
-    else {
+    } else {
       return 'Folders error';
     }
 
@@ -423,7 +432,8 @@ class M2mailbox {
    * 
    * @return string $html HTML à afficher pour la restauration des dossiers
    */
-  public function get_restorable_directories($attrib) {
+  public function get_restorable_directories($attrib)
+  {
     $mbox = driver_mel::gi()->rcToMceId(rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC));
     $directories = driver_mel::gi()->get_restorable_directories($mbox);
 
@@ -452,7 +462,8 @@ class M2mailbox {
   /**
    * Appel la méthode d'unexpunge pour la restauration des messages
    */
-  public static function unexpunge() {
+  public static function unexpunge()
+  {
     $date = trim(rcube_utils::get_input_value('date', rcube_utils::INPUT_POST));
     $seconds = time() - strtotime($date);
     $hours = intdiv($seconds, 3600);
@@ -465,8 +476,7 @@ class M2mailbox {
     }
     if ($ret) {
       rcmail::get_instance()->output->show_message('mel_moncompte.restore_bal_succes', 'confirmation');
-    }
-    else {
+    } else {
       rcmail::get_instance()->output->show_message('mel_moncompte.restore_bal_error', 'error');
     }
   }
@@ -474,7 +484,8 @@ class M2mailbox {
   /**
    * Appel la méthode de restore_dir pour la restauration de dossiers
    */
-  public static function restore_dir() {
+  public static function restore_dir()
+  {
     $rcmail = rcmail::get_instance();
     $rcmail->storage_init();
     $quotas = $rcmail->quota_content();
@@ -506,21 +517,21 @@ class M2mailbox {
     $mbox = driver_mel::gi()->rcToMceId(rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC));
     $ret = driver_mel::gi()->restore_directories($mbox, $directories);
 
-    $dirs_not_enough_space = array_filter($ret, function($e) {
+    $dirs_not_enough_space = array_filter($ret, function ($e) {
       return $e->error == 'not enough space';
     });
-    $dirs_error = array_filter($ret, function($e) {
+    $dirs_error = array_filter($ret, function ($e) {
       return $e->error != 'not enough space';
     });
 
     if ($dirs_not_enough_space) {
-      $directories = array_map(function($e) {
+      $directories = array_map(function ($e) {
         return $e->path;
       }, $dirs_not_enough_space);
       rcmail::get_instance()->output->show_message("Les dossiers suivants n'ont pas pu être restaurés par manque d'espace : " . implode(', ', $directories), 'error');
     }
     if ($dirs_error) {
-      $directories = array_map(function($e) {
+      $directories = array_map(function ($e) {
         return $e->path;
       }, $dirs_error);
       rcmail::get_instance()->output->show_message("Les dossiers suivants n'ont pas pu être restaurés à cause d'une erreur : " . implode(', ', $directories), 'error');

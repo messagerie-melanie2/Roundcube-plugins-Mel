@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Mél Moncompte
  *
@@ -23,7 +24,8 @@
  *
  * @author Thomas Payen <thomas.payen@i-carre.net> / PNE Messagerie MEDDE
  */
-class M2contacts {
+class M2contacts
+{
   /**
    *
    * @var LibMelanie\Api\Defaut\User Utilisateur Mél
@@ -56,7 +58,8 @@ class M2contacts {
    * @param string $user
    * @param string $mbox
    */
-  public function __construct($user = null, $mbox = null) {
+  public function __construct($user = null, $mbox = null)
+  {
     // Chargement de l'instance rcmail
     $this->rc = rcmail::get_instance();
     if (isset($user) && !empty($user)) {
@@ -77,8 +80,7 @@ class M2contacts {
               $this->user = $this->user->objectshare->mailbox;
             }
             $mbox = $this->user->uid;
-          }
-          else {
+          } else {
             $this->user = driver_mel::gi()->getUser();
           }
         }
@@ -92,12 +94,10 @@ class M2contacts {
       if (!isset($this->user)) {
         $this->user = driver_mel::gi()->getUser();
       }
-    }
-    catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
+    } catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[Resources] M2contacts::__construct() Melanie2DatabaseException");
       return false;
-    }
-    catch (\Exception $ex) {
+    } catch (\Exception $ex) {
       return false;
     }
   }
@@ -107,7 +107,8 @@ class M2contacts {
    * 
    * @return LibMelanie\Api\Defaut\Addressbook Carnet d'adresses Mél
    */
-  public function getAddressbook() {
+  public function getAddressbook()
+  {
     return $this->addressbook;
   }
 
@@ -116,7 +117,8 @@ class M2contacts {
    *
    * @return array
    */
-  public function getAcl() {
+  public function getAcl()
+  {
     if (!isset($this->addressbook) || $this->addressbook->owner != $this->user->uid)
       return false;
     try {
@@ -136,12 +138,10 @@ class M2contacts {
         }
       }
       return $acl;
-    }
-    catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
+    } catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[Resources] M2contacts::getAcl() Melanie2DatabaseException");
       return false;
-    }
-    catch (\Exception $ex) {
+    } catch (\Exception $ex) {
       return false;
     }
   }
@@ -152,8 +152,9 @@ class M2contacts {
    * @param array $rights
    * @return boolean
    */
-  public function setAcl($user, $rights) {
-    mel_logs::get_instance()->log(mel_logs::INFO, "[Resources] contacts::setAcl($user, $rights) mbox = " . $this->mbox);
+  public function setAcl($user, $rights)
+  {
+    mel_logs::get_instance()->log(mel_logs::INFO, "[Resources] contacts::setAcl($user, " . implode(' ', $rights) . ") mbox = " . $this->mbox);
     // Ajouter un hook lors du positionnement des ACLs
     $data = $this->rc->plugins->exec_hook('mce.setAcl_before', [
       'type'    => 'contacts',
@@ -183,8 +184,7 @@ class M2contacts {
         if (!driver_mel::gi()->userIsGroup($user)) {
           return false;
         }
-      }
-      else {
+      } else {
         // Valide que le droit concerne bien un utilisateur
         $_user = driver_mel::gi()->getUser($user);
         if (!isset($_user)) {
@@ -206,16 +206,14 @@ class M2contacts {
       if (in_array('w', $rights)) {
         // Ecriture + Lecture + Freebusy
         $share->acl |= LibMelanie\Api\Defaut\Share::ACL_WRITE
-                    | LibMelanie\Api\Defaut\Share::ACL_DELETE
-                    | LibMelanie\Api\Defaut\Share::ACL_READ
-                    | LibMelanie\Api\Defaut\Share::ACL_FREEBUSY;
-      }
-      else if (in_array('r', $rights)) {
+          | LibMelanie\Api\Defaut\Share::ACL_DELETE
+          | LibMelanie\Api\Defaut\Share::ACL_READ
+          | LibMelanie\Api\Defaut\Share::ACL_FREEBUSY;
+      } else if (in_array('r', $rights)) {
         // Lecture + Freebusy
         $share->acl |= LibMelanie\Api\Defaut\Share::ACL_READ
-                    | LibMelanie\Api\Defaut\Share::ACL_FREEBUSY;
-      }
-      else if (in_array('l', $rights)) {
+          | LibMelanie\Api\Defaut\Share::ACL_FREEBUSY;
+      } else if (in_array('l', $rights)) {
         // Freebusy
         $share->acl |= LibMelanie\Api\Defaut\Share::ACL_FREEBUSY;
       }
@@ -230,12 +228,10 @@ class M2contacts {
         'ret'     => !is_null($ret),
       ]);
       return $data['ret'];
-    }
-    catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
+    } catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[Resources] M2contacts::setAcl() Melanie2DatabaseException");
       return false;
-    }
-    catch (\Exception $ex) {
+    } catch (\Exception $ex) {
       return false;
     }
   }
@@ -245,7 +241,8 @@ class M2contacts {
    * @param string $user
    * @return boolean
    */
-  public function deleteAcl($user) {
+  public function deleteAcl($user)
+  {
     mel_logs::get_instance()->log(mel_logs::INFO, "[Resources] contacts::deleteAcl($user) mbox = " . $this->mbox);
     // Ajouter un hook lors du positionnement des ACLs
     $data = $this->rc->plugins->exec_hook('mce.deleteAcl_before', [
@@ -275,12 +272,10 @@ class M2contacts {
         'ret'     => !is_null($ret),
       ]);
       return $data['ret'];
-    }
-    catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
+    } catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[Resources] M2contacts::deleteAcl() Melanie2DatabaseException");
       return false;
-    }
-    catch (\Exception $ex) {
+    } catch (\Exception $ex) {
       return false;
     }
   }
@@ -291,30 +286,27 @@ class M2contacts {
    * @param string $name [optionnel]
    * @return boolean
    */
-  public function createAddressbook($name = null) {
+  public function createAddressbook($name = null)
+  {
     try {
       $this->addressbook = driver_mel::gi()->addressbook([$this->user]);
       if (!isset($name)) {
         $this->addressbook->name = $this->user->fullname;
-      }
-      else {
+      } else {
         $this->addressbook->name = $name;
       }
       $this->addressbook->id = $this->mbox ?: $this->user->uid;
       $this->addressbook->owner = $this->user->uid;
       $ret = $this->addressbook->save();
-			if (!is_null($ret)) {
+      if (!is_null($ret)) {
         return $this->addressbook->load();
-      }
-      else {
+      } else {
         return false;
       }
-    }
-    catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
+    } catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[Resources] M2contacts::createAddressbook() Melanie2DatabaseException");
       return false;
-    }
-    catch (\Exception $ex) {
+    } catch (\Exception $ex) {
       return false;
     }
     return false;
@@ -323,7 +315,8 @@ class M2contacts {
   /**
    * Suppression du carnet d'adresse
    */
-  public function deleteAddressbook() {
+  public function deleteAddressbook()
+  {
     if (isset($this->addressbook) && isset($this->user) && $this->addressbook->owner == $this->user->uid && $this->addressbook->id != $this->user->uid) {
       // Parcour les contacts pour les supprimer
       $contacts = $this->addressbook->getAllContacts();
@@ -342,7 +335,8 @@ class M2contacts {
    * @param array $attrib
    * @return string
    */
-  public function resources_elements_list($attrib) {
+  public function resources_elements_list($attrib)
+  {
     // add id to message list table if not specified
     if (! strlen($attrib['id']))
       $attrib['id'] = 'rcmresourceselementslist';
@@ -361,17 +355,14 @@ class M2contacts {
         ];
         if (($order = array_search(driver_mel::gi()->mceToRcId($addressbook->id), $sort_contacts)) !== false) {
           $addressbooks[$addressbook->id]['order'] = $order;
-        }
-        else if ($addressbook->owner == $this->user->uid) {
+        } else if ($addressbook->owner == $this->user->uid) {
           if ($addressbook->id == $this->user->uid) {
             $addressbooks[$addressbook->id]['order'] = 1000;
-          }
-          else {
+          } else {
             $addressbooks[$addressbook->id]['order'] = 2000;
             $addressbooks[$addressbook->id]['class'] = ' personnal';
           }
-        }
-        else {
+        } else {
           $addressbooks[$addressbook->id]['order'] = 3000;
         }
       }
@@ -385,7 +376,7 @@ class M2contacts {
 
       // Objet HTML
       $table = new html_table();
-      $checkbox_subscribe = new html_checkbox(array('name' => '_show_resource_rc[]','title' => $this->rc->gettext('changesubscription'),'onclick' => "rcmail.command(this.checked ? 'show_resource_in_roundcube' : 'hide_resource_in_roundcube', this.value, 'contact')"));
+      $checkbox_subscribe = new html_checkbox(array('name' => '_show_resource_rc[]', 'title' => $this->rc->gettext('changesubscription'), 'onclick' => "rcmail.command(this.checked ? 'show_resource_in_roundcube' : 'hide_resource_in_roundcube', this.value, 'contact')"));
 
       // sort addressbooks
       uasort($addressbooks, function ($a, $b) {
@@ -399,7 +390,7 @@ class M2contacts {
       foreach ($addressbooks as $id => $value) {
         $name = $value['name'];
         $class = $value['class'];
-        $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id), 'class' => 'contact'.$class, 'foldername' => driver_mel::gi()->mceToRcId($id)));
+        $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id), 'class' => 'contact' . $class, 'foldername' => driver_mel::gi()->mceToRcId($id)));
 
         $table->add('name', $name);
         $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_contacts[$id]) ? $id : ''), array('value' => $id)));
@@ -408,12 +399,10 @@ class M2contacts {
       $this->rc->output->add_gui_object('mel_resources_elements_list', $attrib['id']);
 
       return $table->show($attrib);
-    }
-    catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
+    } catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[Resources] M2contacts::resources_elements_list() Melanie2DatabaseException");
       return false;
-    }
-    catch (\Exception $ex) {
+    } catch (\Exception $ex) {
       return false;
     }
   }
@@ -421,22 +410,24 @@ class M2contacts {
   /**
    * Handler to render ACL form for a contacts folder
    */
-  public function acl_template() {
-    $this->rc->output->add_handler('folderacl', array($this,'acl_form'));
+  public function acl_template()
+  {
+    $this->rc->output->add_handler('folderacl', array($this, 'acl_form'));
     $this->rc->output->send('mel_moncompte.acl_frame');
   }
 
   /**
    * Handler for ACL form template object
    */
-  public function acl_form() {
+  public function acl_form()
+  {
     $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
-    $options = array('type' => 'm2contacts','name' => $id,'attributes' => array(0 => '\\HasNoChildren'),'namespace' => 'personal','special' => false,'rights' => array(0 => 'l',1 => 'r',2 => 's',3 => 'w',4 => 'i',5 => 'p',6 => 'k',7 => 'x',8 => 't',9 => 'e',10 => 'c',11 => 'd',12 => 'a'),'norename' => false,'noselect' => false,'protected' => true);
+    $options = array('type' => 'm2contacts', 'name' => $id, 'attributes' => array(0 => '\\HasNoChildren'), 'namespace' => 'personal', 'special' => false, 'rights' => array(0 => 'l', 1 => 'r', 2 => 's', 3 => 'w', 4 => 'i', 5 => 'p', 6 => 'k', 7 => 'x', 8 => 't', 9 => 'e', 10 => 'c', 11 => 'd', 12 => 'a'), 'norename' => false, 'noselect' => false, 'protected' => true);
 
     $form = array();
 
     // Allow plugins to modify the form content (e.g. with ACL form)
-    $plugin = $this->rc->plugins->exec_hook('acl_form_mel', array('form' => $form,'options' => $options,'name' => $cal->name));
+    $plugin = $this->rc->plugins->exec_hook('acl_form_mel', array('form' => $form, 'options' => $options, 'name' => $cal->name));
 
     if (! $plugin['form']['sharing']['content'])
       $plugin['form']['sharing']['content'] = html::div('hint', $this->rc->gettext('aclnorights'));
@@ -450,13 +441,14 @@ class M2contacts {
    * @param array $attrib
    * @return string
    */
-  public function acl_frame($attrib) {
+  public function acl_frame($attrib)
+  {
     $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
     if (! $attrib['id'])
       $attrib['id'] = 'rcmusersaclframe';
 
     $attrib['name'] = $attrib['id'];
-    $attrib['src'] = $this->rc->url(array('_action' => 'plugin.mel_contacts_acl','id' => $id,'framed' => 1));
+    $attrib['src'] = $this->rc->url(array('_action' => 'plugin.mel_contacts_acl', 'id' => $id, 'framed' => 1));
     $attrib['width'] = '100%';
     $attrib['height'] = 275;
     $attrib['border'] = 0;
@@ -465,7 +457,8 @@ class M2contacts {
     return $this->rc->output->frame($attrib);
   }
 
-  public function restore_contacts($attrib) {
+  public function restore_contacts($attrib)
+  {
 
     if (! $attrib['id'])
       $attrib['id'] = 'rcmExportForm';
@@ -473,10 +466,10 @@ class M2contacts {
     $html = '';
     $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
     $id = driver_mel::gi()->rcToMceId($id);
-    $hidden = new html_hiddenfield(array('name' => 'contacts','id' => 'event-export-contacts','value' => $id));
+    $hidden = new html_hiddenfield(array('name' => 'contacts', 'id' => 'event-export-contacts', 'value' => $id));
     $html .= $hidden->show();
 
-    $select = new html_select(array('name' => 'joursvg','id' => 'event-export-contactsvg'));
+    $select = new html_select(array('name' => 'joursvg', 'id' => 'event-export-contactsvg'));
     $select->add($this->rc->gettext('cal_j-1', 'mel_moncompte'), 'horde_1');
     $select->add($this->rc->gettext('cal_j-2', 'mel_moncompte'), 'horde_2');
     $select->add('', 'horde_n');
@@ -485,7 +478,7 @@ class M2contacts {
 
     $this->rc->output->add_gui_object('exportform', $attrib['id']);
 
-    return html::tag('form', array('action' => $this->rc->url(array('task' => 'addressbook','action' => 'export')),'method' => "post",'id' => $attrib['id']), $html);
+    return html::tag('form', array('action' => $this->rc->url(array('task' => 'addressbook', 'action' => 'export')), 'method' => "post", 'id' => $attrib['id']), $html);
   }
 }
 /**
@@ -493,14 +486,16 @@ class M2contacts {
  *
  * @author Thomas Payen <thomas.payen@i-carre.net> / PNE Messagerie MEDDE
  */
-class M2contactsgroup extends M2contacts {
+class M2contactsgroup extends M2contacts
+{
   /**
    * Constructeur
    *
    * @param string $user
    * @param string $mbox
    */
-  public function __construct($user = null, $mbox = null) {
+  public function __construct($user = null, $mbox = null)
+  {
     $this->group = true;
     parent::__construct($user, $mbox);
   }
@@ -508,14 +503,15 @@ class M2contactsgroup extends M2contacts {
   /**
    * Handler for ACL form template object
    */
-  public function acl_form() {
+  public function acl_form()
+  {
     $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
-    $options = array('type' => 'm2contactsgroup','name' => $id,'attributes' => array(0 => '\\HasNoChildren'),'namespace' => 'personal','special' => false,'rights' => array(0 => 'l',1 => 'r',2 => 's',3 => 'w',4 => 'i',5 => 'p',6 => 'k',7 => 'x',8 => 't',9 => 'e',10 => 'c',11 => 'd',12 => 'a'),'norename' => false,'noselect' => false,'protected' => true);
+    $options = array('type' => 'm2contactsgroup', 'name' => $id, 'attributes' => array(0 => '\\HasNoChildren'), 'namespace' => 'personal', 'special' => false, 'rights' => array(0 => 'l', 1 => 'r', 2 => 's', 3 => 'w', 4 => 'i', 5 => 'p', 6 => 'k', 7 => 'x', 8 => 't', 9 => 'e', 10 => 'c', 11 => 'd', 12 => 'a'), 'norename' => false, 'noselect' => false, 'protected' => true);
 
     $form = array();
 
     // Allow plugins to modify the form content (e.g. with ACL form)
-    $plugin = $this->rc->plugins->exec_hook('acl_form_mel', array('form' => $form,'options' => $options,'name' => $cal->name));
+    $plugin = $this->rc->plugins->exec_hook('acl_form_mel', array('form' => $form, 'options' => $options, 'name' => $cal->name));
 
     if (! $plugin['form']['sharing']['content'])
       $plugin['form']['sharing']['content'] = html::div('hint', $this->rc->gettext('aclnorights'));
@@ -529,13 +525,14 @@ class M2contactsgroup extends M2contacts {
    * @param array $attrib
    * @return string
    */
-  public function acl_frame($attrib) {
+  public function acl_frame($attrib)
+  {
     $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
     if (! $attrib['id'])
       $attrib['id'] = 'rcmusersaclframe';
 
     $attrib['name'] = $attrib['id'];
-    $attrib['src'] = $this->rc->url(array('_action' => 'plugin.mel_contacts_acl_group','id' => $id,'framed' => 1));
+    $attrib['src'] = $this->rc->url(array('_action' => 'plugin.mel_contacts_acl_group', 'id' => $id, 'framed' => 1));
     $attrib['width'] = '100%';
     $attrib['height'] = 275;
     $attrib['border'] = 0;

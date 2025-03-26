@@ -198,9 +198,9 @@ export class create_or_edit_post extends MelObject {
 
     // Vider l'ancienne liste et ajouter les nouvelles suggestions
     datalist.empty();
-    dataList.forEach((item) => {
+    for (const item of dataList) {
       datalist.append(`<option value="${item}">`);
-    });
+    }
   }
   // endregion
 

@@ -330,10 +330,9 @@ export class Forum extends MelObject {
   autocomplete(inputSelector, suggestionsSelector, dataList) {
     const input = $(inputSelector);
     const suggestion = $(suggestionsSelector);
-    const self = this;
 
-    input.on('input', function () {
-      const query = $(this).val().toLowerCase().trim();
+    input.on('input', (e) => {
+      const query = e.currentTarget.value.toLowerCase().trim();
       suggestion.empty().hide();
 
       if (query) {
@@ -342,16 +341,16 @@ export class Forum extends MelObject {
         );
 
         if (filtered.length > 0) {
-          filtered.forEach((item) => {
+          for (const item of filtered) {
             const div = document.createElement('div');
             div.textContent = item;
             div.addEventListener('click', () => {
               input.val(item);
               suggestion.empty().hide();
-              self.searchPosts();
+              this.searchPosts();
             });
             suggestion.append(div);
-          });
+          }
 
           suggestion.css('display', 'block');
         }

@@ -104,13 +104,6 @@ class NextcloudModule extends WorkspaceObject {
   main() {
     super.main();
 
-    // Ajouter le listener pour le plein écran
-    this._p_set_full_screen_listener(
-      'stockage',
-      document.getElementById('module-nc'),
-      null, //TODO
-    );
-
     NavBarManager.AddEventListener().OnAfterSwitch((args) => {
       const { task } = args;
       let nextCloudFrame = FramesManager.Instance.get_frame('stockage', {
@@ -131,6 +124,14 @@ class NextcloudModule extends WorkspaceObject {
 
     BnumPromise.Start(async () => {
       await NavBarManager.WaitLoading();
+      // Ajouter le listener pour le plein écran
+      await this._p_set_full_screen_listener(
+        'stockage',
+        document.getElementById('module-nc'),
+        $(NavBarManager.currentNavBar.mainDiv).find(
+          '[data-task="stockage"] .visibility-icon',
+        ),
+      );
       NavBarManager.currentNavBar.onstatetoggle.push(async (...args) => {
         const [task, state, caller] = args;
         const loading = BnumMessage.DisplayMessage(
@@ -180,6 +181,7 @@ class NextcloudModule extends WorkspaceObject {
     let roundrive = new Roundrive(folder);
     let contents = this.moduleContainer.querySelector('.module-block-content');
 
+    contents.setAttribute('tabindex', '0');
     contents.style.position = 'relative';
     contents.appendChild(loader);
     this.moduleContainer.disableRefreshButton();
@@ -244,6 +246,10 @@ class NextcloudModule extends WorkspaceObject {
     contents = null;
   }
 
+  /**
+   * Configure le dropdown.
+   * @private
+   */
   #_setupDropDown() {
     this.dropdown.addEventListener('custom:event:change', (e) => {
       const { value } = e.detail;
@@ -254,6 +260,7 @@ class NextcloudModule extends WorkspaceObject {
           this.moduleContainer.content.style.display = 'none';
           if (pan) {
             pan.style.display = null;
+            $(pan).focus();
           } else {
             this.dropdown.disable();
             this.moduleContainer.disableRefreshButton();
@@ -265,11 +272,13 @@ class NextcloudModule extends WorkspaceObject {
             pan.appendChild(
               BootstrapLoader.Create({ mode: 'block', center: true }),
             );
+            pan.setAttribute('tabindex', '0');
             this.moduleContainer.appendChild(pan);
             this.#_appendFavorites(pan).then(() => {
               pan.querySelector(BootstrapLoader.TAG).remove();
               this.dropdown.enable();
               this.moduleContainer.enableRefreshButton();
+              $(pan).focus();
             });
           }
 
@@ -277,6 +286,7 @@ class NextcloudModule extends WorkspaceObject {
 
         default:
           this.moduleContainer.content.style.display = null;
+          $(this.moduleContainer.content).focus();
           if (pan) pan.style.display = 'none';
           break;
       }

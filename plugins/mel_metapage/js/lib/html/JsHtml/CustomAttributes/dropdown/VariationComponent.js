@@ -47,29 +47,19 @@ export default class DropDownVariationComponent extends AHTMLComponent {
   setup(...args) {
     super.setup(...args);
 
-    let iconElement;
+    let iconElement = this._p_parent().querySelector(BnumHtmlIcon.TAG);
+
+    if (iconElement) {
+      args[0].prepend(BnumHtmlShadowIcon.Create({ icon: iconElement.icon }));
+      iconElement.remove();
+    } else if (
+      (iconElement = this._p_parent().querySelector(BnumHtmlShadowIcon.TAG))
+    ) {
+      args[0].prepend(iconElement);
+    }
+
     switch (this.variation) {
-      case EDropDownVariations.alternate:
-        args[0].prepend(BnumHtmlShadowIcon.Arrow.down);
-
-        if (this._p_parent().querySelector(BnumHtmlIcon.TAG))
-          console.warn('/!\\Icon is not supported in alternate dropdown');
-        break;
-
-      default:
-        iconElement = this._p_parent().querySelector(BnumHtmlIcon.TAG);
-
-        if (iconElement) {
-          args[0].prepend(
-            BnumHtmlShadowIcon.Create({ icon: iconElement.icon }),
-          );
-          iconElement.remove();
-        } else if (
-          (iconElement = this._p_parent().querySelector(BnumHtmlShadowIcon.TAG))
-        ) {
-          args[0].prepend(iconElement);
-        }
-
+      case EDropDownVariations.default:
         this._p_parent().classList.add(
           'input-mel',
           'fake-input',
@@ -94,16 +84,20 @@ export default class DropDownVariationComponent extends AHTMLComponent {
         style = `
             :host(:state(alternate)) {
                 color: var(--dropdown-color--alternate, var(--mel-button-text-color, #363a5b));
-                padding: var(--dropdow-padding--alternate, 8px 10px 8px 10px);
+                padding: var(--dropdow-padding--alternate, 8px 10px 8px 0px);
                 /*border-radius: 5px;*/
             }
 
+            :host(:state(alternate)) > bnum-wrapper {
+              justify-content: var(--dropdown-justify-content--alternate, left);
+            }
+
             :host(:state(alternate)) select {
-              padding-left: 10px;
+              padding-left: 0px;
               color: var(--dropdown-color--alternate, var(--mel-button-text-color, #363a5b));
-              -moz-appearance: none; /* Firefox */
-              -webkit-appearance: none; /* Safari and Chrome */
-              appearance: none; 
+              /*-moz-appearance: none; * Firefox *
+              -webkit-appearance: none; * Safari and Chrome *
+              appearance: none; */
             }
 
             :host(:state(alternate):hover) {

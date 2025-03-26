@@ -1,5 +1,6 @@
 import { MelEnumerable } from '../../../../classes/enum.js';
-import { EMPTY_STRING } from '../../../../constants/constants.js';
+import { EMPTY_STRING, SPACE } from '../../../../constants/constants.js';
+import { InternetNavigator } from '../../../../helpers/InternetNavigator.js';
 import { BnumEvent } from '../../../../mel_events.js';
 import {
   BnumHtmlShadowIcon,
@@ -90,6 +91,7 @@ export default class HTMLDropDownElement extends AHTMLCustomInternalElement {
    * @type {import('../lib/AHTMLComponent.js').default[]}
    */
   #_components = [];
+  #_updateStyle = [];
 
   constructor() {
     super({ mode: EWebComponentMode.inline_block });
@@ -160,23 +162,48 @@ export default class HTMLDropDownElement extends AHTMLCustomInternalElement {
       (this.getAttribute('id') ?? 'dropdown__host') + '__voice',
     );
 
+    //Ajout du shadow dom
+    let context = this._p_start_construct({ delegatesFocus: true });
+
     //Modifications sur cet élément
     this.setAttribute('aria-labelledby', `${voiceId}2`);
     this.setState('bnum-dropdown');
-    this.onclick = () => {
-      this.navigator.querySelector('select').showPicker();
-    };
 
     this.attrs({
       role: 'combobox',
       tabindex: 0,
     });
 
+    //Génération des élément
+    if (!InternetNavigator.IsFirefox()) {
+      //Les navigateurs sous chromium ne savent pas gérer le clique d'un select sans se réouvrir lui même, on lui ajoute donc un wrapper.
+      this.state.add('not-firefox');
+      let absoluteWrapper =
+        HTMLWrapperElement.CreateNode().addClass('absolute-wrapper');
+      absoluteWrapper.onclick = this.action.bind(this);
+      context.append(absoluteWrapper);
+      absoluteWrapper = null;
+
+      // MARK: Additionnal :Style
+      this.#_updateStyle.push(`
+        :host(:state(not-firefox)) {
+          position: relative;
+        }
+
+        :host(:state(not-firefox)) .absolute-wrapper {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+        }`);
+    } else this.onclick = this.action.bind(this);
+
     this.onkeydown = (e) => {
       switch (e.key) {
-        case ' ':
+        case SPACE:
         case 'Enter':
-          this.click();
+          this.action();
           break;
 
         default:
@@ -184,15 +211,12 @@ export default class HTMLDropDownElement extends AHTMLCustomInternalElement {
       }
     };
 
-    //Ajout du shadow dom
-    let context = this._p_start_construct({ delegatesFocus: true });
-
-    //Génération des élément
     //Génération du select
     let select = document.createElement('select');
     select.addEventListener('change', (e) => {
       this.onvaluechanged.call(this.value, e, this);
     });
+    select.style.pointerEvents = 'none';
     select.setAttribute('tabindex', '-1');
     select.setAttribute('aria-labelledby', voiceId);
 
@@ -215,7 +239,7 @@ export default class HTMLDropDownElement extends AHTMLCustomInternalElement {
     this.#_removeOldOptions();
 
     //Génération du wrapper
-    let wrapper = HTMLWrapperElement.CreateNode();
+    let wrapper = HTMLWrapperElement.CreateNode().addClass('host__wrapper');
     wrapper.style.display = 'flex';
     wrapper.appendChild(select);
 
@@ -263,6 +287,8 @@ export default class HTMLDropDownElement extends AHTMLCustomInternalElement {
     this.internals.setFormValue(this.value);
 
     //Libération de la mémoire
+    this.#_updateStyle.length = 0;
+    this.#_updateStyle = null;
     context = null;
     style = null;
     select = null;
@@ -297,6 +323,7 @@ export default class HTMLDropDownElement extends AHTMLCustomInternalElement {
     return true;
   }
 
+  // MARK: :Style
   /**
    * C'est ici que le style de l'élément est défini
    * @returns {string}
@@ -334,7 +361,10 @@ export default class HTMLDropDownElement extends AHTMLCustomInternalElement {
         display:contents;
       }
 
-      ${this.#_components.map((x) => x?.style?.() ?? EMPTY_STRING).join(EMPTY_STRING)}
+      ${this.#_components
+        .map((x) => x?.style?.() ?? EMPTY_STRING)
+        .concat(...this.#_updateStyle)
+        .join(EMPTY_STRING)}
     `;
   }
 
@@ -407,6 +437,13 @@ export default class HTMLDropDownElement extends AHTMLCustomInternalElement {
 
       ok();
     });
+  }
+
+  /**
+   * Action à faire lorsqu'on clique sur l'élément
+   */
+  action() {
+    this.navigator.querySelector('select').showPicker();
   }
 
   /**

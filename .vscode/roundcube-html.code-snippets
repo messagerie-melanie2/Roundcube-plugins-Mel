@@ -1,0 +1,133 @@
+{
+	// Place your Roundcube-plugins-Mel workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
+	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
+	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
+	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are: 
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. 
+	// Placeholders with the same ids are connected.
+	// Example:
+	"roundcube:label": {
+		"scope": "html",
+		"prefix": "roundcube:label",
+		"body": [
+			"<roundcube:label name=\"$1.$2\" />$0"
+		],
+		"description": "Label roundcube"
+	},
+	"roundcube:includes": {
+		"scope": "html",
+		"prefix": "roundcube:include",
+		"body": [
+			"<roundcube:include file=\"$1.html\" />$0"
+		],
+		"description": "Include other roundcube html file"
+	},
+	"roundcube:var": {
+		"scope": "html",
+		"prefix": "roundcube:var",
+		"body": [
+			"<roundcube:var name=\"env:$1\" />$0"
+		],
+		"description": "Returns the content of the specified environment variable."
+	},
+	"roundcube:exp": {
+		"scope": "html",
+		"prefix": "roundcube:exp",
+		"body": [
+			"<roundcube:exp expression=\"$1 ? $2 : $3\" />$0"
+		],
+		"description": "Evaluates the given expression and returns the resulting content. The syntax of the expressions is actually PHP code but can contain variables as described in Environment variables."
+	},
+	"roundcube:button-link": {
+		"scope": "html",
+		"prefix": "roundcube:button-link",
+		"body": [
+			"<roundcube:button type=\"link\" command=\"$1\" label=\"$2.$3\" class=\"$4\" classAct=\"$4 $5 active\" />$0"
+		],
+		"description": "Creates a button for a specific command of the Roundcube client. A button is also registered in the UI manager and is automatically enabled and disabled according to the current state of the application."
+	},
+	"roundcube:button-input": {
+		"scope": "html",
+		"prefix": "roundcube:button-input",
+		"body": [
+			"<roundcube:button type=\"input\" command=\"$1\" label=\"$2.$3\" class=\"$4\" classAct=\"$4 $5 active\" />$0"
+		],
+		"description": "Creates a button for a specific command of the Roundcube client. A button is also registered in the UI manager and is automatically enabled and disabled according to the current state of the application."
+	},
+	"roundcube:button": {
+		"scope": "html",
+		"prefix": "roundcube:button",
+		"body": [
+			"<roundcube:button command=\"$1\" label=\"$2.$3\" class=\"$4\" classAct=\"$4 $5 active\" />$0"
+		],
+		"description": "Creates a button for a specific command of the Roundcube client. A button is also registered in the UI manager and is automatically enabled and disabled according to the current state of the application."
+	},
+	"roundcube:container": {
+		"scope": "html",
+		"prefix": "roundcube:container",
+		"body": [
+			"<roundcube:container name=\"$1\" id=\"$2\" />$0"
+		],
+		"description": "This tag defines a container where plugins can add their stuff. HTML content will be added at this tags position by the template engine and it also specifies the ID of a DOM element where more content can be added client side."
+	},
+	"roundcube:object": {
+		"scope": "html",
+		"prefix": "roundcube:object",
+		"body": [
+			"<roundcube:object name=\"$1\" $0 />"
+		],
+		"description": "Dynamic content which is created by the application is put into the template with this tag. An object is identified by the name attribute and can require further attributes according to the object type as well as regular HTML attributes which are just passed through. The section Content objects describes all available objects and their attributes. Please note that most objects are only available in certain steps/tempaltes. An object tag will be ignored and replaced by an empty string if it's not available."
+	},
+	"roundcube:if": {
+		"scope": "html",
+		"prefix": "roundcube:if",
+		"body": [
+			"<roundcube:if condition=\"$1\" />",
+			"${2:content}",
+			"<roundcube:endif />",
+			"$0"
+		],
+		"description": "These tags allow you the include or exclude certain parts of the template if a given Conditional expressions evaluates to true."
+	},
+	"roundcube:elseif": {
+		"scope": "html",
+		"prefix": "roundcube:elseif",
+		"body": [
+			"<roundcube:elseif condition=\"$1\" />",			
+			"${2:content}",
+			"$0"
+		],
+		"description": "These tags allow you the include or exclude certain parts of the template if a given Conditional expressions evaluates to true."
+	},
+	"roundcube:else": {
+		"scope": "html",
+		"prefix": "roundcube:else",
+		"body": [
+			"<roundcube:else />",
+			"${2:content}",
+			"$0"
+		],
+		"description": "These tags allow you the include or exclude certain parts of the template if a given Conditional expressions evaluates to true."
+	},
+	"roundcube:endif": {
+		"scope": "html",
+		"prefix": "roundcube:endif",
+		"body": [
+			"<roundcube:endif />$0"
+		],
+		"description": "These tags allow you the include or exclude certain parts of the template if a given Conditional expressions evaluates to true."
+	},
+	"roundcube:ifelse": {
+		"scope": "html",
+		"prefix": "roundcube:ifelse",
+		"body": [
+			"<roundcube:if condition=\"$1\" />",
+			"${2:ifcontent}",
+			"<roundcube:else />",
+			"${3:elsecontent}",
+			"<roundcube:endif />",
+			"$0"
+		],
+		"description": "These tags allow you the include or exclude certain parts of the template if a given Conditional expressions evaluates to true."
+	},
+}

@@ -30,7 +30,7 @@ export default class AHTMLComponent {
    * @description Méthode d'initialisation du composant
    * @abstract
    */
-  setup() {}
+  setup(...args) {}
 
   /**
    * @description Méthode appelée lorsqu'un attribut est mis à jour
@@ -57,6 +57,14 @@ export default class AHTMLComponent {
     }
 
     return returnValue;
+  }
+
+  /**
+   * @protected
+   * @returns {import('../js_html_base_web_elements.js').HtmlCustomDataTag}
+   */
+  _p_parent() {
+    return this.#_parent;
   }
 
   /**

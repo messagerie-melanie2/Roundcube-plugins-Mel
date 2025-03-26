@@ -2638,6 +2638,7 @@ function sendMessageToAriane(data) {
     'https://ariane.preprod.m2.e2.rie.gouv.fr',
     'https://ariane.din.developpement-durable.gouv.fr',
     'https://mel.din.developpement-durable.gouv.fr',
+    'https://bnum.din.gouv.fr',
     'https://rcube.preprod.m2.e2.rie.gouv.fr',
   ];
 

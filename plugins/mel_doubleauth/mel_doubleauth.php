@@ -639,8 +639,8 @@ class mel_doubleauth extends bnum_plugin {
 
         $bodymail = new MailBody('mel_doubleauth.email', [
             'code' => $otp,
-            'bnum.change_password' => 'https://mel.din.developpement-durable.gouv.fr/changepassword/index.php',
-            'url.internal.security' => 'https://mel.din.developpement-durable.gouv.fr/aide/doc/bnum/#15-Configuration:l4GIVl2g7xdGSnhdT7Cdwd',
+            'bnum.change_password' => 'https://bnum.din.gouv.fr/changepassword/index.php',
+            'url.internal.security' => 'https://aide.din.developpement-durable.gouv.fr/bnum_tutoriels-apprendre_01_authentification/',
             'expiration' => $expire/60,
             'logobnum' => __DIR__.'/skins/mel_elastic/pictures/logobnum.png'//MailBody::load_image(__DIR__.'/skins/elastic/pictures/logobnum.png', 'png')
         ]);

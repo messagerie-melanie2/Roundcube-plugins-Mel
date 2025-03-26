@@ -134,6 +134,7 @@ class mel_forum extends bnum_plugin
         $this->rc()->output->set_env('workspace_uid', $workspace_uid);
         $this->rc()->output->set_env('user_fullname', driver_mel::gi()->getUser()->name);
         $this->rc()->output->set_env('is_admin', driver_mel::gi()->getUser()->isWorkspaceOwner($workspace_uid));
+        $this->rc()->output->set_env('wsp_tags', $this->_get_all_tags_by_workspace($workspace_uid));
         $this->rc()->output->add_handlers(['post_search' => [$this, '_show_search']]);
         $this->rc()->output->send('mel_forum.forum');
     }
@@ -377,6 +378,7 @@ class mel_forum extends bnum_plugin
 
         //vérification des droits d'accès
         if ($user->isWorkspaceMember($this->get_input('_workspace_uid'))) {
+            $this->rc()->output->set_env('wsp_tags', $this->_get_all_tags_by_workspace($this->get_input('_workspace_uid')));
             $this->rc()->html_editor();
             $this->load_script_module('create_or_edit_post');
 
@@ -438,6 +440,7 @@ class mel_forum extends bnum_plugin
             ];
             $this->rc()->output->set_env('post', $post_data);
             $this->rc()->output->set_env('is_editing', $is_editing);
+            $this->rc()->output->set_env('post', $post_data);
             $this->include_web_component()->Base();
             $this->include_web_component()->BnumButton();
 
@@ -483,6 +486,16 @@ class mel_forum extends bnum_plugin
         if (!$this->_has_owner_rights($post, $post->workspace)) {
             $this->_display_error_page();
         }
+        // gestion des tags
+        $tags = $post->listTags();
+        foreach ($tags as $tag) {
+            $this->_unsassociate_tags_from_post($tag->name);
+            // si le tag est associé à aucun post le supprimer
+            if (!$this->_tag_is_associated_to_any_post($tag->name)) {
+                $this->_delete_tag($tag->name);
+            }
+        }
+
 
         // Supprimer l'article
         $ret = $post->delete();
@@ -1037,7 +1050,7 @@ class mel_forum extends bnum_plugin
     protected function _create_tag($name)
     {
         // Récupérer le Workspace
-        $workspace_uid = $this->get_input('_workspace', rcube_utils::INPUT_POST);
+        $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_POST);
 
         //Créer un tag
         $tag = new LibMelanie\Api\Defaut\Posts\Tag();
@@ -1062,7 +1075,7 @@ class mel_forum extends bnum_plugin
     private function _delete_tag($name)
     {
         // Récupérer le Workspace
-        $workspace_uid = $this->get_input('_workspace', rcube_utils::INPUT_POST);
+        $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_POST);
 
         // Récupérer le tag existant
         $tag = new LibMelanie\Api\Defaut\Posts\Tag();
@@ -1084,7 +1097,7 @@ class mel_forum extends bnum_plugin
      */
     protected function _associate_tag_with_post($name)
     {
-        $workspace_uid = $this->get_input('_workspace', rcube_utils::INPUT_POST);
+        $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_POST);
         $uid = $this->get_input('_uid', rcube_utils::INPUT_POST);
 
         // Récupérer le tag existant
@@ -1108,7 +1121,7 @@ class mel_forum extends bnum_plugin
      */
     protected function _unsassociate_tags_from_post($name)
     {
-        $workspace_uid = $this->get_input('_workspace', rcube_utils::INPUT_POST);
+        $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_POST);
         $uid = $this->get_input('_uid', rcube_utils::INPUT_POST);
 
         // Récupérer le tag existant
@@ -1156,7 +1169,7 @@ class mel_forum extends bnum_plugin
     protected function _exist_tag($exist_tag)
     {
         $tag = new LibMelanie\Api\Defaut\Posts\Tag();
-        $tag->workspace = $this->get_input('_workspace', rcube_utils::INPUT_POST);
+        $tag->workspace = $this->get_input('_workspace_uid', rcube_utils::INPUT_POST);
         $tags = $tag->listTags();
         foreach ($tags as $tag) {
             if ($tag->name === $exist_tag) {
@@ -1174,7 +1187,7 @@ class mel_forum extends bnum_plugin
     protected function _tag_is_associated_to_any_post($tag_name)
     {
         $tag = new LibMelanie\Api\Defaut\Posts\Tag();
-        $tag->workspace = $this->get_input('_workspace', rcube_utils::INPUT_POST);
+        $tag->workspace = $this->get_input('_workspace_uid', rcube_utils::INPUT_POST);
         $tag->name = $tag_name;
         $tag->load();
         return (!($tag->countPosts() === 0));
@@ -1195,6 +1208,26 @@ class mel_forum extends bnum_plugin
 
         foreach ($tags as $tag) {
             $rettags[] = ["name" => $tag->tag_name, "id" => $tag->id];
+        }
+
+        return $rettags;
+    }
+
+    /**
+     * récupère tout les tags d'un espace de travail
+     * 
+     * @param string 
+     */
+    protected function _get_all_tags_by_workspace($wsp_uid)
+    {
+        $tag = new \LibMelanie\Api\Defaut\Posts\Tag();
+        $tag->workspace = $wsp_uid;
+
+        $rettags = [];
+        $tags = $tag->listTags();
+
+        foreach ($tags as $tag) {
+            $rettags[] = $tag->name;
         }
 
         return $rettags;

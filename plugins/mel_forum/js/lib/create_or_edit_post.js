@@ -109,6 +109,7 @@ export class create_or_edit_post extends MelObject {
    * @returns {void}
    */
   addTagListenner() {
+    this.autocompleDatalist('#suggestions', this.get_env('wsp_tags'));
     $('#add-tag').on('keydown', (event) => {
       if (event.keyCode === 13) {
         // Touche "Entrée"
@@ -187,6 +188,20 @@ export class create_or_edit_post extends MelObject {
     });
   }
 
+  /**
+   * Autocomplétion pour la création de tag
+   * @param {string} datalistSelector selecteur jquery de la div de suggestion
+   * @param {string[]} dataList tableau de référence
+   */
+  autocompleDatalist(datalistSelector, dataList) {
+    const datalist = $(datalistSelector);
+
+    // Vider l'ancienne liste et ajouter les nouvelles suggestions
+    datalist.empty();
+    for (const item of dataList) {
+      datalist.append(`<option value="${item}">`);
+    }
+  }
   // endregion
 
   // region Boutons principaux

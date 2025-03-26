@@ -100,6 +100,11 @@ class mtes_driver_mel extends mce_driver_mel
   ];
 
   /**
+   * Domaine pour les utilisateurs externes
+   */
+  const EXTERNAL_USER_DOMAIN = '@bnum.melanie2.i2';
+
+  /**
    * Liste des domaines internes pour ne pas créer d'utilisateur externe
    */
   const INTERNAL_DOMAINS = [
@@ -640,7 +645,6 @@ class mtes_driver_mel extends mce_driver_mel
     $user = $this->user([null, 'webmail.external.users']);
 
     $user->email = $email;
-    $user->email_list = [$email];
 
     if ($user->load()) {
       // Si l'utilisateur existe on ne fait rien
@@ -651,14 +655,17 @@ class mtes_driver_mel extends mce_driver_mel
       // Calcul des nom/prénom à partir de l'adresse email (à confirmer plus tard)
       list($firstname, $lastname) = array_values($this->get_names_from_email($email));
 
+      $user->server_routage = $email;
+      $user->email_list = [$this->_external_email($email)];
+
       // Calcul de l'uid à partir de l'adresse email
       $uid = $this->get_uid_from_email($email);
 
       // Ajout des attributs
       foreach (self::EXTERNAL_USER as $key => $value) {
-        $user->$key = str_replace(
+        $user->$key = trim(str_replace(
           ['%%firstname%%', '%%lastname%%', '%%email%%', '%%uid%%'], 
-          [$firstname, $lastname, $email, $uid], $value);
+          [$firstname, $lastname, $email, $uid], $value));
       }
 
       // UUIDv4
@@ -709,6 +716,18 @@ class mtes_driver_mel extends mce_driver_mel
       }
       return !is_null($ret);
     }
+  }
+
+  /**
+   * Génération d'un email dédié pour les externes (pour éviter les conflits avec les imports)
+   * 
+   * @param string $email Email de l'utilisateur externe
+   * 
+   * @return string Email formatté de l'utilisateur externe
+   */
+  protected function _external_email($email)
+  {
+    return str_replace('@', '-at-', $email) . self::EXTERNAL_USER_DOMAIN;
   }
 
   /**

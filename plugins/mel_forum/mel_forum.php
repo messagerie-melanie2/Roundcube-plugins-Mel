@@ -696,31 +696,57 @@ class mel_forum extends bnum_plugin
     #region Enregistrement
 
     /**
-     * Traite l'envoi d'un article (création ou édition) et notifie les utilisateurs si c'est une nouvelle publication.
+     * Gère l'envoi d'un article (création ou modification) et déclenche des notifications si nécessaire.
      *
      * Cette méthode :
-     * - Détermine si l'action est une publication ou un brouillon, via `_isdraft`
-     * - Sauvegarde l'article via `_add_post()`
-     * - Envoie des notifications aux utilisateurs (uniquement pour les nouvelles publications)
-     * - Gère les tags associés à l'article
-     * - Notifie via Tchap si configuré
-     * - Logge les erreurs éventuelles
+     * - Vérifie si l'article est un brouillon ou une publication via `_isdraft`.
+     * - Charge l'article existant pour comparer son état précédent.
+     * - Sauvegarde l'article via `_add_post()`.
+     * - Met à jour les tags associés.
+     * - Envoie des notifications aux utilisateurs si l'article est nouvellement publié.
+     * - Envoie un message via Tchap en cas de publication.
+     * - Logge les erreurs en cas d'échec de la sauvegarde.
+     *
+     * Notifications :
+     * - Une notification est envoyée si l'article est une nouvelle publication.
+     * - Les notifications ne sont pas envoyées pour les mises à jour de publications existantes.
+     * - Un message Tchap est envoyé uniquement en cas de nouvelle publication.
      *
      * @return void
-     * 
      */
     public function send_post()
     {
         $is_draft = $this->get_input('_isdraft', rcube_utils::INPUT_POST) === 'true';
-        $result = $this->_add_post();
-        if ($result !== null && !$is_draft) {
-            // Notifier les utilisateurs, seulement si c'est une création
-            $this->notify();  // Appel à la fonction de notification
+        $post_uid = $this->get_input('_uid', rcube_utils::INPUT_POST);
 
-            // Ensuite, passer à la gestion des tags
+        // Charger l'article AVANT modification pour connaître son état précédent
+        $post = new LibMelanie\Api\Defaut\Posts\Post();
+        $post->uid = $post_uid;
+        $post_exists = $post->load();
+
+        $result = $this->_add_post();
+
+        if ($result !== null) {
+            // Gestion des tags
             $this->_manage_tags();
-            //on notifie les utilisateur via le salon tchap associé si il éxiste
-            tchap::send_message($this->get_input('_workspace', rcube_utils::INPUT_POST), sprintf($this->gettext('a_post_has_been_published', 'mel_forum'), $this->get_input('_title', rcube_utils::INPUT_POST)));
+
+            // Cas 1: Nouvel article publié
+            // Cas 2: Brouillon existant publié
+            $should_notify = (!$post_exists || ($post->isdraft && !$is_draft));
+
+            if ($should_notify) {
+                // Notifier les utilisateurs seulement dans les cas 1 et 2
+                $this->notify();
+
+                // Envoyer le message Tchap seulement si c'est une publication
+                tchap::send_message(
+                    $this->get_input('_workspace', rcube_utils::INPUT_POST),
+                    sprintf(
+                        $this->gettext('a_post_has_been_published', 'mel_forum'),
+                        $this->get_input('_title', rcube_utils::INPUT_POST)
+                    )
+                );
+            }
         } else {
             mel_logs::get_instance()->log(mel_logs::ERROR, 'mel_forum:: erreur de lors de la modification du post');
         }

@@ -153,9 +153,11 @@ RoundriveCreate.prototype.create_document = function (goFunc = null) {
                 name: datas.file,
               },
               goFunc,
-              async (error) => {
-                create_popUp = undefined;
-                create_popUp.close();
+              async () => {
+                let pop = window.create_popUp;
+                //On supprime la variable globale pour ne pas que la modale soit considéré comme "minifié".
+                window.create_popUp = undefined;
+                pop.close();
               },
             );
           }

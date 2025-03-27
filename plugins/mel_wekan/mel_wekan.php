@@ -491,7 +491,7 @@ class mel_wekan extends bnum_plugin
                     case 'custom_name':
                         if ($default_value[$index]['mode'] === 'custom_name') $title = $default_value[$index]['value'];
                     case 'create':
-                        $board_id = $this->create_workspace_wekan($workspace, $title ?? $workspace->title(), $workspace->isPublic() === false ? false: true, null, [
+                        $board_id = $this->create_workspace_wekan($workspace, $title ?? $workspace->title(), !!$workspace->isPublic(), null, [
                             $this->rc->gettext("wekan_todo", "mel_workspace"),
                             $this->rc->gettext("wekan_in_progress", "mel_workspace"),
                             $this->rc->gettext("wekan_do", "mel_workspace")

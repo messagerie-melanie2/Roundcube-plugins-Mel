@@ -1,9 +1,9 @@
+import ABaseMelObject from '../../../base_mel_object.js';
 import { BaseStorage } from '../../../classes/base_storage.js';
 import { Random } from '../../../classes/random.js';
 import { BnumModules } from '../../../helpers/dynamic_load_modules.js';
 import { MaterialIcon } from '../../../icons.js';
 import { isNullOrUndefined } from '../../../mel.js';
-import { MelObject } from '../../../mel_object.js';
 export {
   HtmlCustomTag,
   HtmlCustomDataTag,
@@ -658,14 +658,14 @@ class BnumHtmlShadowIcon extends BnumHtmlIcon {
     if (BnumHtmlShadowIcon._style_in_save) return;
 
     BnumHtmlShadowIcon._style_in_save = true;
-    await MelObject.Empty().http_call({
+    await ABaseMelObject.Empty().http_call({
       url: `${window.location.origin + window.location.pathname}skins/mel_elastic/material-symbols.css?v=${BnumModules.VERSION}`,
       on_success: (loaded) => {
-        MelObject.Empty().save(
+        ABaseMelObject.Empty().save(
           'shadow-icon-material-symbol-version',
           BnumModules.VERSION,
         );
-        MelObject.Empty().save('shadow-icon-material-symbol', loaded);
+        ABaseMelObject.Empty().save('shadow-icon-material-symbol', loaded);
       },
     });
 
@@ -674,7 +674,9 @@ class BnumHtmlShadowIcon extends BnumHtmlIcon {
 
   #_loadStyle() {
     let style;
-    let loaded_style = MelObject.Empty().load('shadow-icon-material-symbol');
+    let loaded_style = ABaseMelObject.Empty().load(
+      'shadow-icon-material-symbol',
+    );
 
     if (!loaded_style) {
       this.#_saveStyle();
@@ -682,11 +684,12 @@ class BnumHtmlShadowIcon extends BnumHtmlIcon {
       style.rel = 'stylesheet';
       style.href = `skins/mel_elastic/material-symbols.css?v=${BnumModules.VERSION}`;
     } else if (
-      (MelObject.Empty().load('shadow-icon-material-symbol-version') || true) &&
-      MelObject.Empty().load('shadow-icon-material-symbol-version') !==
+      (ABaseMelObject.Empty().load('shadow-icon-material-symbol-version') ||
+        true) &&
+      ABaseMelObject.Empty().load('shadow-icon-material-symbol-version') !==
         BnumModules.VERSION
     ) {
-      MelObject.Empty().save('shadow-icon-material-symbol', null);
+      ABaseMelObject.Empty().save('shadow-icon-material-symbol', null);
       style = this.#_loadStyle();
     } else {
       style = document.createElement('style');

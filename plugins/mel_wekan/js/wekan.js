@@ -71,42 +71,9 @@ class Wekan {
   }
 }
 
-function _try_observe_html() {
-  // Selectionne le noeud dont les mutations seront observées
-  let targetNode = document.querySelector('html');
-
-  // Options de l'observateur (quelles sont les mutations à observer)
-  let config = { attributes: true, childList: false, subtree: false };
-
-  // Créé une instance de l'observateur lié à la fonction de callback
-  let observer = new MutationObserver((mutationsList) => {
-    for (const mutation of mutationsList) {
-      if (
-        mutation.type === 'attributes' &&
-        mutation.attributeName === 'class'
-      ) {
-        let style;
-        if (document.querySelector('html').classList.contains('mwsp'))
-          style = 'none';
-        else style = 'flex';
-
-        PageManager.Instance.get_frame('wekan')[0]
-          .contentWindow.$('#wekan-iframe')[0]
-          .contentWindow.document.querySelector(
-            '#header-quick-access',
-          ).style.display = style;
-        break;
-      }
-    }
-  });
-
-  observer.observe(targetNode, config);
-
-  return this;
-}
 
 window.wekan = new Wekan();
-if (rcmail.env.plugin_list_workspace) _try_observe_html();
+
 $(document).ready(async () => {
   if (
     rcmail.env.task === 'wekan' &&

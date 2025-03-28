@@ -531,6 +531,47 @@ class WorkspaceObject extends MelObject {
 
     return false;
   }
+
+  /**
+   * Ajoute un observer sur le html pour savoir si la page est affiché dans un espace de travail ou non.
+   * @param {(data:{style: 'none' | 'flex', mutation:MutationRecord}) => void} onUpdated
+   * @param {Object} [param1={}]
+   * @param {?HTMLElement} [param1.targetNode=null]
+   * @param {string} [param1.displayOnShow='flex']
+   * @returns {MutationObserver}
+   */
+  static TryObserveHtml(
+    onUpdated,
+    { targetNode = null, displayOnShow = 'flex' } = {},
+  ) {
+    // Selectionne le noeud dont les mutations seront observées
+    targetNode ??= document.querySelector('html');
+
+    // Options de l'observateur (quelles sont les mutations à observer)
+    let config = { attributes: true, childList: false, subtree: false };
+
+    // Créé une instance de l'observateur lié à la fonction de callback
+    let observer = new MutationObserver((mutationsList) => {
+      for (const mutation of mutationsList) {
+        if (
+          mutation.type === 'attributes' &&
+          mutation.attributeName === 'class'
+        ) {
+          let style;
+          if (document.querySelector('html').classList.contains('mwsp'))
+            style = 'none';
+          else style = displayOnShow;
+
+          onUpdated({ style, mutation });
+          break;
+        }
+      }
+    });
+
+    observer.observe(targetNode, config);
+
+    return observer;
+  }
 }
 
 /**

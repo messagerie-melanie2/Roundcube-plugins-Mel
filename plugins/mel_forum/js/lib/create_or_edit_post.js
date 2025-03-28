@@ -295,9 +295,12 @@ export class create_or_edit_post extends MelObject {
   publishButton() {
     $('#publish-post').click(() => {
       this.post_id = this.get_env('post').id;
+      this.post_uid = this.get_env('post').uid
 
       // Vérifier s'il s'agit d'une création ou d'une modification
-      const isModification = !!this.post_id; // true si post_id est défini (modification)
+      const isModification = !!this.post_id; // true si un identifiant existe (modification)
+      const isEditing = this.get_env('is_editing');
+      const wasDraft = this.get_env('post')?.isdraft ?? false; // Vérifie si c'était un brouillon
       let content = tinymce.activeEditor.getContent();
       let title = $('#edit-title').val().trim();
       if (title !== '' && content !== '') {
@@ -313,6 +316,8 @@ export class create_or_edit_post extends MelObject {
             _content: content,
             _uid: this.post_uid,
             _isdraft: false,
+            _is_editing: isEditing,
+            _was_draft: wasDraft,
             _settings: JSON.stringify({
               extwin: true,
               comments: $('#enable_comment')[0].checked,

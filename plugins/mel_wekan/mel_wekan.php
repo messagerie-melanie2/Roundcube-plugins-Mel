@@ -99,6 +99,8 @@ class mel_wekan extends bnum_plugin
         $this->rc->output->set_env("wekan_storage_end", $this->rc->config->get("wekan_storage_end"));
         $this->ignore_footer();
 
+        $this->include_module('workspace_additions.js', 'js/workspace');
+
         $this->rc->output->set_pagetitle("Kanban");
         $this->rc->output->send('mel_wekan.wekan');
     }
@@ -573,7 +575,7 @@ class mel_wekan extends bnum_plugin
 
     public function wsp_block($args) {
         if ($args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE) !== null) {
-            $args['plugin']->include_workspace_module('mel_wekan', 'workspace.js', 'js');
+            $args['plugin']->include_workspace_module('mel_wekan', 'workspace.js', 'js/workspace');
             $args['layout']->setNavBarSetting('wekan', 'view_kanban', false, 4);
         }
 

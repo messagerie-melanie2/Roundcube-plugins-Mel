@@ -1048,8 +1048,7 @@ if (rcmail) {
           fields_requireds.append(' Champs obligatoires');
           main_div.append(fields_requireds);
           let subject = document.createElement('INPUT');
-          subject.classList.add('form-control', 'input-mel', 'disabled');
-          subject.setAttribute('disabled', 'disabled');
+          subject.classList.add('form-control', 'input-mel');
           subject.setAttribute('value', current_subject);
 
           let title_subject = document.createElement('h3');
@@ -1088,7 +1087,13 @@ if (rcmail) {
             const new_uid = await mel_metapage.Functions.comment_mail(
               uid,
               comment_area.value,
-              current_mail_box,
+              {
+                folder: current_mail_box,
+                subject:
+                  subject.value === current_subject
+                    ? null
+                    : subject.value || null,
+              },
             );
             modal.close();
             modal = null;

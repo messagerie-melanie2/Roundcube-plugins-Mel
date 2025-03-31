@@ -2858,39 +2858,29 @@ class mel_metapage extends bnum_plugin
         $folder = rcube_utils::get_input_value('_folder', rcube_utils::INPUT_POST) ?? 'INBOX';
         $message_uid = intval(rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST));
         $comment = rcube_utils::get_input_value('_comment', rcube_utils::INPUT_POST);
+        $subject = rcube_utils::get_input_value('_subject', rcube_utils::INPUT_POST);
         $user_mail = rcube_utils::get_input_value('_user', rcube_utils::INPUT_POST) ?? null;
 
         $this->rc->get_storage()->set_folder($folder);
 
         $headers_old = $this->rc->get_storage()->get_message_headers($message_uid, $folder);
-        $test = $this->rc->get_storage()->get_raw_body($message_uid);
-        if (strpos($test, 'X-Suivimel') !== false) {
-            $test = explode('X-Suivimel', $test);
-            $suivi = explode("\n", str_replace(': ', '', $test[1]))[0];
+        $mail_raw = $this->rc->get_storage()->get_raw_body($message_uid);
+        if (strpos($mail_raw, 'X-Suivimel') !== false) {
+            $mail_raw = explode('X-Suivimel', $mail_raw);
+            $suivi = explode("\n", str_replace(': ', '', $mail_raw[1]))[0];
             $suivi = 'Le ' . date('d/m/Y H:i') . ', ' . driver_mel::gi()->getUser(null, true, false, null, $user_mail)->name . " a ajouté :¤¤$comment" . "¤¤" . rcube_mime::decode_header($suivi);
-            $test = $test[0] . 'X-Suivimel: ' . Mail_mimePart::encodeHeader('X-Suivimel', $suivi, RCUBE_CHARSET) . $test[1];
+            $mail_raw = $mail_raw[0] . 'X-Suivimel: ' . Mail_mimePart::encodeHeader('X-Suivimel', $suivi, RCUBE_CHARSET) . $mail_raw[1];
         } else {
-            // $test = explode('Subject: ', $test);
-            // $added = false;
-            // $val = '';
-            // foreach ($test as $key => $value) {
-            //     if ($value !== $test[0] && $value[(strlen($value) - 1)] === "\n" && !$added) 
-            //     {
-            //         $val .= 'X-Suivimel: '.Mail_mimePart::encodeHeader('X-Suivimel', "Le ".date('d/m/Y H:i').', '.driver_mel::gi()->getUser(null, true, false, null, $user_mail)->name." a ajouté :¤¤$comment", RCUBE_CHARSET)."\nSubject: ".$value;
-            //         $added = true;
-            //     }
-            //     else $val .= $value;
-            // }
-            // $test = $val;
-
-            // if ($added === false)
-            // {
-            //     $test = false;
-            // }
-            $test = str_replace('Subject: ', 'X-Suivimel: ' . Mail_mimePart::encodeHeader('X-Suivimel', "Le " . date('d/m/Y H:i') . ', ' . driver_mel::gi()->getUser(null, true, false, null, $user_mail)->name . " a ajouté :¤¤$comment", RCUBE_CHARSET) . "\nSubject: ", $test);
+            $mail_raw = str_replace('Subject: ', 'X-Suivimel: ' . Mail_mimePart::encodeHeader('X-Suivimel', "Le " . date('d/m/Y H:i') . ', ' . driver_mel::gi()->getUser(null, true, false, null, $user_mail)->name . " a ajouté :¤¤$comment", RCUBE_CHARSET) . "\nSubject: ", $mail_raw);
         }
 
-        $datas = $this->rc->imap->save_message($folder, $test, '', false, [], $headers_old->date);
+        if ($subject) $mail_raw = preg_replace(
+            '/^Subject:.*(?:\r?\n[ \t].*)*/mi', // Expression régulière pour trouver la ligne commençant par "Subject: "
+            'Subject: '. Mail_mimePart::encodeHeader('Subject', $subject), // Remplacement par la nouvelle valeur de $subject
+            $mail_raw
+        );
+
+        $datas = $this->rc->imap->save_message($folder, $mail_raw, '', false, [], $headers_old->date);
 
         if ($datas !== false) {
             $message = new rcube_message($message_uid, $folder);

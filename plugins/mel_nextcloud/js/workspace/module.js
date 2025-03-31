@@ -856,17 +856,14 @@ class FileTag extends AActionNextcloudTag {
       .generate();
     container.setAttribute('title', `Ouvrir le fichier "${this.filename}"`);
 
-    container.onclick = () => {
-      NextcloudModule.EmptyWorkspaceObject.switch_workspace_page(
-        'stockage',
-      ).then(() => {
-        FramesManager.Instance.get_frame('stockage', { jquery: false })
-          .contentWindow.$('iframe')
-          .attr(
-            'src',
-            `${MelObject.Empty().get_env('nextcloud_url')}/apps/files?dir=/${this.itemData.data.dirname}&openfile=${this.itemData.data.uid}`,
-          );
-      });
+    container.onclick = async () => {
+      await FramesManager.Instance.switch_frame('stockage');
+      FramesManager.Instance.get_frame('stockage', { jquery: false })
+        .contentWindow.$('iframe')
+        .attr(
+          'src',
+          `${MelObject.Empty().get_env('nextcloud_url')}/apps/files?dir=/${this.itemData.data.dirname}&openfile=${this.itemData.data.uid}`,
+        );
     };
 
     return container;

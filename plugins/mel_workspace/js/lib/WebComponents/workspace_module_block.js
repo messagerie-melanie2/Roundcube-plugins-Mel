@@ -324,7 +324,10 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
         break;
     }
   }
-
+  /**
+   * Désactive le bouton de rafraîchissement
+   * @returns {this}
+   */
   disableRefreshButton() {
     let button = this.header.querySelector('.refresh-button');
 
@@ -336,11 +339,20 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
     return this;
   }
 
+  /**
+   * Active le bouton de rafraîchissement
+   * @returns {this}
+   */
   enableRefreshButton() {
     let button = this.header.querySelector('.refresh-button');
 
     if (button) {
       button.removeAttribute('loading');
+
+      //Correction du style pour le bouton et éviter qu'il est une apparance étrange.
+      if (button.style.width === 0) button.style.width = '34px';
+      if (button.style.height === 0) button.style.height = '34px';
+
       button = null;
     }
 

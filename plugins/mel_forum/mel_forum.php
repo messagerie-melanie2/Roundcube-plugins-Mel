@@ -436,7 +436,8 @@ class mel_forum extends bnum_plugin
                 'tags' => $tags,
                 'settings' => $post->settings,
                 'workspace' => $post->workspace,
-                'id' => $post->id
+                'id' => $post->id,
+                'isdraft' => (bool) $post->isdraft
             ];
             $this->rc()->output->set_env('post', $post_data);
             $this->rc()->output->set_env('is_editing', $is_editing);
@@ -709,22 +710,52 @@ class mel_forum extends bnum_plugin
     #region Enregistrement
 
     /**
-     * Gère l'enregistrement d'un article et des tags qui lui sont associés
+     * Gère l'envoi d'un article (création ou modification) et déclenche des notifications si nécessaire.
+     *
+     * Cette méthode permet de créer ou de mettre à jour un article, et prend en compte l'état de l'article pour
+     * déterminer si une notification doit être envoyée. Elle vérifie si l'article est un brouillon ou une
+     * publication via les paramètres `_isdraft`, `_is_editing` et `_was_draft`, et effectue les actions appropriées.
+     * 
+     * - Si l'article est créé ou publié pour la première fois, une notification est envoyée aux utilisateurs.
+     * - Si l'article est un brouillon qui est modifié, aucune notification n'est envoyée.
+     * - Les tags associés à l'article sont également mis à jour.
+     * - Un message est envoyé via Tchap uniquement lors de la publication d'un article.
+     * - En cas d'échec de la sauvegarde, un log d'erreur est généré.
+     *
+     * Notifications :
+     * - Article publié et brouillon publié, une notification est envoyée.
+     * - Article modifié, brouillon créé ou brouillon modifié, aucune notification n'est envoyée.
+     * - Un message Tchap est envoyé uniquement lorsque l'article est publié.
+     *
      * @return void
      */
     public function send_post()
     {
-        $result = $this->_add_post();
-        if ($result !== null) {
-            // Le post est créé, notifier les utilisateurs
-            $this->notify();  // Appel à la fonction de notification
+        $is_editing = $this->get_input('_is_editing', rcube_utils::INPUT_POST) === 'true';
+        $was_draft = $this->get_input('_was_draft', rcube_utils::INPUT_POST) === 'true';
+        $is_draft = $this->get_input('_isdraft', rcube_utils::INPUT_POST) === 'true';
 
-            // Ensuite, passer à la gestion des tags
+        $result = $this->_add_post(); // Enregistre ou met à jour l'article
+
+        if ($result !== null) {
             $this->_manage_tags();
-            //on notifie les utilisateur via le salon tchap associé si il éxiste
-            tchap::send_message($this->get_input('_workspace', rcube_utils::INPUT_POST), sprintf($this->gettext('a_post_has_been_published', 'mel_forum'), $this->get_input('_title', rcube_utils::INPUT_POST)));
+
+            // Etape de vérification pour notification ou non
+            $should_notify = (!$is_editing || $was_draft) && !$is_draft;
+
+            if ($should_notify) {
+                $this->notify();
+
+                tchap::send_message(
+                    $this->get_input('_workspace', rcube_utils::INPUT_POST),
+                    sprintf(
+                        $this->gettext('a_post_has_been_published', 'mel_forum'),
+                        $this->get_input('_title', rcube_utils::INPUT_POST)
+                    )
+                );
+            }
         } else {
-            mel_logs::get_instance()->log(mel_logs::ERROR, 'mel_forum:: erreur de lors de la modification du post');
+            mel_logs::get_instance()->log(mel_logs::ERROR, 'mel_forum:: erreur lors de la modification du post');
         }
     }
 

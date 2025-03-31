@@ -1,7 +1,7 @@
 import { BnumPromise } from './BnumPromise.js';
-import { Cookie } from './classes/cookies';
-import { EMPTY_STRING } from './constants/constants';
-import { isNullOrUndefined } from './mel';
+import { Cookie } from './classes/cookies.js';
+import { EMPTY_STRING } from './constants/constants.js';
+import { isNullOrUndefined } from './mel.js';
 import { Top } from './top.js';
 
 /**

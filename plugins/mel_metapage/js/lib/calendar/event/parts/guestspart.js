@@ -1104,6 +1104,7 @@ export class GuestsPart extends FakePart {
             start,
             end,
             attendees,
+            interval: (end - start) / 1000 / 60,
           }),
       );
 
@@ -1119,6 +1120,7 @@ export class GuestsPart extends FakePart {
       }
 
       const slots = await promise;
+
       promise = null;
       let $find_next = MelHtml.start
         .button({
@@ -1140,6 +1142,11 @@ export class GuestsPart extends FakePart {
           slot
             .generate(timePart)
             .generate()
+            .addClass(
+              moment(slot.start).format() === timePart.date_start.format()
+                ? 'current-date btn-success'
+                : 'not-current-date',
+            )
             .appendTo(
               $('<div>')
                 .addClass('col-6 col-md-3')

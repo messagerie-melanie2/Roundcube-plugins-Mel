@@ -71,6 +71,7 @@ export class WorkspacePage extends WorkspaceObject {
       if (task === 'tasks' && !FramesManager.Instance.has_frame('tasks')) {
         return {
           source: this.workspace.uid,
+          askedTask: 'tasks',
         };
       } else if (task === 'tasks') {
         FramesManager.Instance.get_frame('tasks', {

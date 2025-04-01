@@ -330,12 +330,8 @@ class EventParts {
       inputs.select_calendar_owner.parent().find('span'),
       ev?.calendar_blocked ?? false,
     );
-    this.status.onUpdate(ev.status ?? '');
-    this.sensitivity.onUpdate(
-      !ev?.id
-        ? SensitivityPart.STATES.public
-        : ev?.sensitivity ?? SensitivityPart.STATES.public,
-    );
+    this.status.onUpdate(ev.status ?? EMPTY_STRING);
+    this.sensitivity.onUpdate(ev?.sensitivity ?? SensitivityPart.STATES.public);
     this.alarm.init(ev);
     this.category.init(ev);
     this.date.init(ev);

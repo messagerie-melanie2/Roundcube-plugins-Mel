@@ -131,6 +131,15 @@ class NextcloudModule extends WorkspaceObject {
         $(NavBarManager.currentNavBar.mainDiv).find(
           '[data-task="stockage"] .visibility-icon',
         ),
+        {
+          onSetFullScreen: () => {
+            document.querySelector('#module-nc .see-all').style.display =
+              'none';
+          },
+          onUnsetFullScreen: () => {
+            document.querySelector('#module-nc .see-all').style.display = null;
+          },
+        },
       );
       NavBarManager.currentNavBar.onstatetoggle.push(async (...args) => {
         const [task, state, caller] = args;

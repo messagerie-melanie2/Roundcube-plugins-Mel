@@ -262,7 +262,8 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
         .setVariation(EButtonType.fromString(this.buttonType))
         .setIconPos('right')
         .setIcon(this.buttonIcon)
-        .generate();
+        .generate()
+        .addClass('see-all');
 
       if (this.buttonIgnore !== 'default-actions') {
         button.onclick = () => {

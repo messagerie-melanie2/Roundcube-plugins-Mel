@@ -160,7 +160,7 @@ export class ModuleForum extends WorkspaceObject {
             jquery: false,
           }).contentWindow.location.href.includes(this.workspace.uid))
       ) {
-        return { _workspace_uid: this.workspace.uid };
+        return { _workspace_uid: this.workspace.uid, askedTask: args.task };
       }
     }, 'forum');
   }

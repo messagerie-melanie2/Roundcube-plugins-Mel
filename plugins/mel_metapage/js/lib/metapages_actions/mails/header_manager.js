@@ -66,6 +66,9 @@ export class UIMailHeaderManager extends MailModule {
 
     UI.popup_init($list[0]);
 
+    //Ajoute la classe popupmenu après avoir initialisé la popup pour que le mécanisme fonctionne correctement
+    $clone_popup.addClass('popupmenu');
+
     this.set_listeners();
 
     this.on_ui_close_mail_visu();

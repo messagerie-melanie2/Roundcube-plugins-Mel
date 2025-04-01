@@ -231,8 +231,8 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
       buttonRefresh.style.marginLeft = '10px';
       buttonRefresh.style.padding = '4px';
       buttonRefresh.style.maxWidth = '34px';
-      buttonRefresh.style.width = '34px';
-      buttonRefresh.style.height = '34px';
+      buttonRefresh.style.minWidth = '34px';
+      buttonRefresh.style.minHeight = '34px';
 
       buttonRefresh.addEventListener('click', (e) => {
         this.onrefresh.call(e, this);

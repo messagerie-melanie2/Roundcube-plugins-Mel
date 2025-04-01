@@ -1264,11 +1264,16 @@ function RemoveAllMembers() {
 
 function ExportMembers() {
   var dn_list = $('#liste_listes option:selected').val();
+
   if (dn_list) {
-    rcmail.goto_url('settings/plugin.listes_export', {
-      _dn_list: dn_list,
-      _current_username: $('#rcmmoncomptebalplist option:selected').val(),
-    });
+    rcmail.goto_url(
+      'settings/plugin.listes_export',
+      {
+        _dn_list: dn_list,
+        _current_username: $('#rcmmoncomptebalplist option:selected').val(),
+      },
+      false,
+    );
   } else {
     alert(rcmail.gettext('mel_moncompte.listes_noselect'));
   }

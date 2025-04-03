@@ -286,6 +286,7 @@ export class create_or_edit_post extends MelObject {
             });
           },
         }).always(() => {
+          CursorUtils.ResetCursor();
           this.#_unsetButtonLoading();
         });
       } else {
@@ -310,7 +311,7 @@ export class create_or_edit_post extends MelObject {
   publishButton() {
     $('#publish-post').click(() => {
       this.post_id = this.get_env('post').id;
-      this.post_uid = this.get_env('post').uid
+      this.post_uid = this.get_env('post').uid;
 
       // Vérifier s'il s'agit d'une création ou d'une modification
       const isModification = !!this.post_id; // true si un identifiant existe (modification)

@@ -62,11 +62,6 @@ class mce_driver_mel extends driver_mel
   protected $_restoration_jenkins_pipeline_name;
 
   /**
-   * Prefix pour le formatage des numéros de téléphone
-   */
-  const PHONE_PREFIX = ["+33(0)", "+33", "+39", "+49", "+590", "+594", "+596", "+262", "+508", "+681", "+689", "+687"];
-
-  /**
    * Constructeur par défaut
    */
   public function __construct()
@@ -780,10 +775,12 @@ class mce_driver_mel extends driver_mel
    */
   protected function formatPhoneNumber($phoneNumber)
   {
+    $rcmail = rcmail::get_instance();
+
     if (isset($phoneNumber)) {
       $phoneNumber = preg_replace('/\s+|-/', '', $phoneNumber); // Remplace un ou plusieurs espace | un tiret par un seul espace
 
-      foreach (static::PHONE_PREFIX as $format) {
+      foreach ($rcmail->config->get('PHONE_PREFIX', ["+33(0)", "+33", "+39", "+49", "+590", "+594", "+596", "+262", "+508", "+681", "+689", "+687"]) as $format) {
         if (strpos($phoneNumber, $format) === 0) // si le début d'une num de tel === un des format, alors il est remplacé par un unique 0
         {
           if ($format === '+33' || $format === '+33(0)') {

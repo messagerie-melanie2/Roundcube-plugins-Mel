@@ -97,6 +97,7 @@ class mtes_driver_mel extends mce_driver_mel
     'lastname'          => '%%lastname%%',
     'firstname'         => '%%firstname%%',
     'uid'               => '%%uid%%',
+    'email_extern'      => '%%email%%',
   ];
 
   /**

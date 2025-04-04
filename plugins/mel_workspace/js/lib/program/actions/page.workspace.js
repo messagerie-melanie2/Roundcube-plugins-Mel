@@ -108,21 +108,28 @@ export class WorkspacePage extends WorkspaceObject {
           break;
 
         case 'send':
-          if (this.workspace.users.emails.length >= 300) {
-            if (
-              !confirm(
-                "Attention, la limite d'envoi est de 300 destinataires, vous pourrez envoyer un mail seulement aux 300 premiers membres.",
-              )
+        if (this.workspace.users.emails.length >= 300) {
+          if (
+            !confirm(
+              "Attention, la limite d'envoi est de 300 destinataires, vous pourrez envoyer un mail seulement aux 300 premiers membres.",
             )
-              return;
-          }
+          )
+            return;
+        }
 
-          this.open_compose_step({
-            to: MelEnumerable.from(this.workspace.users.emails)
-              .where((x) => x !== MelCurrentUser.main_email)
-              .take(300)
-              .join(','),
-          });
+          const mails = MelEnumerable.from(this.workspace.users.emails)
+          .where((x) => x !== MelCurrentUser.main_email)
+          .take(300)
+          .join(',');
+
+          if (this.workspace.users.get(this.get_env('current_user').email).external) {
+            window.open(`mailto:${mails}`, '_blank');
+          }
+          else {
+            this.open_compose_step({
+              to: mails,
+            });
+          }
           break;
 
         case 'leave':

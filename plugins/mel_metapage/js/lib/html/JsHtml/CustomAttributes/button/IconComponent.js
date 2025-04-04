@@ -111,6 +111,7 @@ export default class IconComponent extends AHTMLComponent {
    */
   #_initIcon() {
     if (this.icon) {
+      this.#_parent.addClass('bnum-button--icon');
       let bnumIcon = this.querySelector(`#icon-${this.id}`);
 
       if (!bnumIcon) {

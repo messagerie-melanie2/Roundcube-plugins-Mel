@@ -63,5 +63,8 @@ export default class RoundShapeComponent extends AHTMLComponent {
     this.#_parent.style.borderRadius = this.isSquare
       ? DEFAULT_BORDER_RADIUS
       : null;
+
+    if (this.isSquare) this.#_parent.addClass('bnum-button--roundsquare');
+    else this.#_parent.removeClass('bnum-button--roundsquare');
   }
 }

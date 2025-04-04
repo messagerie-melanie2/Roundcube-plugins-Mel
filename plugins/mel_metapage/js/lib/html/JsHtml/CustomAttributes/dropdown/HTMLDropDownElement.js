@@ -20,6 +20,13 @@ import DropDownVariationComponent, {
 } from './VariationComponent.js';
 
 /**
+ * Si le shadow dom est activé ou non par défaut. Si vrai, on utilisera toujours le shadown dom.
+ * @type {boolean}
+ * @constant
+ */
+const DEFAULT_SHADOW = true;
+
+/**
  * @callback DropDownCallback
  * @param {string} value
  * @param {Event} originalEvent
@@ -167,7 +174,7 @@ export default class HTMLDropDownElement extends AHTMLCustomInternalElement {
 
     //Modifications sur cet élément
     this.setAttribute('aria-labelledby', `${voiceId}2`);
-    this.setState('bnum-dropdown');
+    this.setState('bnum-dropdown').addClass('bnum-select');
 
     this.attrs({
       role: 'combobox',
@@ -317,10 +324,10 @@ export default class HTMLDropDownElement extends AHTMLCustomInternalElement {
   /**
    * @inheritdoc
    * @override
-   * @returns {true}
+   * @returns {true | boolean}
    */
   shadowEnabled() {
-    return true;
+    return DEFAULT_SHADOW ? true : super.shadowEnabled();
   }
 
   // MARK: :Style

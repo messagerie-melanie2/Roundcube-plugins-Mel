@@ -229,7 +229,6 @@ $(document).ready(() => {
     event = null,
   ) {
     let isFromGlobalModal = false;
-
     if (event === null) {
       event = rcmail.local_storage_get_item('tmp_calendar_event');
 
@@ -267,6 +266,16 @@ $(document).ready(() => {
     if (event.mail_datas) {
       url['_mbox'] = event.mail_datas.mbox;
       url['_uid'] = event.mail_datas.uid;
+    }
+
+    //Ajouter des composants d'url custom pour les autres plugins
+    if (event.url_data) {
+      for (const key in event.url_data) {
+        if (Object.prototype.hasOwnProperty.call(event.url_data, key)) {
+          const element = event.url_data[key];
+          url[key] = element;
+        }
+      }
     }
 
     var buttons = {},

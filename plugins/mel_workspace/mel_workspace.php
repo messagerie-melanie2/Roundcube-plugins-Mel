@@ -139,7 +139,30 @@ class mel_workspace extends bnum_plugin
                 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                     try {
                         if ($this->rc()->output !== null) {
-                           $this->include_module_addon('forum_additions.js', 'forums');// $this->include_module('forum_additions.js', 'js/lib/forums');
+                           $this->include_module_addon('forum_additions.js', 'forums');
+                        }
+                    } catch (\Throwable $th) {
+                        //throw $th;
+                    }
+                }
+                break;
+
+            case 'mel_metapage':
+            case 'calendar':
+                if (($_SERVER['REQUEST_METHOD'] === 'GET' && $this->is_index_action())|| $this->get_current_action() === 'dialog-ui') {
+                    try {
+                        if ($this->rc()->output !== null) {
+                            $uid = $this->get_input('_wsp_uid', rcube_utils::INPUT_GET);
+                            $wsp = self::Workspace($uid);
+                            $users = $wsp->users(true)->select(function ($k, $v) {
+                                return ['email' => $v->email, 'name' => $v->name, 'fullname' => $v->fullname, 'is_external' => $v->is_external];
+                            })->toDictionnary(function ($k, $v) {
+                                return $v['email'];
+                            }, function ($k, $v) {
+                                return $v;
+                            });
+                            $this->rc()->output->set_env('current_workspace_users', $users);
+                            $this->include_module_addon('calendar_additions.js', 'calendar');
                         }
                     } catch (\Throwable $th) {
                         //throw $th;

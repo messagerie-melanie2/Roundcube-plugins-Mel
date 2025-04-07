@@ -83,6 +83,9 @@ export class WorkspaceAgenda extends WorkspaceObject {
         calendar_blocked: true,
         start: moment(),
         end: moment().add(1, 'h'),
+        url_data: {
+          _wsp_uid: this.workspace.uid,
+        },
       };
       this.rcmail().local_storage_set_item('tmp_calendar_event', event);
 

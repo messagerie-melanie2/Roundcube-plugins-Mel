@@ -61,14 +61,19 @@ export class CategoryPart extends FakePart {
   init(event) {
     this._generateCategories()._$wspButton.css('display', 'none');
 
-    if (
-      (top ?? parent ?? window).$('html').hasClass('mwsp') &&
-      (!event.categories || !event.categories.length)
-    ) {
-      event.categories = [
-        `ws#${MelObject.Empty().load('current_wsp')}`,
-      ];
-      event.calendar_blocked = 'true';
+    {
+      /**
+       * @type {?{calendarEvent: *}}
+       */
+      const plugin = MelObject.Empty().trigger(
+        'calendar.create.category.before',
+        {
+          part: this,
+          calendarEvent: event,
+        },
+      );
+
+      if (plugin?.calendarEvent) event = plugin.calendarEvent;
     }
 
     if (!!event.categories && event.categories.length > 0) {
@@ -86,7 +91,7 @@ export class CategoryPart extends FakePart {
 
     //Gestion de l'évènement du checkbox
     if (!$._data(this._$hasCategory[0], 'events')?.click) {
-      const event = () => {
+      const eventFunction = () => {
         if (!this._$hasCategory[0].checked) {
           this._$field.val(EMPTY_STRING).change();
           this._$fakeField.parent().parent().css('display', 'none');
@@ -95,8 +100,8 @@ export class CategoryPart extends FakePart {
           this._$fakeField.parent().parent().css('display', EMPTY_STRING);
         }
       };
-      event();
-      this._$hasCategory.click(event.bind(this));
+      eventFunction();
+      this._$hasCategory.click(eventFunction.bind(this));
     }
 
     this.updateIcon();

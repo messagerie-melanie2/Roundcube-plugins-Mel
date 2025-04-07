@@ -24,6 +24,7 @@
 import { MelEnumerable } from '../../classes/enum.js';
 import { EMPTY_STRING } from '../../constants/constants.js';
 import { MelHtml } from '../../html/JsHtml/MelHtml.js';
+import { MelObject } from '../../mel_object.js';
 import {
   ATTENDEE_CONTAINER_SELECTOR,
   ATTENDEE_SELECTOR,
@@ -488,6 +489,8 @@ export class EventView {
     }
 
     this._generate_listeners();
+
+    MelObject.Empty().trigger('calendar.view.loaded', { view: this });
   }
 
   /**

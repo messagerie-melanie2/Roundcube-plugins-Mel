@@ -749,6 +749,14 @@ class WorkspaceUsers {
   }
 
   /**
+   * Vérifie si il y a des utilisateurs dans l'espace
+   * @returns {boolean}
+   */
+  any() {
+    return Object.keys(this.#users).length > 0;
+  }
+
+  /**
    * Récupère Un utilisateur à partir de son email
    * @param {string} email
    * @returns {WorkspaceUser}
@@ -820,7 +828,7 @@ class CurrentWorkspaceData {
    * @readonly
    */
   get users() {
-    if (!this.#users) {
+    if (!this.#users && rcmail.env.current_workspace_users) {
       this.#users = new WorkspaceUsers(
         ...MelEnumerable.from(rcmail.env.current_workspace_users).select(
           (x) => new WorkspaceUser(x.value),

@@ -3986,9 +3986,6 @@ html.dark-mode .mv2-app-text {
 .popover {
   color: var(--popover-text-color);
 }
-.popover button.mel-button {
-  color: var(--secondary-text-color);
-}
 .popover button.mel-button:hover {
   background-color: var(--popover-hover-background-color);
   color: var(--popover-hover-text-color);

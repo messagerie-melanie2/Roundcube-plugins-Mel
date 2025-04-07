@@ -123,6 +123,7 @@ export default class LoadingComponent extends AHTMLComponent {
    */
   setLoadingMode() {
     if (!this.isLoadingMode) {
+      this.#_parent.addClass('bnum-button--loading');
       //On met la taille du bouton pour éviter que l'affichage du loading ne décale le contenu
       this.#_parent.style.width = `${this.#_parent.offsetWidth}px`;
       this.#_parent.style.height = `${this.#_parent.offsetHeight}px`;
@@ -171,6 +172,7 @@ export default class LoadingComponent extends AHTMLComponent {
    */
   stopLoadingmode() {
     if (this.isLoadingMode) {
+      this.#_parent.removeClass('bnum-button--loading');
       let targetWrapper = this.#_getTargetWrapper();
 
       this._p_save_data('loading', false);

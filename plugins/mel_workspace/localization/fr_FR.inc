@@ -6,3 +6,4 @@ $labels['click_for_open'] = 'Cliquez ici pour ouvrir l\'espace.';
 $labels['open'] = 'Ouvrir';
 $labels['wsp_desc'] = 'Description de l\'espace';
 $labels['planning'] = 'Planning';
+$labels['see_all'] = 'Voir tout';

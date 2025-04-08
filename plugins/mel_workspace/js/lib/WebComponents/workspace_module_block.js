@@ -98,7 +98,9 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
   }
 
   get buttonText() {
-    return this._p_get_data('button-text') || 'Voir tout';
+    return (
+      this._p_get_data('button-text') || rcmail.gettext('mel_workspace.see_all')
+    );
   }
 
   get buttonIcon() {

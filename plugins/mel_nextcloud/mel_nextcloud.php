@@ -38,6 +38,7 @@ class mel_nextcloud extends rcube_plugin {
 
     // Chargement de la conf
     $this->load_config();
+    $this->add_texts('localization/global/', true);
     $this->add_texts('localization/', false);
     
     $this->get_env_js();
@@ -414,8 +415,13 @@ class mel_nextcloud extends rcube_plugin {
     return $args;
   }
 
-  public function wsp_block($args) {
+  /**
+   * Fournit au hook, les éléments qui permettent d'afficher et de faire fonctionner le module "Documents" dans l'accueil de l'espace de travail
+   * @param array{workspace:Workspace, layout:WorkspacePageLayout, plugin:mel_workspace} $args
+   */
+  public function wsp_block($args) : array {
     if (class_exists('roundrive') && $args['workspace']->objects()->get(mel_workspace::KEY_DRIVE) !== null) {
+      // Rétrocomptatibilitée
       if ($args['workspace']->objects()->get(mel_workspace::KEY_DRIVE) === false)
       {
         $args['workspace']->objects()->remove(mel_workspace::KEY_DRIVE);

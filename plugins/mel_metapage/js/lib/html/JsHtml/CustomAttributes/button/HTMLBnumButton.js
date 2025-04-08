@@ -1,3 +1,4 @@
+import { MelEnumerable } from '../../../../classes/enum.js';
 import { EMPTY_STRING } from '../../../../constants/constants.js';
 import { EWebComponentMode } from '../js_html_base_web_elements.js';
 import AHTMLCustomInternalElement from '../lib/AHTMLCustomInternalElement.js';
@@ -126,6 +127,42 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
 
   set icon(value) {
     this.#_iconComponent.icon = value;
+  }
+
+  /**
+   * Texte du bouton
+   * @type {string}
+   */
+  get innerCustomText() {
+    let textToChange = this.navigator.querySelector('.internal__wrapper--main');
+    if (textToChange === null)
+      textToChange = MelEnumerable.from(this.navigator.childNodes)
+        .where((x) => x.nodeType === 'TEXT')
+        .firstOrDefault(this.navigator);
+
+    return textToChange.textContent;
+  }
+
+  set innerCustomText(value) {
+    let textToChange = this.navigator.querySelector('.internal__wrapper--main');
+    if (textToChange === null)
+      textToChange = MelEnumerable.from(this.navigator.childNodes)
+        .where((x) => x.nodeType === 'TEXT')
+        .firstOrDefault(this.navigator);
+
+    textToChange.textContent = value;
+  }
+
+  /**
+   * Html du bouton
+   * @type {string}
+   */
+  get innerCustomHTML() {
+    return this.navigator.querySelector('.internal__wrapper--main').innerHTML;
+  }
+
+  set innerCustomHTML(value) {
+    this.navigator.querySelector('.internal__wrapper--main').innerHTML = value;
   }
 
   /**

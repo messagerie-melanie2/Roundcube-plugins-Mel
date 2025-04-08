@@ -80,9 +80,30 @@ export default class ABaseMelObject {
    * @param {!string} plugin Plugin d'où provient le texte traduit
    * @returns {string}
    * @protected
+   * @deprecated utilisez {@link getLocalization} à la place
    */
   gettext(key_text, plugin = EMPTY_STRING) {
     return this.rcmail().gettext(key_text, plugin);
+  }
+
+  /**
+   * Récupère un texte via une clé, ce qui permet de l'afficher dans la bonne langue
+   * @param {string} keyText Clé qui permet de retrouver le texte
+   * @param {Object} [param1={}]
+   * @param {string} [param1.plugin=EMPTY_STRING]
+   * @param {?Object<string, string>} [param1.variables=null]
+   * @returns {string}
+   */
+  getLocalization(keyText, { plugin = EMPTY_STRING, variables = null } = {}) {
+    let text = this.rcmail().gettext(keyText, plugin);
+
+    if (variables && Object.keys(variables).length) {
+      for (const [key, value] of Object.entries(variables)) {
+        text = text.replaceAll(`$${key}`, value);
+      }
+    }
+
+    return text;
   }
 
   /**

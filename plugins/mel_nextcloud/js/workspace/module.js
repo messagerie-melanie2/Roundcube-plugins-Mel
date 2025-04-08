@@ -104,24 +104,6 @@ class NextcloudModule extends WorkspaceObject {
   main() {
     super.main();
 
-    NavBarManager.AddEventListener().OnAfterSwitch((args) => {
-      const { task } = args;
-      let nextCloudFrame = FramesManager.Instance.get_frame('stockage', {
-        jquery: false,
-      }).contentWindow.document.getElementById('mel_nextcloud_frame');
-
-      if (
-        task === 'stockage' && // Si il s'agit de la tâche de stockage
-        (!FramesManager.Instance.has_frame('stockage') || // Si la frame n'éxiste pas ou
-          // Si l'id dans l'url n'est pas le bon
-          !nextCloudFrame.contentWindow.location.href.includes(
-            `dossiers-${this.workspace.uid}`,
-          ))
-      ) {
-        nextCloudFrame.src = `${Nextcloud.index_url}/apps/files?dir=/dossiers-${this.workspace.uid}`;
-      }
-    }, 'stockage');
-
     BnumPromise.Start(async () => {
       await NavBarManager.WaitLoading();
       // Ajouter le listener pour le plein écran
@@ -131,6 +113,16 @@ class NextcloudModule extends WorkspaceObject {
         $(NavBarManager.currentNavBar.mainDiv).find(
           '[data-task="stockage"] .visibility-icon',
         ),
+        {
+          onSetFullScreen: () => {
+            document.querySelector('#module-nc .see-all').innerCustomText =
+              this.gettext('open_documents', 'mel_nextcloud');
+          },
+          onUnsetFullScreen: () => {
+            document.querySelector('#module-nc .see-all').innerCustomText =
+              this.gettext('see_all', 'mel_workspace');
+          },
+        },
       );
       NavBarManager.currentNavBar.onstatetoggle.push(async (...args) => {
         const [task, state, caller] = args;
@@ -159,6 +151,32 @@ class NextcloudModule extends WorkspaceObject {
         this.rcmail().hide_message(loading);
       });
     });
+
+    this.moduleContainer
+      .querySelector('.see-all')
+      .addEventListener('click', async () => {
+        const url = `${Nextcloud.index_url}/apps/files?dir=/dossiers-${this.workspace.uid}`;
+
+        await FramesManager.Instance.switch_frame('stockage', {
+          args: FramesManager.Instance.has_frame('stockage')
+            ? null
+            : { _param: url },
+        });
+
+        let nextCloudFrame = FramesManager.Instance.get_frame('stockage', {
+          jquery: false,
+        }).contentWindow.document.getElementById('mel_nextcloud_frame');
+
+        if (
+          !nextCloudFrame.contentWindow.location.href.includes(
+            `dossiers-${this.workspace.uid}`,
+          )
+        ) {
+          nextCloudFrame.src = url;
+        }
+
+        nextCloudFrame = null;
+      });
   }
 
   /**

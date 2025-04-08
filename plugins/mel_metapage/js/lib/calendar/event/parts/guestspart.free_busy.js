@@ -68,7 +68,7 @@ export class FreeBusyGuests {
   async load_freebusy_data(event) {
     if (!FreeBusyGuests.can) return [];
 
-    const interval = this.interval;
+    const interval = event.interval || this.interval;
     const event_attendees = event.attendees;
     const date2servertime = cal.date2ISO8601;
     const fix_date = FreeBusyGuests.FixDate;
@@ -458,7 +458,8 @@ export class Slot {
    */
   get creator() {
     let freeBusyCreator;
-    if (this.#_creator?.id && this.#_creator?.name) freeBusyCreator = this.#_creator;
+    if (this.#_creator?.id && this.#_creator?.name)
+      freeBusyCreator = this.#_creator;
     else {
       const splited = (this.#_creator || '/').split('/');
 

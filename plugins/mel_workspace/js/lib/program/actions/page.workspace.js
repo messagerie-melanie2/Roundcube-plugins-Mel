@@ -71,6 +71,7 @@ export class WorkspacePage extends WorkspaceObject {
       if (task === 'tasks' && !FramesManager.Instance.has_frame('tasks')) {
         return {
           source: this.workspace.uid,
+          askedTask: 'tasks',
         };
       } else if (task === 'tasks') {
         FramesManager.Instance.get_frame('tasks', {
@@ -107,21 +108,28 @@ export class WorkspacePage extends WorkspaceObject {
           break;
 
         case 'send':
-          if (this.workspace.users.emails.length >= 300) {
-            if (
-              !confirm(
-                "Attention, la limite d'envoi est de 300 destinataires, vous pourrez envoyer un mail seulement aux 300 premiers membres.",
-              )
+        if (this.workspace.users.emails.length >= 300) {
+          if (
+            !confirm(
+              "Attention, la limite d'envoi est de 300 destinataires, vous pourrez envoyer un mail seulement aux 300 premiers membres.",
             )
-              return;
-          }
+          )
+            return;
+        }
 
-          this.open_compose_step({
-            to: MelEnumerable.from(this.workspace.users.emails)
-              .where((x) => x !== MelCurrentUser.main_email)
-              .take(300)
-              .join(','),
-          });
+          const mails = MelEnumerable.from(this.workspace.users.emails)
+          .where((x) => x !== MelCurrentUser.main_email)
+          .take(300)
+          .join(',');
+
+          if (this.workspace.users.get(this.get_env('current_user').email).external) {
+            window.open(`mailto:${mails}`, '_blank');
+          }
+          else {
+            this.open_compose_step({
+              to: mails,
+            });
+          }
           break;
 
         case 'leave':
@@ -181,14 +189,21 @@ export class WorkspacePage extends WorkspaceObject {
     );
 
     if (this.get_env('start_page')) {
-      window.addEventListener('load', () => {
-        NavBarManager.WaitLoading().then(() => {
-          NavBarManager.currentNavBar.select(this.get_env('start_page'), {
-            background: false,
-          });
-        });
-      });
+      //Si le document est chargé, on l'applique
+      if (document.readyState === 'complete') this._setStartupPage();
+      //Sinon, on attend que toute les dépendances soient chargées
+      else window.addEventListener('load', this._setStartupPage.bind(this));
     }
+  }
+
+  /**
+   * Set the startup page based on the environment variable.
+   * @returns {Promise<void>}
+   * @private
+   */
+  async _setStartupPage() {
+    await NavBarManager.WaitLoading(),
+      this.switch_workspace_page(this.get_env('start_page'));
   }
 
   #_get_row(number = 0) {

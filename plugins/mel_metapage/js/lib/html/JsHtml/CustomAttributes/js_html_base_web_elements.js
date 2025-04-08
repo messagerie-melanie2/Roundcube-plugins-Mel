@@ -72,7 +72,7 @@ class HtmlCustomTag extends HTMLElement {
    * @see {@link https://developer.mozilla.org/fr/docs/Web/API/Web_components/Using_shadow_DOM}
    */
   get navigator() {
-    return this.shadowEnabled() ? this.shadowRoot : this;
+    return this.shadowEnabled() ? (this.shadowRoot ?? this) : this;
   }
 
   /**
@@ -137,7 +137,9 @@ class HtmlCustomTag extends HTMLElement {
    */
   _p_start_construct({ shadowConfig = {} } = {}) {
     shadowConfig['mode'] = 'open';
-    return this.shadowEnabled() ? this.attachShadow(shadowConfig) : this;
+    return this.shadowEnabled()
+      ? (this.shadowRoot ?? this.attachShadow(shadowConfig))
+      : this;
   }
 
   /**

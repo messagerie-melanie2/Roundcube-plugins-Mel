@@ -98,7 +98,9 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
   }
 
   get buttonText() {
-    return this._p_get_data('button-text') || 'Voir tout';
+    return (
+      this._p_get_data('button-text') || rcmail.gettext('mel_workspace.see_all')
+    );
   }
 
   get buttonIcon() {
@@ -231,8 +233,8 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
       buttonRefresh.style.marginLeft = '10px';
       buttonRefresh.style.padding = '4px';
       buttonRefresh.style.maxWidth = '34px';
-      buttonRefresh.style.width = '34px';
-      buttonRefresh.style.height = '34px';
+      buttonRefresh.style.minWidth = '34px';
+      buttonRefresh.style.minHeight = '34px';
 
       buttonRefresh.addEventListener('click', (e) => {
         this.onrefresh.call(e, this);
@@ -262,7 +264,8 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
         .setVariation(EButtonType.fromString(this.buttonType))
         .setIconPos('right')
         .setIcon(this.buttonIcon)
-        .generate();
+        .generate()
+        .addClass('see-all');
 
       if (this.buttonIgnore !== 'default-actions') {
         button.onclick = () => {

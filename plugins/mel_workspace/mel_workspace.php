@@ -238,11 +238,15 @@ class mel_workspace extends bnum_plugin
             $plugin ??= [];
     
             $this->workspacePageLayout = $plugin['layout'] ?? new WorkspacePageLayout();
+
+            if (!$this->get_user()->is_external) {
+                $this->workspacePageLayout->fourthRow()->append(4, $this->workspacePageLayout->htmlModuleBlock(['id' => 'module-agenda','data-title' => 'Agenda de l\'espace', 'data-button' => 'calendar', 'data-button-text' => 'Créer', 'data-button-icon' => 'add_circle', 'data-button-ignore' => 'default-actions', 'data-button-type' => 'primary'])); 
+                $this->workspacePageLayout->setNavBarSetting('mel_metapage.calendar', 'calendar_month', true, 1);
+                $this->include_module_program('agenda.js', 'Parts');
+            }
     
             $this->workspacePageLayout->fourthRow()->append(8, $this->workspacePageLayout->htmlModuleBlock(['id' => 'module-planning','data-title' => 'Planning des membres']));
-            $this->workspacePageLayout->fourthRow()->append(4, $this->workspacePageLayout->htmlModuleBlock(['id' => 'module-agenda','data-title' => 'Agenda de l\'espace', 'data-button' => 'calendar', 'data-button-text' => 'Créer', 'data-button-icon' => 'add_circle', 'data-button-ignore' => 'default-actions', 'data-button-type' => 'primary']));
             $this->workspacePageLayout->setNavBarSetting('home', 'home', false, 0);
-            $this->workspacePageLayout->setNavBarSetting('mel_metapage.calendar', 'calendar_month', true, 1);
             $this->workspacePageLayout->setNavBarSetting('mel_workspace.planning', 'calendar_view_week', true, 1);
     
             if ($workspace->objects()->has(self::KEY_TASK)) $this->workspacePageLayout->setNavBarSetting('tasks', 'check_box', false, 6);
@@ -269,7 +273,6 @@ class mel_workspace extends bnum_plugin
     
             $this->include_css('workspace.css');
             self::IncludeWorkspaceModuleComponent();
-            $this->include_module_program('agenda.js', 'Parts');
             $this->include_module_program('planning.js', 'Parts');
             $this->load_script_module('page.workspace.js', '/js/lib/program/actions/');
             $this->include_script('js/params.js');
@@ -431,7 +434,7 @@ class mel_workspace extends bnum_plugin
             $this->sendEncodedExit($retour, []);
         } catch (\Throwable $th) {
             $func = "create";
-            mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func] Un erreur est survenue lors de la création de l'espace de travail ''".$workspace->title."'' !");
+            mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func] Un erreur est survenue lors de la création de l'espace de travail ''".$workspace->title()."'' !");
             mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func]".$th->getTraceAsString());
             mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func]".$th->getMessage());
         }

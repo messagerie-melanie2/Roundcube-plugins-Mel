@@ -314,6 +314,15 @@ export class NavBarManager {
         });
         break;
     }
+
+    const useTopContext = true;
+    FramesManager.Helper.window_object.UpdateDocumentTitle(
+      MelObject.Empty().getLocalization('page_title', {
+        plugin: 'mel_workspace',
+        variables: { name: workspace.title },
+      }),
+      useTopContext,
+    );
   }
 
   static Kill(uid) {

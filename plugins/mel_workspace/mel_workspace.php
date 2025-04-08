@@ -323,7 +323,7 @@ class mel_workspace extends bnum_plugin
         }
 
         $this->ignore_footer();
-
+        $this->rc()->output->set_pagetitle($this->gettext(['name' => 'page_title', 'name' => $workspace->title()]));
         $this->rc()->output->send('mel_workspace.workspace');
     }
 

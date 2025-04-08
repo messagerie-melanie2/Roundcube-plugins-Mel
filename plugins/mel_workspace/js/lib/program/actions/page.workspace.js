@@ -180,6 +180,15 @@ export class WorkspacePage extends WorkspaceObject {
       },
     );
 
+    FramesManager.Helper.window_object.UpdateDocumentTitle(
+      this.getLocalization('page_title', {
+        plugin: 'mel_workspace',
+        variables: {
+          name: this.workspace.title,
+        },
+      }),
+    );
+
     if (this.get_env('start_page')) {
       window.addEventListener('load', () => {
         NavBarManager.WaitLoading().then(() => {

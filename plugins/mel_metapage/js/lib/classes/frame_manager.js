@@ -1199,7 +1199,13 @@ class Window {
       caller: this,
     }) ?? { stop: false };
 
-    if (plugin.stop) return this;
+    if (Array.isArray(plugin)) {
+      for (const callbackResult of plugin) {
+        if (callbackResult.stop) {
+          return this;
+        }
+      }
+    } else if (plugin.stop) return this;
 
     const url = this.get_frame()[0].contentWindow.location.href;
     if (!url) this.get_frame()[0].contentWindow.location.reload();

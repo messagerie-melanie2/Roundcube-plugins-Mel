@@ -320,7 +320,7 @@ class mel_metapage extends bnum_plugin
         $this->rc->output->set_env("main_nav_can_deploy", $this->rc->config->get('main_nav_can_deploy', true));
         $this->rc->output->set_env("avatar_background_color", $this->rc->config->get('avatar_error_color', null));
 
-        
+
         $this->rc->output->set_env('mel_metapage_const', [
             "key" => self::FROM_KEY,
             "value" => self::FROM_VALUE
@@ -428,8 +428,8 @@ class mel_metapage extends bnum_plugin
                     if ($this->rc->task === 'bnum') {
                         $this->load_metapage_script_module('bnum.js');
                         $this->include_script_frame_manager();
-    
-                        include_once __DIR__."/program/classes/metrics.php";
+
+                        include_once __DIR__ . "/program/classes/metrics.php";
                         (new MetricsConfigData($this))->send_to_env();
                     }
                 }
@@ -454,7 +454,8 @@ class mel_metapage extends bnum_plugin
             //$this->rc->get_storage();
             /*if ($this->rc->task === "webconf" && $this->visio_enabled())
                 $this->register_task("webconf");
-            else*/ if ($this->rc->task === 'search')
+            else*/
+            if ($this->rc->task === 'search')
                 $this->register_task("search");
             else if ($this->rc->task === "chat")
                 $this->register_task("chat");
@@ -543,7 +544,7 @@ class mel_metapage extends bnum_plugin
             $this->add_hook("startup", array($this, "send_spied_urls"));
             //$this->add_hook('contacts_autocomplete_after', [$this, 'contacts_autocomplete_after']);
             if ($this->rc->task === 'settings' && rcube_utils::get_input_value('_open_section', rcube_utils::INPUT_GET) !== null) $this->add_hook('ready', array($this, 'open_section'));
-            
+
             $this->rc->output->set_env("webconf.base_url", $this->rc->config->get("web_conf"));
 
             $user = driver_mel::gi()->getUser();
@@ -599,9 +600,7 @@ class mel_metapage extends bnum_plugin
             $this->load_config();
             $this->register_task("mel_metapage");
             $this->register_action('get_create_workspace', array($this, 'create_workspace_html'));
-        }
-
-        else if ($this->rc->task === 'mail') {
+        } else if ($this->rc->task === 'mail') {
             $this->include_internal_and_external_buttons();
         }
 
@@ -974,8 +973,8 @@ class mel_metapage extends bnum_plugin
 
     function appendTo($args)
     {
-        if (strpos($args['content'], '/scriptType:module"') !== false){
-            $args["content"] = str_replace('/scriptType:module"', '?v='.Version::VERSION.'.'.Version::BUILD.'" type="module"', $args["content"]);
+        if (strpos($args['content'], '/scriptType:module"') !== false) {
+            $args["content"] = str_replace('/scriptType:module"', '?v=' . Version::VERSION . '.' . Version::BUILD . '" type="module"', $args["content"]);
         }
 
         if (strpos($args['content'], '﻿') !== false) $args['content'] = str_replace('﻿', '', $args['content']);
@@ -1226,6 +1225,7 @@ class mel_metapage extends bnum_plugin
         $this->include_stylesheet($this->local_skin_path() . '/global.css');
         $this->include_stylesheet($this->local_skin_path() . '/user.css');
         $this->include_stylesheet($this->local_skin_path() . '/option.css');
+        $this->include_stylesheet($this->local_skin_path() . '/annuaire_part.css');
     }
 
     function load_config_js()
@@ -1341,7 +1341,7 @@ class mel_metapage extends bnum_plugin
         if (class_exists("mel_workspace")) {
             // $wsp = $this->rc->plugins->get_plugin("mel_workspace");
             // $wsp->load_workspaces();
-            $workspaces = mel_workspace::LoadWorkspaces();//$wsp->workspaces;
+            $workspaces = mel_workspace::LoadWorkspaces(); //$wsp->workspaces;
         } else {
             $workspaces = [];
         }
@@ -1610,7 +1610,7 @@ class mel_metapage extends bnum_plugin
             if (class_exists("mel_workspace")) {
                 // $wsp = $this->rc->plugins->get_plugin("mel_workspace");
                 // $wsp->load_workspaces();
-                $workspaces = mel_workspace::LoadWorkspaces();//$wsp->workspaces;
+                $workspaces = mel_workspace::LoadWorkspaces(); //$wsp->workspaces;
             } else {
                 $workspaces = [];
             }
@@ -2064,7 +2064,6 @@ class mel_metapage extends bnum_plugin
                 'title'   => html::label($avatar_color_key, rcube::Q($this->gettext($avatar_color_key))),
                 'content' => "<input name=$avatar_color_key type=\"color\" value=\"$config\"/>",
             ];
-
         } else if ($args['section'] == 'calendar') {
             $this->add_texts('localization/');
 
@@ -2196,15 +2195,15 @@ class mel_metapage extends bnum_plugin
 
             $templates = mel_helper::Enumerable($templates);
 
-            if (!class_exists('mel_parapheur')) $templates = $templates->where(function($key) {
+            if (!class_exists('mel_parapheur')) $templates = $templates->where(function ($key) {
                 return $key !== 'app_parapheur';
             });
 
-            if (!class_exists('rizomo')) $templates = $templates->where(function($key) {
+            if (!class_exists('rizomo')) $templates = $templates->where(function ($key) {
                 return $key !== 'app_rizomo';
             });
 
-            if (!class_exists('mel_rocket_chat')) $templates = $templates->where(function($key) {
+            if (!class_exists('mel_rocket_chat')) $templates = $templates->where(function ($key) {
                 return $key !== 'app_chat';
             });
 
@@ -2346,7 +2345,6 @@ class mel_metapage extends bnum_plugin
             $args['prefs']["mel_calendar_configuration"] = $config;
 
             $this->rc->output->set_env("mel_metapage_calendar_configs", $config);
-            
         } else if ($args['section'] == 'globalsearch') {
             $op_search_mail_max = 'search_mail_max';
             $op_search_on_all_bal = 'search_on_all_bal';
@@ -2676,8 +2674,7 @@ class mel_metapage extends bnum_plugin
                 'notifications'
             ]))) {
                 $part['name'] = ($extern ? '> ' : '') . ucwords(explode('@', $part['mailto'])[1]);
-            }
-            else if (strpos($part['mailto'], $name . '@') === 0) {
+            } else if (strpos($part['mailto'], $name . '@') === 0) {
                 $part['name'] = ucwords(str_replace('.', ' ', $part['name']));
             }
 
@@ -2688,14 +2685,14 @@ class mel_metapage extends bnum_plugin
                 $part['name'] .= ' emis par ' . trim($sender);
             }
 
-            if ($this->rc->config->get('mel_messages_list_clear_headers', "full") == "service" 
-                    && !empty($service)) {
+            if (
+                $this->rc->config->get('mel_messages_list_clear_headers', "full") == "service"
+                && !empty($service)
+            ) {
                 $message->from = $part['name'] . ' - ' . $service . " <" . $part['mailto'] . ">";
-            }
-            else {
+            } else {
                 $message->from = $part['name'] . " <" . $part['mailto'] . ">";
             }
-            
         }
 
         return $args;
@@ -3731,10 +3728,11 @@ class mel_metapage extends bnum_plugin
     {
         $url =  $this->rc->config->get('login_doc_url');
         $txt = $this->gettext('login_da');
-        return html::div([], $txt.' '.html::a(['href'=>$url], $url).'.');
-    }  
+        return html::div([], $txt . ' ' . html::a(['href' => $url], $url) . '.');
+    }
 
-    public function infiniteScrollCount() {
+    public function infiniteScrollCount()
+    {
         $namespace = rcube_utils::get_input_value('_for', rcube_utils::INPUT_POST);
 
         $data = $this->rc->plugins->exec_hook('webcomponents.scroll.count', ['namespace' => $namespace, 'count' => 0]);
@@ -3743,7 +3741,8 @@ class mel_metapage extends bnum_plugin
         exit;
     }
 
-    public function infiniteScrollData() {
+    public function infiniteScrollData()
+    {
         $page = rcube_utils::get_input_value('_page', rcube_utils::INPUT_POST);
         $namespace = rcube_utils::get_input_value('_for', rcube_utils::INPUT_POST);
 
@@ -3753,13 +3752,14 @@ class mel_metapage extends bnum_plugin
         exit;
     }
 
-    public function avatar_url() {
+    public function avatar_url()
+    {
         $data = null;
         $redirect = false;
         $email = rcube_utils::get_input_value('_email', rcube_utils::INPUT_GET);
         $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GET);
 
-        if (!isset($email)){
+        if (!isset($email)) {
             $email = driver_mel::gi()->getUser($id)->email;
             $_GET['_email'] = $email;
         }
@@ -3772,28 +3772,27 @@ class mel_metapage extends bnum_plugin
         }
 
         if ($img || rcube_utils::get_input_value('_no_data', rcube_utils::INPUT_GET)) {
-            
+
             if (!$img) $this->storage()->update_cache("no_avatar_$email", date("Y-m-d H:i:s"));
             $img = $this->_generate_no_picture();
-            
-            $this->rc->output->future_expire_header(86400*30);
-            header("Content-Type: image/png"); 
-  
-            imagepng($img); 
+
+            $this->rc->output->future_expire_header(86400 * 30);
+            header("Content-Type: image/png");
+
+            imagepng($img);
             exit;
         }
-        
+
         $plugin = $this->exec_hook('app.avatar', [
             'email' => $email,
             'data' => null,
         ]);
 
         // redirect to url provided by a plugin
-        if (!empty($plugin['url'])) { 
-            $data = $plugin['url'];//$this->rc()->output->redirect($plugin['url']);
+        if (!empty($plugin['url'])) {
+            $data = $plugin['url']; //$this->rc()->output->redirect($plugin['url']);
             $redirect = true;
-        }
-        else if (!isset($plugin) && !isset($plugin['data'])) $data = $plugin['data'];
+        } else if (!isset($plugin) && !isset($plugin['data'])) $data = $plugin['data'];
         else {
             // $data = [
             // '_task' => 'addressbook',
@@ -3809,19 +3808,20 @@ class mel_metapage extends bnum_plugin
         if ($redirect) $this->rc()->output->redirect($data);
         else {
             if ($data) {
-                $this->rc->output->future_expire_header(86400*30);
+                $this->rc->output->future_expire_header(86400 * 30);
                 $this->rc()->output->sendExit($data, ['Content-Type: ' . rcube_mime::image_content_type($data)]);
             }
-    
+
             if (!empty($_GET['_error'])) {
                 $this->rc()->output->sendExit('', ['HTTP/1.0 204 Photo not found']);
             }
-    
+
             $this->rc()->output->sendExit(base64_decode(rcmail_output::BLANK_GIF), ['Content-Type: image/gif']);
         }
     }
 
-    public function _generate_no_picture() {
+    public function _generate_no_picture()
+    {
         $image = imagecreate(200, 200);
 
         $email = rcube_utils::get_input_value('_email', rcube_utils::INPUT_GET);
@@ -3840,35 +3840,37 @@ class mel_metapage extends bnum_plugin
         unset($text);
 
         // Set the background color of image 
-        $background_color = imagecolorallocate($image, $colors['background'][0], $colors['background'][1], $colors['background'][2]); 
+        $background_color = imagecolorallocate($image, $colors['background'][0], $colors['background'][1], $colors['background'][2]);
         imagefill($image, 200, 200, $background_color);
 
         // Set the text color of image 
-        $text_color = imagecolorallocate($image, $colors['text'][0], $colors['text'][1], $colors['text'][2]); 
+        $text_color = imagecolorallocate($image, $colors['text'][0], $colors['text'][1], $colors['text'][2]);
 
-        $tmp=imagefttext($image, 120, 0, 50, 160, $text_color, __DIR__.'/skins/mel_elastic/roboto.ttf', strtoupper(substr($email, 0, 1)));
+        $tmp = imagefttext($image, 120, 0, 50, 160, $text_color, __DIR__ . '/skins/mel_elastic/roboto.ttf', strtoupper(substr($email, 0, 1)));
         //imagestring($image, 2, 20, 20, substr($email, 0, 1), $text_color);
 
         return $image;
     }
 
-    function getContrastingColor($bgColor) {
+    function getContrastingColor($bgColor)
+    {
         // Convertir la couleur hexadécimale en RGB
         $r = hexdec(substr($bgColor, 1, 2));
         $g = hexdec(substr($bgColor, 3, 2));
         $b = hexdec(substr($bgColor, 5, 2));
-    
+
         // Calculer la luminosité
         $luminance = (($r * 299) + ($g * 587) + ($b * 114)) / 1000;
-    
+
         // Si la couleur de fond est claire, choisir une couleur de texte sombre, et vice versa
         return $luminance > 186 ? '#000000' : '#FFFFFF'; // Texte noir pour fond clair, blanc pour fond sombre
     }
-    
-    function getRandomColorWithContrast($name, $toHexa = false) {
+
+    function getRandomColorWithContrast($name, $toHexa = false)
+    {
         $bgColor = $this->stringToColorCode($name);
         $textColor = $this->getContrastingColor($bgColor);
-        
+
         if (!$toHexa) return $this->getColor($bgColor, $textColor);
         else return [
             'background' => $bgColor,
@@ -3876,7 +3878,8 @@ class mel_metapage extends bnum_plugin
         ];
     }
 
-    function getColor($bgColor, $textColor) {
+    function getColor($bgColor, $textColor)
+    {
         $r = hexdec(substr($bgColor, 1, 2));
         $g = hexdec(substr($bgColor, 3, 2));
         $b = hexdec(substr($bgColor, 5, 2));
@@ -3891,8 +3894,9 @@ class mel_metapage extends bnum_plugin
         ];
     }
 
-    function stringToColorCode($str) {
-        return "#".substr(md5($str), 0, 6);
+    function stringToColorCode($str)
+    {
+        return "#" . substr(md5($str), 0, 6);
         // $val = 0;
         // foreach (str_split($str) as $value) {
         //     $value = ord(strtolower($value));
@@ -3906,10 +3910,11 @@ class mel_metapage extends bnum_plugin
         // if (strlen($val) < 6) $val .= ((10**(6-strlen($val)))/10);
 
         // return "#$val";
-      }
-      
-    
-    public function no_contact_found($args) {
+    }
+
+
+    public function no_contact_found($args)
+    {
         if ((is_null($args['record']) || is_null($args['data'])) && $this->get_current_action() === 'avatar') {
             // $args['url'] = [
             //     '_task' => 'mel_metapage',
@@ -3919,17 +3924,18 @@ class mel_metapage extends bnum_plugin
             //     ];
             $_GET['_no_data'] = true;
             $this->avatar_url();
-
         }
 
         return $args;
     }
 
-    public static function IncludeAvatar() {
+    public static function IncludeAvatar()
+    {
         rcmail::get_instance()->plugins->get_plugin('mel_metapage')->include_component('avatar.js');
-    } 
+    }
 
-    public static function IncludeLoader() {
+    public static function IncludeLoader()
+    {
         rcmail::get_instance()->plugins->get_plugin('mel_metapage')->include_component('bootstrap-loader.js');
-    } 
+    }
 }

@@ -1,7 +1,5 @@
 if (rcmail) {
   (() => {
-    //
-
     function module_loader() {
       return window?.loadJsModule ?? parent?.loadJsModule ?? top?.loadJsModule;
     }
@@ -9,39 +7,6 @@ if (rcmail) {
     async function load_helper() {
       const loader = module_loader();
       return (await loader('mel_metapage', 'mel_object.js')).MelObject.Empty();
-    }
-
-    function change_frame(frame, args = null) {
-      let config = {
-        changeframe: true,
-        wait: false,
-        args: {},
-        action: 'update_location',
-        action_args: [],
-      };
-
-      if (args !== null && args !== undefined) {
-        for (const key in args) {
-          if (Object.hasOwnProperty.call(args, key)) {
-            const element = args[key];
-            config[key] = element;
-          }
-        }
-      }
-
-      mel_metapage.Functions.change_frame(
-        frame,
-        config.changeframe,
-        config.wait,
-        config.args,
-        [
-          {
-            action: config.action,
-            args: config.action_args,
-            onlyExist: true,
-          },
-        ],
-      );
     }
 
     rcmail.register_command(
@@ -147,15 +112,6 @@ if (rcmail) {
         PageManager.SwitchFrame('settings', {
           args: config,
         });
-
-        // change_frame('settings', {
-        //   args: {
-        //     _action: 'folders',
-        //   },
-        //   action_args: [
-        //     mel_metapage.Functions.url('settings', 'folders', config),
-        //   ],
-        // });
       },
       true,
     );
@@ -212,27 +168,6 @@ if (rcmail) {
       await helper.switch_frame('settings', {
         args: { _action: 'plugin.mel_resources_agendas' },
       });
-      //window.location.href = mel_metapage.Functions.url("settings", "plugin.mel_resources_agendas");
-      //la page existe encore
-      // if (parent.$('iframe.settings-frame').length > 0) {
-      //   parent.$('iframe.settings-frame')[0].src = mel_metapage.Functions.url(
-      //     'settings',
-      //     'plugin.mel_resources_agendas',
-      //   );
-      //   mel_metapage.Functions.change_frame('settings', true, false);
-      // } else if (parent.$('.settings-frame').length > 0) {
-      //   rcmail.set_busy(true, 'loading');
-      //   window.location.href = mel_metapage.Functions.url(
-      //     'settings',
-      //     'plugin.mel_resources_agendas',
-      //   );
-      // } else {
-      //   mel_metapage.Functions.change_frame('settings', true, true, {
-      //     _action: 'plugin.mel_resources_agendas',
-      //   }).then(() => {
-      //     parent.$('iframe.settings-frame')[0].contentWindow.location.reload();
-      //   });
-      // }
     });
 
     rcmail.register_command(
@@ -398,11 +333,9 @@ if (rcmail) {
         $args[rcmail.env.mel_metapage_const.key] =
           rcmail.env.mel_metapage_const.value;
         rcmail.set_busy(true, 'loading');
-        //console.log('test', mel_metapage.Functions.url("addressbook", "plugin.annuaire", $args), top.$('.addressbook-frame'));
+
         top.$('.addressbook-frame')[0].contentWindow.location.href =
           mel_metapage.Functions.url('addressbook', 'plugin.annuaire', $args);
-        // rcmail.set_busy(false);
-        // rcmail.clear_messages();
       },
       true,
     );
@@ -572,10 +505,7 @@ if (rcmail) {
           (datas) => {
             datas = JSON.parse(datas);
 
-            if (
-              /*!!datas.message && EMPTY_STRING !== datas.message && */ !!datas.start &&
-              EMPTY_STRING !== datas.start
-            ) {
+            if (!!datas.start && EMPTY_STRING !== datas.start) {
               $('#user-dropdown .div-first input').val(
                 moment(datas.start, 'DD/MM/YYYY HH:mm:ss').format('YYYY-MM-DD'),
               );
@@ -643,8 +573,6 @@ if (rcmail) {
           $('.mm-frame').css('display', 'none');
           $('#layout-frames').css('display', '');
           $('iframe.search-frame').css('display', '');
-          //top.rcmail.set_busy(false);
-          //rcmail.clear_messages();
         }
 
         await module_helper_mel.Look.SendTask('search');
@@ -661,7 +589,7 @@ if (rcmail) {
           $('.a-frame').css('display', 'none');
           $('.mm-frame').css('display', 'none');
           $('#layout-frames').css('display', '');
-          $('iframe.search-frame').css('display', ''); //[0].contentWindow.rcmail.command('mel.search', {word});
+          $('iframe.search-frame').css('display', '');
         } else if ($('.search-frame').length > 0) {
           $('.a-frame').css('display', 'none');
           $('.mm-frame').css('display', 'none');
@@ -686,89 +614,6 @@ if (rcmail) {
       'refreshFrame',
       () => {
         PageManager.Instance.get_window().refresh();
-        return null;
-        let iframe = $(`iframe.${rcmail.env.current_frame_name}-frame`);
-
-        if (rcmail.env.current_frame_name === 'discussion') {
-          iframe[0].src = iframe[0].src;
-          return;
-        }
-
-        let parent = $(`.${rcmail.env.current_frame_name}-frame`);
-
-        // Frame déjà ouverte
-        if (iframe.length > 0) {
-          iframe[0].contentWindow
-            .$('body')
-            .html(MEL_ELASTIC_UI.create_loader('refresh_loading'));
-          if (!iframe[0].contentWindow.location.href.includes('_is_from'))
-            iframe.src =
-              iframe[0].contentWindow.location.href +
-              (iframe[0].contentWindow.location.href[
-                iframe[0].contentWindow.location.href.length - 1
-              ] === '&'
-                ? ''
-                : '&') +
-              '_is_from=iframe';
-          else iframe[0].contentWindow.location.reload();
-        }
-        // Frame parent
-        else if (
-          rcmail.env.current_frame_name === undefined ||
-          parent.length > 0
-        ) {
-          const url = window.location.href;
-
-          if (rcmail.env.current_frame_name === undefined) {
-            const _includes = ['mel-focus', 'selected', 'order1', 'mel'];
-            console.log($('#taskmenu .selected')[0].classList);
-            const key = Enumerable.from($('#taskmenu .selected')[0].classList)
-              .where(
-                (x) =>
-                  !_includes.includes(x) &&
-                  !x.includes('icofont') &&
-                  !x.includes('icon-mel-') &&
-                  !x.includes('button'),
-              )
-              .first();
-            rcmail.env.current_frame_name = key;
-            parent = $(`.${mm_st_ClassContract(key)}-frame`);
-          } else
-            rcmail.env.current_frame_name = mm_st_ClassContract(
-              rcmail.env.current_frame_name,
-            );
-
-          parent.remove();
-
-          let args = null;
-
-          try {
-            if (url.includes('&')) {
-              args = Enumerable.from(url.split('&'))
-                .where((x) => x.includes('=') && !x.includes('task'))
-                .toJsonDictionnary(
-                  (x) => x.split('=')[0],
-                  (x) => x.split('=')[1],
-                );
-              args[rcmail.env.mel_metapage_const.key] =
-                rcmail.env.mel_metapage_const.value;
-            }
-          } catch (error) {}
-
-          mel_metapage.Functions.change_frame(
-            rcmail.env.current_frame_name,
-            true,
-            false,
-            args,
-          ) /*.then(() => {  
-                        const contract = mm_st_ClassContract(rcmail.env.current_frame_name);
-                        //console.log("rcmail.env.current_frame_name", rcmail.env.current_frame_name, contract, $(`iframe.${contract}-frame`), `${url}${(url[url.length-1] === '&' ? '' : '&')}_is_from=iframe`);                     
-                        $(`iframe.${contract}-frame`)[0].src = `${url}${(url[url.length-1] === '&' ? '' : '&')}_is_from=iframe`;
-                        rcmail.set_busy(false);
-                        rcmail.clear_messages();
-                        mel_metapage.Functions.change_frame(rcmail.env.current_frame_name, true);
-                    })*/;
-        }
       },
       true,
     );
@@ -781,11 +626,8 @@ if (rcmail) {
           mel_metapage.Functions.url('mel_elastic', 'plugin.toggle_animations'),
           {},
           (datas) => {
-            //debugger;
             rcmail.env.animation_enabled = JSON.parse(datas);
             let current = MEL_ELASTIC_UI.themes[MEL_ELASTIC_UI.theme];
-
-            //rcmail.env.animation_enabled = !(rcmail.env.animation_enabled ?? current.animation_enabled_by_default);
 
             for (const key in MEL_ELASTIC_UI.themes) {
               if (Object.hasOwnProperty.call(MEL_ELASTIC_UI.themes, key)) {

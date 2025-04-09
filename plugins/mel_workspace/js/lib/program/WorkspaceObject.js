@@ -130,7 +130,8 @@ class WorkspaceObject extends MelObject {
     visibilityButton,
     { onSetFullScreen = null, onUnsetFullScreen = null } = {},
   ) {
-    visibilityButton ??= { length: false };
+    //Si on est en jQuery, on passe en Javascript Natif
+    if (visibilityButton?.length) visibilityButton = visibilityButton[0];
 
     if (task === askedTask) {
       //On cache tout les autres modules
@@ -155,7 +156,8 @@ class WorkspaceObject extends MelObject {
         }),
       );
 
-      if (visibilityButton.length)
+      //Si un bouton existe ou non
+      if (visibilityButton)
         visibilityButton.addClass('disabled').attr('disabled', 'disabled');
 
       this.showBlock(module);
@@ -170,8 +172,8 @@ class WorkspaceObject extends MelObject {
 
       return { _break: true, askedTask };
     } else if (module.hasAttribute('data-fullscreen')) {
-      if (visibilityButton.length)
-        visibilityButton.removeClass('disabled').removeAttr('disabled');
+      if (visibilityButton)
+        visibilityButton.removeClass('disabled').removeAttribute('disabled');
 
       module.removeAttribute('data-fullscreen');
 

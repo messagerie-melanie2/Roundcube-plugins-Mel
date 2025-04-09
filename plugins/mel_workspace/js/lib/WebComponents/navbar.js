@@ -202,6 +202,16 @@ class WspNavBar extends HtmlCustomTag {
     );
   }
 
+  /**
+   * @type {string}
+   * @readonly
+   */
+  get currentTask() {
+    return this.navigator
+      .querySelector('bnum-wsp-navigation-button[aria-pressed="true"]')
+      .getAttribute('data-task');
+  }
+
   _p_main() {
     // this.attachInternals().states.add('can-be-busy');
     this.classList.add('can-be-busy');

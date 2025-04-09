@@ -1,18 +1,39 @@
 import { Point } from '../../mel_maths.js';
 import { Sticker } from './sticker.js';
 
+/**
+ * Classe représentant un sticker épinglé (PinSticker).
+ * Hérite de la classe Sticker.
+ */
 export class PinSticker extends Sticker {
+  /**
+   * Constructeur de la classe PinSticker.
+   * @param {string} uid - Identifiant unique du sticker.
+   * @param {number} order - Ordre du sticker.
+   * @param {string} title - Titre du sticker.
+   * @param {string} text - Texte du sticker.
+   * @param {string} color - Couleur de fond du sticker.
+   * @param {string} text_color - Couleur du texte du sticker.
+   * @param {number|null} [height=null] - Hauteur du sticker (optionnelle).
+   */
   constructor(uid, order, title, text, color, text_color, height = null) {
     super(`pin-${uid}`, order, title, text, color, text_color, true);
-    this.pos = Point.Zero();
+    this.pos = Point.Zero(); // Position initiale du sticker (par défaut à zéro).
     this.height = height;
   }
 
+  /**
+   * Génère le HTML du sticker épinglé.
+   * @param {Object} options - Options pour la génération.
+   * @param {Point|null} [options.pos=null] - Position du sticker (optionnelle).
+   * @returns {jQuery} Élément HTML généré.
+   */
   generate({ pos = null }) {
     if (!pos) pos = Point.Zero();
 
     let $generated = $(super.html());
 
+    // Ajout des classes et styles spécifiques au sticker épinglé.
     $generated
       .addClass('pined')
       .appendTo($('body'))
@@ -23,9 +44,12 @@ export class PinSticker extends Sticker {
 
     let $table = $generated.find('.takb').parent().parent();
 
+    // Suppression des boutons inutiles pour un sticker épinglé.
     $generated.find('.eye').parent().remove();
     $generated.find('.pb').parent().remove();
     $generated.find('.db').parent().remove();
+
+    // Modification des boutons pour les adapter au sticker épinglé.
     $generated
       .find('.downb')
       .removeClass('downb')
@@ -46,6 +70,11 @@ export class PinSticker extends Sticker {
     return $generated;
   }
 
+  /**
+   * Retourne le HTML du sticker sous forme de chaîne.
+   * @param {boolean} [hidden=false] - Indique si le sticker doit être caché.
+   * @returns {string} HTML du sticker.
+   */
   html(hidden = false) {
     let $generated = this.generate({});
 
@@ -55,8 +84,9 @@ export class PinSticker extends Sticker {
   }
 
   /**
-   *
-   * @param {Sticker} sticker
+   * Crée une instance de PinSticker à partir d'un objet Sticker.
+   * @param {Sticker} sticker - Instance de la classe Sticker.
+   * @returns {PinSticker} Instance de PinSticker.
    */
   static fromSticker(sticker) {
     return new PinSticker(
@@ -70,6 +100,9 @@ export class PinSticker extends Sticker {
     );
   }
 
+  /**
+   * Définit les gestionnaires d'événements pour le sticker.
+   */
   set_handlers() {
     super.set_handlers();
 
@@ -82,6 +115,8 @@ export class PinSticker extends Sticker {
       .attr('draggable', true)
       .removeClass('disabled')
       .removeAttr('disabled');
+
+    // Gestionnaire pour le début du drag (déplacement).
     $move[0].addEventListener('dragstart', (ev) => {
       if (Sticker.lock) {
         ev.preventDefault();
@@ -105,6 +140,7 @@ export class PinSticker extends Sticker {
       $drag[0].addEventListener('dragover', (ev) => {
         ev.preventDefault();
 
+        // Mise à jour de la position pendant le drag.
         this.update_pos(new Point(ev.clientX, ev.clientY));
       });
 
@@ -116,12 +152,15 @@ export class PinSticker extends Sticker {
       });
     });
 
+    // Gestionnaire pour la fin du drag.
     $move[0].addEventListener('dragend', (ev) => {
       console.log('evend', ev);
 
       if (!droped) {
+        // Si le drag est annulé, revenir à la position initiale.
         this.update_pos(init_pos);
       } else {
+        // Si le drag est validé, envoyer les nouvelles coordonnées au serveur.
         this.post(
           'pin_move',
           {
@@ -149,8 +188,9 @@ export class PinSticker extends Sticker {
   }
 
   /**
-   *
-   * @param {Point} pos
+   * Met à jour la position du sticker.
+   * @param {Point} pos - Nouvelle position du sticker.
+   * @returns {PinSticker} Instance actuelle pour chaînage.
    */
   update_pos(pos) {
     this.pos = pos;

@@ -7,24 +7,52 @@ import { MetapageModule } from './metapage_module.js';
 import { PinSticker } from './notes/pined_sticker.js';
 import { Sticker, default_note_uid } from './notes/sticker.js';
 
+/**
+ * Module de gestion des notes.
+ * @extends MetapageModule
+ */
 export class MetapageNotesModule extends MetapageModule {
+  /**
+   * Constructeur de la classe MetapageNotesModule.
+   */
   constructor() {
     super();
   }
 
+  /**
+   * Méthode principale appelée pour initialiser le module.
+   * Configure les événements, initialise les propriétés et génère les notes épinglées.
+   */
   main() {
     super.main();
 
+    /**
+     * Instance de l'objet plein écran pour afficher les notes.
+     * @type {MelFullScreenItem|null}
+     * @private
+     */
     this._fullscreen = null;
+
+    /**
+     * État d'affichage des notes.
+     * @type {boolean}
+     */
     this.state = false;
 
+    /**
+     * Liste des notes.
+     * @type {Object|null}
+     */
     this.notes = null;
+
+    // Définition de la propriété `notes` avec un getter.
     Object.defineProperties(this, {
       notes: {
         get: () => {
           let notes;
           const raw_notes = this.get_env('mel_metapages_notes');
 
+          // Si aucune note n'est trouvée, créer une note par défaut.
           if (!MelEnumerable.from(raw_notes ?? []).any()) {
             notes = {};
             notes[default_note_uid] = new Sticker(default_note_uid, 0, '', '');
@@ -36,6 +64,7 @@ export class MetapageNotesModule extends MetapageModule {
       },
     });
 
+    // Configuration des événements pour le bouton de sélection des notes.
     this.select_note_button().click(() => {
       if (!this._fullscreen) {
         this.add_event_listener(
@@ -58,6 +87,7 @@ export class MetapageNotesModule extends MetapageModule {
       } else this.toggle();
     });
 
+    // Gestion des clics pour masquer les notes si elles sont affichées.
     this.select('#barup-wrapper-row').click((ev) => {
       if (this.is_show()) {
         let $parent = $(ev.target);
@@ -79,6 +109,7 @@ export class MetapageNotesModule extends MetapageModule {
       }
     });
 
+    // Événement pour commencer à épingler une note.
     this.add_event_listener(
       'notes.apps.start-pin',
       (val) => {
@@ -87,6 +118,7 @@ export class MetapageNotesModule extends MetapageModule {
       { callback_key: 'notes_modules' },
     );
 
+    // Événement pour gérer l'épinglement ou le retrait d'une note.
     this.add_event_listener(
       'notes.apps.tak',
       async (taked) => {
@@ -148,10 +180,12 @@ export class MetapageNotesModule extends MetapageModule {
       { callback_key: 'notes_modules' },
     );
 
+    // Gestion du redimensionnement de la fenêtre.
     this.rcmail().addEventListener('skin-resize', () => {
       this._on_resize();
     });
 
+    // Génération des notes épinglées.
     this._generate_pined_notes();
 
     if ($('.mel-note.pined').length > 0) {
@@ -159,6 +193,11 @@ export class MetapageNotesModule extends MetapageModule {
     }
   }
 
+  /**
+   * Gère le redimensionnement des notes épinglées.
+   * Ajuste leur position en fonction de la taille de la fenêtre.
+   * @private
+   */
   _on_resize() {
     $('.mel-note.pined').each((i, e) => {
       e = $(e);
@@ -178,14 +217,28 @@ export class MetapageNotesModule extends MetapageModule {
     });
   }
 
+  /**
+   * Vérifie si les notes sont affichées.
+   * @returns {boolean} `true` si les notes sont affichées, sinon `false`.
+   */
   is_show() {
     return this.state;
   }
 
+  /**
+   * Sélectionne le bouton de gestion des notes.
+   * @returns {jQuery} Élément jQuery correspondant au bouton.
+   */
   select_note_button() {
     return this.select('#button-notes');
   }
 
+  /**
+   * Crée un élément plein écran pour afficher les notes.
+   * Configure les événements de fermeture et d'affichage.
+   * @private
+   * @returns {MetapageNotesModule} Instance actuelle pour chaînage.
+   */
   _create_fullscreen_item() {
     this._fullscreen = new MelFullScreenItem('app-notes', 'body', {
       close_on_click: false,
@@ -201,6 +254,7 @@ export class MetapageNotesModule extends MetapageModule {
       this.select_note_button().addClass('on-focus');
     });
 
+    // Gestion des événements de glisser-déposer pour réorganiser les notes.
     this._fullscreen.$apps[0].addEventListener('dragover', (ev) => {
       ev.preventDefault();
       ev.dataTransfer.dropEffect = 'move';
@@ -265,6 +319,11 @@ export class MetapageNotesModule extends MetapageModule {
     return this;
   }
 
+  /**
+   * Génère les notes dans l'interface plein écran.
+   * @private
+   * @returns {MetapageNotesModule} Instance actuelle pour chaînage.
+   */
   _generate_notes() {
     let focused_sticker = this.in_focus_mode() ? this.get_note_focused() : null;
 
@@ -303,6 +362,11 @@ export class MetapageNotesModule extends MetapageModule {
     return this._generate_pined_notes();
   }
 
+  /**
+   * Génère le bouton pour créer une nouvelle note.
+   * @private
+   * @returns {mel_html2} Instance du bouton HTML.
+   */
   _generate_plus_button() {
     const create_icon = 'add_circle';
     const icon = new MainIconHtml(create_icon, { class: 'new-note-icon' }, {});
@@ -326,6 +390,11 @@ export class MetapageNotesModule extends MetapageModule {
     return html_button;
   }
 
+  /**
+   * Génère les notes épinglées et les ajoute au corps du document.
+   * @private
+   * @returns {MetapageNotesModule} Instance actuelle pour chaînage.
+   */
   _generate_pined_notes() {
     if (this.begin_pin) return;
 
@@ -352,10 +421,20 @@ export class MetapageNotesModule extends MetapageModule {
     return this;
   }
 
+  /**
+   * Vérifie si le mode focus est activé.
+   * @private
+   * @returns {boolean} `true` si le mode focus est activé, sinon `false`.
+   */
   in_focus_mode() {
     return this._fullscreen.$element.find('.mel-note .eye.crossed').length > 0;
   }
 
+  /**
+   * Récupère la note actuellement en focus.
+   * @private
+   * @returns {Sticker} Instance de la note en focus.
+   */
   get_note_focused() {
     let $parent = this._fullscreen.$element.find('.mel-note .eye.crossed');
 
@@ -366,11 +445,19 @@ export class MetapageNotesModule extends MetapageModule {
     return Sticker.fromHtml($parent.attr('id').replace('note-', EMPTY_STRING));
   }
 
+  /**
+   * Masque l'interface des notes.
+   * @returns {MetapageNotesModule} Instance actuelle pour chaînage.
+   */
   hide() {
     this._fullscreen.hide();
     return this;
   }
 
+  /**
+   * Affiche l'interface des notes.
+   * @returns {MetapageNotesModule} Instance actuelle pour chaînage.
+   */
   show() {
     if (!this._fullscreen) {
       this.select_note_button().click();
@@ -378,6 +465,10 @@ export class MetapageNotesModule extends MetapageModule {
     return this;
   }
 
+  /**
+   * Bascule l'affichage des notes.
+   * @returns {MetapageNotesModule} Instance actuelle pour chaînage.
+   */
   toggle() {
     if (this.state) this.hide();
     else this.show();

@@ -83,18 +83,6 @@ export class NavBarManager {
       args: config,
       actions: ['workspace'],
     });
-    top.history.replaceState(
-      {},
-      document.title,
-      MelObject.Empty().url('workspace', {
-        action: 'workspace',
-        params: {
-          _uid: workspace.uid,
-          _force_bnum: 1,
-        },
-        removeIsFromIframe: true,
-      }),
-    );
   }
 
   /**
@@ -183,6 +171,13 @@ export class NavBarManager {
     return this;
   }
 
+  static #_UpdateHistory(url) {
+    top.history.replaceState({}, document.title, url);
+    history.replaceState({}, document.title, url);
+
+    return this;
+  }
+
   static async SwitchPage(
     task,
     { event = null, workspace = null, manualConfig = null } = {},
@@ -225,19 +220,6 @@ export class NavBarManager {
           args: config,
           actions: ['workspace'],
         });
-        top.history.replaceState(
-          {},
-          document.title,
-          MelObject.Empty().url('workspace', {
-            action: 'workspace',
-            params: {
-              _uid: workspace.uid,
-              _page: 'settings',
-              _force_bnum: 1,
-            },
-            removeIsFromIframe: true,
-          }),
-        );
         break;
 
       case 'more':
@@ -247,19 +229,6 @@ export class NavBarManager {
           args: config,
           actions: ['workspace'],
         });
-        top.history.replaceState(
-          {},
-          document.title,
-          MelObject.Empty().url('workspace', {
-            action: 'workspace',
-            params: {
-              _uid: workspace.uid,
-              _page: 'more',
-              _force_bnum: 1,
-            },
-            removeIsFromIframe: true,
-          }),
-        );
         break;
 
       default:
@@ -298,19 +267,6 @@ export class NavBarManager {
           }
 
           MainNav.select('workspace', { context: this.nav });
-          top.history.replaceState(
-            {},
-            document.title,
-            MelObject.Empty().url('workspace', {
-              action: 'workspace',
-              params: {
-                _uid: workspace.uid,
-                _force_bnum: 1,
-                _page: task,
-              },
-              removeIsFromIframe: true,
-            }),
-          );
         });
         break;
     }
@@ -322,6 +278,18 @@ export class NavBarManager {
         variables: { name: workspace.title },
       }),
       useTopContext,
+    );
+
+    this.#_UpdateHistory(
+      MelObject.Empty().url('workspace', {
+        action: 'workspace',
+        params: {
+          _uid: workspace.uid,
+          _page: task,
+          _force_bnum: 1,
+        },
+        removeIsFromIframe: true,
+      }),
     );
   }
 

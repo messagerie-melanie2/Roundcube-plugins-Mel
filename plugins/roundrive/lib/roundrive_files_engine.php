@@ -198,6 +198,15 @@ class roundrive_files_engine
         }
     }
 
+    /**
+     * Récupère la liste des fichiers favoris de l'utilisateur.
+     *
+     * Cette méthode utilise le système de fichiers pour lister les fichiers
+     * marqués comme favoris. Si un répertoire spécifique est fourni, seuls
+     * les fichiers dans ce répertoire seront retournés.
+     *
+     * @return void
+     */
     public function action_get_favorites() {
         $directory = rcube_utils::get_input_value('_directory', rcube_utils::INPUT_POST);
         $favorites = $this->filesystem->listFavorites($directory !== null ? function($object) use ($directory) {
@@ -205,6 +214,26 @@ class roundrive_files_engine
         } : null);
 
         echo json_encode(iterator_to_array($favorites));
+        exit;
+    }
+
+    /**
+     * Récupère la liste des fichiers dans la corbeille de l'utilisateur.
+     *
+     * Cette méthode utilise le système de fichiers pour lister les fichiers
+     * qui ont été déplacés dans la corbeille. Si un répertoire spécifique est
+     * fourni, seuls les fichiers de ce répertoire seront retournés.
+     *
+     * @return void
+     */
+    public function action_get_trashes() {
+        $directory = rcube_utils::get_input_value('_directory', rcube_utils::INPUT_POST);
+        $trashes = $this->filesystem->listTashes($directory !== null ? function($object) use ($directory) {
+            return strpos($object['originalLocation'], $directory) !== false;
+        } : null);
+
+
+        echo json_encode(iterator_to_array($trashes));
         exit;
     }
 

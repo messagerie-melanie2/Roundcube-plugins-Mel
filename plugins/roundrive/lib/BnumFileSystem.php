@@ -2,6 +2,7 @@
 include_once "BnumWebDavAdaptater.php";
 use League\Flysystem\Filesystem;
 use League\Flysystem\Util\ContentListingFormatter;
+use Sabre\VObject\Property\Boolean;
 
 class BnumFileSystem extends Filesystem {
     /**
@@ -22,11 +23,27 @@ class BnumFileSystem extends Filesystem {
 
     /**
      * Lists all favorites.
-     * @return array
+     * @return Generator
      */
     public function listFavorites(?callable $whereCallback = null) : \Generator {
         $favorites = iterator_to_array($this->_where($this->getAdapter()->listFavorites(), $whereCallback));
         yield from (new ContentListingFormatter('', true, true))->formatListing($favorites);
+    }
+
+    /**
+     * Lists all trashes.
+     * @return Generator
+     */
+    public function listTashes(?callable $whereCallback = null, bool $setOriginalPath = true) : Generator {
+        $trashes = iterator_to_array($this->_where($this->getAdapter()->listTrash(), $whereCallback));
+        $trashes = (new ContentListingFormatter('', true, true))->formatListing($trashes);
+        if ($setOriginalPath === false) yield from $trashes;
+        else {
+            foreach ($trashes as $value) {
+                $value['path'] = $value['originalLocation'];
+                yield $value;
+            }
+        }
     }
 
     /**

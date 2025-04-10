@@ -144,6 +144,9 @@ export class PinSticker extends Sticker {
         this.update_pos(new Point(ev.clientX, ev.clientY));
       });
 
+      //Ajout d'un dragover sur la note elle même pour éviter de ne pas déplacer la note et de ne pas avoir le bon comportement
+      this.get_html().on('dragover', this.action_element_dragover.bind(this));
+
       $drag[0].addEventListener('drop', (ev) => {
         ev.preventDefault();
 
@@ -155,6 +158,9 @@ export class PinSticker extends Sticker {
     // Gestionnaire pour la fin du drag.
     $move[0].addEventListener('dragend', (ev) => {
       console.log('evend', ev);
+
+      //Suppression du dragover pour éviter les bugs
+      this.get_html().off('dragover');
 
       if (!droped) {
         // Si le drag est annulé, revenir à la position initiale.
@@ -185,6 +191,20 @@ export class PinSticker extends Sticker {
       droped = null;
       init_pos = null;
     });
+  }
+
+  /**
+   * Gestionnaire d'événement pour le dragover d'un élément.
+   * Cette fonction est appelée lorsque l'utilisateur fait glisser un élément
+   * au-dessus du sticker. Elle met à jour la position du sticker en fonction
+   * des coordonnées actuelles de la souris.
+   *
+   * @param {DragEvent} ev - Événement de type dragover.
+   */
+  action_element_dragover(ev) {
+    ev.preventDefault();
+
+    this.update_pos(new Point(ev.clientX, ev.clientY));
   }
 
   /**

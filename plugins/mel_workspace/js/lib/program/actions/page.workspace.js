@@ -188,6 +188,15 @@ export class WorkspacePage extends WorkspaceObject {
       },
     );
 
+    FramesManager.Helper.window_object.UpdateDocumentTitle(
+      this.getLocalization('page_title', {
+        plugin: 'mel_workspace',
+        variables: {
+          name: this.workspace.title,
+        },
+      }),
+    );
+
     if (this.get_env('start_page')) {
       //Si le document est chargé, on l'applique
       if (document.readyState === 'complete') this._setStartupPage();

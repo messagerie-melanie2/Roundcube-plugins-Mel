@@ -170,6 +170,7 @@ export class NavBarManager {
         });
       });
 
+      // Actions pour le changement de page lorsque l'on clique sur un bouton de la barre de navigation.
       navbar.onbuttonclicked.push((task, event) => {
         this.SwitchPage(task, { event, workspace });
       });

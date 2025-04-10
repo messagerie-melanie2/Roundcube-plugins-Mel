@@ -163,12 +163,6 @@ export class NavBarManager {
             .fullCalendar('refetchEvents');
         }
 
-        // Ajout d'une animation de chargement
-        MelObject.Empty()
-          .generate_loader('deleting', true)
-          .generate()
-          .appendTo($('body').html(EMPTY_STRING));
-
         // Supprime la barre de navigation et recharge la page.
         this.Kill(workspace.uid);
         FramesManager.Instance.switch_frame('workspace', {

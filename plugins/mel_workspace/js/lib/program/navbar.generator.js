@@ -1,9 +1,9 @@
 // Importation des dépendances nécessaires
+import { BnumPromise } from '../../../../mel_metapage/js/lib/BnumPromise.js';
 import { FramesManager } from '../../../../mel_metapage/js/lib/classes/frame_manager.js';
 import { MainNav } from '../../../../mel_metapage/js/lib/classes/main_nav.js';
 import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
 import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';
-import { Mel_Promise } from '../../../../mel_metapage/js/lib/mel_promise.js';
 import { WspNavBar } from '../WebComponents/navbar.js';
 import { WorkspaceModuleBlock } from '../WebComponents/workspace_module_block.js';
 import { WorkspaceObject } from './WorkspaceObject.js';
@@ -449,7 +449,9 @@ export class NavBarManager {
   static async WaitLoading({ waiting_time = 5 } = {}) {
     // Attend que la barre de navigation soit disponible.
     if (!NavBarManager.currentNavBar)
-      await Mel_Promise.wait(() => !!NavBarManager.currentNavBar, waiting_time);
+      await BnumPromise.Wait(() => !!NavBarManager.currentNavBar, {
+        timeout: waiting_time,
+      });
 
     return !!NavBarManager.currentNavBar;
   }

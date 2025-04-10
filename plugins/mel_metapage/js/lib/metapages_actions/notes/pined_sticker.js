@@ -101,6 +101,32 @@ export class PinSticker extends Sticker {
   }
 
   /**
+   * Désactive les autres notes épinglées.
+   * Cette méthode réduit l'opacité et désactive les interactions des autres notes
+   * épinglées, à l'exception de celle actuellement sélectionnée.
+   */
+  disableOtherNotes() {
+    for (const note of document.querySelectorAll('.mel-note.pined')) {
+      if (note.getAttribute('id') !== `note-${this.uid}`) {
+        note.style.opacity = 0.5;
+        note.style.pointerEvents = 'none';
+      }
+    }
+  }
+
+  /**
+   * Réactive les autres notes épinglées.
+   * Cette méthode restaure l'opacité et les interactions des autres notes
+   * épinglées après qu'elles aient été désactivées.
+   */
+  enableOtherNotes() {
+    for (const note of document.querySelectorAll('.mel-note.pined')) {
+      note.style.opacity = null;
+      note.style.pointerEvents = null;
+    }
+  }
+
+  /**
    * Définit les gestionnaires d'événements pour le sticker.
    */
   set_handlers() {
@@ -146,6 +172,7 @@ export class PinSticker extends Sticker {
 
       //Ajout d'un dragover sur la note elle même pour éviter de ne pas déplacer la note et de ne pas avoir le bon comportement
       this.get_html().on('dragover', this.action_element_dragover.bind(this));
+      this.disableOtherNotes();
 
       $drag[0].addEventListener('drop', (ev) => {
         ev.preventDefault();
@@ -161,6 +188,7 @@ export class PinSticker extends Sticker {
 
       //Suppression du dragover pour éviter les bugs
       this.get_html().off('dragover');
+      this.enableOtherNotes();
 
       if (!droped) {
         // Si le drag est annulé, revenir à la position initiale.

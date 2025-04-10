@@ -35,15 +35,20 @@ class BnumFileSystem extends Filesystem {
      * @return Generator
      */
     public function listTashes(?callable $whereCallback = null, bool $setOriginalPath = true) : Generator {
-        $trashes = iterator_to_array($this->_where($this->getAdapter()->listTrash(), $whereCallback));
-        $trashes = (new ContentListingFormatter('', true, true))->formatListing($trashes);
-        if ($setOriginalPath === false) yield from $trashes;
-        else {
-            foreach ($trashes as $value) {
-                $value['path'] = $value['originalLocation'];
-                yield $value;
-            }
+        // Récupère les éléments de la corbeille lié à un dossier précis ou non.
+        $trashes = $this->_where($this->getAdapter()->listTrash(), $whereCallback);
+
+        if ($setOriginalPath) {
+            // Formate les éléments de la corbeille pour avoir le bon chemin
+            $trashes = $this->_select($trashes, function ($object) {
+                $object['path'] = $object['originalLocation'];
+                return $object;
+            });
         }
+
+        // Formate les éléments de la corbeille pour avoir le bon format
+        $trashes = (new ContentListingFormatter('', true, true))->formatListing(iterator_to_array($trashes));
+        yield from $trashes;
     }
 
     /**
@@ -57,6 +62,19 @@ class BnumFileSystem extends Filesystem {
                 if (call_user_func($callback, $object)) {
                     yield $object;
                 }
+            }
+        }
+    }
+
+    /**
+     * Permet de modifier les résultats en fonction d'un callback
+     * @return \Generator
+     */
+    private function _select(\Generator $generator, ?callable $callback) : \Generator {
+        if ($callback === null) yield from $generator;
+        else {
+            foreach ($generator as $object) {
+                yield call_user_func($callback, $object);
             }
         }
     }

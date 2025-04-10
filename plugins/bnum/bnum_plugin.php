@@ -58,31 +58,6 @@ abstract class bnum_plugin extends rcube_plugin
         }
     }
 
-    public function include_component($name, $path = (self::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes') , $plugin = 'mel_metapage') {
-        if ($path[0] === '/') $path = substr($path, 1);
-
-        $this->include_script_from_plugin($plugin, "$path/$name/scriptType:module", 'head');
-    }
-
-    public function include_module($name, $path = 'js/lib', $position = 'head') {
-        $this->include_script_from_plugin($this->ID, "$path/$name/scriptType:module", $position);
-    }
-
-    public function include_module_program($name, $path = null ) {
-        $path = $path === null ? '' : "/$path";
-        $this->include_module($name, "js/lib/program$path");
-    }
-
-    public function include_module_action($name, $path = null ) {
-        $path = $path === null ? '' : "/$path";
-        $this->include_module($name, "js/lib/program/actions$path");
-    }
-
-    public function include_module_addon($name, $path = null ) {
-        $path = $path === null ? '' : "/$path";
-        $this->include_module($name, "js/lib/program/addons$path");
-    }
-
     protected function break_initial_fonctionality($key) {
         $this->add_script("rcmail.addEventListener('$key', function break_fonctionality () {return {break:true}; });");
     }
@@ -94,32 +69,7 @@ abstract class bnum_plugin extends rcube_plugin
         }
     }
 
-    public function include_script_from_plugin($plugin, $fn, $pos = 'head_bottom')
-    {
-        $ID = rcmail::get_instance()->plugins->get_plugin($plugin)->ID;
-        if (is_object($this->api->output) && $this->api->output->type == 'html') {
-            $src = $this->resource_url_from_plugin($fn, "plugins/$ID");
-            $this->rc()->output->include_script($src, $pos, false);
-        }
-    }
-
-    /**
-     * Make the given file name link into the plugin directory
-     *
-     * @param string $fn Filename
-     */
-    private function resource_url_from_plugin($fn, $id)
-    {
-        // pattern "skins/[a-z0-9-_]+/plugins/$this->ID/" used to identify plugin resources loaded from the core skin folder
-        if ($fn[0] != '/' && !preg_match("#^(https?://|skins/[a-z0-9-_]+/plugins/$id/)#i", $fn)) {
-            return $id . '/' . $fn;
-        }
-        else {
-            return $fn;
-        }
-    }
-
-    /**
+        /**
      * Register a handler for a specific client-request action
      *
      * The callback will be executed upon a request like /?_task=mail&_action=plugin.myaction
@@ -247,6 +197,56 @@ abstract class bnum_plugin extends rcube_plugin
         return WebComponnents::Instance();
     } 
 
+    public function include_component($name, $path = (self::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes') , $plugin = 'mel_metapage') {
+        if ($path[0] === '/') $path = substr($path, 1);
+
+        $this->include_script_from_plugin($plugin, "$path/$name/scriptType:module", 'head');
+    }
+
+    public function include_module($name, $path = 'js/lib', $position = 'head') {
+        $this->include_script_from_plugin($this->ID, "$path/$name/scriptType:module", $position);
+    }
+
+    public function include_module_program($name, $path = null ) {
+        $path = $path === null ? '' : "/$path";
+        $this->include_module($name, "js/lib/program$path");
+    }
+
+    public function include_module_action($name, $path = null ) {
+        $path = $path === null ? '' : "/$path";
+        $this->include_module($name, "js/lib/program/actions$path");
+    }
+
+    public function include_module_addon($name, $path = null ) {
+        $path = $path === null ? '' : "/$path";
+        $this->include_module($name, "js/lib/program/addons$path");
+    }
+
+    public function include_script_from_plugin($plugin, $fn, $pos = 'head_bottom')
+    {
+        $ID = rcmail::get_instance()->plugins->get_plugin($plugin)->ID;
+        if (is_object($this->api->output) && $this->api->output->type == 'html') {
+            $src = $this->resource_url_from_plugin($fn, "plugins/$ID");
+            $this->rc()->output->include_script($src, $pos, false);
+        }
+    }
+
+    /**
+     * Make the given file name link into the plugin directory
+     *
+     * @param string $fn Filename
+     */
+    private function resource_url_from_plugin($fn, $id)
+    {
+        // pattern "skins/[a-z0-9-_]+/plugins/$this->ID/" used to identify plugin resources loaded from the core skin folder
+        if ($fn[0] != '/' && !preg_match("#^(https?://|skins/[a-z0-9-_]+/plugins/$id/)#i", $fn)) {
+            return $id . '/' . $fn;
+        }
+        else {
+            return $fn;
+        }
+    }
+
     public function ____METHODS____($what, ...$args) {
         switch ($what) {
             case 'include_component':
@@ -317,7 +317,6 @@ class WebComponnents {
                 return $this->_include_component($name, $path, $plugin);
             
             default:
-                # code...
                 break;
         }
     }

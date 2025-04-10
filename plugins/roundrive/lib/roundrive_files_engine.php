@@ -228,7 +228,7 @@ class roundrive_files_engine
      */
     public function action_get_trashes() {
         $directory = rcube_utils::get_input_value('_directory', rcube_utils::INPUT_POST);
-        $trashes = $this->filesystem->listTashes($directory !== null ? function($object) use ($directory) {
+        $trashes = $this->filesystem->listTrashes($directory !== null ? function($object) use ($directory) {
             return strpos($object['originalLocation'], $directory) !== false;
         } : null);
 

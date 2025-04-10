@@ -34,7 +34,7 @@ class BnumFileSystem extends Filesystem {
      * Lists all trashes.
      * @return Generator
      */
-    public function listTashes(?callable $whereCallback = null, bool $setOriginalPath = true) : Generator {
+    public function listTrashes(?callable $whereCallback = null, bool $setOriginalPath = true) : Generator {
         // Récupère les éléments de la corbeille lié à un dossier précis ou non.
         $trashes = $this->_where($this->getAdapter()->listTrash(), $whereCallback);
 

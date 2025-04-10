@@ -39,7 +39,7 @@ export default class ABaseMelObject {
    */
   listen(key, callback, { callbackKey = null, topRcmail = false } = {}) {
     if (callbackKey)
-      this.rcmail(topRcmail).add_handler_ex(key, callbackKey, callback);
+      this.rcmail(topRcmail).add_event_listener_ex(key, callbackKey, callback);
     else this.rcmail(topRcmail).addEventListener(key, callback);
 
     return this;

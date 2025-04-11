@@ -3,10 +3,11 @@
 @include_once 'includes/libm2.php';
 
 // Instance addressbook
-require_once ('lib/mel_addressbook.php');
-require_once ('lib/all_addressbook.php');
+require_once('lib/mel_addressbook.php');
+require_once('lib/all_addressbook.php');
 
-class mel_contacts extends bnum_plugin {
+class mel_contacts extends bnum_plugin
+{
   public $task = 'mail|settings|addressbook|calendar|ariane|sondage|mel_metapage|bnum';
 
   // Mél
@@ -44,24 +45,27 @@ class mel_contacts extends bnum_plugin {
   /**
    * Startup method of a Roundcube plugin
    */
-  public function init() {
+  public function init()
+  {
     $this->rc = rcube::get_instance();
 
     // Instancie l'utilisateur Mél
     $this->user = driver_mel::gi()->getUser();
 
-    if ($this->rc->task == 'addressbook' 
-        || $this->rc->task == 'mail' 
-        || $this->rc->task == 'settings' 
-        || $this->rc->task == 'calendar'
-        || $this->rc->task == 'ariane'
-        || $this->rc->task == 'discussion'
-        || $this->rc->task == 'sondage'
-        || $this->rc->task == 'mel_metapage') {
+    if (
+      $this->rc->task == 'addressbook'
+      || $this->rc->task == 'mail'
+      || $this->rc->task == 'settings'
+      || $this->rc->task == 'calendar'
+      || $this->rc->task == 'ariane'
+      || $this->rc->task == 'discussion'
+      || $this->rc->task == 'sondage'
+      || $this->rc->task == 'mel_metapage'
+    ) {
       // register hooks
-      $this->add_hook('addressbooks_list', array($this,'address_sources'));
-      $this->add_hook('addressbook_get', array($this,'get_address_book'));
-      $this->add_hook('config_get', array($this,'config_get'));
+      $this->add_hook('addressbooks_list', array($this, 'address_sources'));
+      $this->add_hook('addressbook_get', array($this, 'get_address_book'));
+      $this->add_hook('config_get', array($this, 'config_get'));
     }
 
     if ($this->rc->task == 'addressbook') {
@@ -70,18 +74,18 @@ class mel_contacts extends bnum_plugin {
       $this->add_hook('saved_search_create', array($this, 'saved_search_create'));
 
       // Plugin actions
-      $this->register_action('plugin.book', array($this,'book_actions'));
-      $this->register_action('plugin.book-save', array($this,'book_save'));
+      $this->register_action('plugin.book', array($this, 'book_actions'));
+      $this->register_action('plugin.book-save', array($this, 'book_save'));
 
       //List actions
       $this->register_action('plugin.get-lists', array($this, 'get_lists'));
 
       // ACL Actions
-      $this->register_action('plugin.contacts-acl', array($this,'contacts_acl'));
-      $this->register_action('plugin.contacts-acl-group', array($this,'contacts_acl_group'));
+      $this->register_action('plugin.contacts-acl', array($this, 'contacts_acl'));
+      $this->register_action('plugin.contacts-acl-group', array($this, 'contacts_acl_group'));
 
       if ($this->rc->config->get('skin') == 'mel_elastic')
-        $this->include_stylesheet($this->local_skin_path().'/mel_contacts.css');
+        $this->include_stylesheet($this->local_skin_path() . '/mel_contacts.css');
 
       // Show contact button
       if ($this->rc->action == 'show') {
@@ -93,13 +97,12 @@ class mel_contacts extends bnum_plugin {
           $this->include_script('mel_contact_show.js');
           // Envi
         }
-        
       }
 
       // Load UI elements
       if ($this->api->output->type == 'html') {
         $this->load_config();
-        require_once ($this->home . '/lib/mel_contacts_ui.php');
+        require_once($this->home . '/lib/mel_contacts_ui.php');
         $this->ui = new mel_contacts_ui($this);
       }
     }
@@ -113,13 +116,16 @@ class mel_contacts extends bnum_plugin {
    * Liste les carnets d'adresses de l'utilisateur
    * Utilise les données de cache si nécessaire
    */
-  private function _list_user_addressbooks() {
+  private function _list_user_addressbooks()
+  {
     try {
       $this->addressbooks = $this->user->getSharedAddressbooks();
       foreach ($this->addressbooks as $addressbook) {
-        if (!$this->has_principal
-            /* Créer le carnet d'adresse principal s'il n'existe pas */
-            && $addressbook->id == $this->user->uid) {
+        if (
+          !$this->has_principal
+          /* Créer le carnet d'adresse principal s'il n'existe pas */
+          && $addressbook->id == $this->user->uid
+        ) {
           $this->has_principal = true;
           break;
         }
@@ -130,12 +136,10 @@ class mel_contacts extends bnum_plugin {
           $this->rc->user->save_prefs(array('default_addressbook' => driver_mel::gi()->mceToRcId($default_addressbook_object->id)));
         }
       }
-    }
-    catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
+    } catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[addressbook] mel_contacts::address_sources() Melanie2DatabaseException");
       return false;
-    }
-    catch (\Exception $ex) {
+    } catch (\Exception $ex) {
       return false;
     }
   }
@@ -146,7 +150,8 @@ class mel_contacts extends bnum_plugin {
    * @param array $p Hash array with hook parameters
    * @return array Hash array with modified hook parameters
    */
-  public function address_sources($p) {
+  public function address_sources($p)
+  {
     try {
       if (!isset($this->addressbooks)) {
         // Récupérer les carnets d'adresses de l'utilisateur
@@ -166,9 +171,11 @@ class mel_contacts extends bnum_plugin {
 
       foreach ($this->addressbooks as $abook) {
         $id = driver_mel::gi()->mceToRcId($abook->id);
-        if (isset($hidden_contacts[$abook->id])
-            && (count($hidden_contacts) < count($this->addressbooks)
-                || $this->user->uid != $abook->id))
+        if (
+          isset($hidden_contacts[$abook->id])
+          && (count($hidden_contacts) < count($this->addressbooks)
+            || $this->user->uid != $abook->id)
+        )
           continue;
 
         // Gestion du order
@@ -185,8 +192,8 @@ class mel_contacts extends bnum_plugin {
         $sources[$id] = [
           'id' => $id,
           'order' => $order,
-          'name' => $abook->id == $this->user->uid ? $this->rc->gettext('personaladdressbook', 'mel_elastic') : ($abook->owner == $this->user->uid ? $abook->name : "(" . $abook->owner . ") " . $abook->name), 
-          'realname' => $abook->name, 
+          'name' => $abook->id == $this->user->uid ? $this->rc->gettext('personaladdressbook', 'mel_elastic') : ($abook->owner == $this->user->uid ? $abook->name : "(" . $abook->owner . ") " . $abook->name),
+          'realname' => $abook->name,
           'readonly' => !$abook->asRight(LibMelanie\Config\ConfigMelanie::WRITE),
           'writeable' => $abook->asRight(LibMelanie\Config\ConfigMelanie::WRITE),
           'deletable' => $abook->owner == $this->user->uid && $abook->id != $this->user->uid,
@@ -206,16 +213,17 @@ class mel_contacts extends bnum_plugin {
           return strnatcmp($a['order'], $b['order']);
       });
       // Générer la source All
-      $all_source = [ 'all' => [
-              'id' => 'all',
-              'name' => $this->rc->gettext('allcontacts', 'mel_elastic'),
-              'readonly' => true,
-              'writeable' => false,
-              'groups' => false,
-              'autocomplete' => false,
-              'searchonly'   => true,
-              'class_name' => 'all',
-          ]
+      $all_source = [
+        'all' => [
+          'id' => 'all',
+          'name' => $this->rc->gettext('allcontacts', 'mel_elastic'),
+          'readonly' => true,
+          'writeable' => false,
+          'groups' => false,
+          'autocomplete' => false,
+          'searchonly'   => true,
+          'class_name' => 'all',
+        ]
       ];
       // 0005855: On sature le nb de connexion à la bdd horde si Maia est inaccessible
       if ($this->rc->action == 'photo' && $this->rc->task == 'addressbook') {
@@ -223,22 +231,18 @@ class mel_contacts extends bnum_plugin {
         unset($p['sources']['annuaire']);
         unset($p['sources']['amande_group']);
         $p['sources'] = array_replace([$sources[driver_mel::gi()->mceToRcId($this->user->uid)]], $p['sources']);
-      }
-      else if ($this->rc->task == 'addressbook') {
+      } else if ($this->rc->task == 'addressbook') {
         $p['sources'] = array_replace($all_source, $p['sources'], $sources);
-      }
-      else {
+      } else {
         $annuaire = $p['sources']['annuaire'];
         unset($p['sources']['annuaire']);
         $p['sources'] = array_replace($all_source, $p['sources'], $sources, [$annuaire]);
       }
       return $p;
-    }
-    catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
+    } catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[addressbook] mel_contacts::address_sources() Melanie2DatabaseException");
       return false;
-    }
-    catch (\Exception $ex) {
+    } catch (\Exception $ex) {
       return false;
     }
     return false;
@@ -251,9 +255,10 @@ class mel_contacts extends bnum_plugin {
    * 
    * @return string|boolean
    */
-  private function get_carddav_url($id) {
+  private function get_carddav_url($id)
+  {
     $rcmail = rcmail::get_instance();
-    if ($template = $rcmail->config->get('addressbook_carddav_url', null)){
+    if ($template = $rcmail->config->get('addressbook_carddav_url', null)) {
       return strtr($template, array(
         '%h' => $_SERVER['HTTP_HOST'],
         '%u' => urlencode($rcmail->get_user_name()),
@@ -269,14 +274,14 @@ class mel_contacts extends bnum_plugin {
    * kolab_addressbook_prio setting extending list of address sources
    * to be used for autocompletion.
    */
-  public function config_get($args) {
+  public function config_get($args)
+  {
     if ($args['name'] != 'autocomplete_addressbooks') {
       return $args;
     }
     if (is_array($args['result']) && count($args['result'])) {
       $sources = $args['result'];
-    }
-    else {
+    } else {
       // Default sources
       $sources = array('amande');
     }
@@ -289,12 +294,10 @@ class mel_contacts extends bnum_plugin {
       $sources[] = $abook->id;
       $args['result'] = $sources;
       return $args;
-    }
-    catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
+    } catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[addressbook] mel_contacts::config_get() Melanie2DatabaseException");
       return false;
-    }
-    catch (\Exception $ex) {
+    } catch (\Exception $ex) {
       return false;
     }
     return false;
@@ -305,7 +308,8 @@ class mel_contacts extends bnum_plugin {
    * @param array $p
    * @return array|false si probleme
    */
-  public function get_address_book($p) {
+  public function get_address_book($p)
+  {
     try {
       if (!isset($this->addressbooks)) {
         // Récupérer les carnets d'adresses de l'utilisateur
@@ -317,12 +321,10 @@ class mel_contacts extends bnum_plugin {
       // Gestion du All
       if ($p['id'] == 'all') {
         $p['instance'] = new all_addressbook($this->rc);
-      }
-      else {
+      } else {
         if (isset($this->addressbooks[$p['id']])) {
           $p['instance'] = new mel_addressbook($this->rc, $this->user, $this->addressbooks[$p['id']]);
-        }
-        else {
+        } else {
           $addressbook = driver_mel::gi()->addressbook([$this->user]);
           $addressbook->id = $p['id'];
           if ($addressbook->load()) {
@@ -332,12 +334,10 @@ class mel_contacts extends bnum_plugin {
         }
       }
       return $p;
-    }
-    catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
+    } catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[addressbook] mel_contacts::get_address_book() Melanie2DatabaseException");
       return false;
-    }
-    catch (\Exception $ex) {
+    } catch (\Exception $ex) {
       return false;
     }
     return false;
@@ -346,16 +346,15 @@ class mel_contacts extends bnum_plugin {
   /**
    * Handler for plugin actions
    */
-  public function book_actions() {
+  public function book_actions()
+  {
     $action = trim(rcube_utils::get_input_value('_act', rcube_utils::INPUT_GPC));
 
     if ($action == 'create') {
       $this->ui->book_edit();
-    }
-    else if ($action == 'edit') {
+    } else if ($action == 'edit') {
       $this->ui->book_edit();
-    }
-    else if ($action == 'delete') {
+    } else if ($action == 'delete') {
       $this->book_delete();
     }
   }
@@ -363,9 +362,14 @@ class mel_contacts extends bnum_plugin {
   /**
    * Handler for address book create/edit form submit
    */
-  public function book_save() {
-    $prop = array('id' => driver_mel::gi()->rcToMceId(trim(rcube_utils::get_input_value('_source', rcube_utils::INPUT_POST))),'name' => trim(rcube_utils::get_input_value('_name', rcube_utils::INPUT_POST)),'oldname' => trim(rcube_utils::get_input_value('_oldname', rcube_utils::INPUT_POST, true)), // UTF7-IMAP
-'subscribed' => true);
+  public function book_save()
+  {
+    $prop = array(
+      'id' => driver_mel::gi()->rcToMceId(trim(rcube_utils::get_input_value('_source', rcube_utils::INPUT_POST))),
+      'name' => trim(rcube_utils::get_input_value('_name', rcube_utils::INPUT_POST)),
+      'oldname' => trim(rcube_utils::get_input_value('_oldname', rcube_utils::INPUT_POST, true)), // UTF7-IMAP
+      'subscribed' => true
+    );
     $type = strlen($prop['oldname']) ? 'update' : 'create';
 
     try {
@@ -374,8 +378,7 @@ class mel_contacts extends bnum_plugin {
       if ($type == 'update') {
         $addressbook->id = $prop['id'];
         $addressbook->load();
-      }
-      else {
+      } else {
         $addressbook->id = md5($prop['name'] . time() . $this->user->uid);
         $addressbook->owner = $this->user->uid;
       }
@@ -389,20 +392,26 @@ class mel_contacts extends bnum_plugin {
         $this->rc->output->show_message($error, 'error');
         // display the form again
         $this->ui->book_edit();
-      }
-      else {
+      } else {
         $this->rc->output->show_message('mel_contacts.book' . $type . 'd', 'confirmation');
-        $this->rc->output->command('book_update', array('id' => $addressbook->id,'name' => $addressbook->name,'readonly' => false,'editable' => true,'groups' => true,'autocomplete' => true,'realname' => $addressbook->id, // IMAP folder name
-'class_name' => '','mel' => true), $type);
+        $this->rc->output->command('book_update', array(
+          'id' => $addressbook->id,
+          'name' => $addressbook->name,
+          'readonly' => false,
+          'editable' => true,
+          'groups' => true,
+          'autocomplete' => true,
+          'realname' => $addressbook->id, // IMAP folder name
+          'class_name' => '',
+          'mel' => true
+        ), $type);
 
         $this->rc->output->send('iframe');
       }
-    }
-    catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
+    } catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[addressbook] mel_contacts::book_save() Melanie2DatabaseException");
       return false;
-    }
-    catch (\Exception $ex) {
+    } catch (\Exception $ex) {
       return false;
     }
     return false;
@@ -411,32 +420,32 @@ class mel_contacts extends bnum_plugin {
   /**
    * Handler for address book delete action (AJAX)
    */
-  private function book_delete() {
+  private function book_delete()
+  {
     $folder = trim(rcube_utils::get_input_value('_source', rcube_utils::INPUT_GPC));
 
     try {
       $addressbook = driver_mel::gi()->addressbook([$this->user]);
       $addressbook->id = $folder;
-      if ($addressbook->id != $this->user->uid 
-          && $addressbook->load() 
-          && $addressbook->delete()) {
+      if (
+        $addressbook->id != $this->user->uid
+        && $addressbook->load()
+        && $addressbook->delete()
+      ) {
         $this->rc->output->show_message('mel_contacts.bookdeleted', 'confirmation');
         $this->rc->output->set_env('pagecount', 0);
         // $this->rc->output->command('set_rowcount', rcmail_get_rowcount_text(new rcube_result_set()));
         $this->rc->output->command('list_contacts_clear');
         $this->rc->output->command('book_delete_done', $addressbook->id);
-      }
-      else {
+      } else {
         $this->rc->output->show_message('mel_contacts.bookdeleteerror', 'error');
       }
 
       $this->rc->output->send();
-    }
-    catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
+    } catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[addressbook] mel_contacts::book_delete() Melanie2DatabaseException");
       return false;
-    }
-    catch (\Exception $ex) {
+    } catch (\Exception $ex) {
       return false;
     }
     return false;
@@ -445,7 +454,8 @@ class mel_contacts extends bnum_plugin {
   /**
    * Handler to render ACL form for a calendar folder
    */
-  public function contacts_acl() {
+  public function contacts_acl()
+  {
     mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::contacts_acl() : " . $this->rc->user->get_username());
     $this->rc->output->add_handler('folderacl', array(new M2contacts($this->rc->user->get_username()), 'acl_form'));
     $this->rc->output->send('mel_contacts.kolabacl');
@@ -453,19 +463,21 @@ class mel_contacts extends bnum_plugin {
   /**
    * Handler to render ACL groups form for a calendar folder
    */
-  public function contacts_acl_group() {
+  public function contacts_acl_group()
+  {
     mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::contacts_acl() : " . $this->rc->user->get_username());
     $this->rc->output->add_handler('folderacl', array(new M2contactsgroup($this->rc->user->get_username()), 'acl_form'));
     $this->rc->output->send('mel_contacts.kolabacl');
   }
-  
+
   /**
    * Hooks for contact form to add category and type field
    * 
    * @param array $args
    * @return array
    */
-  public function contact_form($args) {
+  public function contact_form($args)
+  {
     return driver_mel::gi()->contact_form($args);
   }
 
@@ -475,7 +487,8 @@ class mel_contacts extends bnum_plugin {
    * @param array $args
    * @return array
    */
-  public function saved_search_create($args) {
+  public function saved_search_create($args)
+  {
     $args['data']['data']['source'] = rcube_utils::get_input_value('_source', rcube_utils::INPUT_POST);
     return $args;
   }
@@ -486,11 +499,11 @@ class mel_contacts extends bnum_plugin {
     $cid = rcube_utils::get_input_value('cid', rcube_utils::INPUT_POST);
     $dn = base64_decode(explode('-', $cid, 2)[0]);
     $user = driver_mel::gi()->getUser(null, true, null, $dn);
-    $lists = $user->getListsIsMember(['dn', 'email','name']);
+    $lists = $user->getListsIsMember(['dn', 'email', 'name']);
     $list = mel_helper::Enumerable($lists)->select(function ($k, $v) {
       return ['email' => $v->email, 'dn' => $v->dn, 'name' => $v->name, 'url' => $this->rc->url(['action' => 'show', 'cid' => base64_encode($v->dn), 'source' => 'amande'])];
     })->toArray();
-    echo(json_encode($list));
+    echo (json_encode($list));
     exit;
   }
 }

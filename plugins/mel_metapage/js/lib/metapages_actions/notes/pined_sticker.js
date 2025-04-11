@@ -101,6 +101,32 @@ export class PinSticker extends Sticker {
   }
 
   /**
+   * Désactive les autres notes épinglées.
+   * Cette méthode réduit l'opacité et désactive les interactions des autres notes
+   * épinglées, à l'exception de celle actuellement sélectionnée.
+   */
+  disableOtherNotes() {
+    for (const note of document.querySelectorAll('.mel-note.pined')) {
+      if (note.getAttribute('id') !== `note-${this.uid}`) {
+        note.style.opacity = 0.5;
+        note.style.pointerEvents = 'none';
+      }
+    }
+  }
+
+  /**
+   * Réactive les autres notes épinglées.
+   * Cette méthode restaure l'opacité et les interactions des autres notes
+   * épinglées après qu'elles aient été désactivées.
+   */
+  enableOtherNotes() {
+    for (const note of document.querySelectorAll('.mel-note.pined')) {
+      note.style.opacity = null;
+      note.style.pointerEvents = null;
+    }
+  }
+
+  /**
    * Définit les gestionnaires d'événements pour le sticker.
    */
   set_handlers() {
@@ -144,6 +170,10 @@ export class PinSticker extends Sticker {
         this.update_pos(new Point(ev.clientX, ev.clientY));
       });
 
+      //Ajout d'un dragover sur la note elle même pour éviter de ne pas déplacer la note et de ne pas avoir le bon comportement
+      this.get_html().on('dragover', this.action_element_dragover.bind(this));
+      this.disableOtherNotes();
+
       $drag[0].addEventListener('drop', (ev) => {
         ev.preventDefault();
 
@@ -155,6 +185,10 @@ export class PinSticker extends Sticker {
     // Gestionnaire pour la fin du drag.
     $move[0].addEventListener('dragend', (ev) => {
       console.log('evend', ev);
+
+      //Suppression du dragover pour éviter les bugs
+      this.get_html().off('dragover');
+      this.enableOtherNotes();
 
       if (!droped) {
         // Si le drag est annulé, revenir à la position initiale.
@@ -185,6 +219,20 @@ export class PinSticker extends Sticker {
       droped = null;
       init_pos = null;
     });
+  }
+
+  /**
+   * Gestionnaire d'événement pour le dragover d'un élément.
+   * Cette fonction est appelée lorsque l'utilisateur fait glisser un élément
+   * au-dessus du sticker. Elle met à jour la position du sticker en fonction
+   * des coordonnées actuelles de la souris.
+   *
+   * @param {DragEvent} ev - Événement de type dragover.
+   */
+  action_element_dragover(ev) {
+    ev.preventDefault();
+
+    this.update_pos(new Point(ev.clientX, ev.clientY));
   }
 
   /**

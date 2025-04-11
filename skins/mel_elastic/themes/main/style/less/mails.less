@@ -384,3 +384,17 @@ body.task-mail.action-none #layout-content {
     color: var(--mel-button-text-color) !important;
   }
 }
+#priority-tooltip {
+  .mel-button {
+    &.bckg {
+      color: var(
+        --mel-priority-button-text-color,
+        var(--mel-button-text-color, unset)
+      );
+
+      &:hover {
+        color: var(--mel-button-hover-text-color);
+      }
+    }
+  }
+}

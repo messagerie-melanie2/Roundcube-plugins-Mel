@@ -990,6 +990,13 @@ function rcube_libcalendaring(settings) {
         modified: Math.floor(Date.now() / 1000),
         isread: false,
         local: true,
+        action: [
+          {
+            href: './?_task=calendar',
+            text: rcmail.gettext('open_agenda', 'libcalendaring'),
+            title: rcmail.gettext('open_agenda', 'libcalendaring'),
+          },
+        ],
       };
 
       if (typeof mel_metapage !== 'undefined') {

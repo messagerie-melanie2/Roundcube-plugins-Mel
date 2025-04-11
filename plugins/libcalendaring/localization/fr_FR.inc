@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Localizations for the Kolab calendaring utilities plugin
  *
@@ -178,3 +179,5 @@ $labels['ntimes'] = '$n fois';
 // PAMELA - Visios
 $labels['join_visio'] = 'Rejoindre la visioconférence';
 $labels['__bdays__'] = $labels['birthdays'] ?? 'Anniversaires';
+// PAMELA - Notif agenda
+$labels['open_agenda'] = 'Ouvrir l\'agenda';

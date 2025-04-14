@@ -298,28 +298,39 @@ class WebComponnents {
      * @return array Liste des composants Web.
      */
     public static function Get() : array {
-        return [
-            WebComponentData::Create('bnum-icon', 'js_html_base_web_elements.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
-            WebComponentData::Create('bnum-shadow-icon', 'js_html_base_web_elements.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
-            WebComponentData::Create('bnum-screen-reader', 'js_html_base_web_elements.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
-            WebComponentData::Create('bnum-voice', 'js_html_base_web_elements.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
-            WebComponentData::Create('bnum-separate', 'js_html_base_web_elements.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
-            WebComponentData::Create('bnum-flex-container', 'js_html_base_web_elements.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
-            WebComponentData::Create('bnum-centered-flex-container', 'js_html_base_web_elements.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
-            WebComponentData::Create('bnum-placeholder', 'js_html_base_web_elements.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
-            WebComponentData::Create('bnum-button', 'HTMLBnumButton.js', 'js/lib/html/JsHtml/CustomAttributes/button', 'mel_metapage'),
-            WebComponentData::Create('primary-button', 'HTMLBnumButton.js', 'js/lib/html/JsHtml/CustomAttributes/button', 'mel_metapage'),
-            WebComponentData::Create('secondary-button', 'HTMLBnumButton.js', 'js/lib/html/JsHtml/CustomAttributes/button', 'mel_metapage'),
-            WebComponentData::Create('error-button', 'HTMLBnumButton.js', 'js/lib/html/JsHtml/CustomAttributes/button', 'mel_metapage'),
-            WebComponentData::Create('bnum-tabs', 'tab_web_element.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
-            WebComponentData::Create('bnum-tab-container', 'tab_web_element.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
-            WebComponentData::Create('bnum-tab-receiver', 'tab_web_element.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
-            WebComponentData::Create('bnum-pressed-button', 'pressed_button_web_element.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
-            WebComponentData::Create('bnum-favorite-button', 'pressed_button_web_element.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
-            WebComponentData::Create('bnum-infinite-scroll-container', 'infinite_scroll_container.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
-            WebComponentData::Create('bnum-avatar', 'avatar.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
-            WebComponentData::Create('bnum-searchbar', 'searchbar.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
+        // Configuration des composants Web
+        $components = [
+            ['bnum-icon', 'js_html_base_web_elements.js'],
+            ['bnum-shadow-icon', 'js_html_base_web_elements.js'],
+            ['bnum-screen-reader', 'js_html_base_web_elements.js'],
+            ['bnum-voice', 'js_html_base_web_elements.js'],
+            ['bnum-separate', 'js_html_base_web_elements.js'],
+            ['bnum-flex-container', 'js_html_base_web_elements.js'],
+            ['bnum-centered-flex-container', 'js_html_base_web_elements.js'],
+            ['bnum-placeholder', 'js_html_base_web_elements.js'],
+            ['bnum-button', 'HTMLBnumButton.js', 'js/lib/html/JsHtml/CustomAttributes/button'],
+            ['primary-button', 'HTMLBnumButton.js', 'js/lib/html/JsHtml/CustomAttributes/button'],
+            ['secondary-button', 'HTMLBnumButton.js', 'js/lib/html/JsHtml/CustomAttributes/button'],
+            ['error-button', 'HTMLBnumButton.js', 'js/lib/html/JsHtml/CustomAttributes/button'],
+            ['bnum-tabs', 'tab_web_element.js'],
+            ['bnum-tab-container', 'tab_web_element.js'],
+            ['bnum-tab-receiver', 'tab_web_element.js'],
+            ['bnum-pressed-button', 'pressed_button_web_element.js'],
+            ['bnum-favorite-button', 'pressed_button_web_element.js'],
+            ['bnum-infinite-scroll-container', 'infinite_scroll_container.js'],
+            ['bnum-avatar', 'avatar.js'],
+            ['bnum-searchbar', 'searchbar.js'],
         ];
+
+        // Génération des instances de WebComponentData
+        return array_map(function ($component) {
+            return WebComponentData::Create(
+                $component[0], // Tag HTML
+                $component[1], // Nom du fichier
+                $component[2] ?? (bnum_plugin::BASE_MODULE_PATH . 'html/JsHtml/CustomAttributes'), // Chemin (par défaut)
+                $component[3] ?? 'mel_metapage' // Plugin (par défaut)
+            );
+        }, $components);
     }
 
     /**

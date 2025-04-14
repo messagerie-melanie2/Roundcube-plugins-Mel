@@ -54,7 +54,7 @@ class mel_elastic extends bnum_plugin
             // $this->add_hook('preferences_list', array($this, 'prefs_list'));
             // $this->add_hook('preferences_save',     array($this, 'prefs_save'));
             $this->add_hook('ready', array($this, 'set_theme'));
-            $this->add_hook('render_page', array($this, 'hook_render_page'));
+            $this->add_hook('send_page', array($this, 'hook_render_page'));
             $this->register_action('update_theme', array($this, 'update_theme'));
             $this->register_action('update_theme_picture', array($this, 'update_theme_picture'));
             $this->register_action('update_custom_picture', array($this, 'update_custom_picture'));
@@ -215,12 +215,19 @@ class mel_elastic extends bnum_plugin
     }
 
     public function hook_render_page($args) {
+        $hook = $this->exec_hook('before_send_page', ['content' => $args['content'], 'plugin' => $this]);
+
+        if ($hook !== null) {
+            $args['content'] = $hook['content'] ?? $args['content'];
+        }
+
         include_once __DIR__.'/program/webcomponents.php';
+        // On récupère les composants
         $webcomponents = WebComponnents::Instance()->getCustomComponents($args['content']);
 
-        if ($webcomponents) {
-            WebComponnents::Instance()->tryIncludes($webcomponents);
-        }
+        // On ajoute les composants
+        if ($webcomponents) $args['content'] = WebComponnents::Instance()->tryIncludes($webcomponents, $args['content']);
+        else $args['content'] = str_replace('<<elastic:modules/>>', '', $args['content']);
 
         return $args;
     }

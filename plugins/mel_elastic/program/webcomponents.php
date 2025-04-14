@@ -1,0 +1,237 @@
+<?php
+
+class WebComponentData {
+    public $tag;
+    public $name;
+    public $path;
+    public $plugin;
+
+    public function __construct(string $tag, string $name, string $path = (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), string $plugin = 'mel_elastic') {
+        $this->name = $name;
+        $this->path = $path;
+        $this->plugin = $plugin;
+        $this->tag = $tag;
+    }
+
+    static function Create(string $tag, string $name, string $path = (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), string $plugin = 'mel_elastic') : WebComponentData {
+        return new WebComponentData($tag, $name, $path, $plugin);
+    }
+}
+
+/**
+ * Classe WebComponnents
+ * Fournit des méthodes pour inclure des composants Web spécifiques.
+ */
+class WebComponnents {
+
+    /**
+     * Instance du plugin mel_metapage.
+     * 
+     * @var rcube_plugin
+     */
+    private $plugin;
+
+    private $webcomponents = [];
+
+    /**
+     * Instance unique de la classe WebComponnents.
+     * 
+     * @var WebComponnents
+     */
+    private static $_instance;
+
+    /**
+     * Constructeur privé pour le singleton.
+     */
+    private function __construct() {
+        $this->plugin = rcmail::get_instance()->plugins->get_plugin('mel_metapage');
+        $this->webcomponents = array_reduce(self::Get(), function($carry, $element) {
+            $carry[$element->tag] = $element;
+            return $carry;
+        }, []);
+    }
+
+
+
+    /**
+     * Inclut un composant Web.
+     *
+     * @param string $name Nom du composant.
+     * @param string $path Chemin du composant.
+     * @param string $plugin Nom du plugin.
+     */
+    private function _include_component($name, $path = (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes') , $plugin = 'mel_metapage') {
+        return $this->plugin->____METHODS____('include_component', $name, $path, $plugin);
+    }
+
+    public function getCustomComponents(string $html) {
+        // Générer la regex à partir des clés de $this->webcomponents
+        $regex = '(' . implode('|', array_keys($this->webcomponents)) . ')';
+
+        // Trouver toutes les correspondances dans $html
+        preg_match_all($regex, $html, $matches);
+
+        // Récupérer les clés uniques trouvées
+        $foundKeys = array_unique($matches[0]);
+
+        // Retourner les clés trouvées
+        return $foundKeys;
+    }
+
+    public function GetAlreadyExistsComponentsGenerator(array $keys, string $html) : Generator {
+        if ($keys) {
+            $regex = '<script\s+src=(["\'])[\w\d\/\.\?=]+\1\s+type=\1module\1\s*>';
+
+            preg_match_all($regex, $html, $matches);
+
+            if (isset($matches) && count($matches) > 0) $matches = $matches[0];
+
+            if (isset($matches) && count($matches) > 0) {
+                $matches = implode('|', $matches);
+                $regex = mel_helper::Enumerable($this->webcomponents)->where(function ($key, $value) use ($keys) {
+                    return in_array($key, $keys);
+                })->select(function ($key, $value) {
+                    return $value->name;
+                })->removeTwins(function ($_, $name) {
+                    return $name;
+                })->join('|');
+                $regex = str_replace('.', '\.', $regex);
+
+                yield from mel_helper::Enumerable($keys)->where(function ($_, $keyTag) use($regex, $matches) {
+                    return !preg_match($regex, $matches, $_);
+                })->select(function ($_, $keyTag) {
+                    return $this->webcomponents[$keyTag];
+                })->removeTwins(function ($_, $webcomponent) {
+                    return $webcomponent->name;
+                });
+            }
+        }
+    }
+
+    public function tryIncludes(array $keys, string $html) : string {
+        $scripts = [];
+        foreach ($this->GetAlreadyExistsComponentsGenerator($keys, $html) as $component) {
+            if (!in_array($component->name, $scripts)) $scripts[] = "<script src=\"plugins/$component->plugin$component->path/$component->name\" type=\"module\"></script>";
+        }
+
+        return str_replace('<<elastic:modules/>>', implode('', $scripts), $html);
+    }
+
+    /**
+     * Inclut le composant de base.
+     * @deprecated version 25.4
+     */
+    public function Base() {
+        $this->_include_component('js_html_base_web_elements.js');
+    }
+
+    /**
+     * Inclut le composant de tabulation.
+     * @deprecated version 25.4
+     */
+    public function Tabs() {
+        $this->_include_component('tab_web_element.js');
+    }
+
+    /**
+     * Inclut le composant de bouton pressé.
+     * @deprecated version 25.4
+     */
+    public function PressedButton() {
+        $this->_include_component('pressed_button_web_element.js');
+    }
+
+    /**
+     * Inclut le conteneur de défilement infini.
+     * @deprecated version 25.4
+     */
+    public function InfiniteScrollContainer() {
+        $this->_include_component('infinite_scroll_container.js');
+    }
+
+    /**
+     * Inclut le composant d'avatar.
+     * @deprecated version 25.4
+     */
+    public function Avatar() {
+        $this->_include_component('avatar.js');
+    }
+
+    /**
+     * Inclut la barre de recherche.
+     * @deprecated version 25.4
+     */
+    public function SearchBar() {
+        $this->_include_component('searchbar.js');
+    }
+
+    /**
+     * @deprecated 25.2
+     * Inclut le bouton Mel.
+     */
+    public function MelButton() {
+        $this->_include_component('HTMLMelButton.js');
+    }
+
+    /**
+     * Inclut le bouton Bnum.
+     * @deprecated version 25.4
+     */
+    public function BnumButton() {
+        $this->_include_component('HTMLBnumButton.js', 'js/lib/html/JsHtml/CustomAttributes/button');
+    }
+
+    /**
+     * Méthode générique pour inclure des composants.
+     *
+     * @param string $what Type de composant à inclure.
+     */
+    public function ____METHODS____($what, ...$args) {
+        switch ($what) {
+            case '_include_component':
+                $name = $args[0];
+                $path = $args[1] ?? bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes/';
+                $plugin = $args[2] ?? 'mel_metapage';
+                return $this->_include_component($name, $path, $plugin);
+            
+            default:
+                break;
+        }
+    }
+
+    public static function Get() : array {
+        return [
+            WebComponentData::Create('bnum-icon', 'js_html_base_web_elements.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
+            WebComponentData::Create('bnum-shadow-icon', 'js_html_base_web_elements.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
+            WebComponentData::Create('bnum-screen-reader', 'js_html_base_web_elements.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
+            WebComponentData::Create('bnum-voice', 'js_html_base_web_elements.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
+            WebComponentData::Create('bnum-separate', 'js_html_base_web_elements.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
+            WebComponentData::Create('bnum-flex-container', 'js_html_base_web_elements.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
+            WebComponentData::Create('bnum-centered-flex-container', 'js_html_base_web_elements.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
+            WebComponentData::Create('bnum-placeholder', 'js_html_base_web_elements.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
+            WebComponentData::Create('bnum-button', 'HTMLBnumButton.js', 'js/lib/html/JsHtml/CustomAttributes/button', 'mel_metapage'),
+            WebComponentData::Create('primary-button', 'HTMLBnumButton.js', 'js/lib/html/JsHtml/CustomAttributes/button', 'mel_metapage'),
+            WebComponentData::Create('secondary-button', 'HTMLBnumButton.js', 'js/lib/html/JsHtml/CustomAttributes/button', 'mel_metapage'),
+            WebComponentData::Create('error-button', 'HTMLBnumButton.js', 'js/lib/html/JsHtml/CustomAttributes/button', 'mel_metapage'),
+            WebComponentData::Create('bnum-tabs', 'tab_web_element.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
+            WebComponentData::Create('bnum-tab-container', 'tab_web_element.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
+            WebComponentData::Create('bnum-tab-receiver', 'tab_web_element.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
+            WebComponentData::Create('bnum-pressed-button', 'pressed_button_web_element.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
+            WebComponentData::Create('bnum-favorite-button', 'pressed_button_web_element.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
+            WebComponentData::Create('bnum-infinite-scroll-container', 'infinite_scroll_container.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
+            WebComponentData::Create('bnum-avatar', 'avatar.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
+            WebComponentData::Create('bnum-searchbar', 'searchbar.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
+        ];
+    }
+
+    /**
+     * Retourne l'instance unique de la classe WebComponnents.
+     *
+     * @return WebComponnents
+     */
+    public static function Instance() {
+        if (!isset(self::$_instance)) self::$_instance = new WebComponnents();
+
+        return self::$_instance;
+    }
+}

@@ -1,5 +1,4 @@
 <?php
-include_once 'bnum_plugin.php';
 /**
  * Plugin Mél Métapage
  *

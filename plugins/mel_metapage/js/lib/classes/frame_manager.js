@@ -611,6 +611,15 @@ class Window {
   }
 
   /**
+   * Id de le fanêtre
+   * @type {number | string}
+   * @readonly
+   */
+  get uid() {
+    return this._id;
+  }
+
+  /**
    * Initialise les variables
    * @private
    * @returns {Window} Chaîne

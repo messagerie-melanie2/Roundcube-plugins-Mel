@@ -89,8 +89,6 @@ class mel_elastic extends bnum_plugin
         if ($this->rc->config->get('skin') == 'mel_elastic')
         {
             $this->load_config();
-            // $this->add_hook('preferences_list', array($this, 'prefs_list'));
-            // $this->add_hook('preferences_save',     array($this, 'prefs_save'));
             $this->add_hook('ready', array($this, 'set_theme'));
             $this->add_hook('send_page', array($this, 'hook_render_page'));
             $this->register_action('update_theme', array($this, 'update_theme'));
@@ -98,10 +96,8 @@ class mel_elastic extends bnum_plugin
             $this->register_action('update_custom_picture', array($this, 'update_custom_picture'));
             $this->register_action('toggle_animations', array($this, 'toggleAnimations'));
             $this->load_css();
-            //$this->include_script('../../skins/elastic/ui.js');
             $this->include_script('../../skins/mel_elastic/dependencies/linq.js');
             $this->include_script('../../skins/mel_elastic/dependencies/poppers.js');
-            // $this->include_script('js/lib/html.js');
             $this->include_script('../../skins/mel_elastic/ui.js');
             $this->include_module('elastic_ui.js', '../../skins/mel_elastic', 'foot');
             $this->include_script('../../skins/mel_elastic/jquery.datetimepicker.full.min.js');
@@ -109,7 +105,6 @@ class mel_elastic extends bnum_plugin
             $this->rc->output->set_env('mel_themes_pictures', Background::from_path($this->skinPath.'/images/backgrounds/backgrounds.json'));
             $this->load_folders();
             $this->add_texts('localization/', true);
-            //$this->add_hook('messages_list', [$this, 'mail_messages_list']);
             $this->rc->output->set_env("button_add", 
                 '<div class="mel-add" onclick="¤¤¤">
                     <span style="position:relative">'.$this->gettext('add').'<span class="icofont-plus-circle plus"></span></span>
@@ -132,15 +127,6 @@ class mel_elastic extends bnum_plugin
         for ($i=0; $i < $size; ++$i) { 
             $this->include_stylesheet('/'.$this->css[$i]);
         }
-
-        //$this->load_css_font();
-    }
-
-    function load_css_font()
-    {
-        //$this->rc->config->get('custom-font-size', "sm")
-        // $this->include_stylesheet("/fonts/fontsize.css");
-        // $this->rc->output->set_env('font-size', $this->rc->config->get('custom-font-size', "lg"));
     }
 
     /**

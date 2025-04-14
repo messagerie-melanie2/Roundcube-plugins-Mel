@@ -1,5 +1,6 @@
 <?php
 include_once __DIR__.'/lib/Workspace.php';
+include_once __DIR__.'/../mel_elastic/program/webcomponents.php';
 use LibMelanie\Api\Defaut\Workspaces\Share;
 
 /* Liste de hooks disponibles : 
@@ -191,11 +192,6 @@ class mel_workspace extends bnum_plugin
         $this->include_css('workspace_list.css');
         $this->include_css('index.css');
         $this->load_script_module('index');
-        $this->include_web_component()->Base();
-        $this->include_web_component()->Tabs();
-        $this->include_web_component()->PressedButton();
-        $this->include_web_component()->InfiniteScrollContainer();
-        $this->include_web_component()->Avatar();
         self::IncludeWorkspaceBlockComponent();
 
         $this->add_handler('subscribed', [$this, 'handler_subscribed']);
@@ -254,7 +250,6 @@ class mel_workspace extends bnum_plugin
             if ($workspace->isAdmin()) $this->workspacePageLayout->setNavBarSetting('workspace_params', 'settings', false, 999);
             else {
                 $this->workspacePageLayout->setNavBarSetting('workspace_user', 'group', false, 999);
-                $this->include_web_component()->Avatar();
             }
             
     

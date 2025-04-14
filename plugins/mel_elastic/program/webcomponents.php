@@ -1,11 +1,45 @@
 <?php
 
+/**
+ * Classe représentant les données d'un composant Web.
+ */
 class WebComponentData {
+    /**
+     * Tag HTML du composant.
+     * 
+     * @var string
+     */
     public $tag;
+
+    /**
+     * Nom du fichier du composant.
+     * 
+     * @var string
+     */
     public $name;
+
+    /**
+     * Chemin du fichier du composant.
+     * 
+     * @var string
+     */
     public $path;
+
+    /**
+     * Nom du plugin auquel appartient le composant.
+     * 
+     * @var string
+     */
     public $plugin;
 
+    /**
+     * Constructeur de la classe WebComponentData.
+     * 
+     * @param string $tag Tag HTML du composant.
+     * @param string $name Nom du fichier du composant.
+     * @param string $path Chemin du fichier du composant.
+     * @param string $plugin Nom du plugin.
+     */
     public function __construct(string $tag, string $name, string $path = (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), string $plugin = 'mel_elastic') {
         $this->name = $name;
         $this->path = $path;
@@ -13,6 +47,16 @@ class WebComponentData {
         $this->tag = $tag;
     }
 
+    /**
+     * Crée une instance de WebComponentData.
+     * 
+     * @param string $tag Tag HTML du composant.
+     * @param string $name Nom du fichier du composant.
+     * @param string $path Chemin du fichier du composant.
+     * @param string $plugin Nom du plugin.
+     * 
+     * @return WebComponentData
+     */
     static function Create(string $tag, string $name, string $path = (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), string $plugin = 'mel_elastic') : WebComponentData {
         return new WebComponentData($tag, $name, $path, $plugin);
     }
@@ -20,7 +64,7 @@ class WebComponentData {
 
 /**
  * Classe WebComponnents
- * Fournit des méthodes pour inclure des composants Web spécifiques.
+ * Fournit des méthodes pour inclure et gérer des composants Web spécifiques.
  */
 class WebComponnents {
 
@@ -31,10 +75,15 @@ class WebComponnents {
      */
     private $plugin;
 
+    /**
+     * Liste des composants Web disponibles.
+     * 
+     * @var array
+     */
     private $webcomponents = [];
 
     /**
-     * Instance unique de la classe WebComponnents.
+     * Instance unique de la classe WebComponnents (singleton).
      * 
      * @var WebComponnents
      */
@@ -51,43 +100,64 @@ class WebComponnents {
         }, []);
     }
 
-
-
     /**
      * Inclut un composant Web.
      *
      * @param string $name Nom du composant.
      * @param string $path Chemin du composant.
      * @param string $plugin Nom du plugin.
+     * 
+     * @return mixed
      */
     private function _include_component($name, $path = (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes') , $plugin = 'mel_metapage') {
         return $this->plugin->____METHODS____('include_component', $name, $path, $plugin);
     }
 
+    /**
+     * Récupère les composants personnalisés présents dans un contenu HTML.
+     * 
+     * @param string $html Contenu HTML à analyser.
+     * 
+     * @return array Liste des tags de composants trouvés.
+     */
     public function getCustomComponents(string $html) {
         // Générer la regex à partir des clés de $this->webcomponents
-        $regex = '(' . implode('|', array_keys($this->webcomponents)) . ')';
+                $regex = '(' . implode('|', array_keys($this->webcomponents)) . ')';
 
         // Trouver toutes les correspondances dans $html
-        preg_match_all($regex, $html, $matches);
+                preg_match_all($regex, $html, $matches);
 
         // Récupérer les clés uniques trouvées
-        $foundKeys = array_unique($matches[0]);
+                $foundKeys = array_unique($matches[0]);
 
         // Retourner les clés trouvées
         return $foundKeys;
     }
 
+    /**
+     * Générateur pour récupérer les composants qui n'existent pas encore dans le contenu HTML.
+     * 
+     * @param array $keys Liste des tags de composants à vérifier.
+     * @param string $html Contenu HTML à analyser.
+     * 
+     * @return Generator Générateur des composants manquants.
+     */
     public function GetAlreadyExistsComponentsGenerator(array $keys, string $html) : Generator {
         if ($keys) {
+            // Regex pour trouver les balises <script> avec des modules déjà inclus
             $regex = '<script\s+src=(["\'])[\w\d\/\.\?=]+\1\s+type=\1module\1\s*>';
 
+            // Trouver toutes les correspondances dans le contenu HTML
             preg_match_all($regex, $html, $matches);
 
+            // Si des correspondances sont trouvées, les convertir en une chaîne pour la comparaison
             if (isset($matches) && count($matches) > 0) $matches = $matches[0];
 
             if (isset($matches) && count($matches) > 0) {
                 $matches = implode('|', $matches);
+
+                // Filtrer les composants Web définis dans $keys
+                // Utilisation de mel_helper::Enumerable pour manipuler les collections
                 $regex = mel_helper::Enumerable($this->webcomponents)->where(function ($key, $value) use ($keys) {
                     return in_array($key, $keys);
                 })->select(function ($key, $value) {
@@ -95,8 +165,11 @@ class WebComponnents {
                 })->removeTwins(function ($_, $name) {
                     return $name;
                 })->join('|');
+
+                // Échapper les points dans les noms pour éviter des erreurs dans la regex
                 $regex = str_replace('.', '\.', $regex);
 
+                // Générer les composants manquants
                 yield from mel_helper::Enumerable($keys)->where(function ($_, $keyTag) use($regex, $matches) {
                     return !preg_match($regex, $matches, $_);
                 })->select(function ($_, $keyTag) {
@@ -108,17 +181,28 @@ class WebComponnents {
         }
     }
 
+    /**
+     * Tente d'inclure les composants manquants dans le contenu HTML.
+     * 
+     * @param array $keys Liste des tags de composants à inclure.
+     * @param string $html Contenu HTML à modifier.
+     * 
+     * @return string Contenu HTML modifié avec les inclusions nécessaires.
+     */
     public function tryIncludes(array $keys, string $html) : string {
         $scripts = [];
         foreach ($this->GetAlreadyExistsComponentsGenerator($keys, $html) as $component) {
+            // Ajouter un script pour chaque composant manquant
             if (!in_array($component->name, $scripts)) $scripts[] = "<script src=\"plugins/$component->plugin$component->path/$component->name\" type=\"module\"></script>";
         }
 
+        // Remplacer le placeholder dans le HTML par les scripts générés
         return str_replace('<<elastic:modules/>>', implode('', $scripts), $html);
     }
 
     /**
      * Inclut le composant de base.
+     * 
      * @deprecated version 25.4
      */
     public function Base() {
@@ -127,6 +211,7 @@ class WebComponnents {
 
     /**
      * Inclut le composant de tabulation.
+     * 
      * @deprecated version 25.4
      */
     public function Tabs() {
@@ -135,6 +220,7 @@ class WebComponnents {
 
     /**
      * Inclut le composant de bouton pressé.
+     * 
      * @deprecated version 25.4
      */
     public function PressedButton() {
@@ -143,6 +229,7 @@ class WebComponnents {
 
     /**
      * Inclut le conteneur de défilement infini.
+     * 
      * @deprecated version 25.4
      */
     public function InfiniteScrollContainer() {
@@ -151,6 +238,7 @@ class WebComponnents {
 
     /**
      * Inclut le composant d'avatar.
+     * 
      * @deprecated version 25.4
      */
     public function Avatar() {
@@ -159,6 +247,7 @@ class WebComponnents {
 
     /**
      * Inclut la barre de recherche.
+     * 
      * @deprecated version 25.4
      */
     public function SearchBar() {
@@ -175,6 +264,7 @@ class WebComponnents {
 
     /**
      * Inclut le bouton Bnum.
+     * 
      * @deprecated version 25.4
      */
     public function BnumButton() {
@@ -185,6 +275,9 @@ class WebComponnents {
      * Méthode générique pour inclure des composants.
      *
      * @param string $what Type de composant à inclure.
+     * @param mixed ...$args Arguments nécessaires pour inclure le composant.
+     * 
+     * @return mixed
      */
     public function ____METHODS____($what, ...$args) {
         switch ($what) {
@@ -199,6 +292,11 @@ class WebComponnents {
         }
     }
 
+    /**
+     * Récupère la liste des composants Web disponibles.
+     * 
+     * @return array Liste des composants Web.
+     */
     public static function Get() : array {
         return [
             WebComponentData::Create('bnum-icon', 'js_html_base_web_elements.js', (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), 'mel_metapage'),
@@ -227,7 +325,7 @@ class WebComponnents {
     /**
      * Retourne l'instance unique de la classe WebComponnents.
      *
-     * @return WebComponnents
+     * @return WebComponnents Instance unique.
      */
     public static function Instance() {
         if (!isset(self::$_instance)) self::$_instance = new WebComponnents();

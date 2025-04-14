@@ -493,11 +493,31 @@ abstract class bnum_plugin extends rcube_plugin
     }
 }
 
+/**
+ * Classe ScriptManager
+ * Gère les scripts JavaScript pour éviter les doublons et faciliter leur inclusion.
+ */
 class ScriptManager {
+    /**
+     * Liste des scripts ajoutés.
+     * 
+     * @var array
+     */
     private $scripts = [];
 
+    /**
+     * Constructeur de la classe ScriptManager.
+     */
     public function __construct() {}
 
+    /**
+     * Génère une clé unique pour identifier un script.
+     *
+     * @param string $script Nom du script.
+     * @param string|null $plugin Nom du plugin associé (optionnel).
+     * @param string|null $path Chemin du script (optionnel).
+     * @return string Clé unique générée.
+     */
     private function _toKey(string $script, ?string $plugin = null, ?string $path = null) : string {
         $key = $script;
 
@@ -512,6 +532,14 @@ class ScriptManager {
         return $key;
     }
 
+    /**
+     * Ajoute un script à la liste des scripts gérés.
+     *
+     * @param string $script Nom du script.
+     * @param string|null $plugin Nom du plugin associé (optionnel).
+     * @param string|null $path Chemin du script (optionnel).
+     * @return bool Retourne true si le script a été ajouté, false s'il existait déjà.
+     */
     public function add(string $script, ?string $plugin = null, ?string $path = null) : bool {
         $returnValue = false;
         $key = $this->_toKey($script, $plugin, $path);
@@ -524,6 +552,14 @@ class ScriptManager {
         return $returnValue;
     }
 
+    /**
+     * Vérifie si un script existe déjà dans la liste des scripts gérés.
+     *
+     * @param string $script Nom du script.
+     * @param string|null $plugin Nom du plugin associé (optionnel).
+     * @param string|null $path Chemin du script (optionnel).
+     * @return bool Retourne true si le script existe, false sinon.
+     */
     public function exist(string $script, ?string $plugin = null, ?string $path = null) : bool {
         return in_array($this->_toKey($script, $plugin, $path), $this->scripts);
     }

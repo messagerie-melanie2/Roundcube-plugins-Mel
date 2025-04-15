@@ -229,6 +229,24 @@ window.rcmail &&
       if (rcmail.env.annuaire_list) {
         rcmail.annuaire_list_fill_list(null, rcmail.env.annuaire_list);
       }
+      
+      // Clic unique sur un <li> pour sélectionner et afficher le contact
+      $(document).on('mousedown', '#annuaire-list li', function (e) {
+        if ($(e.target).closest('.gototree').length) return;
+
+        const $li = $(this);
+        const nodeId = $li.attr('id')?.replace(/^rcmrow/, '');
+
+        if (
+          !$li.hasClass('selected') &&
+          nodeId &&
+          rcmail.annuaire_list &&
+          rcmail.annuaire_list.select
+        ) {
+          e.preventDefault(); // Évite le "focus-only"
+          rcmail.annuaire_list.select(nodeId); // Sélectionne l’élément
+        }
+      });
     }
 
     if (rcmail.env.task == 'mail') {

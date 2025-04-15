@@ -3,13 +3,11 @@ function open_research() {
   $('.hide-button-search').toggle();
 }
 
-
 $(window).resize(function () {
   if ($(this).width() > 480) {
-    if ($('#barup-search-col').is(":hidden")) {
+    if ($('#barup-search-col').is(':hidden')) {
       $('#barup-search-col').show();
-    }
-    else {
+    } else {
       $('.hide-button-search').show();
     }
   }

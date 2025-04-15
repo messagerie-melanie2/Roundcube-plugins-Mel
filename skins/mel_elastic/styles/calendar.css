@@ -88,8 +88,8 @@ html.layout-small.framed .task-calendar #layout #layout-content {
 }
 html .task-calendar #layout .ui-datepicker-year {
   display: inline-block !important;
-  margin: 0!important;
-  padding: 0px!important;
+  margin: 0 !important;
+  padding: 0px !important;
   opacity: 0;
   width: 100%;
   position: absolute;
@@ -97,8 +97,8 @@ html .task-calendar #layout .ui-datepicker-year {
 }
 html .task-calendar #layout .ui-datepicker-month {
   display: inline-block !important;
-  margin: 0!important;
-  padding: 0px!important;
+  margin: 0 !important;
+  padding: 0px !important;
   opacity: 0;
   width: 100%;
   position: absolute;
@@ -121,20 +121,20 @@ html body.task-calendar .ui-datepicker-inline .ui-datepicker-activerange {
   margin: 0 20px;
 }
 .task-calendar .ui-datepicker-prev::before {
-  content: "\e905" !important;
-  font-weight: normal!important;
-  font-family: DWP!important;
+  content: '\e905' !important;
+  font-weight: normal !important;
+  font-family: DWP !important;
 }
 .task-calendar .ui-datepicker-next::before {
-  content: "\e904" !important;
-  font-weight: normal!important;
-  font-family: DWP!important;
+  content: '\e904' !important;
+  font-weight: normal !important;
+  font-family: DWP !important;
 }
 .task-calendar .ui-datepicker.ui-widget-content a.ui-state-active.ui-state-highlight {
   border-radius: 100%;
   height: 20px;
   width: 20px;
-  line-height: 15px!important;
+  line-height: 15px !important;
   color: var(--calendar-datepicker-selected-color) !important;
   margin-left: auto;
   margin-right: auto;
@@ -149,7 +149,7 @@ html body.task-calendar .ui-datepicker-inline .ui-datepicker-activerange {
   border-radius: 100%;
   height: 20px;
   width: 20px;
-  line-height: 15px!important;
+  line-height: 15px !important;
   color: var(--calendar-datepicker-selected-color) !important;
   margin-left: auto;
   margin-right: auto;
@@ -158,7 +158,7 @@ html body.task-calendar .ui-datepicker-inline .ui-datepicker-activerange {
   border-radius: 100%;
   height: 20px;
   width: 20px;
-  line-height: 15px!important;
+  line-height: 15px !important;
   color: var(--calendar-datepicker-selected-color) !important;
   margin-left: auto;
   margin-right: auto;
@@ -170,7 +170,7 @@ html body.task-calendar .ui-datepicker-inline .ui-datepicker-activerange {
   background-color: white !important;
 }
 .task-calendar .ui-dialog .ui-datepicker-inline .ui-datepicker-activerange {
-  background-color: #F2FAF9 !important;
+  background-color: #f2faf9 !important;
 }
 .task-calendar .calendar-datepicker .ui-datepicker {
   background-color: var(--calendar-datepicker-background-color) !important;
@@ -200,7 +200,7 @@ html.layout-small .task-calendar .calendar-datepicker .ui-datepicker {
 .task-calendar .listing li > div.calendar .calname::before {
   /* margin-left: 15px; */
   position: absolute;
-  content: "\e94d";
+  content: '\e94d';
   margin-left: -42px;
   font-family: DWP;
   font-size: 9px !important;
@@ -226,17 +226,17 @@ html.layout-small .task-calendar .calendar-datepicker .ui-datepicker {
   margin-right: -20px;
 }
 .task-calendar .listing li > div a.quickview::before {
-  content: "\e961";
-  font-family: DWP!important;
+  content: '\e961';
+  font-family: DWP !important;
 }
 .task-calendar .listing li > div a.quickview:hover::before {
   opacity: 1;
 }
 .task-calendar .listing li > div.focusview a.quickview::before {
   opacity: 1;
-  content: "\e962";
+  content: '\e962';
 }
-.task-calendar .listing li[aria-level="2"] .custom-control {
+.task-calendar .listing li[aria-level='2'] .custom-control {
   padding-left: 60px !important;
   margin-right: -43px !important;
 }
@@ -266,7 +266,7 @@ html.touch .task-calendar .listing .custom-switch .custom-control-label {
   background: none;
   top: 4px;
   left: -8px;
-  content: "\ec4b";
+  content: '\ec4b';
   font-family: IcoFont;
   font-size: 8px;
   -webkit-text-stroke: var(--calendar-list-item-switch-tick-stroke);
@@ -284,11 +284,11 @@ html.touch .task-calendar .listing .custom-switch .custom-control-label {
   content: unset;
 }
 .task-calendar .searchbar form::after {
-  content: "\e92d";
+  content: '\e92d';
   height: 36px;
   color: var(--calendar-toolbar-search-icon-color);
   margin: 0 0.75rem 0 0;
-  font-family: DWP!important;
+  font-family: DWP !important;
 }
 .task-calendar #timezone-display {
   display: none;
@@ -302,29 +302,29 @@ html.touch .task-calendar .listing .custom-switch .custom-control-label {
   margin-top: 8px;
 }
 .task-calendar .fc .fc-day.fc-today {
-  background-color: #F2FAF9 !important;
+  background-color: #f2faf9 !important;
 }
 .task-calendar .fc .fc-day-number {
-  color: #575A76 !important;
+  color: #575a76 !important;
 }
 .task-calendar .fc .fc-day-header {
-  color: #575A76 !important;
+  color: #575a76 !important;
 }
 .task-calendar .fc .fc-week-number {
-  color: #575A76 !important;
+  color: #575a76 !important;
 }
 .task-calendar .fc .fc-week-header {
-  color: #575A76 !important;
+  color: #575a76 !important;
 }
 .task-calendar .fc .fc-now-indicator {
-  border-color: #FE7351;
+  border-color: #fe7351;
   border-width: thin;
 }
 .task-calendar .fc .fc-nonbusiness {
-  background-color: #C4C4C4;
+  background-color: #c4c4c4;
 }
 .task-calendar .fc .fc-axis {
-  color: #575A76 !important;
+  color: #575a76 !important;
 }
 .task-calendar .fc .fc-event .fc-content.sensible .fc-icon-sensitive {
   display: inline-block;
@@ -333,7 +333,7 @@ html.touch .task-calendar .listing .custom-switch .custom-control-label {
   margin-left: 0.25rem;
 }
 .task-calendar .fc .fc-event .fc-content.sensible .fc-icon-sensitive::before {
-  content: "\f023";
+  content: '\f023';
   display: block;
   margin: 0 0.25rem 0 0;
   margin-top: 0px;
@@ -349,30 +349,30 @@ html.touch .task-calendar .listing .custom-switch .custom-control-label {
 }
 .task-calendar .fc .fc-content i.fc-icon-needs-action:before,
 .task-calendar .fc .fc-time i.fc-icon-needs-action:before {
-  content: "\f059";
+  content: '\f059';
   font-style: normal;
 }
 .task-calendar .fc .fc-content i.fc-icon-declined:before,
 .task-calendar .fc .fc-time i.fc-icon-declined:before {
-  content: "\f05e";
+  content: '\f05e';
   font-style: normal;
 }
 .task-calendar .fc .fc-content i.fc-icon-delegated:before,
 .task-calendar .fc .fc-time i.fc-icon-delegated:before {
-  content: "\f064";
+  content: '\f064';
   font-style: normal;
 }
 .task-calendar .fc .fc-content i.fc-icon-telework:before,
 .task-calendar .fc .fc-time i.fc-icon-telework:before {
-  content: "\e918";
-  font-family: "DWP";
+  content: '\e918';
+  font-family: 'DWP';
   font-weight: normal;
   font-style: normal;
 }
 .task-calendar .fc .fc-content i.fc-icon-vacation:before,
 .task-calendar .fc .fc-time i.fc-icon-vacation:before {
-  content: "\e967";
-  font-family: "DWP";
+  content: '\e967';
+  font-family: 'DWP';
   font-weight: normal;
   font-style: normal;
 }
@@ -407,11 +407,11 @@ html.touch .task-calendar .listing .custom-switch .custom-control-label {
   border-color: var(--calendar-table-border) !important;
 }
 .task-calendar .fc-axis.fc-widget-header {
-  background-color: #E3E4EA;
+  background-color: #e3e4ea;
   font-weight: normal;
 }
 .task-calendar .fc-day-header {
-  background-color: #E3E4EA;
+  background-color: #e3e4ea;
   font-weight: normal;
 }
 .task-calendar .fc-day-header.fc-widget-header.fc-thu.fc-today {
@@ -424,9 +424,9 @@ html.touch .task-calendar .listing .custom-switch .custom-control-label {
   padding-left: 7px;
 }
 .task-calendar .fc-toolbar.fc-header-toolbar .fc-right .prev::before {
-  content: "\e905" !important;
-  font-weight: normal!important;
-  font-family: DWP!important;
+  content: '\e905' !important;
+  font-weight: normal !important;
+  font-family: DWP !important;
 }
 .task-calendar .fc-toolbar.fc-header-toolbar .fc-right .next {
   border-top-right-radius: 100%;
@@ -435,19 +435,19 @@ html.touch .task-calendar .listing .custom-switch .custom-control-label {
   padding-left: 7px;
 }
 .task-calendar .fc-toolbar.fc-header-toolbar .fc-right .next::before {
-  content: "\e904" !important;
-  font-weight: normal!important;
-  font-family: DWP!important;
+  content: '\e904' !important;
+  font-weight: normal !important;
+  font-family: DWP !important;
 }
 .task-calendar .fc-toolbar.fc-header-toolbar .fc-right button {
   background-color: white;
   color: #424564;
   transition: all 0.1s ease-in;
-  border-color: #F0F0F0;
+  border-color: #f0f0f0;
 }
 .task-calendar .fc-toolbar.fc-header-toolbar .fc-right button:hover {
-  background-color: #484D7A;
-  border-color: #484D7A;
+  background-color: #484d7a;
+  border-color: #484d7a;
   color: white;
 }
 .task-calendar .fc-toolbar.fc-header-toolbar .fc-left .btn-group.btn-group-toggle {
@@ -469,11 +469,11 @@ html.touch .task-calendar .listing .custom-switch .custom-control-label {
   margin-left: 15px;
 }
 html.layout-small .task-calendar select.mel-input.calendar {
-  border-radius: 0!important;
+  border-radius: 0 !important;
   margin: 0;
 }
 html.layout-phone .task-calendar select.mel-input.calendar {
-  border-radius: 0!important;
+  border-radius: 0 !important;
   margin: 0;
 }
 .task-calendar ul.treelist.iconized li div.treetoggle {
@@ -493,7 +493,7 @@ html.layout-phone .task-calendar select.mel-input.calendar {
   left: 14px;
 }
 .task-calendar #annuaire-list > li > .treetoggle {
-  left: 15px!important;
+  left: 15px !important;
 }
 .task-calendar #annuaire-list ul {
   margin-left: 10px;
@@ -502,13 +502,13 @@ html.layout-phone .task-calendar select.mel-input.calendar {
   margin-left: 20px;
 }
 #datepicker {
-  background-color: #31365B !important;
+  background-color: #31365b !important;
 }
 .datepicker-dp-title {
   white-space: nowrap;
 }
 .menu a.refresh::before {
-  content: "\e5d5" !important;
+  content: '\e5d5' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -516,12 +516,12 @@ html.layout-phone .task-calendar select.mel-input.calendar {
   transform: scale(1.5) !important;
 }
 .menu a.create::before {
-  content: "\e929" !important;
-  font-family: DWP!important;
-  font-weight: normal!important;
+  content: '\e929' !important;
+  font-family: DWP !important;
+  font-weight: normal !important;
 }
 .task-calendar #layout #layout-content > .header .menu a.create.button::before {
-  content: "\ef85" !important;
+  content: '\ef85' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -529,30 +529,30 @@ html.layout-phone .task-calendar select.mel-input.calendar {
   transform: scale(1.5) !important;
 }
 .menu a.edit::before {
-  content: "\e95c" !important;
-  font-family: DWP!important;
-  font-weight: normal!important;
+  content: '\e95c' !important;
+  font-family: DWP !important;
+  font-weight: normal !important;
 }
 .menu a.showurl::before {
-  content: "\e91c" !important;
-  font-family: DWP!important;
-  font-weight: normal!important;
+  content: '\e91c' !important;
+  font-family: DWP !important;
+  font-weight: normal !important;
 }
 .menu a.appointment::before {
-  content: "\e901" !important;
-  font-family: DWP!important;
-  font-weight: normal!important;
+  content: '\e901' !important;
+  font-family: DWP !important;
+  font-weight: normal !important;
 }
 .menu a.settings::before {
-  content: "\e925" !important;
-  font-family: DWP!important;
-  font-weight: normal!important;
+  content: '\e925' !important;
+  font-family: DWP !important;
+  font-weight: normal !important;
 }
 .menu a.import::before,
 .menu a.upload::before {
-  content: "\f090" !important;
+  content: '\f090' !important;
   font-family: 'Material Symbols Outlined' !important;
-  font-weight: normal!important;
+  font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48;
   font-size: 17px;
   transform: scale(1.5) !important;
@@ -561,14 +561,14 @@ html.layout-phone .task-calendar select.mel-input.calendar {
 .menu a.download.eml::before,
 .menu a.download.maildir::before,
 .menu a.download.mbox::before {
-  content: "\e90d" !important;
-  font-family: DWP!important;
-  font-weight: normal!important;
+  content: '\e90d' !important;
+  font-family: DWP !important;
+  font-weight: normal !important;
 }
 .menu a.export::before,
 .menu a.export.all::before,
 .menu a.export.selection::before {
-  content: "\f09b" !important;
+  content: '\f09b' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -576,7 +576,7 @@ html.layout-phone .task-calendar select.mel-input.calendar {
   transform: scale(1.5) !important;
 }
 .menu a.print::before {
-  content: "\e8ad" !important;
+  content: '\e8ad' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -584,9 +584,9 @@ html.layout-phone .task-calendar select.mel-input.calendar {
   transform: scale(1.5) !important;
 }
 .menu a.copy::before {
-  content: "\e90a";
-  font-family: DWP!important;
-  font-weight: normal!important;
+  content: '\e90a';
+  font-family: DWP !important;
+  font-weight: normal !important;
 }
 .mel-cal-icon {
   margin-right: 15px;
@@ -611,12 +611,12 @@ a.mel-calendar-button {
   width: fit-content;
 }
 a.mel-calendar-button:hover {
-  color: white!important;
-  background-color: #484D7A;
-  border-color: #484D7A;
+  color: white !important;
+  background-color: #484d7a;
+  border-color: #484d7a;
 }
 a.mel-calendar-button:hover > span {
-  color: white!important;
+  color: white !important;
 }
 a.mel-calendar-button.danger:hover {
   background-color: #fc945a;
@@ -629,13 +629,13 @@ button.mel-calendar-button {
   background-color: transparent;
   padding-top: 5px;
   padding-bottom: 5px;
-  margin-right: 10px!important;
-  margin-left: 0!important;
+  margin-right: 10px !important;
+  margin-left: 0 !important;
 }
 button.mel-calendar-button:hover {
-  color: white!important;
-  background-color: #484D7A;
-  border-color: #484D7A;
+  color: white !important;
+  background-color: #484d7a;
+  border-color: #484d7a;
   border-radius: 10px;
 }
 button.mel-calendar-button > .inner {
@@ -648,7 +648,7 @@ button.mel-calendar-button.danger:hover {
   border-color: #fc945a;
 }
 .mel-calendar-button-sm {
-  padding: 5px 5px!important;
+  padding: 5px 5px !important;
 }
 .mel-ellipsis {
   text-overflow: ellipsis;
@@ -658,7 +658,7 @@ button.mel-calendar-button.danger:hover {
 .calendar-show-event.modal-footer.global-modal-footer {
   border-top-style: solid;
   border-top-width: 1.6px;
-  border-color: #B1B4C6;
+  border-color: #b1b4c6;
   margin: 0 3rem;
 }
 .calendar_url {
@@ -693,26 +693,26 @@ html.layout-large .small-toolbar-calendar {
   margin-left: -16px !important;
 }
 .layout-phone .col-6.datetime {
-  flex: 1 0 100%!important;
-  max-width: 100%!important;
-  width: 100%!important;
+  flex: 1 0 100% !important;
+  max-width: 100% !important;
+  width: 100% !important;
 }
 .layout-small .col-6.datetime {
-  flex: 1 0 100%!important;
-  max-width: 100%!important;
-  width: 100%!important;
+  flex: 1 0 100% !important;
+  max-width: 100% !important;
+  width: 100% !important;
 }
 .layout-small #mel-calendar-date-month {
-  display: none!important;
+  display: none !important;
 }
 .layout-phone #mel-calendar-date-month {
-  display: none!important;
+  display: none !important;
 }
 .layout-small #mel-calendar-date-year {
-  display: none!important;
+  display: none !important;
 }
 .layout-phone #mel-calendar-date-year {
-  display: none!important;
+  display: none !important;
 }
 ul#calendarslist .calendar {
   cursor: pointer;
@@ -757,7 +757,7 @@ ul#calendarslist.treelist li div.treetoggle:hover {
 }
 #calendarurlbox .slider::before {
   position: absolute;
-  content: "";
+  content: '';
   height: 13px;
   width: 13px;
   left: 2px;
@@ -773,7 +773,7 @@ ul#calendarslist.treelist li div.treetoggle:hover {
   border-radius: 50%;
 }
 #calendarurlbox input:checked + .slider {
-  background-color: #2196F3;
+  background-color: #2196f3;
 }
 #calendarurlbox input:checked + .slider::before {
   -webkit-transform: translateX(13px);
@@ -781,7 +781,7 @@ ul#calendarslist.treelist li div.treetoggle:hover {
   transform: translateX(13px);
 }
 #calendarurlbox input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
+  box-shadow: 0 0 1px #2196f3;
 }
 #appointmentbox {
   overflow-x: hidden;
@@ -810,7 +810,7 @@ ul#calendarslist.treelist li div.treetoggle:hover {
 }
 #appointmentbox .slider::before {
   position: absolute;
-  content: "";
+  content: '';
   height: 13px;
   width: 13px;
   left: 2px;
@@ -826,7 +826,7 @@ ul#calendarslist.treelist li div.treetoggle:hover {
   border-radius: 50%;
 }
 #appointmentbox input:checked + .slider {
-  background-color: #2196F3;
+  background-color: #2196f3;
 }
 #appointmentbox input:checked + .slider::before {
   -webkit-transform: translateX(13px);
@@ -834,7 +834,7 @@ ul#calendarslist.treelist li div.treetoggle:hover {
   transform: translateX(13px);
 }
 #appointmentbox input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
+  box-shadow: 0 0 1px #2196f3;
 }
 .calendar-scheduler .schedule-table tr.times th {
   cursor: pointer;
@@ -947,13 +947,13 @@ body.quickview-active .fc .fc-scroller {
   padding: 0;
 }
 .fix-panel.clicked-from-button .mel-button {
-  display: none!important;
+  display: none !important;
 }
 .fix-panel .dialog-message {
   color: var(--main-text-color);
 }
 .mel-custom-event-dialog {
-  position: unset!important;
+  position: unset !important;
 }
 .fc .fc-list-item.cal-event-status-tentative {
   opacity: 0.6;
@@ -963,4 +963,7 @@ body.quickview-active .fc .fc-scroller {
 }
 #agendaoptions {
   background-color: transparent !important;
+}
+.mwsp #layout-sidebar {
+  display: none;
 }

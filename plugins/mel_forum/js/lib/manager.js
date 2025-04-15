@@ -43,6 +43,11 @@ export class Manager extends MelObject {
     // Gestion du bouton d'action du post
     this.initButtons();
 
+    //affichage du bandeau si on est en brouillon
+    if (this.get_env('is_draft')) {
+      $('#header-draft').removeClass('hidden');
+    }
+
     rcmail.addEventListener('a.clicked', (args) => {
       if (!args.abort.signal && !args.url.includes('/?_task=')) {
         args.e.preventDefault();
@@ -198,7 +203,6 @@ export class Manager extends MelObject {
    * @returns {Promise<void>} Retourne une promesse qui est résolue une fois que tous les commentaires sont affichés et que les événements sont attachés.
    */
   static async displayComments(order = 'date_desc', parent_comment_id = null) {
-
     CursorUtils.SetLoadingCursor;
 
     BnumMessage.SetBusyLoading();
@@ -370,15 +374,19 @@ export class Manager extends MelObject {
     const context_menu = $('#post-context-menu');
     const button_copy = $('#copy-post');
     const button_download = $('#download-post');
+    const button_history = $('#history-post');
     const button_edit = $('#edit-post');
     const button_delete = $('#delete-post');
     const button_add_like = $('#add_like');
     const button_add_dislike = $('#add_dislike');
+    const button_edit_footer = $('#header-edit-post');
 
-    //Ne pas afficher les boutons d'édition et supression si l'utilisateur n'a pas les droits suffisant
+    //Ne pas afficher les boutons d'édition, supression et historique si l'utilisateur n'a pas les droits suffisant
     if (!rcmail.env.has_owner_rights) {
       button_delete.toggleClass('hidden');
       button_edit.toggleClass('hidden');
+      button_edit_footer.toggleClass('hidden');
+      button_history.toggleClass('hidden');
     }
 
     more_action.click(() => {
@@ -428,19 +436,39 @@ export class Manager extends MelObject {
     button_download.click(() => {
       this.downloadPost();
     });
+    button_history.click(() => {
+      this.historyPost();
+    });
+    button_edit_footer.click(() => {
+      this.editPost();
+    });
 
     // Initialisation de l'affichage boutons like et dislike en fonction de l'utilisateur.
     if (rcmail.env.has_liked) {
       button_add_like.addClass('filled');
     }
-    button_add_like.attr('title', rcmail.env.like_reactions.join(', ') + 
-    (rcmail.env.like_count > 1 ? this.gettext('mel_forum.liked_this_plural') : (rcmail.env.like_count === 1 ? this.gettext('mel_forum.liked_this_sing') : this.gettext('mel_forum.like_action'))));
+    button_add_like.attr(
+      'title',
+      rcmail.env.like_reactions.join(', ') +
+        (rcmail.env.like_count > 1
+          ? this.gettext('mel_forum.liked_this_plural')
+          : rcmail.env.like_count === 1
+            ? this.gettext('mel_forum.liked_this_sing')
+            : this.gettext('mel_forum.like_action')),
+    );
 
     if (rcmail.env.has_disliked) {
       button_add_dislike.addClass('filled');
     }
-    button_add_dislike.attr('title', rcmail.env.dislike_reactions.join(', ') + 
-    (rcmail.env.dislike_count > 1 ? this.gettext('mel_forum.disliked_this_plural') : (rcmail.env.dislike_count === 1 ? this.gettext('mel_forum.disliked_this_sing') : this.gettext('mel_forum.dislike_action'))));
+    button_add_dislike.attr(
+      'title',
+      rcmail.env.dislike_reactions.join(', ') +
+        (rcmail.env.dislike_count > 1
+          ? this.gettext('mel_forum.disliked_this_plural')
+          : rcmail.env.dislike_count === 1
+            ? this.gettext('mel_forum.disliked_this_sing')
+            : this.gettext('mel_forum.dislike_action')),
+    );
 
     //listenner des boutons likes est dislike
     button_add_like.on('keydown', (event) => {
@@ -570,7 +598,7 @@ export class Manager extends MelObject {
           );
         }
       },
-      on_error: (err) => {
+      on_error: () => {
         // Affichage du message d'erreur en cas de problème avec la requête
         BnumMessage.DisplayMessage(
           rcmail.gettext('mel_forum.delete_post_failure'),
@@ -578,6 +606,22 @@ export class Manager extends MelObject {
         );
 
         CursorUtils.ResetCursor();
+      },
+    });
+  }
+
+  /**
+   * Redirige vers la page d'historique de l'article.
+   */
+  historyPost() {
+    CursorUtils.SetLoadingCursor();
+
+    // Rediriger vers la page de l'historique avec l'UID du post
+    window.location.href = this.url('forum', {
+      action: 'history',
+      params: {
+        _uid: rcmail.env.post_uid,
+        _workspace_uid: rcmail.env.workspace_uid,
       },
     });
   }
@@ -623,6 +667,7 @@ export class Manager extends MelObject {
     let dialog = new MelDialog(
       new DialogPage('choose-download-format', {
         content: modalContent,
+        // eslint-disable-next-line quotes
         title: "Télécharger l'article",
         buttons: [
           new RcmailDialogButton('Annuler', {
@@ -685,37 +730,51 @@ export class Manager extends MelObject {
   }
 
   /**
-     * Met à jour le title de la reaction
-     * @param {external:jQuery} div élément html à mettre à jour
-     * @param {external:jQuery} counter div du compteur de reaction
-     * @param {'like' | 'dislike'} type type de la reaction (like ou dislike)
-     * @param {boolean} add booleen true si on ajoute une reaction false si on l'enlève
-     */
+   * Met à jour le title de la reaction
+   * @param {external:jQuery} div élément html à mettre à jour
+   * @param {external:jQuery} counter div du compteur de reaction
+   * @param {'like' | 'dislike'} type type de la reaction (like ou dislike)
+   * @param {boolean} add booleen true si on ajoute une reaction false si on l'enlève
+   */
   updateTitle(div, counter, type, add) {
     let currentValue = +(counter.text() || 0);
     let newstring = div.attr('title');
     let dis = type === 'like' ? '' : 'dis';
     switch (currentValue) {
-        case 0:
-            newstring = this.gettext('mel_forum.' + dis + 'like_action');
-            break;
-        case 1:
-            if (add){
-                newstring = this.get_env('user_fullname') + this.gettext('mel_forum.' + dis + 'liked_this_sing');
-            } else {
-                newstring = newstring.replace(this.get_env('user_fullname'), '').replace(', ', '').replace(this.gettext('mel_forum.' + dis + 'liked_this_plural'), this.gettext('mel_forum.' + dis + 'liked_this_sing'));
-            }
-            break;
-        default:
-            if (add) {
-                newstring = this.get_env('user_fullname') + ', ' + newstring.replace(this.gettext('mel_forum.' + dis + 'liked_this_sing'), this.gettext('mel_forum.' + dis + 'liked_this_plural'));
-            } else {
-                newstring = newstring.replace(this.get_env('user_fullname'), '');
-            }
-            break;
+      case 0:
+        newstring = this.gettext('mel_forum.' + dis + 'like_action');
+        break;
+      case 1:
+        if (add) {
+          newstring =
+            this.get_env('user_fullname') +
+            this.gettext('mel_forum.' + dis + 'liked_this_sing');
+        } else {
+          newstring = newstring
+            .replace(this.get_env('user_fullname'), '')
+            .replace(', ', '')
+            .replace(
+              this.gettext('mel_forum.' + dis + 'liked_this_plural'),
+              this.gettext('mel_forum.' + dis + 'liked_this_sing'),
+            );
+        }
+        break;
+      default:
+        if (add) {
+          newstring =
+            this.get_env('user_fullname') +
+            ', ' +
+            newstring.replace(
+              this.gettext('mel_forum.' + dis + 'liked_this_sing'),
+              this.gettext('mel_forum.' + dis + 'liked_this_plural'),
+            );
+        } else {
+          newstring = newstring.replace(this.get_env('user_fullname'), '');
+        }
+        break;
     }
-    div.attr('title',newstring);
-}
+    div.attr('title', newstring);
+  }
 
   /**
    * Gestion des likes et dislike des posts
@@ -745,26 +804,30 @@ export class Manager extends MelObject {
         let opposite_counter = type === 'like' ? dislike_counter : like_counter;
 
         if (target_div.hasClass('filled')) {
-            target_div.removeClass('filled');
-            this.updateCounter(target_counter, -1);
-            // true signifie qu'on ajoute la réaction
-            this.updateTitle(target_div, target_counter, type, false);
-
+          target_div.removeClass('filled');
+          this.updateCounter(target_counter, -1);
+          // true signifie qu'on ajoute la réaction
+          this.updateTitle(target_div, target_counter, type, false);
         } else {
-            target_div.addClass('filled');
-            this.updateCounter(target_counter, 1);
-            // true signifie qu'on ajoute la réaction
-            this.updateTitle(target_div, target_counter, type, true);
+          target_div.addClass('filled');
+          this.updateCounter(target_counter, 1);
+          // true signifie qu'on ajoute la réaction
+          this.updateTitle(target_div, target_counter, type, true);
 
-            if (opposite_div.hasClass('filled')) {
-                opposite_div.removeClass('filled');
-                this.updateCounter(opposite_counter, -1);
-                // false signifie qu'on enlève la réaction
-                this.updateTitle(opposite_div, opposite_counter, opposite_type, false);
-            }
+          if (opposite_div.hasClass('filled')) {
+            opposite_div.removeClass('filled');
+            this.updateCounter(opposite_counter, -1);
+            // false signifie qu'on enlève la réaction
+            this.updateTitle(
+              opposite_div,
+              opposite_counter,
+              opposite_type,
+              false,
+            );
+          }
         }
-    },
-      on_error: (err) => {
+      },
+      on_error: () => {
         BnumMessage.DisplayMessage(
           rcmail.gettext('mel_forum.error_editing'),
           eMessageType.Error,

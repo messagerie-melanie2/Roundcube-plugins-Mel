@@ -59,6 +59,10 @@
 	display: none;
 }
 
+#settingstabpluginmel_doubleauth {
+	display: none;
+}
+
 .notice-container .courrielleur {
 	display: block !important;
 }

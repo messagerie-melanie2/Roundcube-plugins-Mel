@@ -61,6 +61,8 @@ $labels['download_post_failure'] = 'Le téléchargement de l\'article a échoué
 $labels['edit_article'] = 'Modifier l\'article';
 $labels['pin_article'] = 'Épingler l\'article';
 $labels['unpin_article'] = 'Désépingler l\'article';
+$labels['view_history'] = 'Historique';
+
 
 #endregion
 #region Droits
@@ -80,6 +82,9 @@ $labels['comment_menu'] = 'Menu du commentaire';
 $labels['delete_comment'] = 'Supprimer le commentaire';
 $labels['dislike_action'] = 'Je n\'aime pas';
 $labels['display_fav_only'] = 'Afficher uniquement les favoris';
+$labels['display_posts'] = 'Afficher les articles';
+$labels['display_my_draft'] = 'Afficher mes brouillons';
+$labels['display_draft'] = 'Afficher tous les brouillons';
 $labels['edit_comment'] = 'Modifier le commentaire';
 $labels['has_been_deleted'] = ' a été supprimé avec succès.';
 $labels['hide_items'] = 'Masquer les';
@@ -95,14 +100,18 @@ $labels['more_responses'] = 'Plus de réponses';
 $labels['newest'] = 'Plus récents';
 $labels['no_post'] = 'Cet espace ne contient aucun article pour le moment.';
 $labels['no_favorites'] = 'Vous n\'avez aucun article favori pour le moment.';
+$labels['no_draft'] = 'Vous n\'avez aucun brouillon pour le moment.';
 $labels['oldest'] = 'Plus anciens';
 $labels['respond'] = 'Répondre';
 $labels['save'] = 'Sauvegarder';
+$labels['publish'] = 'Publier';
 $labels['see_response_singular'] = 'Voir la réponse';
 $labels['see_the'] = 'Voir les';
 $labels['sort_by'] = 'Trier par : ';
 $labels['workspace_news'] = 'Derniers articles';
 $labels['front_page'] = 'À la une';
+$labels['this_is_draft'] = 'Ceci est un brouillon';
+$labels['search_post'] = 'Rechercher un article ...';
 
 #endregion
 #region Message
@@ -143,11 +152,13 @@ $labels['reply_save_error'] = 'Une erreur est survenue lors de la sauvegarde de 
 $labels['reply_save_failure'] = 'Erreur lors de la sauvegarde de la réponse.';
 $labels['saved'] = ' enregistré avec succès.';
 $labels['the_article'] = 'L\'article ';
+$labels['today'] = 'Aujourd\'hui';
 $labels['today_at'] = 'Aujourd\'hui à';
 $labels['toggle_replies_error'] = 'Erreur lors du basculement des réponses.';
 $labels['undislike'] = 'Dislike annulé avec succès.';
 $labels['unexpected_error'] = 'Une erreur inattendue est survenue.';
 $labels['unlike'] = 'Like annulé avec succès.';
+$labels['yesterday'] = 'Hier';
 $labels['yesterday_at'] = 'Hier à';
 $labels['fields_required'] = 'Les champs titre et contenu sont requis';
 
@@ -253,7 +264,7 @@ $labels['no_image_to_replace'] = "Aucune image à remplacer pour le post_id : ";
 #endregion
 #region MESSAGE TCHAP
 
-$labels['a_post_has_been_published'] = '📰 Un article a été publié dans votre espace de travail.';
+$labels['a_post_has_been_published'] = '📰 L\'article « %s » a été publié dans votre espace de travail.';
 
 #region NOTIFICATION
 
@@ -271,3 +282,13 @@ $labels['read_comment'] = 'Lire le commentaire';
 $labels['read_comment_title'] = 'Cliquez pour lire le commentaire';
 $labels['read_response'] = 'Lire la réponse';
 $labels['read_response_title'] = 'Cliquez pour lire la réponse';
+
+#region Historique
+$labels['article'] = 'Article';
+$labels['history_article'] = 'historique des modifications';
+$labels['title'] = 'titre';
+$labels['content'] = 'contenu';
+$labels['settings'] = 'paramètres';
+$labels['the'] = 'Le';
+$labels['at_modify'] = 'a modifié';
+$labels['return_to_post'] = 'Retour à l\'article';

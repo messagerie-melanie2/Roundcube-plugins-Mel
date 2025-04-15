@@ -230,6 +230,10 @@ class tchap_manager extends MelObject {
     this.rcmail(is_top).addEventListener('frame_loaded', (eClass) => {
       if (eClass === 'tchap') this.update_badge();
     });
+
+    if (this.get_env('plugin_list_workspace')) {
+      this._try_observe_html()._update_tchap_left_panel();
+    }
   }
   //#endregion
   // #region private
@@ -239,8 +243,9 @@ class tchap_manager extends MelObject {
    * @return {Promise<void>}
    */
   async _notificationhandler() {
+    // eslint-disable-next-line no-constant-condition
     while (true) {
-      this.update_badge(); //this._update_badge();
+      this.update_badge();
 
       await this.sleep(
         FramesManager.Instance.currentTask === 'tchap'
@@ -341,4 +346,50 @@ class tchap_manager extends MelObject {
   }
 
   // #endregion
+  /**
+   * Observe le html pour détecter si on cache ou affiche le panneau de gauche de tchap si 'mwsp' est présent dans la classe de l'élément html
+   * @private
+   * @returns {tchap_manager}
+   */
+  _try_observe_html() {
+    // Selectionne le noeud dont les mutations seront observées
+    let targetNode = document.querySelector('html');
+
+    // Options de l'observateur (quelles sont les mutations à observer)
+    let config = { attributes: true, childList: false, subtree: false };
+
+    // Créé une instance de l'observateur lié à la fonction de callback
+    let observer = new MutationObserver((mutationsList) => {
+      for (const mutation of mutationsList) {
+        if (
+          mutation.type === 'attributes' &&
+          mutation.attributeName === 'class'
+        ) {
+          this._update_tchap_left_panel();
+          break;
+        }
+      }
+    });
+
+    observer.observe(targetNode, config);
+
+    return this;
+  }
+
+  /**
+   * Cache ou affiche le panneau de gauche de tchap si 'mwsp' est présent dans la classe de l'élément html
+   * @private
+   */
+  _update_tchap_left_panel() {
+    let style;
+    if (document.querySelector('html').classList.contains('mwsp'))
+      style = 'none';
+    else style = 'flex';
+
+    FramesManager.Instance.get_frame('tchap')[0]
+      .contentWindow.$('#tchap_frame')[0]
+      .contentWindow.document.querySelector(
+        '.mx_LeftPanel_wrapper',
+      ).style.display = style;
+  }
 }

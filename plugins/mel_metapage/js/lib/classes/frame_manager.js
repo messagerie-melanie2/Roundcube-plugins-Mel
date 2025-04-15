@@ -1665,7 +1665,6 @@ class FrameManager {
 
       $it
         .attr('data-task', $it.attr('href').split('=')[1])
-        .attr('href', '#')
         .attr('onclick', EMPTY_STRING)
         .parent()
         .addClass('not-busy-only');
@@ -1697,10 +1696,6 @@ class FrameManager {
         $it.click(this.button_action.bind(this));
       }
 
-      // $it.click(() => {
-      //   $('#popoverback').remove();
-      // })
-
       if (!$it.hasClass('menu-last-frame') && !$it.attr('data-command')) {
         $it.on(
           'auxclick',
@@ -1712,35 +1707,8 @@ class FrameManager {
             }
           }.bind(this, { task: $it.attr('data-task') }),
         );
-        // $it
-        // .popover({
-        //   trigger: 'manual',
-        //   content: this._generate_menu.bind(this, $it),
-        //   html: true,
-        // })
-        // // .on('hide.bs.popover', () => {
-        // //   $('#popoverback').remove();
-        // // })
-        // .on('contextmenu', (e) => {
-        //   e.preventDefault();
-        //   $('#layout-menu [aria-describedby], #otherapps [aria-describedby]').each((i, e) => {
-        //     $(e).popover('hide');
-        //   });
-        //    $('#popoverback').remove();
-        //   $(e.currentTarget).popover('show');
-        //   //console.log('$(e.currentTarget)', $(e.currentTarget));
-        //   $('body').prepend($('<div>').click(() => $('#popoverback').remove()).attr('id', 'popoverback').css({width:'100%', height:'100%', position:'absolute', top:0, left:0, 'z-index':1, 'background-color':'var(--ui-widget-overlay)'}));
-        // });
       }
     }
-
-    // if (!window.fmbodyoptionsa) {
-    //   $('.barup, #layout-menu').click(() => {
-    //     $('#popoverback').remove();
-    //   });
-
-    //   window.fmbodyoptionsa = true;
-    // }
   }
 
   /**

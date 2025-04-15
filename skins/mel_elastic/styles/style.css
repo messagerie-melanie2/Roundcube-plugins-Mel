@@ -1495,6 +1495,9 @@ body.task-mail .floating-action-buttons {
 .mel-return {
   transition: all 0.1s ease-in;
   cursor: pointer;
+  display: inline-block;
+  width: 50px;
+  padding: 8px 12px;
 }
 .mel-return:hover {
   color: var(--danger-color);
@@ -2162,6 +2165,10 @@ span.span-webconf {
   content: '\e908' !important;
   font-family: var(--main-icon-font) !important;
 }
+.icon-mel-save::before {
+  content: '\e161' !important;
+  font-family: var(--third-icon-font) !important;
+}
 a.roadmap::before {
   content: '\efd8' !important;
   font-family: var(--secondary-icon-font) !important;
@@ -2812,6 +2819,10 @@ html.dark-mode #visio-right-pannel-util {
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
+}
+.spin {
+  animation: spin 0.75s linear infinite;
+  display: inline-block;
 }
 .loader-base {
   width: var(--loader-width);
@@ -3975,9 +3986,6 @@ html.dark-mode .mv2-app-text {
 .popover {
   color: var(--popover-text-color);
 }
-.popover button.mel-button {
-  color: var(--secondary-text-color);
-}
 .popover button.mel-button:hover {
   background-color: var(--popover-hover-background-color);
   color: var(--popover-hover-text-color);
@@ -4843,4 +4851,9 @@ html.touch:root {
   bottom: 0;
   background-color: var(--modal-background-color);
   justify-content: end;
+}
+bnum-option,
+selected-option,
+default-option {
+  display: none;
 }

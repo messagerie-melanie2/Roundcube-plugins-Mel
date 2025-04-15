@@ -3,6 +3,7 @@ import { MelTemplate } from '../../../mel_metapage/js/lib/html/JsHtml/MelTemplat
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { WorkspaceObject } from '../../../mel_workspace/js/lib/program/WorkspaceObject.js';
+import { formatPostDate } from './utils.js';
 
 export class New_posts extends MelObject {
   constructor() {
@@ -87,7 +88,8 @@ export class New_posts extends MelObject {
         POST_LINK: post.post_link,
         POST_CREATOR: post.post_creator,
         CREATOR_EMAIL: post.creator_email,
-        POST_DATE: post.creation_date,
+        POST_DATE: formatPostDate(post.creation_date),
+        TITLE_FULL_DATE: post.formatted_full_date,
         UID: post.uid,
         POST_TITLE: post.title,
         //POST_COUNT_REACTION: post.reaction,

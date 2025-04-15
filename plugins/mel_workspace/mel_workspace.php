@@ -215,10 +215,16 @@ class mel_workspace extends bnum_plugin
             $plugin ??= [];
     
             $this->workspacePageLayout = $plugin['layout'] ?? new WorkspacePageLayout();
+
+            if (!$this->get_user()->is_external) {
+                $this->workspacePageLayout->fourthRow()->append(4, $this->workspacePageLayout->htmlModuleBlock(['id' => 'module-agenda','data-title' => 'Agenda de l\'espace', 'data-button' => 'calendar', 'data-button-text' => 'Créer', 'data-button-icon' => 'add_circle', 'data-button-ignore' => 'default-actions', 'data-button-type' => 'primary'])); 
+                $this->workspacePageLayout->setNavBarSetting('mel_metapage.calendar', 'calendar_month', true, 1);
+                $this->include_module_program('agenda.js', 'Parts');
+            }
     
-            $this->workspacePageLayout->fourthRow()->append(12, $this->workspacePageLayout->htmlModuleBlock(['id' => 'module-agenda','data-title' => 'Planning des membres']));
+            $this->workspacePageLayout->fourthRow()->append(8, $this->workspacePageLayout->htmlModuleBlock(['id' => 'module-planning','data-title' => 'Planning des membres']));
             $this->workspacePageLayout->setNavBarSetting('home', 'home', false, 0);
-            $this->workspacePageLayout->setNavBarSetting('mel_metapage.calendar', 'calendar_month', true, 1);
+            $this->workspacePageLayout->setNavBarSetting('mel_workspace.planning', 'calendar_view_week', true, 1);
     
             if ($workspace->objects()->has(self::KEY_TASK)) $this->workspacePageLayout->setNavBarSetting('tasks', 'check_box', false, 6);
             
@@ -244,7 +250,7 @@ class mel_workspace extends bnum_plugin
     
             $this->include_css('workspace.css');
             self::IncludeWorkspaceModuleComponent();
-            $this->include_module_program('agenda.js', 'Parts');
+            $this->include_module_program('planning.js', 'Parts');
             $this->load_script_module('page.workspace.js', '/js/lib/program/actions/');
             $this->include_script('js/params.js');
     
@@ -405,7 +411,7 @@ class mel_workspace extends bnum_plugin
             $this->sendEncodedExit($retour, []);
         } catch (\Throwable $th) {
             $func = "create";
-            mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func] Un erreur est survenue lors de la création de l'espace de travail ''".$workspace->title."'' !");
+            mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func] Un erreur est survenue lors de la création de l'espace de travail ''".$workspace->title()."'' !");
             mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func]".$th->getTraceAsString());
             mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func]".$th->getMessage());
         }
@@ -1654,8 +1660,8 @@ class mel_workspace extends bnum_plugin
         }
         else {
             mel_helper::include_mail_body();
-            include_once 'lib/wsp_mail_body.php';
-            $email = 'bnum';//$this->get_worskpace_services($workspace)[self::EMAIL] ? (self::get_wsp_mail($workspace_id) ?? driver_mel::gi()->getUser()->email) : driver_mel::gi()->getUser()->email;
+            include_once 'lib/WspMailBody.php';
+            $email = 'bnum';
 
             $bodymail = new WspMailBody('mel_workspace.email');
 
@@ -1667,7 +1673,7 @@ class mel_workspace extends bnum_plugin
             $bodymail->wsp_last__action_date = DateTime::createFromFormat('Y-m-d H:i:s', $workspace->modified)->format('d/m/Y');
             $bodymail->logobnum = MailBody::load_image(__DIR__.'/skins/elastic/pictures/logobnum.png', 'png');
             $bodymail->bnum_base__url = 'http://mtes.fr/2';
-            $bodymail->url = 'https://mel.din.developpement-durable.gouv.fr/bureau/?_task=workspace&_action=workspace&_uid='.$workspace->uid;
+            $bodymail->url = 'https://bnum.din.gouv.fr/?_task=workspace&_action=workspace&_uid='.$workspace->uid;
 
             $div = ['<div style="display:flex">'];
             $shares = $workspace->shares;
@@ -1675,7 +1681,7 @@ class mel_workspace extends bnum_plugin
             $i = 0;
             foreach ($shares as $user) {
                 if ($i++ < 2) {
-                    $image = MailBody::load_image($this->rc->config->get('rocket_chat_url').'avatar/'.$user->user_uid);
+                    $image = MailBody::load_image($this->rc()->config->get('rocket_chat_url').'avatar/'.$user->user_uid);
 
                     if (MailBody::image_loaded()) $div[] = "<img src=\"$image\" style=\"width:36px;height:36px;border-radius:100%;margin-left:-15px;border: solid thick white;\" />";
                     else $div[] = "<div style=\"text-align: center;line-height: 25px;display:inline-block;width:36px;height:36px;border-radius:100%;background-color:#7DD0C2;margin-left:-15px;border: solid thick white;\"><span>".substr(driver_mel::gi()->getUser($user->user_uid)->name, 0, 2)."</span></div>";
@@ -1699,9 +1705,7 @@ class mel_workspace extends bnum_plugin
             $subject = $bodymail->subject();
             $message = $bodymail->body();
 
-            $is_html = true;
-            $sent = \LibMelanie\Mail\Mail::Send($email, driver_mel::gi()->getUser($userid)->email, $subject, $body);
-            //mel_helper::send_mail($subject, $message, $email, ['email' => driver_mel::gi()->getUser($userid)->email, 'name' => driver_mel::gi()->getUser($userid)->name], $is_html);
+            $sent = \LibMelanie\Mail\Mail::Send($email, driver_mel::gi()->getUser($userid)->email, $subject, $message);
         }
     }
         #region private/register_actions

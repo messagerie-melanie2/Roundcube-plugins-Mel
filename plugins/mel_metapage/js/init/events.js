@@ -81,6 +81,37 @@ if (rcmail && window.mel_metapage) {
     },
   );
 
+  rcmail.addEventListener('ui.mailtomenu.click', async (obj) => {
+    const { tag, mailto } = obj;
+    if (tag === 'gotoaddressbook') {
+      const manager = (await module_helper_mel.load_mel_object()).Empty();
+      manager.http_internal_get({
+        task: 'plugin.annuaire',
+        action: 'plugin.is_in_annuaire',
+        params: {
+          _query: mailto,
+        },
+        on_success: (data) => {
+          if (data) {
+            PageManager.SwitchFrame('addressbook', {
+              args: {
+                _query: mailto,
+                _open: true,
+                _action: 'plugin.annuaire',
+                _source: 'amande',
+              },
+            });
+          } else {
+            rcmail.display_message(
+              manager.gettext('noinaddressbook', 'mel_metapage'),
+              'error',
+            );
+          }
+        },
+      });
+    }
+  });
+
   rcmail.addEventListener(
     mel_metapage.EventListeners.calendar_updated.before,
     () => {
@@ -401,7 +432,7 @@ if (rcmail && window.mel_metapage) {
         }
 
         let avatar = top.document.querySelector('#user-picture');
-        avatar.outerHTML = `<bnum-avatar id="user-picture"></bnum-avatar>`;
+        avatar.outerHTML = '<bnum-avatar id="user-picture"></bnum-avatar>';
         avatar = null;
       }
 
@@ -2274,30 +2305,31 @@ $(document).ready(() => {
       //Vérification si on intercetpe le lien ou non
       const intercept = $target.data('spied');
 
-      if (
-        intercept !== undefined &&
-        intercept !== null &&
-        (intercept == 'false' || intercept === false)
-      )
-        return;
-      else if ($target.attr('href').includes('mailto:'))
-        return intercept_mailto(event);
-      else if (
-        $target.attr('onclick') !== undefined &&
-        !$target.attr('onclick').includes('event.click')
-      )
-        return;
-      else if (
-        !!Enumerable &&
-        !!$target.parent()[0] &&
-        Enumerable.from($target.parent()[0].classList).any((x) =>
-          x.includes('listitem'),
+      if ($target.attr('data-force') !== '1') {
+        if (
+          intercept !== undefined &&
+          intercept !== null &&
+          (intercept == 'false' || intercept === false)
         )
-      )
-        return;
-      else if ($target.parent().parent().parent().attr('id') === 'taskmenu')
-        return;
-      //else if ($target.attr('target') === '_blank') return;
+          return;
+        else if ($target.attr('href').includes('mailto:'))
+          return intercept_mailto(event);
+        else if (
+          $target.attr('onclick') !== undefined &&
+          !$target.attr('onclick').includes('event.click')
+        )
+          return;
+        else if (
+          !!Enumerable &&
+          !!$target.parent()[0] &&
+          Enumerable.from($target.parent()[0].classList).any((x) =>
+            x.includes('listitem'),
+          )
+        )
+          return;
+        else if ($target.parent().parent().parent().attr('id') === 'taskmenu')
+          return;
+      }
 
       //On ferme la modal
       $('#globalModal').modal('hide');
@@ -2321,7 +2353,6 @@ $(document).ready(() => {
         rcmail.env.urls_spies = spies;
         rcmail.env.enumerated_url_spies = true;
       }
-
 
       if (url !== undefined && url !== null) {
         //Initialisation
@@ -2487,7 +2518,7 @@ $(document).ready(() => {
                   }
                 }
               }
-              
+
               let open_modal = true;
 
               if (!url.includes('/?_task=') && !/^data:/i.test(url)) {
@@ -2520,13 +2551,12 @@ $(document).ready(() => {
               }
 
               if (!open_modal) {
-                
-                let abort = {signal:false}
-                rcmail.triggerEvent('a.clicked', {url, abort, e: event});
-                
+                let abort = { signal: false };
+                rcmail.triggerEvent('a.clicked', { url, abort, e: event });
+
                 if (abort.signal) return;
               }
-              
+
               break;
           }
         } while (reloop);
@@ -2608,6 +2638,7 @@ function sendMessageToAriane(data) {
     'https://ariane.preprod.m2.e2.rie.gouv.fr',
     'https://ariane.din.developpement-durable.gouv.fr',
     'https://mel.din.developpement-durable.gouv.fr',
+    'https://bnum.din.gouv.fr',
     'https://rcube.preprod.m2.e2.rie.gouv.fr',
   ];
 

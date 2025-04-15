@@ -1,6 +1,3 @@
-// import { FrameManager } from '../lib/classes/frame_manager';
-// import { WrapperObject } from '../lib/mel_object';
-
 rcmail.addEventListener('init', async () => {
   if (
     window !== top ||

@@ -410,8 +410,8 @@ $labels['download_application'] = 'Télécharger l\'application';
 $labels['double_authentication_notification'] = 'Configurez l\'authentification à deux facteurs pour sécuriser votre accès au Bnum';
 $labels['introduction_text'] = 'Dans %%date%% jours, un renforcement de la sécurité de votre compte deviendra obligatoire pour accéder au Bnum. Configurez l\'authentification à deux facteurs pour sécuriser votre accès au Bnum.';
 $labels['introduction_deadline_passed_text'] = 'Votre accès au Bnum depuis Internet n\'est plus possible, car vous n\'avez pas effectué les actions nécessaires avant la date limite. Pour rétablir votre accès depuis Internet : \nConfigurez votre authentification à deux facteurs (2FA), ou désactivez définitivement l\'accès depuis Internet dans vos paramètres.';
-$labels['secondary_email_text'] = 'Pour pouvoir récupérer votre code au cas où vous perdez votre téléphone par exemple, veuillez entrer une adresse e-mail de récupération :';
-$labels['different_email'] = 'L\'email de récupération doit être distinct de l\'email professionnel.';
+$labels['secondary_email_text'] = 'Pour pouvoir récupérer votre code au cas de perte de votre téléphone (par exemple)   Veuillez saisir une adresse e-mail de récupération :';
+$labels['different_email'] = 'L\'email de récupération doit être distinct de votre email professionnel.';
 $labels['verification_email_text'] = 'Saisissez le code de vérification reçu par mail';
 $labels['verification_application_text'] = 'Rentrer le code de validation affiché sur l’application';
 $labels['application_text'] = 'Télécharger une application de l\'authentification à deux facteurs comme <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=fr&gl=US" target="_blank">Google Authenticator</a> ou <a href="https://play.google.com/store/apps/details?id=org.fedorahosted.freeotp&hl=fr&gl=US" target="_blank">FreeOTP Authenticator</a>.';
@@ -502,3 +502,13 @@ $labels['login_da'] = "Si vous êtes sur internet et n'avez pas activé l'authen
 
 $labels['compose-mail'] = 'Composer un email';
 $labels['note-delete-warning'] = 'Attention ! Vous allez supprimer votre note, si vous êtes sûr, appuyez sur "ok".';
+$labels['search_in_addressbook'] = 'Rechercher dans l\'annuaire';
+$labels['start_search'] = 'Lancer la recherche';
+$labels['erase_text'] = 'Effacer la saisie';
+$labels['add_users_not_added'] = 'Certains utilisateurs n\'ont pas encore été ajoutés à la liste des participants, les ajouter ?';
+
+$labels['return_to_creation_window'] = 'Retour à la fenêtre de création (email, espaces de travail, etc...)';
+$labels['return_to_creation_modal'] = 'Retour à la modale de création';
+$labels['create_workspace_title'] = 'Création d\'un espace de travail';
+$labels['gotoaddressbook'] = 'Afficher dans l\'annuaire';
+$labels['noinaddressbook'] = 'Le contact n\'est pas dans l\'annuaire';

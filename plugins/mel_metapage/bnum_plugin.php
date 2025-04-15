@@ -64,8 +64,8 @@ abstract class bnum_plugin extends rcube_plugin
         $this->include_script_from_plugin($plugin, "$path/$name/scriptType:module", 'head');
     }
 
-    public function include_module($name, $path = 'js/lib') {
-        $this->include_script_from_plugin($this->ID, "$path/$name/scriptType:module", 'head');
+    public function include_module($name, $path = 'js/lib', $position = 'head') {
+        $this->include_script_from_plugin($this->ID, "$path/$name/scriptType:module", $position);
     }
 
     public function include_module_program($name, $path = null ) {
@@ -125,12 +125,13 @@ abstract class bnum_plugin extends rcube_plugin
      * The callback will be executed upon a request like /?_task=mail&_action=plugin.myaction
      *
      * @param string $action   Action name (should be unique)
-     * @param mixed  $callback Callback function as string
+     * @param callback  $callback Callback function as string
      *                         or array with object reference and method name
+     * @param ?string $current_task (optionnel) Tâche lié à l'action (par défaut, celle en cours)
      */
-    protected function force_register_action($action, $callback)
+    protected function force_register_action($action, $callback, $current_task = null)
     {
-        $this->api->register_action($action, $this->ID, $callback, $this->get_current_task());
+        $this->api->register_action($action, $this->ID, $callback, $current_task ?? $this->get_current_task());
     }
 
     protected function register_actions($array) {
@@ -295,8 +296,16 @@ class WebComponnents {
         $this->_include_component('searchbar.js');
     }
 
+    /**
+     * @deprecated
+     */
     public function MelButton() {
         $this->_include_component('HTMLMelButton.js');
+    }
+
+
+    public function BnumButton() {
+        $this->_include_component('HTMLBnumButton.js', 'js/lib/html/JsHtml/CustomAttributes/button');
     }
 
     public function ____METHODS____($what, ...$args) {

@@ -99,6 +99,8 @@ class mel_wekan extends bnum_plugin
         $this->rc->output->set_env("wekan_storage_end", $this->rc->config->get("wekan_storage_end"));
         $this->ignore_footer();
 
+        $this->include_module('workspace_additions.js', 'js/workspace');
+
         $this->rc->output->set_pagetitle("Kanban");
         $this->rc->output->send('mel_wekan.wekan');
     }
@@ -491,7 +493,7 @@ class mel_wekan extends bnum_plugin
                     case 'custom_name':
                         if ($default_value[$index]['mode'] === 'custom_name') $title = $default_value[$index]['value'];
                     case 'create':
-                        $board_id = $this->create_workspace_wekan($workspace, $title ?? $workspace->title(), $workspace->isPublic() === false ? false: true, null, [
+                        $board_id = $this->create_workspace_wekan($workspace, $title ?? $workspace->title(), !!$workspace->isPublic(), null, [
                             $this->rc->gettext("wekan_todo", "mel_workspace"),
                             $this->rc->gettext("wekan_in_progress", "mel_workspace"),
                             $this->rc->gettext("wekan_do", "mel_workspace")
@@ -573,7 +575,7 @@ class mel_wekan extends bnum_plugin
 
     public function wsp_block($args) {
         if ($args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE) !== null) {
-            $args['plugin']->include_workspace_module('mel_wekan', 'workspace.js', 'js');
+            $args['plugin']->include_workspace_module('mel_wekan', 'workspace.js', 'js/workspace');
             $args['layout']->setNavBarSetting('wekan', 'view_kanban', false, 4);
         }
 

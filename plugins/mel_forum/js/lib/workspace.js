@@ -109,12 +109,14 @@ export class ModuleForum extends WorkspaceObject {
       // Réactiver l'élément déclencheur
       this.select(caller).removeClass('disabled').removeAttr('disabled');
       this.rcmail().hide_message(loading);
-
     });
 
     //Ajout du onclick sur la checkbox notification tchap
     $('#tchap-notification').change(() => {
-        this.save_params('tchap_notification', +$('#tchap-notification').prop('checked'));
+      this.save_params(
+        'tchap_notification',
+        +$('#tchap-notification').prop('checked'),
+      );
     });
 
     //Lorsque une donnée est reçu de la part de la frame enfante
@@ -158,7 +160,7 @@ export class ModuleForum extends WorkspaceObject {
             jquery: false,
           }).contentWindow.location.href.includes(this.workspace.uid))
       ) {
-        return { _workspace_uid: this.workspace.uid };
+        return { _workspace_uid: this.workspace.uid, askedTask: args.task };
       }
     }, 'forum');
   }

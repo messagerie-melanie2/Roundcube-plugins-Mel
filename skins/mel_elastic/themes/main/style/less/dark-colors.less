@@ -28,6 +28,12 @@ html.dark-mode-custom:root {
   --box-information-text-color: var(--main-text-color);
   --invitebox-label-text-color: var(--box-information-text-color);
 
+  --mv2-event-background-color: var(--bureau-card-content-background-color);
+  --mv2-event-text-color: var(--bureau-card-text-color);
+
+  --mv2-event-hover-background-color: var(--hover-background-color);
+  --mv2-event-hover-text-color: var(--default-text-color);
+
   //Border colors
   --main-border-color: var(--default-text-color);
   --secondary-border-color: #4d6066;
@@ -80,10 +86,13 @@ html.dark-mode-custom:root {
   --nav-item-hover-border-bottom: solid thin var(--main-border-color);
 
   //Buttons
+  --mel-priority-button-text-color: var(--mel-button-text-color);
+
   --workspace-favorite-button-text-color: var(--input-button-text-color);
   --workspace-favorite-button-pressed-text-color: var(--main-bckg-color);
   --workspace-favorite-button-hover-text-color: var(
-    --workspace-favorite-button-pressed-text-colorBourgoin-Jallieu, 38300
+    --workspace-favorite-button-pressed-text-colorBourgoin-Jallieu,
+    38300
   );
 
   --wsp-nav-button-invisible-background-color: var(--invisible);
@@ -95,7 +104,9 @@ html.dark-mode-custom:root {
   --wsp-nav-button-border-color-invisible-active: var(
     --wsp-nav-button-invisible-text-color
   );
-  --wsp-list-hover-background-color: var(--bureau-card-content-hover-background-color);
+  --wsp-list-hover-background-color: var(
+    --bureau-card-content-hover-background-color
+  );
 
   --mel-button-background-color: var(--main-bckg-color);
   --mel-button-hover-background-color: var(--hover-background-color);
@@ -399,11 +410,33 @@ html.dark-mode-custom:root {
   --forum-tag-background-color: var(--main-bckg-color);
   --forum-list-hover-background-color: #161d24;
   --forum-list-border-color: transparent;
+
+  //Dropdown
+  //Dropdown alternate
+  --dropdown-color--alternate: var(--main-text-color);
+  --dropdown-background-color--alternate--hover: #192129;
+  --dropdown-color--alternate--hover: var(--main-text-color);
+  --dropdown-background-color--alternate--clicked: #161d24;
+  --dropdown-color--alternate--clicked: var(--dropdown-color--alternate--hover);
 }
 
 html.dark-mode,
 html.dark-mode-custom {
   input[type='time']::-webkit-calendar-picker-indicator {
     color-scheme: dark;
+  }
+
+  .melv2-event {
+    --mv2-item-background-color: var(--mv2-event-background-color);
+    --mv2-item-text-color: var(--mv2-event-text-color);
+
+    &:hover {
+      --mv2-item-background-color: var(--mv2-event-hover-background-color);
+      --mv2-item-text-color: var(--mv2-event-hover-text-color);
+
+      .melv2-event-separator {
+        background-color: var(--mv2-event-hover-text-color);
+      }
+    }
   }
 }

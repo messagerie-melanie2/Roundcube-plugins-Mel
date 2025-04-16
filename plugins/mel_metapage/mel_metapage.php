@@ -177,7 +177,7 @@ class mel_metapage extends bnum_plugin
                 ]);
                 return;
             } else if ($haveMaintenance === 'true') {
-                $this->add_hook("send_page", array($this, "maintenance"));
+                $this->add_hook(class_exists('mel_elastic') ? 'before_send_page' :  'send_page', array($this, "maintenance"));
                 return;
             }
         }
@@ -194,7 +194,7 @@ class mel_metapage extends bnum_plugin
         $this->add_hook('preferences_save',     array($this, 'prefs_save'));
         $this->add_hook('folder_update',     array($this, 'folder_update'));
         $this->add_hook('rocket.chat.sectionlist',     array($this, 'rc_section_list'));
-        $this->add_hook("send_page", array($this, "appendTo"));
+        $this->add_hook(class_exists('mel_elastic') ? 'before_send_page' :  'send_page', array($this, "appendTo"));
         $this->add_hook("message_send_error", [$this, 'message_send_error']);
         $this->add_hook("message_draftsaved", [$this, 'message_draftsaved']);
         $this->add_hook("message_part_structure", [$this, 'hook_message_part_structure']);
@@ -569,7 +569,7 @@ class mel_metapage extends bnum_plugin
                 }
             }
 
-            $this->add_hook("send_page", array($this, "generate_html")); //$this->rc->output->add_header($this->rc->output->parse("mel_metapage.barup", false, false));
+            $this->add_hook(class_exists('mel_elastic') ? 'before_send_page' :  'send_page', array($this, "generate_html")); //$this->rc->output->add_header($this->rc->output->parse("mel_metapage.barup", false, false));
         } else if (
             $this->rc->task == 'logout'
             || $this->rc->task == 'login'
@@ -604,7 +604,7 @@ class mel_metapage extends bnum_plugin
         }
 
         if ($this->rc->task === "calendar" || ($this->rc->task === "mel_metapage" && $this->rc->action === "dialog-ui")) {
-            $this->add_hook("send_page", array($this, "parasite_calendar"));
+            $this->add_hook(class_exists('mel_elastic') ? 'before_send_page' :  'send_page', array($this, "parasite_calendar"));
         }
 
         if ($this->rc->task === "settings" && $this->rc->action === "plugin.mel_suggestion_box") {
@@ -3044,7 +3044,6 @@ class mel_metapage extends bnum_plugin
         }
 
         $this->set_plugin_env_exist();
-        $this->include_web_component()->Avatar();
 
         $this->rc->output->set_env("frames.multi_frame_enabled", $this->get_config('multi_frame_enabled', false));
         $this->rc->output->set_env("frames.max_multi_frame", $this->get_config('max_multi_frame', 3));

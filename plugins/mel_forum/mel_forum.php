@@ -128,7 +128,6 @@ class mel_forum extends bnum_plugin
     public function index()
     {
         $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
-        $this->include_web_component()->Avatar();
         $this->load_script_module('forum');
         $this->_show_posts();
         $this->rc()->output->set_env('workspace_uid', $workspace_uid);
@@ -442,8 +441,6 @@ class mel_forum extends bnum_plugin
             $this->rc()->output->set_env('post', $post_data);
             $this->rc()->output->set_env('is_editing', $is_editing);
             $this->rc()->output->set_env('post', $post_data);
-            $this->include_web_component()->Base();
-            $this->include_web_component()->BnumButton();
 
             // Envoyer le template approprié
             $this->rc()->output->send('mel_forum.create-post');
@@ -1977,7 +1974,6 @@ class mel_forum extends bnum_plugin
     {
         $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
         if (driver_mel::gi()->getUser()->isWorkspaceMember($workspace_uid)) {
-            $this->include_web_component()->Avatar();
             $this->load_script_module('front_page_post');
             $this->rc()->output->set_env('_workspace_uid', $workspace_uid);
             $this->rc()->output->set_env('posts_data', $this->_post_object_to_JSON(null, 0, true));
@@ -2183,7 +2179,6 @@ class mel_forum extends bnum_plugin
     {
         $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
         if (driver_mel::gi()->getUser()->isWorkspaceMember($workspace_uid)) {
-            $this->include_web_component()->Avatar();
             $this->load_script_module('new_posts');
             $this->_show_new_posts();
             $this->rc()->output->set_env('workspace_uid', $workspace_uid);

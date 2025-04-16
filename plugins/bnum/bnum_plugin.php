@@ -22,6 +22,14 @@ abstract class bnum_plugin extends rcube_plugin
      */
     private static $module_loaded = false;
 
+    private $script_manager;
+
+    public function __construct($api)
+    {
+        parent::__construct($api);
+        $this->script_manager = new ScriptManager();
+    }
+
     /**
      * Méthode abstraite d'initialisation.
      * Doit être implémentée par les classes dérivées.
@@ -51,14 +59,17 @@ abstract class bnum_plugin extends rcube_plugin
     protected function load_script_module_from_plugin($plugin, $name = self::BASE_MODULE_NAME, $path = self::BASE_MODULE_PATH, $save_in_memory = false, $where = 'docready') {
         $this->setup_module();
 
-        // Prépare les arguments pour le script JavaScript.
-        $args = "'$plugin', '$name', '$path', $save_in_memory";
-        
-        if ($this->api->output !== null) {
-            try {
-                $this->api->output->add_script("runModule($args);", $where);
-            } catch (\Throwable $th) {
-                return null;
+        if (!$this->script_manager->exist($name, $plugin, $path)) {
+            $this->script_manager->add($name, $plugin, $path);
+            // Prépare les arguments pour le script JavaScript.
+            $args = "'$plugin', '$name', '$path', $save_in_memory";
+            
+            if ($this->api->output !== null) {
+                try {
+                    $this->api->output->add_script("runModule($args);", $where);
+                } catch (\Throwable $th) {
+                    return null;
+                }
             }
         }
     }
@@ -360,10 +371,13 @@ abstract class bnum_plugin extends rcube_plugin
     /**
      * Inclut un composant Web.
      *
-     * @return WebComponnents
+     * @return ?WebComponnents
      */
-    protected function include_web_component() {
-        return WebComponnents::Instance();
+    protected function include_web_component() : ?WebComponnents {
+        include_once __DIR__.'../mel_elastic/program/webcomponents.php';
+     
+        if (class_exists('WebComponnents')) return WebComponnents::Instance();
+        else return null;
     } 
 
     /**
@@ -432,10 +446,14 @@ abstract class bnum_plugin extends rcube_plugin
      */
     public function include_script_from_plugin($plugin, $fn, $pos = 'head_bottom')
     {
-        $ID = rcmail::get_instance()->plugins->get_plugin($plugin)->ID;
-        if (is_object($this->api->output) && $this->api->output->type == 'html') {
-            $src = $this->resource_url_from_plugin($fn, "plugins/$ID");
-            $this->rc()->output->include_script($src, $pos, false);
+        if (!$this->script_manager->exist($fn, $plugin)) {
+            $this->script_manager->add($fn, $plugin);
+        
+            $ID = rcmail::get_instance()->plugins->get_plugin($plugin)->ID;
+            if (is_object($this->api->output) && $this->api->output->type == 'html') {
+                $src = $this->resource_url_from_plugin($fn, "plugins/$ID");
+                $this->rc()->output->include_script($src, $pos, false);
+            }
         }
     }
 
@@ -476,125 +494,73 @@ abstract class bnum_plugin extends rcube_plugin
 }
 
 /**
- * Classe WebComponnents
- * Fournit des méthodes pour inclure des composants Web spécifiques.
+ * Classe ScriptManager
+ * Gère les scripts JavaScript pour éviter les doublons et faciliter leur inclusion.
  */
-class WebComponnents {
+class ScriptManager {
     /**
-     * Instance du plugin mel_metapage.
+     * Liste des scripts ajoutés.
      * 
-     * @var rcube_plugin
+     * @var array
      */
-    private $plugin;
+    private $scripts = [];
 
     /**
-     * Instance unique de la classe WebComponnents.
-     * 
-     * @var WebComponnents
+     * Constructeur de la classe ScriptManager.
      */
-    private static $_instance;
+    public function __construct() {}
 
     /**
-     * Constructeur privé pour le singleton.
-     */
-    private function __construct() {
-        $this->plugin = rcmail::get_instance()->plugins->get_plugin('mel_metapage');
-    }
-
-    /**
-     * Inclut un composant Web.
+     * Génère une clé unique pour identifier un script.
      *
-     * @param string $name Nom du composant.
-     * @param string $path Chemin du composant.
-     * @param string $plugin Nom du plugin.
+     * @param string $script Nom du script.
+     * @param string|null $plugin Nom du plugin associé (optionnel).
+     * @param string|null $path Chemin du script (optionnel).
+     * @return string Clé unique générée.
      */
-    private function _include_component($name, $path = (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes') , $plugin = 'mel_metapage') {
-        return $this->plugin->____METHODS____('include_component', $name, $path, $plugin);
-    }
+    private function _toKey(string $script, ?string $plugin = null, ?string $path = null) : string {
+        $key = $script;
 
-    /**
-     * Inclut le composant de base.
-     */
-    public function Base() {
-        $this->_include_component('js_html_base_web_elements.js');
-    }
-
-    /**
-     * Inclut le composant de tabulation.
-     */
-    public function Tabs() {
-        $this->_include_component('tab_web_element.js');
-    }
-
-    /**
-     * Inclut le composant de bouton pressé.
-     */
-    public function PressedButton() {
-        $this->_include_component('pressed_button_web_element.js');
-    }
-
-    /**
-     * Inclut le conteneur de défilement infini.
-     */
-    public function InfiniteScrollContainer() {
-        $this->_include_component('infinite_scroll_container.js');
-    }
-
-    /**
-     * Inclut le composant d'avatar.
-     */
-    public function Avatar() {
-        $this->_include_component('avatar.js');
-    }
-
-    /**
-     * Inclut la barre de recherche.
-     */
-    public function SearchBar() {
-        $this->_include_component('searchbar.js');
-    }
-
-    /**
-     * @deprecated
-     * Inclut le bouton Mel.
-     */
-    public function MelButton() {
-        $this->_include_component('HTMLMelButton.js');
-    }
-
-    /**
-     * Inclut le bouton Bnum.
-     */
-    public function BnumButton() {
-        $this->_include_component('HTMLBnumButton.js', 'js/lib/html/JsHtml/CustomAttributes/button');
-    }
-
-    /**
-     * Méthode générique pour inclure des composants.
-     *
-     * @param string $what Type de composant à inclure.
-     */
-    public function ____METHODS____($what, ...$args) {
-        switch ($what) {
-            case '_include_component':
-                $name = $args[0];
-                $path = $args[1] ?? bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes/';
-                $plugin = $args[2] ?? 'mel_metapage';
-                return $this->_include_component($name, $path, $plugin);
-            
-            default:
-                break;
+        if ($plugin !== null) {
+            $key .= "[$plugin]";
         }
+
+        if ($path !== null) {
+            $key .= "[$path]";
+        }
+
+        return $key;
     }
 
     /**
-     * Retourne l'instance unique de la classe WebComponnents.
+     * Ajoute un script à la liste des scripts gérés.
      *
-     * @return WebComponnents
+     * @param string $script Nom du script.
+     * @param string|null $plugin Nom du plugin associé (optionnel).
+     * @param string|null $path Chemin du script (optionnel).
+     * @return bool Retourne true si le script a été ajouté, false s'il existait déjà.
      */
-    public static function Instance() {
-        if (!isset(self::$_instance)) self::$_instance = new WebComponnents();
+    public function add(string $script, ?string $plugin = null, ?string $path = null) : bool {
+        $returnValue = false;
+        $key = $this->_toKey($script, $plugin, $path);
 
-        return self::$_instance;
+        if (!in_array($key, $this->scripts)) {
+            $this->scripts[] = $key;
+            $returnValue = true;
+        }
+
+        return $returnValue;
+    }
+
+    /**
+     * Vérifie si un script existe déjà dans la liste des scripts gérés.
+     *
+     * @param string $script Nom du script.
+     * @param string|null $plugin Nom du plugin associé (optionnel).
+     * @param string|null $path Chemin du script (optionnel).
+     * @return bool Retourne true si le script existe, false sinon.
+     */
+    public function exist(string $script, ?string $plugin = null, ?string $path = null) : bool {
+        return in_array($this->_toKey($script, $plugin, $path), $this->scripts);
     }
 }

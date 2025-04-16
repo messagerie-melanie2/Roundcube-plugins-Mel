@@ -1,1 +1,3 @@
 <?php
+// Etat par défaut du scope de la recherche, base, sub ou all.
+$config['search_scope'] = 'base';

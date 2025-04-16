@@ -1,280 +1,285 @@
 //compress:false
-@import "main.less";
+@import 'main.less';
 
-._layout-border()
-{
-    border-right-color: var(--layout-border);
-    border-right-style: solid;
-    border-right-width: thin;
+._layout-border() {
+  border-right-color: var(--layout-border);
+  border-right-style: solid;
+  border-right-width: thin;
 }
 
-._dwp-icon(){
-    font-family: DWP;
-    font-weight: normal;
+._dwp-icon() {
+  font-family: DWP;
+  font-weight: normal;
 }
 
-.task-mail{
-    #layout-sidebar{
-        ._layout-border();
-        background-color:var(--mail-layout-sidebar-background-color)!important;
+.task-mail {
+  #layout-sidebar {
+    ._layout-border();
+    background-color: var(--mail-layout-sidebar-background-color) !important;
 
-        &>.header {
-            background-color:var(--mail-header-layout-list-background-color)!important;
+    & > .header {
+      background-color: var(
+        --mail-header-layout-list-background-color
+      ) !important;
 
-            html@{layout-large} &{
-                display: none;
-            }
+      html@{layout-large} & {
+        display: none;
+      }
+    }
+  }
+
+  #layout-content {
+    & > .header {
+      background-color: var(
+        --mail-header-layout-content-background-color
+      ) !important;
+
+      #toolbar-menu {
+        li {
+          a {
+            color: var(--secondary-text-color);
+          }
+
+          .dropbutton {
+            background-color: var(--tierciary-bckg-color);
+          }
         }
+      }
+    }
+  }
+
+  #layout-list {
+    #searchmenu {
+      flex: 2;
+      justify-content: space-around;
     }
 
-    #layout-content {
-        &>.header
-        {
-            background-color:var(--mail-header-layout-content-background-color)!important;
+    ._layout-border();
+    // background-color:var(--tierciary-bckg-color)!important;
 
-            #toolbar-menu{
-                li {
-                    a {
-                        color: var(--secondary-text-color);
-                    }
-
-                    .dropbutton{
-                        background-color: var(--tierciary-bckg-color);
-                    }
-                }
-            }
-        }
+    #messagelist-header {
+      justify-content: left;
     }
 
-    #layout-list
-    {
-        ._layout-border();
-        // background-color:var(--tierciary-bckg-color)!important;
+    &.initial,
+    &.full {
+      max-width: 100%;
+      width: 100% !important;
+      flex: 0 1 auto !important;
+    }
+  }
 
-        #messagelist-header {
-            justify-content: left;
+  &.action-compose {
+    #layout {
+      #layout-content > .header {
+        a.button,
+        span {
+          color: var(--layout-content-header-text-color);
         }
+      }
+    }
+  }
 
-        &.initial,
-        &.full {
-            max-width: 100%;
-            width:100%!important;
-            flex: 0 1 auto!important;
-        }
+  &.action-preview {
+    .ui.alert.boxinformation {
+      color: var(--box-information-text-color);
+      background-color: var(--box-information-background-color);
+    }
+    .calendar-agenda-preview .event-row.current {
+      color: var(--box-information-text-color);
+    }
+    .invitebox {
+      td.label,
+      .rsvp-status.hint {
+        color: var(--invitebox-label-text-color);
+      }
+    }
+  }
+
+  #messagelist-content {
+    background-color: var(--layout-content-background-color) !important;
+  }
+
+  .quota-widget {
+    color: var(--secondary-text-color);
+    flex-wrap: wrap;
+    padding: 0.5rem 3.7rem;
+    max-width: none;
+
+    &::before {
+      content: '\e94f';
+      font-family: DWP;
     }
 
-    &.action-compose {
-      #layout { 
-        #layout-content > .header {
-          a.button,
+    .count {
+      color: var(--secondary-text-color);
+    }
+
+    .bar {
+      background-color: var(--quota-bar-bckg-color);
+      border-color: var(--quota-bar-border-color);
+      margin-left: 0;
+    }
+
+    .value {
+      background-color: var(--quota-bar-color);
+    }
+  }
+
+  html body& {
+    &.action-show {
+      #layout-content {
+        overflow: auto;
+      }
+    }
+  }
+
+  .mail-floating-button {
+    z-index: 101;
+    position: absolute;
+    bottom: 18px;
+    right: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 15px;
+  }
+}
+
+/*Liste des messages*/
+table.messagelist {
+  tr {
+    &.unread {
+      background-color: var(--alternate-bckg-color);
+
+      & > td {
+        &:first-child {
+          border-left: 2px solid var(--message-list-unread-border-left) !important;
+        }
+      }
+
+      td {
+        background-color: var(--invisible);
+
+        &.subject {
           span {
-            color: var(--layout-content-header-text-color);
+            &.date {
+              font-weight: bold;
+              color: var(--main-text-color);
+            }
+
+            &.fromto {
+              font-weight: bold;
+              color: var(--main-text-color);
+            }
+
+            &.adr {
+              font-weight: bold;
+            }
+
+            &.msgicon {
+              &::before {
+                content: '\e94d' !important;
+                color: var(--main-text-color) !important;
+              }
+
+              &.status {
+                &.unread {
+                  &.selected {
+                    &::before {
+                      color: var(--secondary-text-color);
+                    }
+                  }
+                }
+              }
+
+              &.replied {
+                &::before {
+                  content: '\e96a' !important;
+                }
+              }
+
+              &.forwarded {
+                &::before {
+                  content: '\e96a' !important;
+                  transform: scaleX(-1);
+                }
+
+                &.replied {
+                  &::before {
+                    content: '\e96a' !important;
+                    transform: scaleX(1);
+                  }
+                }
+              }
+            }
+          }
+
+          a {
+            font-weight: bold;
+            color: var(--main-text-color);
+          }
+        }
+      }
+
+      &.selected {
+        td {
+          &.subject {
+            span {
+              &.fromto {
+                color: var(--secondary-text-color);
+              }
+            }
           }
         }
       }
     }
 
-    &.action-preview {
-        .ui.alert.boxinformation {
-            color: var(--box-information-text-color);
-            background-color: var(--box-information-background-color);
-        }
-        .calendar-agenda-preview .event-row.current {
-            color: var(--box-information-text-color);
-        }
-        .invitebox {
-            td.label,
-            .rsvp-status.hint {
-                color: var(--invitebox-label-text-color);
-            }
-        }
-    }
+    &.message {
+      td {
+        border-bottom: 1px solid var(--base-message-border-color);
+        border-color: var(--message-border-color);
+        padding-top: 0.4rem;
+        padding-bottom: 0.4rem;
+        cursor: pointer !important;
 
-    #messagelist-content{
-        background-color: var(--layout-content-background-color)!important;
-    }
-
-    .quota-widget {
-        color: var(--secondary-text-color);
-        flex-wrap: wrap;
-        padding: .5rem 3.7rem;
-        max-width: none;
-
-        &::before{
-            content: "\e94f";
-            font-family:DWP;
+        html.dark-mode & {
+          border-color: #2c373a;
         }
 
-        .count{
-            color: var(--secondary-text-color);
+        span {
+          cursor: pointer !important;
         }
 
-        .bar{
-            background-color: var(--quota-bar-bckg-color);
-            border-color: var(--quota-bar-border-color);
-            margin-left: 0;
+        &.labels {
+          html body & {
+            background-color: var(--invisible) !important;
+            border: none !important;
+            padding-top: 0px !important;
+          }
         }
 
-        .value{
-            background-color: var(--quota-bar-color);
-        }
-    }
+        &.subject {
+          span {
+            &.priority {
+              height: 0;
 
-    html body&{
-        &.action-show{
-            #layout-content{
-                overflow: auto;
-            }
-        }
-    }
-
-    .mail-floating-button {
-      z-index: 101;
-      position: absolute;
-      bottom: 18px;
-      right: 8px;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 4px 15px;
-    }
-}
-
-/*Liste des messages*/
-table.messagelist{
-    tr {
-        &.unread{
-          background-color: var(--alternate-bckg-color);
-
-            & > td {
-                &:first-child{
-                    border-left: 2px solid var(--message-list-unread-border-left) !important;
-                }
-            }
-
-            td {
-              background-color: var(--invisible);
-              
-                &.subject{
-                    span{
-                        &.date{
-                            font-weight: bold;
-                            color: var(--main-text-color);
-                        }
-
-                        &.fromto{
-                            font-weight: bold;
-                            color:var(--main-text-color);
-                        }
-
-                        &.adr {
-                          font-weight: bold;
-                        }
-                        
-                        &.msgicon{
-                            &::before{
-                                content:"\e94d"!important;
-                                color:var(--main-text-color)!important;
-                            }
-
-                            &.status
-                            {
-                                &.unread{
-                                    &.selected{
-                                        &::before{
-                                            color: var(--secondary-text-color);
-                                        }
-                                    }
-                                }
-                            }
-
-                            &.replied{
-                                &::before{
-                                    content:"\e96a"!important;
-                                }
-                            }
-
-                            &.forwarded {
-                                &::before{
-                                    content:"\e96a"!important;
-                                    transform: scaleX(-1);
-                                }
-
-                                &.replied{
-                                    &::before{
-                                        content:"\e96a"!important;
-                                        transform: scaleX(1);
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    a{
-                        font-weight: bold;
-                        color:var(--main-text-color);
-                    }
-                }
-            }
-
-            &.selected{
-                td{
-                    &.subject{
-                        span {
-                            &.fromto{
-                                color: var(--secondary-text-color);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        &.message{
-            td {
-                border-bottom: 1px solid var(--base-message-border-color);
-                border-color:var(--message-border-color);
-                padding-top: 0.4rem;
-                padding-bottom: 0.4rem;
-                cursor: pointer !important;
-
-                html.dark-mode &{
-                    border-color:#2c373a;
-                }
-
-                span{
-                    cursor: pointer !important;
-                }
-
-                &.labels{
-                    html body &{
-                        background-color: var(--invisible)!important;
-                        border:none!important;
-                        padding-top: 0px!important;
-                    }
-                }
-
-            &.subject {
               span {
-                &.priority {
-                  height: 0;
+                &.prio {
+                  display: block;
+                  font-size: 22px;
+                  margin-top: -31px;
+                  margin-left: -3px;
+                  pointer-events: none;
 
-                  span {
-                    &.prio{
-                        display: block;
-                        font-size: 22px;
-                        margin-top: -31px;
-                        margin-left: -3px;
-                        pointer-events: none;
+                  &::before {
+                    font-family: 'Material Symbols Outlined' !important;
+                    font-weight: normal;
+                    font-variation-settings: 'wght' 300;
+                  }
+                }
 
-                        &::before{
-                            font-family: 'Material Symbols Outlined' !important;
-                            font-weight: normal;
-                            font-variation-settings: 'wght' 300;
-                        }
-                    }
-
-                    each(@priorities, {
+                each(@priorities, {
                         @tmp: @value[CLASS];
                         &.@{tmp}{
                             &:extend(table.messagelist tr.message td.subject span.priority span.prio);
@@ -285,1078 +290,1099 @@ table.messagelist{
                             }
                         }
                     });
+              }
+            }
+          }
+        }
+      }
+      &:hover {
+        box-shadow: 0px 2px 2px var(--message-hover-shadow);
+        position: relative;
+
+        td {
+          &.subject {
+            span {
+              &.msgicon {
+                &.status {
+                  &::before {
+                    color: var(--main-text-color) !important;
+                  }
+
+                  &:hover {
+                    &::before {
+                      color: var(--mail-icon-hover-color) !important;
+                    }
+                  }
+
+                  &.unread {
+                    &:hover {
+                      &::before {
+                        color: var(--mail-unread-icon-hover-color) !important;
+                      }
+                    }
                   }
                 }
               }
             }
-            }
-            &:hover{
-                box-shadow: 0px 2px 2px var(--message-hover-shadow);
-                position: relative;
+          }
 
-                td{
-                    &.subject{
-                        span{
-                            &.msgicon{
-                                &.status{
-                                    &::before{
-                                        color: var(--main-text-color) !important;
-                                    }
-
-                                    &:hover{
-                                        &::before{
-                                            color: var(--mail-icon-hover-color)  !important;
-                                        }
-                                    }
-
-                                    &.unread{
-                                        &:hover{
-                                            &::before{
-                                                color: var(--mail-unread-icon-hover-color)  !important;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    &.flags{
-                        span{
-                            &.flagged{
-                                &:hover{
-                                    &::before{
-                                        color: var(--mail-unread-icon-hover-color)  !important;
-                                    }
-                                }
-                            }
-
-                            &.unflagged{
-                                &:hover{
-                                    &::before{
-                                        color: var(--mail-icon-hover-color)  !important;
-                                    }
-                                }
-                            }
-                        }
-                    }
+          &.flags {
+            span {
+              &.flagged {
+                &:hover {
+                  &::before {
+                    color: var(--mail-unread-icon-hover-color) !important;
+                  }
                 }
-            }
+              }
 
-            &.selected{
-                &:hover{
-                    box-shadow: 0px 2px 2px var(--message-hover-shadow);
-                    position: relative;
-    
-                    td{
-                        &.subject{
-                            span{
-                                &.msgicon{
-                                    &.status{
-                                        &::before{
-                                            color: var(--secondary-text-color) !important;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+              &.unflagged {
+                &:hover {
+                  &::before {
+                    color: var(--mail-icon-hover-color) !important;
+                  }
                 }
+              }
             }
+          }
         }
+      }
 
-        &.flagged{
-            td{
+      &.selected {
+        &:hover {
+          box-shadow: 0px 2px 2px var(--message-hover-shadow);
+          position: relative;
+
+          td {
+            &.subject {
+              span {
+                &.msgicon {
+                  &.status {
+                    &::before {
+                      color: var(--secondary-text-color) !important;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    &.flagged {
+      td {
+        color: var(--main-text-color);
+
+        &.subject {
+          span {
+            &.subject {
+              a {
                 color: var(--main-text-color);
-
-                &.subject{
-                    span{
-                        &.subject{
-                            a{
-                                color: var(--main-text-color);
-                            }
-                        }
-
-                        &.date{
-                            color: var(--main-text-color);
-                        }
-
-                        &.fromto{
-                            color: var(--mail-unread-icon-color);
-                        }
-                    }
-                }
+              }
             }
+
+            &.date {
+              color: var(--main-text-color);
+            }
+
+            &.fromto {
+              color: var(--mail-unread-icon-color);
+            }
+          }
+        }
+      }
+    }
+
+    &:hover {
+      span {
+        &.unflagged {
+          &::before {
+            content: '\e958' !important;
+            ._dwp-icon() !important;
+          }
+        }
+      }
+    }
+
+    &.selected {
+      background-color: var(--secondary-bckg-color);
+
+      td {
+        background-color: var(--secondary-bckg-color);
+      }
+    }
+
+    &.message {
+      &.bloqued {
+        td {
+          border-left: var(--danger-color) thick solid !important;
+          border-color: var(--danger-color);
+          border-style: solid !important;
+          border-width: thick !important;
+
+          &.subject {
+            border-right: none !important;
+          }
+
+          &.flags {
+            border-left: none !important;
+          }
         }
 
-        &:hover{
-            span{
-                &.unflagged{
-                    &::before{
-                        content: "\e958"!important;
-                        ._dwp-icon()!important;
-                    }
-                }
+        .msgicon {
+          &.status {
+            &::before {
+              content: '\e939' !important;
+              font-family: DWP !important;
+              color: var(--danger-color) !important;
             }
+
+            &.unread {
+              &::before {
+                content: '\e939' !important;
+                font-family: DWP !important;
+              }
+            }
+          }
+        }
+      }
+
+      &.suspect {
+        td {
+          border-left: var(--warning-color) thick solid !important;
+          border-color: var(--warning-color);
+          border-style: solid !important;
+          border-width: thick !important;
+
+          &.subject {
+            border-right: none !important;
+          }
+
+          &.flags {
+            border-left: none !important;
+          }
         }
 
-        &.selected{
-            background-color: var(--secondary-bckg-color);
-
-            td{
-                background-color: var(--secondary-bckg-color);
+        .msgicon {
+          &.status {
+            &::before {
+              content: '\e939' !important;
+              font-family: DWP !important;
             }
+
+            &.unread {
+              &::before {
+                content: '\e939' !important;
+                font-family: DWP !important;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  td {
+    &.subject {
+      span {
+        &.date {
+          color: var(--main-text-color);
         }
 
-        &.message{
-            &.bloqued{
-                td{
-                    border-left: var(--danger-color) thick solid !important;
-                    border-color: var(--danger-color);
-                    border-style: solid !important;
-                    border-width: thick !important;
-
-                    &.subject{
-                        border-right: none!important;
-                    }
-
-                    &.flags{
-                        border-left: none!important;
-                    }
-                }
-
-                .msgicon{
-                    &.status{
-                        &::before{
-                            content: '\e939'!important;
-                            font-family: DWP!important;
-                            color:var(--danger-color)!important;
-                        }
-
-                        &.unread{
-                            &::before{
-                                content: '\e939'!important;
-                                font-family: DWP!important;
-                            }
-                        }
-                    }
-                }
-            }
-
-            &.suspect{
-                td{
-                    border-left: var(--warning-color) thick solid !important;
-                    border-color: var(--warning-color);
-                    border-style: solid !important;
-                    border-width: thick !important;
-
-                    &.subject{
-                        border-right: none!important;
-                    }
-
-                    &.flags{
-                        border-left: none!important;
-                    }
-                }
-
-                .msgicon{
-                    &.status{
-                        &::before{
-                            content: '\e939'!important;
-                            font-family: DWP!important;
-                        }
-
-                        &.unread{
-                            &::before{
-                                content: '\e939'!important;
-                                font-family: DWP!important;
-                            }
-                        }
-                    }
-                }
-            }
+        &.priority {
+          color: var(--main-text-color);
         }
+
+        &.fromto {
+          color: var(--mail-unread-icon-color);
+          padding-left: 0 !important;
+        }
+
+        &.msgicon {
+          &.status {
+            &::before {
+              font-weight: bold;
+              color: var(--main-text-color);
+            }
+          }
+
+          &.replied {
+            &::before {
+              content: '\e92a' !important;
+            }
+
+            &.forwarded {
+              &::before {
+                transform: none;
+              }
+
+              &::after {
+                content: '\e92a' !important;
+                transform: scaleX(-1);
+                font-family: 'DWP' !important;
+                font-style: normal !important;
+                opacity: 1 !important;
+                color: var(--mail-unread-icon-hover-color) !important;
+              }
+            }
+          }
+
+          &.forwarded {
+            &::before {
+              content: '\e92a' !important;
+              transform: scaleX(-1);
+            }
+          }
+
+          &::before {
+            content: '\e94e' !important;
+            font-family: 'DWP' !important;
+            font-style: normal !important;
+            color: var(--mail-unread-icon-hover-color) !important;
+            margin-right: 13px !important;
+            font-size: 1rem !important;
+          }
+        }
+
+        &.subject {
+          padding-left: 2rem;
+          padding-right: 50px;
+        }
+      }
+
+      a {
+        html body div#layout-list & {
+          color: var(--main-text-color);
+        }
+      }
+    }
+
+    &.labels {
+      &::before {
+        font-family: 'DWP' !important;
+        content: '\e955';
+        margin-left: -3px;
+        margin-right: 12px;
+      }
+
+      span {
+        margin-right: 15px;
+        border-radius: 5px;
+        padding: 2px;
+      }
+    }
+
+    &.flags {
+      html@{touch} & {
+        position: initial;
+      }
+    }
+  }
+
+  span {
+    &.threads {
+      > div {
+        color: var(--main-text-color);
+      }
+    }
+
+    &.flagged {
+      &::before {
+        content: '\e957' !important;
+        ._dwp-icon() !important;
+      }
+    }
+
+    &.attachment {
+      span {
+        &::before {
+          content: '\e959' !important;
+          ._dwp-icon() !important;
+        }
+      }
+    }
+  }
+
+  .selected {
+    .subject,
+    .priority {
+      color: var(--secondary-text-color) !important;
     }
 
     td {
-        &.subject{
-            span {
-                &.date{
-                    color: var(--main-text-color);
-                }
-                
-                &.priority {
-                  color: var(--main-text-color);
-                }
-
-                &.fromto{
-                    color: var(--mail-unread-icon-color);
-                    padding-left:0!important;
-                }
-
-                &.msgicon{
-                    &.status{
-                        &::before{
-                            font-weight: bold;
-                            color:var(--main-text-color);
-                        }
-                    }
-
-                    &.replied{
-                        &::before{
-                            content:"\e92a"!important;
-                        }
-
-                        &.forwarded{
-                            &::before{
-                                transform: none;
-                            }
-
-                            &::after{
-                                content:"\e92a"!important;
-                                transform: scaleX(-1);
-                                font-family:"DWP"!important;
-                                font-style: normal!important;
-                                opacity: 1!important;
-                                color:var(--mail-unread-icon-hover-color)!important;
-                            }
-                        }
-                    }
-
-                    &.forwarded{
-                        &::before{
-                            content:"\e92a"!important;
-                            transform: scaleX(-1);
-                        }
-                    }
-
-                    &::before{
-                        content: "\e94e" !important;
-                        font-family:"DWP" !important;
-                        font-style: normal !important;
-                        color: var(--mail-unread-icon-hover-color) !important;
-                        margin-right: 13px !important;
-                        font-size: 1rem !important;
-                    }
-                }
-
-                &.subject{
-                    padding-left: 2rem;
-                    padding-right: 50px;
-                }
-            }
-
-            a{
-                html body div#layout-list &{
-                    color: var(--main-text-color);
-                }
-            }
-        }
-
-        &.labels{
-            &::before{
-                font-family: 'DWP' !important;
-                content: "\e955";
-                margin-left: -3px;
-                margin-right: 12px;
-            }
-
-            span {
-                margin-right: 15px;
-                border-radius: 5px;
-                padding: 2px;
-            }
-        }
-
-        &.flags{
-            html@{touch} &{
-                position: initial;
-            }
-        }
-    }
-
-    span{
-        &.threads{
-            > div{
-                color:var(--main-text-color);
-            }
-        }
-
-        &.flagged{
-            &::before{
-                content: "\e957"!important;
-                ._dwp-icon()!important;
-            }
-        }
-
-        &.attachment{
-            span{
-                &::before{
-                    content: "\e959"!important;
-                    ._dwp-icon()!important;
-                }
-            }
-        }
-    }
-
-    .selected {
-        .subject,
-        .priority{
-            color:var(--secondary-text-color)!important;
-        }
-
-        td{
-            &.subject{
-                span {
-                    &.msgicon{
-                        &::before, 
-                        &::after{
-                            color:var(--secondary-text-color)!important;
-                        }
-                    }
-
-                    &.date{
-                        color:var(--secondary-text-color)!important;
-                    }
-
-                    &.fromto{
-                        color:var(--secondary-text-color)!important;
-                        &::before{
-                            color:var(--secondary-text-color);
-                        }
-                    }
-                }
-
-                a{
-                    color:var(--secondary-text-color)!important;
-                }
-            }
-        }
-
+      &.subject {
         span {
-            &.threads{
-                > div{
-                    color:var(--secondary-text-color);
-                }
+          &.msgicon {
+            &::before,
+            &::after {
+              color: var(--secondary-text-color) !important;
             }
+          }
+
+          &.date {
+            color: var(--secondary-text-color) !important;
+          }
+
+          &.fromto {
+            color: var(--secondary-text-color) !important;
+            &::before {
+              color: var(--secondary-text-color);
+            }
+          }
         }
-    }
 
-    .contextRow {
-        &.context-source{
-            &.subject {
-                color:var(--secondary-text-color)!important;
-            }
-
-            td{
-                &.subject{
-                    color:var(--secondary-text-color)!important;
-
-                    span{
-                        &.date{
-                            color:var(--secondary-text-color)!important;
-                        }
-
-                        &.fromto{
-                            color:var(--secondary-text-color)!important;
-
-                            &::before{
-                                color:var(--secondary-text-color);
-                            }
-                        }
-
-                        &.msgicon{
-                            &::before,
-                            &::after{
-                                color:var(--secondary-text-color)!important;
-                            }
-                        }
-                    }
-
-                    a{
-                        color:var(--secondary-text-color)!important;
-                    }
-                }
-            }
-
-            span {
-                &.threads{
-                    > div{
-                        color:var(--secondary-text-color);
-                    }
-                }
-            }
+        a {
+          color: var(--secondary-text-color) !important;
         }
+      }
     }
 
-    .flags{
-        color: var(--main-text-color);
+    span {
+      &.threads {
+        > div {
+          color: var(--secondary-text-color);
+        }
+      }
     }
+  }
 
-    .unread{
-        &.selected{
+  .contextRow {
+    &.context-source {
+      &.subject {
+        color: var(--secondary-text-color) !important;
+      }
+
+      td {
+        &.subject {
+          color: var(--secondary-text-color) !important;
+
+          span {
+            &.date {
+              color: var(--secondary-text-color) !important;
+            }
+
+            &.fromto {
+              color: var(--secondary-text-color) !important;
+
+              &::before {
+                color: var(--secondary-text-color);
+              }
+            }
+
+            &.msgicon {
+              &::before,
+              &::after {
+                color: var(--secondary-text-color) !important;
+              }
+            }
+          }
+
+          a {
+            color: var(--secondary-text-color) !important;
+          }
+        }
+      }
+
+      span {
+        &.threads {
+          > div {
+            color: var(--secondary-text-color);
+          }
+        }
+      }
+    }
+  }
+
+  .flags {
+    color: var(--main-text-color);
+  }
+
+  .unread {
+    &.selected {
+      td {
+        &.subject {
+          span {
+            &.fromto,
+            &.date {
+              color: var(--secondary-text-color);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &:not(.withselection) {
+    tr {
+      &.unread {
+        & > td {
+          &.selection {
+            & + td {
+              border-left: 2px solid var(--message-list-unread-border-left) !important;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &:not(.threaded) {
+    tbody {
+      tr {
+        &:nth-child(2n) {
+          td {
+            background-color: var(--default-background-lighter);
+          }
+        }
+
+        &.unread {
+          &:nth-child(2n) {
             td {
-                &.subject{
-                    span{
-                        &.fromto,
-                        &.date{
-                            color: var(--secondary-text-color);
-                        }
-                    }
-                }
+              background-color: var(--default-background-lighter);
             }
-        }
-    }
+          }
 
-    &:not(.withselection) {
-        tr {
-            &.unread {
-                & > td {
-                    &.selection {
-                        & + td{
-                            border-left: 2px solid var(--message-list-unread-border-left) !important;
-                        }
-                    }
-                }
+          td {
+            background-color: var(--default-background);
+          }
+
+          &.selected {
+            td {
+              background-color: var(--secondary-bckg-color);
             }
+          }
         }
-    }
 
-    &:not(.threaded)
-    {
-        tbody{
-            tr{
-              &:nth-child(2n){
-                td {
-                    background-color: var(--default-background-lighter);
-                }
+        &.selected {
+          &:nth-child(2n) {
+            td {
+              background-color: var(--secondary-bckg-color);
             }
-
-            &.unread{
-                &:nth-child(2n){
-                    td {
-                        background-color: var(--default-background-lighter);
-                    }
-                }
-
-                td {
-                    background-color: var(--default-background);
-                }
-
-                    &.selected{
-                        td{
-                            background-color: var(--secondary-bckg-color);
-                        }
-                    }
-                }
-
-                &.selected{
-                    &:nth-child(2n){
-                        td {
-                            background-color: var(--secondary-bckg-color);
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-#mailsearchlist
-{
-    position: absolute;
-    right: 0;
-
-    html.touch & {
-      position: initial;
-    }
-
-    .searchbar{
-        a{
-            html body.task-mail &{
-                color:var(--main-text-color);
-            }
-
-            &.unread{
-                display: none;
-                // &::before{
-                //     content: "\e91e";
-                //     ._dwp-icon();
-                // }
-            }
-
-            &.flag {
-                &:extend(#mailsearchlist .searchbar a.unread);
-            }
-
-            &.options{
-                &::before{
-                    content: "\e5cf";
-                    ._material-icon-submenu();
-                }
-            }
-        }
-
-        &.open{
-            a {
-                &.options{
-                    &::before{
-                        content: "\e5ce";
-                    }
-                } 
-            }
-        }
-    }
-
-    &.hoverable{
-        right:20px;
-
-        html.touch & {
-          margin-right: 15px;
-
-          .searchbar{
-            &.menu{
-                width: auto;
-            }
-        }
-        }
-
-        .searchbar{
-            &.menu{
-                width: 0;
-            }
-        }
-
-        .icon-mel-search
-        {
-            margin-right: 4px;
-        }
-    }
-}
-
-#messagelist-header {
-	display: flex !important;
-}
-
-#layout{
-    & > div {
-        & > .footer {
-            &.small{
-                html body.task-mail &{
-                    background-color: var(--invisible);
-                    height: 80px;
-                }
-            }
-        }
-    }
-}
-
-/* deprecated ? */
-#backtomails {
-	margin-left: 30px;
-
-    + separate{
-        display: block;
-        border-color: #D1D3DD;
-    }
-}
-
-.contextmenu{
-    li {
-        a{
-            &.label {
-                &.selected{
-                    background: var(--tierciary-bckg-color);
-                    color: var(--secondary-text-color);
-                }
-            }
-        }
-    }
-
-    &.rcmsubmenu {
-        .cmd_move {
-            display:none!important;
-        }
-    }
-}
-
-#rcm_messagelist {
-    li {
-        .ct{
-            &-tb{
-                &::before{
-                    // font-family: 'DWP' !important;
-                    ._material-icon-barup();
-                    content: "\e866";
-                }
-
-                &::after{
-                    color: #737677;
-                    font-size: .9em;
-                    margin: 0 0 0 .2em;
-                    min-width: 1.18em;
-                    content: "\f054";
-                    display: block;
-                    float: right;
-                    width: 1.18em;
-                    height: 1em;
-                    font-family: 'Icons';
-                    font-style: normal;
-                    font-weight: 900;
-                    text-decoration: inherit;
-                    text-align: center;
-                }
-            }
-        }
-    }
-}
-
-.mailboxlist()
-{
-    margin-top: var(--settings-mail-folder-margin-top);//var(--settings-mail-folder-margin-top) var(--settings-base-mail-folder-margin-bottom);
-    margin-bottom: var(--settings-mail-folder-margin-bottom);
-    margin-left: var(--settings-mail-folder-margin-left);
-    margin-right: var(--settings-mail-folder-margin-right);
-    padding-right: 0;
-}
-
-#folderlist{
-    &-content{
-        padding: 0 20px;
-
-        > a{
-            &.button{
-                color:var(--secondary-text-color);
-                position: absolute;
-                padding-bottom: 10px;
-                top: 24px;
-                right: 18px;
-                z-index:1;
-                padding-left: 3px;
-
-                &:hover{
-                    background-color: var(--secondary-bckg-color);
-                }
-            }
-        }
-
-        ul {
-            &#mailboxlist{
-                > li {
-                    &.mailbox{
-                        &.virtual {
-                            &.drafts,
-                            &.models,
-                            &.sent,
-                            &.junk,
-                            &.trash,
-                            &.inbox{
-                                .mailboxlist();
-                            }
-                        }
-                    }
-
-                    > ul {
-                        li {
-                            &[aria-level="2"]{
-                                &:first-of-type {
-                                    border-top-style: solid;
-                                    border-top-width: thin;
-                                    margin-top: 15px;
-                                    padding-top: 10px;
-
-                                    div{
-                                        &.treetoggle{
-                                            top: 10px;
-                                        }
-                                    }
-
-                                    .unreadcount{
-                                        top: 10px;
-                                    }
-
-                                    [aria-level="3"]{
-                                        .unreadcount{
-                                            top: unset;
-                                        }
-                                    }
-
-                                }
-                            }
-                        }
-                    }
-
-                    ~ li {
-                        padding-right:0;
-                    }
-
-                    &:first-of-type{
-
-                        --settings-mail-folder-margin-top:var(--settings-mail-first-folder-margin-top);
-                        --settings-mail-folder-margin-left:var(--settings-mail-first-folder-margin-left);
-                        --settings-mail-folder-margin-right:var(--settings-mail-first-folder-margin-right);
-                        --settings-mail-folder-margin-bottom:var(--settings-mail-first-folder-margin-bottom);
-
-                        .unreadcount{
-                            right: 15px;
-                        }
-
-                        > a {
-                            padding-right: 1.5rem;
-                        }
-
-                        &[aria-expanded=false] {
-                            & > a{
-                                padding-right: 4rem;
-                            }
-                        }
-                    }
-
-                    .unreadcount{
-                        right: 0 !important;
-                    }
-                }
-
-                &.unified{
-                    margin-top: 20px;
-                    > li{
-                        &:first-of-type{
-                            > ul {
-                                &:first-of-type{
-                                    li{
-                                        &[aria-level="2"]{
-                                            margin-right: 0;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            li {
-                &.mailbox{
-                    &.selected{
-                        a{
-                            background-color: var(--secondary-bckg-color);
-                        }
-                    }
-                }
-            }
-        }
-
-        li {
-
-            margin-top: var(--settings-mail-subfolder-margin-top);
-            margin-bottom: var(--settings-mail-subfolder-margin-bottom);
-            margin-left: var(--settings-mail-subfolder-margin-left);
-            margin-right: var(--settings-mail-subfolder-margin-right);
-
-            &.mailbox{
-                &.boite{
-                    .mailboxlist();
-
-                    &[aria-expanded="true"]{
-                        border:none;
-
-                        --settings-mail-folder-margin-top:var(--settings-mail-opened-folder-margin-top)!important;
-                        --settings-mail-folder-margin-left:var(--settings-mail-opened-folder-margin-left)!important;
-                        --settings-mail-folder-margin-right:var(--settings-mail-opened-folder-margin-right)!important;
-                        --settings-mail-folder-margin-bottom:var(--settings-mail-opened-folder-margin-bottom)!important;
-                    }
-                }
-            }
-        }
-    }
-}
-
-#rcm_labellist{
-	overflow: auto;
-	max-height: 400px;
-}
-
-/**ICONS**/
-
-.menu{
-    a {
-        &#listmenulink{
-            &.options{
-                &::before{
-                    content: "\e429"!important;
-                    ._material-icon-barup()!important;
-                }
-            }
-        }
-
-        &.compose{
-            &::before{
-                content: "\e22b"!important;
-                ._material-icon-barup()!important;
-            }
-        }
-
-        &.select{
-            &::before{
-                content: "\f82f"!important;
-                ._material-icon-barup()!important;
-                font-variation-settings: 'wght' 300, 'opsz' 48, 'FILL' 1 !important;
-            }
-        }
-
-        &.reply{
-            &::before{
-                content: "\e15e"!important;
-                ._material-icon-barup()!important;
-            }
-
-            &-all,
-            &.all,
-            &.list{
-                &::before{
-                    content: "\e15f"!important;
-                    ._material-icon-barup()!important;
-                }
-            }
-        }
-
-        &.delete{
-            &::before{
-              content: "\e872"!important;
-              ._material-icon-barup()!important;
-            }
-        }
-
-        &.more{
-            &::before{
-                content: "\e5d3"!important;
-                ._material-icon-barup() !important;
-                font-variation-settings: 'wght' 700, 'opsz' 48 !important;
-            }
-        }
-
-        &.close-visu{
-            &::before{
-                content: "\e5c9"!important;
-                ._material-icon-barup()!important;
-            } 
-        }
-
-        &.forward{
-            &::before{
-              content: "\e154"!important;
-              ._material-icon-barup()!important;
-            }
-
-            &.attachment,
-            &.bounce,
-            &.inline{
-                &::before{
-                  content: "\e154"!important;
-                  ._material-icon-barup()!important;
-                }
-            }
-        }
-
-        &.threads{
-            &::before{
-                content: "\e0bf"!important;
-                ._material-icon-barup()!important;
-            } 
-        }
-
-        &.junk,
-        &.markasjunk,
-        &.junkadmin
-            {
-            &::before{
-                content: "\f16a"!important;
-                ._material-icon-barup()!important;
-            } 
-        }
-
-        &.markmessage{
-            &::before{
-                content: "\f05b"!important;
-                ._material-icon-barup()!important;
-            } 
-        }
-
-        &.print{
-            &::before{
-                content: "\e8ad"!important;
-                ._material-icon-barup()!important;
-            } 
-        }
-
-        &.prev{
-            &::before{
-                content: "\e5c4"!important;
-                ._material-icon-barup()!important;
-            } 
-        }
-
-        &.next{
-            &::before{
-                content: "\e5c8"!important;
-                ._material-icon-barup()!important;
-            } 
-        }
-
-        &.send{
-            &::before{
-                content: "\e163"!important;
-                ._material-icon-barup()!important;
-                font-variation-settings: 'wght' 300, 'opsz' 48, 'FILL' 1 !important;
-            } 
-        }
-
-        &.save.draft{
-            &::before{
-                content: "\e161"!important;
-                ._material-icon-barup()!important;
-                font-variation-settings: 'wght' 300, 'opsz' 48, 'FILL' 1 !important;
-            } 
-        }
-
-        &.save.model{
-            &::before{
-                content: "\eb60"!important;
-                ._material-icon-barup()!important;
-                font-variation-settings: 'wght' 300, 'opsz' 48, 'FILL' 1 !important;
-            } 
-        }
-
-        &.signature{
-            &::before{
-                content: "\f74c"!important;
-                ._material-icon-barup()!important;
-            } 
-        }
-
-        &#mel_envoi_differe{
-            &::before{
-                content: "\e8b5"!important;
-                ._material-icon-barup()!important;
-                
-            } 
-            &#text {
-              font-size: 90%;
-            }
-        }
-    }
-}
-
-.button-refresh()
-{
-    content: "\e5d5"!important;
-    ._material-icon-barup()!important;
-}
-
-#message-menu {
-  .menu {
-    a {
-      &.print {
-        &::before{
-          content: "\e8ad"!important;
-          ._material-icon-submenu()!important;
-        }
-      }
-
-      &.import {
-        &::before{
-          content: "\f09b"!important;
-          ._material-icon-submenu()!important;
-        }
-      }
-
-      &.download {
-        &::before{
-          content: "\f090"!important;
-          ._material-icon-submenu()!important;
-        }
-      }
-
-      &.edit {
-        &::before{
-          content: "\e3c9"!important;
-          ._material-icon-submenu()!important;
-        }
-      }
-
-      &.source {
-        &::before{
-          content: "\f770"!important;
-          ._material-icon-submenu()!important;
-        }
-      }
-
-      &.move {
-        &::before{
-          content: "\e2c8"!important;
-          ._material-icon-submenu()!important;
-        }
-      }
-
-      &.copy {
-        &::before{
-          content: "\e14d"!important;
-          ._material-icon-submenu()!important;
-        }
-      }
-
-      &.extwin {
-        &::before{
-          content: "\e89e"!important;
-          ._material-icon-submenu()!important;
-        }
-      }
-
-      &.compose {
-        &::before{
-          content: "\e22b"!important;
-          ._material-icon-submenu()!important;
-        }
-      }
-
-      &.filterlink {
-        &::before{
-          content: "\ef4f"!important;
-          ._material-icon-submenu()!important;
-        }
-      }
-      
-      &.calendarlink {
-        &::before{
-          content: "\ebcc"!important;
-          ._material-icon-submenu()!important;
-        }
-      }
-
-      &.taskaddlink {
-        &::before{
-          content: "\e834"!important;
-          ._material-icon-submenu()!important;
+          }
         }
       }
     }
   }
 }
 
+#mailsearchlist {
+  position: absolute;
+  right: 0;
+
+  html.touch & {
+    position: initial;
+  }
+
+  .searchbar {
+    a {
+      html body.task-mail & {
+        color: var(--main-text-color);
+      }
+
+      &.unread {
+        display: none;
+        // &::before{
+        //     content: "\e91e";
+        //     ._dwp-icon();
+        // }
+      }
+
+      &.flag {
+        &:extend(#mailsearchlist .searchbar a.unread);
+      }
+
+      &.options {
+        &::before {
+          content: '\e5cf';
+          ._material-icon-submenu();
+        }
+      }
+    }
+
+    &.open {
+      a {
+        &.options {
+          &::before {
+            content: '\e5ce';
+          }
+        }
+      }
+    }
+  }
+
+  &.hoverable {
+    right: 20px;
+
+    html.touch & {
+      margin-right: 15px;
+
+      .searchbar {
+        &.menu {
+          width: auto;
+        }
+      }
+    }
+
+    .searchbar {
+      &.menu {
+        width: 0;
+      }
+    }
+
+    .icon-mel-search {
+      margin-right: 4px;
+    }
+  }
+}
+
+#messagelist-header {
+  display: flex !important;
+}
+
+#layout {
+  & > div {
+    & > .footer {
+      &.small {
+        html body.task-mail & {
+          background-color: var(--invisible);
+          height: 80px;
+        }
+      }
+    }
+  }
+}
+
+/* deprecated ? */
+#backtomails {
+  margin-left: 30px;
+
+  + separate {
+    display: block;
+    border-color: #d1d3dd;
+  }
+}
+
+.contextmenu {
+  li {
+    a {
+      &.label {
+        &.selected {
+          background: var(--tierciary-bckg-color);
+          color: var(--secondary-text-color);
+        }
+      }
+    }
+  }
+
+  &.rcmsubmenu {
+    .cmd_move {
+      display: none !important;
+    }
+  }
+}
+
+#rcm_messagelist {
+  li {
+    .ct {
+      &-tb {
+        &::before {
+          // font-family: 'DWP' !important;
+          ._material-icon-barup();
+          content: '\e866';
+        }
+
+        &::after {
+          color: #737677;
+          font-size: 0.9em;
+          margin: 0 0 0 0.2em;
+          min-width: 1.18em;
+          content: '\f054';
+          display: block;
+          float: right;
+          width: 1.18em;
+          height: 1em;
+          font-family: 'Icons';
+          font-style: normal;
+          font-weight: 900;
+          text-decoration: inherit;
+          text-align: center;
+        }
+      }
+    }
+  }
+}
+
+.mailboxlist() {
+  margin-top: var(
+    --settings-mail-folder-margin-top
+  ); //var(--settings-mail-folder-margin-top) var(--settings-base-mail-folder-margin-bottom);
+  margin-bottom: var(--settings-mail-folder-margin-bottom);
+  margin-left: var(--settings-mail-folder-margin-left);
+  margin-right: var(--settings-mail-folder-margin-right);
+  padding-right: 0;
+}
+
+#folderlist {
+  &-content {
+    padding: 0 20px;
+
+    > a {
+      &.button {
+        color: var(--secondary-text-color);
+        position: absolute;
+        padding-bottom: 10px;
+        top: 24px;
+        right: 18px;
+        z-index: 1;
+        padding-left: 3px;
+
+        &:hover {
+          background-color: var(--secondary-bckg-color);
+        }
+      }
+    }
+
+    ul {
+      &#mailboxlist {
+        > li {
+          &.mailbox {
+            &.virtual {
+              &.drafts,
+              &.models,
+              &.sent,
+              &.junk,
+              &.trash,
+              &.inbox {
+                .mailboxlist();
+              }
+            }
+          }
+
+          > ul {
+            li {
+              &[aria-level='2'] {
+                &:first-of-type {
+                  border-top-style: solid;
+                  border-top-width: thin;
+                  margin-top: 15px;
+                  padding-top: 10px;
+
+                  div {
+                    &.treetoggle {
+                      top: 10px;
+                    }
+                  }
+
+                  .unreadcount {
+                    top: 10px;
+                  }
+
+                  [aria-level='3'] {
+                    .unreadcount {
+                      top: unset;
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          ~ li {
+            padding-right: 0;
+          }
+
+          &:first-of-type {
+            --settings-mail-folder-margin-top: var(
+              --settings-mail-first-folder-margin-top
+            );
+            --settings-mail-folder-margin-left: var(
+              --settings-mail-first-folder-margin-left
+            );
+            --settings-mail-folder-margin-right: var(
+              --settings-mail-first-folder-margin-right
+            );
+            --settings-mail-folder-margin-bottom: var(
+              --settings-mail-first-folder-margin-bottom
+            );
+
+            .unreadcount {
+              right: 15px;
+            }
+
+            > a {
+              padding-right: 1.5rem;
+            }
+
+            &[aria-expanded='false'] {
+              & > a {
+                padding-right: 4rem;
+              }
+            }
+          }
+
+          .unreadcount {
+            right: 0 !important;
+          }
+        }
+
+        &.unified {
+          margin-top: 20px;
+          > li {
+            &:first-of-type {
+              > ul {
+                &:first-of-type {
+                  li {
+                    &[aria-level='2'] {
+                      margin-right: 0;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      li {
+        &.mailbox {
+          &.selected {
+            a {
+              background-color: var(--secondary-bckg-color);
+            }
+          }
+        }
+      }
+    }
+
+    li {
+      margin-top: var(--settings-mail-subfolder-margin-top);
+      margin-bottom: var(--settings-mail-subfolder-margin-bottom);
+      margin-left: var(--settings-mail-subfolder-margin-left);
+      margin-right: var(--settings-mail-subfolder-margin-right);
+
+      &.mailbox {
+        &.boite {
+          .mailboxlist();
+
+          &[aria-expanded='true'] {
+            border: none;
+
+            --settings-mail-folder-margin-top: var(
+              --settings-mail-opened-folder-margin-top
+            ) !important;
+            --settings-mail-folder-margin-left: var(
+              --settings-mail-opened-folder-margin-left
+            ) !important;
+            --settings-mail-folder-margin-right: var(
+              --settings-mail-opened-folder-margin-right
+            ) !important;
+            --settings-mail-folder-margin-bottom: var(
+              --settings-mail-opened-folder-margin-bottom
+            ) !important;
+          }
+        }
+      }
+    }
+  }
+}
+
+#rcm_labellist {
+  overflow: auto;
+  max-height: 400px;
+}
+
+/**ICONS**/
+
+.menu {
+  a {
+    &#listmenulink {
+      &.options {
+        &::before {
+          content: '\e429' !important;
+          ._material-icon-barup() !important;
+        }
+      }
+    }
+
+    &.compose {
+      &::before {
+        content: '\e22b' !important;
+        ._material-icon-barup() !important;
+      }
+    }
+
+    &.select {
+      &::before {
+        content: '\f82f' !important;
+        ._material-icon-barup() !important;
+        font-variation-settings:
+          'wght' 300,
+          'opsz' 48,
+          'FILL' 1 !important;
+      }
+    }
+
+    &.reply {
+      &::before {
+        content: '\e15e' !important;
+        ._material-icon-barup() !important;
+      }
+
+      &-all,
+      &.all,
+      &.list {
+        &::before {
+          content: '\e15f' !important;
+          ._material-icon-barup() !important;
+        }
+      }
+    }
+
+    &.delete {
+      &::before {
+        content: '\e872' !important;
+        ._material-icon-barup() !important;
+      }
+    }
+
+    &.more {
+      &::before {
+        content: '\e5d3' !important;
+        ._material-icon-barup() !important;
+        font-variation-settings:
+          'wght' 700,
+          'opsz' 48 !important;
+      }
+    }
+
+    &.close-visu {
+      &::before {
+        content: '\e5c9' !important;
+        ._material-icon-barup() !important;
+      }
+    }
+
+    &.forward {
+      &::before {
+        content: '\e154' !important;
+        ._material-icon-barup() !important;
+      }
+
+      &.attachment,
+      &.bounce,
+      &.inline {
+        &::before {
+          content: '\e154' !important;
+          ._material-icon-barup() !important;
+        }
+      }
+    }
+
+    &.threads {
+      &::before {
+        content: '\e0bf' !important;
+        ._material-icon-barup() !important;
+      }
+    }
+
+    &.junk,
+    &.markasjunk,
+    &.junkadmin {
+      &::before {
+        content: '\f16a' !important;
+        ._material-icon-barup() !important;
+      }
+    }
+
+    &.markmessage {
+      &::before {
+        content: '\f05b' !important;
+        ._material-icon-barup() !important;
+      }
+    }
+
+    &.print {
+      &::before {
+        content: '\e8ad' !important;
+        ._material-icon-barup() !important;
+      }
+    }
+
+    &.prev {
+      &::before {
+        content: '\e5c4' !important;
+        ._material-icon-barup() !important;
+      }
+    }
+
+    &.next {
+      &::before {
+        content: '\e5c8' !important;
+        ._material-icon-barup() !important;
+      }
+    }
+
+    &.send {
+      &::before {
+        content: '\e163' !important;
+        ._material-icon-barup() !important;
+        font-variation-settings:
+          'wght' 300,
+          'opsz' 48,
+          'FILL' 1 !important;
+      }
+    }
+
+    &.save.draft {
+      &::before {
+        content: '\e161' !important;
+        ._material-icon-barup() !important;
+        font-variation-settings:
+          'wght' 300,
+          'opsz' 48,
+          'FILL' 1 !important;
+      }
+    }
+
+    &.save.model {
+      &::before {
+        content: '\eb60' !important;
+        ._material-icon-barup() !important;
+        font-variation-settings:
+          'wght' 300,
+          'opsz' 48,
+          'FILL' 1 !important;
+      }
+    }
+
+    &.signature {
+      &::before {
+        content: '\f74c' !important;
+        ._material-icon-barup() !important;
+      }
+    }
+
+    &#mel_envoi_differe {
+      &::before {
+        content: '\e8b5' !important;
+        ._material-icon-barup() !important;
+      }
+      &#text {
+        font-size: 90%;
+      }
+    }
+  }
+}
+
+.button-refresh() {
+  content: '\e5d5' !important;
+  ._material-icon-barup() !important;
+}
+
+#message-menu {
+  .menu {
+    a {
+      &.print {
+        &::before {
+          content: '\e8ad' !important;
+          ._material-icon-submenu() !important;
+        }
+      }
+
+      &.import {
+        &::before {
+          content: '\f09b' !important;
+          ._material-icon-submenu() !important;
+        }
+      }
+
+      &.download {
+        &::before {
+          content: '\f090' !important;
+          ._material-icon-submenu() !important;
+        }
+      }
+
+      &.edit {
+        &::before {
+          content: '\e3c9' !important;
+          ._material-icon-submenu() !important;
+        }
+      }
+
+      &.source {
+        &::before {
+          content: '\f770' !important;
+          ._material-icon-submenu() !important;
+        }
+      }
+
+      &.move {
+        &::before {
+          content: '\e2c8' !important;
+          ._material-icon-submenu() !important;
+        }
+      }
+
+      &.copy {
+        &::before {
+          content: '\e14d' !important;
+          ._material-icon-submenu() !important;
+        }
+      }
+
+      &.extwin {
+        &::before {
+          content: '\e89e' !important;
+          ._material-icon-submenu() !important;
+        }
+      }
+
+      &.compose {
+        &::before {
+          content: '\e22b' !important;
+          ._material-icon-submenu() !important;
+        }
+      }
+
+      &.filterlink {
+        &::before {
+          content: '\ef4f' !important;
+          ._material-icon-submenu() !important;
+        }
+      }
+
+      &.calendarlink {
+        &::before {
+          content: '\ebcc' !important;
+          ._material-icon-submenu() !important;
+        }
+      }
+
+      &.taskaddlink {
+        &::before {
+          content: '\e834' !important;
+          ._material-icon-submenu() !important;
+        }
+      }
+    }
+  }
+}
 
 #mailto-menu {
   .menu {
     a {
       &.addressbook {
-        &::before{
-          content: "\e7fd"!important;
-          ._material-icon-submenu()!important;
+        &::before {
+          content: '\e7fd' !important;
+          ._material-icon-submenu() !important;
         }
       }
       &.compose {
-        &::before{
-          content: "\e22b"!important;
-          ._material-icon-submenu()!important;
+        &::before {
+          content: '\e22b' !important;
+          ._material-icon-submenu() !important;
         }
       }
     }
@@ -1367,35 +1393,37 @@ table.messagelist{
   .menu {
     a {
       &.read {
-        &::before{
-          content: "\e151"!important;
-          ._material-icon-submenu()!important;
+        &::before {
+          content: '\e151' !important;
+          ._material-icon-submenu() !important;
         }
       }
       &.unread {
-        &::before{
-          content: "\e158"!important;
-          ._material-icon-submenu()!important;
+        &::before {
+          content: '\e158' !important;
+          ._material-icon-submenu() !important;
         }
       }
       &.flag {
-        &::before{
-          content: "\e153"!important;
-          ._material-icon-submenu()!important;
-          font-variation-settings: 'wght' 300, 'opsz' 48, 'FILL' 1 !important;
-
+        &::before {
+          content: '\e153' !important;
+          ._material-icon-submenu() !important;
+          font-variation-settings:
+            'wght' 300,
+            'opsz' 48,
+            'FILL' 1 !important;
         }
       }
       &.unflag {
-        &::before{
-          content: "\e153"!important;
-          ._material-icon-submenu()!important;
+        &::before {
+          content: '\e153' !important;
+          ._material-icon-submenu() !important;
         }
       }
       &.junk {
-        &::before{
-          content: "\f16a"!important;
-          ._material-icon-submenu()!important;
+        &::before {
+          content: '\f16a' !important;
+          ._material-icon-submenu() !important;
         }
       }
     }
@@ -1406,45 +1434,45 @@ table.messagelist{
   .menu {
     a {
       &.expunge {
-        &::before{
-          content: "\f82e"!important;
-          ._material-icon-submenu()!important;
+        &::before {
+          content: '\f82e' !important;
+          ._material-icon-submenu() !important;
         }
       }
       &.purge {
-        &::before{
-          content: "\e28d"!important;
-          ._material-icon-submenu()!important;
+        &::before {
+          content: '\e28d' !important;
+          ._material-icon-submenu() !important;
         }
       }
       &.read {
-        &::before{
-          content: "\e151"!important;
-          ._material-icon-submenu()!important;
+        &::before {
+          content: '\e151' !important;
+          ._material-icon-submenu() !important;
         }
       }
       &.folders {
-        &::before{
-          content: "\e2c7"!important;
-          ._material-icon-submenu()!important;
+        &::before {
+          content: '\e2c7' !important;
+          ._material-icon-submenu() !important;
         }
       }
       &.create {
-        &::before{
-          content: "\e147"!important;
-          ._material-icon-submenu()!important;
+        &::before {
+          content: '\e147' !important;
+          ._material-icon-submenu() !important;
         }
       }
       &.settings {
-        &::before{
-          content: "\e8b8"!important;
-          ._material-icon-submenu()!important;
+        &::before {
+          content: '\e8b8' !important;
+          ._material-icon-submenu() !important;
         }
       }
       &.refresh {
-        &::before{
-          content: "\e5d5"!important;
-          ._material-icon-submenu()!important;
+        &::before {
+          content: '\e5d5' !important;
+          ._material-icon-submenu() !important;
         }
       }
     }
@@ -1456,32 +1484,35 @@ table.messagelist{
     a {
       &.read {
         &::before {
-          content: "\e151" !important;
+          content: '\e151' !important;
           ._material-icon-submenu() !important;
         }
       }
       &.unread {
         &::before {
-          content: "\e158" !important;
+          content: '\e158' !important;
           ._material-icon-submenu() !important;
         }
       }
       &.flag {
         &::before {
-          content: "\e153" !important;
+          content: '\e153' !important;
           ._material-icon-submenu() !important;
-          font-variation-settings: 'wght' 300, 'opsz' 48, 'FILL' 1;
+          font-variation-settings:
+            'wght' 300,
+            'opsz' 48,
+            'FILL' 1;
         }
       }
       &.unflag {
         &::before {
-          content: "\e153" !important;
+          content: '\e153' !important;
           ._material-icon-submenu() !important;
         }
       }
       &.junk {
         &::before {
-          content: "\f16a" !important;
+          content: '\f16a' !important;
           ._material-icon-submenu() !important;
         }
       }
@@ -1494,61 +1525,61 @@ table.messagelist{
     a {
       &.print {
         &::before {
-          content: "\e8ad" !important;
+          content: '\e8ad' !important;
           ._material-icon-submenu() !important;
         }
       }
       &.download {
         &::before {
-          content: "\f090" !important;
+          content: '\f090' !important;
           ._material-icon-submenu() !important;
         }
       }
       &.edit {
         &::before {
-          content: "\e3c9" !important;
+          content: '\e3c9' !important;
           ._material-icon-submenu() !important;
         }
       }
       &.source {
         &::before {
-          content: "\f770" !important;
+          content: '\f770' !important;
           ._material-icon-submenu() !important;
         }
       }
       &.copy {
         &::before {
-          content: "\e14d" !important;
+          content: '\e14d' !important;
           ._material-icon-submenu() !important;
         }
       }
       &.extwin {
         &::before {
-          content: "\e89e" !important;
+          content: '\e89e' !important;
           ._material-icon-submenu() !important;
         }
       }
       &.compose {
         &::before {
-          content: "\e22b" !important;
+          content: '\e22b' !important;
           ._material-icon-submenu() !important;
         }
       }
       &.filterlink {
         &::before {
-          content: "\ef4f" !important;
+          content: '\ef4f' !important;
           ._material-icon-submenu() !important;
         }
       }
       &.calendarlink {
         &::before {
-          content: "\ebcc" !important;
+          content: '\ebcc' !important;
           ._material-icon-submenu() !important;
         }
       }
       &.taskaddlink {
         &::before {
-          content: "\e834" !important;
+          content: '\e834' !important;
           ._material-icon-submenu() !important;
         }
       }
@@ -1561,61 +1592,61 @@ table.messagelist{
     a {
       &.collapseall {
         &::before {
-          content: "\e5d6" !important;
+          content: '\e5d6' !important;
           ._material-icon-submenu() !important;
         }
       }
       &.expandall {
         &::before {
-          content: "\e5d7" !important;
+          content: '\e5d7' !important;
           ._material-icon-submenu() !important;
         }
       }
       &.openextwin {
         &::before {
-          content: "\e89e" !important;
+          content: '\e89e' !important;
           ._material-icon-submenu() !important;
         }
       }
       &.expunge {
         &::before {
-          content: "\f82e" !important;
+          content: '\f82e' !important;
           ._material-icon-submenu() !important;
         }
       }
       &.purge {
         &::before {
-          content: "\e28d" !important;
+          content: '\e28d' !important;
           ._material-icon-submenu() !important;
         }
       }
       &.read {
         &::before {
-          content: "\e151" !important;
+          content: '\e151' !important;
           ._material-icon-submenu() !important;
         }
       }
       &.folders {
         &::before {
-          content: "\e2c8" !important;
+          content: '\e2c8' !important;
           ._material-icon-submenu() !important;
         }
       }
       &.create {
         &::before {
-          content: "\e147" !important;
+          content: '\e147' !important;
           ._material-icon-submenu() !important;
         }
       }
       &.settings {
         &::before {
-          content: "\e8b8" !important;
+          content: '\e8b8' !important;
           ._material-icon-submenu() !important;
         }
       }
       &.refresh {
         &::before {
-          content: "\e5d5" !important;
+          content: '\e5d5' !important;
           ._material-icon-submenu() !important;
         }
       }
@@ -1623,475 +1654,482 @@ table.messagelist{
   }
 }
 
-a{
-    &.button{
-        &.icon{
-            &.refresh{
-                &::before{
-                    .button-refresh();
-                }
-            }
-            &.toolbar-list-button{
-                &::before{
-                  content: "\e5d4"!important;
-                  ._material-icon-barup()!important;
-                  font-variation-settings: 'wght' 700, 'opsz' 48  !important;
-                }
-            }
-            &.folders{
-                &::before{
-                  content: "\e2c8"!important;
-                  ._material-icon-barup()!important;
-                  font-variation-settings: 'wght' 300, 'opsz' 48, 'FILL' 1 !important;
-                }
-            }
-            &.calendars{
-                &::before{
-                  content: "\ebcc"!important;
-                  ._material-icon-barup()!important;
-                  font-variation-settings: 'wght' 300, 'opsz' 48, 'FILL' 1 !important;
-                }
-            }
+a {
+  &.button {
+    &.icon {
+      &.refresh {
+        &::before {
+          .button-refresh();
         }
+      }
+      &.toolbar-list-button {
+        &::before {
+          content: '\e5d4' !important;
+          ._material-icon-barup() !important;
+          font-variation-settings:
+            'wght' 700,
+            'opsz' 48 !important;
+        }
+      }
+      &.folders {
+        &::before {
+          content: '\e2c8' !important;
+          ._material-icon-barup() !important;
+          font-variation-settings:
+            'wght' 300,
+            'opsz' 48,
+            'FILL' 1 !important;
+        }
+      }
+      &.calendars {
+        &::before {
+          content: '\ebcc' !important;
+          ._material-icon-barup() !important;
+          font-variation-settings:
+            'wght' 300,
+            'opsz' 48,
+            'FILL' 1 !important;
+        }
+      }
     }
+  }
 }
 
 @media screen and (max-width: 1250px) {
-  a{
-    &.button{
-        &.icon{
-            &.refresh{
-                &::before{
-                    height: 58px;
-                }
-            }
-            &.toolbar-list-button{
-                &::before{
-                  height: 58px;
-                }
-            }
-            &.folders{
-                &::before{
-                  height: 58px;
-                }
-            }
+  a {
+    &.button {
+      &.icon {
+        &.refresh {
+          &::before {
+            height: 58px;
+          }
         }
-    }
-}
-}
-
-button{
-    &.btn{
-        &.refresh{
-            &::before{
-                .button-refresh();
-            }
+        &.toolbar-list-button {
+          &::before {
+            height: 58px;
+          }
         }
+        &.folders {
+          &::before {
+            height: 58px;
+          }
+        }
+      }
     }
+  }
 }
 
-.folderlist{
-    li{
-        a{
-            &::before{
-                content: "\e2c7"!important;
-                ._material-icon-400()!important;
-            }
-        }
-
-        &.drafts{
-            a{
-                &::before{
-                    content: "\e3c9"!important;
-                    ._material-icon-400();
-                }
-            }
-        }
-
-        &.trash{
-            a{
-                &::before{
-                  content: "\e872"!important;
-                  ._material-icon-400()!important;
-                }
-            }
-        }
-
-        &.sent{
-            a{
-                &::before{
-                    content: "\e163"!important;
-                    ._material-icon-400()!important;
-                }
-            }
-        }
-
-        &.inbox,
-        &.boite{
-            > a{
-                &::before{
-                    content: "\e156"!important;
-                   ._material-icon-400()!important;
-                   font-variation-settings: 'wght' 400, 'opsz' 48, 'FILL' 1 !important;
-                }
-            }
-        }
-
-        &.junk{
-            a{
-                &::before{
-                    content: "\f16a" !important;
-                    ._material-icon-400()!important;
-                }
-            }
-        }
+button {
+  &.btn {
+    &.refresh {
+      &::before {
+        .button-refresh();
+      }
     }
+  }
+}
+
+.folderlist {
+  li {
+    a {
+      &::before {
+        content: '\e2c7' !important;
+        ._material-icon-400() !important;
+      }
+    }
+
+    &.drafts {
+      a {
+        &::before {
+          content: '\e3c9' !important;
+          ._material-icon-400();
+        }
+      }
+    }
+
+    &.trash {
+      a {
+        &::before {
+          content: '\e872' !important;
+          ._material-icon-400() !important;
+        }
+      }
+    }
+
+    &.sent {
+      a {
+        &::before {
+          content: '\e163' !important;
+          ._material-icon-400() !important;
+        }
+      }
+    }
+
+    &.inbox,
+    &.boite {
+      > a {
+        &::before {
+          content: '\e156' !important;
+          ._material-icon-400() !important;
+          font-variation-settings:
+            'wght' 400,
+            'opsz' 48,
+            'FILL' 1 !important;
+        }
+      }
+    }
+
+    &.junk {
+      a {
+        &::before {
+          content: '\f16a' !important;
+          ._material-icon-400() !important;
+        }
+      }
+    }
+  }
 }
 
 .tb_noclass::before,
-#tb_label_popuplink::before
-{
-    content: "\e866"!important;
-    ._material-icon-barup()!important;
+#tb_label_popuplink::before {
+  content: '\e866' !important;
+  ._material-icon-barup() !important;
 }
 
 /****/
 
-td{
-    &.subject{
-        td{
-            &.labels{
-                padding-bottom: 0 !important;
-                line-height: 15px !important;
-                font-size: 0.8rem !important;
-            }
-        }
+td {
+  &.subject {
+    td {
+      &.labels {
+        padding-bottom: 0 !important;
+        line-height: 15px !important;
+        font-size: 0.8rem !important;
+      }
     }
+  }
 }
 
-.popover{
-    &-body{
-        #message-menu{
-            .tb_noclass{
-                &::before{
-                    font-family: DWP !important;
-                    content: "\e956" !important;
-                }
-
-                &::after{
-                    content: none !important;
-                }
-            }
+.popover {
+  &-body {
+    #message-menu {
+      .tb_noclass {
+        &::before {
+          font-family: DWP !important;
+          content: '\e956' !important;
         }
+
+        &::after {
+          content: none !important;
+        }
+      }
     }
+  }
 }
 
 .parent-close-visu {
-	margin-right: 10px;
-	padding-right: 10px;
-	border-right-color: var(--secondary-text-color) !important;
-	border-right-style: solid !important;
-	border-right-width: thin !important;
+  margin-right: 10px;
+  padding-right: 10px;
+  border-right-color: var(--secondary-text-color) !important;
+  border-right-style: solid !important;
+  border-right-width: thin !important;
 }
 
-#message-header{
-    .mel-header{
-        &-from,
-        &-date{
-            display: none;
-        }
+#message-header {
+  .mel-header {
+    &-from,
+    &-date {
+      display: none;
     }
+  }
 }
 
-.success-search{
+.success-search {
+  color: #4bbc52 !important;
+  &::before {
     color: #4bbc52 !important;
-    &::before{
-        color: #4bbc52 !important;
-    }
+  }
 }
 
 #mail-search-border {
-    height: calc(1.5em + .75rem + 2px);
-    margin: 0 15px;
-    width: 92%;
-    position:relative;
-    border: none;
+  height: calc(1.5em + 0.75rem + 2px);
+  margin: 0 15px;
+  width: 92%;
+  position: relative;
+  border: none;
 
-    html.dark-mode &{
-        border: 1px solid #E1C58F;
-        background-color: #323F4B !important;
-    }
+  html.dark-mode & {
+    border: 1px solid #e1c58f;
+    background-color: #323f4b !important;
+  }
 }
 
 #mail-search-icon {
-    font-size: 1.5rem;
-    margin-top: 4px;
-    display: inline-block;
-    color: #2c363a;
+  font-size: 1.5rem;
+  margin-top: 4px;
+  display: inline-block;
+  color: #2c363a;
 }
 
-html.dark-mode
-{
-    #searchmenu {
-        background-color: #323f4b !important;
-    }
+html.dark-mode {
+  #searchmenu {
+    background-color: #323f4b !important;
+  }
 
-    .mel-input-container{
-        &.form-control
-        {
-            &.input-mel{
-                .icon-mel-search{
-                    &.success-search
-                    {
-                        color: #4bbc52 !important;
-                    }
-                }
-
-                &.border-success-search{
-                    border-color: #4bbc52 !important;
-                }
-            }
+  .mel-input-container {
+    &.form-control {
+      &.input-mel {
+        .icon-mel-search {
+          &.success-search {
+            color: #4bbc52 !important;
+          }
         }
+
+        &.border-success-search {
+          border-color: #4bbc52 !important;
+        }
+      }
     }
+  }
 }
 
-.button{
-    &.icon{
-        &.toolbar-button{
-            &.refresh{
-                &:focus{
-                    border-left: 2px solid var(--secondary-focus-border) !important;
-                    background-color: var(--secondary-bckg-color) !important;
-                    color: var(--secondary-text-color) !important;
-                    
-                    html.dark-mode &{
-                        color: #c7dfff !important;
-                    }
-                }
-            }
+.button {
+  &.icon {
+    &.toolbar-button {
+      &.refresh {
+        &:focus {
+          border-left: 2px solid var(--secondary-focus-border) !important;
+          background-color: var(--secondary-bckg-color) !important;
+          color: var(--secondary-text-color) !important;
+
+          html.dark-mode & {
+            color: #c7dfff !important;
+          }
         }
+      }
     }
+  }
 }
 
 ul {
-    ul{
-        li{
-            &.mailbox{
-                > a{
-                    cursor: pointer !important;
-                }
-
-                &.select{
-                    > a{
-                        &:first-of-type{
-                            cursor: default !important;
-                        }
-                    }
-                }
-
-                &:hover{
-                    > a{
-                        &:first-of-type{
-                            background-color: var(--secondary-bckg-color);
-                            border-radius: 5px;
-                        }
-                    }
-                }
-
-                &.droptarget{
-                    background-color: var(--drag-n-drop-bckg-color)!important;
-                    &:hover{
-                        > a{
-                            &:first-of-type{
-                                background-color: var(--drag-n-drop-bckg-color)!important;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-.mail-show-hover{
-    background-color: #4f4f4f33;
-    animation: mail-show-hover 0.05s linear forwards;
-    width: 30px;
-    height: 30px;
-}
-
-body.task-mail.action-compose a.removelink
-{
-    display: none;
-}
-
-#compose-contacts{
-    .modal-title{
-        display: inline-block;
-    }
-
-    .modal-close{
-        float: right;
-    }
-}
-
-#melplusmails{
-    color: var(--secondary-text-color);
-}
-
-.message-list-filter-container{
-    background-color: var(--default-bckg-color);
-    border-bottom: var(--message-list-border-bottom);
-    padding: 0px 0px 0px 10px;
-    display: flex;
-    justify-content: space-between;
-
-    .mel-filter-more{
-        // margin-right: -2.7px;
-        height: 100%;
-        border:none;
-        // margin-left: auto;
-
-        button {
-            &.mel-button{
-                padding: 0;
-                border-radius: 0;
-                height: 100%;
-            }
-        }
-    }
-}
-
-#message-list-filters{
-    display: flex;
-    padding: 0px 5px 1px 10px;
-    margin-bottom: 0;
-    align-items: center;
-
+  ul {
     li {
-        &.input-group {
-            width: auto;
-            flex-wrap: nowrap;
-            align-items: center;
-
-            .touch &{
-                border-radius: 5px;
-            }
+      &.mailbox {
+        > a {
+          cursor: pointer !important;
         }
 
-        #list-select-mail-choices {
-            color: var(--input-button-text-color);
-            width: 15px;
-            justify-content: center;
-            display: flex;
-            margin-left: 0;
-            border-radius: 0px;
-            max-height: 30px;
-            align-items: center;
-            margin-right: 5px;
-
-            &:hover {
-                color: var(--default-text-color);
+        &.select {
+          > a {
+            &:first-of-type {
+              cursor: default !important;
             }
-        }
-
-        .quick-filter {
-            color: var(--input-button-text-color);
-            border-radius: 5px;
-            padding: 0px 5px;
-            white-space: nowrap;
-            font-size: 12px;
-            margin-right: 5px;
-
-            &.active{
-                color: var(--active-button-text-color);
-                background-color: var(--active-button-background-color);
-                border-color: var(--main-border-color);
-        
-                &.hoverable{
-                    &:hover{
-                        background-color: var(--tierciary-bckg-color);
-                        border-color: var(--main-border-color);
-                    }
-                }
-
-                &.quick-filter-all {
-                    pointer-events: none;
-                }
-            }
-
-            &:hover{
-                color: var(--default-text-color);
-            }
-        }
-    }
-}
-
-#message-list-filters-extra {
-    background-color: var(--default-bckg-color);
-    // border-bottom: 1px solid var(--message-border-color);
-    div {
-        display: flex;
-        flex-direction: row;  
-        border-bottom: var(--message-list-border-bottom);
-        overflow: auto;
-    }
-
-    button {
-        //background-color: var(--secondary-bckg-color);
-        border-radius: 5px;
-        padding: 0px 10px;
-        display: flex;
-        align-items: center;
-        margin: 5px;
-        font-size: 12px;
-        white-space: nowrap;
-
-        &.active{
-            &:extend(#message-list-filters li .quick-filter.active);
-    
-            &.hoverable{
-                &:hover{
-                    &:extend(#message-list-filters li .quick-filter.active.hoverable:hover);
-                color: var(--default-text-color);
-
-                }
-            }
-        }
-
-        .material-symbols-outlined{
-            margin-left: 10px;
-            font-size: 18px;
-            margin-right: -5px;
+          }
         }
 
         &:hover {
-            .material-symbols-outlined{
-                color:red;
+          > a {
+            &:first-of-type {
+              background-color: var(--secondary-bckg-color);
+              border-radius: 5px;
             }
+          }
         }
+
+        &.droptarget {
+          background-color: var(--drag-n-drop-bckg-color) !important;
+          &:hover {
+            > a {
+              &:first-of-type {
+                background-color: var(--drag-n-drop-bckg-color) !important;
+              }
+            }
+          }
+        }
+      }
     }
+  }
 }
 
-#toolbar-list-menu .selection{
-    display:none!important;
+.mail-show-hover {
+  background-color: #4f4f4f33;
+  animation: mail-show-hover 0.05s linear forwards;
+  width: 30px;
+  height: 30px;
+}
+
+body.task-mail.action-compose a.removelink {
+  display: none;
+}
+
+#compose-contacts {
+  .modal-title {
+    display: inline-block;
+  }
+
+  .modal-close {
+    float: right;
+  }
+}
+
+#melplusmails {
+  color: var(--secondary-text-color);
 }
 
 .message-list-filter-container {
-	display: flex;
-	justify-content: space-between;
+  background-color: var(--default-bckg-color);
+  border-bottom: var(--message-list-border-bottom);
+  padding: 0px 0px 0px 10px;
+  display: flex;
+  justify-content: space-between;
+
+  .mel-filter-more {
+    // margin-right: -2.7px;
+    height: 100%;
+    border: none;
+    // margin-left: auto;
+
+    button {
+      &.mel-button {
+        padding: 0;
+        border-radius: 0;
+        height: 100%;
+      }
+    }
+  }
 }
 
-#quick-filter-priority{
-    &.prio {
-        &::after{
-            font-family: 'Material Symbols Outlined' !important;
-            font-weight: normal;
-            font-variation-settings: 'wght' 300;
-            vertical-align: top;
+#message-list-filters {
+  display: flex;
+  padding: 0px 5px 1px 10px;
+  margin-bottom: 0;
+  align-items: center;
+
+  li {
+    &.input-group {
+      width: auto;
+      flex-wrap: nowrap;
+      align-items: center;
+
+      .touch & {
+        border-radius: 5px;
+      }
+    }
+
+    #list-select-mail-choices {
+      color: var(--input-button-text-color);
+      width: 15px;
+      justify-content: center;
+      display: flex;
+      margin-left: 0;
+      border-radius: 0px;
+      max-height: 30px;
+      align-items: center;
+      margin-right: 5px;
+
+      &:hover {
+        color: var(--default-text-color);
+      }
+    }
+
+    .quick-filter {
+      color: var(--input-button-text-color);
+      border-radius: 5px;
+      padding: 0px 5px;
+      white-space: nowrap;
+      font-size: 12px;
+      margin-right: 5px;
+
+      &.active {
+        color: var(--active-button-text-color);
+        background-color: var(--active-button-background-color);
+        border-color: var(--main-border-color);
+
+        &.hoverable {
+          &:hover {
+            background-color: var(--tierciary-bckg-color);
+            border-color: var(--main-border-color);
+          }
         }
 
-        each(@priorities, {
+        &.quick-filter-all {
+          pointer-events: none;
+        }
+      }
+
+      &:hover {
+        color: var(--default-text-color);
+      }
+    }
+  }
+}
+
+#message-list-filters-extra {
+  background-color: var(--default-bckg-color);
+  // border-bottom: 1px solid var(--message-border-color);
+  div {
+    display: flex;
+    flex-direction: row;
+    border-bottom: var(--message-list-border-bottom);
+    overflow: auto;
+  }
+
+  button {
+    //background-color: var(--secondary-bckg-color);
+    border-radius: 5px;
+    padding: 0px 10px;
+    display: flex;
+    align-items: center;
+    margin: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+
+    &.active {
+      &:extend(#message-list-filters li .quick-filter.active);
+
+      &.hoverable {
+        &:hover {
+          &:extend(#message-list-filters
+            li
+            .quick-filter.active.hoverable:hover);
+          color: var(--default-text-color);
+        }
+      }
+    }
+
+    .material-symbols-outlined {
+      margin-left: 10px;
+      font-size: 18px;
+      margin-right: -5px;
+    }
+
+    &:hover {
+      .material-symbols-outlined {
+        color: red;
+      }
+    }
+  }
+}
+
+#toolbar-list-menu .selection {
+  display: none !important;
+}
+
+.message-list-filter-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+#quick-filter-priority {
+  &.prio {
+    &::after {
+      font-family: 'Material Symbols Outlined' !important;
+      font-weight: normal;
+      font-variation-settings: 'wght' 300;
+      vertical-align: top;
+    }
+
+    each(@priorities, {
             @tmp: @value[CLASS];
             &.@{tmp}{
                 //&:extend(table.messagelist tr.message td.subject span.priority span.@{tmp});
@@ -2101,85 +2139,86 @@ body.task-mail.action-compose a.removelink
             }
         });
 
-        &.prio3 {
-            &:after{
-                content: '\e15b';
-            }
-        }
+    &.prio3 {
+      &:after {
+        content: '\e15b';
+      }
     }
+  }
 }
 
 .folderlist {
-    li {
-        a{
-            &.favourite-virtual-box{
-                &::before{
-                    content: "\e838"!important;
-                }
-            }
+  li {
+    a {
+      &.favourite-virtual-box {
+        &::before {
+          content: '\e838' !important;
         }
+      }
     }
+  }
 }
 
-#rcm_folderlist .menu a.favorite::before{
-    &:extend(.menu-before-format);
-    content: "\e838"!important;
+#rcm_folderlist .menu a.favorite::before {
+  &:extend(.menu-before-format);
+  content: '\e838' !important;
 }
 
-#rcm_folderlist .menu a.favorite.unset-to::before{
-    content: "\e838"!important;
-    font-variation-settings: 'FILL' 1;
+#rcm_folderlist .menu a.favorite.unset-to::before {
+  content: '\e838' !important;
+  font-variation-settings: 'FILL' 1;
 }
 
 #folderlistbox,
-#files-compose-dialog
-{
-    ul.treelist.iconized li div.treetoggle {
-        top: 1px!important;
-    }
+#files-compose-dialog {
+  ul.treelist.iconized li div.treetoggle {
+    top: 1px !important;
+  }
 }
 
 .menu-before-format {
-    font-family: 'Material Symbols Outlined' !important;
-    font-weight: normal;
-    font-variation-settings: 'wght' 300, 'opsz' 48;
-    font-size: 22px;
-    line-height: inherit;
-    transform: scale(1);
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal;
+  font-variation-settings:
+    'wght' 300,
+    'opsz' 48;
+  font-size: 22px;
+  line-height: inherit;
+  transform: scale(1);
 }
 
-#rcm_folderlist .menu a.color-folder::before{
-    &:extend(.menu-before-format);
-    content: "\e23a"!important;
+#rcm_folderlist .menu a.color-folder::before {
+  &:extend(.menu-before-format);
+  content: '\e23a' !important;
 }
 
-#rcm_folderlist .menu a.cancel-color-folder::before{
-    &:extend(.menu-before-format);
-    content: "\e23b"!important;
+#rcm_folderlist .menu a.cancel-color-folder::before {
+  &:extend(.menu-before-format);
+  content: '\e23b' !important;
 }
 
-#rcm_folderlist .menu a.icon-folder::before{
-    &:extend(.menu-before-format);
-    content: "\f88d"!important;
+#rcm_folderlist .menu a.icon-folder::before {
+  &:extend(.menu-before-format);
+  content: '\f88d' !important;
 }
 
-#selected-action-list{
-    border-left: solid thin var(--layout-list-header-text-color);
-    margin-left:10px;
-    padding-left:10px;
-    
-    ul {
-        li {
-            a{
-                color: var(--layout-list-header-text-color) !important;
-            }
+#selected-action-list {
+  border-left: solid thin var(--layout-list-header-text-color);
+  margin-left: 10px;
+  padding-left: 10px;
 
-            a.disabled {
-              html.layout-phone &,
-              html.layout-small & {
-                display: none;
-              }
-            }
+  ul {
+    li {
+      a {
+        color: var(--layout-list-header-text-color) !important;
+      }
+
+      a.disabled {
+        html.layout-phone &,
+        html.layout-small & {
+          display: none;
         }
+      }
     }
+  }
 }

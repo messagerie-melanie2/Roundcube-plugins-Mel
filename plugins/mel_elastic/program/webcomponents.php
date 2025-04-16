@@ -308,10 +308,10 @@ class WebComponnents {
             ['bnum-flex-container', 'js_html_base_web_elements.js'],
             ['bnum-centered-flex-container', 'js_html_base_web_elements.js'],
             ['bnum-placeholder', 'js_html_base_web_elements.js'],
-            ['bnum-button', 'HTMLBnumButton.js', 'js/lib/html/JsHtml/CustomAttributes/button'],
-            ['primary-button', 'HTMLBnumButton.js', 'js/lib/html/JsHtml/CustomAttributes/button'],
-            ['secondary-button', 'HTMLBnumButton.js', 'js/lib/html/JsHtml/CustomAttributes/button'],
-            ['error-button', 'HTMLBnumButton.js', 'js/lib/html/JsHtml/CustomAttributes/button'],
+            ['bnum-button', 'HTMLBnumButton.js', '/js/lib/html/JsHtml/CustomAttributes/button'],
+            ['primary-button', 'HTMLBnumButton.js', '/js/lib/html/JsHtml/CustomAttributes/button'],
+            ['secondary-button', 'HTMLBnumButton.js', '/js/lib/html/JsHtml/CustomAttributes/button'],
+            ['error-button', 'HTMLBnumButton.js', '/js/lib/html/JsHtml/CustomAttributes/button'],
             ['bnum-tabs', 'tab_web_element.js'],
             ['bnum-tab-container', 'tab_web_element.js'],
             ['bnum-tab-receiver', 'tab_web_element.js'],
@@ -320,6 +320,7 @@ class WebComponnents {
             ['bnum-infinite-scroll-container', 'infinite_scroll_container.js'],
             ['bnum-avatar', 'avatar.js'],
             ['bnum-searchbar', 'searchbar.js'],
+            ['bnum-helper', 'HTMLBnumHelperElement.js', '/js/lib/webcomponents', 'mel_elastic']
         ];
 
         // Génération des instances de WebComponentData

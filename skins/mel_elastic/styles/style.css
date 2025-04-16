@@ -4857,3 +4857,11 @@ selected-option,
 default-option {
   display: none;
 }
+bnum-helper {
+  border-bottom: dotted thin;
+  cursor: help;
+}
+bnum-helper bnum-icon,
+bnum-helper bnum-icon.material-symbols-outlined {
+  font-size: var(--bnum-helper-icon-font-size, inherit);
+}

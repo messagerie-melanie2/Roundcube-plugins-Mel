@@ -6590,3 +6590,15 @@ selected-option,
 default-option {
   display: none;
 }
+
+bnum-helper {
+  border-bottom: dotted thin;
+  cursor: help;
+
+  bnum-icon {
+    font-size: var(--bnum-helper-icon-font-size, inherit);
+    &.material-symbols-outlined {
+      &:extend(bnum-helper bnum-icon);
+    }
+  }
+}

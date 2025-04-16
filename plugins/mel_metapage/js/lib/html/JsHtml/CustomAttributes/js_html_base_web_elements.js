@@ -535,6 +535,13 @@ class BnumHtmlIcon extends HtmlCustomTag {
     this.innerText = icon;
   }
 
+  /**
+   * Génère un élément HTML de type BnumHtmlIcon
+   * @param {Object} [param0={}]
+   * @param {?string} [param0.icon=null]
+   * @param {Document} [param0.context=document]
+   * @returns {BnumHtmlIcon}
+   */
   static Create({ icon = null, context = document } = {}) {
     let node = context.createElement(this.TAG);
 

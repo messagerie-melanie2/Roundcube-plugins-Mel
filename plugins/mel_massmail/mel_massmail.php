@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Mél Mass Mails
  * plugin mel_massmail pour roundcube
@@ -15,7 +16,8 @@
  */
 // Chargement de la librairie ORM
 @include_once 'includes/libm2.php';
-class mel_massmail extends rcube_plugin {
+class mel_massmail extends rcube_plugin
+{
   /**
    *
    * @var string
@@ -33,13 +35,14 @@ class mel_massmail extends rcube_plugin {
    *
    * @see rcube_plugin::init()
    */
-  function init() {
+  function init()
+  {
     $this->rc = rcmail::get_instance();
 
     // Définition des hooks
     $this->add_hook('message_sent', array(
-        $this,
-        'message_sent'
+      $this,
+      'message_sent'
     ));
 
     // Charge la configuration
@@ -55,7 +58,8 @@ class mel_massmail extends rcube_plugin {
    * @param array $args
    * @return array
    */
-  public function message_sent($args) {
+  public function message_sent($args)
+  {
     if (mel_logs::is(mel_logs::TRACE))
       mel_logs::get_instance()->log(mel_logs::TRACE, "mel::message_sent(" . var_export($args, true) . ")");
     // MANTIS 0004388: Ne pas faire de blocage sur envois massifs depuis Internet si l'auth s'est faite avec la double auth
@@ -64,10 +68,10 @@ class mel_massmail extends rcube_plugin {
     }
     // Configuration des intervals d'envois maximum autorisé
     $send_conf = $this->rc->config->get('max_emitted_messages_configuration', array(
-        // <temps_minute> => <nombre_denvois_max>,
-        5 => 500,
-        60 => 1500,
-        600 => 4000
+      // <temps_minute> => <nombre_denvois_max>,
+      5 => 500,
+      60 => 1500,
+      600 => 4000
     ));
     // Récupération des destinataires du message
     if (isset($args['headers']['To']) && $args['headers']['To'] != 'undisclosed-recipients:;') {
@@ -85,6 +89,18 @@ class mel_massmail extends rcube_plugin {
     } else {
       $bcc = array();
     }
+    // MANTIS 0008830 : Ajouter une liste des derniers destinataires au message d'alerte
+    // Préparation de la liste des destinataires à ajouter
+    $destinataires = array_merge($to, $cc, $bcc);
+    $destinataires = array_map('trim', $destinataires);
+    $destinataires = array_unique($destinataires);
+    // Limite configurable (10 par défaut)
+    $max_destinataires = $this->rc->config->get('max_destinataires_alerte', 10);
+    // Garder uniquement les derniers (fin du tableau)
+    $destinataires = array_slice($destinataires, -$max_destinataires);
+    // Formater la liste pour affichage
+    $destinataires_list = "- " . implode("\n- ", $destinataires);
+
     // Compte le nombre de destinataires
     $nb = count($to) + count($cc) + count($bcc);
     // Configuration des destinataires du mail d'alerte
@@ -111,8 +127,8 @@ class mel_massmail extends rcube_plugin {
             $ldap_error = false;
             if (LibMelanie\Ldap\Ldap::Authentification($uid, $this->rc->get_user_password(), LibMelanie\Config\Ldap::$MASTER_LDAP)) {
               $user = LibMelanie\Ldap\Ldap::GetUserInfos($uid, null, array(
-                  'userpassword',
-                  'sambantpassword'
+                'userpassword',
+                'sambantpassword'
               ), LibMelanie\Config\Ldap::$MASTER_LDAP);
               $entry = array();
               if (strpos($user['userpassword'][0], $pwdgrille) === false) {
@@ -173,6 +189,9 @@ Nous vous invitons à vérifier auprès de l'utilisateur s'il est ou non à l'or
 - Sensibiliser l'utilisateur sur le choix et la sécurisation de son mot de passe
 - Inviter l'utilisateur à activer la double authentification*, dans le but d'une meilleure sécurisation de son compte
 
+Liste des 10 derniers destinataires concernés par l'envoi :
+$destinataires_list
+
 * Le guide d'utilisation de la double authentification est disponible à l'adresse suivante : https://fabrique-numerique.gitbook.io/bnum/tutoriels/apprendre-a/activer-lauthentification-a-deux-facteurs" . ($ldap_error ? "\r\n\r\nPour le PNE:\r\nUne erreur LDAP ($ldap_error) s'est produite, le mot de passe n'a pas pu être grillé automatiquement, merci de le faire au plus vite." : "");
 
             // Envoi du message d'information
@@ -188,13 +207,14 @@ Nous vous invitons à vérifier auprès de l'utilisateur s'il est ou non à l'or
     }
     return $args;
   }
-  
+
   /**
    * Rechercher les opérateurs Mél d'un utilisateur
    * Voir Mantis #4387 (https://mantis.pneam.cp2i.e2.rie.gouv.fr/mantis/view.php?id=4387)
    * @param string $uid Uid de l'utilisateur
    */
-  private function _search_operators_mel_by_dn($uid) {
+  private function _search_operators_mel_by_dn($uid)
+  {
     // Récupération du DN en fonction de l'UID
     $user_infos = LibMelanie\Ldap\Ldap::GetUserInfos($uid);
     $base_dn = $user_infos['dn'];

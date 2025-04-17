@@ -1,6 +1,7 @@
 import ABaseMelObject from '../../../base_mel_object.js';
 import { BaseStorage } from '../../../classes/base_storage.js';
 import { Random } from '../../../classes/random.js';
+import { EMPTY_STRING } from '../../../constants/constants.js';
 import { BnumModules } from '../../../helpers/dynamic_load_modules.js';
 import { MaterialIcon } from '../../../icons.js';
 import { isNullOrUndefined } from '../../../mel.js';
@@ -106,6 +107,7 @@ class HtmlCustomTag extends HTMLElement {
       if (this._p_main) this._p_main();
 
       this.#loaded = true;
+      this._p_setLoaded();
     }
   }
 
@@ -140,6 +142,15 @@ class HtmlCustomTag extends HTMLElement {
     return this.shadowEnabled()
       ? (this.shadowRoot ?? this.attachShadow(shadowConfig))
       : this;
+  }
+
+  /**
+   * Marque l'élément comme chargé, ce qui permet de gérer sa visibilitée pour améliorer son affichage.
+   *
+   * @protected
+   */
+  _p_setLoaded() {
+    this.setAttribute('data-loaded', 'true');
   }
 
   /**
@@ -460,6 +471,26 @@ class HtmlCustomDataTag extends HtmlCustomTag {
 
   _p_save_into_data(dataName, value) {
     this.#data.add(dataName, value);
+
+    return this;
+  }
+
+  _p_startInvisible() {
+    if (
+      !isNullOrUndefined(this.style.visibility) &&
+      this.style.visibility !== EMPTY_STRING
+    )
+      this._p_save_into_data('visibility', this.style.visibility);
+
+    this.style.visibility = 'hidden';
+
+    return this;
+  }
+
+  _p_stopInvisible() {
+    this.style.visibility = this._p_get_data('visibility') || null;
+
+    if (this.#data.has('visibility')) this.#data.remove('visibility');
 
     return this;
   }

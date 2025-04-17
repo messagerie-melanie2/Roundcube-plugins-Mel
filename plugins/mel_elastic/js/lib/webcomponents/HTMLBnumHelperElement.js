@@ -2,8 +2,8 @@ import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constant
 import {
   BnumHtmlIcon,
   BnumHtmlShadowIcon,
-  HtmlCustomDataTag,
 } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/js_html_base_web_elements.js';
+import AHTMLCustomInternalElement from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/lib/AHTMLCustomInternalElement.js';
 
 /**
  * Constante représentant l'icône utilisée par défaut.
@@ -24,7 +24,7 @@ const ICON = 'help';
  * @extends HtmlCustomDataTag
  * @example <h1>Options de la recherche <bnum-helper>Dans quels parties du mail la recherche doit être faite par défaut.</bnum-helper></h1>
  */
-export default class HTMLBnumHelperElement extends HtmlCustomDataTag {
+export default class HTMLBnumHelperElement extends AHTMLCustomInternalElement {
   /**
    * Constructeur de la classe HTMLBnumHelperElement.
    */
@@ -59,6 +59,10 @@ export default class HTMLBnumHelperElement extends HtmlCustomDataTag {
           `:host {
               border-bottom: dotted thin;
               cursor: help;
+            }
+
+            :host(:state(loaded)) {
+              opacity: var(--bnum-helper-opacity, 1) !important;
             }
             `,
         ),

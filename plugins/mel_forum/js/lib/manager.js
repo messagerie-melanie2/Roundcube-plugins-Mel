@@ -689,6 +689,7 @@ export class Manager extends MelObject {
                 params: {
                   _uid: uid,
                   _format: selectedFormat,
+                  _workspace_uid: this.get_env('workspace_uid'),
                 },
                 removeIsFromIframe: true,
               });

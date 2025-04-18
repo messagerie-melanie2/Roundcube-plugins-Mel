@@ -73,3 +73,7 @@ $messages['noemailnamewarning'] = 'Merci de saisir une adresse de courriel ou un
 
 $labels['bookshowurl'] = 'Voir le lien carddav';
 $labels['carddavurldescription'] = 'Copiez cette adresse dans une application cliente <a href="http://en.wikipedia.org/wiki/CardDAV" target="_blank">CardDAV</a> afin de sychroniser vos contacts avec votre ordinateur ou votre mobile.';
+
+$labels['email_list'] = 'Adresses de messagerie';
+$labels['main_email'] = 'Courriel principal';
+$labels['other_emails'] = 'Autres courriels';

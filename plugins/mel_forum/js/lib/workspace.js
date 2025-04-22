@@ -1,6 +1,9 @@
 import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager.js';
 import { WorkspaceModuleBlock } from '../../../mel_workspace/js/lib/WebComponents/workspace_module_block.js';
-import { BnumMessage } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
+import {
+  BnumMessage,
+  eMessageType,
+} from '../../../mel_metapage/js/lib/classes/bnum_message.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { BootstrapLoader } from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/bootstrap-loader.js';
 import { WorkspaceObject } from '../../../mel_workspace/js/lib/program/WorkspaceObject.js';
@@ -116,6 +119,10 @@ export class ModuleForum extends WorkspaceObject {
       this.save_params(
         'tchap_notification',
         +$('#tchap-notification').prop('checked'),
+      );
+      BnumMessage.DisplayMessage(
+        rcmail.gettext('mel_workspace.successfully_saved'),
+        eMessageType.Success,
       );
     });
 

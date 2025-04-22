@@ -1,4 +1,3 @@
-//compress:false
 @import 'main.less';
 @import 'style_mixin.less';
 @import './variables/apps.less';
@@ -6589,4 +6588,18 @@ bnum-option,
 selected-option,
 default-option {
   display: none;
+}
+
+bnum-helper {
+  border-bottom: dotted thin;
+  cursor: help;
+
+  ._webcomponent_loading(bnum-helper);
+
+  bnum-icon {
+    font-size: var(--bnum-helper-icon-font-size, inherit);
+    &.material-symbols-outlined {
+      &:extend(bnum-helper bnum-icon);
+    }
+  }
 }

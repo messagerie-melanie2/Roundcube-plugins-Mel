@@ -231,22 +231,30 @@ window.rcmail &&
       }
       
       // Clic unique sur un <li> pour sélectionner et afficher le contact
-      $(document).on('mousedown', '#annuaire-list li', function (e) {
-        if ($(e.target).closest('.gototree').length) return;
+      const annuaireList = document.getElementById('annuaire-list');
 
-        const $li = $(this);
-        const nodeId = $li.attr('id')?.replace(/^rcmrow/, '');
+      if (annuaireList) {
+        annuaireList.addEventListener('mousedown', function(e) {
+          // Trouve l'élément li parent le plus proche ou vérifie si le target est un li
+          const li = e.target.closest('li');
+          if (!li) return;
 
-        if (
-          !$li.hasClass('selected') &&
-          nodeId &&
-          rcmail.annuaire_list &&
-          rcmail.annuaire_list.select
-        ) {
-          e.preventDefault(); // Évite le "focus-only"
-          rcmail.annuaire_list.select(nodeId); // Sélectionne l’élément
-        }
-      });
+          // Vérifie si le clic était sur un élément avec la classe gototree
+          if (e.target.closest('.gototree')) return;
+
+          const nodeId = li.id?.replace(/^rcmrow/, '');
+
+          if (
+            !li.classList.contains('selected') &&
+            nodeId &&
+            rcmail.annuaire_list &&
+            rcmail.annuaire_list.select
+          ) {
+            e.preventDefault(); // Évite le "focus-only"
+            rcmail.annuaire_list.select(nodeId); // Sélectionne l'élément
+          }
+        });
+      }
     }
 
     if (rcmail.env.task == 'mail') {

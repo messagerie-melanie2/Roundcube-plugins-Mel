@@ -478,8 +478,12 @@ class Gestionnaireabsence extends Moncompteobject
       } else {
         // Erreur
         $err = \LibMelanie\Ldap\Ldap::GetInstance(\LibMelanie\Config\Ldap::$MASTER_LDAP)->getError();
-        rcmail::get_instance()->output->show_message(rcmail::get_instance()->gettext('mel_moncompte.absence_nok') . ' : ' . $err, 'error');
-        return false;
+        if ($err === '0: Success') {
+          rcmail::get_instance()->output->show_message('mel_moncompte.absence_ok', 'confirmation');
+        } else {
+          rcmail::get_instance()->output->show_message(rcmail::get_instance()->gettext('mel_moncompte.absence_nok') . ' : ' . $err, 'error');
+          return false;
+        }
       }
     } else {
       // Erreur d'auth

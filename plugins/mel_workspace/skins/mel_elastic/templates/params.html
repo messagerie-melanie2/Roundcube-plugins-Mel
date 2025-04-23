@@ -1,7 +1,7 @@
 <div class="wsp-params wsp-object" style="margin-top: 30px; display: none">
   <div class="row" style="margin-bottom: 5px">
     <div class="col-md-3">
-      <label for="spaceTitle">Nouveau titre de l'espace : </label>
+      <label for="spaceTitle"><roundcube:label name="mel_workspace.new_wsp_title" /></label>
       <input
         id="spaceTitle"
         type="text"
@@ -19,13 +19,13 @@
         class="mel-button disabled"
         disabled
       >
-        Changer de titre<span class="plus icon-mel-pencil"></span>
+      <roundcube:label name="mel_workspace.change_wsp_title" /><span class="plus icon-mel-pencil"></span>
       </button>
     </div>
   </div>
   <div class="row" style="margin-bottom: 5px">
     <div class="col-md-6">
-      <label for="spaceDesc">Nouvelle description de l'espace : </label>
+      <label for="spaceDesc"><roundcube:label name="mel_workspace.new_wsp_description" /></label>
       <textarea
         id="spaceDesc"
         class="form-control input-mel mel-input"
@@ -40,20 +40,20 @@
         class="mel-button disabled mel-button-block"
         disabled
       >
-        Changer de description<span class="plus icon-mel-pencil"></span>
+      <roundcube:label name="mel_workspace.change_wsp_description" /><span class="plus icon-mel-pencil"></span>
       </button>
       <button
         id="wsp-param-btn-desc-del"
         onclick="rcmail.command('workspace.update_desc', true)"
         class="mel-button btn btn-secondary btn-danger danger"
       >
-        Supprimer la description<span class="plus icon-mel-trash"></span>
+      <roundcube:label name="mel_workspace.delete_wsp_description" /><span class="plus icon-mel-trash"></span>
       </button>
     </div>
   </div>
   <div class="row" style="margin-bottom: 5px; position: relative">
     <div class="col-md-3">
-      <label for="spaceHashtag">Nouvelle thématique : </label>
+      <label for="spaceHashtag"><roundcube:label name="mel_workspace.new_wsp_theme" /></label>
       <input
         id="spaceHashtag"
         type="text"
@@ -78,20 +78,20 @@
         style="margin-right: 5px"
         disabled
       >
-        Changer de thématique<span class="plus icon-mel-pencil"></span>
+      <roundcube:label name="mel_workspace.change_wsp_theme" /><span class="plus icon-mel-pencil"></span>
       </button>
       <button
         id="wsp-param-btn-hash-del"
         onclick="rcmail.command('workspace.update_hashtag', true)"
         class="mel-button btn btn-secondary btn-danger danger"
       >
-        Supprimer la thématique<span class="plus icon-mel-trash"></span>
+      <roundcube:label name="mel_workspace.delete_wsp_theme" /><span class="plus icon-mel-trash"></span>
       </button>
     </div>
   </div>
   <div class="row">
     <div class="col-md-6">
-      <label for="spaceColor">Couleur de l'espace : </label>
+      <label for="spaceColor"><roundcube:label name="mel_workspace.wsp_color" /></label>
       <input
         id="spaceColor"
         type="color"
@@ -102,7 +102,7 @@
       />
     </div>
     <div class="col-md-6">
-      <label for="spaceLogo" style="display: block">Logo de l'espace : </label>
+      <label for="spaceLogo" style="display: block"><roundcube:label name="mel_workspace.wsp_logo" /></label>
       <a
         id="spaceLogo"
         data-popup="groupoptions-wsp-param"
@@ -116,7 +116,7 @@
         id="worspace-avatar-b"
         class="dwp-round mel-focus focus-bordered"
       >
-        <span class="sr-only">Sélectionner un avatar</span>
+        <span class="sr-only"><roundcube:label name="mel_workspace.wsp_avatar" /></span>
         <<logo />>
       </a>
       <button
@@ -126,10 +126,10 @@
         disabled
         style="display: inline-block; margin-left: 15px"
       >
-        Modifier le logo <span class="plus icon-mel-pencil"></span>
+      <roundcube:label name="mel_workspace.change_logo" /><span class="plus icon-mel-pencil"></span>
       </button>
       <div id="groupoptions-wsp-param" class="popupmenu">
-        <h3 id="aria-label-groupoptions-wsp-param" class="voice">Avatars</h3>
+        <h3 id="aria-label-groupoptions-wsp-param" class="voice"><roundcube:label name="mel_workspace.avatar" /></h3>
         <ul
           id="ul-wsp-params"
           class="menu listing"
@@ -146,7 +146,7 @@
       <div class="custom-control custom-switch">
         <input id="tchap-notification" class="pretty-checkbox before-margin-right form-check-input custom-control-input" type="checkbox" <<tchapnotifenabled/>>>
         <label class="custom-control-label" for="tchap-notification">
-          Autoriser les notifications dans le salon tchap associé
+          <roundcube:label name="mel_workspace.enable_notif" />
         </label>
       </div>
     </div>
@@ -195,7 +195,7 @@
     class="btn btn-secondary mel-button"
     onclick="rcmail.command('workspace.add_users')"
   >
-    Ajouter un utilisateur <span class="plus icon-mel-plus"></span>
+    <roundcube:label name="mel_workspace.add_user" /><span class="plus icon-mel-plus"></span>
   </button>
   <!-- </div>
         <div class="col-6">
@@ -210,7 +210,7 @@
     class="mel-button"
     onclick="rcmail.command('workspace.change_visibility')"
   >
-    Passer en <<visibility />>
+  <roundcube:label name="mel_workspace.change_to" /><<visibility />>
   </button>
   <br />
   <<button-leave />>

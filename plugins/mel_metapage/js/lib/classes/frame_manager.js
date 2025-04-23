@@ -1672,12 +1672,10 @@ class FrameManager {
    */
   add_buttons_actions() {
     let $it;
-
     $('#otherapps').css('z-index', OTHERAPPS_Z_INDEX);
 
     for (const iterator of $('#taskmenu a, #otherapps a')) {
       $it = $(iterator);
-
       $it
         .attr('data-task', $it.attr('href').split('=')[1])
         .attr('onclick', EMPTY_STRING)
@@ -1686,7 +1684,8 @@ class FrameManager {
 
       if ($it.hasClass('menu-last-frame'))
         $it
-          .click(() => {
+          .click((e) => {
+            e.preventDefault();
             this._selected_window._history.back();
           })
           .on('mousedown', (e) => {

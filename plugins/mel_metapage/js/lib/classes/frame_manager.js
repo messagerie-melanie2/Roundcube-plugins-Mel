@@ -384,12 +384,33 @@ class HistoryManager {
   }
 
   /**
+   * Nombre de frames dans l'historique
+   * @type {number}
+   * @readonly
+   */
+  get count() {
+    return this._history.length;
+  }
+
+  /**
+   * Dernière frame dans l'historique
+   * @type {string}
+   * @readonly
+   */
+  get last() {
+    return this._history[this._history.length - 1];
+  }
+
+  /**
    * Ajoute une tâche à l'historique
    * @param {string} task Tâche à ajouter
    * @returns {HistoryManager} Chaînage
    */
   add(task) {
-    this.update_button_back(task)._history.push(task);
+    if (this._history[this._history.length - 1] !== task) {
+      this.update_button_back(task);
+      this._history.push(task);
+    }
 
     if (this._history.length > 10) this._history = this._history.slice(1);
 
@@ -562,6 +583,10 @@ class HistoryManager {
       {},
     );
   }
+
+  removeLast() {
+    return this._history.pop();
+  }
 }
 
 /**
@@ -617,6 +642,15 @@ class Window {
    */
   get uid() {
     return this._id;
+  }
+
+  /**
+   * Historique
+   * @type {HistoryManager}
+   * @readonly
+   */
+  get history() {
+    return this._history;
   }
 
   /**
@@ -856,7 +890,9 @@ class Window {
    */
   async _open_frame(task, { new_args = null, anchor = null } = {}) {
     //Ajoute à l'historique et cache l'ancienne frame
-    this._history.add(this._current_frame.task);
+    if (this._current_frame.task !== task)
+      this._history.add(this._current_frame.task);
+
     this._current_frame.hide();
     this._current_frame = this._frames.get(task);
 

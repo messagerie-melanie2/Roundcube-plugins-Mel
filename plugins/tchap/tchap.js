@@ -30,18 +30,22 @@ const SLEEP_ON_TASK = 2500;
 const SLEEP_OUTSIDE = 30000;
 
 /**
- * @class
- * @classdesc Classe de gestion de tchap en JS
+ * @class tchap_manager
+ * @classdesc Classe de gestion de Tchap en JavaScript.
  * @extends {MelObject}
  */
 class tchap_manager extends MelObject {
+  /**
+   * Constructeur de la classe tchap_manager.
+   */
   constructor() {
     super();
   }
 
   // #region ReadOnlyVar
+
   /**
-   * Document de la frame de tchap
+   * Document de la frame de Tchap.
    * @type {Document}
    * @readonly
    */
@@ -50,7 +54,7 @@ class tchap_manager extends MelObject {
   }
 
   /**
-   * Badge qui contient si il y a des messages non-lu
+   * Badge contenant le nombre de messages non lus.
    * @type {HTMLElement}
    * @readonly
    */
@@ -61,7 +65,7 @@ class tchap_manager extends MelObject {
   }
 
   /**
-   * Bouton qui ouvre le menu des paramètres
+   * Bouton pour ouvrir le menu des paramètres.
    * @type {HTMLElement}
    * @readonly
    */
@@ -70,7 +74,7 @@ class tchap_manager extends MelObject {
   }
 
   /**
-   * Ouvre le menu des paramètres puis récupère le bouton qui ouvre les paramètres.
+   * Ouvre le menu des paramètres et retourne le bouton des paramètres.
    * @type {Promise<HTMLElement>}
    * @readonly
    */
@@ -84,7 +88,7 @@ class tchap_manager extends MelObject {
   }
 
   /**
-   * Ouvre le menu des paramètres puis récupère le bouton de déconnexion.
+   * Ouvre le menu des paramètres et retourne le bouton de déconnexion.
    * @type {Promise<HTMLElement>}
    * @readonly
    */
@@ -101,7 +105,7 @@ class tchap_manager extends MelObject {
   }
 
   /**
-   * Panneau de gauche
+   * Panneau de gauche de l'interface Tchap.
    * @type {HTMLElement}
    * @readonly
    */
@@ -110,7 +114,7 @@ class tchap_manager extends MelObject {
   }
 
   /**
-   * Div en arrière plan lorsque le menu des paramètres est ouvert.
+   * Div en arrière-plan lorsque le menu des paramètres est ouvert.
    * @type {HTMLElement}
    * @readonly
    */
@@ -119,7 +123,7 @@ class tchap_manager extends MelObject {
   }
 
   /**
-   * Ouvre le menu des paramètres puis récupère le bouton de thème.
+   * Ouvre le menu des paramètres et retourne le bouton de changement de thème.
    * @type {Promise<HTMLElement>}
    * @readonly
    */
@@ -129,7 +133,7 @@ class tchap_manager extends MelObject {
   }
 
   /**
-   * Messages non-lu
+   * Nombre de messages non lus.
    * @type {string | number}
    * @readonly
    */
@@ -144,6 +148,7 @@ class tchap_manager extends MelObject {
 
   // #region Main
   /**
+   * Méthode principale asynchrone pour initialiser le gestionnaire Tchap.
    * @async
    * @package
    */
@@ -152,21 +157,21 @@ class tchap_manager extends MelObject {
     if ($('#wait_box').length) $('#wait_box').hide();
 
     /**
-     * Interrupteur local qui défini si tchap à été lancer en mode mobile puis redimensionner.
-     *
-     * La page de "redirection" ne doit pas être afficher en cas de redimensionnement.
+     * Interrupteur local pour définir si Tchap a été lancé en mode mobile puis redimensionné.
      * @private
      * @type {boolean}
      */
     this._tchap_mobile_mode_removed = false;
 
+    // Récupération de l'URL de démarrage de Tchap depuis l'environnement
     const url = this.get_env('tchap_startup_url') || this.get_env('tchap_url');
     let $tchap = $('#tchap_frame').attr('src', url);
 
+    // Gestion spécifique pour Internet Explorer
     if (navigator.appName === 'Microsoft Internet Explorer')
       $tchap[0].contentWindow.location.reload(true);
 
-    //Ne pas afficher tchap en mode mobile
+    // Ne pas afficher Tchap en mode mobile
     if ((top ?? parent).$('html').hasClass('layout-phone')) {
       $('#tchap_frame').hide();
       $('#tchap_mobile').show();
@@ -174,23 +179,36 @@ class tchap_manager extends MelObject {
       this._tchap_mobile_mode_removed = true;
     }
 
+    // Ajout d'un gestionnaire d'événements pour charger les éléments nécessaires
     this.tchap_frame().on('load', () => {
       if (this.observer) {
         this.observer.disconnect();
         this.observer = null;
       }
+
+      // Création d'un observateur pour surveiller les mutations DOM dans la frame Tchap
       this.observer = new MutationObserver((mutations) => {
+        // Parcourt toutes les mutations détectées
         for (const element of mutations) {
+          // Vérifie si le type de mutation est l'ajout ou la suppression d'enfants
           if (element.type === 'childList') {
+            // Si le panneau de gauche est modifié
             if (element.target.classList.contains('mx_LeftPanel_wrapper')) {
+              // Si l'observateur est nécessaire et que l'application est initialisée
               if (this.needObserver && this.appInitialized) {
+                // Met à jour les éléments nécessaires
                 this.#_setElements();
                 this.needObserver = false;
-              } else if (!this.appInitialized) {
+              }
+              // Si l'application n'est pas encore initialisée
+              else if (!this.appInitialized) {
+                // Initialise les éléments nécessaires
                 this.#_initElements();
                 this.appInitialized = true;
               }
-            } else if (
+            }
+            // Si l'application est initialisée mais que l'observateur devient nécessaire
+            else if (
               this.appInitialized &&
               !this.needObserver &&
               element.target.classList.contains('mx_AuthBody')
@@ -201,6 +219,7 @@ class tchap_manager extends MelObject {
         }
       });
 
+      // Observer les mutations sur le body de la frame Tchap
       this.observer.observe(this.tchapContext.querySelector('body'), {
         childList: true,
         subtree: true,
@@ -210,15 +229,16 @@ class tchap_manager extends MelObject {
   //#endregion
   // #region private
   /**
-   * Gestion des notifications sur la barre de gauche
+   * Gestion des notifications sur la barre de gauche.
    * @private
    * @return {Promise<void>}
    */
   async _notificationhandler() {
-    // eslint-disable-next-line no-constant-condition
+    // Boucle infinie pour mettre à jour les notifications
     while (true) {
       this.update_badge();
 
+      // Pause entre les mises à jour en fonction de la tâche active
       await this.sleep(
         FramesManager.Instance.currentTask === 'tchap'
           ? SLEEP_ON_TASK
@@ -314,6 +334,23 @@ class tchap_manager extends MelObject {
     );
     return updateCallback(this.tchapContext.querySelector(selector));
   }
+
+  /**
+   * Cache ou affiche le panneau de gauche de Tchap si 'mwsp' est présent dans la classe de l'élément HTML.
+   * @private
+   */
+  _update_tchap_left_panel() {
+    let style;
+    if (document.querySelector('html').classList.contains('mwsp'))
+      style = 'none';
+    else style = 'flex';
+
+    FramesManager.Instance.get_frame('tchap')[0]
+      .contentWindow.$('#tchap_frame')[0]
+      .contentWindow.document.querySelector(
+        '.mx_LeftPanel_wrapper',
+      ).style.display = style;
+  }
   // #endregion
   // #region publics
 
@@ -328,7 +365,7 @@ class tchap_manager extends MelObject {
   }
 
   /**
-   * Retourne la frame de tchap
+   * Retourne la frame de Tchap.
    * @public
    * @returns {external:Jquery}
    */
@@ -337,28 +374,31 @@ class tchap_manager extends MelObject {
   }
 
   /**
-   * Change le thème de tchap
+   * Change le thème de Tchap.
    * @public
    * @method
    */
   async change_theme() {
+    // Récupération du mode de couleur actuel
     const color = this.get_skin().color_mode();
     const tchap_color = this.tchapContext
       .querySelector('body')
       .classList.contains(CURRENT_THEME_BODY_CLASS)
       ? 'light'
       : 'dark';
-    // debugger;
+
+    // Si le thème est différent, on le change
     if (color !== tchap_color) {
-      let button = await this.themeButton; //?.click?.();
+      let button = await this.themeButton;
       button?.click?.();
 
+      // Ferme le menu contextuel si nécessaire
       if (this.contextualMenuBackground) this.contextualMenuBackground.click();
     }
   }
 
   /**
-   * Ouvre les paramètres de tchap
+   * Ouvre les paramètres de Tchap.
    * @public
    * @method
    */
@@ -368,7 +408,7 @@ class tchap_manager extends MelObject {
   }
 
   /**
-   * Options gérant l'affichage de la barre latérale de tchap
+   * Options gérant l'affichage de la barre latérale de Tchap.
    * @public
    * @method
    */
@@ -384,7 +424,7 @@ class tchap_manager extends MelObject {
   }
 
   /**
-   * Deconnecte de tchap
+   * Déconnecte de Tchap.
    * @public
    * @method
    */
@@ -400,13 +440,13 @@ class tchap_manager extends MelObject {
    * @returns {tchap_manager}
    */
   _try_observe_html() {
-    // Selectionne le noeud dont les mutations seront observées
+    // Sélectionne le noeud HTML à observer
     let targetNode = document.querySelector('html');
 
-    // Options de l'observateur (quelles sont les mutations à observer)
+    // Options de l'observateur (observer les changements d'attributs)
     let config = { attributes: true, childList: false, subtree: false };
 
-    // Créé une instance de l'observateur lié à la fonction de callback
+    // Création d'un observateur pour détecter les changements de classe
     let observer = new MutationObserver((mutationsList) => {
       for (const mutation of mutationsList) {
         if (
@@ -419,25 +459,9 @@ class tchap_manager extends MelObject {
       }
     });
 
+    // Démarrage de l'observation
     observer.observe(targetNode, config);
 
     return this;
-  }
-
-  /**
-   * Cache ou affiche le panneau de gauche de tchap si 'mwsp' est présent dans la classe de l'élément html
-   * @private
-   */
-  _update_tchap_left_panel() {
-    let style;
-    if (document.querySelector('html').classList.contains('mwsp'))
-      style = 'none';
-    else style = 'flex';
-
-    FramesManager.Instance.get_frame('tchap')[0]
-      .contentWindow.$('#tchap_frame')[0]
-      .contentWindow.document.querySelector(
-        '.mx_LeftPanel_wrapper',
-      ).style.display = style;
   }
 }

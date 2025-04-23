@@ -98,11 +98,11 @@ class Gestionnaireabsence extends Moncompteobject
     $user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.gestionnaireabsence');
     // Parcourir les absences
     $hasAbsence = false;
-    $offsetChoice = ["-0400" => "America/Guadeloupe","+0000" => "Europe/Paris","+0300" => "Indian/Mayotte","+0400" => "Indian/Reunion"];
+    $offsetChoice = ["-0400" => "America/Guadeloupe", "+0000" => "Europe/Paris", "+0300" => "Indian/Mayotte", "+0400" => "Indian/Reunion"];
     $timezone = rcmail::get_instance()->config->get('timezone');
-    
+
     $html = "%%selectTimezone%%";
-    
+
     $html .= self::absence_template('%%template%%');
     $i = 0;
     foreach ($user->outofoffices as $type => $outofoffice) {
@@ -135,32 +135,33 @@ class Gestionnaireabsence extends Moncompteobject
     if (!$hasAbsence) {
       $html .= html::div('noabsence', rcmail::get_instance()->gettext('noabsence', 'mel_moncompte'));
     }
-    return str_replace("%%selectTimezone%%",self::generate_timezone($timezone),$html);
+    return str_replace("%%selectTimezone%%", self::generate_timezone($timezone), $html);
   }
 
   /**
    * Génération de la liste déroulante des timezones pour les absence hebdo
    */
-  private static function generate_timezone($timezone) {
+  private static function generate_timezone($timezone)
+  {
     $field_id = 'rcmfd_timezone';
     $select = new html_select([
-            'name'  => 'absence_timezone',
-            'id'    => $field_id,
-            'class' => 'custom-select mb-4'
+      'name'  => 'absence_timezone',
+      'id'    => $field_id,
+      'class' => 'custom-select mb-4'
     ]);
 
     $zones = [];
     foreach (DateTimeZone::listIdentifiers() as $i => $tzs) {
-        if ($data = self::timezone_standard_time_data($tzs)) {
-            $zones[$data['key']] = [$tzs, $data['offset']];
-        }
+      if ($data = self::timezone_standard_time_data($tzs)) {
+        $zones[$data['key']] = [$tzs, $data['offset']];
+      }
     }
 
     ksort($zones);
 
     foreach ($zones as $zone) {
-        list($tzs, $offset) = $zone;
-        $select->add('(GMT ' . $offset . ') ' . self::timezone_label($tzs), $tzs);
+      list($tzs, $offset) = $zone;
+      $select->add('(GMT ' . $offset . ') ' . self::timezone_label($tzs), $tzs);
     }
 
     return $select->show((string)$timezone);
@@ -177,36 +178,38 @@ class Gestionnaireabsence extends Moncompteobject
     $checkbox_all_day = new html_checkbox(['id' => "all_day$i", 'class' => 'form-check-input', 'name' => "all_day$i", 'value' => '1', 'onclick' => 'all_day_check(this);']);
 
     // MCE - Ajouter le périmètre de réponse dans les absences hebdo
-		$span_perimeter = '';
-		if (rcmail::get_instance()->config->get('moncompte_absence_hebdo_perimetre', false)) {
-			$select = new html_select(['id' => "perimeter$i", 'name' => "perimeter$i"]);
-			$select->add(rcmail::get_instance()->gettext('absence_type_all', 'mel_moncompte'), Outofoffice::TYPE_ALL);
-			$select->add(rcmail::get_instance()->gettext('absence_type_interne', 'mel_moncompte'), Outofoffice::TYPE_INTERNAL);
-			$select->add(rcmail::get_instance()->gettext('absence_type_externe', 'mel_moncompte'), Outofoffice::TYPE_EXTERNAL);
-			$span_perimeter = html::div('form-group',
-        html::span('perimeter',
+    $span_perimeter = '';
+    if (rcmail::get_instance()->config->get('moncompte_absence_hebdo_perimetre', false)) {
+      $select = new html_select(['id' => "perimeter$i", 'name' => "perimeter$i"]);
+      $select->add(rcmail::get_instance()->gettext('absence_type_all', 'mel_moncompte'), Outofoffice::TYPE_ALL);
+      $select->add(rcmail::get_instance()->gettext('absence_type_interne', 'mel_moncompte'), Outofoffice::TYPE_INTERNAL);
+      $select->add(rcmail::get_instance()->gettext('absence_type_externe', 'mel_moncompte'), Outofoffice::TYPE_EXTERNAL);
+      $span_perimeter = html::div(
+        'form-group',
+        html::span(
+          'perimeter',
           html::label(['for' => "perimeter$i"], rcmail::get_instance()->gettext('absence_perimetre_label', 'mel_moncompte')) .
-          $select->show($perimeter)
+            $select->show($perimeter)
         )
-			);
-		}
+      );
+    }
 
     return html::div(
       'absence' . ($i === '%%template%%' ? ' template' : ''),
       html::div(
         'form-row justify-content-between',
-        $span_perimeter . 
-        html::div(
-          'form-group',
+        $span_perimeter .
           html::div(
-            'form-check',
-            html::span(
-              'allday',
-              $checkbox_all_day->show($all_day ? '1' : '0') .
-                html::label(['for' => "all_day$i", 'class' => 'form-check-label'], rcmail::get_instance()->gettext('allday', 'mel_moncompte'))
+            'form-group',
+            html::div(
+              'form-check',
+              html::span(
+                'allday',
+                $checkbox_all_day->show($all_day ? '1' : '0') .
+                  html::label(['for' => "all_day$i", 'class' => 'form-check-label'], rcmail::get_instance()->gettext('allday', 'mel_moncompte'))
+              )
             )
-          )
-        ) .
+          ) .
           html::div(
             'form-group',
             html::div(
@@ -254,73 +257,72 @@ class Gestionnaireabsence extends Moncompteobject
     );
   }
 
-    /**
-     * Localize timezone identifiers
-     *
-     * @param string $tz Timezone name
-     *
-     * @return string Localized timezone name
-     */
-    public static function timezone_label($tz)
-    {
-        static $labels;
+  /**
+   * Localize timezone identifiers
+   *
+   * @param string $tz Timezone name
+   *
+   * @return string Localized timezone name
+   */
+  public static function timezone_label($tz)
+  {
+    static $labels;
 
-        if ($labels === null) {
-            $labels = [];
-            $lang   = $_SESSION['language'];
-            if ($lang && $lang != 'en_US') {
-                if (file_exists(RCUBE_LOCALIZATION_DIR . "$lang/timezones.inc")) {
-                    include RCUBE_LOCALIZATION_DIR . "$lang/timezones.inc";
-                }
-            }
+    if ($labels === null) {
+      $labels = [];
+      $lang   = $_SESSION['language'];
+      if ($lang && $lang != 'en_US') {
+        if (file_exists(RCUBE_LOCALIZATION_DIR . "$lang/timezones.inc")) {
+          include RCUBE_LOCALIZATION_DIR . "$lang/timezones.inc";
         }
-
-        if (empty($labels)) {
-            return str_replace('_', ' ', $tz);
-        }
-
-        $tokens = explode('/', $tz);
-        $key    = 'tz';
-
-        foreach ($tokens as $i => $token) {
-            $idx   = strtolower($token);
-            $token = str_replace('_', ' ', $token);
-            $key  .= ":$idx";
-
-            $tokens[$i] = !empty($labels[$key]) ? $labels[$key] : $token;
-        }
-
-        return implode('/', $tokens);
+      }
     }
 
-    /**
-     * Returns timezone offset in standard time
-     */
-    public static function timezone_standard_time_data($tzname)
-    {
-        try {
-            $tz    = new DateTimeZone($tzname);
-            $date  = new DateTime(null, $tz);
-            $count = 12;
-
-            // Move back for a month (up to 12 times) until non-DST date is found
-            while ($count > 0 && $date->format('I')) {
-                $date->sub(new DateInterval('P1M'));
-                $count--;
-            }
-
-            $offset  = $date->format('Z') + 45000;
-            $sortkey = sprintf('%06d.%s', $offset, $tzname);
-
-            return [
-                'key'    => $sortkey,
-                'offset' => $date->format('P'),
-            ];
-        }
-        catch (Exception $e) {
-            // ignore
-        }
+    if (empty($labels)) {
+      return str_replace('_', ' ', $tz);
     }
+
+    $tokens = explode('/', $tz);
+    $key    = 'tz';
+
+    foreach ($tokens as $i => $token) {
+      $idx   = strtolower($token);
+      $token = str_replace('_', ' ', $token);
+      $key  .= ":$idx";
+
+      $tokens[$i] = !empty($labels[$key]) ? $labels[$key] : $token;
+    }
+
+    return implode('/', $tokens);
+  }
+
+  /**
+   * Returns timezone offset in standard time
+   */
+  public static function timezone_standard_time_data($tzname)
+  {
+    try {
+      $tz    = new DateTimeZone($tzname);
+      $date  = new DateTime(null, $tz);
+      $count = 12;
+
+      // Move back for a month (up to 12 times) until non-DST date is found
+      while ($count > 0 && $date->format('I')) {
+        $date->sub(new DateInterval('P1M'));
+        $count--;
+      }
+
+      $offset  = $date->format('Z') + 45000;
+      $sortkey = sprintf('%06d.%s', $offset, $tzname);
+
+      return [
+        'key'    => $sortkey,
+        'offset' => $date->format('P'),
+      ];
+    } catch (Exception $e) {
+      // ignore
+    }
+  }
 
 
   /**
@@ -448,7 +450,7 @@ class Gestionnaireabsence extends Moncompteobject
             $outofoffice->order = 70;
             $outofoffice->days = $days;
             $type = trim(rcube_utils::get_input_value("perimeter$i", rcube_utils::INPUT_POST));
-						$outofoffice->type = $type ?: Outofoffice::TYPE_ALL;
+            $outofoffice->type = $type ?: Outofoffice::TYPE_ALL;
             $outofoffice->message = trim(rcube_utils::get_input_value("message$i", rcube_utils::INPUT_POST));
             $all_day = trim(rcube_utils::get_input_value("all_day$i", rcube_utils::INPUT_POST));
             if ($all_day) {
@@ -468,8 +470,8 @@ class Gestionnaireabsence extends Moncompteobject
       $user->outofoffices = $outofoffices;
 
       // Enregistrement de l'utilisateur avec les nouvelles données
-			$ret = $user->save();
-			if (!is_null($ret)) {
+      $ret = $user->save();
+      if (!is_null($ret)) {
         // Ok
         rcmail::get_instance()->output->show_message('mel_moncompte.absence_ok', 'confirmation');
         return true;
@@ -485,59 +487,62 @@ class Gestionnaireabsence extends Moncompteobject
       return false;
     }
   }
-  
 
-  public static function get_ponctual_dates() {
-		    // Récupération de l'utilisateur
-        $user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.gestionnaireabsence');
-        if ($user->authentification(Moncompte::get_current_user_password(), true))
-        {
-          $user->load(['outofoffices']);
-          $offices = $user->outofoffices;
-          $external_oof = $user->outofoffices[Outofoffice::TYPE_INTERNAL];
-  
-          $start = isset($external_oof->start) ? $external_oof->start->format('d/m/Y H:i:s') : null;
-          $end = isset($external_oof->end) ? $external_oof->end->format('d/m/Y H:i:s') : null;
-  
-          if (!isset($start) || !isset($end)) {
-            $external_oof = $external_oof ?? $user->outofoffices[Outofoffice::TYPE_EXTERNAL];
-  
-            $start = isset($external_oof->start) ? $external_oof->start->format('d/m/Y H:i:s') : $start;
-            $end = isset($external_oof->end) ? $external_oof->end->format('d/m/Y H:i:s') : $end;
-          }
-  
-        echo json_encode(['start' => $start,
-                          'end' => $end,
-                          'message' => $external_oof->message ?? '']);
-        }
-        else {
-          rcmail::get_instance()->output->show_message('mel_moncompte.absence_nok', 'error');
-          echo json_encode(['start' => null,
-          'end' => null,
-          'message' => $external_oof->message ?? '']);
-        }
 
-      exit;
-	}
+  public static function get_ponctual_dates()
+  {
+    // Récupération de l'utilisateur
+    $user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.gestionnaireabsence');
+    if ($user->authentification(Moncompte::get_current_user_password(), true)) {
+      $user->load(['outofoffices']);
+      $offices = $user->outofoffices;
+      $external_oof = $user->outofoffices[Outofoffice::TYPE_INTERNAL];
 
-	public static function set_quick_ponctual_dates() {
+      $start = isset($external_oof->start) ? $external_oof->start->format('d/m/Y H:i:s') : null;
+      $end = isset($external_oof->end) ? $external_oof->end->format('d/m/Y H:i:s') : null;
+
+      if (!isset($start) || !isset($end)) {
+        $external_oof = $external_oof ?? $user->outofoffices[Outofoffice::TYPE_EXTERNAL];
+
+        $start = isset($external_oof->start) ? $external_oof->start->format('d/m/Y H:i:s') : $start;
+        $end = isset($external_oof->end) ? $external_oof->end->format('d/m/Y H:i:s') : $end;
+      }
+
+      echo json_encode([
+        'start' => $start,
+        'end' => $end,
+        'message' => $external_oof->message ?? ''
+      ]);
+    } else {
+      rcmail::get_instance()->output->show_message('mel_moncompte.absence_nok', 'error');
+      echo json_encode([
+        'start' => null,
+        'end' => null,
+        'message' => $external_oof->message ?? ''
+      ]);
+    }
+
+    exit;
+  }
+
+  public static function set_quick_ponctual_dates()
+  {
     $date_debut = trim(rcube_utils::get_input_value('absence_date_debut', rcube_utils::INPUT_POST));
     $date_fin = trim(rcube_utils::get_input_value('absence_date_fin', rcube_utils::INPUT_POST));
     // Récupération de l'utilisateur
     $user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.gestionnaireabsence');
-    if ($user->authentification(Moncompte::get_current_user_password(), true))
-    {
+    if ($user->authentification(Moncompte::get_current_user_password(), true)) {
       $user->load(['outofoffices']);
       echo self::set_ponctual_dates($user, $date_debut, $date_fin);
-    }
-    else {           
+    } else {
       rcmail::get_instance()->output->show_message('mel_moncompte.absence_nok', 'error');
       echo false;
     }
     exit;
   }
 
-	private static function set_ponctual_dates(&$user, $start, $end) {
+  private static function set_ponctual_dates(&$user, $start, $end)
+  {
     $outoffice = $user->outofoffices;
     if ($outoffice[Outofoffice::TYPE_INTERNAL] !== null)
       $outoffice[Outofoffice::TYPE_INTERNAL] = self::update_ponctual($user->outofoffices[Outofoffice::TYPE_INTERNAL], $start, $end);
@@ -548,7 +553,8 @@ class Gestionnaireabsence extends Moncompteobject
     return $user->save();
   }
 
-  private static function update_ponctual($outoffice, $start, $end) {
+  private static function update_ponctual($outoffice, $start, $end)
+  {
     $outoffice->start = \DateTime::createFromFormat('d/m/Y', $start);
     $outoffice->end = \DateTime::createFromFormat('d/m/Y', $end);
     $message = $outoffice->message;
@@ -559,12 +565,13 @@ class Gestionnaireabsence extends Moncompteobject
     return $outoffice;
   }
 
-	private static function try_enable_ponctual_date($outoffice) {
+  private static function try_enable_ponctual_date($outoffice)
+  {
     if ($outoffice[Outofoffice::TYPE_EXTERNAL] === null & $outoffice[Outofoffice::TYPE_INTERNAL] === null) {
       $outoffice[Outofoffice::TYPE_EXTERNAL]->enable = true;
       $outoffice[Outofoffice::TYPE_INTERNAL]->enable = true;
     }
-    
+
     return $outoffice;
   }
 }

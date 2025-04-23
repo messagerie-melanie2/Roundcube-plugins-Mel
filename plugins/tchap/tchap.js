@@ -241,7 +241,6 @@ class tchap_manager extends MelObject {
   }
 
   #_initElements() {
-    console.log('Init elements');
     if (this._tchap_mobile_mode_removed) {
       window.addEventListener('resize', () => {
         if (
@@ -287,9 +286,8 @@ class tchap_manager extends MelObject {
     }
 
     this.#_setElements();
-
-    console.log('Ended elements');
   }
+
   #_setElements() {
     const CONNECTED_SELECTOR = `.${SETTING_BUTTON}`;
 

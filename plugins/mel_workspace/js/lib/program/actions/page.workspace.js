@@ -79,6 +79,21 @@ export class WorkspacePage extends WorkspaceObject {
       }
     }, 'tasks');
 
+    if (FramesManager.Instance.get_window()._history.back_enabled()) {
+      NavBarManager.AddEventListener().OnAfterSwitch(() => {
+        FramesManager.Instance.get_window().history.removeLast();
+        FramesManager.Instance.get_window().history.update_button_back(
+          FramesManager.Instance.get_window().history.last,
+        );
+
+        if (FramesManager.Instance.get_window().history.count === 0) {
+          FramesManager.Instance.get_window()
+            .history.$back.addClass('disabled')
+            .attr('disabled', 'disabled');
+        }
+      }, '/');
+    }
+
     NavBarManager.currentNavBar.onactionclicked.push((type) => {
       switch (type) {
         case 'more':

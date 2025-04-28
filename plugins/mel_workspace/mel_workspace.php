@@ -172,7 +172,6 @@ class mel_workspace extends bnum_plugin
 
             case 'tasks':
                 if ($this->is_index_action()) {
-                    //$this->include_module('page.tasks.js');
                     $this->include_module_action('page.tasks.js');
                 }
                 break;
@@ -334,7 +333,6 @@ class mel_workspace extends bnum_plugin
         $navbar = new NavBar($uid);
         $navbar->add_css($this->local_skin_path() . '/navbar.css');
         $navbar->add_css('/' . $this->local_skin_path() . '/material-symbols.css');
-        // $navbar->add_module('js/lib/navbar.js');
 
         $this->rc()->output->set_env('navbar', $navbar->get());
 
@@ -507,13 +505,12 @@ class mel_workspace extends bnum_plugin
     function get_email_from_workspace()
     {
         $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
-        $workspace = new Workspace($uid, true); //self::get_workspace($uid);
+        $workspace = new Workspace($uid, true);
         $shares = $workspace->users(true);
         $array = [];
         $user = driver_mel::gi()->getUser()->uid;
         foreach ($shares as $key => $value) {
             if ($value->uid !== $user) {
-                // $tmp = driver_mel::gi()->getUser($value->user);
 
                 if (isset($value)) $array[] = "$value->fullname<$value->email>";
             }
@@ -599,19 +596,17 @@ class mel_workspace extends bnum_plugin
     public function join_user()
     {
         $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
-        $workspace = self::Workspace($uid); //self::get_workspace($uid);
+        $workspace = self::Workspace($uid);
         if ($workspace->isPublic() === 1) {
             $workspace->add_users(driver_mel::gi()->getUser()->uid);
             $this->_add_users($workspace, [driver_mel::gi()->getUser()]);
             $workspace->save();
-            $admins = $workspace->getAdmins(); //self::get_admins($workspace);
+            $admins = $workspace->getAdmins();
             foreach ($admins as $admin) {
                 if (class_exists("mel_notification")) {
                     mel_notification::notify('workspace', driver_mel::gi()->getUser()->name . ' vient de rejoindre l\'espace "' . $workspace->title() . '" !', '', null, $admin->uid);
                 }
             }
-            //récupérer tout les admins du workspaces
-            //for each notif
         } else
             echo "denied";
         exit;
@@ -619,11 +614,10 @@ class mel_workspace extends bnum_plugin
 
     public function change_color()
     {
-        // include_once "lib/mel_utils.php";
         mel_helper::load_helper()->include_utilities();
         $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
         $color = rcube_utils::get_input_value("_color", rcube_utils::INPUT_POST);
-        $workspace = new Workspace($uid, true); //$this->update_setting($uid, "color", $color);
+        $workspace = new Workspace($uid, true);
         $workspace->color($color);
 
         if ($workspace->get() !== null && $workspace->isAdmin($this->_CurrentUser()->uid)) {
@@ -641,22 +635,11 @@ class mel_workspace extends bnum_plugin
     function change_visibility()
     {
         $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
-        $workspace = new Workspace($uid, true); //self::get_workspace($uid);
+        $workspace = new Workspace($uid, true);
 
         if ($workspace->isAdmin($this->_CurrentUser()->uid)) {
-            // $isPublic = !$workspace->ispublic;
-            // $workspace->ispublic = $isPublic;
             $workspace->isPublic(!$workspace->isPublic());
             $workspace->save();
-
-            // try {
-            //     $rocket = $this->rc->plugins->get_plugin('rocket_chat');
-            //     $rocket->update_channel_type(
-            //         $this->get_object($workspace, self::CHANNEL)->id,
-            //         !$isPublic);
-            // } catch (\Throwable $th) {
-            //     //throw $th;
-            // }
 
             echo "";
         } else
@@ -669,11 +652,9 @@ class mel_workspace extends bnum_plugin
     {
         $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
         $logo = rcube_utils::get_input_value("_logo", rcube_utils::INPUT_POST) ?? "false";
-        $workspace = new Workspace($uid, true); //self::get_workspace($uid);
+        $workspace = new Workspace($uid, true);
 
         if ($workspace->isAdmin($this->_CurrentUser()->uid)) {
-            //$workspace->logo = $logo;
-            //self::edit_modified_date($workspace, false);
             $workspace->logo($logo);
             $workspace->save();
             echo "";
@@ -691,21 +672,17 @@ class mel_workspace extends bnum_plugin
         $type = rcube_utils::get_input_value("_type", rcube_utils::INPUT_POST);
         $val = rcube_utils::get_input_value("_val", rcube_utils::INPUT_POST);
 
-        $wsp = new Workspace($uid, true); //self::get_workspace($uid);
-
+        $wsp = new Workspace($uid, true);
         if ($wsp->isAdmin($this->get_user()->uid)) {
 
             switch ($type) {
                 case 'title':
-                    //$wsp->title = $val;
                     $wsp->title($val);
                     break;
                 case 'desc':
-                    //$wsp->description = $val;
                     $wsp->description($val);
                     break;
                 case 'hashtag':
-                    //$wsp->hashtags = [$val];
                     $wsp->hashtag($val);
                     break;
 
@@ -719,7 +696,6 @@ class mel_workspace extends bnum_plugin
         }
 
         $this->sendExit(!!$echoed);
-        //exit;
     }
 
     /**
@@ -733,40 +709,10 @@ class mel_workspace extends bnum_plugin
         //get input
         $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
         $tmp_users = rcube_utils::get_input_value("_users", rcube_utils::INPUT_POST);
-        //
-        $workspace = new Workspace($uid, true); //self::get_workspace($uid);
+        $workspace = new Workspace($uid, true);
         //get users
         $users = [];
         $noNotifUsers = [];
-        $unexistingUsers = [];
-        // foreach ($tmp_users as $key => $value) {
-        //     $tmp_user = driver_mel::gi()->getUser(null, true, false, null, $value);
-        //     $user_exists = true;
-
-        //     if ($tmp_user->uid === null && !$tmp_user->is_list) {
-        //         if (rcmail::get_instance()->config->get('enable_external_users', false)) {
-        //             $user_exists = driver_mel::gi()->create_external_user($value, $workspace);
-        //         }
-        //         else {
-        //             $user_exists = false;
-        //         }
-
-        //         if ($user_exists) {
-        //             $tmp_user = driver_mel::gi()->getUser(null, true, false, null, $value);
-        //             $noNotifUsers[] = $value;
-        //         }
-        //         else {
-        //             $unexistingUsers[] = $value;
-        //         }
-        //     }
-
-        //     if ($user_exists) {
-        //         foreach ($this->_add_internal_user($workspace, $tmp_user) as $cuser) {
-        //             $users[] = $cuser;
-        //         }
-        //     }
-        // }
-
         $users = $workspace->add_users(...$tmp_users);
 
         if (count($users['errored_user']) >= count($tmp_users)) {
@@ -779,7 +725,6 @@ class mel_workspace extends bnum_plugin
                     $this->_notify_user($v['user'], $workspace->get(), $v['user']);
                     return driver_mel::gi()->getUser($v['user']);
                 })->toArray(), null, $noNotifUsers);
-                //self::edit_modified_date($workspace, false);
                 //save
                 $workspace->save();
                 //end
@@ -822,24 +767,15 @@ class mel_workspace extends bnum_plugin
             $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
             $user = rcube_utils::get_input_value("_id", rcube_utils::INPUT_POST);
             $new_right = rcube_utils::get_input_value("_right", rcube_utils::INPUT_POST);
-            $workspace = new Workspace($uid, true); //self::get_workspace($uid);
+            $workspace = new Workspace($uid, true);
             if ($workspace->isAdmin()) {
 
                 if ($workspace->getAdmins()->count() === 1 && $new_right === "w") {
                     $return = "you are the alone";
                 } else {
-                    //$workspace->shares[$user]->rights = $new_right;
                     $workspace->share($user)->rights = $new_right;
-                    //self::edit_modified_date($workspace, false);
+
                     $workspace->save();
-
-                    //$services = $this->get_worskpace_services($workspace);
-
-                    // if ($services[self::CHANNEL])
-                    //     $this->get_ariane()->update_owner($user, $this->get_object($workspace, self::CHANNEL)->id, $workspace->ispublic === 0 ? true : false, $new_right === Share::RIGHT_WRITE);
-
-                    // if ($services[self::WEKAN])
-                    //     $this->wekan()->update_user_status($this->get_object($workspace, self::WEKAN)->id, $user, !($new_right === Share::RIGHT_WRITE));
 
                     $plugin = $this->exec_hook('workspace.services.set.role', [
                         'workspace' => $workspace,
@@ -892,7 +828,6 @@ class mel_workspace extends bnum_plugin
                     $shares = $workspace->users();
                     unset($shares[$key]);
                     $workspace->updateUsers($shares);
-                    //$this->delete_services_for_user($workspace, $user_to_delete, $this->get_worskpace_services($workspace, true, true));
 
                     $this->exec_hook('workspace.users.services.delete', [
                         'workspace' => $workspace,
@@ -904,8 +839,6 @@ class mel_workspace extends bnum_plugin
                     break;
                 }
             }
-
-            //self::edit_modified_date($workspace, false);
 
             if ($user_find) {
                 $workspace->save();
@@ -968,7 +901,7 @@ class mel_workspace extends bnum_plugin
     function delete_workspace()
     {
         $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
-        $workspace = self::Workspace($uid); //self::get_workspace($uid);
+        $workspace = self::Workspace($uid);
         if ($workspace->isAdmin()) {
             $shares = $workspace->users();
             foreach ($shares as $key => $value) {
@@ -978,18 +911,9 @@ class mel_workspace extends bnum_plugin
             $workspace->save();
             $workspace->load();
 
-            $services = $workspace->services(true, true); //$this->get_worskpace_services($workspace, false, true);
+            $services = $workspace->services(true, true);
 
             try {
-                // if ($services[self::EMAIL] || $services[self::CLOUD])
-                //     driver_mel::gi()->workspace_group($workspace->uid, [], false);  
-
-                // if ($services[self::WEKAN])
-                // {
-                //     $wekan = $this->get_object($workspace, self::WEKAN);
-                //     if ($wekan->updated !== true) $this->wekan()->delete_board($wekan->id);
-                // }
-
                 if (array_search(self::KEY_TASK, $services, true) !== false) {
                     $mel = new M2taskswsp($workspace->uid());
                     $mel->getTaskslist();
@@ -1001,21 +925,6 @@ class mel_workspace extends bnum_plugin
                     'workspace' => $workspace,
                     'plugin' => $this
                 ]);
-
-                // if ($services[self::TCHAP_CHANNEL])
-                // {
-                //     $can =true;
-                //     try {
-                //         $can = !($this->get_object($workspace, self::TCHAP_CHANNEL)->edited ?? false);
-                //     } catch (\Throwable $th) {
-                //         //throw $th;
-                //     }
-                //     if ($can)
-                //     {
-                //         if (class_exists('tchap')) $value = tchap::delete_tchap_room($this->get_object($workspace, self::TCHAP_CHANNEL)->id);
-                //     }
-                // }
-
             } catch (\Throwable $th) {
                 throw $th;
             }
@@ -1030,7 +939,7 @@ class mel_workspace extends bnum_plugin
     function leave_workspace()
     {
         $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
-        $workspace = self::Workspace($uid); //self::get_workspace($uid);
+        $workspace = self::Workspace($uid);
         $shares = $workspace->users();
         if (count($shares) === 1) {
             if (!$workspace->isAdmin()) {
@@ -1145,9 +1054,6 @@ class mel_workspace extends bnum_plugin
                     html::div(
                         ["class" => "col-2 avatar-wsp"],
                         html::tag('bnum-avatar', ['class' => 'avatar-member', 'data-email' => $user->email, 'data-force-size' => '42px', 'style' => 'background-color:' . $this->workspace->color()])
-                        // html::div(["class" => "dwp-round", "style" => "background-color:transparent"],
-                        //     html::tag("img", ["src" => $this->rc()->config->get('rocket_chat_url')."avatar/".$value->user])
-                        // )
                     ) .
                         html::div(
                             ["class" => "col-10"],
@@ -1219,25 +1125,13 @@ class mel_workspace extends bnum_plugin
         }
 
         if ($user_rights === Share::RIGHT_OWNER) {
-            $logo = $workspace->logo(); //self::get_workspace_logo($this->currentWorkspace);
+            $logo = $workspace->logo();
             $html->logo = (($logo ?? "false") == "false" ? '<span>' . substr($workspace->title(), 0, 3) . "</span>" : '<img src="' . $logo . '" />');
             $html->visibility = $workspace->isPublic() ? 'privé' : 'public';
         } else {
             $html->logo = '';
             $html->visibility = '???';
         }
-
-
-
-        // if ($this->rc->config->get('workspace_bar_color_force', "default") === 'default')
-        // {
-        //     $activeColor = $this->is_color_custom($this->currentWorkspace);
-        //     $html = str_replace("<bar_color_text/>", ($activeColor ? $this->gettext('unactive_bar_color', 'mel_workspace').'<span class="plus icon-mel-minus"></span>' : $this->gettext('active_bar_color', 'mel_workspace').'<span class="plus icon-mel-plus"></span>'), $html);
-        //     $html = str_replace("<bar_color_title/>", ($activeColor ? $this->gettext('unactive_bar_color_title', 'mel_workspace') : $this->gettext('active_bar_color_title', 'mel_workspace')), $html);
-        //     $html = str_replace("<bar_color_visibility/>", "", $html);
-        // }
-        // else
-        //     $html = str_replace("<bar_color_visibility/>", "display:none;", $html);
 
         return $html->parse();
     }
@@ -1250,14 +1144,14 @@ class mel_workspace extends bnum_plugin
         $workspace ??= $this->workspace;
 
         $icons = ["minus" => "icon-mel-minus", "plus" => "icon-mel-plus"];
-        $services = $workspace->services(true); //$this->get_worskpace_services($workspace);
+        $services = $workspace->services(true);
         $config = $this->rc()->config->get("workspace_services");
         $html = '<table id=table-apps class="table table-striped table-bordered">';
         $html .= "<thead><tr><td>Applications</td></tr></thead>";
 
         $count = 0;
         foreach ($services as $key => $value) {
-            if ($key === self::KEY_TCHAT || $key === self::KEY_AGENDA) // || $key === self::AGENDA || ($key === self::CHANNEL && !$value))
+            if ($key === self::KEY_TCHAT || $key === self::KEY_AGENDA)
                 continue;
 
             $plugin = $this->exec_hook('workspace.params.services.show', [
@@ -1269,10 +1163,6 @@ class mel_workspace extends bnum_plugin
             ]) ?? ['continue' => true];
 
             if ($plugin !== null && $plugin['continue'] === true) continue;
-            // if ($key === self::CLOUD && 
-            //     (!mel_helper::stockage_active() || 
-            //         (mel_metapage::have_0_quota() && mel_helper::stockage_active())
-            //     )) continue;
 
             $info = $this->get_type_config($config, $key);
             $html .= '<tr><td>';
@@ -1280,15 +1170,6 @@ class mel_workspace extends bnum_plugin
             else $html .= '<span class="' . ($value ? "text-success" : "text-secondary") . ' wsp-change-icon ' . $info["icon"] . '"></span> ' . $info["name"];
 
             if ($value) {
-
-                // if ($key === self::CHANNEL)
-                //     $html.= html::tag("button", ["title" => ($this->channel_enabled === false ? "Vous n'avez pas accès au canal courant ! Demandez à ce que l'on vous rajoute ou changez de canal avec ce bouton !" : "Choisissez un nouveau canal !"),  "id" => "update-channel-button","class" => "mel-button param-button ".($this->channel_enabled === false ? "btn-danger btn" : "") ], "Changer de canal".html::tag("span", ["class" => "plus icon-mel-pencil"]));
-                // else if ($key === self::TASKS)
-                //     $html.= html::tag("button", ["title" => "Choisissez un nouveau tableau !",  "id" => "update-wekan-button","class" => "mel-button param-button " ], "Changer de tableau".html::tag("span", ["class" => "plus icon-mel-pencil"]));
-                // else if ($key === self::TCHAP_CHANNEL) {
-                //     $html.= '<span class="mel-message"> ('. tchap::get_room_name($this->get_object($this->currentWorkspace, self::TCHAP_CHANNEL)->id) .')</span>';
-                //     $html.= html::tag("button", ["title" => ($this->tchap_channel_enabled === false ? "Vous n'avez pas accès au canal courant ! Demandez à ce que l'on vous rajoute ou changez de canal avec ce bouton !" : "Choisissez un nouveau canal !"),  "id" => "update-tchap-channel-button","class" => "mel-button param-button ".($this->tchap_channel_enabled === false ? "btn-danger btn" : "") ], "Changer de canal tchap".html::tag("span", ["class" => "plus icon-mel-pencil"]));
-                // }
                 $plugin = $this->exec_hook('workspace.params.services.show.update', [
                     'workspace' => $workspace,
                     'plugin' => $this,
@@ -1416,11 +1297,10 @@ class mel_workspace extends bnum_plugin
             $env[$user->email] = ['email' => $user->email, 'name' => $user->name, 'fullname' => $user->fullname, 'is_external' => $user->is_external];
         }
 
-        // $this->rc()->output->set_env('current_workspace_users', $env);
         unset($env);
         unset($from_list);
 
-        $lists = $workspace->settings()->get('lists') ?? []; //$this->get_setting($workspace, "lists") ?? [];
+        $lists = $workspace->settings()->get('lists') ?? [];
 
         if (!is_array($lists)) $lists = get_object_vars($lists);
 
@@ -1458,26 +1338,20 @@ class mel_workspace extends bnum_plugin
         $classes = str_replace('"', "¤¤¤", json_encode($classes));
 
         return '<button style="float:right" title="' . $current_titles[$rights] . '"  type="button" data-option-title-current="' . str_replace('"', "¤¤¤", json_encode($current_titles)) . '" data-option-title="' . str_replace('"', "¤¤¤", json_encode($titles)) . '" data-rcmail=true data-onchange="rcmail.command(`workspace.update_user`, MEL_ELASTIC_UI.SELECT_VALUE_REPLACE+`:' . $user . '`)" data-options_class="' . $classes . '" data-is_icon="true" data-value="' . $rights . '" data-options="' . $options . '" class="select-button-mel mel-button no-button-margin  btn-u-r btn btn-primary ' . $rights . '"><span class=' . $icons["$rights"] . '></span></button>';
-        // $html = '<select class=" pretty-select" >';
-        // foreach ($icons as $key => $value) {
-        //     $html .= '<option class=icofont-home value="'.$key.'" '.($key === $rights ? "selected" : "")." ></option>";
-        // }
-        // $html .= "</select>";
-        // return $html;
     }
 
     public function synchronize_list()
     {
         $echo = null;
         $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
-        $wsp = self::Workspace($uid); //self::get_workspace($uid); 
+        $wsp = self::Workspace($uid);
 
         if ($wsp->isAdmin()) {
             $list = rcube_utils::get_input_value("_list", rcube_utils::INPUT_POST);
 
             $loaded_list = driver_mel::gi()->getUser(null, true, false, null, $list);
             $list_members = $loaded_list->list->members;
-            $all_saved_list_data = $wsp->settings()->get('lists'); //$this->get_setting($wsp, 'lists');
+            $all_saved_list_data = $wsp->settings()->get('lists');
             $current_saved_list_data = $all_saved_list_data->$list;
             $shared = $wsp->users();
 
@@ -1515,7 +1389,6 @@ class mel_workspace extends bnum_plugin
 
             if ($has_deleted || $has_new) {
                 $all_saved_list_data->$list = $valid;
-                //$this->add_setting($wsp, 'lists', $all_saved_list_data);
                 $wsp->settings()->set('lists', $all_saved_list_data);
                 $wsp->save();
             }
@@ -1529,13 +1402,12 @@ class mel_workspace extends bnum_plugin
 
     public function delete_list()
     {
-        $echo = null;
         $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
-        $wsp = self::Workspace($uid); //self::get_workspace($uid); 
+        $wsp = self::Workspace($uid);
 
         if ($wsp->isAdmin()) {
             $list = rcube_utils::get_input_value("_list", rcube_utils::INPUT_POST);
-            $all_saved_list_data = $wsp->settings()->get('lists'); //$this->get_setting($wsp, 'lists');
+            $all_saved_list_data = $wsp->settings()->get('lists');
             $current_saved_list_data = $all_saved_list_data->$list;
 
             for ($i = 0, $len = count($current_saved_list_data); $i < $len; ++$i) {
@@ -1543,7 +1415,7 @@ class mel_workspace extends bnum_plugin
             }
 
             unset($all_saved_list_data->$list);
-            //$this->add_setting($wsp, 'lists', $all_saved_list_data);
+
             $wsp->settings()->set('lists', $all_saved_list_data);
             $wsp->save();
         } else echo 'denied';
@@ -1555,8 +1427,7 @@ class mel_workspace extends bnum_plugin
     #region public_functions
     public function include_workspace_module($plugin, $name = 'module', $path = 'js/lib')
     {
-        //$this->load_script_module_from_plugin($plugin, $name, $path);
-        $this->include_script_from_plugin($plugin, "$path/$name/scriptType:module", 'head'); //->include_module($plugin, $name, $path);
+        $this->include_script_from_plugin($plugin, "$path/$name/scriptType:module", 'head');
     }
 
     public function include_workspace_object()
@@ -1866,7 +1737,7 @@ class mel_workspace extends bnum_plugin
         if (array_search(self::KEY_TASK, $services, true) === false) return $services;
 
         include_once "../mel_moncompte/ressources/tasks.php";
-        $tasklist = $workspace->objects()->get(self::KEY_TASK); //$this->get_object($workspace, $tasks);
+        $tasklist = $workspace->objects()->get(self::KEY_TASK);
 
         if ($tasklist !== null) //Si la liste de tâche existe déjà
         {
@@ -1878,7 +1749,7 @@ class mel_workspace extends bnum_plugin
             } else {
                 //$this->remove_object($workspace, $tasks);
                 $workspace->objects()->remove(self::KEY_TASK);
-                return $this->_set_tasklist($workspace, $services, $default_value); //$this->create_tasklist($workspace, $services, $users, $update_wsp, $default_value);
+                return $this->_set_tasklist($workspace, $services, $default_value);
             }
         } else { //Sinon
             $mel = new M2taskswsp($workspace->uid());
@@ -1894,8 +1765,6 @@ class mel_workspace extends bnum_plugin
         }
 
         $key = array_search(self::KEY_TASK, $services, true);
-
-        //$this->create_wekan($workspace, $services, $users, $default_value);
 
         if ($key !== false) unset($services[$key]);
 
@@ -2011,9 +1880,6 @@ class mel_workspace extends bnum_plugin
         $rc = rcmail::get_instance();
         $name = 'mel_workspace.workspace_block';
 
-        // $favorites = $rc->config->get('workspaces_personal_datas', null);
-        // $hashtags = $workspace->hashtag();
-
         $users = []; {
             $it = 0;
             $shared = $workspace->users();
@@ -2040,18 +1906,17 @@ class mel_workspace extends bnum_plugin
 
         $block->id = $workspace->uid();
         $block->picture = self::GetWorkspaceLogo($workspace->get());
-        $block->tag = $workspace->hashtag(); //isset($hashtags) && count($hashtags) > 0 ? ($hashtags[0] ?? '') : '';
+        $block->tag = $workspace->hashtag();
         $block->tag = mel_utils::for_data_html($block->tag);
         $block->title = mel_utils::for_data_html($workspace->title());
         $block->description = mel_utils::for_data_html($workspace->description());
         $block->users = implode(',', $users);
         $block->edited = $workspace->modified();
-        $block->color = $workspace->color(); //self::_GetWorkspaceSetting($workspace, 'color');
-        $block->favorite = $workspace->isFavorite(); //isset($favorites) && isset($favorites[$workspace->uid]) && $favorites[$workspace->uid] && $favorites[$workspace->uid]['tak'] ? $favorites[$workspace->uid]['tak'] : false;
+        $block->color = $workspace->color();
+        $block->favorite = $workspace->isFavorite();
         $block->private = !$workspace->isPublic();
         $block->join = $workspace->hasUser();
         $block->blank = $isblank;
-        //$block->canBeFavorite = !($workspace->isArchived() || ($workspace->isPublic() && !$workspace->hasUser(driver_mel::gi()->getUser()->uid)));
 
         return $block->parse();
     }

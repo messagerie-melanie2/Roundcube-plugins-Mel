@@ -1743,11 +1743,11 @@ class mel_workspace extends bnum_plugin
         {
             $mel = new M2taskswsp($tasklist);
             if ($mel->getTaskslist() !== null) {
-                foreach ($workspace->users() as $s => $v) {
+                foreach ($workspace->users() as $s) {
+                    //MANTIS 0008944: Le module tâche n'ajoute pas les utilisateurs à la création.
                     $mel->setAcl($s->user, ["w"]);
                 }
             } else {
-                //$this->remove_object($workspace, $tasks);
                 $workspace->objects()->remove(self::KEY_TASK);
                 return $this->_set_tasklist($workspace, $services, $default_value);
             }
@@ -1756,6 +1756,7 @@ class mel_workspace extends bnum_plugin
 
             if ($mel->createTaskslist($workspace->title())) {
                 foreach ($workspace->users() as $s) {
+                    //MANTIS 0008944: Le module tâche n'ajoute pas les utilisateurs à la création.
                     $mel->setAcl($s->user, ["w"]);
                 }
 

@@ -1873,7 +1873,7 @@ class mel_workspace extends bnum_plugin
             $mel = new M2taskswsp($tasklist);
             if ($mel->getTaskslist() !== null) {
                 foreach ($workspace->users() as $s => $v) {
-                    $mel->setAcl($s, ["w"]);
+                    $mel->setAcl($s->user, ["w"]);
                 }
             } else {
                 //$this->remove_object($workspace, $tasks);
@@ -1884,8 +1884,8 @@ class mel_workspace extends bnum_plugin
             $mel = new M2taskswsp($workspace->uid());
 
             if ($mel->createTaskslist($workspace->title())) {
-                foreach ($users as $s) {
-                    $mel->setAcl($s, ["w"]);
+                foreach ($workspace->users() as $s) {
+                    $mel->setAcl($s->user, ["w"]);
                 }
 
                 $taskslist = $mel->getTaskslist();

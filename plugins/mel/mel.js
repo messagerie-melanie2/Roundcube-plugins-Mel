@@ -200,10 +200,10 @@ if (window.rcmail) {
           .addClass('form-control custom-select pretty-select')
           .change();
 
-        let $select = $('#compose-options select[name="_store_target"]')[0];
+        let $select = $('#compose-options select[name="_store_target"]');
 
-        if ($select.value === '') {
-          $select.value = evt.response.sended_folder;
+        if ($select.val() === '') {
+          $select.val(evt.response.sended_folder).change();
         }
 
         $select = null;

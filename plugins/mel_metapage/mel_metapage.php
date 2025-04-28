@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Mél Métapage
  *
@@ -2872,7 +2873,7 @@ class mel_metapage extends bnum_plugin
 
         if ($subject) $mail_raw = preg_replace(
             '/^Subject:.*(?:\r?\n[ \t].*)*/mi', // Expression régulière pour trouver la ligne commençant par "Subject: "
-            'Subject: '. Mail_mimePart::encodeHeader('Subject', $subject), // Remplacement par la nouvelle valeur de $subject
+            'Subject: ' . Mail_mimePart::encodeHeader('Subject', $subject, 'utf-8'), // Remplacement par la nouvelle valeur de $subject
             $mail_raw
         );
 

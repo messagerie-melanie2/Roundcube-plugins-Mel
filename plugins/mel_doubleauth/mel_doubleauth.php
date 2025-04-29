@@ -666,7 +666,7 @@ class mel_doubleauth extends bnum_plugin
             'bnum.change_password' => 'https://bnum.din.gouv.fr/changepassword/index.php',
             'url.internal.security' => 'https://aide.din.developpement-durable.gouv.fr/bnum_tutoriels-apprendre_01_authentification/',
             'expiration' => $expire / 60,
-            'logobnum' => __DIR__ . '/skins/mel_elastic/pictures/logobnum.png' //MailBody::load_image(__DIR__.'/skins/elastic/pictures/logobnum.png', 'png')
+            'logobnum' => MailBody::load_image(__DIR__ . '/skins/mel_elastic/pictures/logobnum.png', 'png')
         ]);
 
         // $sent = mel_helper::send_mail($subject, $message, driver_mel::gi()->getUser()->email, ['email' => $mail, 'name' => driver_mel::gi()->getUser()->name], $is_html, [['path' => __DIR__.'/skins/mel_elastic/pictures/logobnum.png', 'id' => $cid, 'type' => 'image/png']]);

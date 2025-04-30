@@ -60,8 +60,9 @@ class CalendarAddition extends WorkspaceObject {
     } else {
       //Si on ne passe pas par le bouton "créer" de l'espace de travail, mais par l'agenda
       //Lorsque la vue de la création d'un évènement de l'agenda est chargé, on ajoute les utilisateurs de l'espace de travail dans la liste des participants
-      this.listen('calendar.view.loaded', () => {
-        this.rcmail().command('calendar-workspace-add-all');
+      this.listen('calendar.view.loaded', (view) => {
+        if (!view.view._event.uid)
+          this.rcmail().command('calendar-workspace-add-all');
       });
     }
   }

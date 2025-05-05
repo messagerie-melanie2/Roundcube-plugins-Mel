@@ -16,3 +16,6 @@ $labels['no-resources'] = 'Aucune ressources';
 $labels['busy'] = 'Occupé';
 $labels['automatic-resa-title'] = 'Réservation : %0';
 $labels['me'] = 'Moi';
+$labels['prev_day'] = 'Jour précédent';
+$labels['next_day'] = 'Jour suivant';
+$labels['change_date'] = 'Changement de date';

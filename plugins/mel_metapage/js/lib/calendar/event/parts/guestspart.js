@@ -870,8 +870,6 @@ export class GuestsPart extends FakePart {
     var role;
     var attendees;
 
-    console.log('update', val);
-
     {
       //On vérifie si il y a des virgules entre parenthèses puis on les gères.
       const regex = REG_BETWEEN_PARENTHESIS;
@@ -887,7 +885,7 @@ export class GuestsPart extends FakePart {
       }
     }
 
-    if (val.includes(GUEST_SEPARATOR)) {
+    if (val.includes(GUEST_SEPARATOR) && val !== GUEST_SEPARATOR) {
       const event = cal.selected_event;
       val = val.split(GUEST_SEPARATOR);
       let has_invalid_email = false;

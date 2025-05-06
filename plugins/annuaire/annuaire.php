@@ -21,7 +21,7 @@
 
 require_once 'lib/drivers/driver_annuaire.php';
 
-class annuaire extends rcube_plugin
+class annuaire extends bnum_plugin
 {
     /**
      *
@@ -89,6 +89,10 @@ class annuaire extends rcube_plugin
 
             // use jQuery for draggable item
             $this->require_plugin('jqueryui');
+
+            if ($this->rc->action === 'show') {
+                $this->include_module('show.js');
+            }
 
             if ($this->rc->action == 'plugin.annuaire') {
                 // register UI objects

@@ -145,17 +145,20 @@ $(document).ready(() => {
           {
             _uid: $('#mel-event-category').val().replace('ws#', ''),
           },
-          (datas) => {
-            datas = JSON.parse(datas);
+          (data) => {
+            data = JSON.parse(data);
             let str = '';
-            for (let index = 0; index < datas.length; ++index) {
-              const element = datas[index];
+            for (let index = 0; index < data.length; ++index) {
+              const element = data[index];
               str += `${element},`;
             }
             $('#attendee-input').val(str).change();
+
+            return data;
           },
-        ).always(() => {
+        ).always((data) => {
           mel_metapage.Functions.busy(false);
+          rcmail.triggerEvent('calendar-workspace-add-all-after', { data });
         });
       },
       true,

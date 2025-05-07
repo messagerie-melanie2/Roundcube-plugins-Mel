@@ -899,7 +899,7 @@ class mtes_driver_mel extends mce_driver_mel
     $names = explode('@', strtolower($email), 2);
     if (strpos($names[0], '.') === false) {
       $lastname = strtoupper($names[0]);
-      $fistname = ' ';
+      $fistname = 'Externe';
     } else {
       $names = explode('.', $names[0]);
       $lastname = strtoupper($names[1]);

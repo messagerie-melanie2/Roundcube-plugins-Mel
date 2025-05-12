@@ -84,6 +84,13 @@ export class MelCalendar extends MelObject {
     } else {
       BnumLog.warning('MelCalendar/rerender', '#calendar not found !');
     }
+
+    // Redimensionne la fenêtre pour s'assurer que le calendrier est correctement affiché
+    window.dispatchEvent(new Event('resize'));
+
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 100);
   }
 
   /**

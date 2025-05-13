@@ -1,60 +1,43 @@
 if (rcmail) {
   (() => {
-    //
-
+    /**
+     * Chargeur de module JavaScript.
+     * @returns {Function|null} La fonction de chargement de module si disponible, sinon null.
+     */
     function module_loader() {
+      // Vérifie les différents contextes (fenêtre actuelle, parent, top) pour trouver la fonction de chargement.
       return window?.loadJsModule ?? parent?.loadJsModule ?? top?.loadJsModule;
     }
 
+    /**
+     * Charge un helper pour manipuler les frames et les pages.
+     * @returns {Promise<Object>} Une instance de MelObject vide.
+     */
     async function load_helper() {
       const loader = module_loader();
+      // Charge le module 'mel_object.js' et retourne une instance vide de MelObject.
       return (await loader('mel_metapage', 'mel_object.js')).MelObject.Empty();
     }
 
-    function change_frame(frame, args = null) {
-      let config = {
-        changeframe: true,
-        wait: false,
-        args: {},
-        action: 'update_location',
-        action_args: [],
-      };
-
-      if (args !== null && args !== undefined) {
-        for (const key in args) {
-          if (Object.hasOwnProperty.call(args, key)) {
-            const element = args[key];
-            config[key] = element;
-          }
-        }
-      }
-
-      mel_metapage.Functions.change_frame(
-        frame,
-        config.changeframe,
-        config.wait,
-        config.args,
-        [
-          {
-            action: config.action,
-            args: config.action_args,
-            onlyExist: true,
-          },
-        ],
-      );
-    }
-
+    /**
+     * Commande pour basculer le thème de l'interface utilisateur.
+     */
     rcmail.register_command(
       'switch_theme',
       () => {
+        // Appelle la fonction de changement de couleur définie dans MEL_ELASTIC_UI.
         MEL_ELASTIC_UI.switch_color();
       },
       true,
     );
 
+    /**
+     * Commande pour ouvrir la boîte de suggestion.
+     */
     rcmail.register_command(
       'open_suggestion',
       () => {
+        // Change la page vers les paramètres et ouvre le plugin de boîte de suggestion.
         mel_metapage.Functions.change_page(
           'settings',
           'plugin.mel_suggestion_box',
@@ -63,6 +46,9 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour ouvrir la double authentification.
+     */
     rcmail.register_command(
       'open_double_auth',
       () => {
@@ -76,6 +62,9 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour ouvrir la barre des tâches personnalisée.
+     */
     rcmail.register_command(
       'custom_taskbar',
       () => {
@@ -87,6 +76,10 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour changer de page.
+     * @param {Object} args - Les arguments contenant la tâche, l'action et les paramètres.
+     */
     rcmail.register_command(
       'change_page',
       (args) => {
@@ -98,6 +91,9 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour ouvrir l'aide.
+     */
     rcmail.register_command(
       'open_help',
       () => {
@@ -106,6 +102,9 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour composer un nouveau mail.
+     */
     rcmail.register_command(
       'mel-compose',
       () => {
@@ -124,6 +123,9 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour ouvrir la barre des tâches personnalisée.
+     */
     rcmail.register_command('custom_taskbar', () => {
       PageManager.SwitchFrame('settings', {
         args: {
@@ -133,33 +135,36 @@ if (rcmail) {
       });
     });
 
+    /**
+     * Commande pour gérer les dossiers de boîte aux lettres.
+     */
     rcmail.register_command(
       'manage_mailbox_folders',
       () => {
         let config = {};
 
+        // Vérifie si une constante spécifique à mel_metapage est définie dans l'environnement.
         if (rcmail.env.mel_metapage_const !== undefined)
           config[rcmail.env.mel_metapage_const.key] =
             rcmail.env.mel_metapage_const.value;
 
         config._action = 'folders';
 
+        // Change la frame vers les paramètres avec la configuration définie.
         PageManager.SwitchFrame('settings', {
           args: config,
         });
-
-        // change_frame('settings', {
-        //   args: {
-        //     _action: 'folders',
-        //   },
-        //   action_args: [
-        //     mel_metapage.Functions.url('settings', 'folders', config),
-        //   ],
-        // });
       },
       true,
     );
 
+    /**
+     * Commande pour utiliser un modèle comme nouveau.
+     * @param {any} a - Argument non utilisé.
+     * @param {any} b - Argument non utilisé.
+     * @param {any} c - Argument non utilisé.
+     * @param {any} d - Argument non utilisé.
+     */
     rcmail.register_command(
       'use_as_new',
       (a, b, c, d) => {
@@ -169,6 +174,13 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour éditer un modèle.
+     * @param {any} a - Argument non utilisé.
+     * @param {any} b - Argument non utilisé.
+     * @param {any} c - Argument non utilisé.
+     * @param {any} d - Argument non utilisé.
+     */
     rcmail.register_command(
       'edit_model',
       (a, b, c, d) => {
@@ -178,6 +190,9 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour gérer la boîte aux lettres via mel_metapage.
+     */
     rcmail.register_command(
       'mel_metapage_manage_mail_box',
       async () => {
@@ -190,6 +205,10 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour changer l'image de l'espace de travail via mel_metapage.
+     * @param {any} item - L'élément contenant l'image.
+     */
     rcmail.register_command(
       'mel_metapage_change_wsp_picture',
       (item) => {
@@ -198,6 +217,9 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour gérer les labels.
+     */
     rcmail.register_command(
       'gestion_labels',
       () => {
@@ -206,35 +228,20 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour ouvrir les paramètres des ressources du calendrier.
+     */
     rcmail.register_command('calendar-setting-resource', async () => {
       const helper = await load_helper();
 
       await helper.switch_frame('settings', {
         args: { _action: 'plugin.mel_resources_agendas' },
       });
-      //window.location.href = mel_metapage.Functions.url("settings", "plugin.mel_resources_agendas");
-      //la page existe encore
-      // if (parent.$('iframe.settings-frame').length > 0) {
-      //   parent.$('iframe.settings-frame')[0].src = mel_metapage.Functions.url(
-      //     'settings',
-      //     'plugin.mel_resources_agendas',
-      //   );
-      //   mel_metapage.Functions.change_frame('settings', true, false);
-      // } else if (parent.$('.settings-frame').length > 0) {
-      //   rcmail.set_busy(true, 'loading');
-      //   window.location.href = mel_metapage.Functions.url(
-      //     'settings',
-      //     'plugin.mel_resources_agendas',
-      //   );
-      // } else {
-      //   mel_metapage.Functions.change_frame('settings', true, true, {
-      //     _action: 'plugin.mel_resources_agendas',
-      //   }).then(() => {
-      //     parent.$('iframe.settings-frame')[0].contentWindow.location.reload();
-      //   });
-      // }
     });
 
+    /**
+     * Commande pour forcer le rafraîchissement des mails.
+     */
     rcmail.register_command(
       'mail-force-refresh',
       () => {
@@ -246,6 +253,10 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour démarrer une webconférence.
+     * @param {Object} args - Les arguments contenant les informations de la webconférence.
+     */
     rcmail.register_command(
       'start_webconf',
       (args) => {
@@ -257,6 +268,9 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour composer un mail à partir d'un événement.
+     */
     rcmail.register_command(
       'event-compose',
       () => {
@@ -274,6 +288,9 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour s'inviter à un événement.
+     */
     rcmail.register_command(
       'event-self-invitation',
       () => {
@@ -308,6 +325,9 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour copier un événement.
+     */
     rcmail.register_command(
       'event-self-copy',
       () => {
@@ -318,6 +338,9 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour tester les notifications.
+     */
     rcmail.register_command(
       'test_notify',
       () => {
@@ -326,6 +349,9 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour créer un nouveau mail à partir d'un message existant.
+     */
     rcmail.register_command(
       'new-mail-from',
       () => {
@@ -344,6 +370,10 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour afficher un mail.
+     * @param {Object} datas - Les données du mail.
+     */
     rcmail.register_command(
       'mel.showMail',
       (datas) => {
@@ -366,6 +396,10 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour afficher un contact.
+     * @param {Object} datas - Les données du contact.
+     */
     rcmail.register_command(
       'mel.show_contact',
       (datas) => {
@@ -388,6 +422,9 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour revenir en arrière dans les contacts de mel_metapage.
+     */
     rcmail.register_command(
       'mel.metapage.contacts.back',
       () => {
@@ -398,15 +435,19 @@ if (rcmail) {
         $args[rcmail.env.mel_metapage_const.key] =
           rcmail.env.mel_metapage_const.value;
         rcmail.set_busy(true, 'loading');
-        //console.log('test', mel_metapage.Functions.url("addressbook", "plugin.annuaire", $args), top.$('.addressbook-frame'));
+
         top.$('.addressbook-frame')[0].contentWindow.location.href =
           mel_metapage.Functions.url('addressbook', 'plugin.annuaire', $args);
-        // rcmail.set_busy(false);
-        // rcmail.clear_messages();
       },
       true,
     );
 
+    /**
+     * Commande pour gérer les clics sur les événements.
+     * @param {Object} params - Les paramètres de l'événement.
+     * @param {Object} obj - L'objet de l'événement.
+     * @param {Event} event - L'événement lui-même.
+     */
     rcmail.register_command(
       'event.click',
       (params, obj, event) => {
@@ -419,6 +460,9 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour définir une absence personnalisée.
+     */
     rcmail.register_command(
       'set_custom_abs',
       async () => {
@@ -572,10 +616,7 @@ if (rcmail) {
           (datas) => {
             datas = JSON.parse(datas);
 
-            if (
-              /*!!datas.message && EMPTY_STRING !== datas.message && */ !!datas.start &&
-              EMPTY_STRING !== datas.start
-            ) {
+            if (!!datas.start && EMPTY_STRING !== datas.start) {
               $('#user-dropdown .div-first input').val(
                 moment(datas.start, 'DD/MM/YYYY HH:mm:ss').format('YYYY-MM-DD'),
               );
@@ -613,6 +654,10 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour effectuer une recherche globale.
+     * @param {Event} event - L'événement de recherche.
+     */
     rcmail.register_command(
       'mel.search.global',
       async (event) => {
@@ -643,8 +688,6 @@ if (rcmail) {
           $('.mm-frame').css('display', 'none');
           $('#layout-frames').css('display', '');
           $('iframe.search-frame').css('display', '');
-          //top.rcmail.set_busy(false);
-          //rcmail.clear_messages();
         }
 
         await module_helper_mel.Look.SendTask('search');
@@ -652,6 +695,10 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour afficher la recherche globale.
+     * @param {Event} event - L'événement de recherche.
+     */
     rcmail.register_command(
       'mel.search.global.show',
       async (event) => {
@@ -661,7 +708,7 @@ if (rcmail) {
           $('.a-frame').css('display', 'none');
           $('.mm-frame').css('display', 'none');
           $('#layout-frames').css('display', '');
-          $('iframe.search-frame').css('display', ''); //[0].contentWindow.rcmail.command('mel.search', {word});
+          $('iframe.search-frame').css('display', '');
         } else if ($('.search-frame').length > 0) {
           $('.a-frame').css('display', 'none');
           $('.mm-frame').css('display', 'none');
@@ -674,6 +721,10 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour gérer les erreurs d'envoi de message.
+     * @param {Object} args - Les arguments contenant les informations de l'erreur.
+     */
     rcmail.register_command(
       'message_send_error',
       (args) => {
@@ -682,97 +733,20 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour rafraîchir la frame.
+     */
     rcmail.register_command(
       'refreshFrame',
       () => {
         PageManager.Instance.get_window().refresh();
-        return null;
-        let iframe = $(`iframe.${rcmail.env.current_frame_name}-frame`);
-
-        if (rcmail.env.current_frame_name === 'discussion') {
-          iframe[0].src = iframe[0].src;
-          return;
-        }
-
-        let parent = $(`.${rcmail.env.current_frame_name}-frame`);
-
-        // Frame déjà ouverte
-        if (iframe.length > 0) {
-          iframe[0].contentWindow
-            .$('body')
-            .html(MEL_ELASTIC_UI.create_loader('refresh_loading'));
-          if (!iframe[0].contentWindow.location.href.includes('_is_from'))
-            iframe.src =
-              iframe[0].contentWindow.location.href +
-              (iframe[0].contentWindow.location.href[
-                iframe[0].contentWindow.location.href.length - 1
-              ] === '&'
-                ? ''
-                : '&') +
-              '_is_from=iframe';
-          else iframe[0].contentWindow.location.reload();
-        }
-        // Frame parent
-        else if (
-          rcmail.env.current_frame_name === undefined ||
-          parent.length > 0
-        ) {
-          const url = window.location.href;
-
-          if (rcmail.env.current_frame_name === undefined) {
-            const _includes = ['mel-focus', 'selected', 'order1', 'mel'];
-            console.log($('#taskmenu .selected')[0].classList);
-            const key = Enumerable.from($('#taskmenu .selected')[0].classList)
-              .where(
-                (x) =>
-                  !_includes.includes(x) &&
-                  !x.includes('icofont') &&
-                  !x.includes('icon-mel-') &&
-                  !x.includes('button'),
-              )
-              .first();
-            rcmail.env.current_frame_name = key;
-            parent = $(`.${mm_st_ClassContract(key)}-frame`);
-          } else
-            rcmail.env.current_frame_name = mm_st_ClassContract(
-              rcmail.env.current_frame_name,
-            );
-
-          parent.remove();
-
-          let args = null;
-
-          try {
-            if (url.includes('&')) {
-              args = Enumerable.from(url.split('&'))
-                .where((x) => x.includes('=') && !x.includes('task'))
-                .toJsonDictionnary(
-                  (x) => x.split('=')[0],
-                  (x) => x.split('=')[1],
-                );
-              args[rcmail.env.mel_metapage_const.key] =
-                rcmail.env.mel_metapage_const.value;
-            }
-          } catch (error) {}
-
-          mel_metapage.Functions.change_frame(
-            rcmail.env.current_frame_name,
-            true,
-            false,
-            args,
-          ) /*.then(() => {  
-                        const contract = mm_st_ClassContract(rcmail.env.current_frame_name);
-                        //console.log("rcmail.env.current_frame_name", rcmail.env.current_frame_name, contract, $(`iframe.${contract}-frame`), `${url}${(url[url.length-1] === '&' ? '' : '&')}_is_from=iframe`);                     
-                        $(`iframe.${contract}-frame`)[0].src = `${url}${(url[url.length-1] === '&' ? '' : '&')}_is_from=iframe`;
-                        rcmail.set_busy(false);
-                        rcmail.clear_messages();
-                        mel_metapage.Functions.change_frame(rcmail.env.current_frame_name, true);
-                    })*/;
-        }
       },
       true,
     );
 
+    /**
+     * Commande pour basculer les animations.
+     */
     rcmail.register_command(
       'toggleAnimations',
       async () => {
@@ -781,11 +755,8 @@ if (rcmail) {
           mel_metapage.Functions.url('mel_elastic', 'plugin.toggle_animations'),
           {},
           (datas) => {
-            //debugger;
             rcmail.env.animation_enabled = JSON.parse(datas);
             let current = MEL_ELASTIC_UI.themes[MEL_ELASTIC_UI.theme];
-
-            //rcmail.env.animation_enabled = !(rcmail.env.animation_enabled ?? current.animation_enabled_by_default);
 
             for (const key in MEL_ELASTIC_UI.themes) {
               if (Object.hasOwnProperty.call(MEL_ELASTIC_UI.themes, key)) {
@@ -813,6 +784,9 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour basculer la visibilité du chat.
+     */
     rcmail.register_command(
       'toggleChat',
       () => {
@@ -864,6 +838,10 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour gérer les actions de notification du chat.
+     * @param {Object} args - Les arguments contenant les informations de la notification.
+     */
     rcmail.register_command(
       'chat-notification-action',
       async (args) => {
@@ -876,6 +854,10 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour mettre à jour les styles CSS des mails.
+     * @param {Object} args - Les arguments contenant la clé et la valeur du style.
+     */
     rcmail.register_command(
       'update_mail_css',
       (args) => {
@@ -902,14 +884,22 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour rafraîchir la liste des messages.
+     */
     rcmail.register_command(
       'refresh_messages_list',
       (args) => {
+        // Appelle la commande 'list' dans la frame de messagerie pour actualiser la liste des messages.
         $('iframe.mail-frame')[0].contentWindow.rcmail.command('list');
       },
       true,
     );
 
+    /**
+     * Commande pour rafraîchir la fenêtre externe.
+     * @param {Object} args - Les arguments contenant la clé et la valeur.
+     */
     rcmail.register_command(
       'refresh_extwin',
       async (args) => {
@@ -925,6 +915,10 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour définir la taille de la police.
+     * @param {Object} args - Les arguments contenant la clé et la valeur.
+     */
     rcmail.register_command(
       'set_font_size',
       async (args) => {
@@ -945,6 +939,10 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour mettre à jour le déploiement de la navigation principale.
+     * @param {Object} args - Les arguments contenant les informations de déploiement.
+     */
     rcmail.register_command(
       'updateMainNavDep',
       async (args) => {
@@ -957,6 +955,10 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour mettre à jour le mode de la barre de défilement.
+     * @param {Object} args - Les arguments contenant la clé et la valeur.
+     */
     rcmail.register_command(
       'updateScollBarMode',
       async (args) => {
@@ -977,6 +979,9 @@ if (rcmail) {
       true,
     );
 
+    /**
+     * Commande pour redessiner l'agenda en fonction des paramètres.
+     */
     if (rcmail.env.task === 'calendar') {
       rcmail.register_command(
         'redraw_aganda',
@@ -987,18 +992,23 @@ if (rcmail) {
             await loader('mel_metapage', 'main.js', '/js/lib/calendar/')
           ).MelCalendar;
 
+          // Met à jour les paramètres de l'agenda dans l'environnement.
           rcmail.env.calendar_settings = settings;
+
+          // Détruit et recrée l'agenda avec les nouveaux paramètres.
           await MelCalendar.rerender({
             helper_object: helper,
             action_list: [MelCalendar.create_action('destroy')],
           });
 
+          // Réinitialise l'interface utilisateur de l'agenda.
           cal = new rcube_calendar_ui(
             $.extend(rcmail.env.calendar_settings, rcmail.env.libcal_settings),
           );
           CalendarPageInit(false);
           cal_elastic_mod();
 
+          // Redessine l'agenda.
           await MelCalendar.rerender({ helper_object: helper });
         },
         true,
@@ -1018,6 +1028,9 @@ if (rcmail) {
       );
     }
 
+    /**
+     * Commande pour commenter un mail.
+     */
     if (rcmail.env.task === 'mail') {
       rcmail.register_command(
         'mel-comment-mail',
@@ -1048,8 +1061,7 @@ if (rcmail) {
           fields_requireds.append(' Champs obligatoires');
           main_div.append(fields_requireds);
           let subject = document.createElement('INPUT');
-          subject.classList.add('form-control', 'input-mel', 'disabled');
-          subject.setAttribute('disabled', 'disabled');
+          subject.classList.add('form-control', 'input-mel');
           subject.setAttribute('value', current_subject);
 
           let title_subject = document.createElement('h3');
@@ -1088,7 +1100,13 @@ if (rcmail) {
             const new_uid = await mel_metapage.Functions.comment_mail(
               uid,
               comment_area.value,
-              current_mail_box,
+              {
+                folder: current_mail_box,
+                subject:
+                  subject.value === current_subject
+                    ? null
+                    : subject.value || null,
+              },
             );
             modal.close();
             modal = null;

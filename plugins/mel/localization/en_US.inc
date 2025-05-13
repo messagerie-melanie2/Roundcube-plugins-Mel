@@ -120,7 +120,7 @@ $labels['Or you can clic here to relogin'] = "Or you can click here to log in ag
 
 $labels['no bal'] = "No BALI? Click here to change your password";
 
-$labels['portail_title'] = 'Open your Mél web homepage';
+$labels['portail_title'] = 'Open your Bnum homepage';
 $labels['help_title'] = 'Open the dedicated Mél assistance page';
 
 $labels['mel_mailboxes_display'] = 'Folder Display Mode';

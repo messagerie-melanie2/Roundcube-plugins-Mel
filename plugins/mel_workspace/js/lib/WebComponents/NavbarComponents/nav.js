@@ -18,15 +18,7 @@ export class WspPageNavigation extends NavBarComponent {
 
   constructor({ parent = null, apps = null } = {}) {
     super({ mode: EWebComponentMode.div, parent });
-    this.#apps = apps; /* ?? [
-      'home',
-      'calendar',
-      'stockage',
-      'forum',
-      'wekan',
-      'useful_link',
-      'tchap',
-    ];*/
+    this.#apps = apps;
     this.#id = this.generateId(NAMESPACE);
     this.onbuttonclicked = new BnumEvent();
     this.oniconclicked = new BnumEvent();
@@ -84,7 +76,6 @@ export class WspPageNavigation extends NavBarComponent {
   }
 
   #_generate_element(obj) {
-    // debugger;
     const { task: taskData, canBeHidden, icon } = obj;
     const [plugin, task] = taskData.includes('.')
       ? taskData.split('.')
@@ -144,7 +135,6 @@ export class WspPageNavigation extends NavBarComponent {
     }
 
     hiddenIcon.classList.add('maximised-hidden');
-    //button.querySelector(PressedButton.TAG).prepend(hiddenIcon);
     button.afterstyle.push((icon, button) => {
       button.prepend(icon);
     }, hiddenIcon);

@@ -42,7 +42,10 @@ export default class RoundShapeComponent extends AHTMLComponent {
    * Initialise le composant
    * @override
    */
-  setup() {}
+  setup() {
+    if (this.isSquare) this._p_parent().addClass('bnum-select--roundsquare');
+    else this._p_parent().removeClass('bnum-select--roundsquare');
+  }
 
   /**
    * Style du bouton

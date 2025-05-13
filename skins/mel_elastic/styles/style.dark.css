@@ -1,133 +1,124 @@
 html.dark-mode-custom .theme-mode-switch.btn.btn-primary.btn-block,
 html.dark-mode .theme-mode-switch.btn.btn-primary.btn-block {
-	border-color: #E1C58F;
-	background-color: #3e4c59;
+  border-color: #e1c58f;
+  background-color: #3e4c59;
 }
 
 html.dark-mode-custom .theme-mode-switch.btn.btn-primary.btn-block::before,
 html.dark-mode .theme-mode-switch.btn.btn-primary.btn-block::before {
-	top: 2px;
-	left: 3px;
-	color: #c7dfff !important;
-    content: "\ee81";
+  top: 2px;
+  left: 3px;
+  color: #c7dfff !important;
+  content: '\ee81';
 }
 
 html.dark-mode-custom .theme-mode-switch.btn.btn-primary.btn-block::after,
 html.dark-mode .theme-mode-switch.btn.btn-primary.btn-block::after {
-	/* border: solid #E1C58F thin; */
-    background-color: #2E2E2E;
-	top: 2px;
-	right: 3px;
+  /* border: solid #E1C58F thin; */
+  background-color: #2e2e2e;
+  top: 2px;
+  right: 3px;
 }
 
 /******** Navigation principale ********/
 
 html.dark-mode nav.otherapps,
 html.dark-mode #layout-menu {
-    background-color:#1f2933;
-    color:#c7dfff;
+  background-color: #1f2933;
+  color: #c7dfff;
 }
 
-html.dark-mode #frame-mel-history
-{
-    background-color:#1f2933;
+html.dark-mode #frame-mel-history {
+  background-color: #1f2933;
 }
 
-html.dark-mode nav.otherapps
-{
-    border-right: 1px solid rgb(77, 96, 102);
+html.dark-mode nav.otherapps {
+  border-right: 1px solid rgb(77, 96, 102);
 }
 
-html.dark-mode #otherapps a
-{
-    background-color:#1f2933!important;
-    color:#c7dfff!important;
+html.dark-mode #otherapps a {
+  background-color: #1f2933 !important;
+  color: #c7dfff !important;
 }
 
-html.dark-mode #otherapps a:focus
-{
-    background-color: #181C28!important;
+html.dark-mode #otherapps a:focus {
+  background-color: #181c28 !important;
 }
 
 html.dark-mode #otherapps a:hover,
 html.dark-mode #otherapps a.selected,
-html.dark-mode #taskmenu a.selected, 
-html.dark-mode #taskmenu a:hover, 
-html.dark-mode #taskmenu a.selected:hover, 
-html.dark-mode #taskmenu .action-buttons a:hover, 
-html.dark-mode #otherapps a.selected, #otherapps a:hover, 
-html.dark-mode #otherapps a.selected:hover, 
-html.dark-mode #otherapps .action-buttons a:hover, 
+html.dark-mode #taskmenu a.selected,
+html.dark-mode #taskmenu a:hover,
+html.dark-mode #taskmenu a.selected:hover,
+html.dark-mode #taskmenu .action-buttons a:hover,
+html.dark-mode #otherapps a.selected,
+#otherapps a:hover,
+html.dark-mode #otherapps a.selected:hover,
+html.dark-mode #otherapps .action-buttons a:hover,
 html.dark-mode #otherapps a:hover span,
-html.dark-mode #layout-menu:hover a:hover > span.inner, 
+html.dark-mode #layout-menu:hover a:hover > span.inner,
 html.dark-mode #layout-menu.force-open a.force-hover > span.inner,
-html.dark-mode #layout-menu:hover a.selected > span.inner, 
+html.dark-mode #layout-menu:hover a.selected > span.inner,
 html.dark-mode #layout-menu.force-open a.selected > span.inner,
 html.dark-mode #taskmenu a:focus,
-html.dark-mode #layout-menu a:focus > span.inner, 
+html.dark-mode #layout-menu a:focus > span.inner,
 html.dark-mode #layout-menu span > a:focus > span.inner,
-html.dark-mode .barup > .wrapper > .user
-{
-    background-color: #323F4B !important;
-    color:#c7dfff;
+html.dark-mode .barup > .wrapper > .user {
+  background-color: #323f4b !important;
+  color: #c7dfff;
 }
 
-html.touch.dark-mode #layout-menu a > span.inner, 
-html.touch.dark-mode #layout-menu span > a > span.inner, 
-html.dark-mode #layout-menu:hover a > span.inner, 
-html.dark-mode #layout-menu:hover span > a > span.inner, 
-html.dark-mode #layout-menu.force-open a > span.inner, #layout-menu.force-open span > a > span.inner, 
-html.dark-mode #layout-menu a:focus > span.inner, 
-html.dark-mode #layout-menu span > a:focus > span.inner
-{
-    border-color:#4e5051; 
+html.touch.dark-mode #layout-menu a > span.inner,
+html.touch.dark-mode #layout-menu span > a > span.inner,
+html.dark-mode #layout-menu:hover a > span.inner,
+html.dark-mode #layout-menu:hover span > a > span.inner,
+html.dark-mode #layout-menu.force-open a > span.inner,
+#layout-menu.force-open span > a > span.inner,
+html.dark-mode #layout-menu a:focus > span.inner,
+html.dark-mode #layout-menu span > a:focus > span.inner {
+  border-color: #4e5051;
 }
-
 
 /******** Navigation secondaire ********/
 
 html.dark-mode .search-container,
 html.dark-mode #barup-search,
-html.dark-mode div#user-picture{
-    background-color: #181C28;
+html.dark-mode div#user-picture {
+  background-color: #181c28;
 }
 
 html.dark-mode .barup,
-html.dark-mode .barup-background-color{
-    --secondary-nav-background-color:#181C28;
+html.dark-mode .barup-background-color {
+  --secondary-nav-background-color: #181c28;
 }
 
-html.dark-mode .search-container
-{
-    border-color:#181C28;
+html.dark-mode .search-container {
+  border-color: #181c28;
 }
 
 html.dark-mode #barup-search {
-	border: solid #4d6066 thin;
-	border-top: none;
+  border: solid #4d6066 thin;
+  border-top: none;
 }
 
-html.dark-mode #barup-search-background
-{
-    border-top: solid #4d6066 thin;
-    top: 60px;
+html.dark-mode #barup-search-background {
+  border-top: solid #4d6066 thin;
+  top: 60px;
 }
 
-html.dark-mode .table-striped tbody tr:nth-of-type(2n+1) {
-	background-color: rgba(255, 255, 255, 0.05);
+html.dark-mode .table-striped tbody tr:nth-of-type(2n + 1) {
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
-html.dark-mode .menu a.logout-color:not(.disabled):focus, 
+html.dark-mode .menu a.logout-color:not(.disabled):focus,
 html.dark-mode .menu a.logout-color:not(.disabled):hover {
-	color:black!important;
+  color: black !important;
 }
 
-html.dark-mode .tiny-rocket-chat
-{
-    background-color: #2E2E2E;
-	color: #E1C58F;
-	border: solid #E1C58F thin;
-
+html.dark-mode .tiny-rocket-chat {
+  background-color: #2e2e2e;
+  color: #e1c58f;
+  border: solid #e1c58f thin;
 }
 
 html.dark-mode .roundbadge.icon-mel-videoconference,
@@ -135,92 +126,84 @@ html.dark-mode .tiny-webconf-menu.dwp-round,
 html.dark-mode .wsp-toolbar.webconf-toolbar .roundbadge.jitsi-select,
 html.dark-mode #rcmloginsubmit,
 html.dark-mode .btn.btn-block.btn-secondary.btn-mel,
-html.dark-mode body.task-calendar .fc-toolbar.fc-header-toolbar .fc-right button,
+html.dark-mode
+  body.task-calendar
+  .fc-toolbar.fc-header-toolbar
+  .fc-right
+  button,
 html.dark-mode ul#mailboxlist ul li.mailbox.selected a,
 html.dark-mode .barup .tiny-rocket-chat,
 html.dark-mode .my_favorites,
 html.dark-mode .mel-button {
-	background-color: transparent;
-	color: #E1C58F;
-	border-color: #E1C58F;
-    border-width: thin;
+  background-color: transparent;
+  color: #e1c58f;
+  border-color: #e1c58f;
+  border-width: thin;
 }
 
 html.dark-mode #message-list-filters li .quick-filter,
 html.dark-mode #message-list-filters li #list-select-mail-choices,
-html.dark-mode .mel-button.bckg.color-for-dark
-{
-    color: #E1C58F;
+html.dark-mode .mel-button.bckg.color-for-dark {
+  color: #e1c58f;
 }
 
-html.dark-mode .tiny-webconf-menu.dwp-round.hidden-toolbar
-{
-    background-color: #1F2933;
+html.dark-mode .tiny-webconf-menu.dwp-round.hidden-toolbar {
+  background-color: #1f2933;
 }
 
-html.dark-mode .tiny-webconf-menu.dwp-round
-{
-    color: #E1C58F!important;
-    background-color: #1F2933;
+html.dark-mode .tiny-webconf-menu.dwp-round {
+  color: #e1c58f !important;
+  background-color: #1f2933;
 }
 
-html.dark-mode .wsp-toolbar.webconf-toolbar .roundbadge.jitsi-select
-{
-    background-color:#1F2933;
+html.dark-mode .wsp-toolbar.webconf-toolbar .roundbadge.jitsi-select {
+  background-color: #1f2933;
 }
 
-html.dark-mode .mel-button.bckg.true:hover
-{
-	border-color: #E1C58F;
+html.dark-mode .mel-button.bckg.true:hover {
+  border-color: #e1c58f;
 }
 
-html.dark-mode .mel-button.dark-no-border-default
-{
-    border-color: transparent;
+html.dark-mode .mel-button.dark-no-border-default {
+  border-color: transparent;
 }
 
-
-html.dark-mode .barup .tiny-rocket-chat{
-    border: none;
+html.dark-mode .barup .tiny-rocket-chat {
+  border: none;
 }
 
 html.dark-mode .task-addressbook .listing tbody tr.selected td,
-html.dark-mode .ignoreActive.mel-button
-{
-    background-color: transparent!important;
-	color: #E1C58F!important;
-	border-color: #E1C58F!important; 
+html.dark-mode .ignoreActive.mel-button {
+  background-color: transparent !important;
+  color: #e1c58f !important;
+  border-color: #e1c58f !important;
 }
 
-html.dark-mode .mel-button.inverse:hover
-{
-    border-color: #E1C58F!important; 
+html.dark-mode .mel-button.inverse:hover {
+  border-color: #e1c58f !important;
 }
 
 html.dark-mode .roundbadge.icon-mel-videoconference,
 html.dark-mode .tiny-webconf-menu.dwp-round,
-html.dark-mode .btn.btn-block.btn-secondary.btn-mel
-{
-    border-style: solid!important;
-    border-width: thin!important;
+html.dark-mode .btn.btn-block.btn-secondary.btn-mel {
+  border-style: solid !important;
+  border-width: thin !important;
 }
 
-html.dark-mode ul#mailboxlist ul li.mailbox.selected a{
-    /* background-color: #2E2E2E; */
+html.dark-mode ul#mailboxlist ul li.mailbox.selected a {
+  /* background-color: #2E2E2E; */
 }
 
-html.dark-mode ul#mailboxlist ul li.selected
-{
-    background-color: transparent;
+html.dark-mode ul#mailboxlist ul li.selected {
+  background-color: transparent;
 }
 
-html.dark-mode .btn:focus
-{
-    color: #E1C58F!important;
+html.dark-mode .btn:focus {
+  color: #e1c58f !important;
 }
 
 html.dark-mode .custom-switch .custom-control-label::after {
-  background-color: #E1C58F!important;
+  background-color: #e1c58f !important;
 }
 
 html.dark-mode #groupoptions-user .more-options:hover,
@@ -232,30 +215,31 @@ html.dark-mode .my_favorites:hover,
 html.dark-mode #rcmloginsubmit:hover,
 html.dark-mode .btn.btn-block.btn-secondary.btn-mel:hover,
 html.dark-mode option:hover,
-html.dark-mode body.task-calendar .fc-toolbar.fc-header-toolbar .fc-right button:hover,
+html.dark-mode
+  body.task-calendar
+  .fc-toolbar.fc-header-toolbar
+  .fc-right
+  button:hover,
 html.dark-mode .mel-button:hover {
-	background-color: #2E2E2E!important;
-    color: #E1C58F!important;
+  background-color: #2e2e2e !important;
+  color: #e1c58f !important;
 }
 
 html.dark-mode #groupoptions-user .more-options:hover,
-html.dark-mode .mel-button.dark-no-border-default:hover
-{
-    border-color: #E1C58F!important; 
+html.dark-mode .mel-button.dark-no-border-default:hover {
+  border-color: #e1c58f !important;
 }
 
-html.dark-mode .mel-button.btn-danger:hover
-{
-    background-color: #c62828!important;
-    color:white!important;
+html.dark-mode .mel-button.btn-danger:hover {
+  background-color: #c62828 !important;
+  color: white !important;
 }
 
 html.dark-mode .tiny-rocket-chat:hover/*,
-/* html.dark-mode .my_favorites:hover */
-{
-    background-color: #FDCF42 !important;
-    color:black!important;
-    border-color: #2E2E2E!important;
+/* html.dark-mode .my_favorites:hover */ {
+  background-color: #fdcf42 !important;
+  color: black !important;
+  border-color: #2e2e2e !important;
 }
 
 html.dark-mode .roundbadge.icon-mel-videoconference.active,
@@ -263,62 +247,62 @@ html.dark-mode .tiny-webconf-menu.dwp-round.active,
 html.dark-mode .btn.btn-block.btn-secondary.btn-mel.active,
 html.dark-mode #rcmloginsubmit.active,
 html.dark-mode .btn.btn-block.btn-secondary.btn-mel:active,
-html.dark-mode body.task-calendar .fc-toolbar.fc-header-toolbar .fc-right button:active,
+html.dark-mode
+  body.task-calendar
+  .fc-toolbar.fc-header-toolbar
+  .fc-right
+  button:active,
 html.dark-mode .tiny-rocket-chat:active,
 html.dark-mode .my_favorites:active,
 html.dark-mode .mel-button:active {
-	background-color: #E1C58F!important;
-    color:black!important;
-    border-color: #2E2E2E!important;
+  background-color: #e1c58f !important;
+  color: black !important;
+  border-color: #2e2e2e !important;
 }
 
-html.dark-mode .barup > .wrapper > .user #user-welcome{
-    color:#c7dfff!important;
+html.dark-mode .barup > .wrapper > .user #user-welcome {
+  color: #c7dfff !important;
 }
 
-html.dark-mode .large-toolbar .mel-ui-button.btn{
-    color:#96b9e7
+html.dark-mode .large-toolbar .mel-ui-button.btn {
+  color: #96b9e7;
 }
 
 html.dark-mode .large-toolbar .mel-ui-button.btn:hover {
-    background-color: #36383c;
-    color: #E1C58F;
-    border-color:transparent;
+  background-color: #36383c;
+  color: #e1c58f;
+  border-color: transparent;
 }
 
 html.dark-mode .large-toolbar .mel-ui-button.btn.disabled {
-    background-color: #131519;
-    color: #E1C58F;
-    opacity: 1!important;
+  background-color: #131519;
+  color: #e1c58f;
+  opacity: 1 !important;
 }
 /******** Navigation des espaces *********/
 /*#4d6066*/
 html.dark-mode .btn.btn-block.wsp-toolbar-melw-wsp-hider,
-html.dark-mode .wsp-toolbar.melw-wsp
-{
-    background-color: #323F4B;
-    color:#c7dfff;
+html.dark-mode .wsp-toolbar.melw-wsp {
+  background-color: #323f4b;
+  color: #c7dfff;
 }
 
-html.dark-mode .wsp-toolbar.melw-wsp button.wsp-toolbar-item
-{
-    color:#c7dfff;
+html.dark-mode .wsp-toolbar.melw-wsp button.wsp-toolbar-item {
+  color: #c7dfff;
 }
 
-html.dark-mode body.task-workspace button.wsp-toolbar-item, 
-html.dark-mode .wsp-toolbar-edited button.wsp-toolbar-item
-{
-    background-color: transparent!important;
+html.dark-mode body.task-workspace button.wsp-toolbar-item,
+html.dark-mode .wsp-toolbar-edited button.wsp-toolbar-item {
+  background-color: transparent !important;
 }
 
-html.dark-mode #layout-content
-{
-    border-color: #323F4B;
+html.dark-mode #layout-content {
+  border-color: #323f4b;
 }
 
-html.dark-mode .btn.btn-block.wsp-toolbar-melw-wsp-hider:hover{
-    background-color: #2E2E2E!important;
-    color: #E1C58F!important;
+html.dark-mode .btn.btn-block.wsp-toolbar-melw-wsp-hider:hover {
+  background-color: #2e2e2e !important;
+  color: #e1c58f !important;
 }
 
 /******** Pages **************/
@@ -327,83 +311,76 @@ html.dark-mode body,
 html.dark-mode #layout-content,
 html.dark-mode option,
 html.dark-mode .frame-header,
-html.dark-mode .watermark::before
-{
-    background-color: #1F2933;
-    color:#96b9e7;
+html.dark-mode .watermark::before {
+  background-color: #1f2933;
+  color: #96b9e7;
 }
 
-html.dark-mode .message-htmlpart blockquote
-{
-    color: #c7dfff;
-    background-color: #323F4B;
+html.dark-mode .message-htmlpart blockquote {
+  color: #c7dfff;
+  background-color: #323f4b;
 }
 
-html.dark-mode .message-htmlpart blockquote *, 
+html.dark-mode .message-htmlpart blockquote *,
 html.dark-mode .message-part blockquote * {
-    color: #c7dfff!important;
-    background-color: #323F4B!important;
+  color: #c7dfff !important;
+  background-color: #323f4b;
 }
 
-html.dark-mode .frame-header
-{
-    box-shadow: -2px 0px 3px #96b9e745;
+html.dark-mode .frame-header {
+  box-shadow: -2px 0px 3px #96b9e745;
 }
 
 html.dark-mode #messagelist-content,
 html.dark-mode .message-list-filter-container,
-html.dark-mode #message-list-filters-extra
-{
-    background-color: #1F2933!important;
-    color:#96b9e7!important;
+html.dark-mode #message-list-filters-extra {
+  background-color: #1f2933 !important;
+  color: #96b9e7 !important;
 }
 
-html.dark-mode #annuaire-list [aria-expanded="true"] {
-	background-color: #323F4B !important;
-	border-left: solid #3e4c59 thin !important;
+html.dark-mode #annuaire-list [aria-expanded='true'] {
+  background-color: #323f4b !important;
+  border-left: solid #3e4c59 thin !important;
 }
 
 html.dark-mode .ui.alert.boxinformation i.icon::before,
 html.dark-mode .invitebox td.label,
 html.dark-mode .formcontent.text-only .faded *,
 html.dark-mode .messagelist tr:hover span.unflagged::before,
-html.dark-mode .messagelist td.subject span.date, 
+html.dark-mode .messagelist td.subject span.date,
 html.dark-mode .messagelist td.subject span.size,
 html.dark-mode .messagelist td.subject span.msgicon.status::before,
-html.dark-mode .messagelist td.subject span.fromto{
-    color:#96b9e7!important;
+html.dark-mode .messagelist td.subject span.fromto {
+  color: #96b9e7 !important;
 }
 
-html.dark-mode .attachmentslist li.ics::before, 
+html.dark-mode .attachmentslist li.ics::before,
 html.dark-mode .attachmentslist li.text.calendar::before,
-html.dark-mode .ui.alert.boxinformation.calendar-invitebox i.icon::before
-{
-    content: "\e901"!important;
-    font-family: DWP!important;
+html.dark-mode .ui.alert.boxinformation.calendar-invitebox i.icon::before {
+  content: '\e901' !important;
+  font-family: DWP !important;
 }
 
 html.dark-mode .messagelist span.threads > div,
 html.dark-mode body div#layout-list .messagelist td.subject a,
-html.dark-mode body div#layout-list .messagelist td.subject span.priority
-{
-    color:#c7dfff;
+html.dark-mode body div#layout-list .messagelist td.subject span.priority {
+  color: #c7dfff;
 }
 
 html.dark-mode table.table,
-html.dark-mode .body{
-    color:#96b9e7;
+html.dark-mode .body {
+  color: #96b9e7;
 }
 
 html.dark-mode #folderlist-content > a.button,
 html.dark-mode .listing li a,
-html.dark-mode #layout > div > .footer a.button, 
+html.dark-mode #layout > div > .footer a.button,
 html.dark-mode #layout > div > .header a.button,
 html.dark-mode .square_div > .contents,
 html.dark-mode .btn-text.btn.btn-secondary,
 html.dark-mode .headlines-by,
-html.dark-mode .mel-not-link
-{
-    color:#c7dfff
+html.dark-mode .mel-not-link {
+  color: #c7dfff;
 }
 
 html.dark-mode .header-wsp > .roundbadge,
@@ -422,39 +399,42 @@ html.dark-mode div#layout-sidebar,
 html.dark-mode #layout-sidebar > .header,
 html.dark-mode .menu.toolbar a,
 html.dark-mode .task-calendar .fc .fc-center h2,
-html.dark-mode #formlogintable
-{
-    color:#c7dfff!important; 
+html.dark-mode #formlogintable {
+  color: #c7dfff !important;
 }
 
-html.dark-mode #tasklist span.date{
-    color:#e4e7eb;
+html.dark-mode #tasklist span.date {
+  color: #e4e7eb;
 }
 
 html.dark-mode #groupoptions-user .more-options,
-html.dark-mode .mel-not-link:hover
-{
-    color:#E1C58F;
+html.dark-mode .mel-not-link:hover {
+  color: #e1c58f;
 }
 
 html.dark-mode .waiting-events-number,
 html.dark-mode #mm-cw-participants,
 html.dark-mode .task-calendar .fc .fc-header-toolbar,
 html.dark-mode .workspace,
-html.dark-mode .tablinks{
-    background-color: #3e4c59;
-    color:#c7dfff;
+html.dark-mode .tablinks {
+  background-color: #3e4c59;
+  color: #c7dfff;
 }
 
 html.dark-mode #mm-cw-participants,
 html.dark-mode .workspace-users-added button,
-html.dark-mode .task-mail #layout-content > .header #toolbar-menu li .dropbutton,
+html.dark-mode
+  .task-mail
+  #layout-content
+  > .header
+  #toolbar-menu
+  li
+  .dropbutton,
 html.dark-mode #layout > div > .header,
 html.dark-mode div#layout-sidebar,
 html.dark-mode .messagelist .unread,
-html.dark-mode .mel-left-pannel
-{
-    background-color: #323F4B !important
+html.dark-mode .mel-left-pannel {
+  background-color: #323f4b !important;
 }
 
 html.dark-mode .headlines-source,
@@ -462,75 +442,72 @@ html.dark-mode .wsp-block,
 html.dark-mode .square_div > .contents,
 html.dark-mode .tablinks.selected,
 html.dark-mode .tabs-contents,
-html.dark-mode .card.clear
-{
-    background-color: #323F4B;
+html.dark-mode .card.clear {
+  background-color: #323f4b;
 }
 
-html.dark-mode .tablinks.selected:hover{
-    background-color: #323F4B!important;
+html.dark-mode .tablinks.selected:hover {
+  background-color: #323f4b !important;
 }
 
-html.dark-mode .tablinks:hover{
-    background-color: #2E2E2E!important;
-    color: #E1C58F !important;
+html.dark-mode .tablinks:hover {
+  background-color: #2e2e2e !important;
+  color: #e1c58f !important;
 }
 
 html.dark-mode .roundbadge.notif.edited,
-html.dark-mode .roundbadge.lightgreen.setalign
-{
-    line-height: 11px;
+html.dark-mode .roundbadge.lightgreen.setalign {
+  line-height: 11px;
 }
 
 html.dark-mode .roundbadge.lightgreen {
-	background-color: #2E2E2E !important;
-	border: solid #E1C58F thin;
-	color: #E1C58F !important;
-    line-height: 14px;
+  background-color: #2e2e2e !important;
+  border: solid #e1c58f thin;
+  color: #e1c58f !important;
+  line-height: 14px;
 }
 
-html.dark-mode ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
-    color: #96845f!important;
-    opacity: 1; /* Firefox */
-  }
-  
-html.dark-mode :-ms-input-placeholder { /* Internet Explorer 10-11 */
-    color: #96845f!important;
-  }
-  
-html.dark-mode ::-ms-input-placeholder { /* Microsoft Edge */
-    color: #96845f!important;
-  }
-
-html.dark-mode .roundbadge.lightgreen.menu
-{
-    line-height: 14px;
+html.dark-mode ::placeholder {
+  /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: #96845f !important;
+  opacity: 1; /* Firefox */
 }
 
-html.dark-mode .dwp-circle
-{
-    background-color: #1F2933;
-    border-color: #1F2933;
+html.dark-mode :-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
+  color: #96845f !important;
+}
+
+html.dark-mode ::-ms-input-placeholder {
+  /* Microsoft Edge */
+  color: #96845f !important;
+}
+
+html.dark-mode .roundbadge.lightgreen.menu {
+  line-height: 14px;
+}
+
+html.dark-mode .dwp-circle {
+  background-color: #1f2933;
+  border-color: #1f2933;
 }
 
 html.dark-mode .dwp-circle.dwp-user::before {
-	color: #1F8073;
+  color: #1f8073;
 }
 
-html.dark-mode .invitebox td.label
-{
-    color:#c5d1d3
+html.dark-mode .invitebox td.label {
+  color: #c5d1d3;
 }
 
 html.dark-mode .listing li.selected ul,
-html.dark-mode .task-calendar #layout-sidebar .listing li.selected ul
-{
-    background-color: transparent!important;
+html.dark-mode .task-calendar #layout-sidebar .listing li.selected ul {
+  background-color: transparent !important;
 }
 
 html.dark-mode .messagelist .selected span.attachment span::before,
-html.dark-mode .messagelist tr.selected:hover span.unflagged::before, 
-html.dark-mode .messagelist .selected td.subject span.date, 
+html.dark-mode .messagelist tr.selected:hover span.unflagged::before,
+html.dark-mode .messagelist .selected td.subject span.date,
 html.dark-mode .messagelist .selected td.subject span.size,
 html.dark-mode .messagelist .selected td.subject a,
 html.dark-mode table.messagelist .selected td.subject span.msgicon::before,
@@ -541,163 +518,161 @@ html.dark-mode .listing tr.selected td,
 html.dark-mode .task-tasks #layout-sidebar .listing li.selected > div > *,
 html.dark-mode .listing li.selected,
 html.dark-mode .listing li.selected > a,
-html.dark-mode .task-calendar .listing li.selected > div > *{
-	background-color: transparent!important;
-	color: #E1C58F!important;
-	/* border-color: #E1C58F!important; */
+html.dark-mode .task-calendar .listing li.selected > div > * {
+  background-color: transparent !important;
+  color: #e1c58f !important;
+  /* border-color: #E1C58F!important; */
 }
 
-html.dark-mode .task-calendar .fc .fc-day.fc-today
-{
-    background-color:#323F4B !important;
+html.dark-mode .task-calendar .fc .fc-day.fc-today {
+  background-color: #323f4b !important;
 }
 
-html.dark-mode .task-calendar .listing .custom-switch .custom-control-label::before
-{
-    background-color: #1F2933!important;
+html.dark-mode
+  .task-calendar
+  .listing
+  .custom-switch
+  .custom-control-label::before {
+  background-color: #1f2933 !important;
 }
 
 html.dark-mode #datepicker,
-html.dark-mode body.task-calendar .ui-datepicker-inline .ui-datepicker-activerange,
-html.dark-mode .task-calendar .calendar-datepicker .ui-datepicker-header, 
-html.dark-mode .task-calendar .calendar-datepicker .ui-datepicker
-{
-    background-color:#181C28!important;
+html.dark-mode
+  body.task-calendar
+  .ui-datepicker-inline
+  .ui-datepicker-activerange,
+html.dark-mode .task-calendar .calendar-datepicker .ui-datepicker-header,
+html.dark-mode .task-calendar .calendar-datepicker .ui-datepicker {
+  background-color: #181c28 !important;
 }
 
-html.dark-mode #datepicker-onoff
-{
-    color:#96b9e7!important;
-    border-radius: 0!important;
+html.dark-mode #datepicker-onoff {
+  color: #96b9e7 !important;
+  border-radius: 0 !important;
 }
 
-html.dark-mode #datepicker-onoff:hover
-{
-    background-color: #2E2E2E!important;
-    color: #E1C58F!important;
+html.dark-mode #datepicker-onoff:hover {
+  background-color: #2e2e2e !important;
+  color: #e1c58f !important;
 }
 
-html.dark-mode .ui-datepicker .ui-datepicker-next, 
-html.dark-mode .ui-datepicker .ui-datepicker-prev, 
-html.dark-mode .ui-datepicker .ui-state-default, 
+html.dark-mode .ui-datepicker .ui-datepicker-next,
+html.dark-mode .ui-datepicker .ui-datepicker-prev,
+html.dark-mode .ui-datepicker .ui-state-default,
 html.dark-mode .ui-datepicker.ui-widget-content .ui-state-default,
 html.dark-mode .datepicker-dp-title,
 html.dark-mode .fc .fc-axis,
-html.dark-mode .fc .fc-day-number
-{
-    color:#96b9e7!important;
+html.dark-mode .fc .fc-day-number {
+  color: #96b9e7 !important;
 }
-
 
 html.dark-mode .headlines-source,
 html.dark-mode .wsp-toolbar.webconf-toolbar .wsp-toolbar-item,
-html.dark-mode .task-addressbook .listing tbody td, 
+html.dark-mode .task-addressbook .listing tbody td,
 html.dark-mode .task-addressbook #layout-list .header,
 html.dark-mode .wsp-block,
 html.dark-mode .ui-datepicker th,
 html.dark-mode body.task-calendar .ui-datepicker-inline .ui-datepicker-week-col,
 html.dark-mode .task-calendar #layout #layout-content > .header a.button,
-html.dark-mode .task-calendar #layout > #layout-content > .header .header-title span
-{
-    color: #c7dfff!important;
+html.dark-mode
+  .task-calendar
+  #layout
+  > #layout-content
+  > .header
+  .header-title
+  span {
+  color: #c7dfff !important;
 }
 
-html.dark-mode .ui-datepicker a.ui-state-active.ui-state-highlight, 
-html.dark-mode .ui-datepicker.ui-widget-content a.ui-state-active.ui-state-highlight, 
+html.dark-mode .ui-datepicker a.ui-state-active.ui-state-highlight,
+html.dark-mode
+  .ui-datepicker.ui-widget-content
+  a.ui-state-active.ui-state-highlight,
 html.dark-mode .ui-datepicker a.ui-state-active {
-	background-color: #2E2E2E !important;
-	border: solid #E1C58F thin;
-	color: #E1C58F !important;
-	line-height: 14px !important;
+  background-color: #2e2e2e !important;
+  border: solid #e1c58f thin;
+  color: #e1c58f !important;
+  line-height: 14px !important;
 }
 
-html.dark-mode .ui-datepicker.ui-widget-content .ui-state-default.ui-state-highlight
-{
-    background-color: #2E2E2E !important;
-	border: solid #E1C58F thin;
-	color: #E1C58F !important;
+html.dark-mode
+  .ui-datepicker.ui-widget-content
+  .ui-state-default.ui-state-highlight {
+  background-color: #2e2e2e !important;
+  border: solid #e1c58f thin;
+  color: #e1c58f !important;
 }
 
-html.dark-mode .fc-unthemed .fc-divider
-{
-    background-color: black;
+html.dark-mode .fc-unthemed .fc-divider {
+  background-color: black;
 }
 
-html.dark-mode .task-calendar .fc .fc-now-indicator
-{
-    border-color: #E1C58F;
+html.dark-mode .task-calendar .fc .fc-now-indicator {
+  border-color: #e1c58f;
 }
 
 html.dark-mode .task-calendar .fc-ltr .fc-time-grid .fc-now-indicator-arrow {
-	border-top-color: transparent;
-	border-bottom-color: transparent;
+  border-top-color: transparent;
+  border-bottom-color: transparent;
 }
 
 html.dark-mode .fc .fc-day-header,
-html.dark-mode .fc-axis.fc-widget-header
-{
-    background-color: #181C28;
-    color:#96b9e7 !important;
+html.dark-mode .fc-axis.fc-widget-header {
+  background-color: #181c28;
+  color: #96b9e7 !important;
 }
 
-html.dark-mode .btn.btn-primary.o, 
+html.dark-mode .btn.btn-primary.o,
 html.dark-mode .btn.btn-primary.w,
-html.dark-mode button.btn.no-style, 
+html.dark-mode button.btn.no-style,
 html.dark-mode button.btn.btn-arrow,
 html.dark-mode #mel-button-small-search,
 html.dark-mode .task-calendar .header .small-toolbar-calendar,
-html.dark-mode .modal-footer button.mel-calendar-button
-{
-    background-color: transparent!important;
-    color:#E1C58F!important;
-    border-color: transparent!important;
+html.dark-mode .modal-footer button.mel-calendar-button {
+  background-color: transparent !important;
+  color: #e1c58f !important;
+  border-color: transparent !important;
 }
 
-html.dark-mode .mel-select-popup .btn.btn-primary.o, 
-html.dark-mode .mel-select-popup .btn.btn-primary.w
-{
-    background-color: black!important;
-    color:#E1C58F!important;
-    border-color: #E1C58F!important;
+html.dark-mode .mel-select-popup .btn.btn-primary.o,
+html.dark-mode .mel-select-popup .btn.btn-primary.w {
+  background-color: black !important;
+  color: #e1c58f !important;
+  border-color: #e1c58f !important;
 }
 
-html.dark-mode .btn.btn-primary.o:hover, 
+html.dark-mode .btn.btn-primary.o:hover,
 html.dark-mode .btn.btn-primary.w:hover,
-html.dark-mode button.btn.no-style:hover, 
+html.dark-mode button.btn.no-style:hover,
 html.dark-mode button.btn.btn-arrow:hover,
 html.dark-mode .modal-footer button.mel-calendar-button:hover,
 html.dark-mode #mel-button-small-search:hover,
-html.dark-mode .task-calendar .header .small-toolbar-calendar:hover 
-{
-    background-color: #2E2E2E!important;
-    border-color: #E1C58F!important;
+html.dark-mode .task-calendar .header .small-toolbar-calendar:hover {
+  background-color: #2e2e2e !important;
+  border-color: #e1c58f !important;
 }
 
-html.dark-mode .mel-select-popup .btn.btn-primary.o.active
-{
-    background-color: #E1C58F!important;
-    color:black!important;
-    border-color: #2E2E2E!important;
-    text-shadow: 0 0 1px #FDCF42;
+html.dark-mode .mel-select-popup .btn.btn-primary.o.active {
+  background-color: #e1c58f !important;
+  color: black !important;
+  border-color: #2e2e2e !important;
+  text-shadow: 0 0 1px #fdcf42;
 }
 
-html.dark-mode .mel-select-popup .btn.btn-primary.w.active
-{
-    background-color: #E1C58F!important;
-    color:black!important;
-    border-color: #2E2E2E!important;
-    text-shadow: 0 0 1px white;
+html.dark-mode .mel-select-popup .btn.btn-primary.w.active {
+  background-color: #e1c58f !important;
+  color: black !important;
+  border-color: #2e2e2e !important;
+  text-shadow: 0 0 1px white;
 }
 
-html.dark-mode .modal-footer button.mel-calendar-button{
-    border-style: solid!important;
-    border-width: thin!important;
+html.dark-mode .modal-footer button.mel-calendar-button {
+  border-style: solid !important;
+  border-width: thin !important;
 }
 
-
-html.dark-mode .wsp-header
-{
-    background-color: transparent!important;
+html.dark-mode .wsp-header {
+  background-color: transparent !important;
 }
 
 html.dark-mode .task-settings #layout-list,
@@ -705,9 +680,8 @@ html.dark-mode .task-settings #layout-list .header,
 html.dark-mode .task-addressbook #layout-list,
 html.dark-mode .task-addressbook #layout-list .header,
 html.dark-mode .task-tasks #layout-list,
-html.dark-mode .task-tasks #layout-list .header
-{
-    background-color: #3e4c59 !important;
+html.dark-mode .task-tasks #layout-list .header {
+  background-color: #3e4c59 !important;
 }
 
 /* html.dark-mode .link-block.square_div > .contents
@@ -715,84 +689,75 @@ html.dark-mode .task-tasks #layout-list .header
     color:#1F2933;
 } */
 html.dark-mode .link-block .tools a.roundbadge {
-	background-color: #fff !important;
-    transition: all 0.1s ease-in;
-    color:var(--main-text-color)!important;
+  background-color: #fff !important;
+  transition: all 0.1s ease-in;
+  color: var(--main-text-color) !important;
 }
 html.dark-mode .link-block .tools a.roundbadge:hover {
-	background-color: #1F2933 !important;
-    color:white!important;
+  background-color: #1f2933 !important;
+  color: white !important;
 }
-html.dark-mode .link-block .tools a.roundbadge.eye:hover::before{
-    color:white!important;
+html.dark-mode .link-block .tools a.roundbadge.eye:hover::before {
+  color: white !important;
 }
 
-html.dark-mode  .multilink-sub {
-    background-color: var(--white);
+html.dark-mode .multilink-sub {
+  background-color: var(--white);
 }
-html.dark-mode  .multilink-sub-copy {
-    color: var(--main-text-color);
+html.dark-mode .multilink-sub-copy {
+  color: var(--main-text-color);
 }
-html.dark-mode  .multilink-sub:hover {
-    background-color: #1F2933;
+html.dark-mode .multilink-sub:hover {
+  background-color: #1f2933;
 }
-html.dark-mode  .multilink-sub:hover .multilink-sub-copy {
-    color: white!important;
+html.dark-mode .multilink-sub:hover .multilink-sub-copy {
+  color: white !important;
 }
 
 html.dark-mode #worspace-avatar-a span,
-html.dark-mode .link-test-color
-{
-    color:#1F2933!important;
+html.dark-mode .link-test-color {
+  color: #1f2933 !important;
 }
 
-html.dark-mode .roundbadge.clear
-{
-    background-color: #3e4c59;
+html.dark-mode .roundbadge.clear {
+  background-color: #3e4c59;
 }
 
-html.dark-mode .card
-{
-    border-color: #1F2933;
+html.dark-mode .card {
+  border-color: #1f2933;
 }
 
-html.dark-mode body.task-mail.action-none #layout-content
-{
-    border-color: #323F4B;   
+html.dark-mode body.task-mail.action-none #layout-content {
+  border-color: #323f4b;
 }
 
-html.dark-mode .parent-close-visu
-{
-    border-color: #4d6066!important;
+html.dark-mode .parent-close-visu {
+  border-color: #4d6066 !important;
 }
 
-html.dark-mode .workspace-users-added button
-{
-    color: #E1C58F!important;
+html.dark-mode .workspace-users-added button {
+  color: #e1c58f !important;
 }
 
-html.dark-mode .workspace-users-added button:hover
-{
-    color: #c62828!important;
+html.dark-mode .workspace-users-added button:hover {
+  color: #c62828 !important;
 }
 /* html.dark-mode .modal-footer button.mel-calendar-button:hover
 {
 
 } */
 
-html.dark-mode .maintenance-text{
-    color:#ECA3A3;
+html.dark-mode .maintenance-text {
+  color: #eca3a3;
 }
 
-html.dark-mode #compose-contacts #annuaire-list [aria-expanded="true"]
-{
-    background-color: transparent!important;
-    color:#c7dfff!important;
+html.dark-mode #compose-contacts #annuaire-list [aria-expanded='true'] {
+  background-color: transparent !important;
+  color: #c7dfff !important;
 }
 
-html.dark-mode .roundrive-folder-create-select
-{
-    background-color: #1F2933;
+html.dark-mode .roundrive-folder-create-select {
+  background-color: #1f2933;
 }
 
 /******** Modales ********/
@@ -802,93 +767,81 @@ html.dark-mode .wlp-minifieds .wlp-header,
 html.dark-mode .toolbar-popup,
 html.dark-mode .wsp-toolbar.webconf-toolbar,
 html.dark-mode .modal-content,
-html.dark-mode #waiting-events-list-items
-{
-    background-color: #1F2933;
-    color:#96b9e7;
-    border: solid #323F4B thin;
+html.dark-mode #waiting-events-list-items {
+  background-color: #1f2933;
+  color: #96b9e7;
+  border: solid #323f4b thin;
 }
 
 html.dark-mode .ui.alert.boxinformation,
-html.dark-mode .task-webconf .square_div > .contents
-{
-    background-color: #1F2933!important;
-    color:#96b9e7!important;
-    border: solid #323F4B thin!important;
+html.dark-mode .task-webconf .square_div > .contents {
+  background-color: #1f2933 !important;
+  color: #96b9e7 !important;
+  border: solid #323f4b thin !important;
 }
 
-html.dark-mode .ui-widget-content, 
-html.dark-mode .ui-widget-header
-{
-    background-color: #1F2933;
-    color:#96b9e7;
+html.dark-mode .ui-widget-content,
+html.dark-mode .ui-widget-header {
+  background-color: #1f2933;
+  color: #96b9e7;
 }
 
 html.dark-mode .global-modal-header.modal-header,
-html.dark-mode .modal-footer.global-modal-footer.calendar-show-event
-{
-    background-color: #1F2933!important;
-    color:#96b9e7!important;
+html.dark-mode .modal-footer.global-modal-footer.calendar-show-event {
+  background-color: #1f2933 !important;
+  color: #96b9e7 !important;
 }
 
-html.dark-mode .modal-header > .modal-close, 
-html.dark-mode .fullscreen-close, 
-html.dark-mode .edited-modal-close
-{
-    background-color: transparent!important;
-    color:#96b9e7!important;
+html.dark-mode .modal-header > .modal-close,
+html.dark-mode .fullscreen-close,
+html.dark-mode .edited-modal-close {
+  background-color: transparent !important;
+  color: #96b9e7 !important;
 }
 
 html.dark-mode #eventedit li.nav-item a,
-html.dark-mode #eventedit ul
-{
-    background-color: #1F2933;
+html.dark-mode #eventedit ul {
+  background-color: #1f2933;
 }
 
-html.dark-mode #eventedit li.nav-item a
-{
-    color:#E1C58F;
-	border-color: #E1C58F;
-    border-left: solid thin;
-    border-bottom: solid thin;
-    border-top-left-radius: 0;
-}
-
-html.dark-mode .mel-responsive-tabheader.mel-responsive-tab,
-html.dark-mode .mel-tab.mel-tabheader{
-    color:#E1C58F!important;
-    text-decoration: none!important;
+html.dark-mode #eventedit li.nav-item a {
+  color: #e1c58f;
+  border-color: #e1c58f;
+  border-left: solid thin;
+  border-bottom: solid thin;
+  border-top-left-radius: 0;
 }
 
 html.dark-mode .mel-responsive-tabheader.mel-responsive-tab,
-html.dark-mode .mel-tab.mel-tabheader.last
-{
-    /* margin-left:5px; */
+html.dark-mode .mel-tab.mel-tabheader {
+  color: #e1c58f !important;
+  text-decoration: none !important;
 }
 
-html.dark-mode #eventedit li.nav-item a:hover
-{
-    background-color: #2E2E2E;
+html.dark-mode .mel-responsive-tabheader.mel-responsive-tab,
+html.dark-mode .mel-tab.mel-tabheader.last {
+  /* margin-left:5px; */
+}
+
+html.dark-mode #eventedit li.nav-item a:hover {
+  background-color: #2e2e2e;
 }
 
 html.dark-mode .mel-responsive-tabheader.mel-responsive-tab:hover,
-html.dark-mode .mel-tab.mel-tabheader:hover
-{
-    background-color: #2E2E2E!important;
+html.dark-mode .mel-tab.mel-tabheader:hover {
+  background-color: #2e2e2e !important;
 }
 
-html.dark-mode #eventedit li.nav-item a.active
-{
-    background-color: #E1C58F;
-    color:#2E2E2E;
-	  border-color: #2E2E2E;
+html.dark-mode #eventedit li.nav-item a.active {
+  background-color: #e1c58f;
+  color: #2e2e2e;
+  border-color: #2e2e2e;
 }
 
 html.dark-mode .mel-responsive-tabheader.mel-responsive-tab.selected,
-html.dark-mode .mel-tab.mel-tabheader.active
-{
-    color:#E1C58F!important;
-    border-bottom-color: #E1C58F !important;
+html.dark-mode .mel-tab.mel-tabheader.active {
+  color: #e1c58f !important;
+  border-bottom-color: #e1c58f !important;
 }
 
 html.dark-mode .btn-secondary:focus,
@@ -897,27 +850,24 @@ html.dark-mode .mel-focus:focus,
 html.dark-mode .mel-focus.focused,
 html.dark-mode .input-child-mel-focus input:focus,
 html.dark-mode .a-child-mel-focus a:focus,
-html.dark-mode .mel-button:focus
-{
-    box-shadow: 0 0 0 .2rem #E1C58F69;
+html.dark-mode .mel-button:focus {
+  box-shadow: 0 0 0 0.2rem #e1c58f69;
 }
 
 html.dark-mode .wlp-minifieds .wlp-header,
 html.dark-mode .wlp-header,
-html.dark-mode .wlp_box
-{
-    border-color: #E1C58F;
+html.dark-mode .wlp_box {
+  border-color: #e1c58f;
 }
 
-html.dark-mode .wlp-header
-{
-    color: #E1C58F;
+html.dark-mode .wlp-header {
+  color: #e1c58f;
 }
 
 /******** Formulaires ********/
 
-html.dark-mode #eventedit .edit-alarm-value, 
-html.dark-mode #eventedit .edit-alarm-offset, 
+html.dark-mode #eventedit .edit-alarm-value,
+html.dark-mode #eventedit .edit-alarm-offset,
 html.dark-mode #eventedit .edit-alarm-related,
 html.dark-mode .input-group-append > button.input-group-text.mel-text,
 html.dark-mode #wspf.form-control.input-mel,
@@ -927,141 +877,130 @@ html.dark-mode .mel-input-container.form-control.input-mel,
 html.dark-mode body.task-calendar select.mel-input.calendar,
 html.dark-mode #wsp-search-input,
 html.dark-mode .mel-search-group > .input-group-append > .input-group-text,
-html.dark-mode .searchbar.menu
-{
-	background-color: transparent;
-    color:#E1C58F;
-	border-color: #E1C58F;
+html.dark-mode .searchbar.menu {
+  background-color: transparent;
+  color: #e1c58f;
+  border-color: #e1c58f;
 }
 
-html.dark-mode .task-addressbook .searchbar.menu
-{
-    border:solid thin!important;
+html.dark-mode .task-addressbook .searchbar.menu {
+  border: solid thin !important;
 }
 
 html.dark-mode .input-group-append > .input-group-text.mel-text,
-html.dark-mode #edit-attendees-comment, 
-html.dark-mode #edit-attendee-name, 
-html.dark-mode #edit-identities-list, 
-html.dark-mode .edit-attendee-role, 
-html.dark-mode textarea.input-mel, 
-html.dark-mode select.input-mel, 
+html.dark-mode #edit-attendees-comment,
+html.dark-mode #edit-attendee-name,
+html.dark-mode #edit-identities-list,
+html.dark-mode .edit-attendee-role,
+html.dark-mode textarea.input-mel,
+html.dark-mode select.input-mel,
 html.dark-mode #edit-alarm-item,
 html.dark-mode input.input-mel,
-html.dark-mode #annuaireselector
-{
-    background-color: transparent!important;
-    color:#E1C58F!important;
-	border-color: #E1C58F!important;  
+html.dark-mode #annuaireselector {
+  background-color: transparent !important;
+  color: #e1c58f !important;
+  border-color: #e1c58f !important;
 }
 
-html.dark-mode .input-mel-datetime::after
-{
-    color:#E1C58F!important;
+html.dark-mode .input-mel-datetime::after {
+  color: #e1c58f !important;
 }
 
 html.dark-mode .task-addressbook .searchbar::after,
-html.dark-mode .mel-input-container.form-control.input-mel .icon-mel-search
-{
-    color:#E1C58F!important;
+html.dark-mode .mel-input-container.form-control.input-mel .icon-mel-search {
+  color: #e1c58f !important;
 }
 
-html.dark-mode .searchbar a.button
-{
-    color:#E1C58F!important;
+html.dark-mode .searchbar a.button {
+  color: #e1c58f !important;
 }
 
 html.dark-mode .input-group-append > button.input-group-text.mel-text:hover,
-html.dark-mode  body.task-calendar select.mel-input.calendar:hover,
-html.dark-mode .searchbar a.button:hover
-{
-    background-color: #2E2E2E !important;
+html.dark-mode body.task-calendar select.mel-input.calendar:hover,
+html.dark-mode .searchbar a.button:hover {
+  background-color: #2e2e2e !important;
 }
 
 html.dark-mode .input-group-append > button.input-group-text.mel-text.active,
-html.dark-mode  body.task-calendar select.mel-input.calendar:active
-{
-	background-color: #E1C58F!important;
-    color:black!important;
-	border-color: #2E2E2E!important;
+html.dark-mode body.task-calendar select.mel-input.calendar:active {
+  background-color: #e1c58f !important;
+  color: black !important;
+  border-color: #2e2e2e !important;
 }
 
 html.dark-mode #mail-user-gp:hover,
-html.dark-mode  body.task-calendar select.mel-input.calendar:focus
-{
-    color:#E1C58F!important;
+html.dark-mode body.task-calendar select.mel-input.calendar:focus {
+  color: #e1c58f !important;
 }
 
 html.dark-mode .ui-slider,
-html.dark-mode .task-calendar #layout-content .searchbar.menu
-{
-    border: solid #E1C58F thin!important;
+html.dark-mode .task-calendar #layout-content .searchbar.menu {
+  border: solid #e1c58f thin !important;
 }
 
-html.dark-mode  .task-calendar .searchbar form::after {
-	color: #E1C58F;
+html.dark-mode .task-calendar .searchbar form::after {
+  color: #e1c58f;
 }
 
 html.dark-mode select.input-mel.custom-select {
-	background-image: url("../fonts/mel_icons/Chevron_down_dark.svg");
+  background-image: url('../fonts/mel_icons/Chevron_down_dark.svg');
 }
 
 html.dark-mode .custom-switch .custom-control-label::before,
-html.dark-mode .mel-radio-1 span
-{
-    border-color: #E1C58F;
-    background-color: #3E4C59;
+html.dark-mode .mel-radio-1 span {
+  border-color: #e1c58f;
+  background-color: #3e4c59;
 }
 
 html.dark-mode .ui-slider .ui-slider-handle,
 html.dark-mode .custom-switch .custom-control-label::after,
-html.dark-mode .custom-switch .custom-control-input:checked ~ .custom-control-label::before,
-html.dark-mode  .mel-radio-1 input[type="checkbox"] + label span::before
-{
-    border-color: #E1C58F;
-    background-color: #2E2E2E;
-    /*#3e4c59*/
+html.dark-mode
+  .custom-switch
+  .custom-control-input:checked
+  ~ .custom-control-label::before,
+html.dark-mode .mel-radio-1 input[type='checkbox'] + label span::before {
+  border-color: #e1c58f;
+  background-color: #2e2e2e;
+  /*#3e4c59*/
 }
 
 html.dark-mode .ui-slider .ui-slider-handle.ui-state-active,
 html.dark-mode .ui-slider .ui-slider-range,
-html.dark-mode .custom-switch .custom-control-input:checked ~ .custom-control-label::before,
-html.dark-mode  .mel-radio-1 input[type="checkbox"]:checked + label span
-{
-    background-color: #182633;
+html.dark-mode
+  .custom-switch
+  .custom-control-input:checked
+  ~ .custom-control-label::before,
+html.dark-mode .mel-radio-1 input[type='checkbox']:checked + label span {
+  background-color: #182633;
 }
 
-html.dark-mode #edit-attendees-table
-{
-    color:#96b9e7;
+html.dark-mode #edit-attendees-table {
+  color: #96b9e7;
 }
 
-html.dark-mode.iframe #eventedit .alarms-input .input-group-text
-{
-    background-color: transparent;
-    border-color: #E1C58F;
-    color: #E1C58F;
+html.dark-mode.iframe #eventedit .alarms-input .input-group-text {
+  background-color: transparent;
+  border-color: #e1c58f;
+  color: #e1c58f;
 }
 
-html.dark-mode .ui.alert.boxinformation
-{
-    background-color: #323F4B !important;
+html.dark-mode .ui.alert.boxinformation {
+  background-color: #323f4b !important;
 }
 
 html.dark-mode #list-of-all-hashtag,
 html.dark-mode .list-of-all-hashtag {
-	background-color: #1F2933;
-    border: solid #323F4B thin;
+  background-color: #1f2933;
+  border: solid #323f4b thin;
 }
 
 html.dark-mode #mail-user-gp,
-html.dark-mode #myday .element-no
-{
-    color:#c7dfff;
+html.dark-mode #myday .element-no {
+  color: #c7dfff;
 }
 
 html.dark-mode .messagelist:not(.threaded) tbody tr:nth-child(2n) td {
-    background-color: #1A222B;
+  background-color: #1a222b;
 }
 
 /* html.dark-mode .messagelist:not(.threaded) tbody tr.unread:nth-child(2n) td {
@@ -1069,247 +1008,265 @@ html.dark-mode .messagelist:not(.threaded) tbody tr:nth-child(2n) td {
 } */
 
 html.dark-mode .messagelist:not(.threaded) tbody tr.unread td {
-    background-color: #323F4B !important;
+  background-color: #323f4b !important;
 }
 
 html.dark-mode .headlines-by.headlines-rss-type {
-	color: #36D2BD  !important;
+  color: #36d2bd !important;
 }
 
-html.dark-mode table.table-striped thead.mel_striped td
-{
-  background-color: #1F2933;  
+html.dark-mode table.table-striped thead.mel_striped td {
+  background-color: #1f2933;
 }
 
-html.dark-mode .wlp-contents
-{
-    border:none;
+html.dark-mode .wlp-contents {
+  border: none;
 }
 
 html.dark-mode a.rcmContactAddress {
-    color: #96b9e7;
-} 
+  color: #96b9e7;
+}
 
 html.dark-mode .mel-block-list {
-	background-color: #323F4B;
+  background-color: #323f4b;
 }
 
-html.dark-mode #quicksearchbar .button.options.annuaire-filter-selected
-{
-    background-color:green;
+html.dark-mode #quicksearchbar .button.options.annuaire-filter-selected {
+  background-color: green;
 }
 
-html.dark-mode ul#tasklist li.taskitem:nth-child(2n)
-{
-    background-color:#4B5C6C;
+html.dark-mode ul#tasklist li.taskitem:nth-child(2n) {
+  background-color: #4b5c6c;
 }
 
 html.dark-mode body.task-tasks .listing li:hover > div > a:first-child:hover {
-	border: #E1C58F solid thin !important;
-    background-color: initial!important;
-	border-top-right-radius: 15px;
-	border-bottom-right-radius: 15px;
+  border: #e1c58f solid thin !important;
+  background-color: initial !important;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
 }
 /***Survol***/
 html.dark-mode ul ul li.mailbox:hover > a:first-of-type {
-	background-color: transparent;
+  background-color: transparent;
 }
 
-html.dark-mode ul ul li.mailbox:hover > a:first-of-type{
-    /* border: #E1C58F solid thin !important; */
-    background-color: #2E2E2E!important;
-    /* color: #E1C58F!important; */
+html.dark-mode ul ul li.mailbox:hover > a:first-of-type {
+  /* border: #E1C58F solid thin !important; */
+  background-color: #2e2e2e !important;
+  /* color: #E1C58F!important; */
 }
 
-html.dark-mode ul ul li.mailbox.selected:hover > a:first-of-type{
-	background-color: transparent!important;
-    border-radius: 0;
+html.dark-mode ul ul li.mailbox.selected:hover > a:first-of-type {
+  background-color: transparent !important;
+  border-radius: 0;
 }
 
-html.dark-mode .messagelist tr.message:hover{
-    box-shadow: 0px 2px 2px #8FABE147;
+html.dark-mode .messagelist tr.message:hover {
+  box-shadow: 0px 2px 2px #8fabe147;
 }
 
-html.dark-mode .messagelist tr.message:hover td.subject span.msgicon.status::before {
-	color: #96b9e7  !important;
+html.dark-mode
+  .messagelist
+  tr.message:hover
+  td.subject
+  span.msgicon.status::before {
+  color: #96b9e7 !important;
 }
 
-html.dark-mode .messagelist tr.message.selected:hover td.subject span.msgicon.status::before {
-	color: #E1C58F !important;
-    /* text-shadow: 1px 1px 0px #000; */
+html.dark-mode
+  .messagelist
+  tr.message.selected:hover
+  td.subject
+  span.msgicon.status::before {
+  color: #e1c58f !important;
+  /* text-shadow: 1px 1px 0px #000; */
 }
 
-html.dark-mode .messagelist tr.message:hover td.subject span.msgicon.status:hover::before {
-    color: #E1C58F  !important;
+html.dark-mode
+  .messagelist
+  tr.message:hover
+  td.subject
+  span.msgicon.status:hover::before {
+  color: #e1c58f !important;
 }
 
-html.dark-mode .messagelist tr.message:hover td.subject span.msgicon.unread.status:hover::before {
-    color: #E1C58F  !important;
+html.dark-mode
+  .messagelist
+  tr.message:hover
+  td.subject
+  span.msgicon.unread.status:hover::before {
+  color: #e1c58f !important;
 }
 
-html.dark-mode .messagelist tr.message:hover td.flags span.unflagged:hover::before {
-    color: #E1C58F  !important;
+html.dark-mode
+  .messagelist
+  tr.message:hover
+  td.flags
+  span.unflagged:hover::before {
+  color: #e1c58f !important;
 }
 
-html.dark-mode .messagelist tr.message:hover td.flags span.flagged:hover::before {
-    color: #E1C58F  !important;
+html.dark-mode
+  .messagelist
+  tr.message:hover
+  td.flags
+  span.flagged:hover::before {
+  color: #e1c58f !important;
 }
 /**calendar survol**/
-html.dark-mode ul#calendarslist.treelist li div.treetoggle:hover
-{
-    background-color: #2E2E2E!important;
-    /* color: #E1C58F!important; */
+html.dark-mode ul#calendarslist.treelist li div.treetoggle:hover {
+  background-color: #2e2e2e !important;
+  /* color: #E1C58F!important; */
 }
 
 html.dark-mode ul#calendarslist .calendar:hover {
-    background-color: #2E2E2E!important;
-    border-radius: 5px;
+  background-color: #2e2e2e !important;
+  border-radius: 5px;
 }
 
 html.dark-mode ul#calendarslist li.selected > .calendar:hover {
-    background-color: transparent!important;
+  background-color: transparent !important;
 }
 
 /**anuaire*/
 html.dark-mode .gestion-options:hover,
-html.dark-mode ul#directorylist.treelist li:hover > div > a, 
+html.dark-mode ul#directorylist.treelist li:hover > div > a,
 html.dark-mode ul#directorylist.treelist li:hover > a,
-html.dark-mode #contacts-table.listing li:hover, 
-html.dark-mode #contacts-table.listing tr:hover td, 
+html.dark-mode #contacts-table.listing li:hover,
+html.dark-mode #contacts-table.listing tr:hover td,
 html.dark-mode .popupmenu #contacts-table.listing li:hover {
-    background-color: #2E2E2E!important;
-    /* color: #E1C58F!important; */
-    border-radius: 5px;
+  background-color: #2e2e2e !important;
+  /* color: #E1C58F!important; */
+  border-radius: 5px;
 }
 
-html.dark-mode ul#directorylist.treelist li.selected:hover > div > a, 
+html.dark-mode ul#directorylist.treelist li.selected:hover > div > a,
 html.dark-mode ul#directorylist.treelist li.selected:hover > a,
-html.dark-mode #contacts-table.listing li.selected:hover, 
-html.dark-mode #contacts-table.listing tr.selected:hover td, 
+html.dark-mode #contacts-table.listing li.selected:hover,
+html.dark-mode #contacts-table.listing tr.selected:hover td,
 html.dark-mode .popupmenu #contacts-table.listing li.selected:hover {
-    background-color: transparent!important;
-    border-radius: 0;
+  background-color: transparent !important;
+  border-radius: 0;
 }
 
 /**settings**/
 html.dark-mode .task-settings .listing tbody td:hover,
 html.dark-mode .task-settings .scroller > .listing li:hover {
-    background-color: #2E2E2E!important;
-    border-radius: 5px;
+  background-color: #2e2e2e !important;
+  border-radius: 5px;
 }
 
 html.dark-mode .task-settings .listing tbody .selected td:hover,
 html.dark-mode .task-settings .scroller > .listing li.selected:hover {
-    background-color: transparent!important;
-    border-radius: 5px;
+  background-color: transparent !important;
+  border-radius: 5px;
 }
 
-html.dark-mode .row.responsiveTabList.namespace-reponsive-tab-shortcut
-{
-    background-color: #323F4B;
+html.dark-mode .row.responsiveTabList.namespace-reponsive-tab-shortcut {
+  background-color: #323f4b;
 }
 
 html.dark-mode .input-group-text.mel {
-	border-top-left-radius: 60px;
-	border-bottom-left-radius: 60px;
-	border-right: none;
-	background-color: transparent;
-	border-color: #E1C58F;
-	color: #E1C58F;
+  border-top-left-radius: 60px;
+  border-bottom-left-radius: 60px;
+  border-right: none;
+  background-color: transparent;
+  border-color: #e1c58f;
+  color: #e1c58f;
 }
 
-html.dark-mode .messagelist tr.message.bloqued .msgicon.status::before{
-    color:red!important;
+html.dark-mode .messagelist tr.message.bloqued .msgicon.status::before {
+  color: red !important;
 }
 
 html.dark-mode #message-model {
-	background-color: #323F4B;
+  background-color: #323f4b;
 }
 
-html.dark-mode separate.device{
-    border-color:#4c4d50;
+html.dark-mode separate.device {
+  border-color: #4c4d50;
 }
 
 html.dark-mode .message-htmlpart table td {
-	background-color: white;
+  background-color: white;
 }
 
-html.dark-mode button.btn-mel:hover + button.mel-button.under-button{
-  color: #E1C58F;
-} 
+html.dark-mode button.btn-mel:hover + button.mel-button.under-button {
+  color: #e1c58f;
+}
 
 html.dark-mode button.btn-mel.active + button.mel-button.under-button {
-    color: black;
-} 
+  color: black;
+}
 
 html.dark-mode button.btn-mel:hover + button.mel-button.under-button:hover,
 html.dark-mode button.btn-mel.active + button.mel-button.under-button:hover {
-  color: #E1C58F;
-  background-color: #2E2E2E;
+  color: #e1c58f;
+  background-color: #2e2e2e;
 }
 
-html.dark-mode .message-partheaders .falselink{
-    color:#96b9e7;
+html.dark-mode .message-partheaders .falselink {
+  color: #96b9e7;
 }
 
 html.dark-mode .mel-selectable:hover {
-    background-color: #2E2E2E;
-    color: #E1C58F;
+  background-color: #2e2e2e;
+  color: #e1c58f;
 }
 
 html.dark-mode .mel-selectable.selected {
-    background-color: #2E2E2E;
-    color: #E1C58F;
-    border-left: solid thick #E1C58F;
+  background-color: #2e2e2e;
+  color: #e1c58f;
+  border-left: solid thick #e1c58f;
 }
 
 html.dark-mode optgroup {
-    background: #2E2E2E;
+  background: #2e2e2e;
 }
 
 html.dark-mode.barup-picture .barup button,
 html.dark-mode.barup-picture .barup #barup-search-input,
-html.dark-mode.barup-picture .barup .search .input-group-append span{
-    background-color: var(--secondary-nav-background-color);
+html.dark-mode.barup-picture .barup .search .input-group-append span {
+  background-color: var(--secondary-nav-background-color);
 }
 
 html.dark-mode.barup-picture .barup #button-help {
-    background-color: var(--secondary-nav-background-color);
+  background-color: var(--secondary-nav-background-color);
 }
 
-html.dark-mode #message-list-filters li .quick-filter.active, 
+html.dark-mode #message-list-filters li .quick-filter.active,
 html.dark-mode #message-list-filters-extra button.active,
 html.dark-mode .mel-tooltip button.mel-button.btn-secondary.active {
-    background-color: #E1C58F;
-    color: black;
-    border-color: #2E2E2E;
+  background-color: #e1c58f;
+  color: black;
+  border-color: #2e2e2e;
 }
 
-html.dark-mode #message-list-filters li .quick-filter.active:focus, 
+html.dark-mode #message-list-filters li .quick-filter.active:focus,
 html.dark-mode #message-list-filters-extra button.active:focus,
 html.dark-mode .mel-tooltip button.mel-button.btn-secondary.active:focus {
-    color: black!important;
+  color: black !important;
 }
 
-html.dark-mode #message-list-filters li .quick-filter.active.hoverable:hover, 
+html.dark-mode #message-list-filters li .quick-filter.active.hoverable:hover,
 html.dark-mode #message-list-filters-extra button.active.hoverable:hover,
 html.dark-mode .mel-tooltip button.mel-button.btn-secondary.active:hover {
-    background-color: #2E2E2E;
-    color: #E1C58F;
-    border-color: #E1C58F;
+  background-color: #2e2e2e;
+  color: #e1c58f;
+  border-color: #e1c58f;
 }
 
-html.dark-mode .mel-tooltip{
-    background-color: #1F2933;
-    border:1px solid #4d6066;
+html.dark-mode .mel-tooltip {
+  background-color: #1f2933;
+  border: 1px solid #4d6066;
 }
 
-html.dark-mode .mel-tooltip::before{
-    color: #1F2933;
-    text-shadow: 0px 0px 1px #4d6066;
+html.dark-mode .mel-tooltip::before {
+  color: #1f2933;
+  text-shadow: 0px 0px 1px #4d6066;
 }
 
 html.dark-mode #message-list-filters-extra div,
-html.dark-mode .message-list-filter-container{
-    border-color: #4d6066;
+html.dark-mode .message-list-filter-container {
+  border-color: #4d6066;
 }

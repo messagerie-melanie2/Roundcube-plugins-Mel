@@ -17,7 +17,7 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-include_once __DIR__.'/../mel_metapage/bnum_plugin.php';
+include_once __DIR__.'/../bnum/bnum_plugin.php';
 class mel_doubleauth extends bnum_plugin {
     /**
      *

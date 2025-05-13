@@ -1455,15 +1455,26 @@ const mel_metapage = {
       return this;
     },
 
-    async comment_mail(uid, comment, folder = 'INBOX') {
+    async comment_mail(
+      uid,
+      comment,
+      { folder = 'INBOX', subject = null } = {},
+    ) {
       let data = uid;
+
+      let config = {
+        _uid: uid,
+        _comment: comment,
+        _folder: folder,
+      };
+
+      if (subject) {
+        config['_subject'] = subject;
+      }
+
       await this.post(
         mel_metapage.Functions.url('mel_metapage', 'comment_mail'),
-        {
-          _uid: uid,
-          _comment: comment,
-          _folder: folder,
-        },
+        config,
         (datas) => {
           if (datas == 'false') {
             rcmail.display_message('Une erreur est survenue!', 'error');

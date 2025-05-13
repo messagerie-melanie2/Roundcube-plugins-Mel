@@ -1,4 +1,5 @@
 import { EMPTY_STRING } from '../../../../constants/constants.js';
+import { OLD_BNUM_MODE } from '../button/constants.js';
 import {
   BnumHtmlIcon,
   BnumHtmlShadowIcon,
@@ -58,13 +59,26 @@ export default class DropDownVariationComponent extends AHTMLComponent {
       args[0].prepend(iconElement);
     }
 
+    if (iconElement) this._p_parent().addClass('bnum-select--icon');
+
     switch (this.variation) {
       case EDropDownVariations.default:
-        this._p_parent().classList.add(
-          'input-mel',
-          'fake-input',
-          'form-control',
-        );
+        if (OLD_BNUM_MODE) {
+          this._p_parent().classList.add(
+            'input-mel',
+            'fake-input',
+            'form-control',
+          );
+        } else {
+          this._p_parent().addClass('bnum-select--default');
+        }
+        break;
+
+      case EDropDownVariations.alternate:
+        if (!OLD_BNUM_MODE) this._p_parent().addClass('bnum-select--alternate');
+        break;
+
+      default:
         break;
     }
 

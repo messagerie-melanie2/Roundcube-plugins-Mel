@@ -130,7 +130,8 @@ class WorkspaceObject extends MelObject {
     visibilityButton,
     { onSetFullScreen = null, onUnsetFullScreen = null } = {},
   ) {
-    visibilityButton ??= { length: false };
+    //Si on est en jQuery, on passe en Javascript Natif
+    if (visibilityButton?.length) visibilityButton = visibilityButton[0];
 
     if (task === askedTask) {
       //On cache tout les autres modules
@@ -155,7 +156,8 @@ class WorkspaceObject extends MelObject {
         }),
       );
 
-      if (visibilityButton.length)
+      //Si un bouton existe ou non
+      if (visibilityButton)
         visibilityButton.addClass('disabled').attr('disabled', 'disabled');
 
       this.showBlock(module);
@@ -170,8 +172,8 @@ class WorkspaceObject extends MelObject {
 
       return { _break: true, askedTask };
     } else if (module.hasAttribute('data-fullscreen')) {
-      if (visibilityButton.length)
-        visibilityButton.removeClass('disabled').removeAttr('disabled');
+      if (visibilityButton)
+        visibilityButton.removeClass('disabled').removeAttribute('disabled');
 
       module.removeAttribute('data-fullscreen');
 
@@ -364,6 +366,14 @@ class WorkspaceObject extends MelObject {
     }
 
     return node;
+  }
+
+  /**
+   * Check si on est dans un espace de travail ou non
+   * @returns {boolean}
+   */
+  isInWorkspace() {
+    return WorkspaceObject.IsInWorkspace();
   }
 
   /**
@@ -572,6 +582,15 @@ class WorkspaceObject extends MelObject {
 
     return observer;
   }
+
+  /**
+   * Check si on est dans un espace de travail ou non
+   * @returns {boolean}
+   * @static
+   */
+  static IsInWorkspace() {
+    return document.querySelector('html').classList.contains('mwsp');
+  }
 }
 
 /**
@@ -749,6 +768,14 @@ class WorkspaceUsers {
   }
 
   /**
+   * Vérifie si il y a des utilisateurs dans l'espace
+   * @returns {boolean}
+   */
+  any() {
+    return Object.keys(this.#users).length > 0;
+  }
+
+  /**
    * Récupère Un utilisateur à partir de son email
    * @param {string} email
    * @returns {WorkspaceUser}
@@ -820,7 +847,7 @@ class CurrentWorkspaceData {
    * @readonly
    */
   get users() {
-    if (!this.#users) {
+    if (!this.#users && rcmail.env.current_workspace_users) {
       this.#users = new WorkspaceUsers(
         ...MelEnumerable.from(rcmail.env.current_workspace_users).select(
           (x) => new WorkspaceUser(x.value),

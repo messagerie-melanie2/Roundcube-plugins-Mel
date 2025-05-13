@@ -18,6 +18,7 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+
 use LibMelanie\Ldap\Ldap as Ldap;
 
 include_once __DIR__ . '/../mce/mce.php';
@@ -30,28 +31,28 @@ class mtes_driver_mel extends mce_driver_mel
    * @var string
    */
   protected $BALP_LABEL = 'Boite partag&AOk-e';
-  
+
   /**
    * Dossier pour les brouillons
    * 
    * @var string
    */
   protected $MBOX_DRAFT = "Brouillons";
-  
+
   /**
    * Dossier pour les éléments envoyés
    *  
    * @var string
    */
   protected $MBOX_SENT = "&AMk-l&AOk-ments envoy&AOk-s";
-  
+
   /**
    * Dossier pour les indésirables
    * 
    * @var string
    */
   protected $MBOX_JUNK = "Ind&AOk-sirables";
-  
+
   /**
    * Dossier pour la corbeille
    * 
@@ -214,7 +215,8 @@ class mtes_driver_mel extends mce_driver_mel
    * 
    * @return string Cible de restauration
    */
-  protected function get_restoration_target($mbox) {
+  protected function get_restoration_target($mbox)
+  {
     $target = $this->get_restoration_host($mbox);
     return explode('.', $target, 2)[0];
   }
@@ -343,10 +345,12 @@ class mtes_driver_mel extends mce_driver_mel
       $args['form']['head']['content']['type'] = array('type' => 'text');
     }
     // N'ajouter les informations sur Internet que si la double auth est activé (sinon sur intranet)
-    else if (mel::is_internal() 
-        || mel::is_auth_strong()
-        || !class_exists('mel_doubleauth') 
-        || mel_doubleauth::is_double_auth_enable()) {
+    else if (
+      mel::is_internal()
+      || mel::is_auth_strong()
+      || !class_exists('mel_doubleauth')
+      || mel_doubleauth::is_double_auth_enable()
+    ) {
       $plugin = rcmail::get_instance()->plugins->get_plugin('mel_contacts');
       // Add fonction
       $args['form']['function'] = [
@@ -377,6 +381,29 @@ class mtes_driver_mel extends mce_driver_mel
         'content' => [
           'share' => array('type' => 'text', 'label' => false, 'render_func' => [$this, 'renderShare']),
         ],
+      ];
+      // Ajout de toutes les adresses de messagerie
+      $emails = isset($args['record']['email_list']) ? $args['record']['email_list'] : [];
+      $main_email = isset($args['record']['email']) ? $args['record']['email'] : '';
+      $other_emails = array_filter($emails, function ($email) use ($main_email) {
+        return $email !== $main_email;
+      });
+      $args['form']['email_list'] = [
+        'name' => $plugin->gettext('email_list'),
+        'content' => [
+          'main_email' => [
+            'type' => 'html',
+            'label' => $plugin->gettext('main_email'),
+            'render_func' => [$this, 'renderMainEmail'],
+            'value' => $main_email
+          ],
+          'other_emails' => [
+            'type' => 'html',
+            'label' => $plugin->gettext('other_emails'),
+            'render_func' => [$this, 'renderOtherEmails'],
+            'value' => implode("\n", $other_emails)
+          ]
+        ]
       ];
       if (isset($args['record']['email'])) {
         // Search in LDAP
@@ -509,6 +536,61 @@ class mtes_driver_mel extends mce_driver_mel
   }
 
   /**
+   * Render main email with href 
+   */
+  public function renderMainEmail($val, $col)
+  {
+    if (empty($val)) {
+      return '';
+    }
+    return html::div(
+      ['class' => 'field'],
+      html::a([
+        'href' => 'mailto:' . $val,
+        'onclick' => sprintf(
+          "return %s.command('compose','%s',this)",
+          rcmail_output::JS_OBJECT_NAME,
+          rcube::JQ($val)
+        ),
+        'class' => 'email'
+      ], rcube::Q($val))
+    );
+  }
+
+  /**
+   * Render other emails with href 
+   */
+  public function renderOtherEmails($val, $col)
+  {
+    if (empty($val)) {
+      return '';
+    }
+
+    $emails = is_array($val) ? $val : explode("\n", $val);
+    $content = '';
+
+    foreach ($emails as $email) {
+      $email = trim($email);
+      if (!empty($email)) {
+        $content .= html::div(
+          ['class' => 'field'],
+          html::a([
+            'href' => 'mailto:' . $email,
+            'onclick' => sprintf(
+              "return %s.command('compose','%s',this)",
+              rcmail_output::JS_OBJECT_NAME,
+              rcube::JQ($email)
+            ),
+            'class' => 'email'
+          ], rcube::Q($email))
+        );
+      }
+    }
+
+    return $content;
+  }
+
+  /**
    * Méthode de création/modification d'un groupe associé à un workspace
    * 
    * @param string $workspace_id Identifiant du workspace
@@ -627,7 +709,8 @@ class mtes_driver_mel extends mce_driver_mel
    * 
    * @return boolean true si l'utilisateur a été créé, false sinon
    */
-  public function create_external_user($email, $workspace) {
+  public function create_external_user($email, $workspace)
+  {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[driver_mel] mtes::create_external_user($email)");
 
@@ -651,8 +734,7 @@ class mtes_driver_mel extends mce_driver_mel
       // Si l'utilisateur existe on ne fait rien
       mel_logs::get_instance()->log(mel_logs::ERROR, "[driver_mel] mtes::create_external_user($email) : Utilisateur déjà existant");
       return false;
-    }
-    else {
+    } else {
       // Calcul des nom/prénom à partir de l'adresse email (à confirmer plus tard)
       list($firstname, $lastname) = array_values($this->get_names_from_email($email));
 
@@ -665,8 +747,10 @@ class mtes_driver_mel extends mce_driver_mel
       // Ajout des attributs
       foreach (self::EXTERNAL_USER as $key => $value) {
         $user->$key = trim(str_replace(
-          ['%%firstname%%', '%%lastname%%', '%%email%%', '%%uid%%'], 
-          [$firstname, $lastname, $email, $uid], $value));
+          ['%%firstname%%', '%%lastname%%', '%%email%%', '%%uid%%'],
+          [$firstname, $lastname, $email, $uid],
+          $value
+        ));
       }
 
       // UUIDv4
@@ -707,8 +791,7 @@ class mtes_driver_mel extends mce_driver_mel
           ]);
 
           return \LibMelanie\Mail\Mail::Send('bnum', $email, $bodymail->subject(), $bodymail->body());
-        }
-        else {
+        } else {
           // Erreur lors de l'enregistrement de la clé
           mel_logs::get_instance()->log(mel_logs::ERROR, "[driver_mel] mtes::create_external_user($email) : Erreur lors de l'enregistrement de la clé");
           $user->delete();
@@ -739,13 +822,13 @@ class mtes_driver_mel extends mce_driver_mel
    * 
    * @return string Url complète
    */
-  protected function url($url, $absolute = true) {
+  protected function url($url, $absolute = true)
+  {
     $base_path = '';
     if (!empty($_SERVER['REDIRECT_SCRIPT_URL'])) {
-        $base_path = $_SERVER['REDIRECT_SCRIPT_URL'];
-    }
-    else if (!empty($_SERVER['SCRIPT_NAME'])) {
-        $base_path = $_SERVER['SCRIPT_NAME'];
+      $base_path = $_SERVER['REDIRECT_SCRIPT_URL'];
+    } else if (!empty($_SERVER['SCRIPT_NAME'])) {
+      $base_path = $_SERVER['SCRIPT_NAME'];
     }
     $base_path = preg_replace('![^/]+$!', '', $base_path);
 
@@ -765,12 +848,13 @@ class mtes_driver_mel extends mce_driver_mel
    * 
    * @return string UUID généré
    */
-  protected function uuidv4() {
+  protected function uuidv4()
+  {
     $data = random_bytes(16);
-  
+
     $data[6] = chr(ord($data[6]) & 0x0f | 0x40); // set version to 0100
     $data[8] = chr(ord($data[8]) & 0x3f | 0x80); // set bits 6-7 to 10
-      
+
     return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
   }
 
@@ -779,7 +863,8 @@ class mtes_driver_mel extends mce_driver_mel
    * 
    * @return string Clé générée
    */
-  protected function getRandomKey() {
+  protected function getRandomKey()
+  {
     return bin2hex(random_bytes(32));
   }
 
@@ -790,7 +875,8 @@ class mtes_driver_mel extends mce_driver_mel
    * 
    * @return boolean true si le domaine est externe, false sinon
    */
-  protected function valid_external_domain($email) {
+  protected function valid_external_domain($email)
+  {
     foreach (self::INTERNAL_DOMAINS as $domain) {
       if (strpos($email, "@$domain") !== false) {
         // C'est un domaine interne
@@ -808,18 +894,18 @@ class mtes_driver_mel extends mce_driver_mel
    * 
    * @return array Tableau associatif avec les clés 'firstname' et 'lastname'
    */
-  protected function get_names_from_email($email) {
+  protected function get_names_from_email($email)
+  {
     $names = explode('@', strtolower($email), 2);
     if (strpos($names[0], '.') === false) {
       $lastname = strtoupper($names[0]);
-      $fistname = ' ';
-    }
-    else {
+      $fistname = 'Externe';
+    } else {
       $names = explode('.', $names[0]);
       $lastname = strtoupper($names[1]);
       $fistname = ucfirst($names[0]);
     }
-    
+
     return [
       'firstname' => $fistname,
       'lastname'  => $lastname,
@@ -833,7 +919,8 @@ class mtes_driver_mel extends mce_driver_mel
    * 
    * @return string uid généré
    */
-  protected function get_uid_from_email($email) {
+  protected function get_uid_from_email($email)
+  {
     $uid = preg_replace("/[^a-z0-9\.-]/", '.', strtolower($email));
 
     if (strlen($uid) > 34) {
@@ -848,7 +935,8 @@ class mtes_driver_mel extends mce_driver_mel
    * 
    * @return LibMelanie\Api\Defaut\Resources\Locality[] Liste des localités 
    */
-  public function resources_localities() {
+  public function resources_localities()
+  {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[driver_mel] mtes::resources_localities()");
 
@@ -863,7 +951,8 @@ class mtes_driver_mel extends mce_driver_mel
    * 
    * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources
    */
-  public function resources($uids = null, $emails = null) {
+  public function resources($uids = null, $emails = null)
+  {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[driver_mel] mtes::resources()");
 
@@ -877,7 +966,8 @@ class mtes_driver_mel extends mce_driver_mel
    * 
    * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources Flex Office
    */
-  public function resources_flex_office($locality_uid) {
+  public function resources_flex_office($locality_uid)
+  {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[driver_mel] mtes::resources_flex_office($locality_uid)");
 
@@ -886,8 +976,7 @@ class mtes_driver_mel extends mce_driver_mel
 
     if ($locality->load()) {
       return $locality->listResources(LibMelanie\Api\Mel\Resource::TYPE_FLEX_OFFICE);
-    }
-    else {
+    } else {
       return [];
     }
   }
@@ -899,7 +988,8 @@ class mtes_driver_mel extends mce_driver_mel
    * 
    * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources Flex Office
    */
-  public function resources_salle($locality_uid) {
+  public function resources_salle($locality_uid)
+  {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[driver_mel] mtes::resources_salle($locality_uid)");
 
@@ -908,8 +998,7 @@ class mtes_driver_mel extends mce_driver_mel
 
     if ($locality->load()) {
       return $locality->listResources(LibMelanie\Api\Mel\Resource::TYPE_SALLE);
-    }
-    else {
+    } else {
       return [];
     }
   }
@@ -921,7 +1010,8 @@ class mtes_driver_mel extends mce_driver_mel
    * 
    * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources Flex Office
    */
-  public function resources_vehicule($locality_uid) {
+  public function resources_vehicule($locality_uid)
+  {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[driver_mel] mtes::resources_vehicule($locality_uid)");
 
@@ -930,8 +1020,7 @@ class mtes_driver_mel extends mce_driver_mel
 
     if ($locality->load()) {
       return $locality->listResources(LibMelanie\Api\Mel\Resource::TYPE_VEHICULE);
-    }
-    else {
+    } else {
       return [];
     }
   }
@@ -943,7 +1032,8 @@ class mtes_driver_mel extends mce_driver_mel
    * 
    * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources Flex Office
    */
-  public function resources_materiel($locality_uid) {
+  public function resources_materiel($locality_uid)
+  {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[driver_mel] mtes::resources_materiel($locality_uid)");
 
@@ -952,8 +1042,7 @@ class mtes_driver_mel extends mce_driver_mel
 
     if ($locality->load()) {
       return $locality->listResources(LibMelanie\Api\Mel\Resource::TYPE_MATERIEL);
-    }
-    else {
+    } else {
       return [];
     }
   }

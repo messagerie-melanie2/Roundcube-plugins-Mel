@@ -49,22 +49,28 @@ export default class FormComponent extends AHTMLComponent {
 
     switch (this.variation) {
       case EButtonType.primary:
-        variationClass.push(OLD_BNUM_MODE ? EMPTY_STRING : '--primary');
+        variationClass.push(
+          OLD_BNUM_MODE ? EMPTY_STRING : 'bnum-button--primary',
+        );
         this.#_parent.setState('primary');
         break;
 
       case EButtonType.secondary:
-        variationClass.push(OLD_BNUM_MODE ? 'white' : '--secondary');
+        variationClass.push(OLD_BNUM_MODE ? 'white' : 'bnum-button--secondary');
         this.#_parent.setState('secondary');
         break;
 
       case EButtonType.danger:
-        variationClass.push(OLD_BNUM_MODE ? 'btn btn-danger' : '--danger');
+        variationClass.push(
+          OLD_BNUM_MODE ? 'btn btn-danger' : 'bnum-button--danger',
+        );
         this.#_parent.setState('danger');
         break;
 
       case EButtonType.nobackground:
-        variationClass.push(OLD_BNUM_MODE ? 'bckg true' : '--nobackground');
+        variationClass.push(
+          OLD_BNUM_MODE ? 'bckg true' : 'bnum-button--nobackground',
+        );
         this.#_parent.setState('nobackground');
         break;
 

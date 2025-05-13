@@ -125,4 +125,11 @@ export default class AHTMLCustomInternalElement extends HtmlCustomDataTag {
     this.removeState('disabled');
     return node;
   }
+
+  /**
+   * @inheritdoc
+   */
+  _p_setLoaded() {
+    this.setState('loaded');
+  }
 }

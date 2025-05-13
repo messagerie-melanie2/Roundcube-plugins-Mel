@@ -413,8 +413,7 @@ class mel_wekan extends bnum_plugin
 
         foreach ($users as $key => $value) {
             $value = $key;
-            if (!$wekan->check_if_user_exist($board_id, $value))
-            {
+            if (!$wekan->check_if_user_exist($board_id, $value)) {
                 try {
                     $return['users'][$value] = $wekan->add_member($board_id, $value, $workspace->isAdmin($value));
                     $wekan->update_user_status($board_id, $value, $workspace->isAdmin($value));
@@ -436,32 +435,33 @@ class mel_wekan extends bnum_plugin
             "users" => []
         ];
 
-        if ($return["board"]["httpCode"] == 200)
-        {
+        if ($return["board"]["httpCode"] == 200) {
             $current_user = driver_mel::gi()->getUser()->uid;
             $board_id = $return["board"]["board_id"] !== null ? $return["board"]["board_id"] : json_decode($return["board"]["content"])->_id;
 
             $return['users'] = $this->add_users_to_wekan_board($workspace, $users, $board_id, $wekan, $current_user)['users'];
 
             $return["board_id"] = $board_id;
-            $return["board_title"] = null;//$return["board"]["board_title"] !== null ? $return["board"]["board_title"] : json_decode($return["board"]["content"])->title;
+            $return["board_title"] = null; //$return["board"]["board_title"] !== null ? $return["board"]["board_title"] : json_decode($return["board"]["content"])->title;
         }
 
         return $return;
     }
 
-    public function workspace_service_delete($args) {
+    public function workspace_service_delete($args)
+    {
         $key = array_search(mel_workspace::KEY_TASK, $args['services']);
 
         if (isset($key) && $key !== false) {
-            $wekan = $args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE);//$this->get_object($workspace, self::WEKAN);
+            $wekan = $args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE); //$this->get_object($workspace, self::WEKAN);
             if ($wekan->updated !== true) $this->delete_board($wekan->id);
         }
 
         return $args;
     }
 
-    public function workspace_services_set($args) {
+    public function workspace_services_set($args)
+    {
         $key = array_search(mel_workspace::KEY_TASK, $args['services']);
 
         if (isset($key) && $key !== false) {
@@ -471,15 +471,13 @@ class mel_wekan extends bnum_plugin
             $workspace = $args['workspace'];
             $default_value = $args['default_values'];
             //Verifier si le wekan existe
-            $board_id = $workspace->objects()->get(self::KEY_FOR_WORKSPACE)->id;//$this->get_object($workspace, self::WEKAN);
-            
-            if ($board_id === null)
-            {
+            $board_id = $workspace->objects()->get(self::KEY_FOR_WORKSPACE)->id; //$this->get_object($workspace, self::WEKAN);
+
+            if ($board_id === null) {
                 $object = ["id" => '', "title" => ''];
                 $index = 'tasks';
 
-                if (!isset($default_value) || !isset($default_value[$index]))
-                {
+                if (!isset($default_value) || !isset($default_value[$index])) {
                     if (!isset($default_value) || $default_value === '') $default_value = [];
 
                     $default_value[$index] = [
@@ -507,10 +505,10 @@ class mel_wekan extends bnum_plugin
                         $board_id["board_title"] = ($board_id["board_title"]['httpCode'] === 200 ? json_decode($board_id["board_title"]['content'])->title : null) ?? '';
                         $object['updated'] = true;
                         break;
-                    
+
                     default:
                         return;
-                } 
+                }
 
                 $object['id'] = $board_id['board_id'];
                 $object['title'] = $board_id['board_title'];
@@ -519,11 +517,9 @@ class mel_wekan extends bnum_plugin
                 //$this->save_object($workspace, self::WEKAN, $object);
                 $args['default_values'] = $default_value;
                 $args['workspace'] = $workspace;
-            }
-            else {
+            } else {
                 foreach ($workspace->users() as $key => $value) {
-                    if (!$this->check_if_user_exist($board_id, $key))
-                    {
+                    if (!$this->check_if_user_exist($board_id, $key)) {
                         try {
                             $this->add_member($board_id, $value);
                         } catch (\Throwable $th) {
@@ -539,7 +535,8 @@ class mel_wekan extends bnum_plugin
         return $args;
     }
 
-    public function workspace_services_set_role($args) {
+    public function workspace_services_set_role($args)
+    {
         if ($args['workspace']->hasService(self::KEY_FOR_WORKSPACE)) {
             $new_right = $args['new_right'];
             $this->update_user_status($args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE)->id, $args['user'], !($new_right === $args['rights']['user']));
@@ -548,32 +545,34 @@ class mel_wekan extends bnum_plugin
         return $args;
     }
 
-    public function workspace_users_services_delete($args) {
+    public function workspace_users_services_delete($args)
+    {
         if ($args['workspace']->hasService(self::KEY_FOR_WORKSPACE)) {
-            $board_id = $args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE)->id; 
+            $board_id = $args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE)->id;
 
-            if ($this->check_if_user_exist($board_id, $args['user']))
-            {
+            if ($this->check_if_user_exist($board_id, $args['user'])) {
                 try {
                     $this->remove_user($board_id, $args['user']);
                 } catch (\Throwable $th) {
                     throw $th;
                 }
-            }   
+            }
         }
 
         return $args;
     }
 
-    public function workspace_params_services_show_update($args) {
+    public function workspace_params_services_show_update($args)
+    {
         if ($args['app'] === mel_workspace::KEY_TASK) {
-            $args['html'] .= html::tag("button", ["title" => "Choisissez un nouveau tableau !",  "id" => "update-wekan-button","class" => "mel-button param-button " ], "Changer de tableau".html::tag("span", ["class" => "plus icon-mel-pencil"]));
+            $args['html'] .= html::tag("button", ["title" => "Choisissez un nouveau tableau !",  "id" => "update-wekan-button", "class" => "mel-button param-button "], "Changer de tableau" . html::tag("span", ["class" => "plus icon-mel-pencil"]));
         }
 
         return $args;
     }
 
-    public function wsp_block($args) {
+    public function wsp_block($args)
+    {
         if ($args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE) !== null) {
             $args['plugin']->include_workspace_module('mel_wekan', 'workspace.js', 'js/workspace');
             $args['layout']->setNavBarSetting('wekan', 'view_kanban', false, 4);
@@ -582,7 +581,8 @@ class mel_wekan extends bnum_plugin
         return $args;
     }
 
-    public function workspace_service_get($args) {
+    public function workspace_service_get($args)
+    {
         if ($args['services'][self::KEY_FOR_WORKSPACE]) $args['services'][self::KEY_FOR_WORKSPACE] = $args['services'][mel_workspace::KEY_TASK] ?? false;
 
         return $args;

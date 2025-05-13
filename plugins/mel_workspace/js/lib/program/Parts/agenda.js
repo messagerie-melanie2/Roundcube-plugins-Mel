@@ -7,7 +7,13 @@ import { WorkspaceModuleBlock } from '../../WebComponents/workspace_module_block
 import { NavBarManager } from '../navbar.generator.js';
 import { WorkspaceObject } from '../WorkspaceObject.js';
 
+/**
+ * @default 'calendar'
+ * @type {string}
+ * @constant
+ */
 const MODULE_NAME = 'calendar';
+
 /**
  * @default 'workspace_agenda'
  * @type {string}
@@ -15,7 +21,15 @@ const MODULE_NAME = 'calendar';
  */
 const KEY_LISTENER = 'workspace_agenda';
 
+/**
+ * Classe représentant le module d'agenda dans l'espace de travail.
+ * @extends WorkspaceObject
+ */
 export class WorkspaceAgenda extends WorkspaceObject {
+  /**
+   * Initialise une nouvelle instance de WorkspaceAgenda.
+   * Vérifie si le module est chargé ou désactivé, et configure son affichage en conséquence.
+   */
   constructor() {
     super();
 
@@ -30,6 +44,7 @@ export class WorkspaceAgenda extends WorkspaceObject {
   }
 
   /**
+   * Clé pour accéder à tous les événements du calendrier.
    * @type {string}
    * @readonly
    * @static
@@ -39,6 +54,7 @@ export class WorkspaceAgenda extends WorkspaceObject {
   }
 
   /**
+   * Clé pour charger les événements du calendrier.
    * @type {string}
    * @readonly
    * @static
@@ -48,6 +64,7 @@ export class WorkspaceAgenda extends WorkspaceObject {
   }
 
   /**
+   * Clé pour les mises à jour du calendrier.
    * @type {string}
    * @readonly
    * @static
@@ -57,6 +74,7 @@ export class WorkspaceAgenda extends WorkspaceObject {
   }
 
   /**
+   * Conteneur du module d'agenda.
    * @type {import('../../WebComponents/workspace_module_block.js').WorkspaceModuleBlock}
    * @readonly
    */
@@ -65,6 +83,7 @@ export class WorkspaceAgenda extends WorkspaceObject {
   }
 
   /**
+   * Contenu du module d'agenda.
    * @type {HTMLElement}
    * @readonly
    */
@@ -73,19 +92,25 @@ export class WorkspaceAgenda extends WorkspaceObject {
   }
 
   /**
-   * Appelé au démarrage du module
+   * Méthode appelée au démarrage du module.
+   * Configure les actions des boutons et les écouteurs d'événements pour le module.
    */
   startup() {
-    //Action à faire lorsque l'on clique sur le bouton "Créer"
+    // Action à effectuer lors du clic sur le bouton "Créer"
     WorkspaceModuleBlock.AddListenerAction(this.moduleContainer, (e) => {
+      // Création d'un événement temporaire avec des données par défaut
       const event = {
         categories: ['ws#' + this.workspace.uid],
         calendar_blocked: true,
         start: moment(),
         end: moment().add(1, 'h'),
+        url_data: {
+          _wsp_uid: this.workspace.uid,
+        },
       };
       this.rcmail().local_storage_set_item('tmp_calendar_event', event);
 
+      // Exécution de la commande pour ajouter un événement
       return this.rcmail().commands['add-event-from-shortcut']
         ? this.rcmail().command(
             'add-event-from-shortcut',
@@ -96,7 +121,7 @@ export class WorkspaceAgenda extends WorkspaceObject {
         : this.rcmail().command('addevent', EMPTY_STRING, e.target, e);
     });
 
-    //Action à faire lorsque l'agenda est mis à jours
+    // Action à effectuer lorsque l'agenda est mis à jour
     this.add_event_listener(
       WorkspaceAgenda.KEY_CALENDAR_UPDATED,
       () => {
@@ -109,19 +134,21 @@ export class WorkspaceAgenda extends WorkspaceObject {
   }
 
   /**
-   * Actions princiapales asynchrones
+   * Actions principales asynchrones.
+   * Configure les actions à effectuer lors du chargement et de la navigation.
    * @private
    */
   async #_main() {
     await this.#_load_content();
     await NavBarManager.WaitLoading();
     NavBarManager.currentNavBar.onquitbuttonclick.push(() => {
+      // Supprime l'écouteur d'événements lors de la fermeture de la barre de navigation
       this.remove_listener(WorkspaceAgenda.KEY_CALENDAR_UPDATED, KEY_LISTENER);
     });
   }
 
   /**
-   * Récupère les donnée depuis le stockage local, si elles n'existent pas, les charge depuis le serveur
+   * Vérifie les données dans le stockage local, les charge depuis le serveur si elles n'existent pas.
    * @returns {AsyncGenerator<*, void, *>}
    */
   async *check_storage_datas() {
@@ -136,7 +163,7 @@ export class WorkspaceAgenda extends WorkspaceObject {
   }
 
   /**
-   * Met en place l'action du bouton afficher/cacher
+   * Configure l'action du bouton afficher/cacher.
    * @private
    */
   async #_setup_hidden() {
@@ -147,7 +174,8 @@ export class WorkspaceAgenda extends WorkspaceObject {
         this.gettext('loading'),
         'loading',
       );
-      $(caller).addClass('disabled').attr('disabled', 'disabled');
+      caller.classList.add('disabled');
+      caller.setAttribute('disabled', 'disabled');
       if (task === MODULE_NAME) {
         await this.switchState(task, state.newState, this.moduleContainer);
 
@@ -155,25 +183,30 @@ export class WorkspaceAgenda extends WorkspaceObject {
           this.startup();
         }
       }
-      $(caller).removeClass('disabled').removeAttr('disabled');
-      rcmail.hide_message(loading);
+      caller.classList.remove('disabled');
+      caller.removeAttribute('disabled');
+      this.rcmail().hide_message(loading);
     });
   }
 
   /**
-   * Charge le contenu de l'agenda
+   * Charge le contenu de l'agenda.
+   * Vérifie les données dans le stockage local et les affiche dans le module.
    * @private
    * @returns {Promise<void>}
    */
   async #_load_content() {
     this.content.textContent = EMPTY_STRING;
     let has = false;
+
+    // Parcourt les événements du stockage local et les affiche
     for await (const calEvent of this.check_storage_datas()) {
       if (!has) has = true;
 
       this.content.appendChild(
         HTMLEventVisualiser.CreateNode(calEvent, {
           customClick: async (e) => {
+            // Gestion du clic personnalisé sur un événement
             const currentFrame = null;
             const { date, event } = e.detail;
 
@@ -193,18 +226,21 @@ export class WorkspaceAgenda extends WorkspaceObject {
       );
     }
 
+    // Si aucun événement n'est trouvé, affiche un message par défaut
     if (!has) {
       this.content.textContent = EMPTY_STRING;
       this.content.appendChild(
         document.createTextNode(
-          this.gettext('no_event_in_agenda', 'mel_workspace'),
+          this.getLocalization('no_event_in_agenda', {
+            plugin: 'mel_workspace',
+          }),
         ),
       );
     }
   }
 
   /**
-   * Charge les données depuis le stockage local
+   * Charge les données depuis le stockage local.
    * @returns {MelEnumerable}
    */
   #_load_storage() {

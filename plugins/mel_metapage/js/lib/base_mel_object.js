@@ -26,6 +26,45 @@ export default class ABaseMelObject {
     return top && !!Top.top()?.rcmail ? Top.top().rcmail : window.rcmail;
   }
 
+  /**
+   * Ecoute un évènement roundcube
+   * @param {string} key
+   * @param {(arg: T) => TReturn} callback
+   * @param {Object} [param2={}]
+   * @param {?string} [param2.callbackKey=null]
+   * @param {boolean} [param2.topRcmail=false]
+   * @returns {this}
+   * @template T
+   * @template TReturn
+   */
+  listen(key, callback, { callbackKey = null, topRcmail = false } = {}) {
+    if (callbackKey)
+      this.rcmail(topRcmail).add_event_listener_ex(key, callbackKey, callback);
+    else this.rcmail(topRcmail).addEventListener(key, callback);
+
+    return this;
+  }
+
+  /**
+   * Trigger un évènement roundcube
+   * @param {string} key
+   * @param {TValue} item
+   * @param {Object} [options={}]
+   * @param {boolean} [options.topRcmail=false] Si on doit récupérer rcmail sur frame en cours ou non
+   * @returns {TReturn}
+   * @template TValue
+   * @template TReturn
+   */
+  trigger(key, item, { topRcmail = false } = {}) {
+    return this.rcmail(topRcmail).triggerEvent(key, item);
+  }
+
+  /**
+   * Ouvre une nouvelle fenêtre de composition d'email.
+   * @param {Object} [param0={}]
+   * @param {undefined | string} [param0.to=undefined]
+   * @param {undefined | string} [param0.subject=undefined]
+   */
   open_compose_step({ to = undefined, subject = undefined } = {}) {
     let config = {};
 
@@ -41,9 +80,30 @@ export default class ABaseMelObject {
    * @param {!string} plugin Plugin d'où provient le texte traduit
    * @returns {string}
    * @protected
+   * @deprecated utilisez {@link getLocalization} à la place
    */
-  gettext(key_text, plugin = '') {
+  gettext(key_text, plugin = EMPTY_STRING) {
     return this.rcmail().gettext(key_text, plugin);
+  }
+
+  /**
+   * Récupère un texte via une clé, ce qui permet de l'afficher dans la bonne langue
+   * @param {string} keyText Clé qui permet de retrouver le texte
+   * @param {Object} [param1={}]
+   * @param {string} [param1.plugin=EMPTY_STRING]
+   * @param {?Object<string, string>} [param1.variables=null]
+   * @returns {string}
+   */
+  getLocalization(keyText, { plugin = EMPTY_STRING, variables = null } = {}) {
+    let text = this.rcmail().gettext(keyText, plugin);
+
+    if (variables && Object.keys(variables).length) {
+      for (const [key, value] of Object.entries(variables)) {
+        text = text.replaceAll(`$${key}`, value);
+      }
+    }
+
+    return text;
   }
 
   /**
@@ -393,25 +453,52 @@ export default class ABaseMelObject {
     this.rcmail().triggerEvent('plugin.push_notification', notification);
   }
 
+  /**
+   * Change l'url de la page courente
+   * @param {string} url
+   * @returns {this}
+   */
   switch_url(url) {
     window.location.href = url;
     return this;
   }
 
+  /**
+   * Change l'url de la frame courente par une url bnum
+   * @param {string} task
+   * @param {Object} [options={}]
+   * @param {?string} [options.action=null] Action à effectuer
+   * @param {Object<string, string | number | boolean>} [options.params={}] Autres paramètres
+   * @returns {this}
+   */
   switch_task(task, { action = null, params = {} }) {
     return this.switch_url(this.url(task, { action, params }));
   }
 
+  /**
+   * Ajoute ce module à "window" pour être utilisable par tout le monde
+   * @param {?string} name Clé pour le retrouver
+   * @returns {this}
+   */
   export(name = null) {
     window[name ?? this.get_class_name()] = this;
     return this;
   }
 
+  /**
+   * Supprime un module qui se trouve dans "window".
+   * @param {?string} name Clé pour le retrouver
+   * @returns {this}
+   */
   delete_export(name = null) {
     window[name ?? this.get_class_name()] = null;
     return this;
   }
 
+  /**
+   * Récupère le nom de la classe en cours
+   * @returns {string}
+   */
   get_class_name() {
     return this.constructor.name;
   }

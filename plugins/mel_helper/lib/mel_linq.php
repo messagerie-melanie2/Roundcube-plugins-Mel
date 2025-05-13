@@ -48,6 +48,7 @@ interface IMel_Enumerable extends IteratorAggregate, Countable
     function toArray() : array;
     function toDictionnary($key_selector, $value_selector) : array;
     function take($number, $where = null, $selector = null) : IMel_Enumerable; 
+    function join($separator = '') : string;
 }
 
 abstract class AMel_Enumerable implements IMel_Enumerable
@@ -249,6 +250,10 @@ class Mel_Enumerable extends AMel_Enumerable implements IMel_Enumerable
         }
 
         return $array;
+    }
+
+    public function join($separator = '') : string {
+        return implode($separator, $this->toArray());
     }
 
     public function getIterator() : Traversable {

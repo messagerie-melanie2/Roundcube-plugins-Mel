@@ -2,6 +2,7 @@ import { MelEnumerable } from '../../../../../mel_metapage/js/lib/classes/enum.j
 import { FramesManager } from '../../../../../mel_metapage/js/lib/classes/frame_manager.js';
 import { MelCurrentUser } from '../../../../../mel_metapage/js/lib/classes/user.js';
 import { EMPTY_STRING } from '../../../../../mel_metapage/js/lib/constants/constants.js';
+import { Top } from '../../../../../mel_metapage/js/lib/top.js';
 import { NavBarManager } from '../navbar.generator.js';
 import { WorkspaceObject } from '../WorkspaceObject.js';
 
@@ -53,10 +54,8 @@ export class WorkspacePage extends WorkspaceObject {
         removeIsFromIframe: true,
       }),
     );
-    // debugger;
     this.save('current_wsp', this.workspace.uid);
     NavBarManager.nav.$('html').addClass('mwsp');
-    // debugger;
     NavBarManager.Generate(this.workspace).currentNavBar.select(
       this.get_env('start_app') || 'home',
       { background: !this.get_env('start_app') },
@@ -79,6 +78,21 @@ export class WorkspacePage extends WorkspaceObject {
         })?.contentWindow?.rcmail?.triggerEvent?.('wsp.on.task.showed');
       }
     }, 'tasks');
+
+    if (FramesManager.Instance.get_window()._history.back_enabled()) {
+      NavBarManager.AddEventListener().OnAfterSwitch(() => {
+        FramesManager.Instance.get_window().history.removeLast();
+        FramesManager.Instance.get_window().history.update_button_back(
+          FramesManager.Instance.get_window().history.last,
+        );
+
+        if (FramesManager.Instance.get_window().history.count === 0) {
+          FramesManager.Instance.get_window()
+            .history.$back.addClass('disabled')
+            .attr('disabled', 'disabled');
+        }
+      }, '/');
+    }
 
     NavBarManager.currentNavBar.onactionclicked.push((type) => {
       switch (type) {
@@ -108,24 +122,27 @@ export class WorkspacePage extends WorkspaceObject {
           break;
 
         case 'send':
-        if (this.workspace.users.emails.length >= 300) {
-          if (
-            !confirm(
-              "Attention, la limite d'envoi est de 300 destinataires, vous pourrez envoyer un mail seulement aux 300 premiers membres.",
+          if (this.workspace.users.emails.length >= 300) {
+            if (
+              !confirm(
+                "Attention, la limite d'envoi est de 300 destinataires, vous pourrez envoyer un mail seulement aux 300 premiers membres.",
+              )
             )
-          )
-            return;
-        }
-
-          const mails = MelEnumerable.from(this.workspace.users.emails)
-          .where((x) => x !== MelCurrentUser.main_email)
-          .take(300)
-          .join(',');
-
-          if (this.workspace.users.get(this.get_env('current_user').email).external) {
-            window.open(`mailto:${mails}`, '_blank');
+              return;
           }
-          else {
+
+          // eslint-disable-next-line no-case-declarations
+          const mails = MelEnumerable.from(this.workspace.users.emails)
+            .where((x) => x !== MelCurrentUser.main_email)
+            .take(300)
+            .join(',');
+
+          if (
+            this.workspace.users.get(this.get_env('current_user').email)
+              .external
+          ) {
+            window.open(`mailto:${mails}`, '_blank');
+          } else {
             this.open_compose_step({
               to: mails,
             });
@@ -187,6 +204,49 @@ export class WorkspacePage extends WorkspaceObject {
         }
       },
     );
+
+    FramesManager.Helper.window_object.UpdateDocumentTitle(
+      this.getLocalization('page_title', {
+        plugin: 'mel_workspace',
+        variables: {
+          name: this.workspace.title,
+        },
+      }),
+    );
+
+    this.listen(
+      'frame.refresh.manual',
+      () => {
+        let return_data = null;
+        if (
+          Top.top().document.querySelector('html').classList.contains('mwsp')
+        ) {
+          const currentTask = FramesManager.Instance.currentTask;
+          if (currentTask !== 'workspace') {
+            FramesManager.Instance.get_window().remove_frame(currentTask);
+            NavBarManager.currentNavBar.select('home');
+            NavBarManager.currentNavBar.select(currentTask, {
+              background: false,
+            });
+            return_data = { stop: true };
+          }
+        }
+
+        return return_data;
+      },
+      {
+        callbackKey: 'wsp.refresh',
+        topRcmail: true,
+      },
+    );
+
+    NavBarManager.currentNavBar.onquitbuttonclick.push(() => {
+      const useTop = true;
+      this.rcmail(useTop).remove_handler_ex(
+        'frame.refresh.manual',
+        'wsp.refresh',
+      );
+    });
 
     if (this.get_env('start_page')) {
       //Si le document est chargé, on l'applique

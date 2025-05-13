@@ -229,6 +229,32 @@ window.rcmail &&
       if (rcmail.env.annuaire_list) {
         rcmail.annuaire_list_fill_list(null, rcmail.env.annuaire_list);
       }
+      
+      // Clic unique sur un <li> pour sélectionner et afficher le contact
+      const annuaireList = document.getElementById('annuaire-list');
+
+      if (annuaireList) {
+        annuaireList.addEventListener('mousedown', function(e) {
+          // Trouve l'élément li parent le plus proche ou vérifie si le target est un li
+          const li = e.target.closest('li');
+          if (!li) return;
+
+          // Vérifie si le clic était sur un élément avec la classe gototree
+          if (e.target.closest('.gototree')) return;
+
+          const nodeId = li.id?.replace(/^rcmrow/, '');
+
+          if (
+            !li.classList.contains('selected') &&
+            nodeId &&
+            rcmail.annuaire_list &&
+            rcmail.annuaire_list.select
+          ) {
+            e.preventDefault(); // Évite le "focus-only"
+            rcmail.annuaire_list.select(nodeId); // Sélectionne l'élément
+          }
+        });
+      }
     }
 
     if (rcmail.env.task == 'mail') {

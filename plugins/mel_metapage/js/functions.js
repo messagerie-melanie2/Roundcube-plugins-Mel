@@ -1303,7 +1303,10 @@ async function m_mp_check_w(step, next) {
 
 async function m_mp_CreateWorkSpace() {
   rcmail.set_busy(true);
-  rcmail.display_message("Création d'un espace de travail...", 'loading');
+  const busy = rcmail.display_message(
+    "Création d'un espace de travail...",
+    'loading',
+  );
   let datas = {
     avatar:
       $('#worspace-avatar-a').find('img').length === 0
@@ -1353,96 +1356,74 @@ async function m_mp_CreateWorkSpace() {
     data: datas,
     url: mel_metapage.Functions.url('workspace', 'create'), //"/?_task=workspace&_action=create",
     success: function (data) {
-      data = JSON.parse(data);
-
-      rcmail.set_busy(false);
-      rcmail.clear_messages();
-
-      for (let it = 0; it < data.errored_user.length; it++) {
-        const element = data.errored_user[it];
-        rcmail.display_message(
-          "impossible d'ajouter " + element + " à l'espace de travail !",
-        );
-      }
-
-      for (const element of data?.uncreated_services ?? []) {
-        if (element === 'tasks') {
-          parent.rcmail.display_message(
-            'La création du service "Kanban" n\'a pas été possible, le service des tâche a donc été désactivé et doit être activé manuellement.',
-            'error',
-          );
-          break;
-        }
-      }
-
-      const action = {
-        func: mel_metapage.Functions.call,
-        args: [
-          true,
-          {
-            _uid: data.workspace_uid,
-            _integrated: true,
-          },
-        ],
-        url: mel_metapage.Functions.url('workspace', 'workspace', {
-          _uid: data.workspace_uid,
-        }),
-      };
-
-      {
-        const tmp = window.create_popUp;
-        delete window.create_popUp;
-        tmp.close();
-      }
-
-      top.rcmail.triggerEvent(
-        mel_metapage.EventListeners.workspaces_updated.get,
-      );
-
-      FramesHelper.switch_frame('workspace', {
-        args: {
-          _action: 'workspace',
-          _uid: data.workspace_uid,
-        },
-      });
-
-      // if (
-      //   $('.workspace-frame').length > 0 &&
-      //   $('iframe.workspace-frame').length === 0
-      // )
-      //   window.location.href = action.url;
-      // else if ($('iframe.workspace-frame').length === 0) {
-      //   mel_metapage.Functions.change_frame('workspace', true, true, {
-      //     _action: 'workspace',
-      //     _uid: data.workspace_uid,
-      //   });
-      // } else if ($('iframe.workspace-frame').length === 1) {
-      //   mel_metapage.Functions.change_frame('workspace', true, true).then(
-      //     () => {
-      //       let config = {
-      //         _uid: data.workspace_uid,
-      //       };
-      //       config[rcmail.env.mel_metapage_const.key] =
-      //         rcmail.env.mel_metapage_const.value;
-
-      //       $('iframe.workspace-frame')[0].src = mel_metapage.Functions.url(
-      //         'workspace',
-      //         'workspace',
-      //         config,
-      //       );
-      //     },
-      //   );
-      // } else window.location.href = action.url;
+      m_mp_create_workspace_success(data, busy);
 
       m_mp_step3_param.datas = null;
     },
     error: function (xhr, ajaxOptions, thrownError) {
       // Add these parameters to display the required response
       console.error(xhr, ajaxOptions, thrownError);
-      rcmail.clear_messages();
+      rcmail.set_busy(false, 'loading', busy);
       rcmail.display_message(xhr, 'error');
       window.create_popUp.close();
       window.create_popUp = undefined;
+    },
+  });
+}
+
+/**
+ * Action à faire lorsque la création de l'espace de travail est un succès.
+ * @param {string} data Données récupérés par le serveur.
+ * @param {string} message_id ID du message de chargement.
+ * @returns {Promise<void>}
+ * @async
+ */
+async function m_mp_create_workspace_success(data, message_id) {
+  data = JSON.parse(data);
+
+  for (let it = 0; it < data.errored_user.length; it++) {
+    const element = data.errored_user[it];
+    rcmail.display_message(
+      "impossible d'ajouter " + element + " à l'espace de travail !",
+    );
+  }
+
+  for (const element of data?.uncreated_services ?? []) {
+    if (element === 'tasks') {
+      parent.rcmail.display_message(
+        'La création du service "Kanban" n\'a pas été possible, le service des tâche a donc été désactivé et doit être activé manuellement.',
+        'error',
+      );
+      break;
+    }
+  }
+
+  {
+    const tmp = window.create_popUp;
+    delete window.create_popUp;
+    tmp.close();
+  }
+
+  top.rcmail.triggerEvent(mel_metapage.EventListeners.workspaces_updated.get);
+  const results = top.rcmail.triggerEvent('workspace.created');
+
+  // Attendre les promesses renvoyer par le trigger + gestion si c'est un tableau ou non
+  if (Array.isArray(results)) {
+    for (const result of results) {
+      if (result && result.then) {
+        await result;
+      }
+    }
+  } else if (results?.then) {
+    await results;
+  }
+
+  rcmail.set_busy(false, 'loading', message_id);
+
+  await FramesHelper.switch_frame('workspace', {
+    args: {
+      _action: 'workspace',
+      _uid: data.workspace_uid,
     },
   });
 }

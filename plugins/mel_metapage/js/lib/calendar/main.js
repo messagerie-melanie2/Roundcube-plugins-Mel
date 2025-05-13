@@ -1,4 +1,6 @@
+import AGENDA_CONNECTORS from '../../../../bnum_agenda/js/lib/connectors.js';
 import { BnumLog } from '../classes/bnum_log.js';
+import { BnumConnector } from '../helpers/bnum_connections/bnum_connections.js';
 import { MelObject } from '../mel_object.js';
 import { WaitSomething } from '../mel_promise.js';
 
@@ -23,6 +25,26 @@ export class MelCalendar extends MelObject {
     BnumLog.info('MelCalendar/main', 'Starting calendar module');
     this._add_on_load();
     MelCalendar.rerender({ helper_object: this });
+
+    this.rcmail().register_command(
+      'mel_calendar/rerender',
+      MelCalendar.rerender.bind(MelCalendar),
+      true,
+    );
+
+    this.rcmail().register_command(
+      'mel_calendar/update_categories',
+      MelCalendar.UpdateCategories.bind(MelCalendar),
+      true,
+    );
+
+    this.listen(
+      'workspace.created',
+      async () => {
+        await MelCalendar.UpdateCategories();
+      },
+      { callbackKey: 'mel_calendar/update_categories', topRcmail: true },
+    );
   }
 
   /**
@@ -113,12 +135,36 @@ export class MelCalendar extends MelObject {
   static create_action(action, ...args) {
     return new MelCalendarAction(action, ...args);
   }
+
+  /**
+   *
+   * @returns {Promise<Object<string, string>>}
+   */
+  static async UpdateCategories() {
+    const helper = MelObject.Empty();
+    const data = await BnumConnector.connect(AGENDA_CONNECTORS.get_categories);
+    helper.rcmail().env.calendar_categories = data.datas;
+    helper.trigger('mel_calendar/update_categories.after', {
+      categories: data.datas,
+    });
+    return data.datas;
+  }
+
+  /**
+   * Retourne la classe MelCalendarAction.
+   * @returns {typeof MelCalendarAction}
+   * @static
+   * @readonly
+   */
+  static get MelCalendarAction() {
+    return MelCalendarAction;
+  }
 }
 
 /**
  * Représente une action à exécuter sur le calendrier.
  */
-export class MelCalendarAction {
+class MelCalendarAction {
   /**
    * Constructeur de MelCalendarAction.
    * @param {string} action - Nom de l'action à exécuter.

@@ -37,7 +37,7 @@ class kolab_storage_folder_test extends PHPUnit\Framework\TestCase
             $authenticated = $rcmail->login(
                 $rcmail->config->get('tests_username'),
                 $rcmail->config->get('tests_password'),
-                $rcmail->config->get('default_host'),
+                $rcmail->config->get('imap_host'),
                 false
             );
 
@@ -115,7 +115,7 @@ class kolab_storage_folder_test extends PHPUnit\Framework\TestCase
 
         $rcmail     = rcmail::get_instance();
         $foldername = 'Calendar';
-        $uri        = parse_url($rcmail->config->get('default_host'));
+        $uri        = parse_url($rcmail->config->get('imap_host'));
         $hostname   = $uri['host'];
 
         $folder = new kolab_storage_folder($foldername, 'event', 'event.default');

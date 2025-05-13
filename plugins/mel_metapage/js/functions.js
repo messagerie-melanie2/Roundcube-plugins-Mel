@@ -1406,34 +1406,6 @@ async function m_mp_CreateWorkSpace() {
         },
       });
 
-      // if (
-      //   $('.workspace-frame').length > 0 &&
-      //   $('iframe.workspace-frame').length === 0
-      // )
-      //   window.location.href = action.url;
-      // else if ($('iframe.workspace-frame').length === 0) {
-      //   mel_metapage.Functions.change_frame('workspace', true, true, {
-      //     _action: 'workspace',
-      //     _uid: data.workspace_uid,
-      //   });
-      // } else if ($('iframe.workspace-frame').length === 1) {
-      //   mel_metapage.Functions.change_frame('workspace', true, true).then(
-      //     () => {
-      //       let config = {
-      //         _uid: data.workspace_uid,
-      //       };
-      //       config[rcmail.env.mel_metapage_const.key] =
-      //         rcmail.env.mel_metapage_const.value;
-
-      //       $('iframe.workspace-frame')[0].src = mel_metapage.Functions.url(
-      //         'workspace',
-      //         'workspace',
-      //         config,
-      //       );
-      //     },
-      //   );
-      // } else window.location.href = action.url;
-
       m_mp_step3_param.datas = null;
     },
     error: function (xhr, ajaxOptions, thrownError) {

@@ -383,28 +383,31 @@ class mtes_driver_mel extends mce_driver_mel
         ],
       ];
       // Ajout de toutes les adresses de messagerie
-      $emails = isset($args['record']['email_list']) ? $args['record']['email_list'] : [];
-      $main_email = isset($args['record']['email']) ? $args['record']['email'] : '';
-      $other_emails = array_filter($emails, function ($email) use ($main_email) {
-        return $email !== $main_email;
-      });
-      $args['form']['email_list'] = [
-        'name' => $plugin->gettext('email_list'),
-        'content' => [
-          'main_email' => [
-            'type' => 'html',
-            'label' => $plugin->gettext('main_email'),
-            'render_func' => [$this, 'renderMainEmail'],
-            'value' => $main_email
-          ],
-          'other_emails' => [
-            'type' => 'html',
-            'label' => $plugin->gettext('other_emails'),
-            'render_func' => [$this, 'renderOtherEmails'],
-            'value' => implode("\n", $other_emails)
+
+      if (isset($args['record']['type'])) {
+        $emails = isset($args['record']['email_list']) ? $args['record']['email_list'] : [];
+        $main_email = isset($args['record']['email']) ? $args['record']['email'] : '';
+        $other_emails = array_filter($emails, function ($email) use ($main_email) {
+          return $email !== $main_email;
+        });
+        $args['form']['email_list'] = [
+          'name' => $plugin->gettext('email_list'),
+          'content' => [
+            'main_email' => [
+              'type' => 'html',
+              'label' => $plugin->gettext('main_email'),
+              'render_func' => [$this, 'renderMainEmail'],
+              'value' => $main_email
+            ],
+            'other_emails' => [
+              'type' => 'html',
+              'label' => $plugin->gettext('other_emails'),
+              'render_func' => [$this, 'renderOtherEmails'],
+              'value' => implode("\n", $other_emails)
+            ]
           ]
-        ]
-      ];
+        ];
+      }
       if (isset($args['record']['email'])) {
         // Search in LDAP
         $user = $this->user();

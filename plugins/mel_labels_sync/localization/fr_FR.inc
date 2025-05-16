@@ -34,3 +34,5 @@ $labels['redirected'] = 'Redirigé';
 $labels['labels_filter_placeholder'] = 'Filtrer les étiquettes';
 
 $labels['labels_editable_by_gestionnaire'] = 'Vous devez être gestionnaire de la boite pour pouvoir modifier ses étiquettes.';
+
+$labels['empty_label_error'] = 'Il n\'est pas possible d\'enregistrer une étiquette sans nom';

@@ -369,6 +369,14 @@ class WorkspaceObject extends MelObject {
   }
 
   /**
+   * Check si on est dans un espace de travail ou non
+   * @returns {boolean}
+   */
+  isInWorkspace() {
+    return WorkspaceObject.IsInWorkspace();
+  }
+
+  /**
    * Change l'état d'un module
    * @param {string} task Module à changer d'état
    * @param {boolean} state Nouvel état
@@ -573,6 +581,15 @@ class WorkspaceObject extends MelObject {
     observer.observe(targetNode, config);
 
     return observer;
+  }
+
+  /**
+   * Check si on est dans un espace de travail ou non
+   * @returns {boolean}
+   * @static
+   */
+  static IsInWorkspace() {
+    return document.querySelector('html').classList.contains('mwsp');
   }
 }
 

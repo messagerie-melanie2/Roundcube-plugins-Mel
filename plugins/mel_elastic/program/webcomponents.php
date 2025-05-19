@@ -3,7 +3,8 @@
 /**
  * Classe représentant les données d'un composant Web.
  */
-class WebComponentData {
+class WebComponentData
+{
     /**
      * Tag HTML du composant.
      * 
@@ -40,7 +41,8 @@ class WebComponentData {
      * @param string $path Chemin du fichier du composant.
      * @param string $plugin Nom du plugin.
      */
-    public function __construct(string $tag, string $name, string $path = (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), string $plugin = 'mel_elastic') {
+    public function __construct(string $tag, string $name, string $path = (bnum_plugin::BASE_MODULE_PATH . 'html/JsHtml/CustomAttributes'), string $plugin = 'mel_elastic')
+    {
         $this->name = $name;
         $this->path = $path;
         $this->plugin = $plugin;
@@ -57,7 +59,8 @@ class WebComponentData {
      * 
      * @return WebComponentData
      */
-    static function Create(string $tag, string $name, string $path = (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes'), string $plugin = 'mel_elastic') : WebComponentData {
+    static function Create(string $tag, string $name, string $path = (bnum_plugin::BASE_MODULE_PATH . 'html/JsHtml/CustomAttributes'), string $plugin = 'mel_elastic'): WebComponentData
+    {
         return new WebComponentData($tag, $name, $path, $plugin);
     }
 }
@@ -66,7 +69,8 @@ class WebComponentData {
  * Classe WebComponnents
  * Fournit des méthodes pour inclure et gérer des composants Web spécifiques.
  */
-class WebComponnents {
+class WebComponnents
+{
 
     /**
      * Instance du plugin mel_metapage.
@@ -92,9 +96,10 @@ class WebComponnents {
     /**
      * Constructeur privé pour le singleton.
      */
-    private function __construct() {
+    private function __construct()
+    {
         $this->plugin = rcmail::get_instance()->plugins->get_plugin('mel_metapage');
-        $this->webcomponents = array_reduce(self::Get(), function($carry, $element) {
+        $this->webcomponents = array_reduce(self::Get(), function ($carry, $element) {
             $carry[$element->tag] = $element;
             return $carry;
         }, []);
@@ -109,7 +114,8 @@ class WebComponnents {
      * 
      * @return mixed
      */
-    private function _include_component($name, $path = (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes') , $plugin = 'mel_metapage') {
+    private function _include_component($name, $path = (bnum_plugin::BASE_MODULE_PATH . 'html/JsHtml/CustomAttributes'), $plugin = 'mel_metapage')
+    {
         return $this->plugin->____METHODS____('include_component', $name, $path, $plugin);
     }
 
@@ -120,15 +126,16 @@ class WebComponnents {
      * 
      * @return array Liste des tags de composants trouvés.
      */
-    public function getCustomComponents(string $html) {
+    public function getCustomComponents(string $html)
+    {
         // Générer la regex à partir des clés de $this->webcomponents
-                $regex = '(' . implode('|', array_keys($this->webcomponents)) . ')';
+        $regex = '(' . implode('|', array_keys($this->webcomponents)) . ')';
 
         // Trouver toutes les correspondances dans $html
-                preg_match_all($regex, $html, $matches);
+        preg_match_all($regex, $html, $matches);
 
         // Récupérer les clés uniques trouvées
-                $foundKeys = array_unique($matches[0]);
+        $foundKeys = array_unique($matches[0]);
 
         // Retourner les clés trouvées
         return $foundKeys;
@@ -142,7 +149,8 @@ class WebComponnents {
      * 
      * @return Generator Générateur des composants manquants.
      */
-    public function GetAlreadyExistsComponentsGenerator(array $keys, string $html) : Generator {
+    public function GetAlreadyExistsComponentsGenerator(array $keys, string $html): Generator
+    {
         if ($keys) {
             // Regex pour trouver les balises <script> avec des modules déjà inclus
             $regex = '<script\s+src=(["\'])[\w\d\/\.\?=]+\1\s+type=\1module\1\s*>';
@@ -170,7 +178,7 @@ class WebComponnents {
                 $regex = str_replace('.', '\.', $regex);
 
                 // Générer les composants manquants
-                yield from mel_helper::Enumerable($keys)->where(function ($_, $keyTag) use($regex, $matches) {
+                yield from mel_helper::Enumerable($keys)->where(function ($_, $keyTag) use ($regex, $matches) {
                     return !preg_match($regex, $matches, $_);
                 })->select(function ($_, $keyTag) {
                     return $this->webcomponents[$keyTag];
@@ -189,7 +197,8 @@ class WebComponnents {
      * 
      * @return string Contenu HTML modifié avec les inclusions nécessaires.
      */
-    public function tryIncludes(array $keys, string $html) : string {
+    public function tryIncludes(array $keys, string $html): string
+    {
         $scripts = [];
         foreach ($this->GetAlreadyExistsComponentsGenerator($keys, $html) as $component) {
             // Ajouter un script pour chaque composant manquant
@@ -205,7 +214,8 @@ class WebComponnents {
      * 
      * @deprecated version 25.4
      */
-    public function Base() {
+    public function Base()
+    {
         $this->_include_component('js_html_base_web_elements.js');
     }
 
@@ -214,7 +224,8 @@ class WebComponnents {
      * 
      * @deprecated version 25.4
      */
-    public function Tabs() {
+    public function Tabs()
+    {
         $this->_include_component('tab_web_element.js');
     }
 
@@ -223,7 +234,8 @@ class WebComponnents {
      * 
      * @deprecated version 25.4
      */
-    public function PressedButton() {
+    public function PressedButton()
+    {
         $this->_include_component('pressed_button_web_element.js');
     }
 
@@ -232,7 +244,8 @@ class WebComponnents {
      * 
      * @deprecated version 25.4
      */
-    public function InfiniteScrollContainer() {
+    public function InfiniteScrollContainer()
+    {
         $this->_include_component('infinite_scroll_container.js');
     }
 
@@ -241,7 +254,8 @@ class WebComponnents {
      * 
      * @deprecated version 25.4
      */
-    public function Avatar() {
+    public function Avatar()
+    {
         $this->_include_component('avatar.js');
     }
 
@@ -250,7 +264,8 @@ class WebComponnents {
      * 
      * @deprecated version 25.4
      */
-    public function SearchBar() {
+    public function SearchBar()
+    {
         $this->_include_component('searchbar.js');
     }
 
@@ -258,7 +273,8 @@ class WebComponnents {
      * @deprecated 25.2
      * Inclut le bouton Mel.
      */
-    public function MelButton() {
+    public function MelButton()
+    {
         $this->_include_component('HTMLMelButton.js');
     }
 
@@ -267,7 +283,8 @@ class WebComponnents {
      * 
      * @deprecated version 25.4
      */
-    public function BnumButton() {
+    public function BnumButton()
+    {
         $this->_include_component('HTMLBnumButton.js', 'js/lib/html/JsHtml/CustomAttributes/button');
     }
 
@@ -279,14 +296,15 @@ class WebComponnents {
      * 
      * @return mixed
      */
-    public function ____METHODS____($what, ...$args) {
+    public function ____METHODS____($what, ...$args)
+    {
         switch ($what) {
             case '_include_component':
                 $name = $args[0];
-                $path = $args[1] ?? bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes/';
+                $path = $args[1] ?? bnum_plugin::BASE_MODULE_PATH . 'html/JsHtml/CustomAttributes/';
                 $plugin = $args[2] ?? 'mel_metapage';
                 return $this->_include_component($name, $path, $plugin);
-            
+
             default:
                 break;
         }
@@ -297,7 +315,8 @@ class WebComponnents {
      * 
      * @return array Liste des composants Web.
      */
-    public static function Get() : array {
+    public static function Get(): array
+    {
         // Configuration des composants Web
         $components = [
             ['bnum-icon', 'js_html_base_web_elements.js'],
@@ -320,7 +339,8 @@ class WebComponnents {
             ['bnum-infinite-scroll-container', 'infinite_scroll_container.js'],
             ['bnum-avatar', 'avatar.js'],
             ['bnum-searchbar', 'searchbar.js'],
-            ['bnum-helper', 'HTMLBnumHelperElement.js', '/js/lib/webcomponents', 'mel_elastic']
+            ['bnum-helper', 'HTMLBnumHelperElement.js', '/js/lib/webcomponents', 'mel_elastic'],
+            ['bnum-img', 'HTMLColorModePicture.js', '/js/lib/webcomponents', 'mel_elastic']
         ];
 
         // Génération des instances de WebComponentData
@@ -339,7 +359,8 @@ class WebComponnents {
      *
      * @return WebComponnents Instance unique.
      */
-    public static function Instance() {
+    public static function Instance()
+    {
         if (!isset(self::$_instance)) self::$_instance = new WebComponnents();
 
         return self::$_instance;

@@ -124,36 +124,7 @@ class mel_contacts_mapping
     ) {
       $_contact_rc['address:home'] = $_contact_rc['address'];
     }
-    // Ajout des autres emails (work, other, etc.)
-    $other_emails = [];
-    if (isset($_contact_rc['email:work'])) {
-      if (is_array($_contact_rc['email:work'])) {
-        $other_emails[] = $_contact_rc['email:work'][0];
-      } else {
-        $other_emails[] = $_contact_rc['email:work'];
-      }
-    }
 
-    if (isset($_contact_rc['email:other'])) {
-      if (is_array($_contact_rc['email:other'])) {
-        $other_emails[] = $_contact_rc['email:other'][0];
-      } else {
-        $other_emails[] = $_contact_rc['email:other'];
-      }
-    }
-
-    if (isset($_contact_rc['email:internet'])) {
-      if (is_array($_contact_rc['email:internet'])) {
-        $other_emails[] = $_contact_rc['email:internet'][0];
-      } else {
-        $other_emails[] = $_contact_rc['email:internet'];
-      }
-    }
-
-    // Ajouter les autres e-mails au champ "other_emails" dans $_contact_m2
-    if (!empty($other_emails)) {
-      $_contact_m2->other_emails = implode('; ', $other_emails);  // Ajouter tous les emails dans un champ séparé par un point-virgule
-    }
     // Address home
     if (isset($_contact_rc['address:home']) && is_array($_contact_rc['address:home'])) {
       foreach ($_contact_rc['address:home'] as $address_home) {

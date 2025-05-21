@@ -8,7 +8,8 @@ include_once 'lib/driver.php';
  * Basé sur thunderbird_labels de Michael Kefeder (http://code.google.com/p/rcmail-thunderbird-labels/)
  * Permet d'afficher les 5 labels de base et de configurer de nouveau label pour imiter la configuration Thunderbird
  */
-class mel_labels_sync extends rcube_plugin {
+class mel_labels_sync extends rcube_plugin
+{
   /**
    * ** PRIVATE **
    */
@@ -18,19 +19,19 @@ class mel_labels_sync extends rcube_plugin {
    * @var array
    */
   private $generic_flags = array(
-          'undeleted',
-          'deleted',
-          'seen',
-          'unseen',
-          'flagged',
-          'unflagged',
-          'answered',
-          'draft',
-          'mdnsent',
-          'nonjunk',
-          'forwarded',
-          'recent',
-          'redirected'
+    'undeleted',
+    'deleted',
+    'seen',
+    'unseen',
+    'flagged',
+    'unflagged',
+    'answered',
+    'draft',
+    'mdnsent',
+    'nonjunk',
+    'forwarded',
+    'recent',
+    'redirected'
   );
 
   /**
@@ -99,7 +100,8 @@ class mel_labels_sync extends rcube_plugin {
    *
    * @see rcube_plugin::init()
    */
-  function init() {
+  function init()
+  {
     $this->rc = rcmail::get_instance();
 
     // Ajout de la localization du plugin
@@ -111,44 +113,45 @@ class mel_labels_sync extends rcube_plugin {
 
     if ($this->rc->task == 'mail') {
       // disable plugin when printing message
-      if ($this->rc->action == 'print' || $this->rc->action == 'compose' || $this->rc->action == 'get' 
-          || $this->rc->action == 'plugin.set_current_page' || $this->rc->action == 'plugin.get_mbox_unread_count' 
-          || $this->rc->action == 'getunread')
+      if (
+        $this->rc->action == 'print' || $this->rc->action == 'compose' || $this->rc->action == 'get'
+        || $this->rc->action == 'plugin.set_current_page' || $this->rc->action == 'plugin.get_mbox_unread_count'
+        || $this->rc->action == 'getunread'
+      )
         return;
 
-        // Ajoute le script javascript
+      // Ajoute le script javascript
       $this->include_script('mel_label.js');
       // Ajout du css
       if ($this->rc->config->get('ismobile', false)) {
         $this->include_stylesheet('skins/mel_larry_mobile/tb_label.css');
-      }
-      else {
+      } else {
         $this->include_stylesheet($this->local_skin_path() . '/tb_label.css');
       }
 
       // Configuration des hooks
       $this->add_hook('messages_list', array(
-              $this,
-              'read_flags'
+        $this,
+        'read_flags'
       ));
       $this->add_hook('message_load', array(
-              $this,
-              'read_single_flags'
+        $this,
+        'read_single_flags'
       ));
       $this->add_hook('template_object_messageheaders', array(
-              $this,
-              'color_headers'
+        $this,
+        'color_headers'
       ));
       $this->add_hook('render_page', array(
-              $this,
-              'tb_label_popup'
+        $this,
+        'tb_label_popup'
       ));
 
       // Template
       $this->add_hook('template_object_searchfilter', array(
-              $this,
-              'search_filter'
-        ));
+        $this,
+        'search_filter'
+      ));
 
       // additional TB flags
       $this->message_tb_labels = array();
@@ -165,7 +168,7 @@ class mel_labels_sync extends rcube_plugin {
         $labels_name[$key] = $label->tag;
         $labels_color[$key] = $label->color;
       }
-      
+
       // Trier dans l'ordre inverse les labels colors pour le css
       krsort($labels_color);
 
@@ -176,75 +179,72 @@ class mel_labels_sync extends rcube_plugin {
       if ($this->rc->config->get('ismobile', false)) {
         // Ajout du bouton dans la toolbar
         $this->add_button(array(
-                'command' => 'Event.preventDefault()',
-                "data-popup"=>"tb_label_popup",
-                'id' => 'tb_label_popuplink',
-                'title' => 'label', // gets translated
-                'domain' => $this->ID,
-                'type' => 'link',
-                'content' => $this->Q($this->gettext('labels')), // maybe put translated version of "Labels" here?
-                'class' => 'mark_as_read icon ui-link ui-btn ui-corner-all ui-icon-tags ui-btn-icon-left'
+          'command' => 'Event.preventDefault()',
+          "data-popup" => "tb_label_popup",
+          'id' => 'tb_label_popuplink',
+          'title' => 'label', // gets translated
+          'domain' => $this->ID,
+          'type' => 'link',
+          'content' => $this->Q($this->gettext('labels')), // maybe put translated version of "Labels" here?
+          'class' => 'mark_as_read icon ui-link ui-btn ui-corner-all ui-icon-tags ui-btn-icon-left'
         ), 'toolbar_mobile');
         // Ajout du bouton dans la toolbar
         $this->add_button(array(
-                'command' => 'Event.preventDefault()',
-                "data-popup"=>"tb_label_popup",
-                'id' => 'tb_label_popuplink',
-                'title' => 'label', // gets translated
-                'domain' => $this->ID,
-                'type' => 'link',
-                'content' => $this->Q($this->gettext('labels')), // maybe put translated version of "Labels" here?
-                'class' => 'mark_as_read icon ui-link ui-btn ui-corner-all ui-icon-tags ui-btn-icon-notext'
+          'command' => 'Event.preventDefault()',
+          "data-popup" => "tb_label_popup",
+          'id' => 'tb_label_popuplink',
+          'title' => 'label', // gets translated
+          'domain' => $this->ID,
+          'type' => 'link',
+          'content' => $this->Q($this->gettext('labels')), // maybe put translated version of "Labels" here?
+          'class' => 'mark_as_read icon ui-link ui-btn ui-corner-all ui-icon-tags ui-btn-icon-notext'
         ), 'more_buttons_toolbar_mobile');
-      }
-      else {//contextmenu
+      } else { //contextmenu
         // Ajout du bouton dans la toolbar
         $this->add_button(array(
-                'command' => 'Event.preventDefault()',
-                "data-popup"=>"tb_label_popup",
-                'id' => 'tb_label_popuplink',//tb_label_popup
-                'title' => 'label', // gets translated
-                'domain' => $this->ID,
-                'type' => 'link',
-                'content' => $this->Q($this->gettext('labels')), // maybe put translated version of "Labels" here?
-                'class' => ($this->rc->config->get('skin') == 'larry' || $this->rc->config->get('skin') == 'mel_larry') ? 'button thunderbird' : 'tb_noclass'
+          'command' => 'Event.preventDefault()',
+          "data-popup" => "tb_label_popup",
+          'id' => 'tb_label_popuplink', //tb_label_popup
+          'title' => 'label', // gets translated
+          'domain' => $this->ID,
+          'type' => 'link',
+          'content' => $this->Q($this->gettext('labels')), // maybe put translated version of "Labels" here?
+          'class' => ($this->rc->config->get('skin') == 'larry' || $this->rc->config->get('skin') == 'mel_larry') ? 'button thunderbird' : 'tb_noclass'
         ), 'toolbar');
       }
 
       // Register action
       $this->register_action('plugin.thunderbird_labels.set_flags', array(
-              $this,
-              'set_flags'
+        $this,
+        'set_flags'
       ));
       $this->register_action('plugin.thunderbird_labels.update_list_labels', array(
-              $this,
-              'update_list_labels'
+        $this,
+        'update_list_labels'
       ));
-    }
-    else if ($this->rc->task == 'settings') {
+    } else if ($this->rc->task == 'settings') {
       // Ajout du css
       if ($this->rc->config->get('ismobile', false)) {
         $this->include_stylesheet('skins/mel_larry_mobile/tb_label.css');
-      }
-      else {
+      } else {
         $this->include_stylesheet($this->local_skin_path() . '/tb_label.css');
       }
 
       $this->add_hook('preferences_list', array(
-              $this,
-              'preferences_list'
+        $this,
+        'preferences_list'
       ));
       $this->add_hook('preferences_save', array(
-              $this,
-              'preferences_save'
+        $this,
+        'preferences_save'
       ));
       $this->add_hook('preferences_sections_list', array(
-              $this,
-              'preferences_sections_list'
+        $this,
+        'preferences_sections_list'
       ));
       $this->add_hook('managesieve_custom_flags', array(
-              $this,
-              'managesieve_custom_flags'
+        $this,
+        'managesieve_custom_flags'
       ));
     }
   }
@@ -254,15 +254,16 @@ class mel_labels_sync extends rcube_plugin {
    *
    * @param array $args
    */
-  public function show_tb_label_contextmenu($args) {
+  public function show_tb_label_contextmenu($args)
+  {
     $li = html::tag('li', array(
-            'class' => 'submenu'
+      'class' => 'submenu'
     ), $this->Q($this->gettext('label')) . $this->_gen_label_submenu($args, 'tb_label_ctxm_submenu'));
     $out .= html::tag('ul', array(
-            'id' => 'tb_label_ctxm_mainmenu'
+      'id' => 'tb_label_ctxm_mainmenu'
     ), $li);
     $this->api->output->add_footer(html::div(array(
-            'style' => 'display: none;'
+      'style' => 'display: none;'
     ), $out));
   }
 
@@ -271,15 +272,15 @@ class mel_labels_sync extends rcube_plugin {
    */
   public function search_filter($attrib)
   {
-      $html = '';
-      // Add labels in filter select
-      foreach ($this->_get_bal_labels() as $label) {
-        $html .= html::tag('option', ['value' => 'KEYWORD ' . strtoupper($label->key), 'class' => 'labels '.$this->_convert_key_to_css($label->mailbox)], $this->gettext('labels').': '.$label->tag);
-      }
-      $html .= '</select>';
+    $html = '';
+    // Add labels in filter select
+    foreach ($this->_get_bal_labels() as $label) {
+      $html .= html::tag('option', ['value' => 'KEYWORD ' . strtoupper($label->key), 'class' => 'labels ' . $this->_convert_key_to_css($label->mailbox)], $this->gettext('labels') . ': ' . $label->tag);
+    }
+    $html .= '</select>';
 
-      $attrib['content'] = str_replace('</select>', $html, $attrib['content']);
-      return $attrib;
+    $attrib['content'] = str_replace('</select>', $html, $attrib['content']);
+    return $attrib;
   }
 
   /**
@@ -289,7 +290,8 @@ class mel_labels_sync extends rcube_plugin {
    * @param string $id
    * @return string html
    */
-  private function _gen_label_submenu($args, $id) {
+  private function _gen_label_submenu($args, $id)
+  {
     $out = '';
     $i = 0;
     foreach ($this->_get_bal_labels() as $label) {
@@ -297,12 +299,12 @@ class mel_labels_sync extends rcube_plugin {
       $box = $this->_convert_key_to_css($label->mailbox);
       $separator = ($i == 0) ? ' separator_below' : '';
       $class = 'labels label_' . $key . ' ' . $box;
-      $out .= '<li id="'.$key.'_b_'.$box.'" class="'.$class.$separator.' ctxm_tb_label"><a href="#ctxm_tb_label" class="active" onclick="rcmail_ctxm_label_set('.$key.')">'.$label->tag.'</a></li>';
-      $i ++;
+      $out .= '<li id="' . $key . '_b_' . $box . '" class="' . $class . $separator . ' ctxm_tb_label"><a href="#ctxm_tb_label" class="active" onclick="rcmail_ctxm_label_set(' . $key . ')">' . $label->tag . '</a></li>';
+      $i++;
     }
     $out = html::tag('ul', array(
-            'class' => 'popupmenu toolbarmenu folders',
-            'id' => $id
+      'class' => 'popupmenu toolbarmenu folders',
+      'id' => $id
     ), $out);
     return $out;
   }
@@ -312,7 +314,8 @@ class mel_labels_sync extends rcube_plugin {
    *
    * @param array $args
    */
-  public function read_single_flags($args) {
+  public function read_single_flags($args)
+  {
     if (!$this->rc->config->get('show_labels', false) || ! isset($args['object']))
       return;
 
@@ -336,7 +339,8 @@ class mel_labels_sync extends rcube_plugin {
    *
    * @param array $p
    */
-  public function color_headers($p) {
+  public function color_headers($p)
+  {
     if ($p['valueof'] == 'subject' && !$this->header_loaded) {
       // always write array, even when empty
       $p['content'] .= '<script type="text/javascript">
@@ -353,7 +357,8 @@ class mel_labels_sync extends rcube_plugin {
    * @param array $args
    * @return array
    */
-  public function read_flags($args) {
+  public function read_flags($args)
+  {
     // dont loop over all messages if we dont have any highlights or no msgs
     if (!$this->rc->config->get('show_labels', false) || !isset($args['messages']) || !is_array($args['messages']))
       return $args;
@@ -393,7 +398,8 @@ class mel_labels_sync extends rcube_plugin {
    *
    * @return boolean
    */
-  function set_flags() {
+  function set_flags()
+  {
     $imap = $this->rc->imap;
     $cbox = rcube_utils::get_input_value('_cur', rcube_utils::INPUT_GET);
     $mbox = rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GET);
@@ -409,12 +415,12 @@ class mel_labels_sync extends rcube_plugin {
 
     if (mel_logs::is(mel_logs::TRACE))
       mel_logs::get_instance()->log(mel_logs::TRACE, '[set_flags] ' . var_export(array(
-              '$cbox' => $cbox,
-              '$mbox' => $mbox,
-              '$toggle_label' => $toggle_label,
-              '$flag_uids' => $flag_uids,
-              '$unflag_uids' => $unflag_uids,
-              '$imap->conn->flags' => $imap->conn->flags
+        '$cbox' => $cbox,
+        '$mbox' => $mbox,
+        '$toggle_label' => $toggle_label,
+        '$flag_uids' => $flag_uids,
+        '$unflag_uids' => $unflag_uids,
+        '$imap->conn->flags' => $imap->conn->flags
       ), true));
 
     if (!is_array($unflag_uids) || !is_array($flag_uids))
@@ -430,12 +436,13 @@ class mel_labels_sync extends rcube_plugin {
    * Mise à jour de la liste des labels
    * Appel ajax depuis le javascript
    */
-  function update_list_labels() {
+  function update_list_labels()
+  {
     if (mel_logs::is(mel_logs::TRACE))
       mel_logs::get_instance()->log(mel_logs::TRACE, 'update_list_labels()');
     $result = array(
-            'action' => 'plugin.thunderbird_labels.update_list_labels',
-            'html' => $this->get_tb_label_popup()
+      'action' => 'plugin.thunderbird_labels.update_list_labels',
+      'html' => $this->get_tb_label_popup()
     );
     echo json_encode($result);
     exit();
@@ -444,7 +451,8 @@ class mel_labels_sync extends rcube_plugin {
   /**
    * Génération du pop up contenant la liste des labels à selectionner
    */
-  function tb_label_popup() {
+  function tb_label_popup()
+  {
     if ($this->rendered) {
       return;
     }
@@ -454,7 +462,8 @@ class mel_labels_sync extends rcube_plugin {
     $this->rendered = true;
   }
 
-  private function get_tb_label_popup() {
+  private function get_tb_label_popup()
+  {
     $out = '';
     // Ajoute le menu si on n'est pas en mobile
     if (!$this->rc->config->get('ismobile', false)) {
@@ -472,19 +481,18 @@ class mel_labels_sync extends rcube_plugin {
     foreach ($this->_get_bal_labels() as $label) {
       $key = $this->_convert_key_to_css($label->key);
       $box = $this->_convert_key_to_css($label->mailbox);
-      $class = 'labels label_'.$key.' '.$box;
+      $class = 'labels label_' . $key . ' ' . $box;
       if (!isset($i[$box])) {
         $i[$box] = 0;
       }
       if ($i[$box] < 9) {
         $i[$box]++;
         $text = $i[$box] . ' ' . $label->tag;
-        $class .= ' click'.$i[$box];
-      }
-      else {
+        $class .= ' click' . $i[$box];
+      } else {
         $text = $label->tag;
       }
-      $out .= '<li id="'.$key.'_b_'.$box.'" class="'.$class.' separator_below"><a href="#">'.$text.'</a></li>';
+      $out .= '<li id="' . $key . '_b_' . $box . '" class="' . $class . ' separator_below"><a href="#">' . $text . '</a></li>';
     }
 
     $out .= '</ul>';
@@ -499,7 +507,8 @@ class mel_labels_sync extends rcube_plugin {
    * @param array Original parameters
    * @return array Modified parameters
    */
-  public function managesieve_custom_flags($p) {
+  public function managesieve_custom_flags($p)
+  {
     $id = $p['id'];
     $select = new html_select(['name' => "_action_flags[$id][]"]);
 
@@ -521,7 +530,8 @@ class mel_labels_sync extends rcube_plugin {
    * @param array Original parameters
    * @return array Modified parameters
    */
-  public function preferences_list($p) {
+  public function preferences_list($p)
+  {
     if ($p['section'] != 'labels') {
       return $p;
     }
@@ -529,8 +539,7 @@ class mel_labels_sync extends rcube_plugin {
 
     if (!$this->_is_gestionnaire($this->_get_current_user_name())) {
       $p['blocks']['show_labels']['options']['labels_list']['content'] = $this->_labels_balp_list() . html::br() . html::br() . html::div(array('class' => 'texte_explic'), $this->gettext('labels_editable_by_gestionnaire'));
-    }
-    else {
+    } else {
       $labels_list = '';
       $i = 0;
 
@@ -541,59 +550,61 @@ class mel_labels_sync extends rcube_plugin {
         $disabled = in_array($label->key, array_column($this->rc->config->get('default_labels', []), 'key')) ? true : false;
 
         $label_color = new html_inputfield(array(
-                'name' => "_colors[" . $label->key . "]",
-                'class' => "$field_class colors",
-        		    'readonly' => 'readonly',
-                'size' => 6,
-                'disabled' => $disabled
+          'name' => "_colors[" . $label->key . "]",
+          'class' => "$field_class colors",
+          'readonly' => 'readonly',
+          'size' => 6,
+          'disabled' => $disabled
         ));
 
         $name = $label->tag;
         $label_name = new html_inputfield(array(
-                'name' => "_labels[" . $label->key . "]",
-                'class' => $field_class,
-                'size' => 30,
-                'disabled' => $disabled
+          'name' => "_labels[" . $label->key . "]",
+          'class' => $field_class,
+          'size' => 30,
+          'disabled' => $disabled
         ));
         $label_remove = new html_mel_button(array(
-                'type' => 'button',
-                'onclick' => '$(this).parent().parent().remove()',
-                'title' => $this->gettext('remove_label'),
-                'disabled' => $disabled
+          'type' => 'button',
+          'onclick' => '$(this).parent().parent().remove()',
+          'title' => $this->gettext('remove_label'),
+          'disabled' => $disabled
         ), '<span style="vertical-align: middle;" class="material-symbols-outlined">delete</span>');
 
-        $parent = html::div(["class" => "row"],
-          html::div(["class" => "col-5"], $label_name->show($name)).
-          html::div(["class" => "col-5"], $label_color->show($color)).
-          html::div(["class" => "col-2"], $label_remove->show())
-      );
-    $labels_list .= html::div(null, $hidden . $parent/* $label_name->show($name) . '&nbsp;' . $label_color->show($color) . '&nbsp;' . $label_remove->show()*/);
+        $parent = html::div(
+          ["class" => "row"],
+          html::div(["class" => "col-5"], $label_name->show($name)) .
+            html::div(["class" => "col-5"], $label_color->show($color)) .
+            html::div(["class" => "col-2"], $label_remove->show())
+        );
+        $labels_list .= html::div(null, $hidden . $parent/* $label_name->show($name) . '&nbsp;' . $label_color->show($color) . '&nbsp;' . $label_remove->show()*/);
       }
 
       $p['blocks']['show_labels']['options']['labels_list']['content'] = $this->_labels_balp_list() . html::br() . html::br() . html::div(array(
-              'id' => 'labelslist'
+        'id' => 'labelslist'
       ), $labels_list);
 
       $field_id = 'rcmfd_new_label';
       $new_label = new html_inputfield(array(
-              'name' => '_new_label',
-              'id' => $field_id,
-              'size' => 30
+        'name' => '_new_label',
+        'id' => $field_id,
+        'size' => 30
       ));
       $add_label = new html_inputfield(array(
-              'type' => 'button',
-              'class' => 'button',
-              'value' => $this->gettext('add_label'),
-              'onclick' => "rcube_label_add_label()"
+        'type' => 'button',
+        'class' => 'button',
+        'value' => $this->gettext('add_label'),
+        'onclick' => "rcube_label_add_label()"
       ));
       $p['blocks']['show_labels']['options']['new_label'] = array(
-              'content' => html::div(["class" => "row"], //$new_label->show('') . '&nbsp;' . $add_label->show()
-              html::div(["class" => "col-7"], $new_label->show('')).
-              html::div(["class" => "col-3"], $add_label->show()).
-              html::div(["class" => "col-2"])
-              )
+        'content' => html::div(
+          ["class" => "row"], //$new_label->show('') . '&nbsp;' . $add_label->show()
+          html::div(["class" => "col-7"], $new_label->show('')) .
+            html::div(["class" => "col-3"], $add_label->show()) .
+            html::div(["class" => "col-2"])
+        )
       );
-      
+
       $colors = require_once 'lib/colors.php';
 
       $this->rc->output->add_script('function rcube_label_add_label() {
@@ -609,11 +620,11 @@ class mel_labels_sync extends rcube_plugin {
             tmp.find(".col-2").append(button);
             tmp.appendTo("#labelslist");
             //.append(input).append("&nbsp;").append(color).append("&nbsp;").append(button).appendTo("#labelslist");
-            color.miniColors({ colorValues:(' . json_encode($colors) .') });
+            color.miniColors({ colorValues:(' . json_encode($colors) . ') });
             $("#rcmfd_new_label").val("");
           }
         }');
-      
+
       // include color picker
       $this->include_script('lib/js/jquery.miniColors.min.js');
       $this->include_stylesheet($this->local_skin_path() . '/jquery.miniColors.css');
@@ -631,14 +642,15 @@ class mel_labels_sync extends rcube_plugin {
    * @param array Original parameters
    * @return array Modified parameters
    */
-  public function preferences_save($p) {
+  public function preferences_save($p)
+  {
     if ($p['section'] == 'labels') {
       if (!$this->_is_gestionnaire($this->_get_current_user_name())) {
         return $p;
       }
       $labels = array();
-      $_post_labels = ( array ) rcube_utils::get_input_value('_labels', rcube_utils::INPUT_POST);
-      $_post_colors = ( array ) rcube_utils::get_input_value('_colors', rcube_utils::INPUT_POST);
+      $_post_labels = (array) rcube_utils::get_input_value('_labels', rcube_utils::INPUT_POST);
+      $_post_colors = (array) rcube_utils::get_input_value('_colors', rcube_utils::INPUT_POST);
       $old_labels = $this->driver->get_user_labels($this->_get_current_user_name());
 
       // Parcours des labels retournés par le post
@@ -646,15 +658,14 @@ class mel_labels_sync extends rcube_plugin {
         $old_label = Driver::find_label_by_key($key, $old_labels);
         if (!isset($old_label)) {
           $label_key = strtolower(rcube_charset::convert($key, 'UTF-8', 'UTF7-IMAP'));
-        }
-        else {
+        } else {
           $label_key = $key;
         }
         $labels[] = Label::withArray([
-                'key' => $label_key,
-                'tag' => $label_name,
-                'color' => $_post_colors[$key] ?  : null,
-                'ordinal' => ''
+          'key' => $label_key,
+          'tag' => $label_name,
+          'color' => $_post_colors[$key] ?: null,
+          'ordinal' => ''
         ]);
       }
 
@@ -671,10 +682,11 @@ class mel_labels_sync extends rcube_plugin {
    * @param array Original parameters
    * @return array Modified parameters
    */
-  public function preferences_sections_list($p) {
+  public function preferences_sections_list($p)
+  {
     $p['list']['labels'] = array(
-            'id' => 'labels',
-            'section' => $this->gettext('labels settings')
+      'id' => 'labels',
+      'section' => $this->gettext('labels settings')
     );
 
     return $p;
@@ -686,7 +698,8 @@ class mel_labels_sync extends rcube_plugin {
    * @param string $key
    * @return string
    */
-  private function _convert_key_to_css($key) {
+  private function _convert_key_to_css($key)
+  {
     return str_replace($this->convert_chars['forbidden'], $this->convert_chars['replacement'], strtolower($key));
   }
   /**
@@ -695,7 +708,8 @@ class mel_labels_sync extends rcube_plugin {
    * @param string $key
    * @return string
    */
-  private function _convert_key_from_css($key) {
+  private function _convert_key_from_css($key)
+  {
     return str_replace($this->convert_chars['replacement'], $this->convert_chars['forbidden'], strtolower($key));
   }
   /**
@@ -704,7 +718,8 @@ class mel_labels_sync extends rcube_plugin {
    *
    * @return Label[] Liste des étiquettes
    */
-  private function _get_bal_labels() {
+  private function _get_bal_labels()
+  {
     $this->rc->output->set_env('username', $this->rc->user->get_username());
     if (in_array('mel_sharedmailboxes', $this->rc->plugins->active_plugins) && $this->rc->task == 'mail') {
       if (empty($this->rc->action)) {
@@ -715,8 +730,7 @@ class mel_labels_sync extends rcube_plugin {
         }
         // Lister les étiquettes BALI en dernier pour prendre le dessus en css
         $_labels_list = array_merge($_labels_list, $this->driver->get_user_labels($this->rc->user->get_username()));
-      }
-      else {
+      } else {
         $username = $this->get_user_from_folder(rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GPC));
         if (isset($username)) {
           $_labels_list = $this->driver->get_user_labels($username);
@@ -730,8 +744,7 @@ class mel_labels_sync extends rcube_plugin {
           }
         }
       }
-    }
-    else {
+    } else {
       // MANTIS 0004420: Toujours lister les étiquettes de la BALI
       $_labels_list = $this->driver->get_user_labels($this->rc->user->get_username());
       if ($this->rc->plugins->get_plugin('mel')->get_user_bal() != $this->rc->user->get_username()) {
@@ -750,34 +763,35 @@ class mel_labels_sync extends rcube_plugin {
    * 
    * @return null|string null si pas de configuration, user sinon 
    */
-  private function get_user_from_folder($folder) {
+  private function get_user_from_folder($folder)
+  {
     $ret = null;
     $balp_label = driver_mel::gi()->getBalpLabel();
     if (isset($balp_label) && strpos($folder, $balp_label) === 0) {
-        $delimiter = $_SESSION['imap_delimiter'];
-        $osDelim = driver_mel::gi()->objectShareDelimiter();
-        $data = explode($delimiter, $folder, 3);
-        $_objects = driver_mel::gi()->getUser()->getObjectsShared();
-        if (count($_objects) >= 1 && isset($_objects[$this->rc->get_user_name() . $osDelim . $data[1]])) {
-            $_object = $_objects[$this->rc->get_user_name() . $osDelim . $data[1]];
-            if (isset($_object->mailbox) && $_object->mailbox->uid == $data[1]) {
-                $ret = $_object->mailbox->uid;
-            }
+      $delimiter = $_SESSION['imap_delimiter'];
+      $osDelim = driver_mel::gi()->objectShareDelimiter();
+      $data = explode($delimiter, $folder, 3);
+      $_objects = driver_mel::gi()->getUser()->getObjectsShared();
+      if (count($_objects) >= 1 && isset($_objects[$this->rc->get_user_name() . $osDelim . $data[1]])) {
+        $_object = $_objects[$this->rc->get_user_name() . $osDelim . $data[1]];
+        if (isset($_object->mailbox) && $_object->mailbox->uid == $data[1]) {
+          $ret = $_object->mailbox->uid;
         }
-    }
-    else {
+      }
+    } else {
       $ret = $this->rc->user->get_username();
     }
     return $ret;
   }
-  
+
   /**
    * Génération de la liste des balp pour l'utilisateur courant
    *
    * @param array $attrib Liste des paramètres de la liste
    * @return string HTML
    */
-  private function _labels_balp_list($attrib = array()) {
+  private function _labels_balp_list($attrib = array())
+  {
     if (! $attrib['id'])
       $attrib['id'] = 'rcmlabelsbalplist';
 
@@ -806,11 +820,11 @@ class mel_labels_sync extends rcube_plugin {
    * Retourne le username courant pour mon compte
    * Utilise la liste pour le déterminer
    */
-  private function _get_current_user_name() {
+  private function _get_current_user_name()
+  {
     if (isset($_GET['_current_username']) || isset($_POST['_current_username'])) {
       return trim(rcube_utils::get_input_value('_current_username', rcube_utils::INPUT_GPC));
-    }
-    else {
+    } else {
       return $this->rc->plugins->get_plugin('mel')->get_user_bal();
     }
   }
@@ -819,14 +833,16 @@ class mel_labels_sync extends rcube_plugin {
    * @param string $balpName
    * @return boolean
    */
-  private function _is_gestionnaire($balpName) {
+  private function _is_gestionnaire($balpName)
+  {
     if ($this->rc->user->get_username() == $balpName) {
       return true;
-    }
-    else {
+    } else {
       $bal = driver_mel::gi()->getUser($balpName);
-      if (isset($bal->shares[$this->rc->user->get_username()]) 
-          && $bal->shares[$this->rc->user->get_username()]->type == \LibMelanie\Api\Defaut\Users\Share::TYPE_ADMIN) {
+      if (
+        isset($bal->shares[$this->rc->user->get_username()])
+        && $bal->shares[$this->rc->user->get_username()]->type == \LibMelanie\Api\Defaut\Users\Share::TYPE_ADMIN
+      ) {
         return true;
       }
     }
@@ -841,8 +857,8 @@ class mel_labels_sync extends rcube_plugin {
    *
    * @return string The quoted string
    */
-  private function Q($str, $mode='strict', $newlines=true) {
+  private function Q($str, $mode = 'strict', $newlines = true)
+  {
     return rcube_utils::rep_specialchars_output($str, 'html', $mode, $newlines);
   }
 }
-?>

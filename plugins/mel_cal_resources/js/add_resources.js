@@ -369,43 +369,58 @@ class ResourceDialog extends MelObject {
     }
 
     const current_resource = this.get_selected_resource();
-    if (
-      current_resource &&
-      !$(`.mel-attendee[data-email="${current_resource.email}"]`).length
-    ) {
-      if (!window.selected_resources) window.selected_resources = {};
-      //On utilisera ça lorsque l'on reviendra sur la modale
-      window.selected_resources[this._location.id] = current_resource;
+    if (current_resource) {
+      {
+        const page = this.get_current_page_resource();
+        // On vérifie si la date est valide avant de continuer
+        if (!page?.isDateValid) {
+          BnumMessage.DisplayMessage(
+            // eslint-disable-next-line quotes
+            "Les dates de l'évènement ne sont pas valides !",
+            eMessageType.Error,
+          );
+          return page.set_validity();
+        }
+      }
 
-      //On change le bouton de text, couleur et on lui donne les info de la ressource sélectionné
-      if (typeof this._caller_button === 'function')
-        this._caller_button = this._caller_button();
+      // Gestion du participant (la ressource)
+      if (!$(`.mel-attendee[data-email="${current_resource.email}"]`).length) {
+        if (!window.selected_resources) window.selected_resources = {};
+        //On utilisera ça lorsque l'on reviendra sur la modale
+        window.selected_resources[this._location.id] = current_resource;
 
-      this._caller_button
-        .html(
-          $('<span>')
-            .css('vertical-align', 'super')
-            .text(ResourceDialog.GetRessourceLocationFormat(current_resource)),
-        )
-        .prepend(
-          MelHtml.start
-            .icon('ads_click')
-            .css('color', 'var(--mel-button-text-color)')
-            .css('margin-right', '5px')
-            .end()
-            .generate(),
-        )
-        .attr('resource', current_resource.email);
+        //On change le bouton de text, couleur et on lui donne les info de la ressource sélectionné
+        if (typeof this._caller_button === 'function')
+          this._caller_button = this._caller_button();
 
-      //On créé un participant
-      EventView.INSTANCE.parts.guests._$fakeField
-        .val(
-          `role=${GuestsPart.ROLES.resource}:${current_resource.fullname}<${current_resource.email}>`,
-        )
-        .change();
+        this._caller_button
+          .html(
+            $('<span>')
+              .css('vertical-align', 'super')
+              .text(
+                ResourceDialog.GetRessourceLocationFormat(current_resource),
+              ),
+          )
+          .prepend(
+            MelHtml.start
+              .icon('ads_click')
+              .css('color', 'var(--mel-button-text-color)')
+              .css('margin-right', '5px')
+              .end()
+              .generate(),
+          )
+          .attr('resource', current_resource.email);
 
-      ResourceLocation.SetAttendeeMechanics(current_resource.email);
-    } else if (!current_resource) {
+        //On créé un participant
+        EventView.INSTANCE.parts.guests._$fakeField
+          .val(
+            `role=${GuestsPart.ROLES.resource}:${current_resource.fullname}<${current_resource.email}>`,
+          )
+          .change();
+
+        ResourceLocation.SetAttendeeMechanics(current_resource.email);
+      }
+    } else {
       BnumMessage.DisplayMessage(
         'Veuillez séléctionner une ressource !',
         eMessageType.Error,

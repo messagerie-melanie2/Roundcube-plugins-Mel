@@ -315,6 +315,8 @@ class ResourceBaseFunctions {
     }
 
     this._$calendar.fullCalendar('refetchEvents');
+
+    this._set_validity();
   }
 
   /**

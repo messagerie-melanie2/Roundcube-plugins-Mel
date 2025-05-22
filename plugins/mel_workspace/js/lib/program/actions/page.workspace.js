@@ -133,7 +133,7 @@ export class WorkspacePage extends WorkspaceObject {
 
           // eslint-disable-next-line no-case-declarations
           const mails = MelEnumerable.from(this.workspace.users.emails)
-            .where((x) => x !== MelCurrentUser.main_email)
+            .where((x) => x && x !== MelCurrentUser.main_email)
             .take(300)
             .join(',');
 

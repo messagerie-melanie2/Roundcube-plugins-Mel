@@ -6469,24 +6469,36 @@ bnum-infinite-scroll-container {
   display: block;
 }
 
-[component-mode='inline-block'] {
-  display: inline-block;
-}
-
 [component-mode='div'] {
   display: block;
+
+  &.customMode {
+    display: var(--component-mode, block);
+  }
 }
 
 [component-mode='flex'] {
   display: flex;
+
+  &.customMode {
+    display: var(--component-mode, flex);
+  }
 }
 
 [component-mode='inline-block'] {
   display: inline-block;
+
+  &.customMode {
+    display: var(--component-mode, inline-block);
+  }
 }
 
 [component-mode='inline-flex'] {
   display: inline-flex;
+
+  &.customMode {
+    display: var(--component-mode, inline-flex);
+  }
 }
 
 bnum-button-icon {

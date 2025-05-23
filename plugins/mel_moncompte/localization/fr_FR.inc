@@ -416,3 +416,8 @@ $labels['sort'] = 'Tri Alpha.';
 $labels['sort_title'] = 'Trier par ordre alphabétique';
 $labels['sort_warning'] = 'Cela va changer l\'ordre de vos agenda, êtes vous-sûr de votre action ?';
 $labels['cannot_sort'] = 'Vous pouvez trier par ordre alphabétique seulement depuis votre agenda personnel !';
+
+$labels['deviceid_title'] = 'Identifiant de l\'appareil : %s';
+$labels['type_title'] = 'Type d\'appareil : %s';
+$labels['lastsync_title'] = 'Dernière synchronisation : %s';
+$labels['zpush_title'] = 'Version Z-Push : %s';

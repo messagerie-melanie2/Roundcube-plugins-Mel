@@ -128,7 +128,7 @@ class Mobile_Stats
             $attrib['id'] = 'rcmmobileslist';
 
         // define list of cols to be displayed
-        $a_show_cols = array('mel_moncompte.deviceid', 'mel_moncompte.type', 'mel_moncompte.last_sync', 'mel_moncompte.z-push');
+        $a_show_cols = array('mel_moncompte.type', 'mel_moncompte.deviceid', 'mel_moncompte.last_sync', 'mel_moncompte.z-push');
 
         $result = array();
 
@@ -150,10 +150,10 @@ class Mobile_Stats
 
                 $result[] = array(
                     'id' => $deviceId . '_zp_' . $versionzpush,
-                    'mel_moncompte.deviceid' => $deviceId,
-                    'mel_moncompte.type' => $devicetype,
-                    'mel_moncompte.last_sync' => $lastsync,
-                    'mel_moncompte.z-push' => $versionzpush,
+                    'mel_moncompte.deviceid' => '<span title="' . sprintf($this->plugin->gettext('deviceid_title'), htmlspecialchars($deviceId)) . '">' . htmlspecialchars($deviceId) . '</span>',
+                    'mel_moncompte.type' => '<span title="' . sprintf($this->plugin->gettext('type_title'), htmlspecialchars($devicetype)) . '">' . htmlspecialchars($devicetype) . '</span>',
+                    'mel_moncompte.last_sync' => '<span title="' . sprintf($this->plugin->gettext('lastsync_title'), htmlspecialchars($lastsync)) . '">' . htmlspecialchars($lastsync) . '</span>',
+                    'mel_moncompte.z-push' => '<span title="' . sprintf($this->plugin->gettext('zpush_title'), htmlspecialchars($versionzpush)) . '">' . htmlspecialchars($versionzpush) . '</span>',,
                     'class' => '',
                 );
             }

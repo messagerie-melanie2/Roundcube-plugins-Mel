@@ -264,6 +264,7 @@
       );
       modal.show({ context });
       modal.dialogContainer
+        .attr('id', 'add-user-modal')
         .find('.param-save-button')
         .css({ display: 'flex', 'align-items': 'center' })
         .append(

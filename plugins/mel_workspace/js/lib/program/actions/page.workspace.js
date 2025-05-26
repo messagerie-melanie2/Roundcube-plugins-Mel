@@ -205,6 +205,23 @@ export class WorkspacePage extends WorkspaceObject {
       },
     );
 
+    top.rcmail.add_event_listener_ex(
+      'workspace.display_adduser_modale',
+      'workspace',
+      (args) => {
+        console.log('afficher');
+        top.document.getElementById('add-user-modal').style.display = 'block';
+      },
+    );
+    top.rcmail.add_event_listener_ex(
+      'workspace.hide_adduser_modale',
+      'workspace',
+      (args) => {
+        console.log('cacher');
+        top.document.getElementById('add-user-modal').style.display = 'none';
+      },
+    );
+
     FramesManager.Helper.window_object.UpdateDocumentTitle(
       this.getLocalization('page_title', {
         plugin: 'mel_workspace',

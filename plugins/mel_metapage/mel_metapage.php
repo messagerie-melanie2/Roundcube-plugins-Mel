@@ -2877,17 +2877,17 @@ class mel_metapage extends bnum_plugin
             $mail_raw
         );
 
-        $datas = $this->rc->imap->save_message($folder, $mail_raw, '', false, [], $headers_old->date);
+        $datas = $this->rc->storage->save_message($folder, $mail_raw, '', false, [], $headers_old->date);
 
         if ($datas !== false) {
             $message = new rcube_message($message_uid, $folder);
 
             foreach ($message->headers->flags as $flag => $value) {
-                $this->rc->imap->set_flag($datas, strtoupper($flag), $folder);
+                $this->rc->storage->set_flag($datas, strtoupper($flag), $folder);
             }
 
-            $this->rc->imap->set_flag($datas, "~commente", $folder);
-            $this->rc->imap->set_flag($datas, 'SEEN', $folder);
+            $this->rc->storage->set_flag($datas, "~commente", $folder);
+            $this->rc->storage->set_flag($datas, 'SEEN', $folder);
             $this->rc->get_storage()->delete_message($message_uid, $folder);
 
             echo $datas;
@@ -2921,7 +2921,7 @@ class mel_metapage extends bnum_plugin
         if (strpos($orga['email'], '.-.') !== false) {
             $tmp = explode('@', explode('.-.', $orga['email'])[1])[0];
 
-            $datas = $this->rc->imap->save_message("Boite partag&AOk-e/$tmp/$folder", $msg);
+            $datas = $this->rc->storage->save_message("Boite partag&AOk-e/$tmp/$folder", $msg);
 
             if ($datas === false) {
                 $tmp2 = explode('.', $tmp);
@@ -2929,25 +2929,25 @@ class mel_metapage extends bnum_plugin
                 $it = 0;
                 while ($datas === false && $it < count($tmp2)) {
                     $tmp .= $tmp2[$it++];
-                    $datas = $this->rc->imap->save_message("Boite partag&AOk-e/$tmp/$folder", $msg);
+                    $datas = $this->rc->storage->save_message("Boite partag&AOk-e/$tmp/$folder", $msg);
                     $tmp .= '.';
                 }
 
                 if ($datas !== false) $folder = "Boite partag&AOk-e/$tmp/$folder";
             }
         } else {
-            if (!isset($this->rc->imap)) {
+            if (!isset($this->rc->storage)) {
                 $this->rc->storage_init();
             }
 
-            if (isset($this->rc->imap)) {
-                $datas = $this->rc->imap->save_message($folder, $msg);
+            if (isset($this->rc->storage)) {
+                $datas = $this->rc->storage->save_message($folder, $msg);
             }
         }
 
         if ($datas !== false) {
-            $this->rc->imap->set_flag($datas, "~rdvtraite", $folder);
-            $this->rc->imap->set_flag($datas, 'SEEN', $folder);
+            $this->rc->storage->set_flag($datas, "~rdvtraite", $folder);
+            $this->rc->storage->set_flag($datas, 'SEEN', $folder);
         }
     }
 

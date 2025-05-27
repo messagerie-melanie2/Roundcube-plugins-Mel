@@ -467,6 +467,13 @@ class mtes_driver_mel extends mce_driver_mel
         if (isset($conf)) {
           $split = explode('@', $args['record']['email'], 2);
           $url = isset($conf[$split[1]]) ? $conf[$split[1]] : $conf['default'];
+
+          //Gestion du nouveau format des listes
+          if ($url === $conf['default'] && strpos($split[1], 'listes.') === 0) {
+            $url = $conf['listes'];
+            $split[1] = str_replace('listes.', '', $split[1]);
+          }
+
           $provenance = mel::is_internal() ? 'intranet' : 'internet';
           if (!isset($url['provenance']) || $url['provenance'] == $provenance) {
             $split[1] = substr($split[1], 0, strpos($split[1], '.'));

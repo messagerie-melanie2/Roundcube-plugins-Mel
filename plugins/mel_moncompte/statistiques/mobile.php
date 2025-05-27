@@ -153,7 +153,7 @@ class Mobile_Stats
                     'mel_moncompte.deviceid' => '<span title="' . sprintf($this->plugin->gettext('deviceid_title'), htmlspecialchars($deviceId)) . '">' . htmlspecialchars($deviceId) . '</span>',
                     'mel_moncompte.type' => '<span title="' . sprintf($this->plugin->gettext('type_title'), htmlspecialchars($devicetype)) . '">' . htmlspecialchars($devicetype) . '</span>',
                     'mel_moncompte.last_sync' => '<span title="' . sprintf($this->plugin->gettext('lastsync_title'), htmlspecialchars($lastsync)) . '">' . htmlspecialchars($lastsync) . '</span>',
-                    'mel_moncompte.z-push' => '<span title="' . sprintf($this->plugin->gettext('zpush_title'), htmlspecialchars($versionzpush)) . '">' . htmlspecialchars($versionzpush) . '</span>',,
+                    'mel_moncompte.z-push' => '<span title="' . sprintf($this->plugin->gettext('zpush_title'), htmlspecialchars($versionzpush)) . '">' . htmlspecialchars($versionzpush) . '</span>',
                     'class' => '',
                 );
             }

@@ -205,6 +205,27 @@ export class WorkspacePage extends WorkspaceObject {
       },
     );
 
+    top.rcmail.add_event_listener_ex(
+      'workspace.hide_adduser_modale',
+      'workspace',
+      this._hide_add_user_modal.bind(this, top.document),
+    );
+    rcmail.add_event_listener_ex(
+      'workspace.hide_adduser_modale',
+      'workspace',
+      this._hide_add_user_modal.bind(this, document),
+    );
+    top.rcmail.add_event_listener_ex(
+      'workspace.display_adduser_modale',
+      'workspace',
+      this._display_add_user_modal.bind(this, top.document),
+    );
+    rcmail.add_event_listener_ex(
+      'workspace.display_adduser_modale',
+      'workspace',
+      this._display_add_user_modal.bind(this, document),
+    );
+
     FramesManager.Helper.window_object.UpdateDocumentTitle(
       this.getLocalization('page_title', {
         plugin: 'mel_workspace',
@@ -254,6 +275,22 @@ export class WorkspacePage extends WorkspaceObject {
       //Sinon, on attend que toute les dépendances soient chargées
       else window.addEventListener('load', this._setStartupPage.bind(this));
     }
+  }
+
+  /**
+   * cache la modale d'ajout d'utilisateur pour que la modale annuaire fonctionne
+   * @param {Window} context
+   */
+  _hide_add_user_modal(context) {
+    context.getElementById('add-user-modal').style.display = 'none';
+  }
+
+  /**
+   * réaffiche la modale d'ajout d'utilisateur
+   * @param {Window} context
+   */
+  _display_add_user_modal(context) {
+    context.getElementById('add-user-modal').style.display = 'block';
   }
 
   /**

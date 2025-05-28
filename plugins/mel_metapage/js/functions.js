@@ -1973,6 +1973,8 @@ function m_mp_openTo(e, idInput, actions = null) {
         else if ($('#globalModal').length > 0)
           $('#globalModal').css('z-index', '');
 
+        rcmail.triggerEvent('workspace.display_adduser_modale');
+
         if (rcmail.env.task === 'calendar') $('.ui-dialog').css('display', '');
         delete rcmail.env.annuaire_select_actions;
       });
@@ -1987,6 +1989,8 @@ function m_mp_openTo(e, idInput, actions = null) {
 
   if (window.create_popUp !== undefined) create_popUp.modal.css('z-index', 1);
   else if ($('#globalModal').length > 0) $('#globalModal').css('z-index', 1);
+
+  rcmail.triggerEvent('workspace.hide_adduser_modale');
 
   if (rcmail.env.task === 'calendar') $('.ui-dialog').css('display', 'none');
 }

@@ -7,15 +7,24 @@ class bnum_agenda extends bnum_plugin {
    * Tâches supportées par ce plugin.
    * @var string
    */
-  public $task = 'agenda|calendar';
+  public $task = 'agenda|calendar|settings';
 
   /**
    * Initialise le plugin et enregistre les actions nécessaires.
    *
    * @return void
    */
-  function init() {
-    $this->register_action('get_categories', [$this, 'action_get_categories']);
+  public function init() {
+    switch ($this->get_current_task()) {
+      case 'agenda':
+      case 'calendar':
+        $this->register_action('get_categories', [$this, 'action_get_categories']);
+        break;
+      
+      default:
+        $this->add_hook('signature.links', [$this, 'hook_signature_links']);
+        break;
+    }    
   }
 
   /**
@@ -65,5 +74,25 @@ class bnum_agenda extends bnum_plugin {
    */
   public function action_get_categories() : never {
     $this->sendEncodedExit(json_encode($this->get_categories()));
+  }
+
+  public function hook_signature_links($args) {
+    $checkbox = new html_checkbox();
+    $custom_links = $args['custom_links'] ?? '';
+    /**
+     * @var calendar
+     */
+    $calendar =$this->api->get_plugin('calendar');
+    $hasUrl = $calendar->get_appointment_url(driver_mel::gi()->getUser()->getDefaultCalendar()->id);
+
+    if ($hasUrl) {
+      $text = 'Lien vers le calendly';
+      $custom_links.=  html::tag('li', [], $checkbox->show('', ['value' => $hasUrl, 'id' => 'checkbox-calendly-link', 'onchange' => 'onInputChange();']) . html::label(['for' => "checkbox-calendly-link"], $text));
+
+      $args['env_links'][$hasUrl] = "Prenez rendez-vous avec moi ici !";
+      $args['custom_links'] = $custom_links;
+    }
+
+    return $args;
   }
 }

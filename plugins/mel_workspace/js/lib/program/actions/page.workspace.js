@@ -279,7 +279,7 @@ export class WorkspacePage extends WorkspaceObject {
 
   /**
    * cache la modale d'ajout d'utilisateur pour que la modale annuaire fonctionne
-   * @param {window} context
+   * @param {Window} context
    */
   _hide_add_user_modal(context) {
     context.getElementById('add-user-modal').style.display = 'none';
@@ -287,7 +287,7 @@ export class WorkspacePage extends WorkspaceObject {
 
   /**
    * réaffiche la modale d'ajout d'utilisateur
-   * @param {window} context
+   * @param {Window} context
    */
   _display_add_user_modal(context) {
     context.getElementById('add-user-modal').style.display = 'block';

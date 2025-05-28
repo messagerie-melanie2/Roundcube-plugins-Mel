@@ -77,6 +77,7 @@ class bnum_agenda extends bnum_plugin {
   }
 
   public function hook_signature_links($args) {
+    $this->add_texts('localization/');
     $checkbox = new html_checkbox();
     $custom_links = $args['custom_links'] ?? '';
     /**
@@ -86,10 +87,10 @@ class bnum_agenda extends bnum_plugin {
     $hasUrl = $calendar->get_appointment_url(driver_mel::gi()->getUser()->getDefaultCalendar()->id);
 
     if ($hasUrl) {
-      $text = 'Lien vers le calendly';
+      $text = $this->rc()->gettext('calendlink', 'bnum_agenda');
       $custom_links.=  html::tag('li', [], $checkbox->show('', ['value' => $hasUrl, 'id' => 'checkbox-calendly-link', 'onchange' => 'onInputChange();']) . html::label(['for' => "checkbox-calendly-link"], $text));
 
-      $args['env_links'][$hasUrl] = "Prenez rendez-vous avec moi ici !";
+      $args['env_links'][$hasUrl] = $this->rc()->gettext('calendlink-label', 'bnum_agenda');
       $args['custom_links'] = $custom_links;
     }
 

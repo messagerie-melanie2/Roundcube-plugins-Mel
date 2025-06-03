@@ -202,6 +202,7 @@ class mel_metapage extends bnum_plugin
         $this->add_hook("message_part_before", [$this, 'hook_message_part_before']);
         $this->add_hook("calendar.on_attendees_notified", [$this, 'on_attendees_notified']);
         $this->add_hook('contact_photo', [$this, 'no_contact_found']);
+        $this->add_hook('plugin.mel_doubleauth.init', [$this, 'hook_double_auth_init']);
 
         if ($this->rc->task === 'settings' && $this->rc->action === "edit-prefs") {
             if (rcube_utils::get_input_value('_section', rcube_utils::INPUT_GPC) === 'globalsearch') $this->include_script('js/actions/settings_gs.js');
@@ -3577,6 +3578,19 @@ class mel_metapage extends bnum_plugin
         }
 
         return $args;
+    }
+
+    /**
+     * Hook appelé lors de l'initialisation de la double authentification.
+     *
+     * Ce hook permet d'inclure le script JavaScript nécessaire au chargement du module
+     * de double authentification dans l'interface utilisateur.
+     *
+     * @param array $args Les arguments du hook ('rcmail', 'plugin')
+     * @return void
+     */
+    public function hook_double_auth_init($args) {
+        $this->include_script('js/always_load/load_module.js');
     }
 
     public function rc_section_list($args)

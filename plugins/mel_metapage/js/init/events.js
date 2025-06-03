@@ -893,7 +893,7 @@ if (rcmail && window.mel_metapage) {
 
   rcmail.addEventListener('start-da-modal', async function (args) {
     const loader =
-      top.loadJsModule ?? parent.loadJsModule ?? window.loadJsModule;
+      window.loadJsModule ?? parent?.loadJsModule ?? top?.loadJsModule;
 
     const { double_auth_modal } = await loader(
       'mel_metapage',

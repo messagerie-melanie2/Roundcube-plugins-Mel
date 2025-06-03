@@ -1,6 +1,9 @@
 import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager.js';
 import { WorkspaceModuleBlock } from '../../../mel_workspace/js/lib/WebComponents/workspace_module_block.js';
-import { BnumMessage } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
+import {
+  BnumMessage,
+  eMessageType,
+} from '../../../mel_metapage/js/lib/classes/bnum_message.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { BootstrapLoader } from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/bootstrap-loader.js';
 import { WorkspaceObject } from '../../../mel_workspace/js/lib/program/WorkspaceObject.js';
@@ -109,12 +112,18 @@ export class ModuleForum extends WorkspaceObject {
       // Réactiver l'élément déclencheur
       this.select(caller).removeClass('disabled').removeAttr('disabled');
       this.rcmail().hide_message(loading);
-
     });
 
     //Ajout du onclick sur la checkbox notification tchap
     $('#tchap-notification').change(() => {
-        this.save_params('tchap_notification', +$('#tchap-notification').prop('checked'));
+      this.save_params(
+        'tchap_notification',
+        +$('#tchap-notification').prop('checked'),
+      );
+      BnumMessage.DisplayMessage(
+        rcmail.gettext('mel_workspace.successfully_saved'),
+        eMessageType.Success,
+      );
     });
 
     //Lorsque une donnée est reçu de la part de la frame enfante
@@ -158,7 +167,7 @@ export class ModuleForum extends WorkspaceObject {
             jquery: false,
           }).contentWindow.location.href.includes(this.workspace.uid))
       ) {
-        return { _workspace_uid: this.workspace.uid };
+        return { _workspace_uid: this.workspace.uid, askedTask: args.task };
       }
     }, 'forum');
   }

@@ -264,6 +264,7 @@
       );
       modal.show({ context });
       modal.dialogContainer
+        .attr('id', 'add-user-modal')
         .find('.param-save-button')
         .css({ display: 'flex', 'align-items': 'center' })
         .append(
@@ -332,7 +333,7 @@
           if (datas === 'no one was found') {
             this.busy(false);
             rcmail.display_message(
-              "Les personnes ajoutées ne font pas partie de l'annuaire... Elles ne sont donc pas ajouté à l'espace.",
+              rcmail.gettext('no_in_addressbook', 'mel_workspace'),
               'warning',
             );
           } else if (datas === 'denied') {

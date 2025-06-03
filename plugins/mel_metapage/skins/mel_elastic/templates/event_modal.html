@@ -85,7 +85,7 @@
 		<!--part:title-->
     <div class="border-bottom-input-icon">
       <input type="text" placeholder="<roundcube:label name='mel_metapage.event_name' />" class="form-control input-mel border-bottom-input large-input" name="title" id="edit-title" required="true" />
-      <button id="reset-title-button" class="border-bottom-input-button close-button" type="button">
+      <button id="reset-title-button" class="border-bottom-input-button close-button" type="button" title="<roundcube:label name='mel_metapage.erase_text'/>">
         <span class="material-symbols-outlined">
           close
         </span>
@@ -144,7 +144,7 @@
 					<!-- <div id="attendees" class="mel-show-attendee" data-linked="attendee-input"></div> -->
 				<input id="attendee-input" class="form-control input-mel" type="text" placeholder="Ajoutez des participants" style="flex: auto;width: unset;"/>
 				</div>
-				<button onclick="m_mp_openTo(this, 'attendee-input', {onselect:m_mp_on_open_select_calendar_contacts})" type="button" class="no-background" type="button">
+				<button onclick="m_mp_openTo(this, 'attendee-input', {onselect:m_mp_on_open_select_calendar_contacts})" type="button" class="no-background" type="button" title="<roundcube:label name='mel_metapage.search_in_addressbook' />">
 					<span class="material-symbols-outlined">
 					person
 					</span>

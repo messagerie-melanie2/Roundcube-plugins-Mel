@@ -228,7 +228,7 @@ export class LinkManager extends MelObject {
       .text(rcmail.gettext('category_filter', 'mel_useful_link'))
       .end('span')
       .end('row')
-      .row({class: 'm-2 list-filter-container overflow-auto'})
+      .row({ class: 'm-2 list-filter-container overflow-auto' })
       .div({ id: 'list-filters-container' })
       .end('div')
       .end('row')
@@ -320,7 +320,7 @@ export class LinkManager extends MelObject {
               link.icon,
               link.description,
               this.linksIdList.includes(item) ? true : false,
-              link.image ?? null
+              link.image ?? null,
             );
 
             foundLink.displayStoreLink().appendTo('#list-store-app');
@@ -350,7 +350,7 @@ export class LinkManager extends MelObject {
             link.icon,
             link.description,
             this.linksIdList.includes(item) ? true : false,
-            link.image ?? null
+            link.image ?? null,
           );
           storeLink.displayStoreLink().appendTo('#list-store-app');
           isLinks = true;
@@ -1226,7 +1226,9 @@ export class LinkManager extends MelObject {
       return null;
     }
 
-    return rcmail.env.external_icon_url + domain;
+    return rcmail.env.external_icon_url
+      ? rcmail.env.external_icon_url + domain
+      : null;
   }
 
   /**

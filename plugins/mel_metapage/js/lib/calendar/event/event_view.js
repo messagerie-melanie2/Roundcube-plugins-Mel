@@ -24,6 +24,7 @@
 import { MelEnumerable } from '../../classes/enum.js';
 import { EMPTY_STRING } from '../../constants/constants.js';
 import { MelHtml } from '../../html/JsHtml/MelHtml.js';
+import { MelObject } from '../../mel_object.js';
 import {
   ATTENDEE_CONTAINER_SELECTOR,
   ATTENDEE_SELECTOR,
@@ -330,12 +331,8 @@ class EventParts {
       inputs.select_calendar_owner.parent().find('span'),
       ev?.calendar_blocked ?? false,
     );
-    this.status.onUpdate(ev.status ?? '');
-    this.sensitivity.onUpdate(
-      !ev?.id
-        ? SensitivityPart.STATES.public
-        : ev?.sensitivity ?? SensitivityPart.STATES.public,
-    );
+    this.status.onUpdate(ev.status ?? EMPTY_STRING);
+    this.sensitivity.onUpdate(ev?.sensitivity ?? SensitivityPart.STATES.public);
     this.alarm.init(ev);
     this.category.init(ev);
     this.date.init(ev);
@@ -492,6 +489,8 @@ export class EventView {
     }
 
     this._generate_listeners();
+
+    MelObject.Empty().trigger('calendar.view.loaded', { view: this });
   }
 
   /**

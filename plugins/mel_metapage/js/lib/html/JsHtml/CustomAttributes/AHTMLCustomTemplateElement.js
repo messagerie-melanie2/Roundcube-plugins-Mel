@@ -1,8 +1,6 @@
 import { BnumEvent } from '../../../mel_events.js';
-import {
-  EWebComponentMode,
-  HtmlCustomDataTag,
-} from './js_html_base_web_elements.js';
+import { EWebComponentMode } from './js_html_base_web_elements.js';
+import AHTMLCustomInternalElement from './lib/AHTMLCustomInternalElement.js';
 
 export { AHTMLCustomTemplateElement, CAN_TEMPLATE };
 
@@ -37,7 +35,7 @@ if (!CAN_TEMPLATE) {
  * @extends HtmlCustomDataTag
  * @abstract
  */
-class AHTMLCustomTemplateElement extends HtmlCustomDataTag {
+class AHTMLCustomTemplateElement extends AHTMLCustomInternalElement {
   constructor({ mode = EWebComponentMode.inline_block } = {}) {
     super({ mode });
 

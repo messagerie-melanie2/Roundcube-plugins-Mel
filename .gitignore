@@ -14,6 +14,7 @@ yarn.lock
 jsdoc-tutorials
 */jsdoc-tutorials/*
 **/.vscode/*
+!**/.vscode/*.code-snippets
 **/launch.json
 */launch.json
 

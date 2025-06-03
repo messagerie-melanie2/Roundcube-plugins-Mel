@@ -1,0 +1,5 @@
+<?php
+// Etat par défaut du scope de la recherche, base, sub ou all.
+$config['search_scope'] = 'base';
+// Colonnes en plus pour les mails
+$config['additional_columns'] = ['priority'];

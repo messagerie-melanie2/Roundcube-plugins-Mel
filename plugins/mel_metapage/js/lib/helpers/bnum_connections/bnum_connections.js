@@ -27,7 +27,10 @@ class BnumConnector {
    * @param {*} param0.default_return Valeur de retour par défaut
    * @returns {Promise<{datas: Y | null, has_error: boolean, error: any | null}>} Retourne les données récupérés ou null si il y a une erreur
    */
-  static async connect(connector, { params = null, default_return = null }) {
+  static async connect(
+    connector,
+    { params = null, default_return = null } = {},
+  ) {
     if (!connector) connector = Connector.in_work();
 
     return await connector.connect({ params, default_return });

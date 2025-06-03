@@ -1,7 +1,19 @@
-@mail-var-list: var(--message-list-content-mail-subject-color), var(--message-list-content-mail-address-color), var(--message-list-content-mail-button-color);
-@mail-var-list-hover: var(--message-list-content-mail-subject-hover-color), var(--message-list-content-mail-address-hover-color), var(--message-list-content-mail-button-hover-color);
-@mail-var-list-selected: var(--message-list-content-selected-mail-subject-color), var(--message-list-content-selected-mail-address-color), var(--message-list-content-selected-mail-button-color);
-@mail-var-list-selected-hover: var(--message-list-content-selected-mail-subject-hover-color), var(--message-list-content-selected-mail-address-hover-color), var(--message-list-content-selected-mail-button-hover-color);
+@mail-var-list: var(--message-list-content-mail-subject-color),
+  var(--message-list-content-mail-address-color),
+  var(--message-list-content-mail-button-color);
+@mail-var-list-hover: var(--message-list-content-mail-subject-hover-color),
+  var(--message-list-content-mail-address-hover-color),
+  var(--message-list-content-mail-button-hover-color);
+@mail-var-list-selected: var(
+    --message-list-content-selected-mail-subject-color
+  ),
+  var(--message-list-content-selected-mail-address-color),
+  var(--message-list-content-selected-mail-button-color);
+@mail-var-list-selected-hover: var(
+    --message-list-content-selected-mail-subject-hover-color
+  ),
+  var(--message-list-content-selected-mail-address-hover-color),
+  var(--message-list-content-selected-mail-button-hover-color);
 
 @class-mail: e('');
 @class-mail-selected: e('.selected');
@@ -43,7 +55,6 @@
 
         &:hover {
           td.subject {
-
             span.fromto,
             span.msgicon.status::before {
               color: @address-color-hover !important;
@@ -114,7 +125,6 @@ body.task-mail {
 }
 
 .task-mail {
-
   #layout-content .iframe-wrapper {
     margin-top: 0px !important;
   }
@@ -126,12 +136,13 @@ body.task-mail {
   }
 
   #layout-list .message-list-filter-container {
-    border-radius: var(--main-panel-border-radius) var(--main-panel-border-radius) 0 0;
+    border-radius: var(--main-panel-border-radius)
+      var(--main-panel-border-radius) 0 0;
     background-color: var(--message-list-quick-filter-background-color);
   }
 
   #layout-sidebar {
-    .scroller>.listing li.selected a {
+    .scroller > .listing li.selected a {
       border-radius: var(--layout-sidebar-selected-item-border-radius);
     }
   }
@@ -141,15 +152,21 @@ body.task-mail {
   }
 
   #messagelist-content {
-    background-color: var(--message-list-content-row-background-color) !important;
+    background-color: var(
+      --message-list-content-row-background-color
+    ) !important;
 
     table.messagelist:not(.threaded) tbody tr:nth-child(2n) {
       td {
-        background-color: var(--message-list-content-row-alternate-background-color);
+        background-color: var(
+          --message-list-content-row-alternate-background-color
+        );
       }
 
       &:hover {
-        background-color: var(--message-list-content-row-background-hover-color);
+        background-color: var(
+          --message-list-content-row-background-hover-color
+        );
       }
     }
 
@@ -160,23 +177,33 @@ body.task-mail {
     table.messagelist {
       tr {
         &.selected td {
-          background-color: var(--message-list-content-selected-row-background-color) !important;
+          background-color: var(
+            --message-list-content-selected-row-background-color
+          ) !important;
         }
 
         &.message {
           &.selected:hover {
-            background-color: var(--message-list-content-selected-row-background-hover-color) !important;
-            html.dark-mode-custom &{
-              background-color: var(--message-list-content-row-background-hover-color) !important;
+            background-color: var(
+              --message-list-content-selected-row-background-hover-color
+            ) !important;
+            html.dark-mode-custom & {
+              background-color: var(
+                --message-list-content-row-background-hover-color
+              ) !important;
             }
           }
 
           &:hover {
             box-shadow: var(--message-list-hover-shadow);
-            background-color: var(--message-list-content-row-background-hover-color) !important;
+            background-color: var(
+              --message-list-content-row-background-hover-color
+            ) !important;
 
             td {
-              background-color: var(--message-list-content-row-background-hover-color) !important;
+              background-color: var(
+                --message-list-content-row-background-hover-color
+              ) !important;
             }
 
             td.subject span.msgicon.status:hover::before {
@@ -188,8 +215,10 @@ body.task-mail {
             border-bottom: var(--message-list-border-bottom);
           }
 
-          &.selected>td.selection+td {
-            border-left-color: var(--message-list-content-selected-row-border-color) !important;
+          &.selected > td.selection + td {
+            border-left-color: var(
+              --message-list-content-selected-row-border-color
+            ) !important;
           }
         }
 
@@ -200,7 +229,9 @@ body.task-mail {
 
           &.selected {
             td.subject span.msgicon::before {
-              color: var(--message-list-content-selected-mail-button-color) !important;
+              color: var(
+                --message-list-content-selected-mail-button-color
+              ) !important;
             }
           }
         }
@@ -212,7 +243,9 @@ body.task-mail {
 
           &.selected {
             td.subject span.fromto {
-              color: var(--message-list-content-selected-mail-address-color) !important;
+              color: var(
+                --message-list-content-selected-mail-address-color
+              ) !important;
             }
           }
         }
@@ -221,7 +254,7 @@ body.task-mail {
   }
 
   #layout-sidebar,
-  #layout-sidebar>.header,
+  #layout-sidebar > .header,
   .upload-form .hint {
     color: var(--layout-sidebar-text-color) !important;
   }
@@ -245,7 +278,9 @@ body.task-mail {
     border-top-right-radius: var(--main-panel-border-radius);
 
     &:hover {
-      background-color: var(--message-list-quick-filter-button-hover-background-color);
+      background-color: var(
+        --message-list-quick-filter-button-hover-background-color
+      );
       color: var(--message-list-quick-filter-button-hover-text-color);
       border-color: var(--message-list-quick-filter-button-hover-border-color);
     }
@@ -266,16 +301,17 @@ body.task-mail {
 
   #layout-sidebar {
     > .header {
-        a.button {
-          color: var(--mail-header-button-color) !important;
-        }
+      a.button {
+        color: var(--mail-header-button-color) !important;
       }
     }
-  
+  }
 
   #layout-content {
-    >.header {
-      background-color: var(--layout-content-header-background-color) !important;
+    > .header {
+      background-color: var(
+        --layout-content-header-background-color
+      ) !important;
 
       .parent-close-visu {
         border-right: var(--layout-content-header-right-border) !important;
@@ -300,10 +336,10 @@ body.task-mail {
       }
     }
 
-
     .attachmentslist {
       background-color: var(--layout-content-message-partheaders);
-      border-top: solid thin var(--layout-content-message-partheaders-top-border-color) !important;
+      border-top: solid thin
+        var(--layout-content-message-partheaders-top-border-color) !important;
       border: none;
 
       a.filename {
@@ -328,12 +364,15 @@ body.task-mail {
       table.headers-table {
         color: var(--layout-content-message-partheaders-title);
       }
-
     }
 
     .recipient-input input {
       color: var(--input-text-color);
     }
+  }
+
+  .favourite-virtual-box {
+    color: var(--layout-sidebar-text-color, white);
   }
 }
 
@@ -341,11 +380,25 @@ body.task-mail.action-none #layout-content {
   border-left: var(--layout-content-border-left-color);
 }
 
-.recipient-input .recipient{
+.recipient-input li.recipient {
   background-color: var(--mel-button-background-color);
   color: var(--mel-button-text-color);
 
-  & *{
-    color: var(--mel-button-text-color)!important;
+  & * {
+    color: var(--mel-button-text-color) !important;
+  }
+}
+#priority-tooltip {
+  .mel-button {
+    &.bckg {
+      color: var(
+        --mel-priority-button-text-color,
+        var(--mel-button-text-color, unset)
+      );
+
+      &:hover {
+        color: var(--mel-button-hover-text-color);
+      }
+    }
   }
 }

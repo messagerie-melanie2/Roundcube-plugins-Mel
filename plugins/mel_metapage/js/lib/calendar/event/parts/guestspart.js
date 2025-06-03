@@ -8,6 +8,7 @@ import { REG_BETWEEN_PARENTHESIS } from '../../../constants/regexp.js';
 import { BnumException } from '../../../exceptions/bnum_base_exceptions.js';
 import { MelHtml } from '../../../html/JsHtml/MelHtml.js';
 import { BnumEvent } from '../../../mel_events.js';
+import { MelObject } from '../../../mel_object.js';
 import { Mel_Promise } from '../../../mel_promise.js';
 import { FreeBusyGuests } from './guestspart.free_busy.js';
 import {
@@ -621,6 +622,22 @@ export class GuestsPart extends FakePart {
    * @override
    */
   init(event) {
+    {
+      /**
+       * @type {?{calendarEvent: *}}
+       */
+      const plugin = MelObject.Empty().trigger(
+        'calendar.create.guests.before',
+        {
+          part: this,
+          calendarEvent: event,
+          Guest,
+        },
+      );
+
+      if (plugin?.calendarEvent) event = plugin.calendarEvent;
+    }
+
     let it = 0;
     const fields = [this._$fakeField, this._$optionnals, this._$animators];
     const main_field_index = 0;
@@ -853,8 +870,6 @@ export class GuestsPart extends FakePart {
     var role;
     var attendees;
 
-    console.log('update', val);
-
     {
       //On vérifie si il y a des virgules entre parenthèses puis on les gères.
       const regex = REG_BETWEEN_PARENTHESIS;
@@ -870,7 +885,7 @@ export class GuestsPart extends FakePart {
       }
     }
 
-    if (val.includes(GUEST_SEPARATOR)) {
+    if (val.includes(GUEST_SEPARATOR) && val !== GUEST_SEPARATOR) {
       const event = cal.selected_event;
       val = val.split(GUEST_SEPARATOR);
       let has_invalid_email = false;
@@ -1104,6 +1119,7 @@ export class GuestsPart extends FakePart {
             start,
             end,
             attendees,
+            interval: (end - start) / 1000 / 60,
           }),
       );
 
@@ -1119,6 +1135,7 @@ export class GuestsPart extends FakePart {
       }
 
       const slots = await promise;
+
       promise = null;
       let $find_next = MelHtml.start
         .button({
@@ -1140,6 +1157,11 @@ export class GuestsPart extends FakePart {
           slot
             .generate(timePart)
             .generate()
+            .addClass(
+              moment(slot.start).format() === timePart.date_start.format()
+                ? 'current-date btn-success'
+                : 'not-current-date',
+            )
             .appendTo(
               $('<div>')
                 .addClass('col-6 col-md-3')

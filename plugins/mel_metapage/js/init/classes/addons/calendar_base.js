@@ -145,17 +145,20 @@ $(document).ready(() => {
           {
             _uid: $('#mel-event-category').val().replace('ws#', ''),
           },
-          (datas) => {
-            datas = JSON.parse(datas);
+          (data) => {
+            data = JSON.parse(data);
             let str = '';
-            for (let index = 0; index < datas.length; ++index) {
-              const element = datas[index];
+            for (let index = 0; index < data.length; ++index) {
+              const element = data[index];
               str += `${element},`;
             }
             $('#attendee-input').val(str).change();
+
+            return data;
           },
-        ).always(() => {
+        ).always((data) => {
           mel_metapage.Functions.busy(false);
+          rcmail.triggerEvent('calendar-workspace-add-all-after', { data });
         });
       },
       true,
@@ -229,7 +232,6 @@ $(document).ready(() => {
     event = null,
   ) {
     let isFromGlobalModal = false;
-
     if (event === null) {
       event = rcmail.local_storage_get_item('tmp_calendar_event');
 
@@ -267,6 +269,16 @@ $(document).ready(() => {
     if (event.mail_datas) {
       url['_mbox'] = event.mail_datas.mbox;
       url['_uid'] = event.mail_datas.uid;
+    }
+
+    //Ajouter des composants d'url custom pour les autres plugins
+    if (event.url_data) {
+      for (const key in event.url_data) {
+        if (Object.prototype.hasOwnProperty.call(event.url_data, key)) {
+          const element = event.url_data[key];
+          url[key] = element;
+        }
+      }
     }
 
     var buttons = {},

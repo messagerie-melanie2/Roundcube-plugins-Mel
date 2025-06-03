@@ -17,6 +17,7 @@ bnum-workspace-module {
     align-items: center;
   }
 
+  .module-block-content-alt,
   .module-block-content {
     max-height: 350px;
     min-height: 350px;
@@ -29,9 +30,14 @@ bnum-workspace-module {
   }
 
   &.mode-small {
+    .module-block-content-alt,
     .module-block-content {
       &:extend(bnum-workspace-module .module-block-content.mode-small);
     }
+  }
+
+  &.hidden-because-other-in-fullscreen-mode {
+    display: none !important;
   }
 }
 
@@ -51,14 +57,18 @@ bnum-workspace-module {
   align-items: center;
   width: 100%;
   flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  background-color: var(--bureau-card-background-color);
+  z-index: 2;
 
   .planning-top-header {
     display: flex;
     flex: 4;
     justify-content: space-between;
-      
+
     @media (max-width: 600px) {
-        flex: 100%; /* Force les blocs à prendre toute la largeur */
+      flex: 100%; /* Force les blocs à prendre toute la largeur */
     }
   }
 
@@ -66,12 +76,11 @@ bnum-workspace-module {
     display: flex;
     flex: 1;
     justify-content: flex-end;
-   
+
     @media (max-width: 600px) {
       justify-content: center;
-   }
+    }
   }
-
 }
 
 bnum-searchbar {
@@ -99,6 +108,7 @@ bnum-separate {
 }
 
 #module-ul {
+  .module-block-content-alt,
   .module-block-content {
     max-height: unset;
 
@@ -121,8 +131,42 @@ bnum-separate {
 .mel-button.button-task {
   html@{touch} & {
     min-width: 80px;
-  .material-symbols-outlined {
-     display: none;
+    .material-symbols-outlined {
+      display: none;
+    }
+  }
+}
+
+.module-block {
+  &__parent {
+    &__parent {
+      &--fullscreen {
+        height: 100% !important;
+
+        > div {
+          display: none;
+
+          bnum-workspace-module {
+            height: calc(100% - 30px) !important;
+            box-shadow: unset !important;
+
+            .module-block-content-alt,
+            .module-block-content {
+              min-height: 0;
+              max-height: 100%;
+              height: calc(100% - 46px); // 46px = header size
+            }
+          }
+        }
+      }
+    }
+
+    &--fullscreen {
+      height: 100% !important;
+      display: block !important;
+      max-width: 100% !important;
+      width: 100% !important;
+      flex: 1 !important;
     }
   }
 }

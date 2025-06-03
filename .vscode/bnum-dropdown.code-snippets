@@ -1,0 +1,70 @@
+{
+	"dropdown": {
+		"scope": "html",
+		"prefix": "bnum-dropdown",
+		"body": [
+			"<bnum-dropdown>",
+			"	<bnum-voice>$1</bnum-voice>",
+			"	${0: options}",
+			"</bnum-dropdown>"
+		],
+		"description": "Dropdown"
+	},
+	"dropdown-square": {
+		"scope": "html",
+		"prefix": "bnum-dropdown-square",
+		"body": [
+			"<bnum-dropdown square>",
+			"	<bnum-voice>$1</bnum-voice>",
+			"	${0: options}",
+			"</bnum-dropdown>"
+		],
+		"description": "Dropdown"
+	},
+	"dropdown-alternate": {
+		"scope": "html",
+		"prefix": "alternate-dropdown",
+		"body": [
+			"<alternate-dropdown>",
+			"	<bnum-voice>$1</bnum-voice>",
+			"	${0: options}",
+			"</alternate-dropdown>"
+		],
+		"description": "Dropdown"
+	},
+	"dropdown-alternate-square": {
+		"scope": "html",
+		"prefix": "alternate-dropdown-square",
+		"body": [
+			"<alternate-dropdown square>",
+			"	<bnum-voice>$1</bnum-voice>",
+			"	${0: options}",
+			"</alternate-dropdown>"
+		],
+		"description": "Dropdown"
+	},
+	"option-dropdown":{
+		"scope": "html",
+		"prefix": "bnum-option-dropdown",
+		"body": [
+			"<bnum-option value=\"$1\">$0</bnum-option>",
+		],
+		"description": "Option du dropdown"
+	},
+	"option-default-dropdown":{
+		"scope": "html",
+		"prefix": "default-option-dropdown",
+		"body": [
+			"<default-option>$0</default-option>",
+		],
+		"description": "Option ,non selectionnable, du dropdown"
+	},
+	"option-selected-dropdown":{
+		"scope": "html",
+		"prefix": "selected-option-dropdown",
+		"body": [
+			"<selected-option value=\"$1\">$0</selected-option>",
+		],
+		"description": "Option par défaut du dropdown. Non compatible avec `default-option`"
+	},
+}

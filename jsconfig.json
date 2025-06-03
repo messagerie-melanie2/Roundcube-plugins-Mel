@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "target": "ES2024",
+    "jsx": "react",
+    "allowImportingTsExtensions": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true
+  },
+  "exclude": ["node_modules", "**/node_modules/*"],
+  "include": [
+    "../Roundcube-plugins-Mel/plugins/**/*.js",
+    "../Roundcube-Mel/Program/js/**/*.js"
+  ]
+}

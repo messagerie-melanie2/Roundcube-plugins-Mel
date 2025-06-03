@@ -42,7 +42,7 @@ class kolab_storage_config_test extends PHPUnit\Framework\TestCase
             $authenticated = $rcube->login(
                 $rcube->config->get('tests_username'),
                 $rcube->config->get('tests_password'),
-                $rcube->config->get('default_host'),
+                $rcube->config->get('imap_host'),
                 false
             );
 

@@ -300,6 +300,7 @@
           );
         },
         async wsp_updated() {
+          return;
           const MelObject = (
             await loadJsModule('mel_metapage', 'mel_object')
           ).MelObject.Empty();

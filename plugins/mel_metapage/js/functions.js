@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 /* eslint-disable vars-on-top */
 const enable_custom_uid = true;
 jQuery.fn.swap = function (b) {
@@ -815,27 +816,32 @@ function m_mp_step3_param(type) {
 
     case 'tchap-channel':
       {
+        //bouton principal tchap
         let $master_button = $('.doc-tchap-channel');
 
         if (!$master_button.hasClass('active')) $master_button.click();
 
+        //bouton de paramétrage associé
         let $param_button = $master_button.parent().find('.under-button');
         let custom_channel_datas = null;
+        // Définit la valeur par défaut du champ personnalisé selon les données disponibles
         const default_custom_value =
           have_datas && m_mp_step3_param.datas[type].mode === 'custom_name'
             ? (m_mp_step3_param?.datas[type]?.value ?? '')
             : null;
 
+        // Titre affiché en haut du formulaire
         const html_title =
           '<h3 class="span-mel t1 first">Paramètres du canal tchap</h3>';
 
+        // Création d'un élément <select> avec trois options pour le mode de création du canal
         let $select =
           $(`<select class="custom-calendar-option-select form-control input-mel custom-select pretty-select">
                     <option value="default">Un canal ayant comme nom l'id sera créé</option>
                     <option value="custom_name">Choisissez le nom du canal</option>
                     <option value="already_exist">Lié à un canal existant</option>
                 </select> `);
-
+        // Si des données existent déjà, on pré-sélectionne la bonne option
         if (have_datas) $select.val(m_mp_step3_param.datas[type].mode);
 
         let $custom_name_div = $(`
@@ -843,7 +849,7 @@ function m_mp_step3_param(type) {
                         <h3 class="span-mel t2 first">Nom personalisé du nouveau canal</h3>
                     </div>
                 `).css('display', 'none');
-
+        // Champ de saisie du nom personnalisé avec mise à jour en temps réel des données
         let $custom_name_input = $(`
                     <input class="form-control input-mel" value="${default_custom_value || wsp_uid || update_title(wsp_title)}" placeholder="Nom du canal" maxlength=30 /> 
                 `)
@@ -873,9 +879,9 @@ function m_mp_step3_param(type) {
             `,
         )
           .on('change', () => {
-            const val = custom_channel_datas[$linked_channel_uid.val()];
+            const val = $linked_channel_uid.val();
             m_mp_step3_param.datas[type].value = {
-              id: val?._id,
+              id: val,
             };
           })
           .appendTo($linked_channel_div);
@@ -912,36 +918,12 @@ function m_mp_step3_param(type) {
               $select.attr('disabled', 'disabled').addClass('disabled');
               rcmail.set_busy(true, 'loading');
 
-              mel_metapage.Functions.post(
-                mel_metapage.Functions.url('discussion', 'get_joined'),
-                {
-                  _moderator: true,
-                  _mode: $('#workspace-private')[0].checked ? 2 : 1,
-                },
-                (datas) => {
-                  //console.log('datas', JSON.parse(datas));
-                  custom_channel_datas = JSON.parse(datas);
-
-                  // for (const iterator of datas) {
-                  //     $linked_channel_select.append(`<option value="${JSON.stringify({id:iterator._id, name:iterator.name})}">${iterator.name}</option>`);
-                  // }
-                  for (const key in custom_channel_datas) {
-                    if (Object.hasOwnProperty.call(custom_channel_datas, key)) {
-                      const element = custom_channel_datas[key];
-                      $linked_channel_uid.append(
-                        `<option value="${key}" ${element._id === m_mp_step3_param.datas[type].value?.id && !!m_mp_step3_param.datas[type].value ? 'selected' : ''}>${element.name}</option>`,
-                      );
-                    }
-                  }
-
-                  $linked_channel_div.css('display', '');
-                  rcmail.clear_messages();
-                  $select
-                    .removeAttr('disabled', 'disabled')
-                    .removeClass('disabled');
-                },
-              );
-
+              $linked_channel_div.css('display', '');
+              m_mp_step3_param.datas[type].value = $linked_channel_div.val();
+              rcmail.clear_messages();
+              $select
+                .removeAttr('disabled', 'disabled')
+                .removeClass('disabled');
               break;
 
             default:
@@ -1158,8 +1140,17 @@ function m_mp_createworkspace() {
       },
     );
     create_popUp.editTitleAndSetBeforeTitle(
-      '<a href="javascript:void(0)" class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="m_mp_reinitialize_popup(() => {$(`#worspace-avatar-a`).css(`display`, `none`).appendTo($(`#layout`));})"><span class=sr-only>Retour à la modale de création</span></a>',
-      "Création d'un espace de travail",
+      `<a href="#" class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" 
+         onclick="m_mp_reinitialize_popup(() => { 
+             $('#worspace-avatar-a').css('display', 'none').appendTo($('#layout')); 
+         })" 
+         onkeydown="if(event.key === 'Enter') this.click();" 
+         role="button" 
+         tabindex="0" 
+         title="${rcmail.gettext('return_to_creation_window', 'mel_metapage')}">
+          <span class="sr-only">${rcmail.gettext('return_to_creation_modal', 'mel_metapage')}</span>
+      </a>`,
+      rcmail.gettext('create_workspace_title', 'mel_metapage'),
     );
     create_popUp.modal.focus();
     create_popUp.show();
@@ -1293,7 +1284,7 @@ async function m_mp_check_w(step, next) {
       let input = $('#_workspace-user-list');
       if (input.val().length > 0) users.push(input.val());
       if (users.length > 0) {
-        if (confirm("Ajouter les utilisateurs qui n'ont pas été ajouter ?")) {
+        if (confirm(rcmail.gettext('add_users_not_added', 'mel_metapage'))) {
           await m_mp_add_users();
         } else stop = true;
       }
@@ -1312,7 +1303,10 @@ async function m_mp_check_w(step, next) {
 
 async function m_mp_CreateWorkSpace() {
   rcmail.set_busy(true);
-  rcmail.display_message("Création d'un espace de travail...", 'loading');
+  const busy = rcmail.display_message(
+    "Création d'un espace de travail...",
+    'loading',
+  );
   let datas = {
     avatar:
       $('#worspace-avatar-a').find('img').length === 0
@@ -1362,96 +1356,74 @@ async function m_mp_CreateWorkSpace() {
     data: datas,
     url: mel_metapage.Functions.url('workspace', 'create'), //"/?_task=workspace&_action=create",
     success: function (data) {
-      data = JSON.parse(data);
-
-      rcmail.set_busy(false);
-      rcmail.clear_messages();
-
-      for (let it = 0; it < data.errored_user.length; it++) {
-        const element = data.errored_user[it];
-        rcmail.display_message(
-          "impossible d'ajouter " + element + " à l'espace de travail !",
-        );
-      }
-
-      for (const element of data?.uncreated_services ?? []) {
-        if (element === 'tasks') {
-          parent.rcmail.display_message(
-            'La création du service "Kanban" n\'a pas été possible, le service des tâche a donc été désactivé et doit être activé manuellement.',
-            'error',
-          );
-          break;
-        }
-      }
-
-      const action = {
-        func: mel_metapage.Functions.call,
-        args: [
-          true,
-          {
-            _uid: data.workspace_uid,
-            _integrated: true,
-          },
-        ],
-        url: mel_metapage.Functions.url('workspace', 'workspace', {
-          _uid: data.workspace_uid,
-        }),
-      };
-
-      {
-        const tmp = window.create_popUp;
-        delete window.create_popUp;
-        tmp.close();
-      }
-
-      top.rcmail.triggerEvent(
-        mel_metapage.EventListeners.workspaces_updated.get,
-      );
-
-      FramesHelper.switch_frame('workspace', {
-        args: {
-          _action: 'workspace',
-          _uid: data.workspace_uid,
-        },
-      });
-
-      // if (
-      //   $('.workspace-frame').length > 0 &&
-      //   $('iframe.workspace-frame').length === 0
-      // )
-      //   window.location.href = action.url;
-      // else if ($('iframe.workspace-frame').length === 0) {
-      //   mel_metapage.Functions.change_frame('workspace', true, true, {
-      //     _action: 'workspace',
-      //     _uid: data.workspace_uid,
-      //   });
-      // } else if ($('iframe.workspace-frame').length === 1) {
-      //   mel_metapage.Functions.change_frame('workspace', true, true).then(
-      //     () => {
-      //       let config = {
-      //         _uid: data.workspace_uid,
-      //       };
-      //       config[rcmail.env.mel_metapage_const.key] =
-      //         rcmail.env.mel_metapage_const.value;
-
-      //       $('iframe.workspace-frame')[0].src = mel_metapage.Functions.url(
-      //         'workspace',
-      //         'workspace',
-      //         config,
-      //       );
-      //     },
-      //   );
-      // } else window.location.href = action.url;
+      m_mp_create_workspace_success(data, busy);
 
       m_mp_step3_param.datas = null;
     },
     error: function (xhr, ajaxOptions, thrownError) {
       // Add these parameters to display the required response
       console.error(xhr, ajaxOptions, thrownError);
-      rcmail.clear_messages();
+      rcmail.set_busy(false, 'loading', busy);
       rcmail.display_message(xhr, 'error');
       window.create_popUp.close();
       window.create_popUp = undefined;
+    },
+  });
+}
+
+/**
+ * Action à faire lorsque la création de l'espace de travail est un succès.
+ * @param {string} data Données récupérés par le serveur.
+ * @param {string} message_id ID du message de chargement.
+ * @returns {Promise<void>}
+ * @async
+ */
+async function m_mp_create_workspace_success(data, message_id) {
+  data = JSON.parse(data);
+
+  for (let it = 0; it < data.errored_user.length; it++) {
+    const element = data.errored_user[it];
+    rcmail.display_message(
+      "impossible d'ajouter " + element + " à l'espace de travail !",
+    );
+  }
+
+  for (const element of data?.uncreated_services ?? []) {
+    if (element === 'tasks') {
+      parent.rcmail.display_message(
+        'La création du service "Kanban" n\'a pas été possible, le service des tâche a donc été désactivé et doit être activé manuellement.',
+        'error',
+      );
+      break;
+    }
+  }
+
+  {
+    const tmp = window.create_popUp;
+    delete window.create_popUp;
+    tmp.close();
+  }
+
+  top.rcmail.triggerEvent(mel_metapage.EventListeners.workspaces_updated.get);
+  const results = top.rcmail.triggerEvent('workspace.created');
+
+  // Attendre les promesses renvoyer par le trigger + gestion si c'est un tableau ou non
+  if (Array.isArray(results)) {
+    for (const result of results) {
+      if (result && result.then) {
+        await result;
+      }
+    }
+  } else if (results?.then) {
+    await results;
+  }
+
+  rcmail.set_busy(false, 'loading', message_id);
+
+  await FramesHelper.switch_frame('workspace', {
+    args: {
+      _action: 'workspace',
+      _uid: data.workspace_uid,
     },
   });
 }
@@ -2001,6 +1973,8 @@ function m_mp_openTo(e, idInput, actions = null) {
         else if ($('#globalModal').length > 0)
           $('#globalModal').css('z-index', '');
 
+        rcmail.triggerEvent('workspace.display_adduser_modale');
+
         if (rcmail.env.task === 'calendar') $('.ui-dialog').css('display', '');
         delete rcmail.env.annuaire_select_actions;
       });
@@ -2015,6 +1989,8 @@ function m_mp_openTo(e, idInput, actions = null) {
 
   if (window.create_popUp !== undefined) create_popUp.modal.css('z-index', 1);
   else if ($('#globalModal').length > 0) $('#globalModal').css('z-index', 1);
+
+  rcmail.triggerEvent('workspace.hide_adduser_modale');
 
   if (rcmail.env.task === 'calendar') $('.ui-dialog').css('display', 'none');
 }

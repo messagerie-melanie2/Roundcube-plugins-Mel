@@ -102,6 +102,7 @@
   }
 }
 
+.ministere-logo,
 .mel-logo {
   position: absolute;
   margin: 30px;
@@ -111,6 +112,7 @@
   @media screen and (max-width: @screen-width[W2]) {
     & {
       display: none;
+      --component-mode: 'none';
     }
   }
 }
@@ -210,4 +212,10 @@
     background-color: var(--default-background);
     border-color: var(--primary-border-color);
   }
+}
+
+.arch-logo {
+  position: absolute;
+  top: 30px;
+  right: 30px;
 }

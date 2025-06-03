@@ -1,3 +1,5 @@
+import { isNullOrUndefined } from '../mel_metapage/js/lib/mel.js';
+
 const EMPTY_STRING = '';
 
 export class Roundrive {
@@ -164,6 +166,16 @@ class DirData {
   }
 
   /**
+   * @type {Symbol | boolean}
+   * @readonly
+   */
+  get favorite() {
+    return isNullOrUndefined(this.#data.favorite)
+      ? DirData.Unknow
+      : this.#data.favorite;
+  }
+
+  /**
    *
    * @param {*} data
    * @returns {DirData | FileData}
@@ -171,7 +183,13 @@ class DirData {
   static From(data) {
     return data.type === 'dir' ? new DirData(data) : new FileData(data);
   }
+
+  static get Unknow() {
+    return UNKNOWN;
+  }
 }
+
+const UNKNOWN = Symbol('unknow');
 
 class FileData extends DirData {
   constructor(data) {

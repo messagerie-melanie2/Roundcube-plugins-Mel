@@ -242,8 +242,10 @@
         --workspace-favorite-button-text-color,
         var(--secondary-mel-button-text-color, var(--main-text-color, black))
       );
+    }
 
-      &:hover {
+    &:hover {
+      bnum-icon {
         color: var(
           --workspace-favorite-button-hover-text-color,
           var(
@@ -253,7 +255,7 @@
               var(--main-text-color, black)
             )
           )
-        );
+        ) !important;
       }
     }
 

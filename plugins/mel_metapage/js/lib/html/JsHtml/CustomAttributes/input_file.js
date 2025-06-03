@@ -1,7 +1,10 @@
 import { EMPTY_STRING } from '../../../constants/constants.js';
 import { isNullOrUndefined } from '../../../mel';
 import { BnumEvent } from '../../../mel_events';
-import { EWebComponentMode, HtmlCustomTag } from './js_html_base_web_elements';
+import {
+  EWebComponentMode,
+  HtmlCustomTag,
+} from './js_html_base_web_elements.js';
 
 export { InputFile };
 

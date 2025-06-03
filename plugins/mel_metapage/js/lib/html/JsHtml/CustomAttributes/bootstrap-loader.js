@@ -102,6 +102,10 @@ export class BootstrapLoader extends HtmlCustomDataTag {
 
     shadow.append(div);
 
+    if (this._p_get_data('size')) {
+      this.setSize(this._p_get_data('size'));
+    }
+
     if (this.hasAttribute('data-center') && this.dataset.center !== 'false') {
       this.classList.add('absolute-center');
     } else {
@@ -134,6 +138,19 @@ export class BootstrapLoader extends HtmlCustomDataTag {
     shadow = null;
     div = null;
     element = null;
+  }
+
+  setSize(size) {
+    if (this.shadowRoot) {
+      let div = this.shadowRoot.querySelector('div');
+
+      div.style.width = size;
+      div.style.height = size;
+
+      div = null;
+    } else this._p_save_into_data('size', size);
+
+    return this;
   }
 
   destroy() {

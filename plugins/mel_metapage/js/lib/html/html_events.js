@@ -1,11 +1,11 @@
 import { BaseStorage } from '../classes/base_storage.js';
 import { MaterialIcon } from '../icons.js';
 import { EventLocation } from '../calendar/event_location.js';
-import { MelObject } from '../mel_object.js';
 import { CalendarLoader } from '../calendar/calendar_loader.js';
 import { DIV, P, BUTTON } from '../constants/constants_html.js';
 import { EMPTY_STRING } from '../constants/constants.js';
 import { FramesManager } from '../classes/frame_manager.js';
+import { BnumEvent } from '../mel_events.js';
 
 /**
  * Représente un évènement du calendrier.
@@ -23,6 +23,7 @@ import { FramesManager } from '../classes/frame_manager.js';
  * - melv2-event-side
  * - melv2-event-clickable
  * - melv2-event-button
+ * @deprecated
  */
 export class html_events extends mel_html2 {
   /**
@@ -64,7 +65,7 @@ export class html_events extends mel_html2 {
       },
     });
 
-    this.onaction = new MelEvent();
+    this.onaction = new BnumEvent();
   }
 
   _before_generate() {
@@ -72,9 +73,11 @@ export class html_events extends mel_html2 {
 
     if (!this.hasClass('melv2-event')) {
       this.addClass('melv2-event');
-      this.onaction.add('events', () => {
-        this._on_action_click();
-      });
+
+      if (!this.onaction.has('events'))
+        this.onaction.add('events', () => {
+          this._on_action_click();
+        });
     }
 
     this.attribs['data-event-uid'] = this.event.uid;
@@ -334,20 +337,35 @@ export class html_events extends mel_html2 {
     return this;
   }
 
-  async _on_action_click() {
+  /**
+   *
+   * @param {*} param0
+   * @private
+   */
+  async _on_action_click({ args_modifier = null } = {}) {
     const date = this.date.toDate().getTime() / 1000.0;
-    await html_events._action_click(this.event.calendar, date, this.event);
+    await html_events._action_click(
+      this.event.calendar,
+      date,
+      this.event,
+      args_modifier,
+    );
   }
 
-  static async _action_click(source, date, event) {
+  /**
+   *
+   * @private
+   */
+  static async _action_click(source, date, event, args_modifier = null) {
     const FRAME = 'calendar';
-    //const page_manager = MelObject.Empty();
 
     let args = {
       source,
       date,
     };
-    // await page_manager.change_frame(FRAME, config);
+
+    if (args_modifier !== null) args = args_modifier(args);
+
     await FramesManager.Instance.switch_frame(FRAME, {
       args,
     });

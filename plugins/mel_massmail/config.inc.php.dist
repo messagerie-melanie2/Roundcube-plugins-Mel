@@ -12,3 +12,6 @@ $rcmail_config['alert_message_dest'] = 'mydest1@example.com, mydest2@example.com
 
 // Grilled password prefix
 $rcmail_config['grilled_password_prefix'] = 'GRILLED/';
+
+// Max number of recipient emails displayed in the alert (to avoid flooding the alert message)
+$rcmail_config['max_destinataires_alerte'] = 10;

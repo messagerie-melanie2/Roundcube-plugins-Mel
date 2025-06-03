@@ -1588,6 +1588,7 @@ $(document).ready(() => {
                 if (event.originalEvent.keyCode === 32)
                   $(event.currentTarget).click();
               }),
+              href: $(tmp).attr('href'),
             });
           });
 
@@ -1609,6 +1610,9 @@ $(document).ready(() => {
               )
                 li.css('display', 'none');
 
+              e.removeAttr('onclick')
+                .attr('href', e.href)
+                .attr('data-force', '1');
               e.appendTo(li);
               li.appendTo($('#taskmenu ul'));
             });

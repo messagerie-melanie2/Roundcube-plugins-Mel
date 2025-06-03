@@ -1,8 +1,9 @@
 import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
-import {
-  HTMLIconMelButton,
-  HTMLMelButton,
-} from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/HTMLMelButton.js';
+import { EButtonType } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/button/FormComponent.js';
+import HTMLBnumButton, {
+  HTMLBnumButtonSecondary,
+} from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/button/HTMLBnumButton.js';
+import { HTMLIconMelButton } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/HTMLMelButton.js';
 import {
   BnumHtmlIcon,
   EWebComponentMode,
@@ -13,12 +14,54 @@ import { BnumEvent } from '../../../../mel_metapage/js/lib/mel_events.js';
 import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';
 import { NavBarManager } from '../program/navbar.generator.js';
 
+export class WorkspaceModuleBlockTitle extends HtmlCustomDataTag {
+  constructor() {
+    super({ mode: EWebComponentMode.div });
+  }
+
+  _p_main() {
+    super._p_main();
+
+    if (
+      this.style.display === 'flex' ||
+      this.getAttribute('data-end-display') === 'flex'
+    )
+      this.style.alignItems = 'center';
+  }
+
+  /**
+   * @default 'bnum-workspace-module-title'
+   * @type {string}
+   * @readonly
+   * @static
+   */
+  static get TAG() {
+    return 'bnum-workspace-module-title';
+  }
+}
+
+WorkspaceModuleBlockTitle.TryDefine(
+  WorkspaceModuleBlockTitle.TAG,
+  WorkspaceModuleBlockTitle,
+);
+
 /**
  * @class
  * @classdesc Représention html d'un block d'un espace de travail.
  * @extends HtmlCustomDataTag
  */
 export class WorkspaceModuleBlock extends HtmlCustomDataTag {
+  /**
+   * Attributs observés par le navigateur
+   * @type {string[]}
+   * @readonly
+   * @static
+   * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements}
+   */
+  static get observedAttributes() {
+    return ['data-fullscreen'];
+  }
+
   /**
    * Le composant se comporte de base comme une div.<br/>
    *
@@ -34,6 +77,8 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
    *
    * data-button-ignore => "default-actions" => Ignore les actions par défaut
    *
+   * data-button-type => 'primary', 'secondary', 'error'. Type du bouton. 'secondary' par défaut.
+   *
    * data-small => 1 ou true. Réduit la taille du block si vrai.
    *
    */
@@ -41,6 +86,7 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
     super({ mode: EWebComponentMode.div });
 
     this.onrefresh = new BnumEvent();
+    this.ontitlebuttonclicked = new BnumEvent();
   }
 
   get headerTitle() {
@@ -52,11 +98,17 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
   }
 
   get buttonText() {
-    return this._p_get_data('button-text') || 'Voir tout';
+    return (
+      this._p_get_data('button-text') || rcmail.gettext('mel_workspace.see_all')
+    );
   }
 
   get buttonIcon() {
     return this._p_get_data('button-icon') || 'arrow_right_alt';
+  }
+
+  get buttonType() {
+    return this._p_get_data('button-type') || 'secondary';
   }
 
   get buttonIgnore() {
@@ -69,6 +121,10 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
 
   get hasRefresh() {
     return ['true', true, 1, '1'].includes(this._p_get_data('button-refresh'));
+  }
+
+  get isFullscreen() {
+    return this.hasAttribute('data-fullscreen');
   }
 
   /**
@@ -157,16 +213,28 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
       title = null;
     }
 
-    if (this.hasRefresh) {
-      let buttonRefresh = HTMLMelButton.CreateNode({
-        contentsNode: BnumHtmlIcon.Create({ icon: 'refresh' }),
-      });
+    let customTitle = contents.querySelector(WorkspaceModuleBlockTitle.TAG);
+    if (customTitle) {
+      header.appendChild(customTitle);
+      customTitle.style.display = null;
+      customTitle = null;
+    }
 
-      buttonRefresh.classList.add('refresh-button', 'white');
+    if (this.hasRefresh) {
+      let buttonRefresh = HTMLBnumButtonSecondary.StartCreate.setContent(
+        BnumHtmlIcon.Refresh,
+      )
+        .setIconMargin(0)
+        .generate();
+
+      buttonRefresh.classList.add('refresh-button');
 
       buttonRefresh.style.display = 'inline-flex';
       buttonRefresh.style.marginLeft = '10px';
       buttonRefresh.style.padding = '4px';
+      buttonRefresh.style.maxWidth = '34px';
+      buttonRefresh.style.minWidth = '34px';
+      buttonRefresh.style.minHeight = '34px';
 
       buttonRefresh.addEventListener('click', (e) => {
         this.onrefresh.call(e, this);
@@ -180,25 +248,24 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
         );
       });
 
-      (header.querySelector('.title-container') ?? header).appendChild(
-        buttonRefresh,
-      );
+      (
+        header.querySelector('.title-container') ??
+        header.querySelector(WorkspaceModuleBlockTitle.TAG) ??
+        header
+      ).appendChild(buttonRefresh);
 
       buttonRefresh = null;
     }
 
     if (this.buttonTask !== false) {
-      let button = HTMLIconMelButton.CreateNode(this.buttonIcon, {
-        content: this.createText(this.buttonText),
-      }).addClass('white', 'button-task');
-      // let button = document.createElement('button');
-      // button.style.paddingTop = 0;
-      // button.style.paddingBottom = 0;
-      // button.classList.add(
-      //   'mel-button',
-      //   'no-margin-button',
-      //   'no-button-margin',
-      // );
+      let button = HTMLBnumButton.StartCreate.setContent(
+        this.createText(this.buttonText),
+      )
+        .setVariation(EButtonType.fromString(this.buttonType))
+        .setIconPos('right')
+        .setIcon(this.buttonIcon)
+        .generate()
+        .addClass('see-all');
 
       if (this.buttonIgnore !== 'default-actions') {
         button.onclick = () => {
@@ -206,24 +273,32 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
             background: false,
           });
         };
+      } else {
+        button.onclick = (e) =>
+          this.ontitlebuttonclicked.call({ e, block: this });
+
+        this.ontitlebuttonclicked.add('default', (obj) => {
+          this.dispatchEvent(
+            new CustomEvent('event:custom:action', {
+              detail: { baseEvent: obj.e, caller: obj.block },
+            }),
+          );
+        });
       }
-
-      // let text = document.createElement('span');
-      // text.appendChild(this.createText(this.buttonText));
-      // text.style.verticalAlign = 'super';
-      // text.style.marginRight = '25px';
-
-      // let icon = document.createElement('bnum-icon');
-      // icon.setAttribute('data-icon', this.buttonIcon);
-
-      // button.append(text, icon);
 
       header.appendChild(button);
 
       button = null;
-      // text = null;
-      // icon = null;
     }
+
+    header.querySelectorAll('[data-end-display]').forEach((el) => {
+      el.style.display = el.getAttribute('data-end-display');
+      el.removeAttribute('data-end-display');
+    });
+    contents.querySelectorAll('[data-end-display]').forEach((el) => {
+      el.style.display = el.getAttribute('data-end-display');
+      el.removeAttribute('data-end-display');
+    });
 
     this.append(header, contents);
 
@@ -231,22 +306,56 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
     contents = null;
   }
 
+  /**
+   * Est appelé quand un attribut de {@link observedAttributes} est modifié
+   * @param {string} name
+   * @param {string} oldValue
+   * @param {string} newValue
+   */
+  attributeChangedCallback(name, oldValue, newValue) {
+    switch (name) {
+      case 'data-fullscreen':
+        this.parentElement.parentElement.classList[
+          newValue === null ? 'remove' : 'add'
+        ]('module-block__parent__parent--fullscreen');
+        this.parentElement.classList[newValue === null ? 'remove' : 'add'](
+          'module-block__parent--fullscreen',
+        );
+        break;
+
+      default:
+        break;
+    }
+  }
+  /**
+   * Désactive le bouton de rafraîchissement
+   * @returns {this}
+   */
   disableRefreshButton() {
     let button = this.header.querySelector('.refresh-button');
 
     if (button) {
-      button.disable();
+      button.setAttribute('loading', 'loading');
       button = null;
     }
 
     return this;
   }
 
+  /**
+   * Active le bouton de rafraîchissement
+   * @returns {this}
+   */
   enableRefreshButton() {
     let button = this.header.querySelector('.refresh-button');
 
     if (button) {
-      button.enable();
+      button.removeAttribute('loading');
+
+      //Correction du style pour le bouton et éviter qu'il est une apparance étrange.
+      if (button.style.width === 0) button.style.width = '34px';
+      if (button.style.height === 0) button.style.height = '34px';
+
       button = null;
     }
 
@@ -356,11 +465,29 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
       height,
     });
   }
+
+  /**
+   * @readonly
+   */
+  static get Tag() {
+    return 'bnum-workspace-module';
+  }
+
+  /**
+   *
+   * @param {WorkspaceModuleBlock} block
+   * @param {(e:{detail: {baseEvent: Event, caller: WorkspaceModuleBlock}}) => void} callback
+   * @static
+   */
+  static AddListenerAction(block, callback) {
+    block.addEventListener('event:custom:action', callback);
+    return block;
+  }
 }
 
 //#region Tag Definition
 {
-  const TAG = 'bnum-workspace-module';
+  const TAG = WorkspaceModuleBlock.Tag;
   if (!customElements.get(TAG))
     customElements.define(TAG, WorkspaceModuleBlock);
 }

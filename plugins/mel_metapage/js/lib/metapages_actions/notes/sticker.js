@@ -2,6 +2,12 @@ import { MelHtml } from '../../html/JsHtml/MelHtml.js';
 import { MaterialSymbolHtml } from '../../html/html_icon.js';
 import { MelObject } from '../../mel_object.js';
 
+/**
+ * Trouve le parent d'un élément HTML en fonction d'une condition.
+ * @param {Object} node Élément HTML de départ.
+ * @param {Function} cond Fonction conditionnelle pour identifier le parent.
+ * @returns {Object|boolean} Le parent trouvé ou `false` si aucun parent ne correspond.
+ */
 function find_parent(node, cond) {
   while (!cond(node) || node[0].nodeName === 'BODY') {
     node = node.parent();
@@ -10,6 +16,11 @@ function find_parent(node, cond) {
   return node[0].nodeName === 'BODY' ? false : node;
 }
 
+/**
+ * Convertit une couleur RGB en format hexadécimal.
+ * @param {string} rgb Couleur au format RGB.
+ * @returns {string} Couleur au format hexadécimal.
+ */
 function string_rgb_to_hex(rgb) {
   if (rgb.includes('(')) {
     rgb = rgb.split('(');
@@ -28,6 +39,11 @@ function string_rgb_to_hex(rgb) {
   return rgb;
 }
 
+/**
+ * Étend la classe MelHtml pour ajouter un bouton spécifique aux notes.
+ * @param {Object} attribs Attributs HTML pour le bouton.
+ * @returns {Object} Instance de MelHtml avec le bouton configuré.
+ */
 MelHtml.extend('button_note', function (attribs = {}) {
   return this.button(attribs)
     .addClass(MaterialSymbolHtml.get_class_fill_on_hover())
@@ -70,27 +86,33 @@ MelHtml.extend('button_note', function (attribs = {}) {
 });
 
 /**
- * Plugin qui contient la localization pour rcmail.gettext
+ * Texte du plugin utilisé pour la localisation avec `rcmail.gettext`.
+ * @type {string}
  */
 const plugin_text = 'mel_metapage';
 
 /**
- * Couleur d'arrière plan de base
+ * Couleur d'arrière-plan par défaut des notes.
+ * @type {string}
  */
 const base_color = '#E6B905';
+
 /**
- * Couleur du texte de base
+ * Couleur de texte par défaut des notes.
+ * @type {string}
  */
 const base_text_color = '#000000';
+
 /**
- * Id par défaut lorsqu'il n'y a pas de notes
+ * Identifiant par défaut lorsqu'il n'y a pas de notes.
+ * @type {string}
  */
 export const default_note_uid = 'create';
 
 /**
- * Change une valeur en hexadécimal
- * @param {number} c Valeur décimale
- * @returns Valeur hexadécimal
+ * Convertit une valeur décimale en hexadécimal.
+ * @param {number} c Valeur décimale.
+ * @returns {string} Valeur hexadécimale.
  */
 function componentToHex(c) {
   var hex = c.toString(16);
@@ -98,22 +120,34 @@ function componentToHex(c) {
 }
 
 /**
- * Récupère la valeur hexadécimal d'un rgb.
- * @param {number} r Valeur rouge
- * @param {number} g Valeur vert
- * @param {number} b Valeur bleu
- * @returns Hexadécimal
+ * Convertit une couleur RGB en hexadécimal.
+ * @param {number} r Composante rouge.
+ * @param {number} g Composante verte.
+ * @param {number} b Composante bleue.
+ * @returns {string} Couleur au format hexadécimal.
  */
 function rgbToHex(r, g, b) {
   return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
 
+/**
+ * Ajoute des zéros à gauche d'une chaîne pour atteindre une longueur donnée.
+ * @param {string} str Chaîne à compléter.
+ * @param {number} len Longueur souhaitée.
+ * @returns {string} Chaîne complétée.
+ */
 function padZero(str, len) {
   len = len || 2;
   var zeros = new Array(len).join('0');
   return (zeros + str).slice(-len);
 }
 
+/**
+ * Inverse une couleur hexadécimale.
+ * @param {string} hex Couleur au format hexadécimal.
+ * @param {boolean} bw Si vrai, retourne noir ou blanc en fonction de la luminosité.
+ * @returns {string} Couleur inversée.
+ */
 function invertColor(hex, bw) {
   if (hex.indexOf('#') === 0) {
     hex = hex.slice(1);
@@ -141,17 +175,18 @@ function invertColor(hex, bw) {
 }
 
 /**
- * Représentation et fonctions utile d'une note
+ * Classe représentant une note (Sticker) avec ses propriétés et comportements.
  */
 export class Sticker {
   /**
-   *
-   * @param {string} uid Id de la note
-   * @param {number} order Ordre de la note
-   * @param {string} title Titre de la note
-   * @param {string} text Contenu de la note
-   * @param {string} color Couleur de la note
-   * @param {string} text_color Couleur du texte de la note
+   * Initialise une nouvelle instance de Sticker.
+   * @param {string} uid Identifiant unique de la note.
+   * @param {number} order Ordre de la note.
+   * @param {string} title Titre de la note.
+   * @param {string} text Contenu de la note.
+   * @param {string} color Couleur de fond de la note.
+   * @param {string} text_color Couleur du texte de la note.
+   * @param {boolean} tak Indique si la note est épinglée.
    */
   constructor(
     uid,
@@ -174,8 +209,9 @@ export class Sticker {
   }
 
   /**
-   * Convertit la classe en html
-   * @returns html
+   * Génère le HTML de la note.
+   * @param {boolean} hidden Si vrai, la note sera masquée.
+   * @returns {Object} HTML généré.
    */
   html(hidden = false) {
     const generate_style = () => {
@@ -253,6 +289,13 @@ export class Sticker {
     return html_js.generate();
   }
 
+  /**
+   * Génère les attributs pour les boutons de la note.
+   * @param {string} button_class Classe CSS du bouton.
+   * @param {string} title Titre du bouton.
+   * @param {Object} options Options supplémentaires.
+   * @returns {Object} Attributs du bouton.
+   */
   _generate_buttons_attributes(
     button_class,
     title,
@@ -267,16 +310,16 @@ export class Sticker {
   }
 
   /**
-   * Récupère l'élément lié à la note
-   * @returns Jquery
+   * Récupère l'élément HTML associé à la note.
+   * @returns {Object} Élément HTML jQuery.
    */
   get_html() {
     return $(`.mel-note#note-${this.uid}`);
   }
 
   /**
-   * Défini le bon comportement de la note.
-   * @returns Chaînage
+   * Définit les gestionnaires d'événements pour la note.
+   * @returns {Sticker} Instance actuelle pour le chaînage.
    */
   set_handlers() {
     let $element = this.get_html();
@@ -549,8 +592,8 @@ export class Sticker {
   }
 
   /**
-   * Affiche sous forme de string certaines données pour le html
-   * @returns id & data-order
+   * Récupère les données de la note sous forme d'attributs HTML.
+   * @returns {Object} Attributs HTML.
    */
   get_datas() {
     return {
@@ -562,8 +605,8 @@ export class Sticker {
   }
 
   /**
-   * Créer une note
-   * @returns Ajax
+   * Ajoute une nouvelle note.
+   * @returns {Promise<any>} Résultat de l'appel AJAX.
    */
   post_add() {
     return this.post('add', { _raw: this });
@@ -656,6 +699,11 @@ export class Sticker {
     return await this.post('del', { _uid: this.uid });
   }
 
+  /**
+   * Met à jour la hauteur de la note.
+   * @param {number} newHeight Nouvelle hauteur.
+   * @returns {Promise<any>} Résultat de l'appel AJAX.
+   */
   post_height_updated(newHeight) {
     if (this.uid === default_note_uid) return;
 
@@ -666,7 +714,8 @@ export class Sticker {
   }
 
   /**
-   * @async Met à jours la note
+   * Met à jour les données de la note.
+   * @returns {Promise<void>} Résultat de l'appel AJAX.
    */
   async post_update() {
     if (this.uid === default_note_uid) {
@@ -688,11 +737,12 @@ export class Sticker {
   }
 
   /**
-   * Effectue une action sur le serveur
-   * @param {string} action Nom de l'action
-   * @param {JSON} params Paramètres de l'action
-   * @param {boolean} doAction Si faux, la fonction de réussite ne sera pas appelé
-   * @returns {Promise<any>} Appel ajax
+   * Effectue une action sur le serveur.
+   * @param {string} action Nom de l'action.
+   * @param {Object} params Paramètres de l'action.
+   * @param {boolean} doAction Si faux, la fonction de réussite ne sera pas appelée.
+   * @param {boolean} lock Si vrai, verrouille l'action.
+   * @returns {Promise<any>} Résultat de l'appel AJAX.
    */
   async post(action, params = {}, doAction = true, lock = true) {
     //const on_eye = this.get_html().find('.icon-mel-eye-crossed').length > 0;
@@ -779,9 +829,9 @@ export class Sticker {
   }
 
   /**
-   * Créer une note à partir d'une autre note
-   * @param {Sticker} element Sticker ou objet ayant les même props.
-   * @returns Nouvelle note
+   * Crée une note à partir d'un objet existant.
+   * @param {Object} element Objet contenant les propriétés d'une note.
+   * @returns {Sticker} Nouvelle instance de Sticker.
    */
   static from(element) {
     let s = new Sticker(
@@ -800,9 +850,9 @@ export class Sticker {
   }
 
   /**
-   * Créer une note depuis les données d'un block html
-   * @param {string} uid Id de la div
-   * @returns Nouvelle note
+   * Crée une note à partir d'un élément HTML.
+   * @param {string} uid Identifiant de la note.
+   * @returns {Sticker} Nouvelle instance de Sticker.
    */
   static fromHtml(uid) {
     let $element = $(`.mel-note#note-${uid}`);
@@ -818,9 +868,9 @@ export class Sticker {
   }
 
   /**
-   * Récupère une note via son ordre
-   * @param {number} order Ordre de la note cherchée
-   * @returns Nouvelle note
+   * Trouve une note par son ordre.
+   * @param {number} order Ordre de la note.
+   * @returns {Sticker} Instance de Sticker trouvée.
    */
   static findByOrder(order) {
     let id = $(`.mel-note[data-order=${order}]`).attr('id');
@@ -829,11 +879,16 @@ export class Sticker {
     );
   }
 
+  /**
+   * Crée une nouvelle note vide.
+   * @returns {Promise<void>} Résultat de l'appel AJAX.
+   */
   static async new() {
     await new Sticker('', -1, '', '').post_add();
   }
 }
 
+// Gestionnaire pour les helpers temporaires.
 let helper = null;
 let timeout = null;
 Object.defineProperties(Sticker, {

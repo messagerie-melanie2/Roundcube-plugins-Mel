@@ -76,6 +76,15 @@ class ResourcesBase extends MelObject {
   }
 
   /**
+   * Vérifie si la date est valide
+   * @type {boolean}
+   * @readonly
+   */
+  get isDateValid() {
+    return !this._has_invalid();
+  }
+
+  /**
    * Fonction principale
    * @override
    * @private
@@ -423,8 +432,9 @@ class ResourcesBase extends MelObject {
    */
   _has_invalid() {
     return (
-      !$('.input-time-end')[0].checkValidity() ||
-      !$('.input-time-start')[0].checkValidity()
+      !this.all_day &&
+      (!$('.input-time-end')[0].checkValidity() ||
+        !$('.input-time-start')[0].checkValidity())
     );
   }
 
@@ -448,6 +458,9 @@ class ResourcesBase extends MelObject {
         $('.input-time-end').length > 0 && $('.ui-dialog .save-btn').length > 0,
     ).then(() => {
       this._set_validity();
+      $('#rc-allday').on('click', () => {
+        this._set_validity();
+      });
     });
 
     return $rtn;
@@ -568,6 +581,14 @@ class ResourcesBase extends MelObject {
   _on_data_changed() {
     this._$calendar.fullCalendar('refetchResources');
     this._$calendar.fullCalendar('refetchEvents');
+  }
+
+  /**
+   * Met à jour la validité des inputs
+   * @returns {void}
+   */
+  set_validity() {
+    return this._set_validity();
   }
 
   /**

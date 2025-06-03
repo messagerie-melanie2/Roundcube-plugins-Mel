@@ -2,6 +2,7 @@ import { MelEnumerable } from '../../../../../mel_metapage/js/lib/classes/enum.j
 import { FramesManager } from '../../../../../mel_metapage/js/lib/classes/frame_manager.js';
 import { MelCurrentUser } from '../../../../../mel_metapage/js/lib/classes/user.js';
 import { EMPTY_STRING } from '../../../../../mel_metapage/js/lib/constants/constants.js';
+import { Top } from '../../../../../mel_metapage/js/lib/top.js';
 import { NavBarManager } from '../navbar.generator.js';
 import { WorkspaceObject } from '../WorkspaceObject.js';
 
@@ -53,10 +54,8 @@ export class WorkspacePage extends WorkspaceObject {
         removeIsFromIframe: true,
       }),
     );
-    // debugger;
     this.save('current_wsp', this.workspace.uid);
     NavBarManager.nav.$('html').addClass('mwsp');
-    // debugger;
     NavBarManager.Generate(this.workspace).currentNavBar.select(
       this.get_env('start_app') || 'home',
       { background: !this.get_env('start_app') },
@@ -71,6 +70,7 @@ export class WorkspacePage extends WorkspaceObject {
       if (task === 'tasks' && !FramesManager.Instance.has_frame('tasks')) {
         return {
           source: this.workspace.uid,
+          askedTask: 'tasks',
         };
       } else if (task === 'tasks') {
         FramesManager.Instance.get_frame('tasks', {
@@ -78,6 +78,21 @@ export class WorkspacePage extends WorkspaceObject {
         })?.contentWindow?.rcmail?.triggerEvent?.('wsp.on.task.showed');
       }
     }, 'tasks');
+
+    if (FramesManager.Instance.get_window()._history.back_enabled()) {
+      NavBarManager.AddEventListener().OnAfterSwitch(() => {
+        FramesManager.Instance.get_window().history.removeLast();
+        FramesManager.Instance.get_window().history.update_button_back(
+          FramesManager.Instance.get_window().history.last,
+        );
+
+        if (FramesManager.Instance.get_window().history.count === 0) {
+          FramesManager.Instance.get_window()
+            .history.$back.addClass('disabled')
+            .attr('disabled', 'disabled');
+        }
+      }, '/');
+    }
 
     NavBarManager.currentNavBar.onactionclicked.push((type) => {
       switch (type) {
@@ -116,12 +131,22 @@ export class WorkspacePage extends WorkspaceObject {
               return;
           }
 
-          this.open_compose_step({
-            to: MelEnumerable.from(this.workspace.users.emails)
-              .where((x) => x !== MelCurrentUser.main_email)
-              .take(300)
-              .join(','),
-          });
+          // eslint-disable-next-line no-case-declarations
+          const mails = MelEnumerable.from(this.workspace.users.emails)
+            .where((x) => x && x !== MelCurrentUser.main_email)
+            .take(300)
+            .join(',');
+
+          if (
+            this.workspace.users.get(this.get_env('current_user').email)
+              .external
+          ) {
+            window.open(`mailto:${mails}`, '_blank');
+          } else {
+            this.open_compose_step({
+              to: mails,
+            });
+          }
           break;
 
         case 'leave':
@@ -180,15 +205,102 @@ export class WorkspacePage extends WorkspaceObject {
       },
     );
 
+    top.rcmail.add_event_listener_ex(
+      'workspace.hide_adduser_modale',
+      'workspace',
+      this._hide_add_user_modal.bind(this, top.document),
+    );
+    rcmail.add_event_listener_ex(
+      'workspace.hide_adduser_modale',
+      'workspace',
+      this._hide_add_user_modal.bind(this, document),
+    );
+    top.rcmail.add_event_listener_ex(
+      'workspace.display_adduser_modale',
+      'workspace',
+      this._display_add_user_modal.bind(this, top.document),
+    );
+    rcmail.add_event_listener_ex(
+      'workspace.display_adduser_modale',
+      'workspace',
+      this._display_add_user_modal.bind(this, document),
+    );
+
+    FramesManager.Helper.window_object.UpdateDocumentTitle(
+      this.getLocalization('page_title', {
+        plugin: 'mel_workspace',
+        variables: {
+          name: this.workspace.title,
+        },
+      }),
+    );
+
+    this.listen(
+      'frame.refresh.manual',
+      () => {
+        let return_data = null;
+        if (
+          Top.top().document.querySelector('html').classList.contains('mwsp')
+        ) {
+          const currentTask = FramesManager.Instance.currentTask;
+          if (currentTask !== 'workspace') {
+            FramesManager.Instance.get_window().remove_frame(currentTask);
+            NavBarManager.currentNavBar.select('home');
+            NavBarManager.currentNavBar.select(currentTask, {
+              background: false,
+            });
+            return_data = { stop: true };
+          }
+        }
+
+        return return_data;
+      },
+      {
+        callbackKey: 'wsp.refresh',
+        topRcmail: true,
+      },
+    );
+
+    NavBarManager.currentNavBar.onquitbuttonclick.push(() => {
+      const useTop = true;
+      this.rcmail(useTop).remove_handler_ex(
+        'frame.refresh.manual',
+        'wsp.refresh',
+      );
+    });
+
     if (this.get_env('start_page')) {
-      window.addEventListener('load', () => {
-        NavBarManager.WaitLoading().then(() => {
-          NavBarManager.currentNavBar.select(this.get_env('start_page'), {
-            background: false,
-          });
-        });
-      });
+      //Si le document est chargé, on l'applique
+      if (document.readyState === 'complete') this._setStartupPage();
+      //Sinon, on attend que toute les dépendances soient chargées
+      else window.addEventListener('load', this._setStartupPage.bind(this));
     }
+  }
+
+  /**
+   * cache la modale d'ajout d'utilisateur pour que la modale annuaire fonctionne
+   * @param {Window} context
+   */
+  _hide_add_user_modal(context) {
+    context.getElementById('add-user-modal').style.display = 'none';
+  }
+
+  /**
+   * réaffiche la modale d'ajout d'utilisateur
+   * @param {Window} context
+   */
+  _display_add_user_modal(context) {
+    context.getElementById('add-user-modal').style.display = 'block';
+  }
+
+  /**
+   * Set the startup page based on the environment variable.
+   * @returns {Promise<void>}
+   * @private
+   */
+  async _setStartupPage() {
+    await NavBarManager.WaitLoading(),
+      this.switch_workspace_page(this.get_env('start_page'));
   }
 
   #_get_row(number = 0) {

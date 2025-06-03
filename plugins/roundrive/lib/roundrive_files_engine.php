@@ -26,10 +26,11 @@
  */
 
 use Sabre\DAV\Client;
-use League\Flysystem\Filesystem;
-use League\Flysystem\WebDAV\WebDAVAdapter;
 
 include_once(__DIR__.'/vendor/autoload.php');
+include_once "BnumClient.php";
+include_once "BnumWebDavAdaptater.php";
+include_once "BnumFileSystem.php";
 include_once "roundrive_collabora.php";
 
 class roundrive_files_engine
@@ -47,7 +48,7 @@ class roundrive_files_engine
 
     /**
      *
-     * @var Filesystem
+     * @var BnumFileSystem
      */
     protected $filesystem;
     protected $client;
@@ -73,9 +74,9 @@ class roundrive_files_engine
                 'encoding' => Client::ENCODING_ALL,
         );
 
-        $client = new Client($settings);
-        $adapter = new WebDAVAdapter($client, str_replace('USERNAME', $this->rc->user->get_username(), $this->rc->config->get('driver_webdav_prefix')));
-        $this->filesystem = new Filesystem($adapter);
+        $client = new BnumClient($settings);
+        $adapter = new BnumWebDavAdaptater($client, str_replace('USERNAME', $this->rc->user->get_username(), $this->rc->config->get('driver_webdav_prefix')));
+        $this->filesystem = new BnumFileSystem($adapter);
         $this->collabora = new roundrive_collabora($plugin, $this->filesystem);
         $this->client = $client;
     }
@@ -195,6 +196,45 @@ class roundrive_files_engine
             $this->plugin->add_texts('localization/', true);
             $this->{$method}();
         }
+    }
+
+    /**
+     * Récupère la liste des fichiers favoris de l'utilisateur.
+     *
+     * Cette méthode utilise le système de fichiers pour lister les fichiers
+     * marqués comme favoris. Si un répertoire spécifique est fourni, seuls
+     * les fichiers dans ce répertoire seront retournés.
+     *
+     * @return void
+     */
+    public function action_get_favorites() {
+        $directory = rcube_utils::get_input_value('_directory', rcube_utils::INPUT_POST);
+        $favorites = $this->filesystem->listFavorites($directory !== null ? function($object) use ($directory) {
+            return strpos($object['path'], $directory) !== false;
+        } : null);
+
+        echo json_encode(iterator_to_array($favorites));
+        exit;
+    }
+
+    /**
+     * Récupère la liste des fichiers dans la corbeille de l'utilisateur.
+     *
+     * Cette méthode utilise le système de fichiers pour lister les fichiers
+     * qui ont été déplacés dans la corbeille. Si un répertoire spécifique est
+     * fourni, seuls les fichiers de ce répertoire seront retournés.
+     *
+     * @return void
+     */
+    public function action_get_trashes() {
+        $directory = rcube_utils::get_input_value('_directory', rcube_utils::INPUT_POST);
+        $trashes = $this->filesystem->listTrashes($directory !== null ? function($object) use ($directory) {
+            return strpos($object['originalLocation'], $directory) !== false;
+        } : null);
+
+
+        echo json_encode(iterator_to_array($trashes));
+        exit;
     }
 
     /**

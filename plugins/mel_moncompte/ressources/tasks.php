@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Mél Moncompte
  *
@@ -23,7 +24,8 @@
  *
  * @author Thomas Payen <thomas.payen@i-carre.net> / PNE Messagerie MEDDE
  */
-class M2tasks {
+class M2tasks
+{
   /**
    *
    * @var LibMelanie\Api\Defaut\User Utilisateur Mél
@@ -56,14 +58,14 @@ class M2tasks {
    * @param string $user
    * @param string $mbox
    */
-  public function __construct($user = null, $mbox = null) {
+  public function __construct($user = null, $mbox = null)
+  {
     // Chargement de l'instance rcmail
     $this->rc = rcmail::get_instance();
     if (isset($user) && !empty($user)) {
       if (is_object($user)) {
         $this->user = $user;
-      }
-      else {
+      } else {
         $user = driver_mel::gi()->rcToMceId($user);
         $this->user = driver_mel::gi()->getUser($user);
         if (isset($this->user) && $this->user->is_objectshare) {
@@ -82,8 +84,7 @@ class M2tasks {
               $this->user = $this->user->objectshare->mailbox;
             }
             $mbox = $this->user->uid;
-          }
-          else {
+          } else {
             $this->user = driver_mel::gi()->getUser();
           }
         }
@@ -93,12 +94,10 @@ class M2tasks {
         if (! $this->taskslist->load())
           $this->taskslist = null;
       }
-    }
-    catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
+    } catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[Resources] M2tasks::__construct() Melanie2DatabaseException");
       return false;
-    }
-    catch (\Exception $ex) {
+    } catch (\Exception $ex) {
       return false;
     }
   }
@@ -108,7 +107,8 @@ class M2tasks {
    * 
    * @return LibMelanie\Api\Defaut\Taskslist Liste de tâches Mél
    */
-  public function getTaskslist() {
+  public function getTaskslist()
+  {
     return $this->taskslist;
   }
 
@@ -117,7 +117,8 @@ class M2tasks {
    *
    * @return array
    */
-  public function getAcl() {
+  public function getAcl()
+  {
     if (!isset($this->taskslist) || $this->taskslist->owner != $this->user->uid)
       return false;
     try {
@@ -140,12 +141,10 @@ class M2tasks {
         }
       }
       return $acl;
-    }
-    catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
+    } catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[Resources] M2tasks::getAcl() Melanie2DatabaseException");
       return false;
-    }
-    catch (\Exception $ex) {
+    } catch (\Exception $ex) {
       return false;
     }
   }
@@ -156,8 +155,9 @@ class M2tasks {
    * @param array $rights
    * @return boolean
    */
-  public function setAcl($user, $rights) {
-    mel_logs::get_instance()->log(mel_logs::INFO, "[Resources] tasks::setAcl($user, $rights) mbox = " . $this->mbox);
+  public function setAcl($user, $rights)
+  {
+    mel_logs::get_instance()->log(mel_logs::INFO, "[Resources] tasks::setAcl($user, " . implode(' ', $rights) . ") mbox = " . $this->mbox);
     // Ajouter un hook lors du positionnement des ACLs
     $data = $this->rc->plugins->exec_hook('mce.setAcl_before', [
       'type'    => 'tasks',
@@ -187,8 +187,7 @@ class M2tasks {
         if (!driver_mel::gi()->userIsGroup($user)) {
           return false;
         }
-      }
-      else {
+      } else {
         // Valide que le droit concerne bien un utilisateur
         $_user = driver_mel::gi()->getUser($user);
         if (!isset($_user)) {
@@ -210,16 +209,14 @@ class M2tasks {
       if (in_array('w', $rights)) {
         // Ecriture + Lecture + Freebusy
         $share->acl |= LibMelanie\Api\Defaut\Share::ACL_WRITE
-                    | LibMelanie\Api\Defaut\Share::ACL_DELETE
-                    | LibMelanie\Api\Defaut\Share::ACL_READ
-                    | LibMelanie\Api\Defaut\Share::ACL_FREEBUSY;
-      }
-      else if (in_array('r', $rights)) {
+          | LibMelanie\Api\Defaut\Share::ACL_DELETE
+          | LibMelanie\Api\Defaut\Share::ACL_READ
+          | LibMelanie\Api\Defaut\Share::ACL_FREEBUSY;
+      } else if (in_array('r', $rights)) {
         // Lecture + Freebusy
         $share->acl |= LibMelanie\Api\Defaut\Share::ACL_READ
-        | LibMelanie\Api\Defaut\Share::ACL_FREEBUSY;
-      }
-      else if (in_array('l', $rights)) {
+          | LibMelanie\Api\Defaut\Share::ACL_FREEBUSY;
+      } else if (in_array('l', $rights)) {
         // Freebusy
         $share->acl |= LibMelanie\Api\Defaut\Share::ACL_FREEBUSY;
       }
@@ -234,12 +231,10 @@ class M2tasks {
         'ret'     => !is_null($ret),
       ]);
       return $data['ret'];
-    }
-    catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
+    } catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[Resources] M2tasks::setAcl() Melanie2DatabaseException");
       return false;
-    }
-    catch (\Exception $ex) {
+    } catch (\Exception $ex) {
       return false;
     }
   }
@@ -249,7 +244,8 @@ class M2tasks {
    * @param string $user
    * @return boolean
    */
-  public function deleteAcl($user) {
+  public function deleteAcl($user)
+  {
     mel_logs::get_instance()->log(mel_logs::INFO, "[Resources] tasks::deleteAcl($user) mbox = " . $this->mbox);
     // Ajouter un hook lors du positionnement des ACLs
     $data = $this->rc->plugins->exec_hook('mce.deleteAcl_before', [
@@ -279,12 +275,10 @@ class M2tasks {
         'ret'     => !is_null($ret),
       ]);
       return $data['ret'];
-    }
-    catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
+    } catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[Resources] M2tasks::deleteAcl() Melanie2DatabaseException");
       return false;
-    }
-    catch (\Exception $ex) {
+    } catch (\Exception $ex) {
       return false;
     }
   }
@@ -295,30 +289,27 @@ class M2tasks {
    * @param string $name [optionnel]
    * @return boolean
    */
-  public function createTaskslist($name = null) {
+  public function createTaskslist($name = null)
+  {
     try {
       $this->taskslist = driver_mel::gi()->taskslist([$this->user]);
       if (!isset($name)) {
         $this->taskslist->name = $this->user->fullname;
-      }
-      else {
+      } else {
         $this->taskslist->name = $name;
       }
-      $this->taskslist->id = $this->mbox ?  : $this->user->uid;
+      $this->taskslist->id = $this->mbox ?: $this->user->uid;
       $this->taskslist->owner = $this->user->uid;
       $ret = $this->taskslist->save();
       if (!is_null($ret)) {
         return $this->taskslist->load();
-      }
-      else {
+      } else {
         return false;
       }
-    }
-    catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
+    } catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[Resources] M2tasks::createTaskslist() Melanie2DatabaseException");
       return false;
-    }
-    catch (\Exception $ex) {
+    } catch (\Exception $ex) {
       return false;
     }
     return false;
@@ -327,7 +318,8 @@ class M2tasks {
   /**
    * Suppression de la liste de tâches
    */
-  public function deleteTaskslist() {
+  public function deleteTaskslist()
+  {
     if ($this->_deleteCondiction()) {
       // Parcour les tâches pour les supprimer
       $tasks = $this->taskslist->getAllTasks();
@@ -340,7 +332,8 @@ class M2tasks {
     return false;
   }
 
-  protected function _deleteCondiction() {
+  protected function _deleteCondiction()
+  {
     return isset($this->taskslist) && isset($this->user) && $this->taskslist->owner == $this->user->uid && $this->taskslist->id != $this->user->uid;
   }
 
@@ -350,7 +343,8 @@ class M2tasks {
    * @param array $attrib
    * @return string
    */
-  public function resources_elements_list($attrib) {
+  public function resources_elements_list($attrib)
+  {
     // add id to message list table if not specified
     if (! strlen($attrib['id']))
       $attrib['id'] = 'rcmresourceselementslist';
@@ -370,17 +364,14 @@ class M2tasks {
         ];
         if (($order = array_search(driver_mel::gi()->mceToRcId($taskslist->id), $sort_tasks)) !== false) {
           $taskslists[$taskslist->id]['order'] = $order;
-        }
-        else if ($taskslist->owner == $this->user->uid) {
+        } else if ($taskslist->owner == $this->user->uid) {
           if ($taskslist->id == $this->user->uid) {
             $taskslists[$taskslist->id]['order'] = 1000;
-          }
-          else {
+          } else {
             $taskslists[$taskslist->id]['order'] = 2000;
             $taskslists[$taskslist->id]['class'] = ' personnal';
           }
-        }
-        else {
+        } else {
           $taskslists[$taskslist->id]['order'] = 3000;
         }
       }
@@ -394,7 +385,7 @@ class M2tasks {
 
       // Objet HTML
       $table = new html_table();
-      $checkbox_subscribe = new html_checkbox(array('name' => '_show_resource_rc[]','title' => $this->rc->gettext('changesubscription'),'onclick' => "rcmail.command(this.checked ? 'show_resource_in_roundcube' : 'hide_resource_in_roundcube', this.value, 'task')"));
+      $checkbox_subscribe = new html_checkbox(array('name' => '_show_resource_rc[]', 'title' => $this->rc->gettext('changesubscription'), 'onclick' => "rcmail.command(this.checked ? 'show_resource_in_roundcube' : 'hide_resource_in_roundcube', this.value, 'task')"));
 
       // sort taskslists
       uasort($taskslists, function ($a, $b) {
@@ -408,7 +399,7 @@ class M2tasks {
       foreach ($taskslists as $id => $value) {
         $name = $value['name'];
         $class = $value['class'];
-        $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id), 'class' => 'task'.$class, 'foldername' => driver_mel::gi()->mceToRcId($id)));
+        $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id), 'class' => 'task' . $class, 'foldername' => driver_mel::gi()->mceToRcId($id)));
 
         $table->add('name', $name);
         $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_tasks[$id]) ? $id : ''), array('value' => $id)));
@@ -417,12 +408,10 @@ class M2tasks {
       $this->rc->output->add_gui_object('mel_resources_elements_list', $attrib['id']);
 
       return $table->show($attrib);
-    }
-    catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
+    } catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[Resources] M2tasks::resources_elements_list() Melanie2DatabaseException");
       return false;
-    }
-    catch (\Exception $ex) {
+    } catch (\Exception $ex) {
       return false;
     }
   }
@@ -430,22 +419,24 @@ class M2tasks {
   /**
    * Handler to render ACL form for a tasks folder
    */
-  public function acl_template() {
-    $this->rc->output->add_handler('folderacl', array($this,'acl_form'));
+  public function acl_template()
+  {
+    $this->rc->output->add_handler('folderacl', array($this, 'acl_form'));
     $this->rc->output->send('mel_moncompte.acl_frame');
   }
 
   /**
    * Handler for ACL form template object
    */
-  public function acl_form() {
+  public function acl_form()
+  {
     $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
-    $options = array('type' => 'm2tasks','name' => $id,'attributes' => array(0 => '\\HasNoChildren'),'namespace' => 'personal','special' => false,'rights' => array(0 => 'l',1 => 'r',2 => 's',3 => 'w',4 => 'i',5 => 'p',6 => 'k',7 => 'x',8 => 't',9 => 'e',10 => 'c',11 => 'd',12 => 'a'),'norename' => false,'noselect' => false,'protected' => true);
+    $options = array('type' => 'm2tasks', 'name' => $id, 'attributes' => array(0 => '\\HasNoChildren'), 'namespace' => 'personal', 'special' => false, 'rights' => array(0 => 'l', 1 => 'r', 2 => 's', 3 => 'w', 4 => 'i', 5 => 'p', 6 => 'k', 7 => 'x', 8 => 't', 9 => 'e', 10 => 'c', 11 => 'd', 12 => 'a'), 'norename' => false, 'noselect' => false, 'protected' => true);
 
     $form = array();
 
     // Allow plugins to modify the form content (e.g. with ACL form)
-    $plugin = $this->rc->plugins->exec_hook('acl_form_mel', array('form' => $form,'options' => $options,'name' => $cal->name));
+    $plugin = $this->rc->plugins->exec_hook('acl_form_mel', array('form' => $form, 'options' => $options, 'name' => $cal->name));
 
     if (! $plugin['form']['sharing']['content'])
       $plugin['form']['sharing']['content'] = html::div('hint', $this->rc->gettext('aclnorights'));
@@ -459,13 +450,14 @@ class M2tasks {
    * @param array $attrib
    * @return string
    */
-  public function acl_frame($attrib) {
+  public function acl_frame($attrib)
+  {
     $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
     if (! $attrib['id'])
       $attrib['id'] = 'rcmusersaclframe';
 
     $attrib['name'] = $attrib['id'];
-    $attrib['src'] = $this->rc->url(array('_action' => 'plugin.mel_tasks_acl','id' => $id,'framed' => 1));
+    $attrib['src'] = $this->rc->url(array('_action' => 'plugin.mel_tasks_acl', 'id' => $id, 'framed' => 1));
     $attrib['width'] = '100%';
     $attrib['height'] = 275;
     $attrib['border'] = 0;
@@ -475,14 +467,16 @@ class M2tasks {
   }
 }
 
-class M2tasksgroup extends M2tasks {
+class M2tasksgroup extends M2tasks
+{
   /**
    * Constructeur
    *
    * @param string $user
    * @param string $mbox
    */
-  public function __construct($user = null, $mbox = null) {
+  public function __construct($user = null, $mbox = null)
+  {
     $this->group = true;
     parent::__construct($user, $mbox);
   }
@@ -490,14 +484,15 @@ class M2tasksgroup extends M2tasks {
   /**
    * Handler for ACL form template object
    */
-  public function acl_form() {
+  public function acl_form()
+  {
     $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
-    $options = array('type' => 'm2tasksgroup','name' => $id,'attributes' => array(0 => '\\HasNoChildren'),'namespace' => 'personal','special' => false,'rights' => array(0 => 'l',1 => 'r',2 => 's',3 => 'w',4 => 'i',5 => 'p',6 => 'k',7 => 'x',8 => 't',9 => 'e',10 => 'c',11 => 'd',12 => 'a'),'norename' => false,'noselect' => false,'protected' => true);
+    $options = array('type' => 'm2tasksgroup', 'name' => $id, 'attributes' => array(0 => '\\HasNoChildren'), 'namespace' => 'personal', 'special' => false, 'rights' => array(0 => 'l', 1 => 'r', 2 => 's', 3 => 'w', 4 => 'i', 5 => 'p', 6 => 'k', 7 => 'x', 8 => 't', 9 => 'e', 10 => 'c', 11 => 'd', 12 => 'a'), 'norename' => false, 'noselect' => false, 'protected' => true);
 
     $form = array();
 
     // Allow plugins to modify the form content (e.g. with ACL form)
-    $plugin = $this->rc->plugins->exec_hook('acl_form_mel', array('form' => $form,'options' => $options,'name' => $cal->name));
+    $plugin = $this->rc->plugins->exec_hook('acl_form_mel', array('form' => $form, 'options' => $options, 'name' => $cal->name));
 
     if (! $plugin['form']['sharing']['content'])
       $plugin['form']['sharing']['content'] = html::div('hint', $this->rc->gettext('aclnorights'));
@@ -511,13 +506,14 @@ class M2tasksgroup extends M2tasks {
    * @param array $attrib
    * @return string
    */
-  public function acl_frame($attrib) {
+  public function acl_frame($attrib)
+  {
     $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
     if (! $attrib['id'])
       $attrib['id'] = 'rcmusersaclframe';
 
     $attrib['name'] = $attrib['id'];
-    $attrib['src'] = $this->rc->url(array('_action' => 'plugin.mel_tasks_acl_group','id' => $id,'framed' => 1));
+    $attrib['src'] = $this->rc->url(array('_action' => 'plugin.mel_tasks_acl_group', 'id' => $id, 'framed' => 1));
     $attrib['width'] = '100%';
     $attrib['height'] = 275;
     $attrib['border'] = 0;
@@ -527,8 +523,10 @@ class M2tasksgroup extends M2tasks {
   }
 }
 
-class M2taskswsp extends M2tasks{
-  public function __construct($id){
+class M2taskswsp extends M2tasks
+{
+  public function __construct($id)
+  {
     // Chargement de l'instance rcmail
     $this->rc = rcmail::get_instance();
     $this->user = new stdClass();
@@ -540,12 +538,13 @@ class M2taskswsp extends M2tasks{
     if (!$this->taskslist->load()) $this->taskslist = null;
   }
 
-    /**
+  /**
    * Récupération de l'acl
    *
    * @return array
    */
-  public function getAcl($user) {
+  public function getAcl($user)
+  {
     if (!isset($this->taskslist)) return false;
     else if ($this->taskslist->owner === $user->uid) return true;
 
@@ -558,17 +557,16 @@ class M2taskswsp extends M2tasks{
           return true;
       }
       return false;
-    }
-    catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
+    } catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[Resources] M2tasks::getAcl() Melanie2DatabaseException");
       return false;
-    }
-    catch (\Exception $ex) {
+    } catch (\Exception $ex) {
       return false;
     }
   }
 
-  protected function _deleteCondiction() {
+  protected function _deleteCondiction()
+  {
     return isset($this->taskslist) && isset($this->user) && $this->taskslist->owner == $this->user->uid && $this->taskslist->id == $this->user->uid;
   }
 }

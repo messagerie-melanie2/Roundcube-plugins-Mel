@@ -40,14 +40,18 @@ html.layout-large .task-mail #layout-sidebar > .header {
   border-right-style: solid;
   border-right-width: thin;
 }
+.task-mail #layout-list #searchmenu {
+  flex: 2;
+  justify-content: space-around;
+}
 .task-mail #layout-list #messagelist-header {
   justify-content: left;
 }
 .task-mail #layout-list.initial,
 .task-mail #layout-list.full {
   max-width: 100%;
-  width: 100%!important;
-  flex: 0 1 auto!important;
+  width: 100% !important;
+  flex: 0 1 auto !important;
 }
 .task-mail.action-compose #layout #layout-content > .header a.button,
 .task-mail.action-compose #layout #layout-content > .header span {
@@ -74,7 +78,7 @@ html.layout-large .task-mail #layout-sidebar > .header {
   max-width: none;
 }
 .task-mail .quota-widget::before {
-  content: "\e94f";
+  content: '\e94f';
   font-family: DWP;
 }
 .task-mail .quota-widget .count {
@@ -123,21 +127,21 @@ table.messagelist tr.unread td.subject span.adr {
   font-weight: bold;
 }
 table.messagelist tr.unread td.subject span.msgicon::before {
-  content: "\e94d" !important;
+  content: '\e94d' !important;
   color: var(--main-text-color) !important;
 }
 table.messagelist tr.unread td.subject span.msgicon.status.unread.selected::before {
   color: var(--secondary-text-color);
 }
 table.messagelist tr.unread td.subject span.msgicon.replied::before {
-  content: "\e96a" !important;
+  content: '\e96a' !important;
 }
 table.messagelist tr.unread td.subject span.msgicon.forwarded::before {
-  content: "\e96a" !important;
+  content: '\e96a' !important;
   transform: scaleX(-1);
 }
 table.messagelist tr.unread td.subject span.msgicon.forwarded.replied::before {
-  content: "\e96a" !important;
+  content: '\e96a' !important;
   transform: scaleX(1);
 }
 table.messagelist tr.unread td.subject a {
@@ -162,8 +166,8 @@ table.messagelist tr.message td span {
 }
 html body table.messagelist tr.message td.labels {
   background-color: var(--invisible) !important;
-  border: none!important;
-  padding-top: 0px!important;
+  border: none !important;
+  padding-top: 0px !important;
 }
 table.messagelist tr.message td.subject span.priority {
   height: 0;
@@ -243,7 +247,7 @@ table.messagelist tr.flagged td.subject span.fromto {
   color: var(--mail-unread-icon-color);
 }
 table.messagelist tr:hover span.unflagged::before {
-  content: "\e958" !important;
+  content: '\e958' !important;
   font-family: DWP !important;
   font-weight: normal !important;
 }
@@ -260,19 +264,19 @@ table.messagelist tr.message.bloqued td {
   border-width: thick !important;
 }
 table.messagelist tr.message.bloqued td.subject {
-  border-right: none!important;
+  border-right: none !important;
 }
 table.messagelist tr.message.bloqued td.flags {
-  border-left: none!important;
+  border-left: none !important;
 }
 table.messagelist tr.message.bloqued .msgicon.status::before {
   content: '\e939' !important;
-  font-family: DWP!important;
+  font-family: DWP !important;
   color: var(--danger-color) !important;
 }
 table.messagelist tr.message.bloqued .msgicon.status.unread::before {
   content: '\e939' !important;
-  font-family: DWP!important;
+  font-family: DWP !important;
 }
 table.messagelist tr.message.suspect td {
   border-left: var(--warning-color) thick solid !important;
@@ -281,18 +285,18 @@ table.messagelist tr.message.suspect td {
   border-width: thick !important;
 }
 table.messagelist tr.message.suspect td.subject {
-  border-right: none!important;
+  border-right: none !important;
 }
 table.messagelist tr.message.suspect td.flags {
-  border-left: none!important;
+  border-left: none !important;
 }
 table.messagelist tr.message.suspect .msgicon.status::before {
   content: '\e939' !important;
-  font-family: DWP!important;
+  font-family: DWP !important;
 }
 table.messagelist tr.message.suspect .msgicon.status.unread::before {
   content: '\e939' !important;
-  font-family: DWP!important;
+  font-family: DWP !important;
 }
 table.messagelist td.subject span.date {
   color: var(--main-text-color);
@@ -302,33 +306,33 @@ table.messagelist td.subject span.priority {
 }
 table.messagelist td.subject span.fromto {
   color: var(--mail-unread-icon-color);
-  padding-left: 0!important;
+  padding-left: 0 !important;
 }
 table.messagelist td.subject span.msgicon.status::before {
   font-weight: bold;
   color: var(--main-text-color);
 }
 table.messagelist td.subject span.msgicon.replied::before {
-  content: "\e92a" !important;
+  content: '\e92a' !important;
 }
 table.messagelist td.subject span.msgicon.replied.forwarded::before {
   transform: none;
 }
 table.messagelist td.subject span.msgicon.replied.forwarded::after {
-  content: "\e92a" !important;
+  content: '\e92a' !important;
   transform: scaleX(-1);
-  font-family: "DWP" !important;
-  font-style: normal!important;
-  opacity: 1!important;
+  font-family: 'DWP' !important;
+  font-style: normal !important;
+  opacity: 1 !important;
   color: var(--mail-unread-icon-hover-color) !important;
 }
 table.messagelist td.subject span.msgicon.forwarded::before {
-  content: "\e92a" !important;
+  content: '\e92a' !important;
   transform: scaleX(-1);
 }
 table.messagelist td.subject span.msgicon::before {
-  content: "\e94e" !important;
-  font-family: "DWP" !important;
+  content: '\e94e' !important;
+  font-family: 'DWP' !important;
   font-style: normal !important;
   color: var(--mail-unread-icon-hover-color) !important;
   margin-right: 13px !important;
@@ -343,7 +347,7 @@ html body div#layout-list table.messagelist td.subject a {
 }
 table.messagelist td.labels::before {
   font-family: 'DWP' !important;
-  content: "\e955";
+  content: '\e955';
   margin-left: -3px;
   margin-right: 12px;
 }
@@ -359,12 +363,12 @@ table.messagelist span.threads > div {
   color: var(--main-text-color);
 }
 table.messagelist span.flagged::before {
-  content: "\e957" !important;
+  content: '\e957' !important;
   font-family: DWP !important;
   font-weight: normal !important;
 }
 table.messagelist span.attachment span::before {
-  content: "\e959" !important;
+  content: '\e959' !important;
   font-family: DWP !important;
   font-weight: normal !important;
 }
@@ -456,7 +460,7 @@ html body.task-mail #mailsearchlist .searchbar a {
   display: none;
 }
 #mailsearchlist .searchbar a.options::before {
-  content: "\e5cf";
+  content: '\e5cf';
   font-family: 'Material Symbols Outlined';
   font-weight: normal;
   font-variation-settings: 'wght' 300, 'opsz' 48;
@@ -465,7 +469,7 @@ html body.task-mail #mailsearchlist .searchbar a {
   transform: scale(1);
 }
 #mailsearchlist .searchbar.open a.options::before {
-  content: "\e5ce";
+  content: '\e5ce';
 }
 #mailsearchlist.hoverable {
   right: 20px;
@@ -495,14 +499,14 @@ html body.task-mail #layout > div > .footer.small {
 }
 #backtomails + separate {
   display: block;
-  border-color: #D1D3DD;
+  border-color: #d1d3dd;
 }
 .contextmenu li a.label.selected {
   background: var(--tierciary-bckg-color);
   color: var(--secondary-text-color);
 }
 .contextmenu.rcmsubmenu .cmd_move {
-  display: none!important;
+  display: none !important;
 }
 #rcm_messagelist li .ct-tb::before {
   font-family: 'Material Symbols Outlined';
@@ -510,14 +514,14 @@ html body.task-mail #layout > div > .footer.small {
   font-variation-settings: 'wght' 300, 'opsz' 48;
   font-size: 17px;
   transform: scale(1.5);
-  content: "\e866";
+  content: '\e866';
 }
 #rcm_messagelist li .ct-tb::after {
   color: #737677;
   font-size: 0.9em;
   margin: 0 0 0 0.2em;
   min-width: 1.18em;
-  content: "\f054";
+  content: '\f054';
   display: block;
   float: right;
   width: 1.18em;
@@ -555,19 +559,19 @@ html body.task-mail #layout > div > .footer.small {
   margin-right: var(--settings-mail-folder-margin-right);
   padding-right: 0;
 }
-#folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type {
+#folderlist-content ul#mailboxlist > li > ul li[aria-level='2']:first-of-type {
   border-top-style: solid;
   border-top-width: thin;
   margin-top: 15px;
   padding-top: 10px;
 }
-#folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type div.treetoggle {
+#folderlist-content ul#mailboxlist > li > ul li[aria-level='2']:first-of-type div.treetoggle {
   top: 10px;
 }
-#folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type .unreadcount {
+#folderlist-content ul#mailboxlist > li > ul li[aria-level='2']:first-of-type .unreadcount {
   top: 10px;
 }
-#folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type [aria-level="3"] .unreadcount {
+#folderlist-content ul#mailboxlist > li > ul li[aria-level='2']:first-of-type [aria-level='3'] .unreadcount {
   top: unset;
 }
 #folderlist-content ul#mailboxlist > li ~ li {
@@ -585,7 +589,7 @@ html body.task-mail #layout > div > .footer.small {
 #folderlist-content ul#mailboxlist > li:first-of-type > a {
   padding-right: 1.5rem;
 }
-#folderlist-content ul#mailboxlist > li:first-of-type[aria-expanded=false] > a {
+#folderlist-content ul#mailboxlist > li:first-of-type[aria-expanded='false'] > a {
   padding-right: 4rem;
 }
 #folderlist-content ul#mailboxlist > li .unreadcount {
@@ -594,7 +598,7 @@ html body.task-mail #layout > div > .footer.small {
 #folderlist-content ul#mailboxlist.unified {
   margin-top: 20px;
 }
-#folderlist-content ul#mailboxlist.unified > li:first-of-type > ul:first-of-type li[aria-level="2"] {
+#folderlist-content ul#mailboxlist.unified > li:first-of-type > ul:first-of-type li[aria-level='2'] {
   margin-right: 0;
 }
 #folderlist-content ul li.mailbox.selected a {
@@ -613,12 +617,12 @@ html body.task-mail #layout > div > .footer.small {
   margin-right: var(--settings-mail-folder-margin-right);
   padding-right: 0;
 }
-#folderlist-content li.mailbox.boite[aria-expanded="true"] {
+#folderlist-content li.mailbox.boite[aria-expanded='true'] {
   border: none;
-  --settings-mail-folder-margin-top: var(--settings-mail-opened-folder-margin-top)!important;
-  --settings-mail-folder-margin-left: var(--settings-mail-opened-folder-margin-left)!important;
-  --settings-mail-folder-margin-right: var(--settings-mail-opened-folder-margin-right)!important;
-  --settings-mail-folder-margin-bottom: var(--settings-mail-opened-folder-margin-bottom)!important;
+  --settings-mail-folder-margin-top: var(--settings-mail-opened-folder-margin-top) !important;
+  --settings-mail-folder-margin-left: var(--settings-mail-opened-folder-margin-left) !important;
+  --settings-mail-folder-margin-right: var(--settings-mail-opened-folder-margin-right) !important;
+  --settings-mail-folder-margin-bottom: var(--settings-mail-opened-folder-margin-bottom) !important;
 }
 #rcm_labellist {
   overflow: auto;
@@ -626,7 +630,7 @@ html body.task-mail #layout > div > .footer.small {
 }
 /**ICONS**/
 .menu a#listmenulink.options::before {
-  content: "\e429" !important;
+  content: '\e429' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -634,7 +638,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1.5) !important;
 }
 .menu a.compose::before {
-  content: "\e22b" !important;
+  content: '\e22b' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -642,7 +646,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1.5) !important;
 }
 .menu a.select::before {
-  content: "\f82f" !important;
+  content: '\f82f' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -651,7 +655,7 @@ html body.task-mail #layout > div > .footer.small {
   font-variation-settings: 'wght' 300, 'opsz' 48, 'FILL' 1 !important;
 }
 .menu a.reply::before {
-  content: "\e15e" !important;
+  content: '\e15e' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -661,7 +665,7 @@ html body.task-mail #layout > div > .footer.small {
 .menu a.reply-all::before,
 .menu a.reply.all::before,
 .menu a.reply.list::before {
-  content: "\e15f" !important;
+  content: '\e15f' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -669,7 +673,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1.5) !important;
 }
 .menu a.delete::before {
-  content: "\e872" !important;
+  content: '\e872' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -677,7 +681,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1.5) !important;
 }
 .menu a.more::before {
-  content: "\e5d3" !important;
+  content: '\e5d3' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -686,7 +690,7 @@ html body.task-mail #layout > div > .footer.small {
   font-variation-settings: 'wght' 700, 'opsz' 48 !important;
 }
 .menu a.close-visu::before {
-  content: "\e5c9" !important;
+  content: '\e5c9' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -694,7 +698,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1.5) !important;
 }
 .menu a.forward::before {
-  content: "\e154" !important;
+  content: '\e154' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -704,7 +708,7 @@ html body.task-mail #layout > div > .footer.small {
 .menu a.forward.attachment::before,
 .menu a.forward.bounce::before,
 .menu a.forward.inline::before {
-  content: "\e154" !important;
+  content: '\e154' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -712,7 +716,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1.5) !important;
 }
 .menu a.threads::before {
-  content: "\e0bf" !important;
+  content: '\e0bf' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -722,7 +726,7 @@ html body.task-mail #layout > div > .footer.small {
 .menu a.junk::before,
 .menu a.markasjunk::before,
 .menu a.junkadmin::before {
-  content: "\f16a" !important;
+  content: '\f16a' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -730,7 +734,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1.5) !important;
 }
 .menu a.markmessage::before {
-  content: "\f05b" !important;
+  content: '\f05b' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -738,7 +742,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1.5) !important;
 }
 .menu a.print::before {
-  content: "\e8ad" !important;
+  content: '\e8ad' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -746,7 +750,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1.5) !important;
 }
 .menu a.prev::before {
-  content: "\e5c4" !important;
+  content: '\e5c4' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -754,7 +758,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1.5) !important;
 }
 .menu a.next::before {
-  content: "\e5c8" !important;
+  content: '\e5c8' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -762,7 +766,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1.5) !important;
 }
 .menu a.send::before {
-  content: "\e163" !important;
+  content: '\e163' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -771,7 +775,7 @@ html body.task-mail #layout > div > .footer.small {
   font-variation-settings: 'wght' 300, 'opsz' 48, 'FILL' 1 !important;
 }
 .menu a.save.draft::before {
-  content: "\e161" !important;
+  content: '\e161' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -780,7 +784,7 @@ html body.task-mail #layout > div > .footer.small {
   font-variation-settings: 'wght' 300, 'opsz' 48, 'FILL' 1 !important;
 }
 .menu a.save.model::before {
-  content: "\eb60" !important;
+  content: '\eb60' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -789,7 +793,7 @@ html body.task-mail #layout > div > .footer.small {
   font-variation-settings: 'wght' 300, 'opsz' 48, 'FILL' 1 !important;
 }
 .menu a.signature::before {
-  content: "\f74c" !important;
+  content: '\f74c' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -797,7 +801,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1.5) !important;
 }
 .menu a#mel_envoi_differe::before {
-  content: "\e8b5" !important;
+  content: '\e8b5' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -808,7 +812,7 @@ html body.task-mail #layout > div > .footer.small {
   font-size: 90%;
 }
 #message-menu .menu a.print::before {
-  content: "\e8ad" !important;
+  content: '\e8ad' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -817,7 +821,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #message-menu .menu a.import::before {
-  content: "\f09b" !important;
+  content: '\f09b' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -826,7 +830,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #message-menu .menu a.download::before {
-  content: "\f090" !important;
+  content: '\f090' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -835,7 +839,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #message-menu .menu a.edit::before {
-  content: "\e3c9" !important;
+  content: '\e3c9' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -844,7 +848,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #message-menu .menu a.source::before {
-  content: "\f770" !important;
+  content: '\f770' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -853,7 +857,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #message-menu .menu a.move::before {
-  content: "\e2c8" !important;
+  content: '\e2c8' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -862,7 +866,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #message-menu .menu a.copy::before {
-  content: "\e14d" !important;
+  content: '\e14d' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -871,7 +875,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #message-menu .menu a.extwin::before {
-  content: "\e89e" !important;
+  content: '\e89e' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -880,7 +884,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #message-menu .menu a.compose::before {
-  content: "\e22b" !important;
+  content: '\e22b' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -889,7 +893,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #message-menu .menu a.filterlink::before {
-  content: "\ef4f" !important;
+  content: '\ef4f' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -898,7 +902,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #message-menu .menu a.calendarlink::before {
-  content: "\ebcc" !important;
+  content: '\ebcc' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -907,7 +911,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #message-menu .menu a.taskaddlink::before {
-  content: "\e834" !important;
+  content: '\e834' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -916,7 +920,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #mailto-menu .menu a.addressbook::before {
-  content: "\e7fd" !important;
+  content: '\e7fd' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -925,7 +929,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #mailto-menu .menu a.compose::before {
-  content: "\e22b" !important;
+  content: '\e22b' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -934,7 +938,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #markmessage-menu .menu a.read::before {
-  content: "\e151" !important;
+  content: '\e151' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -943,7 +947,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #markmessage-menu .menu a.unread::before {
-  content: "\e158" !important;
+  content: '\e158' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -952,7 +956,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #markmessage-menu .menu a.flag::before {
-  content: "\e153" !important;
+  content: '\e153' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -962,7 +966,7 @@ html body.task-mail #layout > div > .footer.small {
   font-variation-settings: 'wght' 300, 'opsz' 48, 'FILL' 1 !important;
 }
 #markmessage-menu .menu a.unflag::before {
-  content: "\e153" !important;
+  content: '\e153' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -971,7 +975,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #markmessage-menu .menu a.junk::before {
-  content: "\f16a" !important;
+  content: '\f16a' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -980,7 +984,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #mailboxoptions-menu .menu a.expunge::before {
-  content: "\f82e" !important;
+  content: '\f82e' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -989,7 +993,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #mailboxoptions-menu .menu a.purge::before {
-  content: "\e28d" !important;
+  content: '\e28d' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -998,7 +1002,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #mailboxoptions-menu .menu a.read::before {
-  content: "\e151" !important;
+  content: '\e151' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1007,7 +1011,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #mailboxoptions-menu .menu a.folders::before {
-  content: "\e2c7" !important;
+  content: '\e2c7' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1016,7 +1020,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #mailboxoptions-menu .menu a.create::before {
-  content: "\e147" !important;
+  content: '\e147' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1025,7 +1029,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #mailboxoptions-menu .menu a.settings::before {
-  content: "\e8b8" !important;
+  content: '\e8b8' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1034,7 +1038,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #mailboxoptions-menu .menu a.refresh::before {
-  content: "\e5d5" !important;
+  content: '\e5d5' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1043,7 +1047,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #rcm_markmessage-menu .menu a.read::before {
-  content: "\e151" !important;
+  content: '\e151' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1052,7 +1056,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #rcm_markmessage-menu .menu a.unread::before {
-  content: "\e158" !important;
+  content: '\e158' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1061,7 +1065,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #rcm_markmessage-menu .menu a.flag::before {
-  content: "\e153" !important;
+  content: '\e153' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1071,7 +1075,7 @@ html body.task-mail #layout > div > .footer.small {
   font-variation-settings: 'wght' 300, 'opsz' 48, 'FILL' 1;
 }
 #rcm_markmessage-menu .menu a.unflag::before {
-  content: "\e153" !important;
+  content: '\e153' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1080,7 +1084,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #rcm_markmessage-menu .menu a.junk::before {
-  content: "\f16a" !important;
+  content: '\f16a' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1089,7 +1093,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #rcm_message-menu .menu a.print::before {
-  content: "\e8ad" !important;
+  content: '\e8ad' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1098,7 +1102,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #rcm_message-menu .menu a.download::before {
-  content: "\f090" !important;
+  content: '\f090' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1107,7 +1111,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #rcm_message-menu .menu a.edit::before {
-  content: "\e3c9" !important;
+  content: '\e3c9' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1116,7 +1120,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #rcm_message-menu .menu a.source::before {
-  content: "\f770" !important;
+  content: '\f770' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1125,7 +1129,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #rcm_message-menu .menu a.copy::before {
-  content: "\e14d" !important;
+  content: '\e14d' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1134,7 +1138,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #rcm_message-menu .menu a.extwin::before {
-  content: "\e89e" !important;
+  content: '\e89e' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1143,7 +1147,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #rcm_message-menu .menu a.compose::before {
-  content: "\e22b" !important;
+  content: '\e22b' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1152,7 +1156,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #rcm_message-menu .menu a.filterlink::before {
-  content: "\ef4f" !important;
+  content: '\ef4f' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1161,7 +1165,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #rcm_message-menu .menu a.calendarlink::before {
-  content: "\ebcc" !important;
+  content: '\ebcc' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1170,7 +1174,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #rcm_message-menu .menu a.taskaddlink::before {
-  content: "\e834" !important;
+  content: '\e834' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1179,7 +1183,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #rcm_folderlist .menu a.collapseall::before {
-  content: "\e5d6" !important;
+  content: '\e5d6' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1188,7 +1192,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #rcm_folderlist .menu a.expandall::before {
-  content: "\e5d7" !important;
+  content: '\e5d7' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1197,7 +1201,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #rcm_folderlist .menu a.openextwin::before {
-  content: "\e89e" !important;
+  content: '\e89e' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1206,7 +1210,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #rcm_folderlist .menu a.expunge::before {
-  content: "\f82e" !important;
+  content: '\f82e' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1215,7 +1219,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #rcm_folderlist .menu a.purge::before {
-  content: "\e28d" !important;
+  content: '\e28d' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1224,7 +1228,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #rcm_folderlist .menu a.read::before {
-  content: "\e151" !important;
+  content: '\e151' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1233,7 +1237,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #rcm_folderlist .menu a.folders::before {
-  content: "\e2c8" !important;
+  content: '\e2c8' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1242,7 +1246,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #rcm_folderlist .menu a.create::before {
-  content: "\e147" !important;
+  content: '\e147' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1251,7 +1255,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #rcm_folderlist .menu a.settings::before {
-  content: "\e8b8" !important;
+  content: '\e8b8' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1260,7 +1264,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 #rcm_folderlist .menu a.refresh::before {
-  content: "\e5d5" !important;
+  content: '\e5d5' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1269,7 +1273,7 @@ html body.task-mail #layout > div > .footer.small {
   transform: scale(1) !important;
 }
 a.button.icon.refresh::before {
-  content: "\e5d5" !important;
+  content: '\e5d5' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1277,7 +1281,7 @@ a.button.icon.refresh::before {
   transform: scale(1.5) !important;
 }
 a.button.icon.toolbar-list-button::before {
-  content: "\e5d4" !important;
+  content: '\e5d4' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1286,7 +1290,7 @@ a.button.icon.toolbar-list-button::before {
   font-variation-settings: 'wght' 700, 'opsz' 48 !important;
 }
 a.button.icon.folders::before {
-  content: "\e2c8" !important;
+  content: '\e2c8' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1295,7 +1299,7 @@ a.button.icon.folders::before {
   font-variation-settings: 'wght' 300, 'opsz' 48, 'FILL' 1 !important;
 }
 a.button.icon.calendars::before {
-  content: "\ebcc" !important;
+  content: '\ebcc' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1315,7 +1319,7 @@ a.button.icon.calendars::before {
   }
 }
 button.btn.refresh::before {
-  content: "\e5d5" !important;
+  content: '\e5d5' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1323,7 +1327,7 @@ button.btn.refresh::before {
   transform: scale(1.5) !important;
 }
 .folderlist li a::before {
-  content: "\e2c7" !important;
+  content: '\e2c7' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1331,7 +1335,7 @@ button.btn.refresh::before {
   font-variation-settings: 'wght' 400, 'opsz' 48 !important;
 }
 .folderlist li.drafts a::before {
-  content: "\e3c9" !important;
+  content: '\e3c9' !important;
   font-family: 'Material Symbols Outlined';
   font-weight: normal;
   font-variation-settings: 'wght' 300, 'opsz' 48;
@@ -1339,7 +1343,7 @@ button.btn.refresh::before {
   font-variation-settings: 'wght' 400, 'opsz' 48;
 }
 .folderlist li.trash a::before {
-  content: "\e872" !important;
+  content: '\e872' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1347,7 +1351,7 @@ button.btn.refresh::before {
   font-variation-settings: 'wght' 400, 'opsz' 48 !important;
 }
 .folderlist li.sent a::before {
-  content: "\e163" !important;
+  content: '\e163' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1356,7 +1360,7 @@ button.btn.refresh::before {
 }
 .folderlist li.inbox > a::before,
 .folderlist li.boite > a::before {
-  content: "\e156" !important;
+  content: '\e156' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1365,7 +1369,7 @@ button.btn.refresh::before {
   font-variation-settings: 'wght' 400, 'opsz' 48, 'FILL' 1 !important;
 }
 .folderlist li.junk a::before {
-  content: "\f16a" !important;
+  content: '\f16a' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1374,7 +1378,7 @@ button.btn.refresh::before {
 }
 .tb_noclass::before,
 #tb_label_popuplink::before {
-  content: "\e866" !important;
+  content: '\e866' !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -1389,7 +1393,7 @@ td.subject td.labels {
 }
 .popover-body #message-menu .tb_noclass::before {
   font-family: DWP !important;
-  content: "\e956" !important;
+  content: '\e956' !important;
 }
 .popover-body #message-menu .tb_noclass::after {
   content: none !important;
@@ -1419,8 +1423,8 @@ td.subject td.labels {
   border: none;
 }
 html.dark-mode #mail-search-border {
-  border: 1px solid #E1C58F;
-  background-color: #323F4B !important;
+  border: 1px solid #e1c58f;
+  background-color: #323f4b !important;
 }
 #mail-search-icon {
   font-size: 1.5rem;
@@ -1578,7 +1582,7 @@ body.task-mail.action-compose a.removelink {
   color: red;
 }
 #toolbar-list-menu .selection {
-  display: none!important;
+  display: none !important;
 }
 .message-list-filter-container {
   display: flex;
@@ -1606,18 +1610,18 @@ body.task-mail.action-compose a.removelink {
   content: '\e15b';
 }
 .folderlist li a.favourite-virtual-box::before {
-  content: "\e838" !important;
+  content: '\e838' !important;
 }
 #rcm_folderlist .menu a.favorite::before {
-  content: "\e838" !important;
+  content: '\e838' !important;
 }
 #rcm_folderlist .menu a.favorite.unset-to::before {
-  content: "\e838" !important;
+  content: '\e838' !important;
   font-variation-settings: 'FILL' 1;
 }
 #folderlistbox ul.treelist.iconized li div.treetoggle,
 #files-compose-dialog ul.treelist.iconized li div.treetoggle {
-  top: 1px!important;
+  top: 1px !important;
 }
 .menu-before-format,
 #rcm_folderlist .menu a.favorite::before,
@@ -1632,13 +1636,13 @@ body.task-mail.action-compose a.removelink {
   transform: scale(1);
 }
 #rcm_folderlist .menu a.color-folder::before {
-  content: "\e23a" !important;
+  content: '\e23a' !important;
 }
 #rcm_folderlist .menu a.cancel-color-folder::before {
-  content: "\e23b" !important;
+  content: '\e23b' !important;
 }
 #rcm_folderlist .menu a.icon-folder::before {
-  content: "\f88d" !important;
+  content: '\f88d' !important;
 }
 #selected-action-list {
   border-left: solid thin var(--layout-list-header-text-color);

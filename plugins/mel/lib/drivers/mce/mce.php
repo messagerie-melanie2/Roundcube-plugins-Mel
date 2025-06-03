@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 /**
  * Plugin Mél
  *
@@ -18,7 +19,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-class mce_driver_mel extends driver_mel {
+class mce_driver_mel extends driver_mel
+{
   /**
    * Namespace for the objets
    */
@@ -62,7 +64,8 @@ class mce_driver_mel extends driver_mel {
   /**
    * Constructeur par défaut
    */
-  public function __construct() {
+  public function __construct()
+  {
     $rcmail = rcmail::get_instance();
     if ($rcmail->config->get('virtual_shared_mailboxes', false)) {
       $this->BALP_LABEL = $rcmail->config->get('virtual_balp_label', $this->BALP_LABEL);
@@ -94,15 +97,20 @@ class mce_driver_mel extends driver_mel {
    *
    * @return \LibMelanie\Api\Mce\User
    */
-  public function &getUser($username = null, $load = true, $fromCache = true, $dn = null, $email = null, $itemName = null) {
+  public function &getUser($username = null, $load = true, $fromCache = true, $dn = null, $email = null, $itemName = null)
+  {
     if (!isset($username) && !isset($dn) && !isset($email)) {
       $username = rcmail::get_instance()->user->get_username();
     }
     if (!$fromCache) {
       $user = $this->user([null, $itemName]);
-      if (isset($username)) {   $user->uid = $username; }
-      else if (isset($dn)) {    $user->dn = $dn; }
-      else if (isset($email)) { $user->email = $email; }
+      if (isset($username)) {
+        $user->uid = $username;
+      } else if (isset($dn)) {
+        $user->dn = $dn;
+      } else if (isset($email)) {
+        $user->email = $email;
+      }
       if ($load && !$user->load()) {
         $user = null;
       }
@@ -132,7 +140,8 @@ class mce_driver_mel extends driver_mel {
   /**
    * Enregistrer les donnés en cache quand un utilisateur change
    */
-  public function onUserChange() {
+  public function onUserChange()
+  {
     \mel::setCache('users', self::$_users);
   }
 
@@ -147,7 +156,8 @@ class mce_driver_mel extends driver_mel {
    *
    * @return \LibMelanie\Api\Defaut\Group
    */
-  public function getGroup($group_dn = null, $load = true, $fromCache = true, $itemName = null) {
+  public function getGroup($group_dn = null, $load = true, $fromCache = true, $itemName = null)
+  {
     if (!$fromCache) {
       $group = $this->group([null, $itemName]);
       $group->dn = $group_dn;
@@ -169,7 +179,7 @@ class mce_driver_mel extends driver_mel {
     }
     return self::$_groups[$keyCache];
   }
-  
+
   /**
    * Retourne le MBOX par defaut pour une boite partagée donnée
    * Peut être INBOX ou autre chose si besoin
@@ -177,10 +187,11 @@ class mce_driver_mel extends driver_mel {
    * @param string $balpname
    * @return string $mbox par defaut
    */
-  public function getMboxFromBalp($balpname) {
+  public function getMboxFromBalp($balpname)
+  {
     return 'INBOX';
   }
-  
+
   /**
    * Récupère et traite les infos de routage depuis l'objet LDAP 
    * pour retourner le hostname de connexion IMAP et/ou SMTP
@@ -190,27 +201,27 @@ class mce_driver_mel extends driver_mel {
    * 
    * @return string $hostname de routage, null si pas de routage trouvé
    */
-  public function getRoutage($infos, $function = '') {
+  public function getRoutage($infos, $function = '')
+  {
     // Conf dédiée pour le managesieve
     if ($function == 'managesieve_connect') {
       $conf = 'managesieve_host';
-    }
-    else {
-      $conf = 'default_host';
+    } else {
+      $conf = 'imap_host';
     }
     // Récupère le hostname depuis la configuration
     $hostname = rcmail::get_instance()->config->get($conf);
-    if (!isset($hostname) 
-        || is_array($hostname)) {
+    if (
+      !isset($hostname)
+      || is_array($hostname)
+    ) {
       if (is_array($infos)) {
         $hostname = isset($infos['mailhost']) ? $infos['mailhost'][0] : null;
-      }
-      else {
+      } else {
         $infos->load(['server_host']);
         $hostname = $infos->server_host;
       }
-    }
-    else {
+    } else {
       $a_host = parse_url($hostname);
       if (isset($a_host['host'])) {
         $hostname = $a_host['host'];
@@ -218,23 +229,25 @@ class mce_driver_mel extends driver_mel {
     }
     return $hostname;
   }
-  
+
   /**
    * Positionne des headers pour un message avant de l'envoyer
    *
    * @param array $headers Liste des headers a fournir au message
    * @return array $headers Retourne les headers completes
    */
-  public function setHeadersMessageBeforeSend($headers) {
+  public function setHeadersMessageBeforeSend($headers)
+  {
     return $headers;
   }
-  
+
   /**
    * Est-ce que l'utilisateur courant a le droit d'accéder au stockage
    *
    * @return boolean true si le stockage doit être affiché, false sinon
    */
-  public function userHasAccessToStockage() {
+  public function userHasAccessToStockage()
+  {
     // Gestion du filtre LDAP
     $filter_ldap = rcmail::get_instance()->config->get('roundcube_nextcloud_filter_ldap', array());
     $hasAccess = true;
@@ -243,16 +256,18 @@ class mce_driver_mel extends driver_mel {
       $user->load(array_keys($filter_ldap));
 
       foreach ($filter_ldap as $key => $value) {
-        if (!isset($user->$key) 
-            || is_array($user->$key) && !in_array($value, $user->$key) 
-            || is_string($user->$key) && $user->$key != $value) {
+        if (
+          !isset($user->$key)
+          || is_array($user->$key) && !in_array($value, $user->$key)
+          || is_string($user->$key) && $user->$key != $value
+        ) {
           $hasAccess = false;
         }
       }
     }
     return $hasAccess;
   }
-  
+
   /**
    * Est-ce que le mot de passe de l'utilisateur doit changer
    * Si c'est le cas la page de changement de mot de passe sera affichée après le login
@@ -261,7 +276,8 @@ class mce_driver_mel extends driver_mel {
    * @param string $title Titre de la fenetre de changement de mot de passe
    * @return boolean Le mot de passe doit changer
    */
-  public function isPasswordNeedsToChange(&$title) {
+  public function isPasswordNeedsToChange(&$title)
+  {
     return false;
   }
 
@@ -271,7 +287,8 @@ class mce_driver_mel extends driver_mel {
    * @param string $user Identifiant de l'objet group
    * @return boolean true si c'est un groupe, false sinon
    */
-  public function userIsGroup($user) {
+  public function userIsGroup($user)
+  {
     return strpos($user, "mceRDN=") === 0;
   }
 
@@ -282,7 +299,8 @@ class mce_driver_mel extends driver_mel {
    * 
    * @return string Url de l'api
    */
-  protected function get_restoration_api_url($mbox) {
+  protected function get_restoration_api_url($mbox)
+  {
     // Récupération de la configuration de la boite pour l'affichage
     $host = $this->get_restoration_host($mbox);
 
@@ -296,7 +314,8 @@ class mce_driver_mel extends driver_mel {
    * 
    * @return string Hôte de restauration
    */
-  protected function get_restoration_host($mbox) {
+  protected function get_restoration_host($mbox)
+  {
     $user = $this->getUser($mbox, false);
 
     if ($user->is_objectshare) {
@@ -314,7 +333,8 @@ class mce_driver_mel extends driver_mel {
    * 
    * @return string Cible de restauration
    */
-  protected function get_restoration_target($mbox) {
+  protected function get_restoration_target($mbox)
+  {
     return $this->get_restoration_host($mbox);
   }
 
@@ -325,7 +345,8 @@ class mce_driver_mel extends driver_mel {
    * @param string $mbox Identifiant de la boite concernée par la restauration
    * @param string $folder Dossier IMAP à restaurer
    */
-  public function unexpunge($mbox, $folder, $hours) {
+  public function unexpunge($mbox, $folder, $hours)
+  {
     switch ($this->_restore_emails_method) {
       case "files":
         return $this->unexpunge_files($mbox, $folder, $hours);
@@ -349,7 +370,8 @@ class mce_driver_mel extends driver_mel {
    * 
    * @return boolean|string true si la restauration a été effectuée, sinon le message d'erreur
    */
-  protected function unexpunge_files($mbox, $folder, $hours) {
+  protected function unexpunge_files($mbox, $folder, $hours)
+  {
     mel_logs::get_instance()->log(mel_logs::INFO, "[mel] mce_driver::unexpunge_files($mbox, $folder, $hours)");
 
     // Pas de dossier configuré dans le driver, par d'unexpunge
@@ -373,8 +395,7 @@ class mce_driver_mel extends driver_mel {
     if (!is_dir($rep)) {
       if (mkdir($rep, 0774, true)) {
         chmod($rep, 0774);
-      }
-      else {
+      } else {
         mel_logs::get_instance()->log(mel_logs::ERROR, "[mel] mce_driver::unexpunge_files($mbox, $folder, $hours) - Impossible de créer le dossier $rep");
 
         return false;
@@ -393,8 +414,7 @@ class mce_driver_mel extends driver_mel {
     if (flock($fic, LOCK_EX)) {
       fputs($fic, 'recuperation:' . $hours);
       flock($fic, LOCK_UN);
-    }
-    else {
+    } else {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[mel] mce_driver::unexpunge_files($mbox, $folder, $hours) - Impossible de verrouiller le fichier $nom");
 
       return false;
@@ -403,8 +423,7 @@ class mce_driver_mel extends driver_mel {
 
     if (file_exists($nom)) {
       $res = chmod($nom, 0444);
-    }
-    else {
+    } else {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[mel] mce_driver::unexpunge_files($mbox, $folder, $hours) - Impossible de créer le fichier $nom");
 
       return false;
@@ -423,7 +442,8 @@ class mce_driver_mel extends driver_mel {
    * 
    * @return boolean|string true si la restauration a été effectuée, sinon le message d'erreur
    */
-  protected function unexpunge_api($mbox, $folder, $hours) {
+  protected function unexpunge_api($mbox, $folder, $hours)
+  {
     mel_logs::get_instance()->log(mel_logs::INFO, "[mel] mce_driver::unexpunge_api($mbox, $folder, $hours)");
 
     $body = (object) [
@@ -474,7 +494,8 @@ class mce_driver_mel extends driver_mel {
    * 
    * @return boolean|string true si la restauration a été effectuée, sinon le message d'erreur
    */
-  protected function unexpunge_jenkins($mbox, $folder, $hours) {
+  protected function unexpunge_jenkins($mbox, $folder, $hours)
+  {
     mel_logs::get_instance()->log(mel_logs::INFO, "[mel] mce_driver::unexpunge_jenkins($mbox, $folder, $hours)");
 
     $_user = $this->getUser($mbox, false);
@@ -533,7 +554,8 @@ class mce_driver_mel extends driver_mel {
    * 
    * @param string $mbox Identifiant de la boite concernée par la restauration
    */
-  public function get_restorable_directories($mbox) {
+  public function get_restorable_directories($mbox)
+  {
     // Requête http à l'API
     $ch = curl_init();
     curl_setopt_array($ch, [
@@ -571,7 +593,8 @@ class mce_driver_mel extends driver_mel {
    *   ],
    * ]
    */
-  public function restore_directories($mbox, $directories) {
+  public function restore_directories($mbox, $directories)
+  {
     $json = json_encode($directories, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
     // Requête http à l'API
@@ -606,7 +629,8 @@ class mce_driver_mel extends driver_mel {
    * 
    * @return array $args personnalisé
    */
-  public function contact_form($args) {
+  public function contact_form($args)
+  {
     // Ajout du Type et de la Category d'un contact
     $args['head_fields']['category'] = ['category'];
     $args['head_fields']['type'] = ['type'];
@@ -639,7 +663,8 @@ class mce_driver_mel extends driver_mel {
    * 
    * @return boolean
    */
-  public function if_group_exist($workspace_id) {
+  public function if_group_exist($workspace_id)
+  {
     return false;
   }
 
@@ -651,7 +676,7 @@ class mce_driver_mel extends driver_mel {
    * @return null|\LibMelanie\Api\Defaut\Group
    */
   public function get_workspace_group($workspace_id)
-  { 
+  {
     return null;
   }
 
@@ -664,7 +689,8 @@ class mce_driver_mel extends driver_mel {
    * 
    * @return boolean true si l'utilisateur a été créé, false sinon
    */
-  public function create_external_user($email, $workspace) {
+  public function create_external_user($email, $workspace)
+  {
     return false;
   }
 
@@ -676,7 +702,8 @@ class mce_driver_mel extends driver_mel {
    * 
    * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources
    */
-  public function resources($uids = null, $emails = null) {
+  public function resources($uids = null, $emails = null)
+  {
     return [];
   }
 
@@ -685,7 +712,8 @@ class mce_driver_mel extends driver_mel {
    * 
    * @return LibMelanie\Api\Defaut\Resources\Locality[] Liste des localités 
    */
-  public function resources_localities() {
+  public function resources_localities()
+  {
     return [];
   }
 
@@ -696,7 +724,8 @@ class mce_driver_mel extends driver_mel {
    * 
    * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources Flex Office
    */
-  public function resources_flex_office($locality_uid) {
+  public function resources_flex_office($locality_uid)
+  {
     return [];
   }
 
@@ -707,7 +736,8 @@ class mce_driver_mel extends driver_mel {
    * 
    * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources Flex Office
    */
-  public function resources_salle($locality_uid) {
+  public function resources_salle($locality_uid)
+  {
     return [];
   }
 
@@ -718,7 +748,8 @@ class mce_driver_mel extends driver_mel {
    * 
    * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources Flex Office
    */
-  public function resources_vehicule($locality_uid) {
+  public function resources_vehicule($locality_uid)
+  {
     return [];
   }
 
@@ -729,7 +760,39 @@ class mce_driver_mel extends driver_mel {
    * 
    * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources Flex Office
    */
-  public function resources_materiel($locality_uid) {
+  public function resources_materiel($locality_uid)
+  {
     return [];
+  }
+
+  /**
+   * Formate un numéro de téléphone en supprimant les espaces et les tirets,
+   * puis en remplaçant le préfixe par un 0 si nécessaire, et enfin en ajoutant
+   * des espaces tous les deux chiffres.
+   *
+   * @param string $phoneNumber Le numéro de téléphone à formater.
+   * @return string Le numéro de téléphone formaté.
+   */
+  protected function formatPhoneNumber($phoneNumber)
+  {
+    $rcmail = rcmail::get_instance();
+
+    if (isset($phoneNumber)) {
+      $phoneNumber = preg_replace('/\s+|-/', '', $phoneNumber); // Remplace un ou plusieurs espace | un tiret par un seul espace
+
+      foreach ($rcmail->config->get('PHONE_PREFIX', ["+33(0)", "+33", "+39", "+49", "+590", "+594", "+596", "+262", "+508", "+681", "+689", "+687"]) as $format) {
+        if (strpos($phoneNumber, $format) === 0) // si le début d'une num de tel === un des format, alors il est remplacé par un unique 0
+        {
+          if ($format === '+33' || $format === '+33(0)') {
+            $phoneNumber = '0' . substr($phoneNumber, strlen($format));
+            return preg_replace('/(..)/', '$1 ', $phoneNumber);
+          } else {
+            $phoneNumber = substr($phoneNumber, strlen($format));
+            return $format . ' ' .  preg_replace('/(..)/', '$1 ', $phoneNumber);
+          }
+        }
+      }
+    }
+    return $phoneNumber;
   }
 }

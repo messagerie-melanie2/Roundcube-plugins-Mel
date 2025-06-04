@@ -150,11 +150,18 @@ class Mobile_Stats
 
                 $result[] = array(
                     'id' => $deviceId . '_zp_' . $versionzpush,
-                    'mel_moncompte.deviceid' => '<span title="' . sprintf($this->plugin->gettext('deviceid_title'), htmlspecialchars($deviceId)) . '">' . htmlspecialchars($deviceId) . '</span>',
-                    'mel_moncompte.type' => '<span title="' . sprintf($this->plugin->gettext('type_title'), htmlspecialchars($devicetype)) . '">' . htmlspecialchars($devicetype) . '</span>',
-                    'mel_moncompte.last_sync' => '<span title="' . sprintf($this->plugin->gettext('lastsync_title'), htmlspecialchars($lastsync)) . '">' . htmlspecialchars($lastsync) . '</span>',
-                    'mel_moncompte.z-push' => '<span title="' . sprintf($this->plugin->gettext('zpush_title'), htmlspecialchars($versionzpush)) . '">' . htmlspecialchars($versionzpush) . '</span>',
+                    'mel_moncompte.deviceid' => $deviceId,
+                    'mel_moncompte.type' => $devicetype,
+                    'mel_moncompte.last_sync' => $lastsync,
+                    'mel_moncompte.z-push' => $versionzpush,
                     'class' => '',
+                    // Ajout des données pour les tooltips
+                    '_tooltips' => array(
+                        'deviceid' => $deviceId,
+                        'type' => $devicetype,
+                        'lastsync' => $lastsync,
+                        'zpush' => $versionzpush
+                    )
                 );
             }
         } catch (Exception $ex) {
@@ -167,6 +174,9 @@ class Mobile_Stats
 
         // set client env
         $this->rc->output->add_gui_object('mel_statistics_mobiles_list', $attrib['id']);
+
+        // Envoie des tooltips au JS
+        $this->rc->output->set_env('mobile_tooltips', array_column($result, '_tooltips'));
 
         return $out;
     }

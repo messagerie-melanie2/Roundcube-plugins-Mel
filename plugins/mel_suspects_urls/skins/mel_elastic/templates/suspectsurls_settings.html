@@ -1,0 +1,60 @@
+<roundcube:include file="includes/layout.html" />
+<roundcube:include file="includes/menu.html" />
+<roundcube:include file="includes/settings-menu.html" />
+
+<div id="layout-content" role="main">
+  <div class="content">
+    <!-- Titre principal -->
+    <h1 class="url-title mb-4">
+      <roundcube:label name="mel_suspects_urls.suspects_urls" />
+    </h1>
+
+    <!-- Bloc dynamique -->
+    <div id="suspect-section">
+      <div class="row url-header">
+        <div class="col-12 mb-4">
+          <h3 class="h5 mb-2">
+            <roundcube:label name="mel_suspects_urls.title_add_suspects_urls" />
+          </h3>
+          <div class="row align-items-center">
+            <div class="col-md-8 mb-2 mb-md-0">
+              <div class="mel-add-url-group">
+                <input id="suspect-input" class="form-control" type="text"
+                  placeholder="Ex : https://exemple.com ou fauxsite.net" value="">
+                <button id="clear-button" class="btn-clear-input" type="button" title="Effacer le champ"
+                  aria-label="Effacer le champ">✖</button>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <button id="suspect-add-btn" class="mel-button btn btn-primary" aria-label="Ajouter une URL suspecte"
+                title="Ajouter une URL suspecte">
+                <span class="add d-none d-sm-block">
+                  <roundcube:label name="mel_suspects_urls.add_suspects_urls" />
+                </span>
+                <span class="material-symbols-outlined">add_circle</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tableau -->
+      <div class="urls-list">
+        <table class="url-table table-striped table-bordered">
+          <thead class="url_striped">
+            <tr>
+              <th class="col-8">URL</th>
+              <th class="col-1 text-center">Statut</th>
+              <th class="col-1 text-center">Supprimer</th>
+            </tr>
+          </thead>
+          <tbody id="suspect-table-body">
+            <!-- Lignes dynamiques ici -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<roundcube:include file="includes/footer.html" />

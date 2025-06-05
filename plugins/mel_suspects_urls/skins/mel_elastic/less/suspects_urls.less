@@ -1,0 +1,221 @@
+//compress:true
+
+.url-title {
+  margin-top: 20px;
+  margin-left: 20px;
+}
+
+.url-header {
+  margin-left: 10px;
+}
+
+#suspect-add-btn {
+  margin-top: 0;
+  margin-right: 20px;
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+}
+
+#suspect-input {
+  border-radius: 60px;
+}
+
+.mel-add-url-group {
+  position: relative;
+  max-width: 100%;
+  width: 100%;
+  max-width: 1000px;
+  display: flex;
+
+  .form-control {
+    padding-right: 2.5rem;
+    width: 100%;
+  }
+
+  .btn-clear-input {
+    position: absolute;
+    top: 50%;
+    right: 0.75rem;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    font-size: 1rem;
+    line-height: 1;
+    color: #6c757d;
+    cursor: pointer;
+    display: none;
+
+    &:hover {
+      color: #000;
+    }
+  }
+}
+
+.urls-list {
+  margin: 20px;
+}
+
+.url-table{
+  width: 100%;
+  margin-bottom: 1rem;
+  border-collapse: collapse;
+
+  thead {
+    &.url_striped {
+      background-color: var(--secondary-nav-background-color);
+
+      th {
+        font-weight: bold;
+      }
+    }
+  }
+
+  &.table-striped > tbody > tr:nth-child(odd) {
+    background-color: var(--bureau-card-content-background-color);
+  }
+
+
+  button.mel-button {
+    margin: 0;
+    padding: 0.375rem 0.75rem;
+    line-height: 1;
+    font-size: 0.875rem;
+
+    .icon-mel-pencil {
+      font-size: 1rem;
+    }
+  }
+}
+
+.url-table.table-bordered{
+    td,
+    th {
+      padding: 0.75rem;
+      border: 1px solid #dee2e6;
+      vertical-align: middle;
+    }
+}
+
+.statut-select {
+  border: none !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  font-size: 14px;
+  color: inherit;
+  cursor: pointer;
+  padding-right: 10px;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.delete-url {
+  text-align: center;
+}
+
+.url-table {
+  thead.url_striped {
+    th.col-1 { // En-têtes Statut et Supprimer
+      text-align: center;
+    }
+  }
+
+  tbody {
+    td.col-1 { // Cellules Statut et Supprimer
+      text-align: center;
+      padding: 0.75rem;
+
+      &:nth-child(2) {
+        .statut-select {
+          display: inline-block;
+          width: auto;
+          max-width: 100%;
+          min-width: 120px;
+          padding: 6px 24px 6px 12px;
+          text-align: left;
+          text-align-last: center;
+          vertical-align: middle;
+          background-position: right 8px center;
+        }
+      }
+
+      &:nth-child(3) {
+        .mel-button {
+          display: inline-flex;
+          justify-content: center;
+          align-items: center;
+          width: auto;
+          padding: 6px;
+          vertical-align: middle;
+
+          .material-symbols-outlined {
+            font-size: 1.25rem;
+            line-height: 1;
+          }
+        }
+      }
+    }
+  }
+}
+
+.pagination-container {
+  text-align: center;
+  margin-top: 1rem;
+
+  .pagination {
+    display: inline-flex;
+    align-items: center; 
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    .page-item {
+      display: flex;
+      align-items: center;
+
+      .page-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: none;
+        font-size: 1rem;
+        color: var(--layout-content-text-color);
+        padding: 0.25rem 0.5rem;
+        cursor: pointer;
+        transition: color 0.2s ease;
+
+        &:hover {
+          color: #000;
+          text-decoration: underline;
+        }
+
+        &:disabled {
+          color: #ccc;
+          cursor: not-allowed;
+          text-decoration: none;
+        }
+
+        .material-symbols-outlined {
+          font-size: 1.75rem; // Icône alignée avec le texte
+          font-weight: bold;
+          line-height: 1;
+          vertical-align: middle;
+        }
+      }
+
+      &.active .page-link {
+        font-weight: bold;
+        text-decoration: underline;
+      }
+
+      &.disabled .page-link {
+        color: #ccc;
+        pointer-events: none;
+      }
+    }
+  }
+}

@@ -154,47 +154,6 @@ if (window.rcmail) {
       rcmail.mobiles_list.init();
       rcmail.mobiles_list.focus();
 
-      // Ajout dynamique des tooltips
-      var tooltips = rcmail.env.mobile_tooltips || [];
-      $('#rcmmobileslist tbody tr').each(function (index) {
-        var tips = tooltips[index];
-        if (!tips) return;
-
-        var $row = $(this);
-        $row
-          .find('td[data-column="mel_moncompte.deviceid"]')
-          .attr(
-            'title',
-            rcmail.gettext('deviceid_title', 'mel_moncompte') +
-              ': ' +
-              tips.deviceid,
-          );
-
-        $row
-          .find('td[data-column="mel_moncompte.type"]')
-          .attr(
-            'title',
-            rcmail.gettext('type_title', 'mel_moncompte') + ': ' + tips.type,
-          );
-
-        $row
-          .find('td[data-column="mel_moncompte.last_sync"]')
-          .attr(
-            'title',
-            rcmail.gettext('lastsync_title', 'mel_moncompte') +
-              ': ' +
-              tips.lastsync,
-          );
-
-        $row
-          .find('td[data-column="mel_moncompte.z-push"]')
-          .attr(
-            'title',
-            rcmail.gettext('zpush_title', 'mel_moncompte') + ': ' + tips.zpush,
-          );
-      });
-    }
-
     // Gestion des boutons désactivés
     if ($('#rcmaccountsinfo').length > 0) {
       $('#rcmaccountsinfo tbody tr').each(function () {

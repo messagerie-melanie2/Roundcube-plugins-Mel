@@ -346,20 +346,20 @@ class Mobile_Stats
                         'mel_moncompte.first_sync' => $firstsync,
                         'mel_moncompte.last_sync' => $lastsync,
                         'mel_moncompte.z-push' => $maxzpushvers,
-                        'mel_moncompte.resync' => html::tag('button', array(
+                        'mel_moncompte.resync' => ['html' => html::tag('button', [
                             'type' => 'button',
                             'class' => 'button resync',
                             'title' => $this->plugin->gettext('device_resync'),
                             'onclick' => "zpush_command('ResyncUserDevice', '$deviceId', '$userDevice')",
                             'tabindex' => '0'
-                        ), $this->plugin->gettext('device_resync')),
-                        'mel_moncompte.remove' => html::tag('button', array(
+                        ], $this->plugin->gettext('device_resync'))],
+                        'mel_moncompte.remove' => ['html' => html::tag('button', [
                             'type' => 'button',
                             'class' => 'button remove',
                             'title' => $this->plugin->gettext('device_remove'),
                             'onclick' => "zpush_command('DeleteUserDevice', '$deviceId', '$userDevice')",
                             'tabindex' => '0'
-                        ), $this->plugin->gettext('device_remove')),
+                        ], $this->plugin->gettext('device_remove'))],
                         'class' => '',
                     );
                 }
@@ -436,13 +436,13 @@ class Mobile_Stats
                                 'mel_moncompte.foldersync' => $folderidname,
                                 'mel_moncompte.last_sync' => $lastsync,
                                 'mel_moncompte.z-push' => $zpushversion,
-                                'mel_moncompte.resync' => html::tag('button', array(
+                                'mel_moncompte.resync' => ['html' => html::tag('button', [
                                     'type' => 'button',
                                     'class' => 'button resync',
                                     'title' => $this->plugin->gettext('device_resync'),
                                     'onclick' => "zpush_command('ResyncFolderId', '$deviceId', '$id_userFolder', '$id_folderid')",
                                     'tabindex' => '0'
-                                ), $this->plugin->gettext('device_resync')),
+                                ], $this->plugin->gettext('device_resync'))],
                                 'mel_moncompte.remaining' => $synced . " / " . $total,
                             );
                         }

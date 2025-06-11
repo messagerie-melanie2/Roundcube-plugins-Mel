@@ -400,7 +400,7 @@ class mel_labels_sync extends rcube_plugin
    */
   function set_flags()
   {
-    $imap = $this->rc->storage;
+    $imap = $this->rc->imap;
     $cbox = rcube_utils::get_input_value('_cur', rcube_utils::INPUT_GET);
     $mbox = rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GET);
     $toggle_label = rcube_utils::get_input_value('_toggle_label', rcube_utils::INPUT_GET);
@@ -654,6 +654,18 @@ class mel_labels_sync extends rcube_plugin
       $_post_labels = (array) rcube_utils::get_input_value('_labels', rcube_utils::INPUT_POST);
       $_post_colors = (array) rcube_utils::get_input_value('_colors', rcube_utils::INPUT_POST);
       $old_labels = $this->driver->get_user_labels($this->_get_current_user_name());
+
+      // Détecter les étiquettes vides 
+      $empty_labels = array_filter($_post_labels, function ($name) {
+        return is_string($name) && trim($name) !== '';
+      });
+
+      // Si rien à sauvegarder générer un message d'erreur
+      if (empty($empty_labels)) {
+        $this->rc->output->command('display_message', $this->gettext('empty_label_error'), 'error');
+        $p['abort'] = true; // Empêche le message de succès par défaut
+        return $p;
+      }
 
       // Parcours des labels retournés par le post
       foreach ($_post_labels as $key => $label_name) {

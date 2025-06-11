@@ -784,6 +784,7 @@ rcube_webmail.prototype.annuaire_set_show_contacts = function () {
       element
         .click(function (e) {
           $('#compose-contacts').focus().modal('show');
+          document.getElementById('contactsearchbox').value = '';
           if ($('#annuaire-list li').length == 0) {
             rcmail.annuaire_set_loading_icon();
             rcmail.http_get(

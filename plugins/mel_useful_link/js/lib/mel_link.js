@@ -394,6 +394,9 @@ class MelLinkVisualizer extends MelLink {
     //   icon = null;
     // }
     if (link && link.includes('https://')) link = null;
+
+    if (image && image.includes('https://')) image = null;
+
     super(id, title, link, inFolder);
     this._setup_image(image);
     this._setup_icon(icon);

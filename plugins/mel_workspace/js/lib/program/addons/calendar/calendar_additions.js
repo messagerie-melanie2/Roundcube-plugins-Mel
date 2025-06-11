@@ -26,7 +26,11 @@ class CalendarAddition extends WorkspaceObject {
       ) {
         calendarEvent.categories = [`ws#${this.load('current_wsp')}`];
         calendarEvent.calendar_blocked = 'true';
-      }
+      } else if (
+        (top ?? parent ?? window).$('html').hasClass('mwsp') &&
+        calendarEvent.uid
+      )
+        this.editMode = true;
 
       return { calendarEvent };
     });
@@ -36,6 +40,7 @@ class CalendarAddition extends WorkspaceObject {
       //Ecoute l'évènement `calendar.create.guests.before` pour ajouter les utilisateurs de l'espace de travail dans la liste des participants
       this.listen('calendar.create.guests.before', (data) => {
         let { calendarEvent, Guest } = data;
+
         if (
           (top ?? parent ?? window).$('html').hasClass('mwsp') &&
           this.workspace.users
@@ -61,6 +66,11 @@ class CalendarAddition extends WorkspaceObject {
       //Si on ne passe pas par le bouton "créer" de l'espace de travail, mais par l'agenda
       //Lorsque la vue de la création d'un évènement de l'agenda est chargé, on ajoute les utilisateurs de l'espace de travail dans la liste des participants
       this.listen('calendar.view.loaded', () => {
+        if (this.editMode) {
+          this.editMode = false;
+          return;
+        }
+
         if (this.isInWorkspace()) {
           this.elementLoaded = true;
           this.rcmail().command('calendar-workspace-add-all');
@@ -68,6 +78,11 @@ class CalendarAddition extends WorkspaceObject {
       });
 
       this.listen('calendar-workspace-add-all-after', () => {
+        if (this.editMode) {
+          this.editMode = false;
+          return;
+        }
+
         if (this.isInWorkspace() && this.elementLoaded) {
           this.elementLoaded = false;
           document.getElementById('edit-title').focus();

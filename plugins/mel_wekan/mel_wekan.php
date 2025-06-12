@@ -428,21 +428,51 @@ class mel_wekan extends bnum_plugin
     }
 
     #region Workspace
+    /**
+     * Affiche une liste déroulante (select HTML) des tableaux Wekan dont l'utilisateur courant est administrateur,
+     * filtrée selon la visibilité (publique/privée) du workspace courant.
+     * 
+     * Cette fonction est appelée via une action AJAX pour permettre à l'utilisateur de choisir un tableau Wekan
+     * à associer à un espace de travail (workspace).
+     * 
+     * Étapes :
+     * 1. Récupère l'identifiant du workspace depuis la requête POST.
+     * 2. Charge l'objet workspace correspondant.
+     * 3. Récupère l'identifiant du tableau Wekan actuellement associé à ce workspace.
+     * 4. Construit un élément <select> HTML contenant les tableaux administrés par l'utilisateur courant,
+     *    en filtrant selon la visibilité du workspace (public/privé).
+     * 5. Marque comme sélectionné le tableau actuellement associé.
+     * 6. Retourne le HTML généré et termine le script.
+     *
+     * @return void
+     */
     public function get_wekan_admin_boards()
     {
+        // 1. Récupère l'identifiant du workspace depuis la requête POST
         $wsp_id = rcube_utils::get_input_value("_wsp", rcube_utils::INPUT_POST);
+
+        // 2. Charge l'objet workspace correspondant
         $wsp = mel_workspace::Workspace($wsp_id);
+
+        // 3. Récupère l'identifiant du tableau Wekan actuellement associé à ce workspace
         $wekan = $wsp->objects()->get(self::KEY_FOR_WORKSPACE)->id;
         
+        // 4. Initialise le HTML du select
         $html = '<select id="select-update-wekan" class="input-mel mel-input form-control">';
 
+        // Récupère l'identifiant de l'utilisateur courant
         $userUid = driver_mel::gi()->getUser()->uid;
+
+        // 5. Parcourt les tableaux administrés par l'utilisateur courant
         foreach ($this->get_user_admin_board_generator($userUid) as $value) {
+            // Filtre selon la visibilité du workspace et du tableau
             if (($wsp->isPublic() && $value->permission === 'public') || 
             (!$wsp->isPublic() && $value->permission === 'private'))
+                // Ajoute une option au select, sélectionnée si c'est le tableau courant
                 $html .= '<option value="'.$value->id.'" '.($value->id === $wekan ? 'selected' : '').'>'.$value->title.'</option>';
         }
 
+        // 6. Termine le select et retourne le HTML
         $html .= '</select>';
 
         echo $html;

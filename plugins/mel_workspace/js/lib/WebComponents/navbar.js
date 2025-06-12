@@ -85,7 +85,7 @@ class WspNavBar extends HtmlCustomTag {
   set description(value) {
     this.workspace.description = value;
 
-    let newDesc = new WspNavBarDescription({
+    let newDesc = WspNavBarDescription.Create({
       description: value,
       parent: this,
     });
@@ -454,7 +454,7 @@ class WspNavBar extends HtmlCustomTag {
      * @type {WspNavBarDescription}
      * @package
      */
-    let description = new WspNavBarDescription({
+    let description = WspNavBarDescription.Create({
       parent: this,
     }).setNavBarParent(this);
 

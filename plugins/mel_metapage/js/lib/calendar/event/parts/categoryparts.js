@@ -78,7 +78,7 @@ export class CategoryPart extends FakePart {
 
     if (!!event.categories && event.categories.length > 0) {
       //Si il y a des catégories
-      this._$fakeField.val(event.categories[0]);
+      this._$fakeField.val(event.categories[0]).change();
 
       if (event.categories[0].includes(TAG_WSP_CATEGORY))
         this._$wspButton.css('display', EMPTY_STRING);

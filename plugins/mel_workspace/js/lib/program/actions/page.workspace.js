@@ -125,6 +125,7 @@ export class WorkspacePage extends WorkspaceObject {
           if (this.workspace.users.emails.length >= 300) {
             if (
               !confirm(
+                // eslint-disable-next-line quotes
                 "Attention, la limite d'envoi est de 300 destinataires, vous pourrez envoyer un mail seulement aux 300 premiers membres.",
               )
             )
@@ -133,7 +134,13 @@ export class WorkspacePage extends WorkspaceObject {
 
           // eslint-disable-next-line no-case-declarations
           const mails = MelEnumerable.from(this.workspace.users.emails)
-            .where((x) => x && x !== MelCurrentUser.main_email)
+            .where(
+              (x) =>
+                x &&
+                x !== null &&
+                x !== 'null' &&
+                x !== MelCurrentUser.main_email,
+            )
             .take(300)
             .join(',');
 

@@ -52,7 +52,7 @@ export class Planning extends HtmlCustomDataTag {
     this.#eventsSource = new EventSourceLoader('planning-events');
     this.#resourceSource = new (
       this.workspace.isPublic ? PublicResourceLoader : ResourcesSourceLoader
-    )('planning-resources', this.slotDurationTime, this);
+    )('planning-resources', 30, this);
 
     this._nextLoad = false;
     this._dateHeader = null;

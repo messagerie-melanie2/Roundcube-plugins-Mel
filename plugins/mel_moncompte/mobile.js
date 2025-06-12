@@ -153,7 +153,6 @@ if (window.rcmail) {
       });
       rcmail.mobiles_list.init();
       rcmail.mobiles_list.focus();
-    }
 
     // Gestion des boutons désactivés
     if ($('#rcmaccountsinfo').length > 0) {

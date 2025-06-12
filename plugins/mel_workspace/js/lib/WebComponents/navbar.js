@@ -233,7 +233,7 @@ class WspNavBar extends HtmlCustomTag {
       ._generate_description()
       ._generate_block();
 
-    let tmp = new WspPageNavigation({ parent: this, apps: this.settings });
+    let tmp = WspPageNavigation.Create({ parent: this, apps: this.settings });
     this.mainDiv.appendChild(tmp);
     tmp.onbuttonclicked.push(
       this.onbuttonclicked.call.bind(this.onbuttonclicked),

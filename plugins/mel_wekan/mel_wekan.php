@@ -80,6 +80,7 @@ class mel_wekan extends bnum_plugin
         if (class_exists("mel_metapage")) mel_metapage::add_url_spied($this->wekan_url(false), 'kanban');
 
         if ($this->rc->task === 'workspace') {
+            $this->api->register_action('get_wekan_admin_boards', $this->ID, [$this, 'get_wekan_admin_boards'], 'workspace');
             $this->add_hook('wsp.show', [$this, 'wsp_block']);
             $this->add_hook('workspace.services.set', [$this, 'workspace_services_set']);
             $this->add_hook('workspace.services.set.role', [$this, 'workspace_services_set_role']);
@@ -427,6 +428,28 @@ class mel_wekan extends bnum_plugin
     }
 
     #region Workspace
+    public function get_wekan_admin_boards()
+    {
+        $wsp_id = rcube_utils::get_input_value("_wsp", rcube_utils::INPUT_POST);
+        $wsp = mel_workspace::Workspace($wsp_id);
+        $wekan = $wsp->objects()->get(self::KEY_FOR_WORKSPACE)->id;
+        
+        $html = '<select id="select-update-wekan" class="input-mel mel-input form-control">';
+
+        $userUid = driver_mel::gi()->getUser()->uid;
+        foreach ($this->get_user_admin_board_generator($userUid) as $value) {
+            if (($wsp->isPublic() && $value->permission === 'public') || 
+            (!$wsp->isPublic() && $value->permission === 'private'))
+                $html .= '<option value="'.$value->id.'" '.($value->id === $wekan ? 'selected' : '').'>'.$value->title.'</option>';
+        }
+
+        $html .= '</select>';
+
+        echo $html;
+        exit;
+    }
+
+
     function create_workspace_wekan($workspace, $title, $isPublic, $color, $list, $users)
     {
         $wekan = $this;

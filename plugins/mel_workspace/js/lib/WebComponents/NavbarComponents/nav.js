@@ -88,11 +88,12 @@ export class WspPageNavigation extends NavBarComponent {
       jquery: false,
     }).contentWindow.rcmail.gettext(`${plugin}.${task}`);
 
-    let button = new WspNavigationButton(this, {
-      text,
+    let button = WspNavigationButton.Create({
+      parent: this,
       startingPressedState: ['true', true].includes(
         this.parent.startingStates[task],
       ),
+      text,
     });
     button.classList.add('not-busy-only');
     button.onbuttonclick.push(

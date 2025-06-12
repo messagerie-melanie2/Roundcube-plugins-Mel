@@ -253,7 +253,8 @@ class WspNavBar extends HtmlCustomTag {
   }
 
   _generate_back_button() {
-    let button = new WspButton(this, {
+    let button = WspButton.Create({
+      parent: this,
       text: 'Retour',
       icon: 'arrow_left_alt',
     });
@@ -565,7 +566,8 @@ class WspNavBar extends HtmlCustomTag {
 
   _generate_invitation() {
     if (this.workspace.isJoin && this.workspace.isAdmin) {
-      let button = new WspButton(this, {
+      let button = WspButton.Create({
+        parent: this,
         text: 'Inviter un membre',
         icon: 'person_add',
       });
@@ -583,7 +585,9 @@ class WspNavBar extends HtmlCustomTag {
       this.workspace.isJoin &&
       !(this.workspace.isAdmin && this.workspace.isAdminAlone)
     ) {
-      let button = new WspButton(this, {
+      let button = WspButton.Create({
+        parent: this,
+        // eslint-disable-next-line quotes
         text: "Quitter l'espace",
         icon: 'logout',
       });
@@ -598,8 +602,10 @@ class WspNavBar extends HtmlCustomTag {
 
   _generate_join() {
     if (!this.workspace.isJoin) {
-      let button = new WspButton(this, {
+      let button = WspButton.Create({
+        parent: this,
         style: WspButton.Style.white,
+        // eslint-disable-next-line quotes
         text: "Rejoindre l'espace",
         icon: 'add',
       });
@@ -612,7 +618,8 @@ class WspNavBar extends HtmlCustomTag {
 
   _generate_send() {
     if (this.workspace.isJoin && !this.workspace.isPublic) {
-      let button = new WspButton(this, {
+      let button = WspButton.Create({
+        parent: this,
         style: WspButton.Style.classic,
         text: 'Ecrire aux participants',
         icon: 'mail',
@@ -646,7 +653,8 @@ class WspNavBar extends HtmlCustomTag {
         !this.workspace.isPublic) &&
       rcmail.env.plugin_list_visio === true
     ) {
-      let button = new WspButton(this, {
+      let button = WspButton.Create({
+        parent: this,
         style: WspButton.Style.white,
         text: 'Visioconférence',
         icon: 'videocam',
@@ -660,7 +668,8 @@ class WspNavBar extends HtmlCustomTag {
 
   _generate_params() {
     if (this.workspace.isJoin && this.workspace.isAdmin) {
-      let button = new WspButton(this, {
+      let button = WspButton.Create({
+        parent: this,
         style: WspButton.Style.white,
         text: 'Paramètres',
         icon: 'settings',
@@ -674,7 +683,8 @@ class WspNavBar extends HtmlCustomTag {
 
   _generate_members() {
     if (this.workspace.isJoin && !this.workspace.isAdmin) {
-      let button = new WspButton(this, {
+      let button = WspButton.Create({
+        parent: this,
         style: WspButton.Style.white,
         text: 'Voir les membres',
         icon: 'info',

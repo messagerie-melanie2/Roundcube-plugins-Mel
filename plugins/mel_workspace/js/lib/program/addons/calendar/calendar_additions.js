@@ -68,6 +68,19 @@ class CalendarAddition extends WorkspaceObject {
   }
 
   /**
+   * Supprime les données associées à un évènement.
+   * @param {string} eventId - L'identifiant de l'évènement.
+   * @returns {this}
+   */
+  clearData(eventId) {
+    if (this.data.has(eventId)) {
+      this.data.remove(eventId);
+    }
+
+    return this;
+  }
+
+  /**
    * Méthode principale qui initialise les différents écouteurs d'évènements pour la gestion des espaces de travail dans l'agenda.
    * @returns {void}
    */
@@ -96,6 +109,8 @@ class CalendarAddition extends WorkspaceObject {
 
         // Tenter le bon affichage de la catégorie
         setTimeout(() => {
+          if ($('#event-add-member').length === 0) return;
+
           if ($('#event-add-member').css('display') === 'none') {
             console.log('[EVENT]La catégorie na pas été chargé correctement !');
             $('#event-category-icon').parent().parent().css('display', '');
@@ -237,6 +252,8 @@ class CalendarAddition extends WorkspaceObject {
         hasModifications = true;
         data.categories = `ws#${this.load('current_wsp')}`;
       }
+
+      this.clearData(calendarEvent.id);
 
       if (hasModifications) {
         args.data = data;

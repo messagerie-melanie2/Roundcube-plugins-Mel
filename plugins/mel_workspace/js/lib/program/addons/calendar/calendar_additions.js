@@ -1,4 +1,6 @@
+import { BaseStorage } from '../../../../../../mel_metapage/js/lib/classes/base_storage.js';
 import { MelEnumerable } from '../../../../../../mel_metapage/js/lib/classes/enum.js';
+import { EMPTY_STRING } from '../../../../../../mel_metapage/js/lib/constants/constants.js';
 import { WorkspaceObject } from '../../WorkspaceObject.js';
 
 /**
@@ -8,6 +10,29 @@ import { WorkspaceObject } from '../../WorkspaceObject.js';
 class CalendarAddition extends WorkspaceObject {
   constructor() {
     super();
+    /**
+     * @type {BaseStorage<{hasAttendees: boolean, hasCategories: boolean}>}
+     */
+    this.data = new BaseStorage();
+  }
+
+  _add(eventId) {
+    if (!this.data.has(eventId)) {
+      this.data.add(eventId, {
+        hasAttendees: false,
+        hasCategories: false,
+      });
+    }
+
+    return this;
+  }
+
+  getData(eventId) {
+    if (!this.data.has(eventId)) {
+      this._add(eventId);
+    }
+
+    return this.data.get(eventId);
   }
 
   /**
@@ -26,6 +51,15 @@ class CalendarAddition extends WorkspaceObject {
       ) {
         calendarEvent.categories = [`ws#${this.load('current_wsp')}`];
         calendarEvent.calendar_blocked = 'true';
+
+        this.getData(calendarEvent.id).hasCategories = true;
+        setTimeout(() => {
+          if ($('#event-add-member').css('display') === 'none') {
+            console.log('[EVENT]La catégorie na pas été chargé correctement !');
+            $('#event-category-icon').parent().parent().css('display', '');
+            $('#event-add-member').css('display', '');
+          }
+        }, 1000);
       } else if (
         (top ?? parent ?? window).$('html').hasClass('mwsp') &&
         calendarEvent.uid
@@ -58,6 +92,10 @@ class CalendarAddition extends WorkspaceObject {
                 ),
             ),
           );
+
+          if (calendarEvent.attendees.length > 1) {
+            this.getData(calendarEvent.id).hasAttendees = true;
+          }
         }
 
         return { calendarEvent };
@@ -74,6 +112,7 @@ class CalendarAddition extends WorkspaceObject {
         if (this.isInWorkspace()) {
           this.elementLoaded = true;
           this.rcmail().command('calendar-workspace-add-all');
+          this.getData(cal.selected_event.id).hasAttendees = true;
         }
       });
 
@@ -89,6 +128,54 @@ class CalendarAddition extends WorkspaceObject {
         }
       });
     }
+
+    this.listen('calendar.save_event.before_send', (args) => {
+      const { calEvent: calendarEvent } = args;
+      let { data } = args;
+
+      let hasModifications = false;
+
+      if (
+        this.getData(calendarEvent.id).hasAttendees &&
+        (!data.attendees || data.attendees.length === 0)
+      ) {
+        console.log(
+          "[EVENT]Les participants n'ont pas été sauvegardés correctement !",
+        );
+        hasModifications = true;
+        data.attendees ??= [];
+        let waitingAttendee = {
+          name: EMPTY_STRING,
+          email: EMPTY_STRING,
+          role: 'REQ-PARTICIPANT',
+        };
+
+        for (const attendee of $('.mel-attendee')) {
+          waitingAttendee.email = attendee.getAttribute('data-email');
+          waitingAttendee.name =
+            attendee.getAttribute('data-name') || EMPTY_STRING;
+          waitingAttendee.role =
+            attendee.getAttribute('data-hiddenrole') || 'REQ-PARTICIPANT';
+
+          data.attendees.push(waitingAttendee);
+          waitingAttendee = {};
+        }
+      }
+
+      if (
+        this.getData(calendarEvent.id).hasCategories &&
+        (!data.categories || data.categories === EMPTY_STRING)
+      ) {
+        console.log("[EVENT]La catégorie n'a pas été chargé correctement !");
+        hasModifications = true;
+        data.categories = `ws#${this.load('current_wsp')}`;
+      }
+
+      if (hasModifications) {
+        args.data = data;
+        return args;
+      }
+    });
   }
 
   /**

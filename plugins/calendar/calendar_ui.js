@@ -1390,6 +1390,41 @@ function rcube_calendar_ui(settings) {
 
         if (data.recurrence && syncstart.is(':checked')) data.syncstart = 1;
 
+        // PAMELA - Gérer la sauvegarde des évènements
+        plugin = rcmail.triggerEvent('calendar.save_event.before_send', {
+          data,
+          abort: false,
+          calEvent: event,
+        });
+
+        if (plugin) {
+          if (Array.isArray(plugin)) {
+            let somedata = {};
+            for (let dataPlugin of plugin) {
+              if (dataPlugin.then) dataPlugin = await dataPlugin;
+
+              if (dataPlugin.data) {
+                somedata.data ??= {};
+                somedata.data = Object.assign(somedata.data, dataPlugin.data);
+              }
+
+              if (dataPlugin.abort) return;
+            }
+
+            if (somedata.data) {
+              data = Object.assign(data, somedata.data);
+            }
+          } else {
+            if (plugin.then) plugin = await plugin;
+            if (plugin.data) {
+              data = Object.assign(data, plugin.data);
+            }
+
+            if (plugin.abort) return;
+          }
+        }
+        // FIN PAMELA
+
         update_event(action, data);
 
         if (rcmail.env.action != 'dialog-ui') $dialog.dialog('close');

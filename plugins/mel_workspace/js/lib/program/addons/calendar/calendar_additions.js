@@ -112,7 +112,9 @@ class CalendarAddition extends WorkspaceObject {
           if ($('#event-add-member').length === 0) return;
 
           if ($('#event-add-member').css('display') === 'none') {
-            console.log('[EVENT]La catégorie na pas été chargé correctement !');
+            console.warn(
+              '[EVENT]La catégorie na pas été chargé correctement !\r\nTentative de correction...',
+            );
             $('#event-category-icon').parent().parent().css('display', '');
             $('#event-add-member').css('display', '');
           }
@@ -220,8 +222,9 @@ class CalendarAddition extends WorkspaceObject {
         this.getData(calendarEvent.id).hasAttendees &&
         (!data.attendees || data.attendees.length === 0)
       ) {
-        console.log(
-          "[EVENT]Les participants n'ont pas été sauvegardés correctement !",
+        console.warn(
+          // eslint-disable-next-line quotes
+          "[EVENT]Les participants n'ont pas été sauvegardés correctement !\r\nTentative de correction...",
         );
         hasModifications = true;
         data.attendees ??= [];
@@ -248,7 +251,10 @@ class CalendarAddition extends WorkspaceObject {
         this.getData(calendarEvent.id).hasCategories &&
         (!data.categories || data.categories === EMPTY_STRING)
       ) {
-        console.log("[EVENT]La catégorie n'a pas été chargé correctement !");
+        // eslint-disable-next-line quotes
+        console.warn(
+          "[EVENT]La catégorie n'a pas été chargé correctement !\r\nTentative de correction...",
+        );
         hasModifications = true;
         data.categories = `ws#${this.load('current_wsp')}`;
       }

@@ -400,7 +400,7 @@ class mel_labels_sync extends rcube_plugin
    */
   function set_flags()
   {
-    $imap = $this->rc->imap;
+    $imap = $this->rc->storage;
     $cbox = rcube_utils::get_input_value('_cur', rcube_utils::INPUT_GET);
     $mbox = rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GET);
     $toggle_label = rcube_utils::get_input_value('_toggle_label', rcube_utils::INPUT_GET);

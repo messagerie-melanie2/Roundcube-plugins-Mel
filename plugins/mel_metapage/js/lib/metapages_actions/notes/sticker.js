@@ -44,6 +44,7 @@ function string_rgb_to_hex(rgb) {
  * Étend la classe MelHtml pour ajouter un bouton spécifique aux notes.
  * @param {Object} attribs Attributs HTML pour le bouton.
  * @returns {Object} Instance de MelHtml avec le bouton configuré.
+ * @deprecated
  */
 MelHtml.extend('button_note', function (attribs = {}) {
   return this.button(attribs)
@@ -117,7 +118,7 @@ export const default_note_uid = 'create';
  */
 function componentToHex(c) {
   var hex = c.toString(16);
-  return hex.length == 1 ? '0' + hex : hex;
+  return hex.length === 1 ? '0' + hex : hex;
 }
 
 /**
@@ -139,7 +140,7 @@ function rgbToHex(r, g, b) {
  */
 function padZero(str, len) {
   len = len || 2;
-  var zeros = new Array(len).join('0');
+  const zeros = new Array(len).join('0');
   return (zeros + str).slice(-len);
 }
 
@@ -153,16 +154,20 @@ function invertColor(hex, bw) {
   if (hex.indexOf('#') === 0) {
     hex = hex.slice(1);
   }
+
   // convert 3-digit hex to 6-digits.
   if (hex.length === 3) {
     hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
   }
+
   if (hex.length !== 6) {
     throw new Error('Invalid HEX color.');
   }
-  var r = parseInt(hex.slice(0, 2), 16),
+
+  let r = parseInt(hex.slice(0, 2), 16),
     g = parseInt(hex.slice(2, 4), 16),
     b = parseInt(hex.slice(4, 6), 16);
+
   if (bw) {
     // https://stackoverflow.com/a/3943023/112731
     return r * 0.299 + g * 0.587 + b * 0.114 > 186 ? '#000000' : '#FFFFFF';
@@ -587,7 +592,7 @@ export class Sticker {
         }
         ev.dataTransfer.dropEffect = 'move';
 
-        var img = new Image();
+        let img = new Image();
         img.src =
           window.location.origin +
           window.location.pathname +
@@ -597,7 +602,7 @@ export class Sticker {
         ev.dataTransfer.setData('text/plain', this.uid);
       });
 
-      $down[0].addEventListener('dragend', (ev) => {
+      $down[0].addEventListener('dragend', () => {
         $('.mel-note.dragover')
           .removeClass('dragover')
           .removeClass('dragover-right')

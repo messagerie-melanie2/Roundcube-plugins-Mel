@@ -1227,7 +1227,7 @@ export class LinkManager extends MelObject {
     }
 
     return rcmail.env.external_icon_url
-      ? rcmail.env.external_icon_url + domain
+      ? rcmail.env.external_icon_url.replace('%0', domain)
       : null;
   }
 

@@ -384,18 +384,43 @@ class MelFolderLink extends MelBaseLink {
  */
 MelFolderLink.folderOpen = false;
 
+/**
+ * Extrait le nom de domaine (host) à partir d'une URL ou d'un nom de domaine brut.
+ *
+ * @param {string} input - URL complète ou nom de domaine (avec ou sans http(s))
+ * @returns {string|null} Le domaine extrait ou null si invalide
+ */
+function extractDomain(input) {
+  if (!input || typeof input !== 'string') return null;
+
+  input = input.trim();
+
+  // Ajouter http:// si aucun protocole pour que URL() fonctionne
+  if (!/^https?:\/\//i.test(input)) {
+    input = 'http://' + input;
+  }
+
+  try {
+    const url = new URL(input);
+    // Supprime le port s’il y en a (ex: example.com:8080)
+    return url.hostname.replace(/:\d+$/, '').toLowerCase();
+  } catch (e) {
+    // En cas d'URL invalide
+    return null;
+  }
+}
+
 class MelLinkVisualizer extends MelLink {
   constructor(id, title, link, image, inFolder = false, icon = null) {
-    // if (icon && icon.includes('https://')) {
-    //   link = icon;
-    //   icon = null;
-    // }    // if (icon && icon.includes('https://')) {
-    //   link = icon;
-    //   icon = null;
-    // }
-    if (link && link.includes('https://')) link = null;
+    if (icon && icon.includes('https://')) {
+      link = icon;
+      icon = null;
+    }
 
-    if (image && image.includes('https://')) image = null;
+    if (link && (link.includes('https://') || link.includes('http://')))
+      link = rcmail.env.external_icon_url.replace('%0', extractDomain(link));
+
+    if (image && !image.includes('plugins/mel_useful_link')) image = link;
 
     super(id, title, link, inFolder);
     this._setup_image(image);

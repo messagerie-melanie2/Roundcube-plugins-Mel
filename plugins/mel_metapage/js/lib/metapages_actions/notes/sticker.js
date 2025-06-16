@@ -371,7 +371,6 @@ export class Sticker {
         .find('.change')
         .addClass('disabled')
         .attr('disabled', 'disabled');
-      //$element.find("textarea").addClass("disabled").attr("disabled", "disabled");
 
       if (this.uid === default_note_uid) await this.post_add();
 
@@ -467,7 +466,7 @@ export class Sticker {
         $('.upb').css('display', '');
         e.removeClass('crossed')
           .find('.material-symbols-outlined')
-          .html('visibility'); //.find('.icon-mel-eye-crossed').addClass('icon-mel-eye').removeClass('icon-mel-eye-crossed');
+          .html('visibility');
         this.get_html().removeClass('eye-focus');
       }
     });
@@ -510,13 +509,11 @@ export class Sticker {
         .find('.change')
         .addClass('disabled')
         .attr('disabled', 'disabled');
-      //$element.find("textarea").addClass("disabled").attr("disabled", "disabled");
 
       await this.post_delete();
 
       rcmail.set_busy(false);
       $element.find('.change').removeClass('disabled').removeAttr('disabled');
-      //$element.find("textarea").removeClass("disabled").removeAttr("disabled");
       rcmail.clear_messages();
       rcmail.display_message(
         rcmail.gettext('note_deleted_success', plugin_text),
@@ -648,29 +645,7 @@ export class Sticker {
     //puis de l'autre note
     await other.post('move', { _uid: other.uid, _order: other.order });
     //Puis on récupère tout pour éviter les bugs
-    await this.post('get'); /*.done((e) => {
-
-                rcmail.env.mel_metapages_notes = JSON.parse(e);
-
-                if (Enumerable.from(rcmail.env.mel_metapages_notes).count() === 0)
-                {
-                    rcmail.env.mel_metapages_notes = {
-                        "create":new Sticker("create", 0, "", "")
-                    };
-                }
-
-                // const html = this.html();
-                // other = Sticker.fromHtml(other.uid);
-                // const other_html = other.html();
-                // let $other = other.get_html();
-                // let $this = this.get_html();
-                // $this[0].outerHTML = other_html;
-                // $other[0].outerHTML = html;
-                // other.set_handlers();
-                // this.set_handlers();
-
-                this.trigger_event('notes.apps.updated', rcmail.env.mel_metapages_notes);
-        });*/
+    await this.post('get');
   }
 
   /**
@@ -752,7 +727,6 @@ export class Sticker {
       );
       rcmail.env.mel_metapages_notes[this.uid.replace('pin-', '')].text =
         this.text;
-      //Sticker.helper.trigger_event('notes.apps.updated', rcmail.env.mel_metapages_notes)
     }
   }
 
@@ -765,7 +739,6 @@ export class Sticker {
    * @returns {Promise<any>} Résultat de l'appel AJAX.
    */
   async post(action, params = {}, doAction = true, lock = true) {
-    //const on_eye = this.get_html().find('.icon-mel-eye-crossed').length > 0;
     if (lock && !!Sticker.lock) {
       rcmail.display_message('Une action est déjà en cours !');
       return;

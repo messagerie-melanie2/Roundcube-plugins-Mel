@@ -1,4 +1,5 @@
 import { MelEnumerable } from '../../classes/enum.js';
+import { EMPTY_STRING } from '../../constants/constants.js';
 import { MelHtml } from '../../html/JsHtml/MelHtml.js';
 import { MaterialSymbolHtml } from '../../html/html_icon.js';
 import { MelObject } from '../../mel_object.js';
@@ -25,7 +26,7 @@ function find_parent(node, cond) {
 function string_rgb_to_hex(rgb) {
   if (rgb.includes('(')) {
     rgb = rgb.split('(');
-    rgb = rgb[1].replace(')', '');
+    rgb = rgb[1].replace(')', EMPTY_STRING);
     rgb = rgb.split(',');
 
     let hex = '#';
@@ -265,8 +266,8 @@ export class Sticker {
                 .end('table')
             .end('div')
             .div({ class:'note-header-params' }).css('display', 'none')
-                .input_color(`title="${rcmail.gettext('change_background_color', plugin_text)}" aria-describedby="${this.uid}" class="change bcgcolor" value="${this.color === base_color ? this.color : rgbToHex(...Enumerable.from(this.color.replace('!important', '').replace('rgb', '').replace('a', '').replace('(', '').replace(')', '').split(',')).select(x => parseInt(x)).toArray())}"`).removeClass('form-control').removeClass('input-mel').css('max-width', '32px')
-                .input_color(`title="${rcmail.gettext('change_text_color', plugin_text)}" aria-describedby="${this.uid}" class="change txtcolor" value="${this.textcolor === base_text_color ? this.textcolor : rgbToHex(...Enumerable.from(this.textcolor.replace('rgb', '').replace('a', '').replace('(', '').replace(')', '').split(',')).select(x => parseInt(x)).toArray())}"`).removeClass('form-control').removeClass('input-mel').css('max-width', '32px')
+                .input_color(`title="${rcmail.gettext('change_background_color', plugin_text)}" aria-describedby="${this.uid}" class="change bcgcolor" value="${this.color === base_color ? this.color : rgbToHex(...Enumerable.from(this.color.replace('!important', EMPTY_STRING).replace('rgb', EMPTY_STRING).replace('a', EMPTY_STRING).replace('(', EMPTY_STRING).replace(')', EMPTY_STRING).split(',')).select(x => parseInt(x)).toArray())}"`).removeClass('form-control').removeClass('input-mel').css('max-width', '32px')
+                .input_color(`title="${rcmail.gettext('change_text_color', plugin_text)}" aria-describedby="${this.uid}" class="change txtcolor" value="${this.textcolor === base_text_color ? this.textcolor : rgbToHex(...Enumerable.from(this.textcolor.replace('rgb', EMPTY_STRING).replace('a', EMPTY_STRING).replace('(', EMPTY_STRING).replace(')', EMPTY_STRING).split(',')).select(x => parseInt(x)).toArray())}"`).removeClass('form-control').removeClass('input-mel').css('max-width', '32px')
                 .button_note(this._generate_buttons_attributes('bb', rcmail.gettext('quit_settings', plugin_text), {})).css('float', 'right').css('border-radius', '0 5px 0 0!important')
                     .icon('arrow_back').end()
                     .sr()
@@ -290,10 +291,16 @@ export class Sticker {
                     .sr()
                         .text('Récupérer la couleur d\'une autre note')
                     .end('sr')
-                .end('Taille')
+                .end('Pipette')
+                .button_note(this._generate_buttons_attributes('duplicate', 'Dupliquer la note', {})).css('float', 'right')
+                    .icon('tab_duplicate').end()
+                    .sr()
+                        .text('Dupliquer la note')
+                    .end('sr')
+                .end('Dupliquer')
             .end('params')
             .div({ class:'note-body' })
-                .textarea({ rows:5, title:'Ecrivez vos notes dans ce champ', class:'change', style:`width:100%;background-color:${this.color};color:${this.textcolor};${(this.height ? `height:${this.height}px;` : '')}` })
+                .textarea({ rows:5, title:'Ecrivez vos notes dans ce champ', class:'change', style:`width:100%;background-color:${this.color};color:${this.textcolor};${(this.height ? `height:${this.height}px;` : EMPTY_STRING)}` })
                     .text(this.text)
                 .end()
             .end()
@@ -311,7 +318,7 @@ export class Sticker {
   _generate_buttons_attributes(
     button_class,
     title,
-    { additionnal_style = '' },
+    { additionnal_style = EMPTY_STRING },
   ) {
     return {
       title,
@@ -350,7 +357,7 @@ export class Sticker {
       });
 
     $element.find('button.rsb').click(() => {
-      $element.find('textarea').css('height', '');
+      $element.find('textarea').css('height', EMPTY_STRING);
       if (this.uid !== default_note_uid) this.post_height_updated(-1);
     });
 
@@ -367,6 +374,21 @@ export class Sticker {
       e.stopPropagation();
     });
 
+    $element.find('button.duplicate').click(async () => {
+      let duplicated = new Sticker(
+        EMPTY_STRING,
+        this.order,
+        this.title,
+        this.text,
+      );
+      duplicated.color = this.color;
+      duplicated.textcolor = this.textcolor;
+
+      if (this.height) duplicated.height = this.height;
+
+      await duplicated.post_add();
+    });
+
     //Handler pour le bouton créer
     $element.find('button.nb').click(async () => {
       if (rcmail.busy === true) return;
@@ -380,8 +402,8 @@ export class Sticker {
       if (this.uid === default_note_uid) await this.post_add();
 
       let sticker = Sticker.fromHtml(this.uid);
-      sticker.text = '';
-      sticker.title = '';
+      sticker.text = EMPTY_STRING;
+      sticker.title = EMPTY_STRING;
       await sticker.post_add();
 
       rcmail.set_busy(false);
@@ -401,12 +423,13 @@ export class Sticker {
 
     $element.find('.takb').click(async () => {
       let $item = this.uid.includes('pin-')
-        ? Sticker.fromHtml(this.uid.replace('pin-', '')).get_html()
+        ? Sticker.fromHtml(this.uid.replace('pin-', EMPTY_STRING)).get_html()
         : [];
 
       this.pin = !this.pin;
-      rcmail.env.mel_metapages_notes[this.uid.replace('pin-', '')].pin =
-        this.pin;
+      rcmail.env.mel_metapages_notes[
+        this.uid.replace('pin-', EMPTY_STRING)
+      ].pin = this.pin;
 
       if (this.pin) {
         $element
@@ -422,16 +445,16 @@ export class Sticker {
         $element
           .find('.takb')
           .find('.material-symbols-outlined')
-          .css('font-variation-settings', '');
+          .css('font-variation-settings', EMPTY_STRING);
         if ($item.length > 0)
           $item
             .find('.takb')
             .find('.material-symbols-outlined')
-            .css('font-variation-settings', '');
+            .css('font-variation-settings', EMPTY_STRING);
       }
 
       await this.post('pin', {
-        _uid: this.uid.replace('pin-', ''),
+        _uid: this.uid.replace('pin-', EMPTY_STRING),
         _pin: this.pin,
       });
 
@@ -442,10 +465,10 @@ export class Sticker {
       e = $(e.currentTarget);
       if (!e.hasClass('crossed')) {
         $('.mel-note').css('display', 'none');
-        $element.css('display', '');
+        $element.css('display', EMPTY_STRING);
         $('.mm-shortcuts.apps .square_div').css('display', 'none');
         $('.shortcut-notes')
-          .css('display', '')
+          .css('display', EMPTY_STRING)
           .css('max-width', '100%')
           .css('width', '100%')
           .css('margin', '0 20%');
@@ -458,17 +481,17 @@ export class Sticker {
           .html('visibility_off');
         this.get_html().addClass('eye-focus');
       } else {
-        $('.mel-note').css('display', '');
-        $('.mm-shortcuts.apps .square_div').css('display', '');
+        $('.mel-note').css('display', EMPTY_STRING);
+        $('.mm-shortcuts.apps .square_div').css('display', EMPTY_STRING);
         $('.shortcut-notes')
-          .css('display', '')
-          .css('max-width', '')
-          .css('width', '')
-          .css('margin', '');
+          .css('display', EMPTY_STRING)
+          .css('max-width', EMPTY_STRING)
+          .css('width', EMPTY_STRING)
+          .css('margin', EMPTY_STRING);
         $('.fullscreen-item-flex').css('display', 'flex');
         $('.nb').removeClass('disabled').removeAttr('disabled');
-        $('.downb').css('display', '');
-        $('.upb').css('display', '');
+        $('.downb').css('display', EMPTY_STRING);
+        $('.upb').css('display', EMPTY_STRING);
         e.removeClass('crossed')
           .find('.material-symbols-outlined')
           .html('visibility');
@@ -480,14 +503,14 @@ export class Sticker {
     $element.find('button.pb').click(() => {
       $element.css('width', $element.width() + 'px');
       $element.find('.note-header').css('display', 'none');
-      $element.find('.note-header-params').css('display', '');
+      $element.find('.note-header-params').css('display', EMPTY_STRING);
     });
 
     //Handler pour le bouton retour
     $element.find('button.bb').click(() => {
-      $element.find('.note-header').css('display', '');
+      $element.find('.note-header').css('display', EMPTY_STRING);
       $element.find('.note-header-params').css('display', 'none');
-      $element.css('width', '');
+      $element.css('width', EMPTY_STRING);
     });
 
     //Handler pour le bouton supprimer
@@ -730,8 +753,9 @@ export class Sticker {
         true,
         false,
       );
-      rcmail.env.mel_metapages_notes[this.uid.replace('pin-', '')].text =
-        this.text;
+      rcmail.env.mel_metapages_notes[
+        this.uid.replace('pin-', EMPTY_STRING)
+      ].text = this.text;
     }
   }
 
@@ -757,7 +781,7 @@ export class Sticker {
       (params['_uid'].includes('pin-') || this.uid.includes('pin-'));
 
     if (!!params['_uid'] && params['_uid'].includes('pin-'))
-      params['_uid'] = params['_uid'].replace('pin-', '');
+      params['_uid'] = params['_uid'].replace('pin-', EMPTY_STRING);
 
     if (action === 'pin') {
       Sticker.helper.trigger_event('notes.apps.start-pin', true);
@@ -776,8 +800,8 @@ export class Sticker {
             rcmail.env.mel_metapages_notes[default_note_uid] = new Sticker(
               'create',
               0,
-              '',
-              '',
+              EMPTY_STRING,
+              EMPTY_STRING,
             );
           }
 
@@ -794,10 +818,12 @@ export class Sticker {
                 'confirmation',
               );
         } else {
-          rcmail.env.mel_metapages_notes[this.uid.replace('pin-', '')].text =
-            this.text;
-          rcmail.env.mel_metapages_notes[this.uid.replace('pin-', '')].title =
-            this.title;
+          rcmail.env.mel_metapages_notes[
+            this.uid.replace('pin-', EMPTY_STRING)
+          ].text = this.text;
+          rcmail.env.mel_metapages_notes[
+            this.uid.replace('pin-', EMPTY_STRING)
+          ].title = this.title;
 
           if (pin) {
             Sticker.helper.trigger_event(
@@ -873,7 +899,7 @@ export class Sticker {
   static findByOrder(order) {
     let id = $(`.mel-note[data-order=${order}]`).attr('id');
     return Sticker.fromHtml(
-      id === undefined ? undefined : id.replace('note-', ''),
+      id === undefined ? undefined : id.replace('note-', EMPTY_STRING),
     );
   }
 
@@ -882,7 +908,7 @@ export class Sticker {
    * @returns {Promise<void>} Résultat de l'appel AJAX.
    */
   static async new() {
-    await new Sticker('', -1, '', '').post_add();
+    await new Sticker(EMPTY_STRING, -1, EMPTY_STRING, EMPTY_STRING).post_add();
   }
 }
 
@@ -922,11 +948,11 @@ function checkColor(color) {
       ? rgbToHex(
           ...MelEnumerable.from(
             color
-              .replace('!important', '')
-              .replace('rgb', '')
-              .replace('a', '')
-              .replace('(', '')
-              .replace(')', '')
+              .replace('!important', EMPTY_STRING)
+              .replace('rgb', EMPTY_STRING)
+              .replace('a', EMPTY_STRING)
+              .replace('(', EMPTY_STRING)
+              .replace(')', EMPTY_STRING)
               .split(','),
           )
             .select((x) => parseInt(x))
@@ -961,7 +987,7 @@ document.addEventListener('click', (e) => {
         if (pipette) {
           const parentElement = pipette.parentElement;
           // Récupère les inputs de couleur de fond et de texte
-          const inputColor = parentElement.querySelector('.bckg');
+          const inputColor = parentElement.querySelector('.bcgcolor');
           const inputTextColor = parentElement.querySelector('.txtcolor');
 
           // Applique les couleurs récupérées et déclenche l'événement de changement

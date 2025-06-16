@@ -157,6 +157,7 @@ $labels['label-unread'] =      'Non lus'              ;
 $labels['label-followed'] =    'Suivis'               ;
 $labels['label-attachment'] =  'Avec une pièce jointe';
 $labels['label-labels'] =      'Étiquettes'           ;
+$labels['label-nolabels'] =    'Sans étiquettes'      ;
 $labels['label-priority'] =    'Priorités'            ;
 $labels['label-noresponses'] = 'Sans réponses'        ;
 

@@ -655,6 +655,42 @@ les propriétés « nom » et « valeur ».
       mel_filter_manager.base_callback(filter, $caller, {});
     });
 
+    rcmail.addEventListener(
+      'quick-filter.nolabels',
+      /**
+       * Événement déclenché lorsqu'aucune étiquette (label) n'est sélectionnée dans les filtres rapides.
+       *
+       * Cet event permet de réinitialiser l'affichage des labels, de désactiver le filtre "labels",
+       * puis de construire une action de filtre qui exclut tous les labels connus.
+       * Enfin, il applique ce filtre via la callback de base.
+       *
+       * @event quick-filter.nolabels
+       * @param {Object} args - Les arguments de l'événement.
+       * @param {mel_filter} args.filter - Le filtre concerné.
+       * @param {jQuery} args.target_event - L'élément déclencheur de l'événement.
+       */
+      (args) => {
+        const { filter, target_event } = args;
+
+        // Réinitialise l'affichage des labels et retire l'état actif du bouton "labels"
+        mel_filter_manager.reset_labels();
+        $('#quick-filter-labels').removeClass('active');
+
+        // Construit une liste d'exclusion pour tous les labels connus
+        const labels = Object.keys(rcmail.env.labels_translate).map((key) => {
+          return (
+            'NOT KEYWORD ' +
+            key.replace('_-s-_', '$').replace('_-t-_', '~').toUpperCase()
+          );
+        });
+
+        // Met à jour l'action du filtre pour exclure tous les labels
+        filter.action = labels.join(' ');
+        // Applique le filtre via la callback standard
+        mel_filter_manager.base_callback(filter, target_event, {});
+      },
+    );
+
     rcmail.addEventListener('quick-filter.priority', async (args) => {
       let { filter, target_event } = args;
 

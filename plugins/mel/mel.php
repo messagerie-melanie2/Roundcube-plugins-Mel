@@ -234,7 +234,7 @@ class mel extends rcube_plugin
 
         if (in_array($this->rc->action, ['', 'index'])) {
           $container = 'messagelistfiltersmenu';
-          $filters = ['all', 'unread', 'followed', 'labels', 'priority', 'attachment', 'noresponses'];
+          $filters = ['all', 'unread', 'followed', 'labels', 'nolabels', 'priority', 'attachment', 'noresponses'];
           //Filtres rapides
           foreach ($filters as $value) {
             $config = array(
@@ -257,6 +257,11 @@ class mel extends rcube_plugin
                 break;
               case 'labels':
                 $config['data-filter-custom-action'] = 'trigger:quick-filter.labels';
+                $config['data-filter-can-be-multiple'] = true;
+                break;
+
+                case 'nolabels':
+                $config['data-filter-custom-action'] = 'trigger:quick-filter.nolabels';
                 $config['data-filter-can-be-multiple'] = true;
                 break;
 

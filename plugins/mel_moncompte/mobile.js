@@ -153,6 +153,7 @@ if (window.rcmail) {
       });
       rcmail.mobiles_list.init();
       rcmail.mobiles_list.focus();
+    }
 
     // Gestion des boutons désactivés
     if ($('#rcmaccountsinfo').length > 0) {
@@ -163,7 +164,6 @@ if (window.rcmail) {
             .find('button.resync')
             .prop('disabled', true)
             .attr('aria-disabled', 'true')
-            .attr('tabindex', '-1');
         }
         var td_user = $(this).children('.mel_moncompte\\.user');
         if (td_user.html().indexOf(rcmail.env.current_user) == -1) {
@@ -171,7 +171,6 @@ if (window.rcmail) {
             .find('button.resync, button.remove')
             .prop('disabled', true)
             .attr('aria-disabled', 'true')
-            .attr('tabindex', '-1');
         }
       });
     }
@@ -184,7 +183,6 @@ if (window.rcmail) {
             .find('button.resync')
             .prop('disabled', true)
             .attr('aria-disabled', 'true')
-            .attr('tabindex', '-1');
         }
         var td_user = $(this).children('.mel_moncompte\\.mailbox');
         if (td_user.html().indexOf(rcmail.env.current_user) == -1) {
@@ -192,7 +190,6 @@ if (window.rcmail) {
             .find('button.resync')
             .prop('disabled', true)
             .attr('aria-disabled', 'true')
-            .attr('tabindex', '-1');
         }
       });
     }
@@ -200,6 +197,7 @@ if (window.rcmail) {
     // Gestion du focus pour l'accessibilité
     $('button.resync, button.remove, #mobile_actions a')
       .attr('role', 'button')
+      .attr('tabindex', '0')
       .on('focus', function () {
         $(this).addClass('keyboard-focus');
       })

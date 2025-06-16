@@ -1,3 +1,4 @@
+import { MelEnumerable } from '../../classes/enum.js';
 import { MelHtml } from '../../html/JsHtml/MelHtml.js';
 import { MaterialSymbolHtml } from '../../html/html_icon.js';
 import { MelObject } from '../../mel_object.js';
@@ -259,8 +260,8 @@ export class Sticker {
                 .end('table')
             .end('div')
             .div({ class:'note-header-params' }).css('display', 'none')
-                .input_color(`title="${rcmail.gettext('change_background_color', plugin_text)}" aria-describedby="${this.uid}" class="change bcgcolor" value="${this.color === base_color ? this.color : rgbToHex(...Enumerable.from(this.color.replace('!important', '').replace('rgb', '').replace('a', '').replace('(', '').replace(')', '').split(',')).select(x => parseInt(x)).toArray())}"`).removeClass('form-control').removeClass('input-mel')
-                .input_color(`title="${rcmail.gettext('change_text_color', plugin_text)}" aria-describedby="${this.uid}" class="change txtcolor" value="${this.textcolor === base_text_color ? this.textcolor : rgbToHex(...Enumerable.from(this.textcolor.replace('rgb', '').replace('a', '').replace('(', '').replace(')', '').split(',')).select(x => parseInt(x)).toArray())}"`).removeClass('form-control').removeClass('input-mel')
+                .input_color(`title="${rcmail.gettext('change_background_color', plugin_text)}" aria-describedby="${this.uid}" class="change bcgcolor" value="${this.color === base_color ? this.color : rgbToHex(...Enumerable.from(this.color.replace('!important', '').replace('rgb', '').replace('a', '').replace('(', '').replace(')', '').split(',')).select(x => parseInt(x)).toArray())}"`).removeClass('form-control').removeClass('input-mel').css('max-width', '32px')
+                .input_color(`title="${rcmail.gettext('change_text_color', plugin_text)}" aria-describedby="${this.uid}" class="change txtcolor" value="${this.textcolor === base_text_color ? this.textcolor : rgbToHex(...Enumerable.from(this.textcolor.replace('rgb', '').replace('a', '').replace('(', '').replace(')', '').split(',')).select(x => parseInt(x)).toArray())}"`).removeClass('form-control').removeClass('input-mel').css('max-width', '32px')
                 .button_note(this._generate_buttons_attributes('bb', rcmail.gettext('quit_settings', plugin_text), {})).css('float', 'right').css('border-radius', '0 5px 0 0!important')
                     .icon('arrow_back').end()
                     .sr()
@@ -277,6 +278,12 @@ export class Sticker {
                     .icon('fullscreen_exit').end()
                     .sr()
                         .text('Réinitialiser la taille de la note')
+                    .end('sr')
+                .end('Taille')
+                .button_note(this._generate_buttons_attributes('pipette', 'Récupérer la couleur d\'une autre note', {})).css('float', 'right')
+                    .icon('colorize').end()
+                    .sr()
+                        .text('Récupérer la couleur d\'une autre note')
                     .end('sr')
                 .end('Taille')
             .end('params')
@@ -340,6 +347,19 @@ export class Sticker {
     $element.find('button.rsb').click(() => {
       $element.find('textarea').css('height', '');
       if (this.uid !== default_note_uid) this.post_height_updated(-1);
+    });
+
+    $element.find('button.pipette').click((e) => {
+      document.body.classList.add('mel-metapage-pipette');
+      $element
+        .find('button.pipette')
+        .addClass('active')
+        .css('background-color', 'lightgreen')
+        .css('pointer-events', 'none');
+
+      Sticker.pipette = true;
+
+      e.stopPropagation();
     });
 
     //Handler pour le bouton créer
@@ -907,4 +927,85 @@ Object.defineProperties(Sticker, {
     },
     configurable: true,
   },
+});
+
+/**
+ * Vérifie et convertit une couleur en format hexadécimal si nécessaire.
+ * Si la couleur est la couleur de base, elle est retournée telle quelle.
+ * Si la couleur est au format RGB, elle est convertie en hexadécimal.
+ * Sinon, la couleur est retournée telle quelle.
+ * @param {string} color Couleur à vérifier et convertir.
+ * @returns {string} Couleur au format hexadécimal ou inchangée.
+ */
+function checkColor(color) {
+  return color === base_color
+    ? base_color
+    : color.includes('rgb')
+      ? rgbToHex(
+          ...MelEnumerable.from(
+            color
+              .replace('!important', '')
+              .replace('rgb', '')
+              .replace('a', '')
+              .replace('(', '')
+              .replace(')', '')
+              .split(','),
+          )
+            .select((x) => parseInt(x))
+            .toArray(),
+        )
+      : color;
+}
+
+document.addEventListener('click', (e) => {
+  // Gestion du mode pipette pour récupérer la couleur d'une autre note
+  if (Sticker.pipette) {
+    let parent = e.target;
+
+    // Remonte dans le DOM jusqu'à trouver un parent avec la classe 'mel-note'
+    while (
+      parent &&
+      !parent.classList.contains('mel-note') &&
+      parent.nodeName !== 'HTML'
+    ) {
+      parent = parent.parentElement;
+    }
+
+    // Si un élément note est trouvé, on récupère ses couleurs
+    if (parent.classList.contains('mel-note')) {
+      const color = parent.style.backgroundColor;
+      const text_color = parent.style.color;
+
+      if (color && text_color) {
+        // Trouve le bouton pipette actif dans la note courante
+        const pipette = document.querySelector('.mel-note .pipette.active');
+
+        if (pipette) {
+          const parentElement = pipette.parentElement;
+          // Récupère les inputs de couleur de fond et de texte
+          const inputColor = parentElement.querySelector('.bckg');
+          const inputTextColor = parentElement.querySelector('.txtcolor');
+
+          // Applique les couleurs récupérées et déclenche l'événement de changement
+          inputColor.value = checkColor(color);
+          inputTextColor.value = checkColor(text_color);
+          inputTextColor.dispatchEvent(new Event('change', { bubbles: true }));
+          inputColor.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      }
+    }
+
+    // Réinitialise l'état visuel de tous les boutons pipette
+    for (const btn of document.querySelectorAll('.mel-note .pipette')) {
+      btn.style.backgroundColor = null;
+      btn.style.pointerEvents = null;
+      btn.classList.remove('active');
+    }
+
+    // Retire la classe pipette du body pour sortir du mode pipette
+    document.body.classList.remove('mel-metapage-pipette');
+
+    // Désactive le mode pipette
+    Sticker.pipette = false;
+  }
 });

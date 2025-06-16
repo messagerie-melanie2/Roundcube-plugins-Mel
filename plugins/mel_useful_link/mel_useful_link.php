@@ -50,11 +50,13 @@ class mel_useful_link extends bnum_plugin
       $this->init_links();
 
       $this->add_hook('mel.portal.links.html', array($this, 'mel_portal_link'));
-      $this->rc->output->set_env("mul_items", $this->rc->config->get('new_personal_useful_links', []));
-      $this->rc->output->set_env("external_icon_url", $this->rc->config->get('external_icon_url', []));
-      $this->rc->output->set_env("default_links", $this->get_store_link());
 
-      $this->rc->output->set_env("mel_portal_ulink", true);
+      if ($this->get_current_action() !== 'refresh') {
+        $this->rc->output->set_env("mul_items", $this->rc->config->get('new_personal_useful_links', []));
+        $this->rc->output->set_env("external_icon_url", $this->rc->config->get('external_icon_url', []));
+        $this->rc->output->set_env("default_links", $this->get_store_link());
+        $this->rc->output->set_env("mel_portal_ulink", true);
+      }
     } else if (class_exists('mel_metapage') && mel_metapage::can_add_widget()) {
       mel_metapage::add_widget("all_links", "useful_links");
       mel_metapage::add_widget("not_taked_links", "useful_links", 'joined');

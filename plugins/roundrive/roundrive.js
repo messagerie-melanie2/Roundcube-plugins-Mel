@@ -259,6 +259,10 @@ function roundrive_directory_selector_dialog(id) {
 
   $('#foldercreatelink').attr('tabindex', 0);
 
+  buttons[rcmail.gettext('roundrive.cancel')] = function () {
+    roundrive_dialog_close(this);
+  };
+
   buttons[rcmail.gettext('roundrive.save')] = function () {
     var lock = rcmail.set_busy(true, 'roundrive.saving'),
       request = {
@@ -277,10 +281,6 @@ function roundrive_directory_selector_dialog(id) {
     roundrive_dialog_close(this);
   };
 
-  buttons[rcmail.gettext('roundrive.cancel')] = function () {
-    roundrive_dialog_close(this);
-  };
-
   if (!rcmail.env.folders_loaded) {
     fn = function () {
       file_api.folder_list();
@@ -288,13 +288,73 @@ function roundrive_directory_selector_dialog(id) {
     };
   }
 
+  /**
+   * Fonction de rappel précédente, appelée avant la personnalisation des boutons du dialogue.
+   * Si aucune fonction n'est définie, une fonction vide est utilisée par défaut.
+   */
+  const old_fn = fn ?? (() => {});
+
+  /**
+   * Fonction de personnalisation des boutons du dialogue de sélection de dossier.
+   * Cette fonction ajoute des icônes personnalisées aux boutons "Enregistrer" et "Annuler"
+   * du dialogue, et centre l'ensemble des boutons dans la barre d'action.
+   * Elle utilise le contexte du document courant ou du parent selon la présence de la barre de boutons.
+   */
+  fn = function () {
+    const ICON_SAVE = 'arrow_right_alt'; // Icône pour le bouton "Enregistrer"
+    const ICON_CANCEL = 'close'; // Icône pour le bouton "Annuler"
+    const STYLE = 'display:flex; align-items: center; margin:12px 4px;'; // Style commun aux boutons
+
+    // Détermine le contexte (fenêtre courante ou parent) selon la présence de la barre de boutons
+    const context = document.querySelector('.ui-dialog-buttonset')
+      ? window
+      : parent;
+    var button;
+    var icon;
+
+    // Appelle la fonction de rappel précédente, si elle existe
+    old_fn();
+
+    // Personnalise le bouton principal (Enregistrer)
+    button = context.document.querySelector('.ui-dialog-buttonset .mainaction');
+    button.setAttribute('style', STYLE);
+
+    // Ajoute l'icône si elle n'est pas déjà présente
+    if (!button.querySelector('bnum-icon')) {
+      icon = context.document.createElement('bnum-icon');
+      icon.innerHTML = ICON_SAVE;
+      icon.style.marginLeft = '40px';
+      button.appendChild(icon);
+    }
+
+    // Personnalise le bouton d'annulation (Annuler)
+    button = context.document.querySelector('.ui-dialog-buttonset .btn-danger');
+    button.setAttribute('style', STYLE);
+
+    // Ajoute l'icône si elle n'est pas déjà présente
+    if (!button.querySelector('bnum-icon')) {
+      icon = context.document.createElement('bnum-icon');
+      icon.innerHTML = ICON_CANCEL;
+      icon.style.marginLeft = '40px';
+      button.appendChild(icon);
+    }
+
+    // Centre la barre de boutons dans le dialogue
+    context.document.querySelector(
+      '.ui-dialog-buttonset',
+    ).style.justifyContent = 'center';
+
+    icon = null;
+    button = null;
+  };
+
   // show dialog window
   roundrive_dialog_show(
     dialog,
     {
       title: rcmail.gettext('roundrive.' + label),
       buttons: buttons,
-      button_classes: ['mainaction'],
+      button_classes: ['mel-button btn-danger', 'mainaction mel-button'],
       minWidth: 330,
       minHeight: 380,
       height: 400,

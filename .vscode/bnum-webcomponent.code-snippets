@@ -1,0 +1,42 @@
+{
+	// Place your Roundcube-plugins-Mel workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
+	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
+	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
+	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are: 
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. 
+	// Placeholders with the same ids are connected.
+	// Example:
+	"create Webcomponent class": {
+		"scope": "javascript",
+		"prefix": "class webcomponent",
+		"body": [
+			"class ${1:MyWebComponent} extends ABnumHTMLElement {",
+			"\tstatic _p_observedAttributes() { return [];}",
+			"",
+			"\tconstructor() {",
+			"\tsuper();",
+			"\t}",
+			"",
+			"\t_p_render() {",
+			"\t\tsuper._p_render();",
+			"",
+			"\t\treturn '';",
+			"\t}",
+			"",
+			"\tstatic Create() {}",
+			"",
+			"\t/**",
+			"\t * @type {string}",
+			"\t * @readonly",
+			"\t */",
+			"\tstatic get TAG() {",
+			"\t\treturn '${2:my-web-component}';",
+			"\t}",
+			"}",
+			"",
+			"${1:MyWebComponent}.TryDefine();"
+
+		],
+		"description": "Log output to console"
+	}
+}

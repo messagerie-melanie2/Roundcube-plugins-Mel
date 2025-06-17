@@ -2,6 +2,7 @@ import ABaseMelObject from '../../../base_mel_object.js';
 import { BaseStorage } from '../../../classes/base_storage.js';
 import { Random } from '../../../classes/random.js';
 import { EMPTY_STRING } from '../../../constants/constants.js';
+import { REG_XSS_SAFE } from '../../../constants/regexp.js';
 import { BnumModules } from '../../../helpers/dynamic_load_modules.js';
 import { MaterialIcon } from '../../../icons.js';
 import { isNullOrUndefined } from '../../../mel.js';
@@ -685,11 +686,42 @@ class BnumHtmlShadowIcon extends BnumHtmlIcon {
     this.#_icon = value;
   }
 
+  /**
+   * @readonly
+   * @type {?string}
+   */
+  get align() {
+    const align = this.data('align') ?? EMPTY_STRING;
+
+    if (align === EMPTY_STRING || REG_XSS_SAFE.test(align)) return align;
+    else {
+      console.error(
+        '###[BnumHtmlShadowIcon]: align is not a valid value, must be empty or alphanumeric.',
+      );
+      throw new Error(
+        'BnumHtmlShadowIcon: align is not a valid value, must be empty or alphanumeric.',
+      );
+    }
+  }
+
   _p_main() {
     super._p_main();
     let root = this._p_start_construct();
 
     root.append(this.#_loadStyle(), BnumHtmlIcon.Create({ icon: this.icon }));
+
+    if (this.align !== EMPTY_STRING) {
+      let style = document.createElement('style');
+      style.appendChild(
+        document.createTextNode(`
+            :host bnum-icon {
+                justify-content: ${this.align};
+            }
+        `),
+      );
+      root.appendChild(style);
+      style = null;
+    }
 
     root = null;
   }

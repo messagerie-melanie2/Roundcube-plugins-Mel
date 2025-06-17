@@ -61,6 +61,9 @@ export default class ABnumHTMLElement extends HTMLElement {
      * @type {BnumEvent<BnumHTMLElementAttributeChangedCallback>}
      */
     this._p_on_attribute_changed = new BnumEvent();
+
+    const script = this.querySelector('script');
+    if (script) script.remove();
   }
 
   /**
@@ -384,12 +387,11 @@ export default class ABnumHTMLElement extends HTMLElement {
 
     if (fromAttribute) data = this.getAttribute(`data-${name}`);
     else {
-      if (this._p_hasData(name)) data = this._p_getData(name);
-      else {
+      if (this.hasAttribute(`data-${name}`)) {
         data = this.#_getData(name, true);
         this.removeAttribute(`data-${name}`);
-        this._p_setData(data);
-      }
+        this._p_setData(name, data);
+      } else data = this._p_getData(name);
     }
 
     return data;

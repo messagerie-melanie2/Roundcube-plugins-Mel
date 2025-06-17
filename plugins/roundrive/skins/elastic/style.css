@@ -1,6 +1,6 @@
 /* Taskbar button */
 #taskbar a.button-files span.button-inner {
-	background: url(images/stockage.png?v=e784.5000) center 15px no-repeat;
+  background: url(images/stockage.png?v=e784.5000) center 15px no-repeat;
 }
 
 /* Attachment toolbar button */
@@ -11,11 +11,11 @@
 
 /* Files main interface */
 body.roundrive #filestoolbar {
-   position: absolute;
-   height: 40px;
-   left: 15px;
-   top: 7px;
-   z-index: 10;
+  position: absolute;
+  height: 40px;
+  left: 15px;
+  top: 7px;
+  z-index: 10;
 }
 
 body.roundrive #filestoolbar a.button.upload {
@@ -43,7 +43,8 @@ body.roundrive #filestoolbar a.button.edit {
 }
 
 body.roundrive #filestoolbar a.button.save {
-  background: url(images/sauvegarder.png?v=e784.5000) center center no-repeat #fff;
+  background: url(images/sauvegarder.png?v=e784.5000) center center no-repeat
+    #fff;
   background-color: var(--buttons-bg-color);
 }
 
@@ -120,32 +121,32 @@ ul.listing li {
 }
 
 ul.treelist.iconized li div.treetoggle {
-    top: 7px;
-    left: 3px;
+  top: 7px;
+  left: 3px;
 }
 
 ul.treelist.iconized ul li div.treetoggle {
-    left: 18px;
+  left: 18px;
 }
 
 ul.treelist.iconized ul ul li div.treetoggle {
-    left: 33px;
+  left: 33px;
 }
 
 ul.treelist.iconized ul ul ul li div.treetoggle {
-    left: 48px;
+  left: 48px;
 }
 
 ul.treelist.iconized ul ul ul ul li div.treetoggle {
-    left: 63px;
+  left: 63px;
 }
 
 ul.treelist.iconized ul ul ul ul ul li div.treetoggle {
-    left: 78px;
+  left: 78px;
 }
 
 ul.treelist.iconized ul ul ul ul ul ul li div.treetoggle {
-    left: 93px;
+  left: 93px;
 }
 
 #files-folder-list ul li span.name {
@@ -196,7 +197,8 @@ ul.treelist.iconized ul ul ul ul ul ul li div.treetoggle {
   height: 18px;
   width: 20px;
   padding: 0;
-  background: url(../../../../skins/larry/images/listicons.png) -100px 0 no-repeat;
+  background: url(../../../../skins/larry/images/listicons.png) -100px 0
+    no-repeat;
 }
 
 .filelist thead tr th.options {
@@ -215,13 +217,14 @@ ul.treelist.iconized ul ul ul ul ul ul li div.treetoggle {
 
 .filelist thead tr th.options .listmenu:focus {
   outline: none;
-  background-color: rgba(73,180,210,0.7);
+  background-color: rgba(73, 180, 210, 0.7);
 }
 
 .filelist tbody tr td.options:hover span {
   width: 26px;
   height: 18px;
-  background: url(../../../../skins/larry/images/buttons.png) -5px -417px no-repeat;
+  background: url(../../../../skins/larry/images/buttons.png) -5px -417px
+    no-repeat;
   display: block;
 }
 
@@ -263,21 +266,20 @@ ul.treelist.iconized ul ul ul ul ul ul li div.treetoggle {
 
 #filelistcontainer.droptarget.hover,
 #filelistcontainer.droptarget.active {
-	border-color: #019bc6;
-	box-shadow: 0 0 3px 2px rgba(71,135,177, 0.5);
-	-webkit-box-shadow: 0 0 3px 2px rgba(71,135,177, 0.5);
+  border-color: #019bc6;
+  box-shadow: 0 0 3px 2px rgba(71, 135, 177, 0.5);
+  -webkit-box-shadow: 0 0 3px 2px rgba(71, 135, 177, 0.5);
 }
 
 #filelistcontainer.droptarget.hover {
-	background-color: #d9ecf4;
-	box-shadow: 0 0 5px 2px rgba(71,135,177, 0.9);
-	-webkit-box-shadow: 0 0 5px 2px rgba(71,135,177, 0.9);
+  background-color: #d9ecf4;
+  box-shadow: 0 0 5px 2px rgba(71, 135, 177, 0.9);
+  -webkit-box-shadow: 0 0 5px 2px rgba(71, 135, 177, 0.9);
 }
 
 #filelistcontainer.droptarget.hover #filelist tbody td {
-	background-color: #d9ecf4;
+  background-color: #d9ecf4;
 }
-
 
 /* plugin dialogs */
 
@@ -292,7 +294,7 @@ ul.treelist.iconized ul ul ul ul ul ul li div.treetoggle {
 }
 
 #files-dialog .boxfooter .listbutton.add {
-	right: 0px;
+  right: 0px;
 }
 
 #files-compose-dialog #folderlistbox {
@@ -304,7 +306,7 @@ ul.treelist.iconized ul ul ul ul ul ul li div.treetoggle {
 }
 
 #files-dialog #folderlistbox {
-  top: 5px;
+  top: 0;
   bottom: 0;
   left: 0;
   right: 0;
@@ -346,7 +348,7 @@ ul.treelist.iconized ul ul ul ul ul ul li div.treetoggle {
 
 a.filesaveall {
   display: inline-block;
-  margin-top: .5em;
+  margin-top: 0.5em;
   padding: 3px 5px 4px 5px;
 }
 
@@ -409,13 +411,12 @@ table.propform td.source table.propform td {
 }
 
 #files-compose-dialog #layout-list,
-#files-compose-dialog #layout-content
-{
-    margin-left: 0px!important;
-    margin-top: 0px;
-    height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
+#files-compose-dialog #layout-content {
+  margin-left: 0px !important;
+  margin-top: 0px;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* #files-compose-dialog #layout-content
@@ -424,81 +425,74 @@ table.propform td.source table.propform td {
     margin-left: 0px!important;
 } */
 
-table#filelist tr{
+table#filelist tr {
   transition: all 0.1s ease-in;
   cursor: pointer;
 }
 
 table#filelist tr:hover {
-	background-color: #484D7A;
-  color:white;
+  background-color: #484d7a;
+  color: white;
 }
 
-table#filelist tr.selected
-{
-  background-color: #363A5B;
-  color:white;
+table#filelist tr.selected {
+  background-color: #363a5b;
+  color: white;
 }
 
 ul.treelist li.mailbox.child.selected {
-	background-color: #363A5B;
+  background-color: #363a5b;
 }
 
 ul.treelist li.mailbox.selected > .name {
-	text-decoration: underline;
+  text-decoration: underline;
 }
 
 html.layout-small .mel-dialog {
-	left: unset !important;
-	right: 5px;
-	/* padding-left: 60px; */
-	width: calc(100% - 70px) !important;
+  left: unset !important;
+  right: 5px;
+  /* padding-left: 60px; */
+  width: calc(100% - 70px) !important;
 }
 
-#files-compose-dialog .header
-{
+#files-compose-dialog .header {
   display: none;
 }
 
-html.layout-small #files-compose-dialog .header
-{
+html.layout-small #files-compose-dialog .header {
   display: block;
 }
 
-.mel-dialog .ui-dialog-buttonset
-{
-  display: block!important;
+.mel-dialog .ui-dialog-buttonset {
+  display: block !important;
 }
 
 .icon-mel-undo-after,
-.icon-mel-arrow-right-after
-{
-  font-family: unset!important;
+.icon-mel-arrow-right-after {
+  font-family: unset !important;
 }
 
 .icon-mel-undo-after:after {
-  content: "\e936";
+  content: '\e936';
 }
 
 .icon-mel-arrow-right-after:after {
-  content: "\e900";
+  content: '\e900';
 }
 
 .icon-mel-undo-after:after,
-.icon-mel-arrow-right-after:after
-{
-  font-family: "DWP";
+.icon-mel-arrow-right-after:after {
+  font-family: 'DWP';
 }
 
 .mel-button.icon-mel-undo-after:after,
-.mel-button.icon-mel-arrow-right-after:after
-{
+.mel-button.icon-mel-arrow-right-after:after {
   margin-left: 15px;
 }
 
 .roundrive-folder-create-select {
-	position: sticky;
-	bottom: 0;
-	background-color: white;
-	text-align: right;
+  position: sticky;
+  bottom: 0;
+  background-color: white;
+  text-align: right;
 }

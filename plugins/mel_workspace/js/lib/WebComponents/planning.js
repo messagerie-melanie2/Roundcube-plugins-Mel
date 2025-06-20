@@ -31,6 +31,8 @@ import { RenderEvent, ViewRender } from './events.js';
 import { FullCalendarElement } from './fullcalendar.js';
 import { WorkspaceModuleBlock } from './workspace_module_block.js';
 
+const PLANNING_TIMESLOT = 60; // minutes
+
 export class Planning extends HtmlCustomDataTag {
   /**
    * @type {string}
@@ -50,7 +52,7 @@ export class Planning extends HtmlCustomDataTag {
     this.#eventsSource = new EventSourceLoader('planning-events');
     this.#resourceSource = new (
       this.workspace.isPublic ? PublicResourceLoader : ResourcesSourceLoader
-    )('planning-resources', this.slotDurationTime, this);
+    )('planning-resources', 30, this);
 
     this._nextLoad = false;
     this._dateHeader = null;
@@ -91,7 +93,7 @@ export class Planning extends HtmlCustomDataTag {
   }
 
   get slotDurationTime() {
-    return 60 / this.calSettings.timeslots;
+    return PLANNING_TIMESLOT;
   }
 
   /**
@@ -309,7 +311,7 @@ export class Planning extends HtmlCustomDataTag {
       height: 400,
       firstHour: settings.first_hour,
       slotDurationType: 'm',
-      slotDurationTime: 60 / settings.timeslots,
+      slotDurationTime: PLANNING_TIMESLOT,
       axisFormat: DATE_HOUR_FORMAT,
       slotLabelFormat: DATE_HOUR_FORMAT,
       resources: this._generate_resources(),
@@ -662,7 +664,7 @@ class SourceLoader extends WorkspaceObject {
 
     this.#data = new dataSourceType();
 
-    this.#key = key;
+    this.#key = `${key}-v2`;
     this.#url = url;
     this.#type = type;
     this.#loadCallback = loadCallback;
@@ -691,7 +693,6 @@ class SourceLoader extends WorkspaceObject {
 
   async get(start, end, { force = false, ignore = false } = {}) {
     if (ignore) return;
-    // debugger;
 
     const key = start.format('DD/MM/YYYY');
     /**
@@ -700,8 +701,6 @@ class SourceLoader extends WorkspaceObject {
     let data = force ? null : this.#data;
 
     if (!data || !data?.has?.({ date: key })) {
-      data = force ? null : this._load(); //this._p_try_load(start, end);
-
       if (!data || !data?.has?.({ date: key })) {
         if (this.#loadCallback) {
           data = await this.#loadCallback(start, end, this, force);
@@ -726,23 +725,27 @@ class SourceLoader extends WorkspaceObject {
         }
 
         this.#data.add(start, data);
-        this._save(data);
-        // if (this.#data[key]) this.#data[key] = {};
-        // this.#data[key] = data;
       } else data = data.toArray(key);
-    } else data = data.toArray(key); //.toArray(key); //MelEnumerable.from(data.get.bind(data, key));
+    } else data = data.toArray(key);
 
     return data;
   }
 
+  /**
+   * @deprecated
+   * @returns {this}
+   */
   _save() {
-    //this.save('planning-' + this.#key, this.#data.serialize());
     let saved = this.load(this.#key, {});
     saved[this.workspace.uid] = this.#data.serialize();
     this.save(this.#key, saved);
     return this;
   }
 
+  /**
+   * @deprecated
+   * @returns {?any}
+   */
   _load() {
     let data = this.load(this.#key, {});
 

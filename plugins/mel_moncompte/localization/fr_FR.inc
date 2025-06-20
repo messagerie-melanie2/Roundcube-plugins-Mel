@@ -363,6 +363,8 @@ $labels['first_sync'] = 'Première synchro';
 $labels['user'] = 'Utilisateur';
 $labels['resync'] = 'Resync';
 $labels['remove'] = 'Enlever';
+$labels['device_resync'] = 'Resynchroniser l\'appareil';
+$labels['device_remove'] = 'Enlever l\'appareil';
 $labels['remaining'] = 'Statut';
 $labels['device_info'] = 'Informations sur l\'appareil';
 $labels['activesync_info'] = 'Informations sur ActiveSync';
@@ -414,3 +416,8 @@ $labels['sort'] = 'Tri Alpha.';
 $labels['sort_title'] = 'Trier par ordre alphabétique';
 $labels['sort_warning'] = 'Cela va changer l\'ordre de vos agenda, êtes vous-sûr de votre action ?';
 $labels['cannot_sort'] = 'Vous pouvez trier par ordre alphabétique seulement depuis votre agenda personnel !';
+
+$labels['deviceid_title'] = 'Identifiant de l\'appareil : %s';
+$labels['type_title'] = 'Type d\'appareil : %s';
+$labels['lastsync_title'] = 'Dernière synchronisation : %s';
+$labels['zpush_title'] = 'Version Z-Push : %s';

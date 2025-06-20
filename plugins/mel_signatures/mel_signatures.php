@@ -18,7 +18,7 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-class mel_signatures extends rcube_plugin
+class mel_signatures extends bnum_plugin
 {
     /**
      *
@@ -341,13 +341,16 @@ class mel_signatures extends rcube_plugin
 
         $attrib['class'] = "dropdown-check-list";
         
-        $links = "";
+        $links = '';
+        $custom_links = '';
         $env_links = [];
         $checkbox = new html_checkbox();
         $i = 1;
 
         $default_url = $this->get_default_url();
         $links .= html::tag('li', [], $checkbox->show("", ['value' => 'custom-link', 'id' => "checkbox-custom-link", 'onchange' => 'onInputChange();']) . html::label(['for' => "checkbox-custom-link"], $this->gettext('customlink')));
+        // Prise en compte des liens personnalisés. Permet d'ajouter des liens en prioritée.
+        $links .= '{{custom_links}}';
         $signature_links = $this->rc->config->get('signature_links', []);
         foreach ($signature_links as $name => $link) {
             $id = "signature_links_$i";
@@ -355,6 +358,19 @@ class mel_signatures extends rcube_plugin
             $env_links[$link] = $name;
             $links .= html::tag('li', ['title' => $name], $checkbox->show($signature_links[$default_url], ['value' => $link, 'id' => $id, 'onchange' => 'onInputChange();']) . html::label(['for' => $id], $name));
         }
+
+        $plugin = $this->exec_hook('signature.links', ['custom_links' => '', 'links' => $links, 'env_links' => $env_links, 'signature_links' => $signature_links, 'attribs' => $attrib]);
+
+        if ($plugin) {
+            $custom_links = $plugin['custom_links'] ?? '';
+            $links = $plugin['links'] ?? $links;
+            $env_links = $plugin['env_links'] ?? $env_links;
+            $attrib = array_merge($attrib, $plugin['attribs'] ?? []);
+        }
+
+        // Si on a des liens personnalisés, on les ajoute
+        $links = str_replace('{{custom_links}}', $custom_links, $links);
+
         $this->rc->output->set_env('signature_links', $env_links);
         return html::div($attrib,
             html::span(['class' => 'anchor'], $this->gettext('linksselection')) .

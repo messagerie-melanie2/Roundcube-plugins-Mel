@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Mél double authentification
  *
@@ -17,8 +18,9 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-include_once __DIR__.'/../bnum/bnum_plugin.php';
-class mel_doubleauth extends bnum_plugin {
+include_once __DIR__ . '/../bnum/bnum_plugin.php';
+class mel_doubleauth extends bnum_plugin
+{
     /**
      *
      * @var rcmail
@@ -29,46 +31,46 @@ class mel_doubleauth extends bnum_plugin {
      * Configuration du nombre de code de récupération
      */
     const NUMBER_RECOVERY_CODES = 4;
-        
+
     /**
      * Expiration du cookie : calcul pour 30 jours (60*60*24*30)
      */
     const EXPIRE_COOKIE = 2592000;
-    
+
     /**
      * Initialisation du plugin
      *
      * @see rcube_plugin::init()
      */
-    public function init() {
+    public function init()
+    {
         $this->rc = rcmail::get_instance();
         $this->load_config();
-        
+
         // Ajout du css
         $this->include_stylesheet($this->local_skin_path() . '/mel_doubleauth.css');
-        
+
         // hooks
         if (!$this->is_internal()) { // Connexion intranet => pas de double auth
             $this->add_hook('login_after', array($this, 'login_after'));
             $this->add_hook('logout_after', array($this, 'logout_after'));
             $this->add_hook('send_page', array($this, 'check_2FAlogin'));
             $this->add_hook('render_page', array($this, 'popup_msg_enrollment'));
-        }
-        else {
+        } else {
             // Si on est internal on considère qu'on s'est connecté avec la double auth (en cas de changement de VPN)
             $_SESSION['mel_doubleauth_login'] = time();
             $_SESSION['mel_doubleauth_2FA_login'] = time();
         }
-        
+
         $this->add_texts('localization/', true);
-        
+
         // check code with ajax
         $this->register_action('plugin.mel_doubleauth-checkcode', array($this, 'checkCode'));
-        
+
         // add user with ajax
         $this->register_action('plugin.mel_doubleauth-adduser', array($this, 'addUser'));
         $this->register_action('plugin.mel_doubleauth-removeuser', array($this, 'removeUser'));
-        
+
         // config
         $this->register_action('mel_doubleauth', array($this, 'mel_doubleauth_init'));
         if ($this->rc->task == 'settings') {
@@ -77,8 +79,7 @@ class mel_doubleauth extends bnum_plugin {
             $this->register_action('plugin.mel.doubleauth.set', array($this, 'actions_set'));
             $this->register_action('plugin.mel.doubleauth.send_otp', array($this, 'send_otp'));
             $this->register_action('plugin.mel.doubleauth.verify_code', array($this, 'verify_code'));
-        }
-        else if ($this->rc->task === 'login') {
+        } else if ($this->rc->task === 'login') {
             $this->register_action('plugin.da.try_connect', array($this, 'otp_forgotten_connect'));
         }
 
@@ -87,19 +88,19 @@ class mel_doubleauth extends bnum_plugin {
 
         $user = driver_mel::gi()->getUser();
         if ($user) {
-          $user->load(['double_authentification_forcee', 'double_authentification_date_butoir','internet_access_enable']);
-          $this->rc->output->set_env("internet_access_enable", $user->internet_access_enable);
-          if ($user->double_authentification_forcee) {
-            $config_2FA = $this->__get2FAconfig();
-        
-            if (!$config_2FA['activate']) {
-                $this->rc->output->set_env("double_authentification_forcee", $user->double_authentification_forcee);
-                $this->rc->output->set_env("double_authentification_date_butoir", $user->double_authentification_date_butoir);
+            $user->load(['double_authentification_forcee', 'double_authentification_date_butoir', 'internet_access_enable']);
+            $this->rc->output->set_env("internet_access_enable", $user->internet_access_enable);
+            if ($user->double_authentification_forcee) {
+                $config_2FA = $this->__get2FAconfig();
+
+                if (!$config_2FA['activate']) {
+                    $this->rc->output->set_env("double_authentification_forcee", $user->double_authentification_forcee);
+                    $this->rc->output->set_env("double_authentification_date_butoir", $user->double_authentification_date_butoir);
+                }
             }
-          }
         }
-      }
-        
+    }
+
     /**
      * Hook login_after
      * Permet d'afficher la demande de double authentification en js
@@ -111,11 +112,11 @@ class mel_doubleauth extends bnum_plugin {
     {
         //mel_logs::get_instance()->log(mel_logs::DEBUG, "doubleauth_login_after");
         if ($this->is_auth_strong()) return $args;
-        
+
         $_SESSION['mel_doubleauth_login'] = time();
-        
+
         $config_2FA = $this->__get2FAconfig();
-        
+
         if (!$this->login_after_check_deadline($config_2FA)) return $args;
 
         $url = rcube_utils::get_input_value('_url', rcube_utils::INPUT_GPC);
@@ -143,46 +144,47 @@ class mel_doubleauth extends bnum_plugin {
                         } else {
                             mel_logs::get_instance()->log(mel_logs::DEBUG, "__ValidateCookie : false");
                             unset($_COOKIE['roundcube_doubleauth']);
-                            rcube_utils::setcookie('roundcube_doubleauth', null, - 1);
+                            rcube_utils::setcookie('roundcube_doubleauth', null, -1);
                         }
                     } else {
                         mel_logs::get_instance()->log(mel_logs::DEBUG, "__ValidateCookie : expire");
                         unset($_COOKIE['roundcube_doubleauth']);
-                        rcube_utils::setcookie('roundcube_doubleauth', null, - 1);
+                        rcube_utils::setcookie('roundcube_doubleauth', null, -1);
                     }
                 } else {
                     mel_logs::get_instance()->log(mel_logs::DEBUG, "__ValidateCookie : pas correct");
                     unset($_COOKIE['roundcube_doubleauth']);
-                    rcube_utils::setcookie('roundcube_doubleauth', null, - 1);
+                    rcube_utils::setcookie('roundcube_doubleauth', null, -1);
                 }
             }
         } else {
             mel_logs::get_instance()->log(mel_logs::DEBUG, "cookie login : pas présent");
             unset($_COOKIE['roundcube_doubleauth']);
-            rcube_utils::setcookie('roundcube_doubleauth', null, - 1);
+            rcube_utils::setcookie('roundcube_doubleauth', null, -1);
         }
-        
+
         if (!$config_2FA['activate']) {
             if ($this->rc->config->get('force_enrollment_users')) {
                 $this->__goingRoundcubeTask('settings', 'plugin.mel_doubleauth');
             }
             return $args;
         }
-        
+
         $this->rc->output->set_pagetitle($this->gettext('mel_doubleauth'));
-        
+
         $this->add_texts('localization', true);
         $this->setup_module();
         $this->include_script('mel_doubleauth_form.js');
 
 
         $this->rc->output->set_env('double_authentification_adresse_recuperation', driver_mel::gi()->getUser()->double_authentification_adresse_recuperation);
-       $this->rc->output->set_env("_url", $url);
-        
+        $this->rc->output->set_env("_url", $url);
+
         $this->rc->output->send('login');
     }
 
-    private function login_after_check_deadline($config_2FA, $user = null){
+    private function login_after_check_deadline($config_2FA, $user = null)
+    {
         $return = true;
 
         $user = $user ?? driver_mel::gi()->getUser();
@@ -192,14 +194,15 @@ class mel_doubleauth extends bnum_plugin {
 
             if (!$deadline || $deadline < $user->double_authentification_date_butoir) $deadline = $user->double_authentification_date_butoir;
 
-            if ($user->double_authentification_forcee && 
-                !$config_2FA['activate'] && 
-                (!$deadline || new DateTime() > $deadline)) {
+            if (
+                $user->double_authentification_forcee &&
+                !$config_2FA['activate'] &&
+                (!$deadline || new DateTime() > $deadline)
+            ) {
                 $this->__exitSession($this->gettext('logout_2fa_needed_not_secure'));
                 $return = false;
             }
-        }
-        else {
+        } else {
             $this->__exitSession($this->gettext('logout_2fa_needed_unknown'));
             $return = false;
         }
@@ -215,7 +218,8 @@ class mel_doubleauth extends bnum_plugin {
      * 
      * @return bool
      */
-    public static function date_grace_enabled($user = null) {
+    public static function date_grace_enabled($user = null)
+    {
         $return = false;
         $user = $user ?? driver_mel::gi()->getUser();
 
@@ -246,7 +250,7 @@ class mel_doubleauth extends bnum_plugin {
 
         return $args;
     }
-    
+
     /**
      * Interception du positionnement du code par l'utilisateur
      * Permet également d'empêcher les connexion aux autres tasks sans double authentification
@@ -261,27 +265,27 @@ class mel_doubleauth extends bnum_plugin {
         if ($this->is_auth_strong()) {
             return $p;
         }
-        
+
         $config_2FA = $this->__get2FAconfig();
-        
+
         if ($config_2FA['activate']) {
             $code = rcube_utils::get_input_value('_code_2FA', rcube_utils::INPUT_POST);
-            
+
             if ($code) {
                 if ($this->__checkCode($code) || $this->__isRecoveryCode($code)) {
                     if ($this->__isRecoveryCode($code)) {
                         $this->__consumeRecoveryCode($code);
                     }
-                    
+
                     if (isset($_COOKIE['roundcube_login'])) {
                         // création d'un cookie pour la sauvegarde de l'authentification.
                         $expiration = self::EXPIRE_COOKIE + time();
                         rcube_utils::setcookie('roundcube_doubleauth', $this->rc->user->get_username() . "###" . $code . "###" . $expiration . "###roundcube", $expiration);
                         // envoi des données au webservice pour sauvegarde en base
-                        $this->__addCookie($this->rc->user->get_username(), $code, intval($expiration),"roundcube");
+                        $this->__addCookie($this->rc->user->get_username(), $code, intval($expiration), "roundcube");
                     } else {
                         unset($_COOKIE['roundcube_doubleauth']);
-                        rcube_utils::setcookie('roundcube_doubleauth', null, - 1);
+                        rcube_utils::setcookie('roundcube_doubleauth', null, -1);
                     }
                     $url = rcube_utils::get_input_value('_url', rcube_utils::INPUT_GPC);
 
@@ -289,8 +293,7 @@ class mel_doubleauth extends bnum_plugin {
 
                     if (isset($url) && $url !== '') $this->__goingToUrl($url);
                     else $this->__goingRoundcubeTask($this->rc->config->get('default_task', 'mail'));
-                }
-                else {
+                } else {
                     $this->__exitSession();
                 }
             }
@@ -305,49 +308,56 @@ class mel_doubleauth extends bnum_plugin {
             if (isset($user)) {
                 $user->load(['double_authentification']);
                 if ($user->double_authentification) {
-                    mel_logs::get_instance()->log(mel_logs::INFO, "[login] Echec de connexion pour l'utilisateur <".$user->uid."> Code erreur : 492 (Double authentification obligatoire)");
+                    mel_logs::get_instance()->log(mel_logs::INFO, "[login] Echec de connexion pour l'utilisateur <" . $user->uid . "> Code erreur : 492 (Double authentification obligatoire)");
                     $this->__exitSession($this->gettext('logout_2fa_needed'));
                 }
                 // Continuer à proposer l'enrollment si besoin
-                else if ($this->rc->config->get('force_enrollment_users') 
-                        && ($this->rc->task !== 'settings' || $this->rc->action !== 'plugin.mel_doubleauth')) {
+                else if (
+                    $this->rc->config->get('force_enrollment_users')
+                    && ($this->rc->task !== 'settings' || $this->rc->action !== 'plugin.mel_doubleauth')
+                ) {
                     $this->__goingRoundcubeTask('settings', 'plugin.mel_doubleauth');
                 }
             }
         }
-        
+
         return $p;
     }
-    
+
     /**
      * Afficher la popup d'enrollement si la double authentification n'est pas activée
      */
     public function popup_msg_enrollment()
     {
         $config_2FA = $this->__get2FAconfig();
-        
-        if (!$config_2FA['activate']
-                && $this->rc->config->get('force_enrollment_users') 
-                && $this->rc->task == 'settings' 
-                && $this->rc->action == 'plugin.mel_doubleauth') {
+
+        if (
+            !$config_2FA['activate']
+            && $this->rc->config->get('force_enrollment_users')
+            && $this->rc->task == 'settings'
+            && $this->rc->action == 'plugin.mel_doubleauth'
+        ) {
 
             // add overlay input box to html page
             $this->rc->output->add_footer(
-                html::tag('form', array(
+                html::tag(
+                    'form',
+                    array(
                         'id' => 'enrollment_dialog',
                         'method' => 'post'
                     ),
                     html::tag('h3', null, $this->gettext('enrollment_dialog_title')) .
-                    $this->gettext('enrollment_dialog_msg')
+                        $this->gettext('enrollment_dialog_msg')
                 )
             );
-            
+
             $this->rc->output->add_script(
-                "$('#enrollment_dialog').show().dialog({ modal:true, resizable:false, closeOnEscape: true, width:420 });", 'docready'
+                "$('#enrollment_dialog').show().dialog({ modal:true, resizable:false, closeOnEscape: true, width:420 });",
+                'docready'
             );
         }
     }
-        
+
     /**
      * Afficher la configuration de la double authentification
      */
@@ -359,13 +369,13 @@ class mel_doubleauth extends bnum_plugin {
             $this->register_handler('plugin.body', array($this, 'mel_doubleauth_form'));
         }
 
-        $this->rc->output->set_env('email_code_expiration', $this->rc->config->get('code_expiration', 30*60));
-        
+        $this->rc->output->set_env('email_code_expiration', $this->rc->config->get('code_expiration', 30 * 60));
+
         $this->rc->output->set_pagetitle($this->gettext('mel_doubleauth'));
         //$this->load_js_page('resend');
         $this->rc->output->send('plugin');
     }
-    
+
     /**
      * Enregistrement de la configuration de double authentification
      */
@@ -374,29 +384,29 @@ class mel_doubleauth extends bnum_plugin {
         $this->add_texts('localization/', true);
         $this->register_handler('plugin.body', array($this, 'mel_doubleauth_form'));
         $this->rc->output->set_pagetitle($this->gettext('mel_doubleauth'));
-        
+
         // POST variables
         $activate = rcube_utils::get_input_value('p2FA_activate', rcube_utils::INPUT_POST);
         $recovery_codes = (array)rcube_utils::get_input_value('2FA_recovery_codes', rcube_utils::INPUT_POST);
-        
+
         // remove recovery codes without value
         $recovery_codes = array_values(array_diff($recovery_codes, array('')));
-        
+
         $data = $this->__get2FAconfig();
         $data['secret'] = null;
         $data['activate'] = $activate ? true : false;
         $data['recovery_codes'] = $recovery_codes;
         $this->__set2FAconfig($data);
-        
+
         // if we can't save time into SESSION, the plugin logouts
         $_SESSION['mel_doubleauth_2FA_login'] = time();
-        
+
         $this->rc->output->show_message($this->gettext('successfully_saved'), 'confirmation');
-        
+
         $this->rc->overwrite_action('plugin.mel_doubleauth');
         $this->rc->output->send('plugin');
     }
-    
+
     /**
      * Construction du formulaire de configuration pour la double authentification
      * 
@@ -409,22 +419,29 @@ class mel_doubleauth extends bnum_plugin {
         /**
          * Create a bootstrap row
          */
-        function row($content, $class = 'row') { return html::div(['class' => "$class"], $content); }
+        function row($content, $class = 'row')
+        {
+            return html::div(['class' => "$class"], $content);
+        }
 
         /**
          * Create a bootstrap col
          */
-        function col($content, $class = 'col-sm my-auto') { return html::div(['class' => "$class"], $content); }
+        function col($content, $class = 'col-sm my-auto')
+        {
+            return html::div(['class' => "$class"], $content);
+        }
 
         /**
          * Create a bootstrap col in one row
          */
-        function rowcol($content, $rowclass = 'row', $colclass = 'col-sm my-auto', $rowid = null) { 
-            return html::div(['class' => "$rowclass"], html::div(['class' => "$colclass", 'id' => $rowid], $content)); 
+        function rowcol($content, $rowclass = 'row', $colclass = 'col-sm my-auto', $rowid = null)
+        {
+            return html::div(['class' => "$rowclass"], html::div(['class' => "$colclass", 'id' => $rowid], $content));
         }
-        
+
         $data = $this->__get2FAconfig();
-        
+
         // info
         $div_container = rowcol(html::span(['class' => 'texte_explic'], $this->gettext('msg_infor')));
 
@@ -433,7 +450,7 @@ class mel_doubleauth extends bnum_plugin {
         $input_descsecret = new html_inputfield(['name' => $field_id, 'id' => $field_id, 'type' => 'hidden', 'value' => $data['secret']]);
 
         $hidden_fields = $input_descsecret->show();
-        
+
         if (!$data['activate']) {
             // Activate/deactivate
             $field_id = 'p2FA_activate_button';
@@ -441,23 +458,23 @@ class mel_doubleauth extends bnum_plugin {
 
             $div_container .= row(
                 col(html::label($field_id, $this->Q($this->gettext('label_activate'))), 'col-sm-2 my-auto') .
-                col($bouton_active->show(), 'col-sm-3')
+                    col($bouton_active->show(), 'col-sm-3')
             );
 
             $div_container .= row(
                 col($this->gettext('info_activer'))
             );
-            
+
             $field_id = 'p2FA_activate';
             $input_descsecret = new html_inputfield(['name' => $field_id, 'id' => $field_id, 'type' => 'hidden', 'value' => '1', 'readonly' => 'readonly']);
 
             $hidden_fields .= $input_descsecret->show();
-            
+
             $html_recovery_codes = '';
 
             for ($i = 0; $i < self::NUMBER_RECOVERY_CODES; $i++) {
                 $value = isset($data['recovery_codes'][$i]) ? $data['recovery_codes'][$i] : '';
-                $html_recovery_codes .= ' <input type="hidden" readonly = "readonly" name="2FA_recovery_codes[]" value="'.$value.'" maxlength="10"> &nbsp; ';
+                $html_recovery_codes .= ' <input type="hidden" readonly = "readonly" name="2FA_recovery_codes[]" value="' . $value . '" maxlength="10"> &nbsp; ';
             }
 
             $hidden_fields .= $html_recovery_codes;
@@ -465,44 +482,48 @@ class mel_doubleauth extends bnum_plugin {
             $html_check_code = '<input type="text" id="2FA_code_to_check" class="form-control" maxlength="10" aria-labelledby="info_check_code">&nbsp;&nbsp;<input type="button" class="button mainaction" id="2FA_check_code" value="' . $this->gettext('check_code') . '">';
 
             $div_container .= rowcol($this->gettext('info_active_ok'));
-            $div_container .= rowcol($this->gettext('info_check_code'), 'row', 'col-sm my-auto','info_check_code');
+            $div_container .= rowcol($this->gettext('info_check_code'), 'row', 'col-sm my-auto', 'info_check_code');
             $div_container .= rowcol($html_check_code);
             $div_container .= rowcol('<br>');
 
             // recovery codes
             $div_container .= rowcol($this->gettext('recovery_codes'));
 
-            $html_recovery_codes = '<input type="button" class="button mainaction" id="2FA_show_recovery_codes" value="' . $this->gettext('show_recovery_codes').'">';
-            
+            $html_recovery_codes = '<input type="button" class="button mainaction" id="2FA_show_recovery_codes" value="' . $this->gettext('show_recovery_codes') . '">';
+
             for ($i = 0; $i < self::NUMBER_RECOVERY_CODES; $i++) {
                 $value = isset($data['recovery_codes'][$i]) ? $data['recovery_codes'][$i] : '';
-                $html_recovery_codes .= ' <input type="password" class="form-control" readonly = "readonly" name="2FA_recovery_codes[]" value="'.$value.'" maxlength="10"> &nbsp; ';
+                $html_recovery_codes .= ' <input type="password" class="form-control" readonly = "readonly" name="2FA_recovery_codes[]" value="' . $value . '" maxlength="10"> &nbsp; ';
             }
 
             $div_container .= rowcol($html_recovery_codes);
             $div_container .= rowcol('<br>');
 
             if (!!driver_mel::gi()->getUser()->double_authentification_adresse_recuperation && !!driver_mel::gi()->getUser()->double_authentification_adresse_valide) {
-                $div_container .= html::div(['id' => 'mail-group'], 
+                $div_container .= html::div(
+                    ['id' => 'mail-group'],
                     row(
-                        col(html::p(['style' => 'height: 100%;display: flex;align-items: center;'], 'Votre email de récupération : '), 'col-2').
-                        col(html::div(['class' => 'input-group'],
-                        html::tag('input', ['id' => 'mail-da-input', 'style' => 'text-align:center;','class' => 'disabled form-control', 'disabled' => 'disabled', 'value' => driver_mel::gi()->getUser()->double_authentification_adresse_recuperation]).
-                        html::div(['class' => 'input-group-append'],
-                            html::tag('button', ['id' => 'start-button-modal', 'class' => 'disabled btn btn-primary', 'disabled' => 'disabled'], 'Changer l\'adresse de récupération')
-                        )
-                    ), 'col-4')
+                        col(html::p(['style' => 'height: 100%;display: flex;align-items: center;'], 'Votre email de récupération : '), 'col-2') .
+                            col(html::div(
+                                ['class' => 'input-group'],
+                                html::tag('input', ['id' => 'mail-da-input', 'style' => 'text-align:center;', 'class' => 'disabled form-control', 'disabled' => 'disabled', 'value' => driver_mel::gi()->getUser()->double_authentification_adresse_recuperation]) .
+                                    html::div(
+                                        ['class' => 'input-group-append'],
+                                        html::tag('button', ['id' => 'start-button-modal', 'class' => 'disabled btn btn-primary', 'disabled' => 'disabled'], 'Changer l\'adresse de récupération')
+                                    )
+                            ), 'col-4')
                     )
                 );
-            }
-            else {
-                $div_container .= html::div(['id' => 'mail-group'], 
-                row(
-                    col(html::p(['style' => 'height: 100%;display: flex;align-items: center;'], 'Veuillez entrer une adresse de récupération !'), 'col-3').
-                    col(
-                        html::tag('button', ['id' => 'start-button-modal', 'class' => 'disabled btn btn-primary', 'disabled' => 'disabled'], 'Définir une adresse de récupération !')
-                ))
-            );
+            } else {
+                $div_container .= html::div(
+                    ['id' => 'mail-group'],
+                    row(
+                        col(html::p(['style' => 'height: 100%;display: flex;align-items: center;'], 'Veuillez entrer une adresse de récupération !'), 'col-3') .
+                            col(
+                                html::tag('button', ['id' => 'start-button-modal', 'class' => 'disabled btn btn-primary', 'disabled' => 'disabled'], 'Définir une adresse de récupération !')
+                            )
+                    )
+                );
             }
 
             $div_container .= rowcol('<br>');
@@ -520,25 +541,27 @@ class mel_doubleauth extends bnum_plugin {
         $hidden_fields .= $input_username->show();
 
         // Build the table with the divs around it
-        $out = $hidden_fields . 
-            html::tag('fieldset', ['class' => 'main'], 
+        $out = $hidden_fields .
+            html::tag(
+                'fieldset',
+                ['class' => 'main'],
                 html::tag('legend', ['id' => 'prefs-title'], $this->gettext('mel_doubleauth')) .
-                html::div(['class' => 'table'], $div_container)
-        );
-        
+                    html::div(['class' => 'table'], $div_container)
+            );
+
         // Construct the form
         $this->rc->output->add_gui_object('mel_doubleauthform', 'mel_doubleauth-form');
-        
+
         $form = $this->rc->output->form_tag([
             'id' => 'mel_doubleauth-form',
             'name' => 'mel_doubleauth-form',
             'method' => 'post',
             'action' => './?_task=settings&_action=plugin.mel_doubleauth-save',
         ], $out);
-        
+
         return html::div(['class' => 'formcontent'], $form);
     }
-    
+
     //------------- appels ajax
     /**
      * Appel Ajax pour valider un code
@@ -547,7 +570,7 @@ class mel_doubleauth extends bnum_plugin {
     {
         $code = rcube_utils::get_input_value('code', rcube_utils::INPUT_GET);
         mel_logs::get_instance()->log(mel_logs::DEBUG, "***** checkCode ***** : " . $code);
-        
+
         if ($this->__checkCode($code)) {
             echo $this->gettext('code_ok');
         } else {
@@ -556,14 +579,14 @@ class mel_doubleauth extends bnum_plugin {
 
         exit;
     }
-    
+
     /**
      * Appel Ajax pour l'ajout d'un utilisateur
      */
     public function addUser()
     {
         mel_logs::get_instance()->log(mel_logs::DEBUG, "***** addUser ***** : " . $this->rc->user->get_username());
-        
+
         $data = [
             'action'    => 'plugin.mel_doubleauth-adduser',
             'code'      => $this->__addUser(),
@@ -573,7 +596,7 @@ class mel_doubleauth extends bnum_plugin {
 
         exit;
     }
-    
+
     /**
      * Appel Ajax pour la suppression d'un utilisateur
      */
@@ -585,13 +608,14 @@ class mel_doubleauth extends bnum_plugin {
             'action' => 'plugin.mel_doubleauth-removeuser',
             'result' => $this->__removeUser(),
             'unlock' => trim(rcube_utils::get_input_value('_unlock', rcube_utils::INPUT_GET)),
-        ];            
+        ];
         echo json_encode($data);
 
         exit;
     }
-    
-    public function actions_get() {
+
+    public function actions_get()
+    {
         $autorized_props = ['double_authentification_adresse_recuperation', 'double_authentification_adresse_valide', 'NUMBER_RECOVERY_CODES'];
         $prop = rcube_utils::get_input_value('_prop', rcube_utils::INPUT_GET);
 
@@ -600,19 +624,19 @@ class mel_doubleauth extends bnum_plugin {
                 case 'NUMBER_RECOVERY_CODES':
                     $prop = self::NUMBER_RECOVERY_CODES;
                     break;
-                
+
                 default:
                     $prop = driver_mel::gi()->getUser()->$prop;
                     break;
             }
-        }
-        else throw new Exception("Denied !", 1);
+        } else throw new Exception("Denied !", 1);
 
         echo json_encode($prop);
         exit;
     }
 
-    public function actions_set() {
+    public function actions_set()
+    {
         $autorized_props = ['double_authentification_adresse_recuperation'];
         $prop = rcube_utils::get_input_value('_prop', rcube_utils::INPUT_POST);
         $value = rcube_utils::get_input_value('_val', rcube_utils::INPUT_POST);
@@ -620,17 +644,17 @@ class mel_doubleauth extends bnum_plugin {
         if (in_array($prop, $autorized_props)) {
             driver_mel::gi()->getUser()->$prop = $value;
             echo 'true';
-        }
-        else throw new Exception("Denied !", 1);
+        } else throw new Exception("Denied !", 1);
 
         exit;
     }
 
-    public function send_otp() {
+    public function send_otp()
+    {
         $this->require_plugin('mel_helper');
         mel_helper::include_mail_body();
         $otp = rand(100000, 999999) + '';
-        $expire = $this->rc->config->get('code_expiration', 30*60);
+        $expire = $this->rc->config->get('code_expiration', 30 * 60);
         // $cid = 'bnumlogo';
         driver_mel::gi()->getUser()->token_otp = $otp;
         driver_mel::gi()->getUser()->token_otp_expire = time() + $expire;
@@ -641,19 +665,20 @@ class mel_doubleauth extends bnum_plugin {
             'code' => $otp,
             'bnum.change_password' => 'https://bnum.din.gouv.fr/changepassword/index.php',
             'url.internal.security' => 'https://aide.din.developpement-durable.gouv.fr/bnum_tutoriels-apprendre_01_authentification/',
-            'expiration' => $expire/60,
-            'logobnum' => __DIR__.'/skins/mel_elastic/pictures/logobnum.png'//MailBody::load_image(__DIR__.'/skins/elastic/pictures/logobnum.png', 'png')
+            'expiration' => $expire / 60,
+            'logobnum' => MailBody::load_image(__DIR__ . '/skins/mel_elastic/pictures/logobnum.png', 'png')
         ]);
 
-       // $sent = mel_helper::send_mail($subject, $message, driver_mel::gi()->getUser()->email, ['email' => $mail, 'name' => driver_mel::gi()->getUser()->name], $is_html, [['path' => __DIR__.'/skins/mel_elastic/pictures/logobnum.png', 'id' => $cid, 'type' => 'image/png']]);
-        
+        // $sent = mel_helper::send_mail($subject, $message, driver_mel::gi()->getUser()->email, ['email' => $mail, 'name' => driver_mel::gi()->getUser()->name], $is_html, [['path' => __DIR__.'/skins/mel_elastic/pictures/logobnum.png', 'id' => $cid, 'type' => 'image/png']]);
+
         $sent = \LibMelanie\Mail\Mail::Send('bnum', $mail, $bodymail->subject(), $bodymail->body());
-        
+
         echo json_encode(isset($mail) ? $sent : -1);
         exit;
     }
 
-    public function verify_code($echo = true) {
+    public function verify_code($echo = true)
+    {
         $return = 0;
         $token = rcube_utils::get_input_value('_token', rcube_utils::INPUT_GP) + '';
 
@@ -662,20 +687,18 @@ class mel_doubleauth extends bnum_plugin {
                 driver_mel::gi()->getUser()->double_authentification_adresse_valide = true;
                 $return = 1;
             }
-        }
-        else $return = -1;
+        } else $return = -1;
 
-        if ($echo){
+        if ($echo) {
             echo $return;
             exit;
-        }
-        else {
+        } else {
             return $return;
         }
-
     }
 
-    public function otp_forgotten_connect() {
+    public function otp_forgotten_connect()
+    {
         $send_to_page = false;
         $code = $this->verify_code($send_to_page);
 
@@ -703,18 +726,17 @@ class mel_doubleauth extends bnum_plugin {
      */
     public static function is_double_auth_enable()
     {
-      return isset($_SESSION['mel_doubleauth_2FA_login']);
+        return isset($_SESSION['mel_doubleauth_2FA_login']);
     }
-    
-    
+
+
     //------------- private methods    
     /**
      * Redirige vers la tache roundcube demandée
      */
-    private function __goingRoundcubeTask($task = 'mail', $action = null, $other_params = null) 
+    private function __goingRoundcubeTask($task = 'mail', $action = null, $other_params = null)
     {
-        if (is_array($other_params))
-        {
+        if (is_array($other_params)) {
             $tmp = '';
             foreach ($other_params as $key => $value) {
                 $tmp .= "&$key=$value";
@@ -722,7 +744,7 @@ class mel_doubleauth extends bnum_plugin {
             $other_params = $tmp;
         }
 
-        $this->__goingToUrl("?_task=$task". (isset($action) ? "&_action=$action" : ''). ($other_params ?? ''));
+        $this->__goingToUrl("?_task=$task" . (isset($action) ? "&_action=$action" : '') . ($other_params ?? ''));
     }
 
     private function __goingToUrl($url)
@@ -734,7 +756,7 @@ class mel_doubleauth extends bnum_plugin {
         header("Location: $url");
         exit;
     }
-    
+
     /**
      * Destruction de la session de l'utilisateur (via Logout)
      * 
@@ -744,18 +766,17 @@ class mel_doubleauth extends bnum_plugin {
     {
         unset($_SESSION['mel_doubleauth_login']);
         unset($_SESSION['mel_doubleauth_2FA_login']);
-        
+
         if (isset($message)) {
             header('Location: ?_task=logout&_logout_msg=' . $message . '&_token=' . $this->rc->get_request_token());
-        }
-        else {
+        } else {
             header('Location: ?_task=logout&_token=' . $this->rc->get_request_token());
         }
-        
+
 
         exit;
     }
-    
+
     /**
      * Récupérer la configuration de double authentification
      * 
@@ -765,27 +786,27 @@ class mel_doubleauth extends bnum_plugin {
     {
         if (!isset($_SESSION['2FA_config'])) {
             $user = $this->rc->user;
-        
+
             $arr_prefs = $user->get_prefs();
             $pref_name = 'mel_doubleauth';
-            
+
             if (!isset($arr_prefs[$pref_name])) {
-              $pref_name = 'melanie2_doubleauth';
+                $pref_name = 'melanie2_doubleauth';
             }
-    
+
             // Récupération si la double auth est activé pour l'utilisateur courant
             $response = $this->__isActivated();
-    
+
             $arr_prefs[$pref_name]['activate'] = $response;
             $arr_prefs[$pref_name]['secret'] = ($response) ? '*************' : '';
 
             // MANTIS 0005754: Réduire les appels au webservice de double auth
             $_SESSION['2FA_config'] = $arr_prefs[$pref_name];
         }
-        
+
         return $_SESSION['2FA_config'];
     }
-    
+
     /**
      * Positionner la configuration de double authentification
      * 
@@ -796,7 +817,7 @@ class mel_doubleauth extends bnum_plugin {
     private function __set2FAconfig($data)
     {
         $user = $this->rc->user;
-        
+
         $arr_prefs = $user->get_prefs();
 
         if ($data["activate"] === false) {
@@ -810,17 +831,16 @@ class mel_doubleauth extends bnum_plugin {
             unset($arr_prefs['mel_doubleauth']["activate"]);
             $res = true;
         }
-        
+
         if ($res && $user->save_prefs($arr_prefs)) {
             // MANTIS 0005754: Réduire les appels au webservice de double auth
             $_SESSION['2FA_config'] = $data;
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
-    
+
     /**
      * Test si le code est un code de récupération de l'utilisateur
      * 
@@ -833,7 +853,7 @@ class mel_doubleauth extends bnum_plugin {
         $prefs = $this->__get2FAconfig();
         return in_array($code, $prefs['recovery_codes']);
     }
-    
+
     /**
      * Utilisation d'un code de récupération
      * 
@@ -845,10 +865,10 @@ class mel_doubleauth extends bnum_plugin {
     {
         $prefs = $this->__get2FAconfig();
         $prefs['recovery_codes'] = array_values(array_diff($prefs['recovery_codes'], array($code)));
-        
+
         $this->__set2FAconfig($prefs);
     }
-    
+
     /**
      * Validation du code OTP
      * 
@@ -876,8 +896,7 @@ class mel_doubleauth extends bnum_plugin {
             // Connexion au serveur de webservice
             $res = $client->validateOTP($this->rc->user->get_username(), $code);
             mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__checkCode() result:$res");
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             mel_logs::get_instance()->log(mel_logs::ERROR, "mel_doubleauth::__checkCode() error:" . $e->getMessage());
             $res = false;
         }
@@ -909,14 +928,13 @@ class mel_doubleauth extends bnum_plugin {
             // Connexion au serveur de webservice
             $res = $client->isActivated($this->rc->user->get_username());
             mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__isActivated() result:$res");
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             mel_logs::get_instance()->log(mel_logs::ERROR, "mel_doubleauth::__isActivated() error:" . $e->getMessage());
             $res = false;
         }
         return $res;
     }
-    
+
     /**
      * Création de l'utilisateur
      * 
@@ -944,15 +962,13 @@ class mel_doubleauth extends bnum_plugin {
             // Connexion au serveur de webservice
             $res = $client->addUser($this->rc->user->get_username());
             mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__addUser() result:$res");
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             mel_logs::get_instance()->log(mel_logs::ERROR, "mel_doubleauth::__addUser() error:" . $e->getMessage());
             $res = false;
         }
         return $res;
-        
     }
-    
+
     /**
      * Suppression de l'utilisateur
      * 
@@ -963,7 +979,7 @@ class mel_doubleauth extends bnum_plugin {
         mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__removeUser()");
         // Gérer le mode bouchon
         if ($this->rc->config->get('dynalogin_mode_bouchon', false)) {
-            rcube_utils::setcookie('roundcube_doubleauth', null, - 1);
+            rcube_utils::setcookie('roundcube_doubleauth', null, -1);
             return $this->rc->config->get('dynalogin_bouchon_removeUser', true);
         }
 
@@ -981,17 +997,16 @@ class mel_doubleauth extends bnum_plugin {
             $res = $client->removeUser($this->rc->user->get_username());
 
             // On supprime le cookie de double auth
-            rcube_utils::setcookie('roundcube_doubleauth', null, - 1);
+            rcube_utils::setcookie('roundcube_doubleauth', null, -1);
 
             mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__removeUser() result:$res");
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             mel_logs::get_instance()->log(mel_logs::ERROR, "mel_doubleauth::__removeUser() error:" . $e->getMessage());
             $res = false;
         }
         return $res;
     }
-    
+
     /**
      * Validation du cookie
      * 
@@ -1022,14 +1037,13 @@ class mel_doubleauth extends bnum_plugin {
             // Connexion au serveur de webservice
             $res = $client->validateCookie($username, $code, $date_validitee, $application);
             mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__ValidateCookie() result:$res");
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             mel_logs::get_instance()->log(mel_logs::ERROR, "mel_doubleauth::__ValidateCookie() error:" . $e->getMessage());
             $res = false;
         }
         return $res;
     }
-    
+
     /**
      * Création du cookie
      * 
@@ -1062,14 +1076,13 @@ class mel_doubleauth extends bnum_plugin {
             // Connexion au serveur de webservice
             $res = $client->addCookie($username, $code, intval($expiration), $application, $_SERVER['HTTP_USER_AGENT']);
             mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__addCookie() result:$res");
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             mel_logs::get_instance()->log(mel_logs::ERROR, "mel_doubleauth::__addCookie() error:" . $e->getMessage());
             $res = false;
         }
         return $res;
     }
-    
+
     /**
      * Modification du cookie
      * 
@@ -1096,20 +1109,19 @@ class mel_doubleauth extends bnum_plugin {
             "login" => $this->rc->user->get_username(),
             "password" => $this->rc->get_user_password()
         ));
-        
+
         // Try/Catch pour le webservice
         try {
             // Connexion au serveur de webservice
             $res = $client->modifyCookie($username, $code, intval($expiration), $application, $_SERVER['HTTP_USER_AGENT']);
             mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__modifyCookie() result:$res");
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_doubleauth::__modifyCookie() error:" . $e->getMessage());
             $res = false;
         }
         return $res;
     }
-    
+
     /**
      * Défini si on est dans une instance interne ou externe de l'application
      * Permet la selection de la bonne url
@@ -1127,11 +1139,11 @@ class mel_doubleauth extends bnum_plugin {
      * 
      * @return boolean
      */
-    private function is_auth_strong() 
+    private function is_auth_strong()
     {
-      return self::date_grace_enabled() || (mel::is_auth_strong() && $this->rc->config->get('is_auth_strong', true));
+        return self::date_grace_enabled() || (mel::is_auth_strong() && $this->rc->config->get('is_auth_strong', true));
     }
-    
+
     /**
      * Replacing specials characters to a specific encoding type
      *
@@ -1141,9 +1153,8 @@ class mel_doubleauth extends bnum_plugin {
      *
      * @return string The quoted string
      */
-    private function Q($str, $mode='strict', $newlines=true)
+    private function Q($str, $mode = 'strict', $newlines = true)
     {
         return rcube_utils::rep_specialchars_output($str, 'html', $mode, $newlines);
     }
 }
-

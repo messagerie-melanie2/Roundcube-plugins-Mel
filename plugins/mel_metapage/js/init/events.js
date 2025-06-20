@@ -2329,6 +2329,24 @@ $(document).ready(() => {
           return;
         else if ($target.parent().parent().parent().attr('id') === 'taskmenu')
           return;
+        else {
+          // Permet de laisser les plugins de gérer l'interception des liens comme ils le souhaitent
+          const value = rcmail.triggerEvent('rcube_spy_url', {
+            break: false,
+            $target,
+            e: event,
+            intercept,
+          }) ?? { break: false };
+
+          // Si il y a plusieurs valeurs de retour, on les traites
+          if (value.length) {
+            for (const iterator of value) {
+              if (iterator.break === true) return;
+            }
+          }
+          // Sinon on traite la valeur de retour
+          else if (value.break === true) return;
+        }
       }
 
       //On ferme la modal

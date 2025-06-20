@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<info>
+	<id>roundcube_external</id>
+	<name>External login for Roundcube</name>
+	<description>Use login password from Roundcube</description>
+	<licence>AGPL</licence>
+	<author>Thomas Payen</author>
+	<version>0.1</version>
+	<dependencies>
+		<nextcloud min-version="9" max-version="29" />
+	</dependencies>
+	<shipped>true</shipped>
+</info>

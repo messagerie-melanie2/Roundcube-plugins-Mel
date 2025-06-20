@@ -207,7 +207,7 @@ class mce_driver_mel extends driver_mel
     if ($function == 'managesieve_connect') {
       $conf = 'managesieve_host';
     } else {
-      $conf = 'default_host';
+      $conf = 'imap_host';
     }
     // Récupère le hostname depuis la configuration
     $hostname = rcmail::get_instance()->config->get($conf);

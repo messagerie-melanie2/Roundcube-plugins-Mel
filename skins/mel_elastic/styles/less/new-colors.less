@@ -1,0 +1,160 @@
+:root {
+  --bnum-app-color: white;
+  --bnum-main-background-color: #fafafa;
+
+  --bnum-primary-color: #363a5b;
+  --bnum-primary-color-lighter: #484d7a;
+  --bnum-primary-color-darker: #2b2e49;
+
+  --bnum-secondary-color: #484d7a;
+  --bnum-secondary-color-lighter: #5c619d;
+  --bnum-secondary-color-darker: #3d4166;
+
+  --bnum-tierciary-color: #f6f6f6;
+  --bnum-tierciary-color-lighter: white;
+  --bnum-tierciary-color-darker: #d9d9d9;
+
+  --bnum-danger-color: #fc945a;
+  --bnum-danger-color-lighter: #f7ab82;
+  --bnum-danger-color-darker: #fb6817;
+
+  --bnum-main-text-color: #363a5b;
+  --bnum-primary-text-color: white;
+  --bnum-secondary-text-color: white;
+  --bnum-tierciary-text-color: #363a5b;
+
+  // MARK: Buttons
+  // Primary button styles
+  --button-disabled-opacity: 0.6;
+
+  --bnum-button-background-color: var(--bnum-primary-color);
+  --bnum-button-text-color: var(--bnum-primary-text-color);
+  --bnum-button-border-color: var(--bnum-button-background-color);
+  --bnum-button-border: solid thin var(--bnum-button-border-color);
+
+  --bnum-button-hover-background-color: var(--bnum-primary-color-lighter);
+  --bnum-button-hover-text-color: var(--bnum-primary-text-color);
+  --bnum-button-hover-border-color: var(--bnum-button-hover-background-color);
+  --bnum-button-hover-border: solid thin var(--bnum-button-hover-border-color);
+
+  --bnum-button-active-background-color: var(--bnum-primary-color-darker);
+  --bnum-button-active-text-color: var(--bnum-primary-text-color);
+  --bnum-button-active-border-color: var(--bnum-button-active-background-color);
+  --bnum-button-active-border: solid thin var(--bnum-button-active-border-color);
+
+  // Secondary button styles
+  --bnum-button-secondary-background-color: var(--bnum-tierciary-color);
+  --bnum-button-secondary-text-color: var(--bnum-main-text-color);
+  --bnum-button-secondary-border-color: var(--bnum-primary-color);
+  --bnum-button-secondary-border: solid thin
+    var(--bnum-button-secondary-border-color);
+
+  --bnum-button-secondary-hover-background-color: var(
+    --bnum-tierciary-color-lighter
+  );
+  --bnum-button-secondary-hover-text-color: var(--bnum-main-text-color);
+  --bnum-button-secondary-hover-border-color: var(--bnum-primary-color);
+  --bnum-button-secondary-hover-border: solid thin
+    var(--bnum-button-hover-border-color);
+
+  --bnum-button-secondary-active-background-color: var(
+    --bnum-tierciary-color-darker
+  );
+  --bnum-button-secondary-active-text-color: var(--bnum-main-text-color);
+  --bnum-button-secondary-active-border-color: var(--bnum-primary-color);
+  --bnum-button-secondary-active-border: solid thin
+    var(--bnum-button-secondary-active-border-color);
+
+  // Danger button styles
+  --bnum-button-danger-background-color: var(--bnum-danger-color);
+  --bnum-button-danger-text-color: var(--bnum-primary-text-color);
+  --bnum-button-danger-border-color: var(--bnum-button-danger-background-color);
+  --bnum-button-danger-border: solid thin var(--bnum-button-danger-border-color);
+
+  --bnum-button-danger-hover-background-color: var(--bnum-danger-color-lighter);
+  --bnum-button-danger-hover-text-color: var(--bnum-primary-text-color);
+  --bnum-button-danger-hover-border-color: var(
+    --bnum-button-danger-hover-background-color
+  );
+  --bnum-button-danger-hover-border: solid thin
+    var(--bnum-button-danger-hover-border-color);
+
+  --bnum-button-danger-active-background-color: var(--bnum-danger-color-darker);
+  --bnum-button-danger-active-text-color: var(--bnum-primary-text-color);
+  --bnum-button-danger-active-border-color: var(
+    --bnum-button-danger-active-background-color
+  );
+  --bnum-button-danger-active-border: solid thin
+    var(--bnum-button-danger-active-border-color);
+}
+
+html.dark-mode-custom:root,
+html.dark-mode:root {
+  --bnum-app-color: #323f4b;
+  --bnum-main-background-color: #434e58;
+
+  --bnum-primary-color: #181f27;
+  --bnum-primary-color-lighter: #222a33;
+  --bnum-primary-color-darker: #0f1419;
+
+  --bnum-secondary-color: #1f2933;
+  --bnum-secondary-color-lighter: #2e2e2e;
+  --bnum-secondary-color-darker: #161d24;
+
+  --bnum-tierciary-color: #e1c58f;
+  --bnum-tierciary-color-lighter: #f5d79b;
+  --bnum-tierciary-color-darker: #c7ae7c;
+
+  --bnum-main-text-color: #96b9e7;
+  --bnum-primary-text-color: #e1c58f;
+  --bnum-secondary-text-color: #c7dfff;
+  --bnum-tierciary-text-color: #1f2933;
+
+  --bnum-danger-color: #441800;
+  --bnum-danger-color-lighter: #6d2701;
+  --bnum-danger-color-darker: #290f01;
+
+  // MARK: Buttons
+  // Primary button styles
+
+  --bnum-button-background-color: var(--bnum-primary-color);
+  --bnum-button-text-color: var(--bnum-primary-text-color);
+  --bnum-button-border-color: var(--bnum-tierciary-color);
+  --bnum-button-border: solid thin var(--bnum-button-border-color);
+
+  --bnum-button-hover-background-color: var(--bnum-primary-color-lighter);
+  --bnum-button-hover-text-color: var(--bnum-primary-text-color);
+  --bnum-button-hover-border-color: var(--bnum-tierciary-color-lighter);
+  --bnum-button-hover-border: solid thin var(--bnum-button-hover-border-color);
+
+  --bnum-button-active-background-color: var(--bnum-secondary-color-darker);
+  --bnum-button-active-text-color: var(--bnum-primary-text-color);
+  --bnum-button-active-border-color: var(--bnum-secondary-color-darker);
+  --bnum-button-active-border: solid thin var(--bnum-button-active-border-color);
+
+  // Secondary button styles
+  --bnum-button-secondary-background-color: var(--bnum-primary-color);
+  --bnum-button-secondary-text-color: var(--bnum-primary-text-color);
+  --bnum-button-secondary-border-color: var(--bnum-tierciary-color);
+  --bnum-button-secondary-border: dashed thin var(--bnum-button-border-color);
+
+  --bnum-button-secondary-hover-background-color: var(
+    --bnum-primary-color-lighter
+  );
+  --bnum-button-secondary-hover-text-color: var(--bnum-primary-text-color);
+  --bnum-button-secondary-hover-border-color: var(
+    --bnum-tierciary-color-lighter
+  );
+  --bnum-button-secondary-hover-border: dashed thin
+    var(--bnum-button-hover-border-color);
+
+  --bnum-button-secondary-active-background-color: var(
+    --bnum-secondary-color-darker
+  );
+  --bnum-button-secondary-active-text-color: var(--bnum-primary-text-color);
+  --bnum-button-secondary-active-border-color: var(
+    --bnum-secondary-color-darker
+  );
+  --bnum-button-secondary-active-border: dashed thin
+    var(--bnum-button-active-border-color);
+}

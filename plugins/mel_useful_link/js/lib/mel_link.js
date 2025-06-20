@@ -386,14 +386,10 @@ MelFolderLink.folderOpen = false;
 
 class MelLinkVisualizer extends MelLink {
   constructor(id, title, link, image, inFolder = false, icon = null) {
-    // if (icon && icon.includes('https://')) {
-    //   link = icon;
-    //   icon = null;
-    // }    // if (icon && icon.includes('https://')) {
-    //   link = icon;
-    //   icon = null;
-    // }
-    if (link && link.includes('https://')) link = null;
+    if (icon && icon.includes('https://')) {
+      link = icon;
+      icon = null;
+    }
 
     if (image && image.includes('https://')) image = null;
 

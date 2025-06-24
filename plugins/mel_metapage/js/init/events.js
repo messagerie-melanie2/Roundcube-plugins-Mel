@@ -2581,28 +2581,13 @@ $(document).ready(() => {
 
         if (task !== null) {
           event.preventDefault();
-          // top.mel_metapage.Functions.change_page(
-          //   task,
-          //   action,
-          //   othersParams === null ? {} : othersParams,
-          //   update,
-          // ).then(() => {
-          //   if (after !== null) after();
-          // });
-          // const { FramesManager } = await loadJsModule(
-          //   'mel_metapage',
-          //   'frame_manager',
-          //   '/js/lib/classes/',
-          // );
 
           if (!!action && !othersParams?._action) {
             othersParams ??= {};
             othersParams._action = action;
           }
 
-          // await FramesManager.Instance.switch_frame(task, {
-          //   args: othersParams,
-          // });
+          // MANTIS 0009050: Impossible d'ouvrir les liens pour les mails ouvert dans une fenêtre externe.
           if (rcmail.env.extwin === 1) window.open(url, '_blank');
           else
             await PageManager.SwitchFrame(task, { args: othersParams, anchor });

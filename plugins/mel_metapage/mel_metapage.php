@@ -744,12 +744,14 @@ class mel_metapage extends bnum_plugin
      */
     function folder_form($args)
     {
+        $prefs = $this->rc->config->get('folders_colors', []);
+        $color = $prefs[$args['name']] ?? '';
         $args['form']['props']['fieldsets']['color'] = [
             'name' => 'Couleur du dossier',
             'content' => [
                 'color' => [
                     'label' => 'Couleur du dossier',
-                    'value' => '<input type="color" title="Laissez pour avoir la couleur par défaut !" name="_color" id="folder-edit-color" value="">'
+                    'value' => "<input type=\"color\" title=\"Laissez pour avoir la couleur par défaut !\" name=\"_color\" id=\"folder-edit-color\" value=\"$color\">"
                 ]
             ]
         ];

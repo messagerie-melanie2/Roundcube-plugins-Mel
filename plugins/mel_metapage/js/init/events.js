@@ -2603,8 +2603,9 @@ $(document).ready(() => {
           // await FramesManager.Instance.switch_frame(task, {
           //   args: othersParams,
           // });
-
-          await PageManager.SwitchFrame(task, { args: othersParams, anchor });
+          if (rcmail.env.extwin === 1) window.open(url, '_blank');
+          else
+            await PageManager.SwitchFrame(task, { args: othersParams, anchor });
 
           if (after !== null) after();
 

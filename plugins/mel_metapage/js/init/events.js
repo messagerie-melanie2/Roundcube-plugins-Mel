@@ -2299,7 +2299,6 @@ $(document).ready(() => {
 
   async function intercept_click(event) {
     var Enumerable = Enumerable || top.Enumerable;
-
     try {
       let $target = $(event.currentTarget ?? event.target);
       //Vérification si on intercetpe le lien ou non
@@ -2328,6 +2327,13 @@ $(document).ready(() => {
         )
           return;
         else if ($target.parent().parent().parent().attr('id') === 'taskmenu')
+          return;
+        else if (
+          $target.hasClass('zipdownload') ||
+          ($target.attr('href').includes('/?_task=mail') &&
+            $target.attr('href').includes('&_action=get') &&
+            $target.attr('href').includes('&_download=1'))
+        )
           return;
         else {
           // Permet de laisser les plugins de gérer l'interception des liens comme ils le souhaitent

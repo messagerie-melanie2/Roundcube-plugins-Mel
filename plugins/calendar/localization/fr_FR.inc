@@ -12,6 +12,8 @@ $labels['timeslots'] = 'Créneau horaire';
 $labels['first_day'] = 'Premier jour de la semaine';
 $labels['first_hour'] = 'Première heure à afficher';
 $labels['workinghours'] = 'Heures de travail';
+// PAMELA
+$labels['event_limit'] = 'Nombres maximum d\'évènements affichés';
 $labels['add_category'] = 'Ajouter une catégorie';
 $labels['remove_category'] = 'Supprimer une catégorie';
 $labels['defaultcalendar'] = 'Ajouter un nouvel événement';

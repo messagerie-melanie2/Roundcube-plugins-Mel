@@ -15,14 +15,18 @@ class bnum_agenda extends bnum_plugin {
    * @return void
    */
   public function init() {
+    $this->rc()->output->set_env('event_limit',$this->rc()->config->get('event_limit'));
     switch ($this->get_current_task()) {
       case 'agenda':
       case 'calendar':
         $this->register_action('get_categories', [$this, 'action_get_categories']);
+        $this->rc()->config->get('event_limit');
         break;
       
       default:
         $this->add_hook('signature.links', [$this, 'hook_signature_links']);
+        $this->add_hook('preferences_list', [$this, 'hook_preferences_list']);
+        $this->add_hook('preferences_save', [$this, 'hook_preferences_save']);
         $this->add_hook('folder_update', [$this, 'hook_folder_update']);
         break;
     }    
@@ -127,6 +131,70 @@ class bnum_agenda extends bnum_plugin {
 
       $this->rc()->user->save_prefs(['folders_colors' => $prefs]);
         
+    return $args;
+  }
+
+  /**
+   * Hook Roundcube pour mettre à jour la couleur d'un dossier.
+   *
+   * Ce hook permet de sauvegarder la couleur associée à un dossier lors de sa modification.
+   *
+   * @param array $args Tableau des arguments transmis par Roundcube lors de la mise à jour d'un dossier.
+   * @return array Tableau des arguments, inchangé.
+   */
+  public function hook_folder_update($args) {
+    $this->load_config();
+    $color = $this->get_input_post('_color') ?? null;
+
+    if ($color === '') $color = null;
+      $folder = $this->get_input_post('_mbox');
+      $prefs = $this->rc()->config->get('folders_colors', []);
+
+      if (isset($color)) $prefs[$folder] = $color;
+      else unset($prefs[$folder]);
+
+      $this->rc()->user->save_prefs(['folders_colors' => $prefs]);
+        
+    return $args;
+  }
+
+  /**
+   * Hook Roundcube pour afficher l'option nombre d'évenements affichés dans l'agenda.
+   *
+   * @param array $args Tableau des arguments transmis par Roundcube lors de la mise à jour d'un dossier.
+   * @return array Tableau des arguments, inchangé.
+   */
+  public function hook_preferences_list($args) {
+    if ($args['section'] === 'calendar') {
+      $this->add_texts('localization/');
+      
+      $field_id = 'event_limit';
+      $select = new html_select(['name' => '_event_limit', 'id' => $field_id]);
+      for ($i=2; $i <= 6; $i++) { 
+        $select->add("$i", $i);
+      }
+
+      $args['blocks']['view']['options']['event_limit'] = [
+        'title'   => html::label($field_id, rcube::Q($this->gettext('event_limit'))),
+        'content' => $select->show(intval($this->rc()->config->get('event_limit', 4))),
+      ];
+    }
+    return $args;
+  }
+
+  /**
+   * Hook Roundcube pour mettre à jour le nombre d'évenements affichés dans l'agenda.
+   *
+   * Ce hook permet de sauvegarder le nombre d'évenements affichés dans l'agenda lors de sa modification.
+   *
+   * @param array $args Tableau des arguments transmis par Roundcube lors de la mise à jour d'un dossier.
+   * @return array Tableau des arguments, inchangé.
+   */
+  public function hook_preferences_save($args) {
+    if ($args['section'] === 'calendar') {
+      $args['prefs']['event_limit'] = rcube_utils::get_input_value('_event_limit', rcube_utils::INPUT_POST);
+      $this->rc()->output->set_env('event_limit', $args['prefs']['event_limit']);
+    }
     return $args;
   }
 }

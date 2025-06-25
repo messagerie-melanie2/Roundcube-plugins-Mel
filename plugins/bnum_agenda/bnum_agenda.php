@@ -134,29 +134,6 @@ class bnum_agenda extends bnum_plugin {
     return $args;
   }
 
-  /**
-   * Hook Roundcube pour mettre à jour la couleur d'un dossier.
-   *
-   * Ce hook permet de sauvegarder la couleur associée à un dossier lors de sa modification.
-   *
-   * @param array $args Tableau des arguments transmis par Roundcube lors de la mise à jour d'un dossier.
-   * @return array Tableau des arguments, inchangé.
-   */
-  public function hook_folder_update($args) {
-    $this->load_config();
-    $color = $this->get_input_post('_color') ?? null;
-
-    if ($color === '') $color = null;
-      $folder = $this->get_input_post('_mbox');
-      $prefs = $this->rc()->config->get('folders_colors', []);
-
-      if (isset($color)) $prefs[$folder] = $color;
-      else unset($prefs[$folder]);
-
-      $this->rc()->user->save_prefs(['folders_colors' => $prefs]);
-        
-    return $args;
-  }
 
   /**
    * Hook Roundcube pour afficher l'option nombre d'évenements affichés dans l'agenda.

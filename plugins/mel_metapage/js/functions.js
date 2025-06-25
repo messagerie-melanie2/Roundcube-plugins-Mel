@@ -3398,7 +3398,7 @@ async function m_mp_ToggleGroupOptionsUser(opener) {
 /**
  * Permet de sauvegarder une option rapide
  */
-function save_option(_option_name, _option_value, element) {
+function save_option(_option_name, _option_value, element, reload = false) {
   element = $(element);
   const name = element.attr('name');
 
@@ -3432,6 +3432,9 @@ function save_option(_option_name, _option_value, element) {
         if (func)
           rcmail.command(func, { key: _option_name, value: parsed_datas });
         else rcmail.command('refreshFrame');
+      }
+      if (reload) {
+        rcmail.command('refreshFrame');
       }
     },
   );

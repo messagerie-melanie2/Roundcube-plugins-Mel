@@ -416,6 +416,24 @@ if (rcmail && window.mel_metapage) {
     });
 
     if (rcmail.env.task === 'settings') {
+      if(parent.rcmail.env.event_limit && parent.rcmail.env.event_limit !==
+        rcmail.env.event_limit
+      ) {
+        parent.rcmail.env.event_limit = rcmail.env.event_limit;
+        (async () => {
+          const manager = await (async () => {
+            try {
+              return PageManager.Instance; 
+            } catch (error) {
+              return await PageManager.Load();
+            }
+          })();
+
+          if(manager.Instance.has_frame('calendar')){
+            manager.Instance.get_window().remove_frame('calendar');
+          }
+        })();
+      }
       if (
         top.rcmail.env.avatar_background_color !==
         rcmail.env.avatar_background_color

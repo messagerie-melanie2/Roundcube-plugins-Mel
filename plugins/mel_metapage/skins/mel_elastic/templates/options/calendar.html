@@ -57,4 +57,17 @@
       </select>
     </div>
   </div>
+  <div class="row mt-3">
+    <div class="col-12">
+      <div><roundcube:label name='calendar.event_limit'/></div>
+      <select data-command="redraw_aganda" name="event_limit" id="rcmfd_event_limit" class="form-control custom-select pretty-select"
+        onchange="save_option('event_limit', this.value, this, true)">
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+      </select>
+    </div>
+  </div>
 </div>

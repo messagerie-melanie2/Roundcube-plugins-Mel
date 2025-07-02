@@ -777,10 +777,10 @@ class mel_acl extends rcube_plugin
             'uid'  => $uid_field,
         );
 
-        // search in UID and name fields
+        // only search in name field
         // $name_field can be in a form of <field>:<modifier> (#1490591)
         $name_field = preg_replace('/:.*$/', '', $name_field);
-        $search     = array_unique(array($name_field, $uid_field));
+        $search     = array($name_field);
 
         $config['search_fields']   = $search;
         $config['required_fields'] = array($uid_field);

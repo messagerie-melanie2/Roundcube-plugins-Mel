@@ -1,0 +1,57 @@
+{
+	// Place your Roundcube-plugins-Mel workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
+	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
+	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
+	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are: 
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. 
+	// Placeholders with the same ids are connected.
+	// Example:
+	"bnum-primary-button": {
+		"scope": "html",
+		"prefix": "button primary icon",
+		"body": [
+			"<primary-button data-icon=\"${1:icon}\" data-icon-pos=\"${2:right}\" $0>${3:text}</primary-button>",
+		],
+		"description": "bouton primairy"
+	},
+	"bnum-primary-button-wi": {
+		"scope": "html",
+		"prefix": "button primary",
+		"body": [
+			"<primary-button $0>${1:text}</primary-button>",
+		],
+		"description": "bouton primairy"
+	},
+	"bnum-secondary-button": {
+		"scope": "html",
+		"prefix": "button secondary icon",
+		"body": [
+			"<secondary-button data-icon=\"${1:icon}\" data-icon-pos=\"${2:right}\" $0>${3:text}</secondary-button>",
+		],
+		"description": "bouton secondary"
+	},
+	"bnum-secondary-button-wi": {
+		"scope": "html",
+		"prefix": "button secondary",
+		"body": [
+			"<secondary-button $0>${1:text}</secondary-button>",
+		],
+		"description": "bouton secondary"
+	},
+	"bnum-danger-button": {
+		"scope": "html",
+		"prefix": "button danger icon",
+		"body": [
+			"<danger-button data-icon=\"${1:icon}\" data-icon-pos=\"${2:right}\" $0>${3:text}</danger-button>",
+		],
+		"description": "bouton danger"
+	},
+	"bnum-danger-button-wi": {
+		"scope": "html",
+		"prefix": "button danger",
+		"body": [
+			"<danger-button $0>${1:text}</danger-button>",
+		],
+		"description": "bouton danger"
+	},
+}

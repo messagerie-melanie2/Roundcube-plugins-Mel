@@ -250,6 +250,7 @@ class FilterBase extends MelObject {
               true,
             )
             .attr('data-fname', this.name)
+            .attr('data-tname', this._name)
             .attr('data-row-name', this.rowName)
             .addClass('pretty-select')
             .attr(

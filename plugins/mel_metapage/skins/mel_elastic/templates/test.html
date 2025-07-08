@@ -35,9 +35,24 @@
 </style>
 
 <div id="layout-content" style="overflow: auto; display: block;">
-  <bnum-primary-button>Ajouter<bnum-icon>add</bnum-icon></bnum-primary-button>
-     <bnum-primary-button>Test sans icônes</bnum-primary-button>
-        <bnum-secondary-button data-icon="add">Test secondaire</bnum-secondary-button>
-<bnum-danger-button data-icon="add" >Test danger</bnum-danger-button> 
+  <button class="bnum-button bnum-button--primary bnum-button--icon bnum-button--loading">
+    <div class="bnum-button__wrapper">
+      <span class="bnum-button__text">Ajouter</span>
+      <bnum-icon>add</bnum-icon>
+    </div>
+  </button>
+
+  <button class="bnum-button bnum-button--secondary bnum-button--loading">
+    <div class="bnum-button__wrapper">
+      <span class="bnum-button__text">Ajouter</span>
+    </div>
+  </button>
+
+  <button class="bnum-button bnum-button--danger bnum-button--icon bnum-button--loading">
+    <div class="bnum-button__wrapper">
+      <bnum-icon>add</bnum-icon>
+      <span class="bnum-button__text">Ajouter</span>
+    </div>
+  </button>
 </div>
 <roundcube:include file="includes/footer.html" />

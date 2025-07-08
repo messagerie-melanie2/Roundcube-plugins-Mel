@@ -1,0 +1,283 @@
+//compress:false
+// material or custom
+@icon-mode: custom;
+
+.bnum-button-icon(@direction) {
+  display: var(--bnum-button-icon-display, flex);
+  margin-@{direction}: var(e('--bnum-button-icon-margin-@{direction}'), 20px);
+}
+
+.bnum-button-loading() when (@icon-mode = material) {
+  font-family: 'Material Symbols Outlined';
+  content: '\e9d0';
+  font-size: 24px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -ms-transform: translateY(-50%) translateX(-50%);
+  transform: translateY(-50%) translateX(-50%);
+}
+
+.bnum-button-loading() when (@icon-mode = custom) {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  border: 1px solid #fff;
+  border-top-color: transparent !important;
+  border-radius: 50%;
+
+  .bnum-button--primary& {
+    border-color: var(--bnum-button-text-color, white);
+  }
+  .bnum-button--secondary& {
+    border-color: var(--bnum-button-secondary-text-color, #363a5b);
+  }
+  .bnum-button--danger& {
+    border-color: var(--bnum-button-danger-active-text-color, white);
+  }
+}
+
+.bnum-button {
+  // MARK: Defaut
+  display: var(--bnum-button-display, inline-block);
+  padding: var(--bnum-button-padding, 6px 10px);
+  border-radius: var(--bnum-button-border-radius, 200px);
+  cursor: var(--bnum-button-cursor, pointer);
+
+  // Without-icon
+  padding-top: var(--bnum-button-without-icon-padding-top, 7.5px);
+  padding-bottom: var(--bnum-button-without-icon-padding-bottom, 7.5px);
+
+  // MARK: Primary
+  &.bnum-button--primary {
+    background-color: var(--bnum-button-background-color, #363a5b);
+    color: var(--bnum-button-text-color, white);
+    border: var(
+      --bnum-button-border,
+      solid thin var(--bnum-button-border-color)
+    );
+
+    &.bnum-button--loading {
+      .bnum-button__icon,
+      bnum-icon,
+      bnum-shadow-icon,
+      .bnum-button__text {
+        &::before {
+          color: var(--bnum-button-danger-text-color, white);
+        }
+      }
+    }
+
+    &:hover {
+      background-color: var(--bnum-button-hover-background-color, #484d7a);
+      color: var(--bnum-button-hover-text-color, white);
+      border: var(
+        --bnum-button-hover-border,
+        solid thin var(--bnum-button-hover-border-color)
+      );
+    }
+
+    &:active {
+      background-color: var(--bnum-button-active-background-color, #2b2e49);
+      color: var(--bnum-button-active-text-color, white);
+      border: var(
+        --bnum-button-active-border,
+        solid thin var(--bnum-button-active-border-color)
+      );
+    }
+  }
+
+  // MARK: Secondary
+  &.bnum-button--secondary {
+    background-color: var(--bnum-button-secondary-background-color, #f6f6f6);
+    color: var(--bnum-button-secondary-text-color, #363a5b);
+    border: var(
+      --bnum-button-secondary-border,
+      solid thin var(--bnum-button-secondary-border-color)
+    );
+
+    &.bnum-button--loading {
+      .bnum-button__icon,
+      bnum-icon,
+      bnum-shadow-icon,
+      .bnum-button__text {
+        &::before {
+          color: var(--bnum-button-secondary-text-color, white);
+        }
+      }
+    }
+
+    &:hover {
+      background-color: var(
+        --bnum-button-secondary-hover-background-color,
+        white
+      );
+      color: var(--bnum-button-secondary-hover-text-color, white);
+      border: var(
+        --bnum-button-secondary-hover-border,
+        solid thin var(--bnum-button-secondary-hover-border-color)
+      );
+    }
+
+    &:active {
+      background-color: var(
+        --bnum-button-secondary-active-background-color,
+        #d9d9d9
+      );
+      color: var(--bnum-button-secondary-active-text-color, white);
+      border: var(
+        --bnum-button-secondary-active-border,
+        solid thin var(--bnum-button-secondary-active-border-color)
+      );
+    }
+  }
+
+  // MARK: Danger
+  &.bnum-button--danger {
+    background-color: var(--bnum-button-danger-background-color, #fc945a);
+    color: var(--bnum-button-danger-text-color, white);
+    border: var(
+      --bnum-button-danger-border,
+      solid thin var(--bnum-button-danger-border-color)
+    );
+
+    &.bnum-button--loading {
+      .bnum-button__icon,
+      bnum-icon,
+      bnum-shadow-icon,
+      .bnum-button__text {
+        &::before {
+          color: var(--bnum-button-danger-text-color, white);
+        }
+      }
+    }
+
+    &:hover {
+      background-color: var(
+        --bnum-button-danger-hover-background-color,
+        #f7ab82
+      );
+      color: var(--bnum-button-danger-hover-text-color, white);
+      border: var(
+        --bnum-button-danger-hover-border,
+        solid thin var(--bnum-button-danger-hover-border-color)
+      );
+    }
+
+    &:active {
+      background-color: var(
+        --bnum-button-danger-active-background-color,
+        #fb6817
+      );
+      color: var(--bnum-button-danger-active-text-color, white);
+      border: var(
+        --bnum-button-danger-active-border,
+        solid thin var(--bnum-button-danger-active-border-color)
+      );
+    }
+  }
+
+  // MARK: Wrapper
+  > .bnum-button__wrapper {
+    display: var(--bnum-button-wrapper-display, flex);
+    align-items: var(--bnum-button-wrapper-align-items, center);
+  }
+
+  /* MARK: Icon */
+  &.bnum-button--icon {
+    padding: var(--bnum-button-padding, 6px 10px);
+
+    > .bnum-button__wrapper {
+      > .bnum-button__icon,
+      > bnum-shadow-icon,
+      > bnum-icon {
+        + .bnum-button__text {
+          .bnum-button-icon(left);
+        }
+      }
+
+      > .bnum-button__text {
+        + .bnum-button__icon,
+        + bnum-shadow-icon,
+        + bnum-icon {
+          .bnum-button-icon(left);
+        }
+      }
+    }
+  }
+
+  // MARK: Square
+  &.bnum-button--square {
+    border-radius: var(--bnum-button-square-border-radius, 10px);
+  }
+
+  // MARK: Disabled
+  &:disabled,
+  &.bnum-button--disabled {
+    cursor: not-allowed;
+    opacity: var(--button-disabled-opacity, 0.6);
+    pointer-events: var(--bnum-button-disabled-pointer-events, none);
+  }
+
+  // MARK: Loading
+  &.bnum-button--loading {
+    &:extend(.bnum-button.bnum-button--disabled);
+
+    cursor: progress;
+
+    .bnum-button__text {
+      color: transparent;
+      position: relative;
+      &::before {
+        .bnum-button-loading();
+        animation: spinelement var(--bnum-button-spin-duration, 0.75s)
+          var(--bnum-button-spin-timing, linear)
+          var(--bnum-button-spin-iteration, infinite);
+      }
+    }
+
+    &.bnum-button--icon {
+      .bnum-button__icon,
+      bnum-icon,
+      bnum-shadow-icon {
+        color: transparent;
+        position: relative;
+        &::before {
+          .bnum-button-loading();
+          animation: spinelement var(--bnum-button-spin-duration, 0.75s)
+            var(--bnum-button-spin-timing, linear)
+            var(--bnum-button-spin-iteration, infinite);
+        }
+      }
+
+      .bnum-button__text {
+        .bnum-button--primary& {
+          color: var(--bnum-button-text-color, white);
+        }
+        .bnum-button--secondary& {
+          color: var(--bnum-button-secondary-text-color, #363a5b);
+        }
+        .bnum-button--danger& {
+          color: var(--bnum-button-danger-active-text-color, white);
+        }
+
+        &::before {
+          content: none;
+        }
+      }
+    }
+  }
+}
+
+// MARK: Animations
+@keyframes spinelement {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(-360deg);
+  }
+}

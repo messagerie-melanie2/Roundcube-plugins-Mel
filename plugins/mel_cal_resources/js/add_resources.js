@@ -44,6 +44,7 @@ export { ResourceDialog };
  * @property {string} name Nom de la ressource
  * @property  {boolean} is_option Si la ressource doit être affiché dans la liste des modes d'évènements ou non
  * @property {string} load_data Nom de la fonction qui permettra de récupérer les données de la ressource associée
+ * @property {boolean} [busy=true] Si la ressource est occupée ou non. Si true, on ne peut pas la réserver.
  */
 
 /**
@@ -466,8 +467,20 @@ class ResourceDialog extends MelObject {
     this._location.onchange.call();
 
     //Changer le status si besoin
-    if (!(EventView.INSTANCE.parts.status._$field.val() || false))
+    if (
+      !(EventView.INSTANCE.parts.status._$field.val() || false) &&
+      !(
+        this.get_env('cal_resources')?.resources?.[this._resource_type]?.busy ??
+        true
+      )
+    )
       EventView.INSTANCE.parts.status._$field.val('FREE').change();
+    else if (
+      !EventView.INSTANCE.parts.status._$field.val() &&
+      (this.get_env('cal_resources')?.resources?.[this._resource_type]?.busy ??
+        true)
+    )
+      EventView.INSTANCE.parts.status._$field.val('CONFIRMED').change();
 
     //Changer la réccurence
     EventView.INSTANCE.parts.recurrence._$fakeField

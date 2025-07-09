@@ -10,12 +10,23 @@ class Utils {
 
   /**
    * Récupère une option via le `data-description`
-   * @param {string} description Description de la resosurce
-   * @returns {external:jQuery}
+   * @param {string} description Description de la ressource
+   * @returns {?HTMLOptionElement}
    */
   static GetOptionByDescription(description) {
-    return $(
+    return document.querySelector(
       `.mel-dialog-page select option[data-description="${description.toUpperCase()}"]`,
+    );
+  }
+
+  /**
+   * Récupère une option via le `data-postalcode`
+   * @param {string} code Code postal de la ressource
+   * @returns {?HTMLOptionElement}
+   */
+  static GetOptionByPostalCode(code) {
+    return document.querySelector(
+      `.mel-dialog-page select option[data-postalcode="${code}"]`,
     );
   }
 }

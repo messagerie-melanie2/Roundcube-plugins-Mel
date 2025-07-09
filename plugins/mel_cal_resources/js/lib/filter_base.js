@@ -264,7 +264,7 @@ class FilterBase extends MelObject {
             .each(
               (jhtml, locality) => {
                 return jhtml
-                  .option({ value: locality.uid, 'data-description': locality.description })
+                  .option({ value: locality.uid, 'data-postalcode': locality.postalcode, 'data-description': locality.description })
                   .text(locality.name)
                   .end();
               },

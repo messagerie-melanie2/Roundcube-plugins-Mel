@@ -14,3 +14,6 @@ $labels['status_updated_error'] = 'Le statut n\'a pas été modifié';
 $labels['confirm_url_deletion'] = 'Êtes-vous sûr de vouloir supprimer cette URL ?';
 $labels['url_deleted_successfully'] = 'L\'URL a été supprimée avec succès';
 $labels['url_delete_error'] = 'L\'URL n\'a pas été supprimée';
+$labels['suspect'] = 'Suspecte';
+$labels['blocked'] = 'Bloquée';
+$labels['delete'] = 'Supprimer';

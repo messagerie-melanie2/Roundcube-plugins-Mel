@@ -61,11 +61,8 @@ class mel_suspects_urls extends bnum_plugin
    */
   function setup_task()
   {
-    if ($this->rc->task == 'settings') {
 
-      $this->load_config();
-
-    }
+    if ($this->rc->task === 'settings') $this->load_config();
     return $this;
   }
 
@@ -81,7 +78,8 @@ class mel_suspects_urls extends bnum_plugin
    */
   function setup_settings()
   {
-    if ($this->rc->task == 'settings') {
+
+    if ($this->rc->task === 'settings') {
 
       $this->add_hook('settings_actions', array($this, 'hook_settings_actions'));
       $this->api->register_action('plugin.mel_suspects_urls', $this->ID, [
@@ -236,7 +234,6 @@ class mel_suspects_urls extends bnum_plugin
       }
 
       $this->rc->output->send();
-      return false;
   }
 
   /**
@@ -306,17 +303,18 @@ class mel_suspects_urls extends bnum_plugin
    */
   function action_settings()
   {
-    if (!$this->check_rights_user()) {
+
+    if ($this->check_rights_user()) {
+      // Affichage normal de la page de configuration
+      $this->include_script('js/mel_suspects_urls.js');
+      $this->include_stylesheet($this->local_skin_path() . '/suspects_urls.css');
+
+      $this->rc->output->set_pagetitle($this->gettext('suspects_urls'));
+      $this->rc->output->send('mel_suspects_urls.suspectsurls_settings');
+    } else {
       $this->rc->output->show_message($this->gettext('access_denied'), 'error');
       $this->rc->output->send('error');
-      return;
     }
-    // Affichage normal de la page de configuration
-    $this->include_script('js/mel_suspects_urls.js');
-    $this->include_stylesheet($this->local_skin_path() . '/suspects_urls.css');
-
-    $this->rc->output->set_pagetitle($this->gettext('suspects_urls'));
-    $this->rc->output->send('mel_suspects_urls.suspectsurls_settings');
   }
 }
 

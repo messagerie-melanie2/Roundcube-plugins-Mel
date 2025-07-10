@@ -110,7 +110,13 @@
    * @returns {void}
    */
   function fetchUrlsFromBackend() {
-    rcmail.http_post('suspect_urls/get_all_urls', {});
+
+    const busy = rcmail.set_busy(true, 'loading');
+
+    rcmail.http_post('suspect_urls/get_all_urls', {})
+      .then(() => {
+        rcmail.set_busy(false, 'loading', busy);
+      });
   }
 
   /**

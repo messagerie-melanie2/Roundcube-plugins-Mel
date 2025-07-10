@@ -24,14 +24,14 @@
             <div class="col-md-8 mb-2 mb-md-0">
               <div class="mel-add-url-group">
                 <input id="suspect-input" class="form-control" type="text"
-                  placeholder="Ex : https://exemple.com ou fauxsite.net" value="">
-                <button id="clear-button" class="btn-clear-input" type="button" title="Effacer le champ"
-                  aria-label="Effacer le champ">✖</button>
+                  placeholder="<roundcube:label name='mel_suspects_urls.example' />" value="">
+                <button id="clear-button" class="btn-clear-input" type="button" title="<roundcube:label name='mel_suspects_urls.delete_field' />"
+                  aria-label="<roundcube:label name='mel_suspects_urls.delete_field' />">✖</button>
               </div>
             </div>
             <div class="col-md-4">
-              <primary-button data-icon="add_circle" id="suspect-add-btn" aria-label="Ajouter une URL suspecte"
-                title="Ajouter une URL suspecte">
+              <primary-button data-icon="add_circle" id="suspect-add-btn" aria-label="<roundcube:label name='mel_suspects_urls.button_title_add_url' />"
+                title="<roundcube:label name='mel_suspects_urls.button_title_add_url' />">
                   <roundcube:label name="mel_suspects_urls.add_suspects_urls" />
               </button>
             </div>
@@ -44,9 +44,9 @@
         <table class="url-table table-striped table-bordered">
           <thead class="url_striped">
             <tr>
-              <th class="col-8">URL</th>
-              <th class="col-1 text-center">Statut</th>
-              <th class="col-1 text-center">Supprimer</th>
+              <th class="col-8"><roundcube:label name="mel_suspects_urls.url" /></th>
+              <th class="col-1 text-center"><roundcube:label name="mel_suspects_urls.status" /></th>
+              <th class="col-1 text-center"><roundcube:label name="mel_suspects_urls.delete" /></th>
             </tr>
           </thead>
           <tbody id="suspect-table-body">

@@ -287,7 +287,7 @@ class mel_suspects_urls extends bnum_plugin
     $urls = [];
     while ($row = $this->db->fetch_assoc($result)) {
       $urls[$row['url']] = [
-        'bloqued' => ($row['statut'] == 1)
+        'bloqued' => ($row['statut'] === 1)
       ];
     }
     

@@ -13,59 +13,87 @@
   }
 
   // Écouteurs d'événements de réponses AJAX
-  rcmail.addEventListener('plugin.mel_suspects_urls_urls_data', function(response) {
+  rcmail.addEventListener(
+    'plugin.mel_suspects_urls_urls_data',
+    function (response) {
+      if (response.success) {
+        allUrlsList = response.data;
+        reinitFilteredUrls();
+        updateSuspectUI();
+      } else {
+        console.error('Erreur lors du chargement des URLs :', response.message);
+        rcmail.display_message(
+          response.message || rcmail.gettext('load_error', 'mel_suspects_urls'),
+          'error',
+        );
+      }
+    },
+  );
 
-    if (response.success) {
-      allUrlsList = response.data;
-      reinitFilteredUrls();
-      updateSuspectUI();
-    } 
-    else {
-      console.error('Erreur lors du chargement des URLs :', response.message);
-      rcmail.display_message(response.message || rcmail.gettext('load_error', 'mel_suspects_urls'), 'error');
-    }
-  });
+  rcmail.addEventListener(
+    'plugin.mel_suspects_urls_update_status_response',
+    function (response) {
+      if (response.success) {
+        rcmail.display_message(
+          rcmail.gettext('status_updated_successfully', 'mel_suspects_urls'),
+          'confirmation',
+        );
+      } else {
+        rcmail.display_message(
+          response.message ||
+            rcmail.gettext('status_updated_error', 'mel_suspects_urls'),
+          'error',
+        );
+      }
+    },
+  );
 
-  rcmail.addEventListener('plugin.mel_suspects_urls_update_status_response', function(response) {
-
-    if (response.success) {
-      rcmail.display_message(rcmail.gettext('status_updated_successfully','mel_suspects_urls'), 'confirmation');
-    } 
-    else {
-      rcmail.display_message(response.message || rcmail.gettext('status_updated_error','mel_suspects_urls'), 'error');
-    }
-  });
-
-  rcmail.addEventListener('plugin.mel_suspects_urls_add_url_response', function(response) {
-
-    if (response.success) {
-      const input = document.getElementById('suspect-input');
+  rcmail.addEventListener(
+    'plugin.mel_suspects_urls_add_url_response',
+    function (response) {
+      if (response.success) {
+        const input = document.getElementById('suspect-input');
 
         if (input) input.value = '';
         fetchUrlsFromBackend();
-        rcmail.display_message(rcmail.gettext('url_added_successfully','mel_suspects_urls'), 'confirmation');
-      } 
-      else {
-        rcmail.display_message(response.message || rcmail.gettext('url_add_error','mel_suspects_urls'), 'error');
-    }
-  });
+        rcmail.display_message(
+          rcmail.gettext('url_added_successfully', 'mel_suspects_urls'),
+          'confirmation',
+        );
+      } else {
+        rcmail.display_message(
+          response.message ||
+            rcmail.gettext('url_add_error', 'mel_suspects_urls'),
+          'error',
+        );
+      }
+    },
+  );
 
-  rcmail.addEventListener('plugin.mel_suspects_urls_delete_url_response', function(response) {
-
-    if (response.success) {
-      fetchUrlsFromBackend();
-      rcmail.display_message(rcmail.gettext('url_deleted_successfully','mel_suspects_urls'), 'confirmation');
-    } 
-    else {
-      rcmail.display_message(response.message || rcmail.gettext('url_delete_error','mel_suspects_urls'), 'error');
-    }
-  });
+  rcmail.addEventListener(
+    'plugin.mel_suspects_urls_delete_url_response',
+    function (response) {
+      if (response.success) {
+        fetchUrlsFromBackend();
+        rcmail.display_message(
+          rcmail.gettext('url_deleted_successfully', 'mel_suspects_urls'),
+          'confirmation',
+        );
+      } else {
+        rcmail.display_message(
+          response.message ||
+            rcmail.gettext('url_delete_error', 'mel_suspects_urls'),
+          'error',
+        );
+      }
+    },
+  );
 
   /**
    * Fonction exécutée au chargement de la page
    * Initialise l'interface utilisateur
    */
-  window.addEventListener('load', async function() {
+  window.addEventListener('load', async function () {
     await initSuspectUI();
   });
 
@@ -74,7 +102,7 @@
    *
    * Cette fonction utilise l'API `rcmail.http_post` pour appeler l'action
    * `suspect_urls/get_all_urls`, qui déclenche la méthode PHP `get_all_urls`.
-   * 
+   *
    * La réponse attendue est ensuite traitée via un gestionnaire d'événement
    * (ex. : `plugin.mel_suspects_urls_urls_data`) enregistré côté client.
    *
@@ -105,11 +133,10 @@
       const searchTerm = input.value.trim().toLowerCase();
 
       if (searchTerm) {
-        filteredUrlsList = allUrlsList.filter(item => 
-          item.url.toLowerCase().includes(searchTerm)
+        filteredUrlsList = allUrlsList.filter((item) =>
+          item.url.toLowerCase().includes(searchTerm),
         );
-      } 
-      else {
+      } else {
         filteredUrlsList = [...allUrlsList];
       }
       currentPage = 1;
@@ -118,7 +145,6 @@
 
     // Ajout avec la touche Entrée
     input.addEventListener('keydown', (e) => {
-
       if (e.key === 'Enter') {
         addBtn.click();
       }
@@ -139,14 +165,22 @@
 
       if (!value) return;
 
-      const alreadyExists = filteredUrlsList.some(item => item.url.toLowerCase() === value.toLowerCase());
+      const alreadyExists = filteredUrlsList.some(
+        (item) => item.url.toLowerCase() === value.toLowerCase(),
+      );
 
       if (alreadyExists) {
-        rcmail.display_message(rcmail.gettext('url_already_exist','mel_suspects_urls'),'error');
+        rcmail.display_message(
+          rcmail.gettext('url_already_exist', 'mel_suspects_urls'),
+          'error',
+        );
         return;
       }
 
-      rcmail.http_post('suspect_urls/add_suspect_url', { _url: value });
+      addBtn.setLoadingMode();
+      rcmail
+        .http_post('suspect_urls/add_suspect_url', { _url: value })
+        .then(() => addBtn.stopLoadingMode());
     });
   }
 
@@ -177,13 +211,13 @@
       const statutTd = document.createElement('td');
       const select = document.createElement('select');
       select.className = 'statut-select';
-      
+
       // Options avec 0 = suspecte, 1 = bloquée
       const options = [
         { value: 0, label: rcmail.gettext('mel_suspects_urls.suspect') },
-        { value: 1, label: rcmail.gettext('mel_suspects_urls.blocked') }
+        { value: 1, label: rcmail.gettext('mel_suspects_urls.blocked') },
       ];
-      
+
       for (const opt of options) {
         const option = document.createElement('option');
         option.value = opt.value;
@@ -197,58 +231,76 @@
 
       // Met à jour le statut dans le backend à chaque changement
       select.addEventListener('change', async (e) => {
-
         try {
           await rcmail.http_post('suspect_urls/update_url_status', {
             _url_id: item.url_id,
-            _statut: e.target.value
+            _statut: e.target.value,
           });
-          
+
           // Mettre à jour localement
           item.statut = parseInt(e.target.value);
 
-          rcmail.display_message(rcmail.gettext('status_updated_successfully','mel_suspects_urls'),'confirmation');
-        } 
-        catch (error) {
+          rcmail.display_message(
+            rcmail.gettext('status_updated_successfully', 'mel_suspects_urls'),
+            'confirmation',
+          );
+        } catch (error) {
           console.error('Erreur:', error);
-          rcmail.display_message(rcmail.gettext('status_updated_error','mel_suspects_urls'),'error');
+          rcmail.display_message(
+            rcmail.gettext('status_updated_error', 'mel_suspects_urls'),
+            'error',
+          );
           // Revenir à l'ancienne valeur
           select.value = item.statut;
         }
       });
-      
+
       statutTd.appendChild(select);
 
       // Colonne Supprimer
       const deleteTd = document.createElement('td');
       deleteTd.className = 'delete-url';
-      const deleteBtn = document.createElement('button');
-      deleteBtn.className = 'mel-button btn btn-link p-0';
-      deleteBtn.setAttribute('title', rcmail.gettext('mel_suspects_urls.delete'));
-      deleteBtn.innerHTML = '<span class="material-symbols-outlined">delete</span>';
+      const deleteBtn = document
+        .getElementById('su-custom-elements')
+        .content.querySelector('#base-template-button')
+        .cloneNode(true);
+
+      deleteBtn.removeAttribute('id');
 
       deleteBtn.addEventListener('click', async () => {
+        if (!confirm(rcmail.gettext('mel_suspects_urls.confirm_url_deletion')))
+          return;
 
-        if (!confirm(rcmail.gettext('mel_suspects_urls.confirm_url_deletion'))) return;
-        
         try {
+          deleteBtn.setLoadingMode();
           await rcmail.http_post('suspect_urls/delete_suspect_url', {
-            _url_id: item.url_id
+            _url_id: item.url_id,
           });
 
+          if (deleteBtn && deleteBtn.stopLoadingMode)
+            deleteBtn.stopLoadingMode();
+
           fetchUrlsFromBackend();
-          
+
           // Si on supprime le dernier élément d'une page, on recule d'une page si possible
-          if ((currentPage - 1) * rowsPerPage >= filteredUrlsList.length && currentPage > 1) {
+          if (
+            (currentPage - 1) * rowsPerPage >= filteredUrlsList.length &&
+            currentPage > 1
+          ) {
             --currentPage;
           }
           updateSuspectUI();
 
-          rcmail.display_message(rcmail.gettext('url_deleted_successfully','mel_suspects_urls'),'confirmation');
-        } 
-        catch (error) {
+          rcmail.display_message(
+            rcmail.gettext('url_deleted_successfully', 'mel_suspects_urls'),
+            'confirmation',
+          );
+        } catch (error) {
           console.error('Erreur:', error);
-          rcmail.display_message(rcmail.gettext('url_delete_error','mel_suspects_urls'),'error');
+          rcmail.display_message(
+            rcmail.gettext('url_delete_error', 'mel_suspects_urls'),
+            'error',
+          );
         }
       });
 
@@ -282,13 +334,12 @@
     paginationContainer.innerHTML = '';
 
     const totalPages = Math.ceil(filteredUrlsList.length / rowsPerPage);
-    
+
     // Cacher la pagination si une seule page ou aucun résultat
     if (totalPages <= 1) {
       paginationContainer.style.display = 'none';
       return;
-    } 
-    else {
+    } else {
       paginationContainer.style.display = 'block';
     }
 
@@ -302,11 +353,11 @@
     prevLi.className = 'page-item' + (isFirstPage ? ' disabled' : '');
     const prevBtn = document.createElement('button');
     prevBtn.className = 'page-link';
-    prevBtn.innerHTML = '<span class="material-symbols-outlined">chevron_left</span>';
+    prevBtn.innerHTML =
+      '<span class="material-symbols-outlined">chevron_left</span>';
     prevBtn.disabled = isFirstPage;
 
     prevBtn.addEventListener('click', () => {
-
       if (currentPage > 1) {
         --currentPage;
         updateSuspectUI();
@@ -336,8 +387,7 @@
       for (let i = 1; i <= totalPages; i++) {
         addPageBtn(i);
       }
-    } 
-    else {
+    } else {
       // Toujours afficher le numéro de la 1ère page
       addPageBtn(1);
 
@@ -376,11 +426,11 @@
     nextLi.className = 'page-item' + (isLastPage ? ' disabled' : '');
     const nextBtn = document.createElement('button');
     nextBtn.className = 'page-link';
-    nextBtn.innerHTML = '<span class="material-symbols-outlined">chevron_right</span>';
+    nextBtn.innerHTML =
+      '<span class="material-symbols-outlined">chevron_right</span>';
     nextBtn.disabled = isLastPage;
 
     nextBtn.addEventListener('click', () => {
-
       if (currentPage < totalPages) {
         ++currentPage;
         updateSuspectUI();
@@ -400,13 +450,13 @@
    */
   function escapeHTML(str) {
     return str.replace(/[&<>"']/g, function (m) {
-      return ({
+      return {
         '&': '&amp;',
         '<': '&lt;',
         '>': '&gt;',
         '"': '&quot;',
-        "'": '&#039;'
-      })[m];
+        "'": '&#039;',
+      }[m];
     });
   }
 })();

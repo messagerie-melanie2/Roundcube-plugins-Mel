@@ -2,6 +2,10 @@
 <roundcube:include file="includes/menu.html" />
 <roundcube:include file="includes/settings-menu.html" />
 
+<template id="su-custom-elements">
+  <error-button data-icon="delete" data-icon-margin="0" id="base-template-button"  class="p-0" title="<roundcube:label name="mel_suspects_urls.delete" />"></error-button>
+</template>
+
 <div id="layout-content" role="main">
   <div class="content">
     <!-- Titre principal -->
@@ -26,12 +30,9 @@
               </div>
             </div>
             <div class="col-md-4">
-              <button id="suspect-add-btn" class="mel-button btn btn-primary" aria-label="Ajouter une URL suspecte"
+              <primary-button data-icon="add_circle" id="suspect-add-btn" aria-label="Ajouter une URL suspecte"
                 title="Ajouter une URL suspecte">
-                <span class="add d-none d-sm-block">
                   <roundcube:label name="mel_suspects_urls.add_suspects_urls" />
-                </span>
-                <span class="material-symbols-outlined">add_circle</span>
               </button>
             </div>
           </div>

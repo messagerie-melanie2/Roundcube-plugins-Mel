@@ -3381,7 +3381,9 @@ class mel_metapage extends bnum_plugin
     private function _check_message_is_custom($isSuspect)
     {
         $array = [];
-        $custom = $this->rc->config->get('mel_custom_suspected_url', []);
+        // Mise à jour du code pour remplacer la config par le hook BDD
+        $plugin = $this->rc->plugins->exec_hook('mel_urls_suspects_get_all', ['urls' => []]);
+        $custom = $plugin['urls'] ?? [];
 
         foreach ($custom as $url => $datas) {
             if ($isSuspect && $datas['bloqued'] === false) $array[] = $url;
@@ -3402,9 +3404,17 @@ class mel_metapage extends bnum_plugin
     private function check_message_is_suspect($message, $rcube_message_header = null, $config = null)
     {
         if (!isset($config)) {
-            $config = $this->rc->config->get('mel_suspect_url', []);
-            $plugin = $this->rc->plugins->exec_hook('mel_config_suspect_url', ['config' => $config]);
-            $config = $plugin['config'] ?? $config;
+            // Mise à jour du code pour remplacer la config par le hook BDD
+            $plugin = $this->rc->plugins->exec_hook('mel_urls_suspects_get_all', ['urls' => []]);
+            $config = [];
+            
+            if (isset($plugin['urls']) && is_array($plugin['urls'])) {
+                foreach ($plugin['urls'] as $url => $datas) {
+                    if ($datas['bloqued'] === false) {
+                        $config[] = $url;
+                    }
+                }
+            }
         }
 
         $is_suspect = mel_helper::Enumerable($config)->any(function ($k, $v) use ($message) {
@@ -3447,9 +3457,17 @@ class mel_metapage extends bnum_plugin
     private function check_message_is_bloqued($message, $rcube_message_header = null, $config = null)
     {
         if (!isset($config)) {
-            $config = $this->rc->config->get('mel_bloqued_url', []);
-            $plugin = $this->rc->plugins->exec_hook('mel_config_bloqued_url', ['config' => $config]);
-            $config = $plugin['config'] ?? $config;
+            // Mise à jour du code pour remplacer la config par le hook BDD
+            $plugin = $this->rc->plugins->exec_hook('mel_urls_suspects_get_all', ['urls' => []]);
+            $config = [];
+            
+            if (isset($plugin['urls']) && is_array($plugin['urls'])) {
+                foreach ($plugin['urls'] as $url => $datas) {
+                    if ($datas['bloqued'] === true) {
+                        $config[] = $url;
+                    }
+                }
+            }
         }
 
         $is_bloqued = mel_helper::Enumerable($config)->any(function ($k, $v) use ($message) {

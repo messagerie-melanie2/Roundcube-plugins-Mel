@@ -173,8 +173,17 @@ abstract class bnum_plugin extends rcube_plugin
      *
      * @return rcmail
      */
-    protected function rc() {
+    protected function rc() : rcmail {
         return rcmail::get_instance();
+    }
+
+    /**
+     * Retourne la connection a la bdd
+     *
+     * @return rcube_db
+     */
+    protected function db() : rcube_db {
+        return $this->rc()->get_dbh();
     }
 
     /**
@@ -245,6 +254,135 @@ abstract class bnum_plugin extends rcube_plugin
      */
     protected function get_config($key, $default_value = null) {
         return $this->rc()->config->get($key, $default_value);
+    }
+
+    /**
+     * Définit une variable d'environnement pour la page.
+     *
+     * @param string $key Nom de la variable.
+     * @param mixed $value Valeur de la variable.
+     */
+    protected function set_env($key, $value) {
+        $this->rc()->output->set_env($key, $value);
+    }
+
+    /**
+     * Définit plusieurs variables d'environnement pour la page.
+     *
+     * @param array $envs Tableau associatif des variables d'environnement.
+     */
+    protected function set_envs($envs) {
+        foreach ($envs as $key => $value) {
+            $this->set_env($key, $value);
+        }
+    }
+
+    /**
+     * Envoie le template spécifié à l'utilisateur.
+     *
+     * @param string $templ Nom du template à envoyer.
+     * @return bool
+     */
+    protected function send($templ) {
+        return $this->rc()->output->send($templ, false);
+    }
+
+    /**
+     * Envoie le template spécifié à l'utilisateur et termine l'exécution.
+     *
+     * @param string $templ Nom du template à envoyer.
+     */
+    protected function send_and_exit($templ) {
+        $this->rc()->output->send($templ, true);
+    }
+
+    /**
+     * Exécute une commande Roundcube côté client.
+     *
+     * @param string $cmd Nom de la commande.
+     * @param mixed ...$args Arguments de la commande.
+     */
+    protected function send_command($cmd, ...$args) {
+        $this->rc()->output->command($cmd, ...$args);
+    }
+
+    /**
+     * Exécute plusieurs commandes Roundcube côté client.
+     *
+     * @param array $commands Tableau associatif des commandes et de leurs arguments.
+     */
+    protected function send_commands(array $commands) {
+        foreach ($commands as $cmd => $args) {
+            if (is_array($args)) {
+                $this->send_command($cmd, ...$args);
+            } else {
+                $this->send_command($cmd, $args);
+            }
+        }
+    }
+
+    /**
+     * Définit le titre de la page.
+     *
+     * @param string $title Titre à afficher.
+     */
+    protected function set_page_title($title) {
+        $this->rc()->output->set_pagetitle($title);
+    }
+
+    /**
+     * Affiche un message à l'utilisateur.
+     *
+     * @param string $message Message à afficher.
+     * @param string $type Type du message ('notice', 'confirm', 'error').
+     * @param mixed $vars Variables supplémentaires pour le message.
+     * @param bool $override Indique si le message doit écraser les précédents.
+     * @param int $timeout Durée d'affichage du message (en ms).
+     */
+    protected function show_message($message, $type = 'notice', $vars = null, $override = true, $timeout = 0) {
+        $this->rc()->output->show_message(
+            $message,
+            $type,
+            $vars,
+            $override,
+            $timeout
+        );
+    }
+
+    /**
+     * Affiche un message de type 'notice'.
+     *
+     * @param string $message Message à afficher.
+     * @param mixed $vars Variables supplémentaires pour le message.
+     * @param bool $override Indique si le message doit écraser les précédents.
+     * @param int $timeout Durée d'affichage du message (en ms).
+     */
+    protected function show_message_notice($message, $vars = null, $override = true, $timeout = 0) {
+        $this->show_message($message, 'notice', $vars, $override, $timeout);
+    }
+
+    /**
+     * Affiche un message de type 'confirm'.
+     *
+     * @param string $message Message à afficher.
+     * @param mixed $vars Variables supplémentaires pour le message.
+     * @param bool $override Indique si le message doit écraser les précédents.
+     * @param int $timeout Durée d'affichage du message (en ms).
+     */
+    protected function show_message_confirm($message, $vars = null, $override = true, $timeout = 0) {
+        $this->show_message($message, 'confirm', $vars, $override, $timeout);
+    }
+
+    /**
+     * Affiche un message de type 'error'.
+     *
+     * @param string $message Message à afficher.
+     * @param mixed $vars Variables supplémentaires pour le message.
+     * @param bool $override Indique si le message doit écraser les précédents.
+     * @param int $timeout Durée d'affichage du message (en ms).
+     */
+    protected function show_message_error($message, $vars = null, $override = true, $timeout = 0) {
+        $this->show_message($message, 'error', $vars, $override, $timeout);
     }
 
     /**

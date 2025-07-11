@@ -524,11 +524,18 @@ class ResourceDialog extends MelObject {
    * @private
    */
   #_autoSelectOption() {
-    let option = Utils.GetOptionByDescription(this.get_env('user_location'));
+    let option =
+      Utils.GetOptionByPostalCode(
+        this.get_env('user_postalcode') ?? EMPTY_STRING,
+      ) ||
+      Utils.GetOptionByDescription(
+        (this.get_env('user_location') ?? EMPTY_STRING).toUpperCase(),
+      );
 
-    if (option.length) {
-      const value = option.attr('value');
-      option.parent().val(value).change();
+    if (option) {
+      const value = option.getAttribute('value');
+      option.parentElement.value = value;
+      option.parentElement.dispatchEvent(new Event('change'));
     }
 
     option = null;

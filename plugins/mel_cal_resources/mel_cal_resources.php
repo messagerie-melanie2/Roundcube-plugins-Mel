@@ -59,8 +59,9 @@ class mel_cal_resources extends bnum_plugin {
      */
     private function _set_global_env() : void {
         $user = $this->get_user();
-        $user->load(['locality']);
+        $user->load(['locality', 'postalcode']);
         $this->rc()->output->set_env('user_location', $user->locality);
+        $this->rc()->output->set_env('user_postalcode', $user->postalcode);
         $this->rc()->output->set_env('lang', $this->rc()->get_user_language());
     }
 

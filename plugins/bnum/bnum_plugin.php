@@ -283,7 +283,7 @@ abstract class bnum_plugin extends rcube_plugin
      * @param string $templ Nom du template à envoyer.
      * @return bool
      */
-    protected function send($templ) {
+    protected function send($templ = null) {
         return $this->rc()->output->send($templ, false);
     }
 
@@ -292,7 +292,7 @@ abstract class bnum_plugin extends rcube_plugin
      *
      * @param string $templ Nom du template à envoyer.
      */
-    protected function send_and_exit($templ) {
+    protected function send_and_exit($templ = null) {
         $this->rc()->output->send($templ, true);
     }
 

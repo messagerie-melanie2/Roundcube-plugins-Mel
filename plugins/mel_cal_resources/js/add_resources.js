@@ -1,6 +1,7 @@
 import { EventView } from '../../mel_metapage/js/lib/calendar/event/event_view.js';
 import { GuestsPart } from '../../mel_metapage/js/lib/calendar/event/parts/guestspart.js';
 import { TimePartManager } from '../../mel_metapage/js/lib/calendar/event/parts/timepart.js';
+import { BaseStorage } from '../../mel_metapage/js/lib/classes/base_storage.js';
 import {
   BnumMessage,
   eMessageType,
@@ -175,7 +176,10 @@ class ResourceDialog extends MelObject {
      */
     this.all_day = null;
 
-    //this.selected_resource = null;
+    /**
+     * @type {BaseStorage<boolean>}
+     */
+    this._initialized_rsc = new BaseStorage();
   }
 
   /**
@@ -320,6 +324,15 @@ class ResourceDialog extends MelObject {
           .observed.tabs.on('api:tabswitched', (e) => {
             const page = e.originalEvent.detail;
             this.dialog.switch_page(page);
+
+            const rsc = this.get_current_page_resource()._name;
+
+            if (!this._initialized_rsc.has(rsc)) {
+              //On affiche la bonne localité si elle existe
+              this.#_autoSelectOption(rsc);
+              this._initialized_rsc.add(rsc, true);
+            }
+
             this.get_current_page_resource().rerender();
           });
 
@@ -519,17 +532,23 @@ class ResourceDialog extends MelObject {
   }
 
   /**
-   * Selectionne automatiquement la valeur d'un filtre via la localité de l'utilisateur en cours
-   * @returns {void}
+   * Sélectionne automatiquement la valeur d'un filtre selon la localité ou le code postal
+   * de l'utilisateur courant. Si une option correspondante est trouvée, elle est sélectionnée
+   * et le filtre déclenche un événement de changement.
+   *
    * @private
+   * @param {?string} resource Nom de la ressource (optionnel)
+   * @returns {this} Chaînage de l'objet courant
    */
-  #_autoSelectOption() {
+  #_autoSelectOption(resource = null) {
     let option =
       Utils.GetOptionByPostalCode(
         this.get_env('user_postalcode') ?? EMPTY_STRING,
+        { resource },
       ) ||
       Utils.GetOptionByDescription(
         (this.get_env('user_location') ?? EMPTY_STRING).toUpperCase(),
+        { resource },
       );
 
     if (option) {
@@ -539,6 +558,8 @@ class ResourceDialog extends MelObject {
     }
 
     option = null;
+
+    return this;
   }
 
   /**

@@ -687,6 +687,49 @@ class ResourcesBase extends MelObject {
 
     this._$calendar.fullCalendar('refetchResources');
     this._$calendar.fullCalendar('refetchEvents');
+
+    this.#_autoSelectFloor(this._name);
+  }
+
+  /**
+   * Sélectionne automatiquement l'étage dans le filtre correspondant
+   * en fonction du numéro de salle de l'utilisateur et d'une expression régulière
+   * définie dans l'environnement. Si une correspondance est trouvée, le filtre "Etage"
+   * est mis à jour et déclenche un événement de changement.
+   *
+   * @private
+   * @param {?string} resource Nom de la ressource (optionnel)
+   * @returns {ResourcesBase} Chaînage de l'objet courant
+   */
+  #_autoSelectFloor(resource = null) {
+    /**
+     * @type {string}
+     */
+    const roomnumber = this.get_env('user_roomnumber');
+
+    if (roomnumber) {
+      const regex_base =
+        this.get_env('floor_regex')?.[this.get_env('user_postalcode')];
+
+      if (regex_base) {
+        const floorResult = roomnumber.match(new RegExp(regex_base));
+
+        if (floorResult && floorResult.length > 0) {
+          const floor = floorResult[0];
+
+          let selected = document.querySelector(
+            `${resource ? `[data-resourcetype="${resource}"] ` : EMPTY_STRING}select[data-fname="Etage"] option[value="${floor}"]`,
+          );
+
+          if (selected) {
+            selected.parentElement.value = floor;
+            selected.parentElement.dispatchEvent(new Event('change'));
+          }
+        }
+      }
+    }
+
+    return this;
   }
 
   /**

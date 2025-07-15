@@ -123,6 +123,14 @@ class mel_suspects_urls extends bnum_plugin
           $sql = "SELECT * FROM mel_suspects_urls ORDER BY url_id ASC";
           $stmt = $this->db()->query($sql);
 
+          if ($stmt === false) {
+            $this->send_command('plugin.mel_suspects_urls_urls_data', [
+                'success' => false,
+                'message' => $this->gettext('mel_suspects_urls.download_error')
+            ]);
+            $this->send_and_exit();
+          }
+
           $urls = [];
           while ($row = $this->db()->fetch_assoc($stmt)) {
               $urls[] = $row;
@@ -152,31 +160,49 @@ class mel_suspects_urls extends bnum_plugin
       if (!$url) {
           $this->send_command('plugin.mel_suspects_urls_add_url_response', [
               'success' => false,
-              'message' => 'URL vide.'
+              'message' => $this->gettext('mel_suspects_urls.empty_url')
           ]);
+
           $this->send_and_exit();
       }
 
       // Vérifier si l'URL existe déjà
       $sql = "SELECT COUNT(*) AS count FROM mel_suspects_urls WHERE LOWER(url) = LOWER(?)";
       $result = $this->db()->query($sql, $url);
+
+      if ($result === false) {
+          $this->send_command('plugin.mel_suspects_urls_add_url_response', [
+              'success' => false,
+              'message' => $this->gettext('mel_suspects_urls.url_error')
+          ]);
+          $this->send_and_exit();
+      }
+
       $row = $this->db()->fetch_assoc($result);
 
       if ($row['count'] > 0) {
           $this->send_command('plugin.mel_suspects_urls_add_url_response', [
               'success' => false,
-              'message' => 'Cette URL existe déjà.'
+              'message' => $this->gettext('mel_suspects_urls.url_already_exist')
           ]);
           
           $this->send_and_exit();
       }
 
       try {
-          $this->db()->query("INSERT INTO mel_suspects_urls (url, statut) VALUES (?, ?)", $url, 0); // 0 = suspecte par défaut
+          $statement = $this->db()->query("INSERT INTO mel_suspects_urls (url, statut) VALUES (?, ?)", $url, 0); // 0 = suspecte par défaut
 
-          $this->send_command('plugin.mel_suspects_urls_add_url_response', [
-              'success' => true
-          ]);
+          if ($statement === false) {
+            $this->send_command('plugin.mel_suspects_urls_add_url_response', [
+                'success' => false,
+                'message' => $this->gettext(['name' => 'mel_suspects_urls.url_add_error', 'vars' => ['url' => $url]])
+            ]);
+          }
+          else {
+            $this->send_command('plugin.mel_suspects_urls_add_url_response', [
+                'success' => true
+            ]);
+          }
       } catch (Exception $e) {
           $this->send_command('plugin.mel_suspects_urls_add_url_response', [
               'success' => false,
@@ -194,11 +220,19 @@ class mel_suspects_urls extends bnum_plugin
       $url_id = intval(rcube_utils::get_input_value('_url_id', rcube_utils::INPUT_POST));
 
       try {
-          $this->db()->query("DELETE FROM mel_suspects_urls WHERE url_id = ?", $url_id);
+          $statement = $this->db()->query("DELETE FROM mel_suspects_urls WHERE url_id = ?", $url_id);
 
-          $this->send_command('plugin.mel_suspects_urls_delete_url_response', [
-              'success' => true
-          ]);
+          if ($statement === false) {
+              $this->send_command('plugin.mel_suspects_urls_delete_url_response', [
+                  'success' => false,
+                  'message' => $this->gettext('mel_suspects_urls.delete_error')
+              ]);
+          }
+          else {
+            $this->send_command('plugin.mel_suspects_urls_delete_url_response', [
+                'success' => true
+            ]);
+          }
       } catch (Exception $e) {
           $this->send_command('plugin.mel_suspects_urls_delete_url_response', [
               'success' => false,
@@ -219,11 +253,19 @@ class mel_suspects_urls extends bnum_plugin
       $statut = intval(rcube_utils::get_input_value('_statut', rcube_utils::INPUT_POST));
 
       try {
-          $this->db()->query("UPDATE mel_suspects_urls SET statut = ? WHERE url_id = ?", $statut, $url_id);
+          $statement = $this->db()->query("UPDATE mel_suspects_urls SET statut = ? WHERE url_id = ?", $statut, $url_id);
 
-          $this->send_command('plugin.mel_suspects_urls_update_status_response', [
-              'success' => true
-          ]);
+          if ($statement === false) {
+              $this->send_command('plugin.mel_suspects_urls_update_status_response', [
+                  'success' => false,
+                  'message' => $this->gettext('mel_suspects_urls.update_error')
+              ]);
+          }
+          else {
+            $this->send_command('plugin.mel_suspects_urls_update_status_response', [
+                'success' => true
+            ]);
+          }
       } catch (Exception $e) {
           $this->send_command('plugin.mel_suspects_urls_update_status_response', [
               'success' => false,

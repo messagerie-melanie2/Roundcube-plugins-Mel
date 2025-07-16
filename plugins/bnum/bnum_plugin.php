@@ -400,6 +400,17 @@ abstract class bnum_plugin extends rcube_plugin
     }
 
     /**
+     * Ajoute plusieurs hooks à la liste des hooks du plugin.
+     *
+     * @param array $hooks Tableau associatif où la clé est le nom du hook et la valeur est le callback à exécuter.
+     */
+    protected function add_hooks(array $hooks) {
+        foreach ($hooks as $hook => $callback) {
+            $this->add_hook($hook, $callback);
+        }
+    }
+
+    /**
      * Exécute un hook.
      *
      * @param string $hook Nom du hook.

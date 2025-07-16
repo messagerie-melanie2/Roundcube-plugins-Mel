@@ -1,0 +1,49 @@
+name: JS & PHP Syntax Checks
+
+on:
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  test:
+    name: Test Branch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debug branch info
+        run: |
+          echo "HEAD REF = ${{ github.head_ref }}"
+          echo "REF = ${{ github.ref }}"
+  js-check:
+    name: JavaScript Syntax Check
+    runs-on: ubuntu-latest
+    if: startsWith(github.head_ref, 'dwp-')
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check JavaScript syntax
+        run: |
+          echo "🔍 Checking JavaScript syntax..."
+          find . -name "*.js" -exec node --check {} \;
+      - name: Run ESLint (optional)
+        run: |
+          if [ -f package.json ]; then
+            npm install
+            if npx eslint --version >/dev/null 2>&1; then
+              npx eslint .
+            else
+              echo "ESLint not configured."
+            fi
+          else
+            echo "No package.json found, skipping linting."
+          fi
+
+  php-check:
+    name: PHP Syntax Check
+    runs-on: ubuntu-latest
+    if: startsWith(github.head_ref, 'dwp-')
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check PHP syntax
+        run: |
+          echo "🔍 Checking PHP syntax..."
+          find . -name "*.php" -print0 | xargs -0 -n1 php -l

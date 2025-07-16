@@ -512,3 +512,5 @@ $labels['return_to_creation_modal'] = 'Retour à la modale de création';
 $labels['create_workspace_title'] = 'Création d\'un espace de travail';
 $labels['gotoaddressbook'] = 'Afficher dans l\'annuaire';
 $labels['noinaddressbook'] = 'Le contact n\'est pas dans l\'annuaire';
+
+$labels['calendar_add_mail_to_event'] = 'Ajouter les destinataires du mail';

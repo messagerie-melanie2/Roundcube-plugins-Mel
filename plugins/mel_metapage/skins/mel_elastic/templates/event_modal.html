@@ -98,7 +98,7 @@
 		<div class="d-flex" style="align-items: center;margin-top:15px">
 			<span class="material-symbols-outlined" style="margin-right:15px">mail</span>
 			<button id="event-mail-add-member" type="button" class="have-workspace mel-button mel-before-remover invite-button create" style="margin-top:0px;">
-				<span style="margin-right:15px">Ajouter les destinataires du mail</span>
+				<span style="margin-right:15px"><roundcube:label name="mel_metapage.calendar_add_mail_to_event" /></span>
 				<span class="icofont-plus-circle set-margin-left-1"></span>
 			</button>
 		</div>
@@ -417,7 +417,7 @@ Choix de la période
 		<!-- MANTIS 0006722: Si l'organisateur est interne, empecher le participant de modifier la date de l'événement -->
 		<div id="edit-internallocalchanges-warning" class="dialog-message" style="display:none"><roundcube:label name="calendar.internallocalchangeswarning" /></div>
 	</div>
-</div>
+</div> 
 
 <roundcube:if condition="in_array(env:task, array('mel_metapage'))" />
 <div id="eventfreebusy" class="popupmenu calendar-scheduler formcontent">

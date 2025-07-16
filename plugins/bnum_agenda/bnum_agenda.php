@@ -15,19 +15,25 @@ class bnum_agenda extends bnum_plugin {
    * @return void
    */
   public function init() {
-    $this->rc()->output->set_env('event_limit',$this->rc()->config->get('event_limit'));
+    $this->load_config();
+
+    $this->set_env('event_limit', $this->get_config('event_limit', 4));
+
     switch ($this->get_current_task()) {
       case 'agenda':
       case 'calendar':
         $this->register_action('get_categories', [$this, 'action_get_categories']);
-        $this->rc()->config->get('event_limit');
         break;
       
       default:
-        $this->add_hook('signature.links', [$this, 'hook_signature_links']);
-        $this->add_hook('preferences_list', [$this, 'hook_preferences_list']);
-        $this->add_hook('preferences_save', [$this, 'hook_preferences_save']);
-        $this->add_hook('folder_update', [$this, 'hook_folder_update']);
+        $this->add_hooks(
+          [
+            'signature.links' => [$this, 'hook_signature_links'],
+            'preferences_list' => [$this, 'hook_preferences_list'],
+            'preferences_save' => [$this, 'hook_preferences_save'],
+            'folder_update' => [$this, 'hook_folder_update']
+          ]
+        );
         break;
     }    
   }
@@ -100,10 +106,10 @@ class bnum_agenda extends bnum_plugin {
     $hasUrl = $calendar->get_appointment_url(driver_mel::gi()->getUser()->getDefaultCalendar()->id);
 
     if ($hasUrl) {
-      $text = $this->rc()->gettext('calendlink', 'bnum_agenda');
+      $text = $this->gettext('calendlink', 'bnum_agenda');
       $custom_links.=  html::tag('li', [], $checkbox->show('', ['value' => $hasUrl, 'id' => 'checkbox-calendly-link', 'onchange' => 'onInputChange();']) . html::label(['for' => "checkbox-calendly-link"], $text));
 
-      $args['env_links'][$hasUrl] = $this->rc()->gettext('calendlink-label', 'bnum_agenda');
+      $args['env_links'][$hasUrl] = $this->gettext('calendlink-label', 'bnum_agenda');
       $args['custom_links'] = $custom_links;
     }
 
@@ -124,7 +130,7 @@ class bnum_agenda extends bnum_plugin {
 
     if ($color === '') $color = null;
       $folder = $this->get_input_post('_mbox');
-      $prefs = $this->rc()->config->get('folders_colors', []);
+      $prefs = $this->get_config('folders_colors', []);
 
       if (isset($color)) $prefs[$folder] = $color;
       else unset($prefs[$folder]);

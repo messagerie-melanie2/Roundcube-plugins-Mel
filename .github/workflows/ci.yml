@@ -3,7 +3,7 @@ name: JS & PHP Syntax Checks
 on:
   pull_request:
     branches:
-      - '**'
+      - '**' # Déclenche sur toute PR vers n'importe quelle branche
 
 jobs:
   js-check:

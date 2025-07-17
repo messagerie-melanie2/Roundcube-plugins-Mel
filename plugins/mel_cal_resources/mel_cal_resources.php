@@ -58,10 +58,17 @@ class mel_cal_resources extends bnum_plugin {
      * @return void
      */
     private function _set_global_env() : void {
+        $this->load_config();
         $user = $this->get_user();
-        $user->load(['locality']);
-        $this->rc()->output->set_env('user_location', $user->locality);
-        $this->rc()->output->set_env('lang', $this->rc()->get_user_language());
+        $user->load(['locality', 'postalcode', 'roomnumber']);
+
+        $this->set_envs([
+            'user_location' => $user->locality,
+            'user_postalcode' => $user->postalcode,
+            'user_roomnumber' => $user->roomnumber,
+            'floor_regex' => $this->get_config('extract_floor', []),
+            'lang' => $this->rc()->get_user_language(),
+        ]);
     }
 
     function load_data($waiting_script_name) {
@@ -69,12 +76,15 @@ class mel_cal_resources extends bnum_plugin {
         $resources =  $this->rc()->config->get('rc_resources', []);
         $filters =  $this->rc()->config->get('rc_filters', []);
 
-        $this->rc()->output->set_env('cal_resources', [
-            'resources' => $resources,
-            'filters' => $filters
-        ]);
-
-        $this->rc()->output->set_env('fav_resources', $this->rc()->config->get(self::CONFIG_KEY_FAVORITE, []));
+        $this->set_envs(
+            [
+                'cal_resources' => [
+                    'resources' => $resources,
+                    'filters' => $filters
+                ],
+                'fav_resources' => $this->get_config(self::CONFIG_KEY_FAVORITE, [])
+            ]
+            );
 
         $this->include_script("js/$waiting_script_name.js");
         $this->include_script('external/bootstrap-multiselect.js');

@@ -10,6 +10,9 @@ class bnum_mail extends bnum_plugin {
 
         if (isset($config) && !$this->rc()->output->get_env('search_scope')) $this->rc()->output->set_env('search_scope', $config);
     }
+    else if ($this->get_current_action() === 'show' && $this->get_input('_extwin') == '1') {
+      $this->include_script_from_plugin('mel_metapage', 'js/functions.js');
+    }
 
     $this->add_hook('messages_list', [$this, 'hook_message_list']);
   }

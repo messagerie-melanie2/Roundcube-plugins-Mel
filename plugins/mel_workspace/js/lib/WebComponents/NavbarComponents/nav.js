@@ -11,19 +11,57 @@ import { BnumEvent } from '../../../../../mel_metapage/js/lib/mel_events.js';
 import { NavBarComponent } from './base.js';
 import { WspNavigationButton } from './button.js';
 
+/**
+ * Namespace utilisé pour générer des identifiants uniques dans le composant de navigation.
+ * @type {string}
+ * @constant
+ * @package
+ */
 const NAMESPACE = 'wsp-page-nav';
+
+/**
+ * Composant de navigation principal pour la barre de navigation de l'espace de travail.
+ * @class
+ * @extends NavBarComponent
+ */
 export class WspPageNavigation extends NavBarComponent {
+  /**
+   * Liste des applications à afficher dans la navigation.
+   * @type {?Array<Object>}
+   * @private
+   */
   #apps = null;
+
+  /**
+   * Identifiant unique du composant de navigation.
+   * @type {?string}
+   * @private
+   */
   #id = null;
 
-  constructor({ parent = null, apps = null } = {}) {
+  /**
+   * Crée une nouvelle instance de WspPageNavigation.
+   * @constructor
+   */
+  constructor() {
     super({ mode: EWebComponentMode.div, parent });
-    this.#apps = apps;
     this.#id = this.generateId(NAMESPACE);
+    /**
+     * Événement déclenché lors du clic sur un bouton de navigation.
+     * @type {BnumEvent}
+     */
     this.onbuttonclicked = new BnumEvent();
+    /**
+     * Événement déclenché lors du clic sur une icône de navigation.
+     * @type {BnumEvent}
+     */
     this.oniconclicked = new BnumEvent();
   }
 
+  /**
+   * Retourne la liste des applications à afficher dans la navigation.
+   * @returns {Array<Object<string, any>>}
+   */
   get applications() {
     if (!this.#apps) {
       let apps = this.data('apps');
@@ -36,10 +74,18 @@ export class WspPageNavigation extends NavBarComponent {
     return this.#apps;
   }
 
+  /**
+   * Retourne l'élément DOM de la navigation.
+   * @returns {HTMLElement}
+   */
   get nav() {
     return this.querySelector(`#${this.#id}`);
   }
 
+  /**
+   * Initialise le composant principal.
+   * @protected
+   */
   _p_main() {
     super._p_main();
 
@@ -61,6 +107,10 @@ export class WspPageNavigation extends NavBarComponent {
     nav = null;
   }
 
+  /**
+   * Génère la structure de la navigation à partir des applications.
+   * @private
+   */
   _generate_nav() {
     const plugins = rcmail.triggerEvent('wsp.navbar.navigation', {
       caller: this,
@@ -75,6 +125,11 @@ export class WspPageNavigation extends NavBarComponent {
     }
   }
 
+  /**
+   * Génère un élément de navigation pour une application donnée.
+   * @param {Object} obj - Objet application à afficher.
+   * @private
+   */
   #_generate_element(obj) {
     const { task: taskData, canBeHidden, icon } = obj;
     const [plugin, task] = taskData.includes('.')
@@ -88,11 +143,12 @@ export class WspPageNavigation extends NavBarComponent {
       jquery: false,
     }).contentWindow.rcmail.gettext(`${plugin}.${task}`);
 
-    let button = new WspNavigationButton(this, {
-      text,
+    let button = WspNavigationButton.Create({
+      parent: this,
       startingPressedState: ['true', true].includes(
         this.parent.startingStates[task],
       ),
+      text,
     });
     button.classList.add('not-busy-only');
     button.onbuttonclick.push(
@@ -147,6 +203,13 @@ export class WspPageNavigation extends NavBarComponent {
     hiddenIcon = null;
   }
 
+  /**
+   * Sélectionne un bouton de navigation selon la tâche.
+   * @param {string} task - Nom de la tâche à sélectionner.
+   * @param {Object} [options] - Options de sélection.
+   * @param {boolean} [options.background=true] - Sélection en arrière-plan.
+   * @returns {WspPageNavigation}
+   */
   select(task, { background = true } = {}) {
     this.unselect();
 
@@ -177,6 +240,13 @@ export class WspPageNavigation extends NavBarComponent {
     return this;
   }
 
+  /**
+   * Désélectionne un ou plusieurs boutons de navigation.
+   * @param {Object} [options]
+   * @param {string} [options.task='all'] - Tâche à désélectionner ou 'all' pour tout.
+   * @param {boolean} [options.background=true] - Désélection en arrière-plan.
+   * @returns {WspPageNavigation}
+   */
   unselect({ task = 'all', background = true } = {}) {
     if (!task || task === 'all') {
       let selected = this.querySelectorAll('[data-task]');
@@ -200,6 +270,32 @@ export class WspPageNavigation extends NavBarComponent {
     }
 
     return this;
+  }
+
+  /**
+   * Crée une nouvelle instance du composant de navigation.
+   * @param {Object} [param0]
+   * @param {HTMLElement} [param0.parent=null] - Élément parent.
+   * @param {Array<Object>} [param0.apps=null] - Liste des applications.
+   * @returns {WspPageNavigation}
+   * @static
+   */
+  static Create({ parent = null, apps = null } = {}) {
+    let node = document.createElement(this.TAG);
+    if (parent) node.setNavBarParent(parent);
+    if (apps) node.setAttribute('data-apps', JSON.stringify(apps));
+
+    return node;
+  }
+
+  /**
+   * Tag HTML du composant.
+   * @readonly
+   * @static
+   * @returns {string}
+   */
+  static get TAG() {
+    return 'bnum-wsp-navigation';
   }
 }
 

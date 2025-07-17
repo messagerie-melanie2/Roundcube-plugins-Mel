@@ -416,6 +416,24 @@ if (rcmail && window.mel_metapage) {
     });
 
     if (rcmail.env.task === 'settings') {
+      if(parent.rcmail.env.event_limit && parent.rcmail.env.event_limit !==
+        rcmail.env.event_limit
+      ) {
+        parent.rcmail.env.event_limit = rcmail.env.event_limit;
+        (async () => {
+          const manager = await (async () => {
+            try {
+              return PageManager.Instance; 
+            } catch (error) {
+              return await PageManager.Load();
+            }
+          })();
+
+          if(manager.Instance.has_frame('calendar')){
+            manager.Instance.get_window().remove_frame('calendar');
+          }
+        })();
+      }
       if (
         top.rcmail.env.avatar_background_color !==
         rcmail.env.avatar_background_color
@@ -893,7 +911,7 @@ if (rcmail && window.mel_metapage) {
 
   rcmail.addEventListener('start-da-modal', async function (args) {
     const loader =
-      top.loadJsModule ?? parent.loadJsModule ?? window.loadJsModule;
+      window.loadJsModule ?? parent?.loadJsModule ?? top?.loadJsModule;
 
     const { double_auth_modal } = await loader(
       'mel_metapage',
@@ -2299,7 +2317,6 @@ $(document).ready(() => {
 
   async function intercept_click(event) {
     var Enumerable = Enumerable || top.Enumerable;
-
     try {
       let $target = $(event.currentTarget ?? event.target);
       //Vérification si on intercetpe le lien ou non
@@ -2328,6 +2345,13 @@ $(document).ready(() => {
         )
           return;
         else if ($target.parent().parent().parent().attr('id') === 'taskmenu')
+          return;
+        else if (
+          $target.hasClass('zipdownload') ||
+          ($target.attr('href').includes('/?_task=mail') &&
+            $target.attr('href').includes('&_action=get') &&
+            $target.attr('href').includes('&_download=1'))
+        )
           return;
         else {
           // Permet de laisser les plugins de gérer l'interception des liens comme ils le souhaitent
@@ -2581,30 +2605,16 @@ $(document).ready(() => {
 
         if (task !== null) {
           event.preventDefault();
-          // top.mel_metapage.Functions.change_page(
-          //   task,
-          //   action,
-          //   othersParams === null ? {} : othersParams,
-          //   update,
-          // ).then(() => {
-          //   if (after !== null) after();
-          // });
-          // const { FramesManager } = await loadJsModule(
-          //   'mel_metapage',
-          //   'frame_manager',
-          //   '/js/lib/classes/',
-          // );
 
           if (!!action && !othersParams?._action) {
             othersParams ??= {};
             othersParams._action = action;
           }
 
-          // await FramesManager.Instance.switch_frame(task, {
-          //   args: othersParams,
-          // });
-
-          await PageManager.SwitchFrame(task, { args: othersParams, anchor });
+          // MANTIS 0009050: Impossible d'ouvrir les liens pour les mails ouvert dans une fenêtre externe.
+          if (rcmail.env.extwin === 1) window.open(url, '_blank');
+          else
+            await PageManager.SwitchFrame(task, { args: othersParams, anchor });
 
           if (after !== null) after();
 

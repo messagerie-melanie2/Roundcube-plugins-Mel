@@ -1,0 +1,93 @@
+name: JS & PHP Syntax Checks
+
+on:
+  pull_request:
+    branches:
+      - '**' # Déclenche sur toute PR vers n'importe quelle branche
+
+jobs:
+  js-check:
+    name: JavaScript Syntax Check (only modified files)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Fetch base branch
+        run: git fetch origin ${{ github.base_ref }}
+
+      - name: Get modified JS files
+        id: js_files
+        run: |
+          FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep '\.js$' || true)
+          echo "$FILES"
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          echo "$FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Show JS files to be checked or none message
+        run: |
+          if [ -z "${{ steps.js_files.outputs.files }}" ]; then
+            echo "✅ No modified JS files to check."
+            exit 0
+          else
+            echo "📄 Modified JS files to be checked:"
+            echo "${{ steps.js_files.outputs.files }}" | tr ' ' '\n'
+          fi
+
+      - name: Run JS syntax check
+        if: steps.js_files.outputs.files != ''
+        run: |
+          echo "🔍 Checking JS syntax on modified files:"
+          for file in ${{ steps.js_files.outputs.files }}; do
+            echo "🔍 Checking $file"
+            node --check "$file"
+          done
+
+      - name: Run ESLint (optional)
+        if: steps.js_files.outputs.files != ''
+        run: |
+          if [ -f package.json ]; then
+            npm install
+            echo "Running ESLint on:"
+            echo "${{ steps.js_files.outputs.files }}" | tr ' ' '\n'
+            npx eslint ${{ steps.js_files.outputs.files }}
+          else
+            echo "No package.json found. Skipping ESLint."
+          fi
+
+  php-check:
+    name: PHP Syntax Check (only modified files)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Fetch base branch
+        run: git fetch origin ${{ github.base_ref }}
+
+      - name: Get modified PHP files
+        id: php_files
+        run: |
+          FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep '\.php$' || true)
+          echo "$FILES"
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          echo "$FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Show PHP files to be checked or none message
+        run: |
+          if [ -z "${{ steps.php_files.outputs.files }}" ]; then
+            echo "✅ No modified PHP files to check."
+            exit 0
+          else
+            echo "📄 Modified PHP files to be checked:"
+            echo "${{ steps.php_files.outputs.files }}" | tr ' ' '\n'
+          fi
+
+      - name: Run PHP lint
+        if: steps.php_files.outputs.files != ''
+        run: |
+          echo "🔍 Checking PHP syntax on modified files:"
+          for file in ${{ steps.php_files.outputs.files }}; do
+            echo "🔍 Checking $file"
+            php -l "$file"
+          done

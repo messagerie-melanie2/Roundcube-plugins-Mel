@@ -4,6 +4,13 @@
 /** BODY **/
 
 body {
+  &.mel-metapage-pipette {
+    cursor: crosshair !important;
+
+    * {
+      cursor: crosshair !important;
+    }
+  }
   .restore-font();
   color: var(--main-text-color);
 
@@ -6619,4 +6626,20 @@ bnum-helper {
       &:extend(bnum-helper bnum-icon);
     }
   }
+}
+
+.attachmentslist {
+  li {
+    .attachment-size {
+      color: var(--secondary-text-color);
+    }
+  }
+}
+
+.task-mail.action-compose #layout-sidebar .scroller a.delete {
+  color: var(--button-pj-text-color, var(--secondary-text-color));
+}
+
+.task-mail.action-compose #layout-sidebar .scroller a.button.icon.dropdown {
+  &:extend(.task-mail.action-compose #layout-sidebar .scroller a.delete);
 }

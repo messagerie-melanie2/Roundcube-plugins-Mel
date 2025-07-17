@@ -357,7 +357,7 @@ class ResourcesBase extends MelObject {
    * @package
    * @param {function} callback
    */
-  _fetch_resources(callback) {
+  _fetch_resources(callback, iterator = 0) {
     FavoriteLoader.Load(this._name).then((values) => {
       this.try_add_resources(values);
 
@@ -370,6 +370,10 @@ class ResourcesBase extends MelObject {
 
       const data = this._format_resources(this._p_resources, this._p_filters);
 
+      const selectUpdatedResult = this.#_update_selects_options(data, iterator);
+      if (selectUpdatedResult)
+        return this._fetch_resources(callback, selectUpdatedResult);
+
       if (!this._first_loaded) this._first_loaded = true;
 
       if (data.length) callback(data);
@@ -381,6 +385,117 @@ class ResourcesBase extends MelObject {
           },
         ]);
     });
+  }
+
+  /**
+   * Met à jour dynamiquement les options des listes déroulantes (select) des filtres,
+   * en fonction des données filtrées et du filtre récemment modifié.
+   * Cette méthode gère l'affichage, l'activation/désactivation et la réinitialisation
+   * des options des filtres dépendants, afin de garantir la cohérence des choix proposés à l'utilisateur.
+   * Elle est appelée lors d'un changement de filtre pour adapter les autres filtres en cascade.
+   *
+   * @private
+   * @param {Array<Object>} data Les ressources filtrées à utiliser pour mettre à jour les options.
+   * @param {number} iterator Compteur d'itérations pour éviter les boucles infinies lors des mises à jour en cascade.
+   * @returns {(number|false)} Retourne le nouvel indice d'itération si une mise à jour supplémentaire est nécessaire, sinon false.
+   */
+  #_update_selects_options(data, iterator) {
+    if (this._filterUpdated) {
+      const name = this._filterUpdated.name;
+
+      let isNext = false;
+      for (const currentSelect of document.querySelectorAll(
+        `[data-resourcetype="${this._name}"] select[data-fname]`,
+      )) {
+        if (currentSelect.dataset.fname === name) isNext = true;
+        else if (isNext) {
+          const filterName = currentSelect.dataset.fname;
+          const filterTrueName =
+            currentSelect.dataset.tname || filterName.toLowerCase();
+          let needUpdated = false;
+
+          // Réinitialisation des options
+          for (const option of currentSelect.querySelectorAll('option')) {
+            if (
+              currentSelect.hasAttribute('multiple') &&
+              this.#_reinit_multi_select(option)
+            )
+              needUpdated = true;
+            else this.#_reinit_base_select(option);
+          }
+
+          if (
+            (currentSelect.value !== EMPTY_STRING &&
+              currentSelect.value !== '/') ||
+            needUpdated
+          ) {
+            if (!needUpdated) currentSelect.value = '/';
+            else $(currentSelect).val([]).multiselect('refresh');
+
+            // On retourne l'itérateur pour éviter les boucles infinies et pour indiqué qu'il faut recharcger les données.
+            if (++iterator < 50) return iterator;
+            else
+              currentSelect.dispatchEvent(
+                new Event('change', { bubbles: true }),
+              );
+          }
+
+          // On affiche les options qui correspondent aux données
+          for (const rs of data) {
+            if (
+              rs.data[filterTrueName] &&
+              rs.data[filterTrueName] !== EMPTY_STRING
+            ) {
+              if (
+                typeof rs.data[filterTrueName] === 'string' &&
+                rs.data[filterTrueName].includes('"')
+              ) {
+                const parsed = JSON.parse(rs.data[filterTrueName]);
+
+                for (const key of Object.keys(parsed)) {
+                  const option = currentSelect.querySelector(
+                    `option[value="${key}"]`,
+                  );
+
+                  if (option) {
+                    option.removeAttribute('disabled');
+                    $(option.parentElement).multiselect('refresh');
+                  }
+                }
+              } else {
+                const option = currentSelect.querySelector(
+                  `option[value="${rs.data[filterTrueName].replaceAll('"', '&quot;')}"]`,
+                );
+
+                if (option) option.style.display = 'block';
+              }
+            }
+          }
+        }
+      }
+
+      this._filterUpdated = null;
+    }
+
+    return false;
+  }
+
+  #_reinit_base_select(option) {
+    if (option.value !== '/' && option.value !== EMPTY_STRING)
+      option.style.display = 'none';
+
+    return false;
+  }
+
+  #_reinit_multi_select(option) {
+    let needUpdated = false;
+    option.setAttribute('disabled', 'disabled');
+    if (option.selected) {
+      option.selected = false;
+      needUpdated = true;
+    }
+
+    return needUpdated;
   }
 
   /**
@@ -572,13 +687,57 @@ class ResourcesBase extends MelObject {
 
     this._$calendar.fullCalendar('refetchResources');
     this._$calendar.fullCalendar('refetchEvents');
+
+    this.#_autoSelectFloor(this._name);
+  }
+
+  /**
+   * Sélectionne automatiquement l'étage dans le filtre correspondant
+   * en fonction du numéro de salle de l'utilisateur et d'une expression régulière
+   * définie dans l'environnement. Si une correspondance est trouvée, le filtre "Etage"
+   * est mis à jour et déclenche un événement de changement.
+   *
+   * @private
+   * @param {?string} resource Nom de la ressource (optionnel)
+   * @returns {ResourcesBase} Chaînage de l'objet courant
+   */
+  #_autoSelectFloor(resource = null) {
+    /**
+     * @type {string}
+     */
+    const roomnumber = this.get_env('user_roomnumber');
+
+    if (roomnumber) {
+      const regex_base =
+        this.get_env('floor_regex')?.[this.get_env('user_postalcode')];
+
+      if (regex_base) {
+        const floorResult = roomnumber.match(new RegExp(regex_base));
+
+        if (floorResult && floorResult.length > 0) {
+          const floor = floorResult[0];
+
+          let selected = document.querySelector(
+            `${resource ? `[data-resourcetype="${resource}"] ` : EMPTY_STRING}select[data-fname="Etage"] option[value="${floor}"]`,
+          );
+
+          if (selected) {
+            selected.parentElement.value = floor;
+            selected.parentElement.dispatchEvent(new Event('change'));
+          }
+        }
+      }
+    }
+
+    return this;
   }
 
   /**
    * Action à faire lorsqe'un filtre à changer de valeur
    * @package
    */
-  _on_data_changed() {
+  _on_data_changed(_, filter) {
+    this._filterUpdated = filter;
     this._$calendar.fullCalendar('refetchResources');
     this._$calendar.fullCalendar('refetchEvents');
   }

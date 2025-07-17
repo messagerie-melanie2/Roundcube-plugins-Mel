@@ -3284,6 +3284,13 @@ $(document).ready(() => {
         }
       });
 
+      for (const iframe of document.querySelectorAll('.wlp-contents iframe')) {
+        $html = iframe.contentWindow.$('html');
+
+        if ($html.hasClass('dark-mode-custom'))
+          $html.removeClass('dark-mode-custom');
+      }
+
       rcmail.triggerEvent('switch_color_theme');
 
       return this._update_theme_color();
@@ -3341,6 +3348,11 @@ $(document).ready(() => {
           e.contentWindow.MEL_ELASTIC_UI._update_theme_color();
         }
       });
+
+      for (const iframe of document.querySelectorAll('.wlp-contents iframe')) {
+        if (iframe.contentWindow && iframe.contentWindow.MEL_ELASTIC_UI)
+          iframe.contentWindow.MEL_ELASTIC_UI._update_theme_color();
+      }
 
       return this;
     }

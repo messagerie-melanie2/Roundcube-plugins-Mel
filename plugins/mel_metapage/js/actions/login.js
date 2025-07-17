@@ -1,3 +1,5 @@
+const FORCE_ENABLE_CERBERE = true;
+
 if (parent != window) {
   parent.location.reload();
 }
@@ -44,7 +46,7 @@ $(document).ready(() => {
 
   const login_id = 'login-alt-1';
 
-  if (rcmail.get_cookie('mel_cerbere') === '1') {
+  if (FORCE_ENABLE_CERBERE || rcmail.get_cookie('mel_cerbere') === '1') {
     $(`#${login_id}`).css('display', '');
   }
 

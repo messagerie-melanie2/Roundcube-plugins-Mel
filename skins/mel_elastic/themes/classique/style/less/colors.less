@@ -378,8 +378,33 @@
   --workspace-separator-color: var(--secondary-border-color);
 }
 
+.update-theme-classique-mail-color {
+  --secondary-text-color: var(--main-text-color);
+
+  &:hover {
+    --secondary-text-color: #ffffff;
+  }
+}
+
 .theme-classique {
-  body.task-mail.action-compose a.filename .attachment-name {
-    --secondary-text-color: var(--main-text-color);
+  body.task-mail.action-compose a {
+    &:hover {
+      &:extend(.update-theme-classique-mail-color:hover);
+    }
+
+    &.filename .attachment- {
+      &size,
+      &name {
+        &:extend(.update-theme-classique-mail-color);
+      }
+    }
+
+    &.delete,
+    &.skip-content {
+      &:extend(.update-theme-classique-mail-color);
+      &:hover {
+        &:extend(.update-theme-classique-mail-color:hover);
+      }
+    }
   }
 }

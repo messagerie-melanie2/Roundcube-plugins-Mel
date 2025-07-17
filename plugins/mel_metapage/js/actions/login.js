@@ -1,8 +1,6 @@
 const FORCE_ENABLE_CERBERE = true;
 
-if (parent != window) {
-  parent.location.reload();
-}
+if (parent !== window) parent.location.reload();
 
 $(document).ready(() => {
   const LOGO_LIGHT = 'skins/mel_elastic/images/logo-light.png';
@@ -26,8 +24,6 @@ $(document).ready(() => {
       if ($('html').hasClass('dark-mode-custom'))
         $('html').removeClass('dark-mode');
     }
-    // switch_color_mode();
-    // reset_cookie();
   });
 
   if (MEL_ELASTIC_UI.color_mode() === 'dark') {
@@ -58,7 +54,7 @@ $(document).ready(() => {
   });
 
   document.onkeyup = function (e) {
-    if (e.ctrlKey && e.altKey && e.shiftKey && e.which == 67) {
+    if (e.ctrlKey && e.altKey && e.shiftKey && e.which === 67) {
       $(`#${login_id}`).css('display', '');
     }
   };

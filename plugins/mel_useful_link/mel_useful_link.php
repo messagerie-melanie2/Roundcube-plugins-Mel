@@ -39,7 +39,7 @@ class mel_useful_link extends bnum_plugin
 
         $this->rc->output->set_env("mul_old_items", $this->rc->config->get('portail_personal_items', []));
         $this->rc->output->set_env("mul_items", $this->rc->config->get('new_personal_useful_links', []));
-        $this->rc->output->set_env("external_icon_url", $this->rc->config->get('external_icon_url', []));
+        $this->rc->output->set_env("external_icon_url", $this->rc->config->get('external_icon_url', null));
         $this->rc->output->set_env("default_links", $this->get_store_link());
 
         include_once "lib/hidden.php";
@@ -53,7 +53,7 @@ class mel_useful_link extends bnum_plugin
 
       if ($this->get_current_action() !== 'refresh') {
         $this->rc->output->set_env("mul_items", $this->rc->config->get('new_personal_useful_links', []));
-        $this->rc->output->set_env("external_icon_url", $this->rc->config->get('external_icon_url', []));
+        $this->rc->output->set_env("external_icon_url", $this->rc->config->get('external_icon_url', null));
         $this->rc->output->set_env("default_links", $this->get_store_link());
         $this->rc->output->set_env("mel_portal_ulink", true);
       }
@@ -854,7 +854,7 @@ class mel_useful_link extends bnum_plugin
     $this->load_config();
     $this->include_module('workspace.js', 'js/lib/workspace');
     $this->include_css('links.css');//include_stylesheet('../mel_useful_link/skins/elastic/links.css');
-    $this->rc->output->set_env("external_icon_url", $this->rc->config->get('external_icon_url', []));
+    $this->rc->output->set_env("external_icon_url", $this->rc->config->get('external_icon_url', null));
     $this->rc->output->set_env("mul_items", $links);
     $this->rc->output->set_env("mul_items_key", 'ws#'.$workspace->uid());
 

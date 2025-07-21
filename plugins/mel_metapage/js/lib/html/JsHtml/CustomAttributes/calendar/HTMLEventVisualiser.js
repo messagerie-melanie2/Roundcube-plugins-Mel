@@ -1,7 +1,7 @@
+import BnumHTMLButton from '../../../../../../../mel_elastic/js/lib/webcomponents/classes/BnumHTMLButton.js';
 import { EMPTY_STRING } from '../../../../constants/constants.js';
 import { BnumEvent } from '../../../../mel_events.js';
 import { html_events } from '../../../html_events.js';
-import HTMLBnumButton from '../button/HTMLBnumButton.js';
 import {
   EWebComponentMode,
   HtmlCustomDataTag,
@@ -80,7 +80,7 @@ export default class HTMLEventVisualiser extends HtmlCustomDataTag {
       );
     }
     this.appendChild(html.generate()[0]);
-    HTMLBnumButton.ToButton(this.querySelector('.melv2-event-clickable'));
+    BnumHTMLButton.ToButton(this.querySelector('.melv2-event-clickable'));
   }
 
   /**

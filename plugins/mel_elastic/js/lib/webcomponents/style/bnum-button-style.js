@@ -90,7 +90,7 @@ const style = `
 
 :host bnum-shadow-icon.icon {
     display: var(--bnum-button-icon-display, flex);
-    margin-%0: var(--bnum-button-icon-margin-%0, 20px);
+    margin-%0: %1; /*var(--bnum-button-icon-margin-%0, 20px);*/
 }
 
 :host bnum-shadow-icon.loader {

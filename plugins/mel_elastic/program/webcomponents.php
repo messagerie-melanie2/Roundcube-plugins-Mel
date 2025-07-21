@@ -285,7 +285,7 @@ class WebComponnents
      */
     public function BnumButton()
     {
-        $this->_include_component('HTMLBnumButton.js', 'js/lib/html/JsHtml/CustomAttributes/button');
+        $this->_include_component('BnumHTMLButton.js', 'js/lib/webcomponents/classes');
     }
 
     /**
@@ -327,10 +327,10 @@ class WebComponnents
             ['bnum-flex-container', 'js_html_base_web_elements.js'],
             ['bnum-centered-flex-container', 'js_html_base_web_elements.js'],
             ['bnum-placeholder', 'js_html_base_web_elements.js'],
-            ['bnum-button', 'HTMLBnumButton.js', '/js/lib/html/JsHtml/CustomAttributes/button'],
-            ['primary-button', 'HTMLBnumButton.js', '/js/lib/html/JsHtml/CustomAttributes/button'],
-            ['secondary-button', 'HTMLBnumButton.js', '/js/lib/html/JsHtml/CustomAttributes/button'],
-            ['error-button', 'HTMLBnumButton.js', '/js/lib/html/JsHtml/CustomAttributes/button'],
+            ['bnum-button', 'BnumHTMLButton.js', '/js/lib/webcomponents/classes', 'mel_elastic'],
+            ['primary-button', 'BnumHTMLButton.js', '/js/lib/webcomponents/classes', 'mel_elastic'],
+            ['secondary-button', 'BnumHTMLButton.js', '/js/lib/webcomponents/classes', 'mel_elastic'],
+            ['error-button', 'BnumHTMLButton.js', '/js/lib/webcomponents/classes', 'mel_elastic'],
             ['bnum-tabs', 'tab_web_element.js'],
             ['bnum-tab-container', 'tab_web_element.js'],
             ['bnum-tab-receiver', 'tab_web_element.js'],

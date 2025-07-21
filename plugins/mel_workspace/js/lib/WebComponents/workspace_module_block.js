@@ -1,11 +1,8 @@
+import BnumHTMLButton, {
+  BnumHTMLSecondaryButton,
+} from '../../../../mel_elastic/js/lib/webcomponents/classes/BnumHTMLButton.js';
 import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
-import { EButtonType } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/button/FormComponent.js';
-import HTMLBnumButton, {
-  HTMLBnumButtonSecondary,
-} from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/button/HTMLBnumButton.js';
-import { HTMLIconMelButton } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/HTMLMelButton.js';
 import {
-  BnumHtmlIcon,
   EWebComponentMode,
   HtmlCustomDataTag,
 } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/js_html_base_web_elements.js';
@@ -221,11 +218,7 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
     }
 
     if (this.hasRefresh) {
-      let buttonRefresh = HTMLBnumButtonSecondary.StartCreate.setContent(
-        BnumHtmlIcon.Refresh,
-      )
-        .setIconMargin(0)
-        .generate();
+      let buttonRefresh = BnumHTMLSecondaryButton.CreateOnlyIcon('refresh');
 
       buttonRefresh.classList.add('refresh-button');
 
@@ -258,14 +251,20 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
     }
 
     if (this.buttonTask !== false) {
-      let button = HTMLBnumButton.StartCreate.setContent(
-        this.createText(this.buttonText),
-      )
-        .setVariation(EButtonType.fromString(this.buttonType))
-        .setIconPos('right')
-        .setIcon(this.buttonIcon)
-        .generate()
-        .addClass('see-all');
+      let button = BnumHTMLButton.Create({
+        variation: this.buttonType,
+        text: this.buttonText,
+        icon: this.buttonIcon,
+        iconPos: 'right',
+      });
+      // HTMLBnumButton.StartCreate.setContent(
+      //   this.createText(this.buttonText),
+      // )
+      //   .setVariation(EButtonType.fromString(this.buttonType))
+      //   .setIconPos('right')
+      //   .setIcon(this.buttonIcon)
+      //   .generate()
+      //   .addClass('see-all');
 
       if (this.buttonIgnore !== 'default-actions') {
         button.onclick = () => {

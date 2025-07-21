@@ -10,6 +10,34 @@ import ElementChangedEvent from '../events/ElementChangedEvent.js';
 import style from '../style/bnum-button-style.js';
 
 /**
+ * Tag HTML du bouton Bnum.
+ * @constant
+ * @type {string}
+ */
+const TAG = 'bnum-button';
+
+/**
+ * Tag HTML du bouton Bnum de type "primary".
+ * @constant
+ * @type {string}
+ */
+const TAG_PRIMARY = 'bnum-primary-button';
+
+/**
+ * Tag HTML du bouton Bnum de type "secondary".
+ * @constant
+ * @type {string}
+ */
+const TAG_SECONDARY = 'bnum-secondary-button';
+
+/**
+ * Tag HTML du bouton Bnum de type "danger".
+ * @constant
+ * @type {string}
+ */
+const TAG_DANGER = 'bnum-danger-button';
+
+/**
  * Icône de chargement par défaut.
  * @constant
  * @type {string}
@@ -247,6 +275,7 @@ export default class BnumHTMLButton extends ABnumHTMLElement {
    */
   _p_render() {
     super._p_render();
+    BnumHTMLButton.ToButton(this);
     const isLoading = this.#_isLoading();
 
     this.#_internals.states.clear();
@@ -390,33 +419,72 @@ export default class BnumHTMLButton extends ABnumHTMLElement {
   }
 
   /**
+   * Ajoute le rôle "bouton" et son fonctionnement à un élément
+   * @param {T} element
+   * @returns {T}
+   * @template {HTMLElement} T
+   * @static
+   */
+  static ToButton(element) {
+    if (!element.onkeydown) {
+      element.onkeydown = (e) => {
+        switch (e.key) {
+          case ' ':
+          case 'Enter':
+            e.target.click();
+            break;
+
+          default:
+            break;
+        }
+      };
+    }
+
+    if (
+      !element.hasAttribute('role') ||
+      element.getAttribute('role') !== 'button'
+    )
+      element.setAttribute('role', 'button');
+
+    if (!element.hasAttribute('tabindex'))
+      element.setAttribute('tabindex', '0');
+
+    return element;
+  }
+
+  /**
+   *
    * Méthode statique de création d'un bouton Bnum.
    * Permet de créer dynamiquement un élément bouton personnalisé avec les propriétés spécifiées.
    *
-   * @function
-   * @static
-   * @memberof BnumHTMLButton
+   * @protected
+   * @param {BnumHTMLButton | BnumHTMLDangerButton | BnumHTMLSecondaryButton | BnumHTMLPrimaryButton} buttonClass
    * @param {Object} [options={}] - Options de création du bouton.
    * @param {string} [options.text=EMPTY_STRING] - Texte du bouton.
    * @param {?string} [options.icon=null] - Nom de l'icône à afficher.
    * @param {'left'|'right'} [options.iconPos='right'] - Position de l'icône.
    * @param {?string} [options.iconMargin=null] - Marge CSS appliquée à l'icône.
-   * @param {'primary'|'secondary'|'danger'} [options.variation=EButtonType.PRIMARY] - Variation du bouton.
+   * @param {'primary'|'secondary'|'danger'|null} [options.variation=null] - Variation du bouton.
    * @param {boolean} [options.square=false] - Indique si le bouton est carré.
    * @param {boolean} [options.loading=false] - Indique si le bouton est en état de chargement.
-   * @returns {HTMLElement} Élément bouton Bnum configuré.
+   * @returns {BnumHTMLButton | BnumHTMLDangerButton | BnumHTMLSecondaryButton | BnumHTMLPrimaryButton} Élément bouton Bnum configuré.
    */
-  static Create({
-    text = EMPTY_STRING,
-    icon = null,
-    iconPos = 'right',
-    iconMargin = null,
-    variation = EButtonType.PRIMARY,
-    square = false,
-    loading = false,
-  } = {}) {
-    let node = document.createElement(this.TAG);
+  static _p_Create(
+    buttonClass,
+    {
+      text = EMPTY_STRING,
+      icon = null,
+      iconPos = 'right',
+      iconMargin = null,
+      variation = null,
+      square = false,
+      loading = false,
+    } = {},
+  ) {
+    let node = document.createElement(buttonClass.TAG);
     node.textContent = text;
+
+    if (iconMargin === 0) iconMargin = '0px';
 
     if (icon) node.setAttribute('data-icon', icon);
     if (iconPos) node.setAttribute('data-icon-pos', iconPos);
@@ -429,13 +497,69 @@ export default class BnumHTMLButton extends ABnumHTMLElement {
   }
 
   /**
+   * Méthode statique de création d'un bouton Bnum.
+   * Permet de créer dynamiquement un élément bouton personnalisé avec les propriétés spécifiées.
+   *
+   * @param {Object} [options={}] - Options de création du bouton.
+   * @param {string} [options.text=EMPTY_STRING] - Texte du bouton.
+   * @param {?string} [options.icon=null] - Nom de l'icône à afficher.
+   * @param {'left'|'right'} [options.iconPos='right'] - Position de l'icône.
+   * @param {?string} [options.iconMargin=null] - Marge CSS appliquée à l'icône.
+   * @param {'primary'|'secondary'|'danger'} [options.variation=EButtonType.PRIMARY] - Variation du bouton.
+   * @param {boolean} [options.square=false] - Indique si le bouton est carré.
+   * @param {boolean} [options.loading=false] - Indique si le bouton est en état de chargement.
+   * @returns {BnumHTMLButton} Élément bouton Bnum configuré.
+   */
+  static Create({
+    text = EMPTY_STRING,
+    icon = null,
+    iconPos = 'right',
+    iconMargin = null,
+    variation = EButtonType.PRIMARY,
+    square = false,
+    loading = false,
+  } = {}) {
+    return this._p_Create(this, {
+      text,
+      icon,
+      iconPos,
+      iconMargin,
+      variation,
+      square,
+      loading,
+    });
+  }
+
+  /**
+   * Crée dynamiquement un bouton Bnum avec uniquement une icône.
+   * @param {string} icon - Nom de l'icône à afficher.
+   * @param {Object} [param1={}] - Options de création du bouton.
+   * @param {string} [param1.variation=EButtonType.PRIMARY] - Variation du bouton.
+   * @param {boolean} [param1.square=false] - Indique si le bouton est carré.
+   * @param {boolean} [param1.loading=false] - Indique si le bouton est en état de chargement.
+   * @returns {BnumHTMLButton} Élément bouton Bnum configuré.
+   */
+  static CreateOnlyIcon(
+    icon,
+    { variation = EButtonType.PRIMARY, square = false, loading = false } = {},
+  ) {
+    return this.Create({
+      icon,
+      variation,
+      square,
+      loading,
+      iconMargin: 0,
+    });
+  }
+
+  /**
    * Tag HTML du composant.
    * @type {string}
    * @readonly
    * @static
    */
   static get TAG() {
-    return 'bnum-test-button';
+    return TAG;
   }
 }
 
@@ -460,6 +584,9 @@ export const EButtonType = {
  * @extends BnumHTMLButton
  */
 export class BnumHTMLPrimaryButton extends BnumHTMLButton {
+  /**
+   * Constructeur du bouton "primary".
+   */
   constructor() {
     super();
     this.data('variation', {
@@ -469,12 +596,7 @@ export class BnumHTMLPrimaryButton extends BnumHTMLButton {
   }
 
   /**
-   * Méthode statique de création d'un bouton Bnum de type "primary".
-   * Permet de créer dynamiquement un élément bouton personnalisé avec les propriétés spécifiées.
-   *
-   * @function
-   * @static
-   * @memberof BnumHTMLPrimaryButton
+   * Crée dynamiquement un bouton Bnum de type "primary".
    * @param {Object} [options={}] - Options de création du bouton.
    * @param {string} [options.text=EMPTY_STRING] - Texte du bouton.
    * @param {?string} [options.icon=null] - Nom de l'icône à afficher.
@@ -492,20 +614,41 @@ export class BnumHTMLPrimaryButton extends BnumHTMLButton {
     square = false,
     loading = false,
   } = {}) {
-    let node = document.createElement(this.TAG);
-    node.textContent = text;
-
-    if (icon) node.setAttribute('data-icon', icon);
-    if (iconPos) node.setAttribute('data-icon-pos', iconPos);
-    if (iconMargin) node.setAttribute('data-icon-margin', iconMargin);
-    if (square) node.setAttribute('square', true);
-    if (loading) node.setAttribute('loading', true);
-
-    return node;
+    return this._p_Create(this, {
+      text,
+      icon,
+      iconPos,
+      iconMargin,
+      square,
+      loading,
+    });
   }
 
+  /**
+   * Crée dynamiquement un bouton Bnum avec uniquement une icône.
+   * @param {string} icon - Nom de l'icône à afficher.
+   * @param {Object} [param1={}] - Options de création du bouton.
+   * @param {boolean} [param1.square=false] - Indique si le bouton est carré.
+   * @param {boolean} [param1.loading=false] - Indique si le bouton est en état de chargement.
+   * @returns {BnumHTMLButton} Élément bouton Bnum configuré.
+   */
+  static CreateOnlyIcon(icon, { square = false, loading = false } = {}) {
+    return this.Create({
+      icon,
+      square,
+      loading,
+      iconMargin: 0,
+    });
+  }
+
+  /**
+   * Retourne le tag HTML du bouton "primary".
+   * @type {string}
+   * @readonly
+   * @static
+   */
   static get TAG() {
-    return 'bnum-primary-button';
+    return TAG_PRIMARY;
   }
 }
 
@@ -519,6 +662,9 @@ BnumHTMLPrimaryButton.TryDefine();
  * @extends BnumHTMLButton
  */
 export class BnumHTMLSecondaryButton extends BnumHTMLButton {
+  /**
+   * Constructeur du bouton "secondary".
+   */
   constructor() {
     super();
     this.data('variation', {
@@ -528,12 +674,7 @@ export class BnumHTMLSecondaryButton extends BnumHTMLButton {
   }
 
   /**
-   * Méthode statique de création d'un bouton Bnum de type "secondary".
-   * Permet de créer dynamiquement un élément bouton personnalisé avec les propriétés spécifiées.
-   *
-   * @function
-   * @static
-   * @memberof BnumHTMLSecondaryButton
+   * Crée dynamiquement un bouton Bnum de type "secondary".
    * @param {Object} [options={}] - Options de création du bouton.
    * @param {string} [options.text=EMPTY_STRING] - Texte du bouton.
    * @param {?string} [options.icon=null] - Nom de l'icône à afficher.
@@ -551,20 +692,41 @@ export class BnumHTMLSecondaryButton extends BnumHTMLButton {
     square = false,
     loading = false,
   } = {}) {
-    let node = document.createElement(this.TAG);
-    node.textContent = text;
-
-    if (icon) node.setAttribute('data-icon', icon);
-    if (iconPos) node.setAttribute('data-icon-pos', iconPos);
-    if (iconMargin) node.setAttribute('data-icon-margin', iconMargin);
-    if (square) node.setAttribute('square', true);
-    if (loading) node.setAttribute('loading', true);
-
-    return node;
+    return this._p_Create(this, {
+      text,
+      icon,
+      iconPos,
+      iconMargin,
+      square,
+      loading,
+    });
   }
 
+  /**
+   * Crée dynamiquement un bouton Bnum avec uniquement une icône.
+   * @param {string} icon - Nom de l'icône à afficher.
+   * @param {Object} [param1={}] - Options de création du bouton.
+   * @param {boolean} [param1.square=false] - Indique si le bouton est carré.
+   * @param {boolean} [param1.loading=false] - Indique si le bouton est en état de chargement.
+   * @returns {BnumHTMLButton} Élément bouton Bnum configuré.
+   */
+  static CreateOnlyIcon(icon, { square = false, loading = false } = {}) {
+    return this.Create({
+      icon,
+      square,
+      loading,
+      iconMargin: 0,
+    });
+  }
+
+  /**
+   * Retourne le tag HTML du bouton "secondary".
+   * @type {string}
+   * @readonly
+   * @static
+   */
   static get TAG() {
-    return 'bnum-secondary-button';
+    return TAG_SECONDARY;
   }
 }
 
@@ -578,6 +740,9 @@ BnumHTMLSecondaryButton.TryDefine();
  * @extends BnumHTMLButton
  */
 export class BnumHTMLDangerButton extends BnumHTMLButton {
+  /**
+   * Constructeur du bouton "danger".
+   */
   constructor() {
     super();
     this.data('variation', {
@@ -587,12 +752,7 @@ export class BnumHTMLDangerButton extends BnumHTMLButton {
   }
 
   /**
-   * Méthode statique de création d'un bouton Bnum de type "danger".
-   * Permet de créer dynamiquement un élément bouton personnalisé avec les propriétés spécifiées.
-   *
-   * @function
-   * @static
-   * @memberof BnumHTMLDangerButton
+   * Crée dynamiquement un bouton Bnum de type "danger".
    * @param {Object} [options={}] - Options de création du bouton.
    * @param {string} [options.text=EMPTY_STRING] - Texte du bouton.
    * @param {?string} [options.icon=null] - Nom de l'icône à afficher.
@@ -610,20 +770,41 @@ export class BnumHTMLDangerButton extends BnumHTMLButton {
     square = false,
     loading = false,
   } = {}) {
-    let node = document.createElement(this.TAG);
-    node.textContent = text;
-
-    if (icon) node.setAttribute('data-icon', icon);
-    if (iconPos) node.setAttribute('data-icon-pos', iconPos);
-    if (iconMargin) node.setAttribute('data-icon-margin', iconMargin);
-    if (square) node.setAttribute('square', true);
-    if (loading) node.setAttribute('loading', true);
-
-    return node;
+    return this._p_Create(this, {
+      text,
+      icon,
+      iconPos,
+      iconMargin,
+      square,
+      loading,
+    });
   }
 
+  /**
+   * Crée dynamiquement un bouton Bnum avec uniquement une icône.
+   * @param {string} icon - Nom de l'icône à afficher.
+   * @param {Object} [param1={}] - Options de création du bouton.
+   * @param {boolean} [param1.square=false] - Indique si le bouton est carré.
+   * @param {boolean} [param1.loading=false] - Indique si le bouton est en état de chargement.
+   * @returns {BnumHTMLButton} Élément bouton Bnum configuré.
+   */
+  static CreateOnlyIcon(icon, { square = false, loading = false } = {}) {
+    return this.Create({
+      icon,
+      square,
+      loading,
+      iconMargin: 0,
+    });
+  }
+
+  /**
+   * Retourne le tag HTML du bouton "danger".
+   * @type {string}
+   * @readonly
+   * @static
+   */
   static get TAG() {
-    return 'bnum-danger-button';
+    return TAG_DANGER;
   }
 }
 

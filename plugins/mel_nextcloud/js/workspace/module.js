@@ -19,9 +19,9 @@ import { NavBarManager } from '../../../mel_workspace/js/lib/program/navbar.gene
 import { BnumPromise } from '../../../mel_metapage/js/lib/BnumPromise.js';
 import { MelEnumerable } from '../../../mel_metapage/js/lib/classes/enum.js';
 import { HTMLAlternateDropDownElement } from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/dropdown/HTMLDropDownElement.js';
-import HTMLBnumButton from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/button/HTMLBnumButton.js';
 import { BnumConnector } from '../../../mel_metapage/js/lib/helpers/bnum_connections/bnum_connections.js';
 import { NcWspConnectors } from './connectors.js';
+import BnumHTMLButton from '../../../mel_elastic/js/lib/webcomponents/classes/BnumHTMLButton.js';
 
 const ENABLE_DIRECT_SELECT = false;
 
@@ -1110,11 +1110,17 @@ class FileTag extends AActionNextcloudTag {
     /**
      * @type {PressedButton}
      */
-    let container = HTMLBnumButton.StartCreate.setNoBackgroundVariation()
-      .setIconMargin(0)
-      .setIconPos('right')
-      .setSquare()
-      .generate();
+    let container = BnumHTMLButton.Create({
+      iconMargin: 0,
+      iconPos: 'right',
+      square: true,
+      variation: 'secondary',
+    });
+    // HTMLBnumButton.StartCreate.setNoBackgroundVariation()
+    //   .setIconMargin(0)
+    //   .setIconPos('right')
+    //   .setSquare()
+    //   .generate();
     container.setAttribute('title', `Ouvrir le fichier "${this.filename}"`);
 
     container.onclick = async () => {

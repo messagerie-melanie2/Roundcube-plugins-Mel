@@ -1,6 +1,6 @@
+import BnumHTMLButton from '../../../../../mel_elastic/js/lib/webcomponents/classes/BnumHTMLButton.js';
 import { MelDialog } from '../../../../../mel_metapage/js/lib/classes/modal.js';
 import { EMPTY_STRING } from '../../../../../mel_metapage/js/lib/constants/constants.js';
-import HTMLBnumButton from '../../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/button/HTMLBnumButton.js';
 import { EWebComponentMode } from '../../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/js_html_base_web_elements.js';
 import { isNullOrUndefined } from '../../../../../mel_metapage/js/lib/mel.js';
 import { MelObject } from '../../../../../mel_metapage/js/lib/mel_object.js';
@@ -63,13 +63,18 @@ class WspNavBarDescription extends NavBarComponent {
     description.classList.add('description', 'threelines');
     description.appendChild(this.createText(this.description));
 
-    let descriptionContainer = HTMLBnumButton.StartCreate.setContent(
-      description,
-    )
-      .setNoBackgroundVariation()
-      .setSquare()
-      .generate()
-      .addClass('description-container', 'shadow-mel-button');
+    let descriptionContainer = BnumHTMLButton.Create({
+      variation: 'secondary',
+      square: true,
+      text: description,
+    }).addClass('description-container', 'shadow-mel-button');
+    // HTMLBnumButton.StartCreate.setContent(
+    //   description,
+    // )
+    //   .setNoBackgroundVariation()
+    //   .setSquare()
+    //   .generate()
+    //   .addClass('description-container', 'shadow-mel-button');
 
     //Ne pas pouvoir cliquer sur le bouton si il n'y a pas de descriptions
     if (!this.description || this.description.length === 0) {

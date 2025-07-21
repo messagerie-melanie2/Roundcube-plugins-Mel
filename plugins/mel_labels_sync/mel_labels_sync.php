@@ -610,7 +610,7 @@ class mel_labels_sync extends rcube_plugin
       $this->rc->output->add_script('function rcube_label_add_label() {
           var name = $("#rcmfd_new_label").val();
           var label = name.replace(/ /g, "_");
-          if (name.trim().length > 0) {
+          if (name.length /*name.trim().length > 0*/) {
             var input = $("<input>").addClass("form-control").attr("type", "text").attr("name", "_labels["+label+"]").attr("size", 30).val(name);
             var color = $("<input>").addClass("form-control").attr("type", "text").attr("readonly", true).attr("name", "_colors["+label+"]").attr("size", 6).addClass("colors").val("");
             var button = $("<button>").addClass("btn btn-secondary mel-button no-margin-button no-button-margin").attr("type", "button").addClass("material-symbols-outlined").html("delete").addClass("button").click(function(){ $(this).parent().parent().remove() });
@@ -622,9 +622,9 @@ class mel_labels_sync extends rcube_plugin
             //.append(input).append("&nbsp;").append(color).append("&nbsp;").append(button).appendTo("#labelslist");
             color.miniColors({ colorValues:(' . json_encode($colors) . ') });
             $("#rcmfd_new_label").val("");
-          } else {
+          } /*else {
             alert("Le nom de l\'étiquette ne peut pas être vide.");
-            }
+            }*/
         }');
 
       // include color picker

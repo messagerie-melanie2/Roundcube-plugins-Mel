@@ -15,8 +15,6 @@ function imgError(iconId = null, noImageId = null, title) {
       : null;
 
   iconImage.hide();
-  if (noImage.text() === '') {
-    noImage.html(firstLetter);
-  }
+  noImage.html(firstLetter);
   noImage.css('display', 'flex');
 }

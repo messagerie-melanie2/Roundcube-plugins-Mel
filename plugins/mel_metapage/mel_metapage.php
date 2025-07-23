@@ -45,6 +45,16 @@ class mel_metapage extends bnum_plugin
     private static $urls_spies;
     private static $widgets;
 
+    /**
+     * Ajoute une URL surveillée avec la tâche associée.
+     *
+     * Initialise la liste des URLs surveillées si elle n'existe pas encore.
+     *
+     * @param string $url   L'URL à surveiller.
+     * @param string $task  La tâche associée à cette URL.
+     * 
+     * @return void
+     */
     public static function add_url_spied($url, $task)
     {
         if (self::$urls_spies === null) self::$urls_spies = [];
@@ -52,6 +62,13 @@ class mel_metapage extends bnum_plugin
         self::$urls_spies[$url] = $task;
     }
 
+    /**
+     * Retourne la liste des URLs surveillées.
+     *
+     * Initialise la liste à un tableau vide si elle n'est pas encore définie.
+     *
+     * @return array Liste des URLs surveillées.
+     */
     public static function get_urls_spied()
     {
         if (self::$urls_spies === null) self::$urls_spies = [];
@@ -59,6 +76,13 @@ class mel_metapage extends bnum_plugin
         return self::$urls_spies;
     }
 
+    /**
+     * Retourne la liste des widgets enregistrés.
+     *
+     * Initialise la liste à un tableau vide si elle n'est pas encore définie.
+     *
+     * @return array Liste des widgets.
+     */
     public static function add_widget($name, $task, $arg)
     {
         if (self::$widgets === null) self::$widgets = [];
@@ -66,6 +90,13 @@ class mel_metapage extends bnum_plugin
         self::$widgets[$name] = "/_task=$task&_action=mel_widget&_is_from=iframe" . ($arg === null ? '' : "&_arg=$arg");
     }
 
+    /**
+ * Retourne la liste des widgets enregistrés.
+ *
+ * Initialise la liste à un tableau vide si elle n'est pas encore définie.
+ *
+ * @return array Liste des widgets.
+ */
     public static function get_widgets()
     {
         if (self::$widgets === null) self::$widgets = [];
@@ -73,6 +104,12 @@ class mel_metapage extends bnum_plugin
         return self::$widgets;
     }
 
+    /**
+     * Indique si un widget peut être ajouté selon la tâche en cours.
+     *
+     * @param array $exception Liste optionnelle des exceptions (non utilisée actuellement).
+     * @return bool Retourne true si la tâche est 'bureau' ou 'settings', sinon false.
+     */
     public static function can_add_widget($exception = [])
     {
         $task = rcmail::get_instance()->task;
@@ -80,6 +117,21 @@ class mel_metapage extends bnum_plugin
         return false && ($task === 'bureau' ||  $task === 'settings');
     }
 
+    /**
+     * Initialise les sous-modules présents dans les sous-dossiers du dossier "program".
+     *
+     * Parcourt tous les dossiers sous "program" :
+     * - Si le dossier est "pages", appelle la méthode init_sub_pages().
+     * - Si le dossier est dans la liste des exceptions (paramètre $exception), il est ignoré.
+     * - Sinon, inclut tous les fichiers PHP présents dans ce dossier.
+     *
+     * Ensuite, si la classe "Program" existe :
+     * - Récupère tous les sous-modules via Program::generate().
+     * - Pour chaque sous-module, si la tâche courante correspond à la tâche du sous-module, appelle sa méthode init().
+     * - Appelle systématiquement la méthode public() de chaque sous-module.
+     *
+     * @param array|null $exception Liste optionnelle des noms de dossiers à exclure de l'initialisation.
+     */
     function init_sub_modules($exception = null)
     {
         $dir = __DIR__;
@@ -114,6 +166,15 @@ class mel_metapage extends bnum_plugin
         }
     }
 
+    /**
+     * Initialise les sous-pages en incluant et instanciant les classes des fichiers PHP
+     * situés dans le répertoire "program/pages", excepté "page.php" et "parsed_page.php".
+     * 
+     * Pour chaque fichier inclus :
+     * - Instancie la classe correspondante (nom basé sur le nom du fichier, avec première lettre en majuscule).
+     * - Appelle la méthode `call()` si elle existe.
+     * - Si la tâche courante est "custom_page", appelle également la méthode `init()`.
+     */
     function init_sub_pages()
     {
         $dir = __DIR__;
@@ -146,11 +207,19 @@ class mel_metapage extends bnum_plugin
         if ($this->rc->task === "chat") $this->register_action('index', array($this, 'ariane'));
     }
 
+    /**
+     * Méthode appelée avant le rendu de la page.
+     *
+     * Permet d’inclure des scripts JavaScript nécessaires, ici 'list.js'.
+     */
     protected function before_page()
     {
         $this->rc->output->include_script('list.js');
     }
 
+    /**
+     * Initialise le bnum (fourre-tout)
+     */
     function setup()
     {
         // Récupération de l'instance de rcmail
@@ -202,6 +271,7 @@ class mel_metapage extends bnum_plugin
         $this->add_hook("message_part_before", [$this, 'hook_message_part_before']);
         $this->add_hook("calendar.on_attendees_notified", [$this, 'on_attendees_notified']);
         $this->add_hook('contact_photo', [$this, 'no_contact_found']);
+        $this->add_hook('plugin.mel_doubleauth.init', [$this, 'hook_double_auth_init']);
 
         if ($this->rc->task === 'settings' && $this->rc->action === "edit-prefs") {
             if (rcube_utils::get_input_value('_section', rcube_utils::INPUT_GPC) === 'globalsearch') $this->include_script('js/actions/settings_gs.js');
@@ -630,6 +700,12 @@ class mel_metapage extends bnum_plugin
         $this->add_hook('folder_create', [$this, 'folder_create']);
     }
 
+    /**
+     * Enregistre le gestionnaire personnalisé pour l’édition des dossiers.
+     *
+     * Associe le tag 'bnumfolderperso' à la méthode '_edit_folder_hack' afin
+     * d’intercepter et personnaliser l’affichage de cette section dans l’interface.
+     */
     private function settings_edit_folder_bnum_action()
     {
         $this->rc->output->add_handlers(array(
@@ -637,6 +713,15 @@ class mel_metapage extends bnum_plugin
         ));
     }
 
+    /**
+     * Génère le HTML d’une section personnalisée pour l’édition d’un dossier.
+     *
+     * Produit un conteneur `<div>` avec deux sous-divisions pour gérer
+     * la couleur personnalisée et l’icône personnalisée du dossier.
+     *
+     * @param array $attrib Attributs additionnels (non utilisés dans la fonction).
+     * @return string Le code HTML généré.
+     */
     private function _edit_folder_hack($attrib)
     {
         $html = html::div(
@@ -648,14 +733,25 @@ class mel_metapage extends bnum_plugin
         return $html;
     }
 
+    /**
+     * Ajoute un champ de sélection de couleur dans le formulaire de dossier.
+     *
+     * Modifie les arguments pour insérer un fieldset avec un champ input de type color
+     * permettant à l'utilisateur de choisir la couleur du dossier.
+     *
+     * @param array $args Arguments du formulaire de dossier.
+     * @return array Arguments modifiés avec le champ couleur ajouté.
+     */
     function folder_form($args)
     {
+        $prefs = $this->rc->config->get('folders_colors', []);
+        $color = $prefs[$args['name']] ?? '';
         $args['form']['props']['fieldsets']['color'] = [
             'name' => 'Couleur du dossier',
             'content' => [
                 'color' => [
                     'label' => 'Couleur du dossier',
-                    'value' => '<input type="color" title="Laissez pour avoir la couleur par défaut !" name="_color" id="folder-edit-color" value="">'
+                    'value' => "<input type=\"color\" title=\"Laissez pour avoir la couleur par défaut !\" name=\"_color\" id=\"folder-edit-color\" value=\"$color\">"
                 ]
             ]
         ];
@@ -663,6 +759,16 @@ class mel_metapage extends bnum_plugin
         return $args;
     }
 
+    /**
+     * Initialise la couleur d’un dossier lors de sa création.
+     *
+     * Récupère la couleur depuis la requête POST et la normalise
+     * (valeurs noires ou vides sont converties en null).
+     * Met à jour ensuite la couleur du dossier via update_color_folder().
+     *
+     * @param array $args Données du dossier à créer (doit contenir ['record']['name']).
+     * @return array Retourne les arguments modifiés.
+     */
     function folder_create($args)
     {
         $color = rcube_utils::get_input_value('_color', rcube_utils::INPUT_POST);
@@ -678,6 +784,14 @@ class mel_metapage extends bnum_plugin
         return $args;
     }
 
+    /**
+     * Charge les modules JavaScript d’actions spécifiques aux métapages.
+     *
+     * Charge notamment les scripts pour les notes et le calendrier,
+     * en conservant le module notes.js en mémoire.
+     *
+     * @return void
+     */
     function load_js_modules_actions()
     {
         $save_in_memory = true;
@@ -686,6 +800,16 @@ class mel_metapage extends bnum_plugin
         $this->load_metapage_script_module('calendar.js');
     }
 
+    /**
+     * Charge un module de script spécifique aux métapages depuis le répertoire dédié.
+     *
+     * Appelle la méthode load_script_module en spécifiant le chemin vers les scripts
+     * de métapages.
+     *
+     * @param string $name Nom du module script à charger
+     * @param bool $save_in_memory Optionnel. Si vrai, conserve le script en mémoire. Par défaut false.
+     * @return mixed Résultat retourné par load_script_module
+     */
     protected function load_metapage_script_module($name, $save_in_memory = false)
     {
         return $this->load_script_module($name, '/js/lib/metapages_actions/', $save_in_memory);
@@ -714,6 +838,17 @@ class mel_metapage extends bnum_plugin
         $this->load_config_js();
     }
 
+    /**
+     * Inclut tous les fichiers JavaScript non minifiés présents dans un dossier donné
+     * et ses sous-dossiers (un seul niveau de profondeur).
+     *
+     * Parcourt les fichiers du dossier `js/init/$folder` et inclut :
+     * - tous les fichiers `.js` sauf ceux contenant `.min.js`
+     * - les fichiers `.js` dans les sous-dossiers directs (pas plus profonds)
+     *
+     * @param string $folder Nom du dossier à parcourir sous `js/init/`
+     * @return void
+     */
     function get__init_js_from_folder($folder)
     {
         $files = scandir(__DIR__ . "/js/init/$folder");
@@ -736,11 +871,27 @@ class mel_metapage extends bnum_plugin
         }
     }
 
+    /**
+     * Envoie les URLs surveillées (spied URLs) à l’environnement JavaScript.
+     *
+     * Récupère les URLs espionnées via la méthode statique `get_urls_spied()`
+     * et les transmet au front-end via `set_env` sous la clé "urls_spies".
+     *
+     * @return void
+     */
     public function send_spied_urls()
     {
         $this->rc->output->set_env("urls_spies", self::get_urls_spied());
     }
 
+    /**
+     * Gère le cache des dossiers lors de la tâche "mail".
+     *
+     * Si la tâche courante est "mail" et que le paramètre '_nocache' est passé à "true",
+     * cette méthode déclenche la suppression du cache des dossiers via `mel_helper::clear_folders_cache`.
+     *
+     * @return void
+     */
     public function m2_gestion_cache()
     {
         if ($this->rc->task === "mail" && (rcube_utils::get_input_value('_nocache', rcube_utils::INPUT_GPC) == "true"/* || 
@@ -749,12 +900,25 @@ class mel_metapage extends bnum_plugin
         }
     }
 
+    /**
+     * Inclut le script JavaScript pour le mode sombre de l’éditeur.
+     *
+     * @return $this Retourne l’instance courante pour permettre le chaînage des appels.
+     */
     public function include_edited_editor()
     {
         $this->include_script('js/actions/editor-dark-mode.js');
         return $this;
     }
 
+    /**
+     * Ajoute un bouton personnalisé "Composer un email" dans le menu des messages.
+     *
+     * Le bouton utilise la commande "new-mail-from" et possède plusieurs classes CSS pour le style et le comportement.
+     * Il est ajouté à la barre d'outils ou menu identifié par "messagemenu".
+     *
+     * @return void
+     */
     private function include_internal_and_external_buttons()
     {
         $this->add_button(array(
@@ -769,6 +933,21 @@ class mel_metapage extends bnum_plugin
         ), "messagemenu");
     }
 
+    /**
+     * Initialise et ajoute plusieurs boutons personnalisés dans l'interface utilisateur.
+     *
+     * Cette méthode ajoute des boutons dans différentes barres d'outils et menus, 
+     * tels que la barre des tâches, la barre d'outils des messages, le menu des événements, etc.
+     * Chaque bouton est configuré avec des commandes, classes CSS, labels et titres pour l'affichage.
+     * 
+     * Des boutons spécifiques à la gestion des mails (déplacement, favoris, couleurs, icônes) 
+     * sont ajoutés uniquement si la tâche courante est "mail".
+     * 
+     * En fin d'exécution, plusieurs dépendances CSS et JS spécifiques sont incluses pour garantir 
+     * le bon fonctionnement et l'apparence des boutons ajoutés.
+     *
+     * @return void
+     */
     function mm_include_plugin()
     {
         $this->include_internal_and_external_buttons();
@@ -927,6 +1106,14 @@ class mel_metapage extends bnum_plugin
         $this->setup_env_js_vars();
     }
 
+    /**
+     * Affiche l’état du mode maintenance et termine l’exécution.
+     *
+     * Récupère la valeur de la configuration 'maintenance' (false par défaut) et l'affiche.
+     * Utilisé pour vérifier rapidement si le système est en maintenance.
+     *
+     * @return void
+     */
     function check_maintenance()
     {
         echo $this->rc->config->get('maintenance', false);
@@ -934,7 +1121,15 @@ class mel_metapage extends bnum_plugin
     }
 
     /**
-     * Html du plugin.
+     * Modifie le contenu HTML en fonction de la tâche courante et de certains marqueurs spécifiques.
+     *
+     * - Ne modifie rien si la tâche est "login" ou "logout".
+     * - Si le contenu contient des indicateurs d’affichage en iframe, le contenu est traité par from_iframe().
+     * - Si un paramètre GET spécifique est présent, applique from_iframe() puis ajoute du HTML via add_html().
+     * - Sinon, injecte des fragments de template (modal, barup, user, option) dans le contenu HTML.
+     *
+     * @param array $args Tableau contenant la clé "content" avec le code HTML à modifier.
+     * @return array Le même tableau $args avec le contenu HTML modifié.
      */
     function generate_html($args)
     {
@@ -971,6 +1166,16 @@ class mel_metapage extends bnum_plugin
         return $args;
     }
 
+    /**
+     * Modifie le contenu HTML reçu pour y injecter des éléments personnalisés.
+     *
+     * - Ajoute une version (version + build) en paramètre dans les balises script de type module.
+     * - Supprime les caractères BOM invisibles s'ils sont présents.
+     * - Injecte le contenu du template "mel_metapage.custom_options" juste après la div avec l'id "layout".
+     *
+     * @param array $args Tableau contenant une clé 'content' avec le code HTML à modifier.
+     * @return array Le même tableau $args avec le contenu modifié.
+     */
     function appendTo($args)
     {
         if (strpos($args['content'], '/scriptType:module"') !== false) {
@@ -988,13 +1193,34 @@ class mel_metapage extends bnum_plugin
         return $args;
     }
 
+    /**
+     * Remplace le contenu donné par la vue "mel_metapage.maintenance".
+     *
+     * @param array $args Tableau d'arguments contenant une clé "content".
+     * @return array Tableau $args avec la clé "content" mise à jour.
+     */
     function maintenance($args)
     {
         $args["content"] = $this->rc->output->parse("mel_metapage.maintenance", false, false);
         return $args;
     }
 
-
+    /**
+     * Modifie le contenu HTML d'un calendrier pour injecter des sélecteurs personnalisés
+     * dans la fenêtre d'édition d'événements.
+     *
+     * Cette fonction cherche la div avec l'id "eventedit" dans le contenu HTML,
+     * extrait une portion spécifique du contenu correspondant à la zone d'édition,
+     * puis remplace cette portion par un template personnalisé incluant :
+     * - Un sélecteur de workspace (si la classe "mel_workspace" existe),
+     * - Un sélecteur de catégories récupérées depuis les préférences utilisateur.
+     *
+     * Elle ajoute également des handlers pour générer dynamiquement ces sélecteurs
+     * dans la vue.
+     *
+     * @param array $args Tableau associatif contenant la clé "content" avec le HTML à modifier.
+     * @return array Tableau $args modifié avec le contenu HTML mis à jour.
+     */
     function parasite_calendar($args)
     {
         $content = $args["content"];
@@ -1120,12 +1346,22 @@ class mel_metapage extends bnum_plugin
         return str_replace('<div id="layout-menu"', '<div id="layout-menu" data-edited=true style="display:none;"', $contents);
     }
 
+    /**
+     * Définit le titre de la page sur "loading" puis envoie la vue "mel_metapage.loading".
+     *
+     * @return void
+     */
     function loadingFrame()
     {
         $this->rc->output->set_pagetitle($this->gettext('loading'));
         $this->rc->output->send("mel_metapage.loading");
     }
 
+    /**
+     * Redirige l'utilisateur vers la tâche "webconf".
+     *
+     * @return void
+     */
     function redirectToWebconf()
     {
         $this->rc->output->redirect(["task" => "webconf"]);
@@ -1184,6 +1420,9 @@ class mel_metapage extends bnum_plugin
         exit;
     }
 
+    /**
+     * TODO deprecated
+     */
     function ariane()
     {
 
@@ -1195,11 +1434,28 @@ class mel_metapage extends bnum_plugin
         $this->rc->output->send("mel_metapage.ariane");
     }
 
+    /**
+     * Indique si le stockage est actif.
+     *
+     * Utilise le helper mel_helper pour vérifier l'état du stockage via la méthode why_stockage_not_active().
+     * Retourne true si le stockage est actif, false sinon.
+     *
+     * @return bool True si le stockage est actif, false autrement.
+     */
     public static function stockage_is_active()
     {
         return mel_helper::load_helper(rcmail::get_instance())->why_stockage_not_active() === 'active';
     }
 
+    /**
+     * Vérifie si l'utilisateur possède une quota de stockage à zéro.
+     *
+     * Charge la propriété `mdrive_quota` de l'utilisateur spécifié (ou de l'utilisateur courant
+     * si aucun utilisateur n'est fourni) et retourne true si la quota est définie et égale à 0.
+     *
+     * @param object|null $user L'objet utilisateur à vérifier. Si null, utilise l'utilisateur courant.
+     * @return bool True si la quota de l'utilisateur est à zéro, false sinon.
+     */
     public static function have_0_quota($user = null)
     {
         $user = $user ?? driver_mel::gi()->getUser();
@@ -1207,6 +1463,15 @@ class mel_metapage extends bnum_plugin
         return isset($user->mdrive_quota) && $user->mdrive_quota == 0;
     }
 
+    /**
+     * Génère et affiche le HTML pour la création d’un workspace.
+     * 
+     * Utilise le moteur de templates pour parser le template
+     * "mel_metapage.create_workspace" sans affichage direct.
+     * Affiche ensuite le contenu généré et termine l'exécution.
+     *
+     * @return void
+     */
     function create_workspace_html()
     {
         $parsed = $this->rc->output->parse("mel_metapage.create_workspace", false, false);
@@ -1228,6 +1493,12 @@ class mel_metapage extends bnum_plugin
         $this->include_stylesheet($this->local_skin_path() . '/annuaire_part.css');
     }
 
+    /**
+     * Inclut tous les fichiers JavaScript présents dans le dossier 'js/configs'.
+     *
+     * Parcourt le répertoire 'js/configs' situé dans le même dossier que cette classe,
+     * puis inclut tous les fichiers dont l'extension est '.js' via la méthode `include_script`.
+     */
     function load_config_js()
     {
 
@@ -1335,6 +1606,23 @@ class mel_metapage extends bnum_plugin
         exit;
     }
 
+    /**
+     * Récupère les mails non lus pour chaque workspace et retourne un tableau JSON des détails.
+     * 
+     * - Charge les workspaces via la classe `mel_workspace` si disponible.
+     * - Construit une requête IMAP de recherche combinant tous les mails non lus (UNSEEN)
+     *   qui ont pour destinataire (TO, CC ou BCC) une adresse liée à un workspace.
+     * - Si un paramètre de recherche `_q` est fourni en GET, il remplace la requête par défaut.
+     * - Recherche dans la boîte via la méthode `search` du stockage et récupère les messages correspondants.
+     * - Pour chaque message trouvé, identifie les workspaces cibles via la méthode `get_wsp_uids_by_to`.
+     * - Construit un tableau contenant les mails groupés par workspace, avec les champs : 
+     *   `from`, `subject`, `date` (formaté) et `uid`.
+     * - Envoie le résultat JSON contenant les données des mails par workspace, la requête de recherche utilisée,
+     *   et les résultats bruts retournés par la recherche.
+     * - Termine l'exécution du script après l'affichage.
+     * 
+     * @return void Affiche directement un JSON des mails non lus par workspace et termine l'exécution.
+     */
     public function get_wsp_unread_mails_count()
     {
         // Metapage sans workspace
@@ -1415,6 +1703,19 @@ class mel_metapage extends bnum_plugin
         exit;
     }
 
+    /**
+     * Extrait les identifiants de workspace à partir d'une liste d'adresses email.
+     *
+     * Analyse la chaîne `$to`, qui contient une ou plusieurs adresses email séparées par des virgules,
+     * et retourne un tableau des identifiants extraits des adresses contenant le préfixe "edt."
+     * suivi d'un espace de travail avant le domaine "@i-carre.net".
+     *
+     * Par exemple, pour une adresse "user.edt.workspace@i-carre.net",
+     * la fonction retournera "workspace" dans le tableau résultant.
+     *
+     * @param string $to Chaîne d'adresses email séparées par des virgules.
+     * @return array Tableau des identifiants workspace extraits des adresses email.
+     */
     function get_wsp_uids_by_to($to)
     {
         $to = explode(",", $to);
@@ -1432,7 +1733,25 @@ class mel_metapage extends bnum_plugin
     }
 
     /**
-     * Recherche un texte dans les mails.
+     * Effectue une recherche de mails dans un dossier spécifié ou dans plusieurs dossiers.
+     *
+     * Si aucun paramètre n'est fourni, récupère les valeurs depuis les requêtes GET :
+     * - `_q` pour la chaîne de recherche,
+     * - `_mbox` pour le dossier (par défaut 'INBOX').
+     *
+     * Pour la boîte de réception (INBOX), la recherche peut s'étendre à plusieurs dossiers 
+     * selon la configuration `search_on_all_bali_folders` et les dossiers abonnés.
+     * Sinon, pour d'autres dossiers, la recherche est conditionnée par la configuration
+     * `search_on_all_bal` et les droits sur les dossiers partagés.
+     *
+     * Le nombre maximal de résultats est limité par la configuration `search_mail_max` (par défaut 9999).
+     * Les messages trouvés sont formatés via la classe `SearchResultMail`.
+     *
+     * @param string|null $input Terme(s) de recherche, ou null pour récupération depuis la requête GET.
+     * @param string|null $folder Dossier de recherche, ou null pour récupération depuis la requête GET (par défaut 'INBOX').
+     *
+     * @return array|null Retourne un tableau de résultats formatés si $input est fourni,
+     *                    sinon affiche directement les résultats en JSON et termine l'exécution.
      */
     public function search_mail($input = null, $folder = null)
     {
@@ -1502,13 +1821,35 @@ class mel_metapage extends bnum_plugin
         } else return $datas;
     }
 
+    /**
+     * Recherche la position d'un message dans un tableau par son identifiant UID.
+     *
+     * Cette fonction est un alias vers `search_id_in_mail` et retourne l'index
+     * de l'élément dans `$array` dont la propriété `uid` correspond à `$id`.
+     *
+     * @param int|string $id L'UID du message à rechercher.
+     * @param array $array Tableau d'objets mail avec une propriété `uid`.
+     * @param int|null $size Nombre d'éléments à parcourir dans `$array`. Si null, utilise la taille totale.
+     *
+     * @return int|false L'index de l'élément trouvé ou false si non trouvé.
+     */
     function mail_where($id, $array, $size = null)
     {
         return self::search_id_in_mail($id, $array, $size);
     }
 
     /**
-     * Recherche un id parmis les mails.
+     * Recherche l'index d'un message dans un tableau d'objets mail par son UID.
+     *
+     * Parcourt le tableau `$array` d'objets mail (ayant une propriété `uid`) jusqu'à `$size`
+     * éléments (par défaut la taille totale du tableau) pour trouver l'objet dont
+     * la propriété `uid` correspond à l'identifiant `$id`.
+     *
+     * @param int|string $id L'identifiant unique (UID) du message à rechercher.
+     * @param array $array Tableau d'objets mail devant contenir une propriété `uid`.
+     * @param int|null $size Nombre d'éléments à parcourir dans `$array`. Si null, utilise la taille totale.
+     * 
+     * @return int|false L'index dans le tableau si trouvé, sinon false.
      */
     public static function search_id_in_mail($id, $array, $size = null)
     {
@@ -1522,7 +1863,19 @@ class mel_metapage extends bnum_plugin
     }
 
     /**
-     * Recherche un texte dans les contacts.
+     * Recherche des contacts dans les sources d'adresses configurées.
+     *
+     * Si aucun paramètre n'est passé, récupère la requête de recherche (`_q`) et les champs (`_headers`)
+     * depuis les paramètres GET. Cherche dans toutes les sources d'adresses disponibles en fonction
+     * des champs spécifiés, en incluant la recherche dans les groupes.
+     *
+     * Retourne soit un tableau des résultats formatés, soit affiche directement le JSON des résultats
+     * et termine l'exécution si aucun argument n'a été passé (appel direct via requête HTTP).
+     *
+     * @param string|null $search Terme(s) de recherche (optionnel, sinon récupéré depuis GET)
+     * @param array|null $fields Liste des champs à rechercher (optionnel, sinon récupérés depuis GET)
+     * 
+     * @return array|null Tableau des résultats de recherche formatés, ou null si sortie JSON directe.
      */
     public function search_contact($search = null, $fields = null)
     {
@@ -1592,7 +1945,16 @@ class mel_metapage extends bnum_plugin
         } else return $datas;
     }
 
-
+    /**
+     * Prépare et affiche le template de création de document.
+     *
+     * Enregistre un handler 'document_type' lié à la méthode `get_docs_types` pour fournir
+     * les types de documents dans le template. Puis génère le rendu du template
+     * "mel_metapage.create_document" et l'affiche immédiatement.
+     * Termine l'exécution du script après l'affichage.
+     *
+     * @return void
+     */
     function get_create_document_template()
     {
         $this->rc->output->add_handlers(array(
@@ -1603,6 +1965,19 @@ class mel_metapage extends bnum_plugin
         //$this->rc->output->send("mel_metapage.create_document");
     }
 
+    /**
+     * Génère et affiche un sélecteur HTML des workspaces disponibles.
+     *
+     * Si la classe `mel_workspace` existe, récupère la liste des workspaces via `mel_workspace::LoadWorkspaces()`.
+     * Puis construit un élément `<select>` HTML avec une option "none" par défaut
+     * suivi des options représentant chaque workspace (avec `uid` en valeur et `title` en texte).
+     *
+     * Ajoute ce sélecteur comme handler `event-wsp` dans la sortie, puis affiche
+     * le template "mel_metapage.event_body" qui peut utiliser ce handler.
+     * Termine l'exécution immédiatement après.
+     *
+     * @return void
+     */
     function get_event_html()
     {
         $w = function () {
@@ -1630,7 +2005,15 @@ class mel_metapage extends bnum_plugin
         exit;
     }
 
-
+    /**
+     * Génère un bloc HTML contenant des boutons pour chaque type de document configuré.
+     *
+     * Chaque bouton appelle une fonction JavaScript `m_mp_UpdateCreateDocument`
+     * avec les informations sur l'extension par défaut et le type du document.
+     * L'icône du bouton est définie par la classe CSS retournée par `get_document_class_icon`.
+     *
+     * @return string HTML contenant les boutons des types de documents.
+     */
     function get_docs_types()
     {
         $templates = $this->rc->config->get('documents_types');
@@ -1642,6 +2025,13 @@ class mel_metapage extends bnum_plugin
         return html::div([], $html);
     }
 
+    /**
+     * Retourne la classe CSS d'icône correspondant au type de document donné.
+     *
+     * @param string $icon Le type d'icône ou l'extension du document.
+     * 
+     * @return string La classe CSS de l'icône associée.
+     */
     function get_document_class_icon($icon)
     {
         switch ($icon) {
@@ -1652,7 +2042,22 @@ class mel_metapage extends bnum_plugin
         }
     }
 
-
+    /**
+     * Prépare et affiche le formulaire de création/modification d'un événement calendrier.
+     *
+     * Cette méthode initialise le plugin calendar, charge les textes de localisation,
+     * les scripts nécessaires à l'interface utilisateur, et prépare les données
+     * d'un événement à partir des paramètres GET ou POST.
+     *
+     * Elle configure également les identités utilisateur, les catégories de calendrier,
+     * et transmet ces données à l'interface via les variables d'environnement de sortie.
+     *
+     * Si un paramètre '_mbox' est présent dans la requête GET, la méthode
+     * déclenche la conversion d'un message mail en événement.
+     * Sinon, elle prépare la fenêtre modale d'édition d'événement.
+     *
+     * @return void
+     */
     function create_calendar_event()
     {
         $calendar = $this->rc->plugins->get_plugin('calendar');
@@ -1730,6 +2135,19 @@ class mel_metapage extends bnum_plugin
     //         ["source" => $source, ]
     //     )
     // }
+
+    /**
+     * Génère la liste HTML personnalisée des contacts.
+     *
+     * Cette méthode initialise les variables d'environnement pour la pagination
+     * (nombre de pages et page courante) et appelle ensuite la méthode `table_output`
+     * pour produire le tableau HTML des contacts.
+     *
+     * @param array $attrib Attributs HTML optionnels à appliquer à la balise contenant la liste.
+     *                      Par défaut, l'attribut 'id' est défini sur 'rcmAddressList'.
+     *
+     * @return string HTML généré par `table_output` affichant la liste des contacts.
+     */
     public function override_rcmail_contacts_list($attrib = array())
     {
         $attrib += array('id' => 'rcmAddressList');
@@ -1743,6 +2161,19 @@ class mel_metapage extends bnum_plugin
         return $this->rc->table_output($attrib, array(), array('name'), 'ID');
     }
 
+    /**
+     * Génère la liste HTML personnalisée des carnets d'adresses disponibles.
+     *
+     * Cette méthode construit un élément `<ul>` contenant des `<li>` pour chaque
+     * source d'adresse récupérée via `get_address_sources()`. Chaque entrée
+     * inclut un lien déclenchant une commande JavaScript pour afficher la liste
+     * des adresses du carnet sélectionné.
+     *
+     * @param array $attrib Attributs HTML optionnels à appliquer à la balise `<ul>`.
+     *                      Par défaut, l'attribut 'id' est défini sur 'rcmdirectorylist'.
+     *
+     * @return string HTML de la liste `<ul>` contenant les carnets d'adresses.
+     */
     public function override_rcmail_addressbook_list($attrib = array())
     {
         $attrib += array('id' => 'rcmdirectorylist');
@@ -1783,6 +2214,20 @@ class mel_metapage extends bnum_plugin
         return html::tag('ul', $attrib, $out, html::$common_attrib);
     }
 
+    /**
+     * Récupère les données météo à partir des coordonnées fournies via POST.
+     *
+     * Utilise le service JSON de prevision-meteo.ch pour obtenir la météo
+     * en fonction de la latitude (_lat) et longitude (_lng) reçues en POST.
+     * Si la requête initiale échoue (code HTTP différent de 200), elle retente
+     * avec les coordonnées arrondies.
+     * Utilise un proxy HTTP configuré via la clé 'weather_proxy' dans la config.
+     *
+     * Affiche un JSON contenant l'URL appelée et la réponse de l'API.
+     * Termine le script après exécution.
+     *
+     * @return void
+     */
     public function weather()
     {
         $proxy = $this->rc->config->get('weather_proxy');
@@ -1803,12 +2248,30 @@ class mel_metapage extends bnum_plugin
         exit;
     }
 
+    /**
+     * Affiche et renvoie le contenu du modal 'mel_metapage.mel_modal'.
+     *
+     * Utilise la méthode de rendu de l'objet output pour parser un template
+     * spécifique et affiche directement le résultat avant de terminer le script.
+     *
+     * @return void
+     */
     function get_modal()
     {
         echo $this->rc->output->parse("mel_metapage.mel_modal", false, false);
         exit;
     }
 
+    /**
+     * Déconnecte l'utilisateur du plugin Rocket Chat si connecté.
+     *
+     * Vérifie si l'utilisateur est connecté via Rocket Chat. Si non connecté,
+     * il effectue la déconnexion et affiche "unloggued". Sinon, affiche "loggued".
+     *
+     * Cette méthode termine le script après exécution.
+     *
+     * @return void
+     */
     public function chat_logout()
     {
         $rc = $this->rc->plugins->get_plugin("rocket_chat");
@@ -1821,6 +2284,15 @@ class mel_metapage extends bnum_plugin
         exit;
     }
 
+    /**
+     * Retourne une instance d’un programme spécifique selon son nom.
+     *
+     * Actuellement, seule la clé 'webconf' est supportée. Si la visioconférence
+     * est activée, la classe correspondante est incluse et instanciée.
+     * 
+     * @param string $program_name Nom du programme à récupérer.
+     * @return object|null Instance du programme demandé ou null si non disponible.
+     */
     public function get_program($program_name)
     {
         $program = null;
@@ -1841,6 +2313,19 @@ class mel_metapage extends bnum_plugin
         return $program;
     }
 
+    /**
+     * Ajoute des sections personnalisées à la liste des préférences affichées dans l’interface utilisateur.
+     *
+     * Cette méthode modifie la liste `$p['list']` en y ajoutant des sections spécifiques selon
+     * la disponibilité de certains plugins ou fonctionnalités, telles que la visioconférence,
+     * le chat, les notifications, la navigation principale, et les paramètres expérimentaux.
+     * 
+     * Certaines sections sont ajoutées conditionnellement en fonction de la présence de classes
+     * ou de fichiers spécifiques, ou en fonction de la configuration.
+     *
+     * @param array $p Tableau contenant la liste des sections de préférences existantes.
+     * @return array Le tableau `$p` mis à jour avec les sections supplémentaires.
+     */
     public function preferences_sections_list($p)
     {
         $dir = __DIR__;
@@ -1893,6 +2378,18 @@ class mel_metapage extends bnum_plugin
         return $p;
     }
 
+    /**
+     * Génère un tableau HTML listant les dossiers BALI avec cases à cocher pour la recherche.
+     *
+     * Récupère la liste des dossiers mail abonnés (subscribed) via le stockage IMAP,
+     * crée un tableau avec deux colonnes : le nom du dossier et une case à cocher indiquant
+     * si la recherche doit inclure ce dossier. Le nom "INBOX" est remplacé par "Courrier entrant".
+     * La sélection des cases à cocher est déterminée par la configuration passée en paramètre.
+     *
+     * @param array|null $config Configuration associant les noms de dossiers à un booléen indiquant
+     *                          si la case doit être cochée (true) ou non (false). Par défaut, toutes cochées.
+     * @return html_table Objet html_table représentant le tableau des dossiers avec cases à cocher.
+     */
     function create_bali_folders_selection($config)
     {
         if (!isset($config)) $config = [];
@@ -1920,6 +2417,18 @@ class mel_metapage extends bnum_plugin
         return $table;
     }
 
+    /**
+     * Génère un tableau HTML listant les boîtes aux lettres partagées (BALP) avec cases à cocher.
+     *
+     * Récupère la liste des BALP partagées pour l'utilisateur, puis crée un tableau HTML à deux colonnes :
+     * - Le nom complet de la boîte aux lettres.
+     * - Une case à cocher indiquant si la BALP est sélectionnée pour la recherche.
+     *
+     * Les cases à cocher sont initialisées selon la configuration fournie.
+     *
+     * @param array $config Configuration indiquant quelles BALP sont activées (clé = index BALP, valeur booléenne).
+     * @return html_table Objet html_table représentant le tableau généré.
+     */
     function create_balp_selection($config)
     {
         $mails = $this->rc->plugins->get_plugin('mel_sharedmailboxes')->get_user_sharedmailboxes_list();
@@ -1940,6 +2449,19 @@ class mel_metapage extends bnum_plugin
         return $table;
     }
 
+    /**
+     * Crée un élément HTML de type select avec label pour un champ de préférence.
+     *
+     * Initialise un select HTML avec un identifiant et un nom spécifiés, ajoute les options
+     * fournies, puis génère un tableau contenant le label associé et le contenu HTML du select.
+     * Les options sont ajoutées uniquement avec leurs libellés (valeurs numériques implicites).
+     *
+     * @param string $field_id Identifiant et nom du champ select.
+     * @param mixed $current Valeur actuellement sélectionnée.
+     * @param array $options Liste des options (libellés) à ajouter au select.
+     * @param array|null $attrib Attributs additionnels HTML pour le select (optionnel).
+     * @return array Tableau associatif avec les clés 'title' (label HTML) et 'content' (select HTML).
+     */
     function create_pref_select($field_id, $current, $options, $attrib = null)
     {
 
@@ -1965,6 +2487,19 @@ class mel_metapage extends bnum_plugin
         );
     }
 
+    /**
+     * Crée un élément HTML de type select avec label pour un champ de préférence.
+     *
+     * Initialise un select HTML avec un identifiant et un nom spécifiés, ajoute les options
+     * fournies, puis génère un tableau contenant le label associé et le contenu HTML du select.
+     *
+     * @param string $field_id Identifiant et nom du champ select.
+     * @param mixed $current Valeur actuellement sélectionnée.
+     * @param array $names Liste des noms (libellés) des options.
+     * @param array|null $values Liste des valeurs des options (optionnel).
+     * @param array|null $attrib Attributs additionnels HTML pour le select (optionnel).
+     * @return array Tableau associatif avec les clés 'title' (label HTML) et 'content' (select HTML).
+     */
     function create_pref_select_more($field_id, $current, $names, $values = null, $attrib = null)
     {
 
@@ -2484,6 +3019,19 @@ class mel_metapage extends bnum_plugin
         return $args;
     }
 
+    /**
+     * Met à jour la configuration des préférences à partir des données POST.
+     *
+     * Parcourt les données fournies, convertit les noms de dossiers en UTF7-IMAP,
+     * remplace "INBOX" par "Courrier entrant", récupère la valeur booléenne correspondante
+     * dans les données POST selon le préfixe donné, puis met à jour la configuration.
+     * Supprime les entrées de configuration qui ne sont plus présentes dans les données.
+     *
+     * @param array $config Configuration initiale à mettre à jour.
+     * @param array $datas Données de référence pour déterminer les dossiers.
+     * @param string $prefix Préfixe utilisé pour extraire les valeurs dans les données POST.
+     * @return array Configuration mise à jour.
+     */
     function _save_pref_update_config($config, $datas, $prefix)
     {
         $folders = [];
@@ -2502,6 +3050,14 @@ class mel_metapage extends bnum_plugin
         return $config;
     }
 
+    /**
+     * Inverse la visibilité du chat et sauvegarde la préférence utilisateur.
+     *
+     * Récupère la visibilité actuelle du chat dans la configuration, inverse cette valeur,
+     * sauvegarde la nouvelle préférence pour l'utilisateur, puis renvoie le nouvel état en JSON.
+     *
+     * @return void
+     */
     function toggleChat()
     {
         $config = !$this->rc->config->get('mel_metapage_chat_visible', true);
@@ -2511,12 +3067,28 @@ class mel_metapage extends bnum_plugin
         exit;
     }
 
+    /**
+     * Retourne l'instance du système d'événements.
+     *
+     * Charge la classe du système d'événements si nécessaire, puis renvoie son instance singleton.
+     *
+     * @return mel_event_system Instance du système d'événements.
+     */
     public static function events()
     {
         include_once 'program/eventSystem.php';
         return mel_event_system::Instance();
     }
 
+    /**
+     * Ouvre une section spécifique dans l’interface utilisateur.
+     *
+     * Récupère la section à ouvrir depuis les paramètres GET, inclut un script JS,
+     * puis transmet la section à ouvrir à l’environnement de sortie.
+     *
+     * @param array $args Arguments passés au hook (non utilisés).
+     * @return void
+     */
     public function open_section($args)
     {
         $section = rcube_utils::get_input_value('_open_section', rcube_utils::INPUT_GET);
@@ -2524,6 +3096,14 @@ class mel_metapage extends bnum_plugin
         $this->rc->output->set_env("open_section", $section);
     }
 
+    /**
+     * Retourne un message décrivant la période de maintenance prévue.
+     *
+     * Le message varie selon que la maintenance est en cours ou à venir.
+     *
+     * @param bool $during Indique si la maintenance est en cours (true) ou à venir (false).
+     * @return string Message décrivant la maintenance, ou chaîne vide si aucune maintenance prévue.
+     */
     public function get_maintenance_text($during = false)
     {
         $text = "";
@@ -2540,6 +3120,14 @@ class mel_metapage extends bnum_plugin
         return $text;
     }
 
+    /**
+     * Gère l’erreur lors de l’envoi d’un message.
+     *
+     * Envoie une commande JavaScript au client via l’interface pour notifier l’erreur.
+     *
+     * @param array $args Données relatives à l’erreur d’envoi du message.
+     * @return array Les mêmes données passées en argument.
+     */
     public function message_send_error($args)
     {
         $this->rc->output->command('plugin.message_send_error', $args);
@@ -2547,6 +3135,17 @@ class mel_metapage extends bnum_plugin
         return $args;
     }
 
+    /**
+     * Modifie le message de confirmation lors de la sauvegarde d’un brouillon.
+     *
+     * Si le brouillon est sauvegardé dans la boîte aux lettres définie par la config 'models_mbox',
+     * le message de confirmation est remplacé par une chaîne localisée 'model_saved' du plugin 'mel_metapage'.
+     *
+     * @param array $args Tableau contenant au moins :
+     *                    - 'folder' : nom de la boîte aux lettres où le brouillon est sauvegardé.
+     *                    - 'message' : message de confirmation original.
+     * @return array Le tableau $args modifié avec un message de confirmation personnalisé.
+     */
     public function message_draftsaved($args)
     {
         if ($args['folder'] === $this->rc->config->get('models_mbox')) {
@@ -2556,6 +3155,18 @@ class mel_metapage extends bnum_plugin
         return $args;
     }
 
+    /**
+     * Hook appelé lors de la récupération des objets d’un message.
+     *
+     * Cette méthode analyse le corps du message pour détecter des liens bloqués ou suspects.
+     * - Si des liens bloqués sont détectés, un message d’alerte rouge est ajouté au contenu.
+     * - Si des liens suspects sont détectés, un message d’alerte jaune est ajouté au contenu.
+     *
+     * @param array $args Tableau contenant au moins :
+     *                    - 'message' : l’objet message avec son UID.
+     *                    - 'content' : tableau des parties HTML/textuelles à afficher.
+     * @return array Le tableau $args modifié avec les alertes ajoutées dans 'content' si nécessaire.
+     */
     public function hook_message_objects($args)
     {
         $message = $this->rc->get_storage()->get_body($args['message']->uid);
@@ -2570,6 +3181,17 @@ class mel_metapage extends bnum_plugin
         return $args;
     }
 
+    /**
+     * Hook appelé lors de la récupération du contenu d'une partie d'un message.
+     *
+     * Cette méthode vérifie si le message contient des liens bloqués (phishing).
+     * Si c'est le cas, elle vide le corps du message afin d'empêcher l'affichage de contenu potentiellement dangereux.
+     *
+     * @param array $args Tableau contenant les clés :
+     *                    - 'body' : le contenu HTML ou texte de la partie du message.
+     *                    - 'object' : l'objet message complet avec notamment les en-têtes dans 'headers'.
+     * @return array Le tableau $args potentiellement modifié, avec 'body' vidé si le message est bloqué.
+     */
     public function hook_message_part_get($args)
     {
 
@@ -2580,6 +3202,25 @@ class mel_metapage extends bnum_plugin
         return $args;
     }
 
+    /**
+     * Hook pour modifier la liste des messages avant affichage.
+     *
+     * Cette méthode nettoie et reformate les entêtes "From" des messages pour améliorer la lisibilité
+     * dans la liste des messages. Elle gère notamment les cas où le nom contient des informations de type
+     * "emis par", des services, ou des descriptions entre parenthèses.
+     * 
+     * Elle ajuste aussi le champ `title` du message avec le nom complet décodé.
+     *
+     * Le comportement dépend de la configuration `mel_messages_list_clear_headers` qui peut être :
+     * - "full" : retourne les arguments sans modification.
+     * - "service" : affiche le nom avec le service associé.
+     * - autre : affiche juste le nom.
+     *
+     * Certaines parties de code concernant la détection des messages suspects ou bloqués sont commentées.
+     *
+     * @param array $args Tableau contenant la liste des messages sous la clé 'messages'.
+     * @return array Tableau modifié avec les messages dont les entêtes "From" sont nettoyés et reformattés.
+     */
     public function hook_messages_list($args)
     {
         // $config = $this->rc->config->get('mel_suspect_url', []);
@@ -2698,23 +3339,51 @@ class mel_metapage extends bnum_plugin
         return $args;
     }
 
+    /**
+     * Ajoute à la configuration les URLs personnalisées marquées comme non bloquées (suspectes).
+     *
+     * Appelle la méthode interne `_check_message_is_custom` avec l’argument `true` pour récupérer
+     * les URLs configurées comme suspectes mais non bloquées, et les fusionne avec la configuration existante.
+     *
+     * @param array $args Tableau d’arguments contenant au moins la clé 'config' (tableau).
+     * @return array Arguments mis à jour avec les URLs suspectes ajoutées à 'config'.
+     */
     public function check_message_is_suspect_custom($args)
     {
         $args['config'] = array_merge($args['config'], $this->_check_message_is_custom(true));
         return $args;
     }
 
+    /**
+     * Ajoute à la configuration les URLs personnalisées bloquées.
+     *
+     * Utilise la méthode interne `_check_message_is_custom` en passant `false` pour récupérer
+     * les URLs dont le flag 'bloqued' est à true.
+     *
+     * @param array $args Tableau d'arguments contenant au moins la clé 'config' (tableau).
+     * @return array Arguments mis à jour avec les URLs bloquées ajoutées à 'config'.
+     */
     public function check_message_is_bloqued_custom($args)
     {
         $args['config'] = array_merge($args['config'], $this->_check_message_is_custom(false));
         return $args;
     }
 
-
+    /**
+     * Vérifie les URLs personnalisées suspectes ou bloquées selon l’état suspect du message.
+     *
+     * Parcourt la configuration 'mel_custom_suspected_url' pour retourner les URLs correspondant
+     * à l’état suspect ($isSuspect) et leur statut bloqué.
+     *
+     * @param bool $isSuspect Indique si le message est suspect ou non.
+     * @return array Liste des URLs correspondant aux critères (suspect ou bloquées).
+     */
     private function _check_message_is_custom($isSuspect)
     {
         $array = [];
-        $custom = $this->rc->config->get('mel_custom_suspected_url', []);
+        // Mise à jour du code pour remplacer la config par le hook BDD
+        $plugin = $this->rc->plugins->exec_hook('mel_urls_suspects_get_all', ['urls' => []]);
+        $custom = $plugin['urls'] ?? [];
 
         foreach ($custom as $url => $datas) {
             if ($isSuspect && $datas['bloqued'] === false) $array[] = $url;
@@ -2735,9 +3404,17 @@ class mel_metapage extends bnum_plugin
     private function check_message_is_suspect($message, $rcube_message_header = null, $config = null)
     {
         if (!isset($config)) {
-            $config = $this->rc->config->get('mel_suspect_url', []);
-            $plugin = $this->rc->plugins->exec_hook('mel_config_suspect_url', ['config' => $config]);
-            $config = $plugin['config'] ?? $config;
+            // Mise à jour du code pour remplacer la config par le hook BDD
+            $plugin = $this->rc->plugins->exec_hook('mel_urls_suspects_get_all', ['urls' => []]);
+            $config = [];
+            
+            if (isset($plugin['urls']) && is_array($plugin['urls'])) {
+                foreach ($plugin['urls'] as $url => $datas) {
+                    if ($datas['bloqued'] === false) {
+                        $config[] = $url;
+                    }
+                }
+            }
         }
 
         $is_suspect = mel_helper::Enumerable($config)->any(function ($k, $v) use ($message) {
@@ -2780,9 +3457,17 @@ class mel_metapage extends bnum_plugin
     private function check_message_is_bloqued($message, $rcube_message_header = null, $config = null)
     {
         if (!isset($config)) {
-            $config = $this->rc->config->get('mel_bloqued_url', []);
-            $plugin = $this->rc->plugins->exec_hook('mel_config_bloqued_url', ['config' => $config]);
-            $config = $plugin['config'] ?? $config;
+            // Mise à jour du code pour remplacer la config par le hook BDD
+            $plugin = $this->rc->plugins->exec_hook('mel_urls_suspects_get_all', ['urls' => []]);
+            $config = [];
+            
+            if (isset($plugin['urls']) && is_array($plugin['urls'])) {
+                foreach ($plugin['urls'] as $url => $datas) {
+                    if ($datas['bloqued'] === true) {
+                        $config[] = $url;
+                    }
+                }
+            }
         }
 
         $is_bloqued = mel_helper::Enumerable($config)->any(function ($k, $v) use ($message) {
@@ -2814,7 +3499,16 @@ class mel_metapage extends bnum_plugin
         return $is_bloqued;
     }
 
-
+    /**
+     * Filtre les contacts pour enlever les doublons dans la liste d'autocomplétion.
+     *
+     * Utilise une fonction personnalisée pour détecter les doublons en se basant sur le champ 'name'.
+     * Si le nom contient un '<', la comparaison se fait sur la version en minuscules du nom complet,
+     * sinon la valeur entière est utilisée pour la comparaison.
+     *
+     * @param array $args Tableau contenant au moins la clé 'contacts' avec la liste des contacts.
+     * @return array Retourne le tableau $args avec la liste des contacts filtrée sans doublons.
+     */
     function contacts_autocomplete_after($args)
     {
         $args['contacts'] = mel_helper::Enumerable($args['contacts'])->removeTwins(function ($k, $v) {
@@ -2824,6 +3518,13 @@ class mel_metapage extends bnum_plugin
         return $args;
     }
 
+    /**
+     * Vérifie si une application est activée dans la configuration.
+     *
+     * @param string $app Nom de l'application à vérifier. Si 'chat', sera converti en 'app_chat'.
+     * @param bool $load_config Indique si la configuration doit être chargée avant la vérification.
+     * @return bool Retourne true si l'application est activée, false sinon.
+     */
     function is_app_enabled($app, $load_config = false)
     {
         if ($app === 'chat') $app = 'app_chat';
@@ -2838,18 +3539,56 @@ class mel_metapage extends bnum_plugin
         return true;
     }
 
+    /**
+     * Vérifie si un utilisateur dispose de Cerbère.
+     *
+     * Charge les informations Cerbère de l'utilisateur via mel_helper::load_user_cerbere,
+     * puis retourne vrai si l'utilisateur a un niveau Cerbère >= 1, sinon faux.
+     *
+     * @param mixed $user Utilisateur (objet ou identifiant) à vérifier.
+     * @return bool True si l'utilisateur a Cerbère, false sinon.
+     */
     public static function user_have_cerbere($user)
     {
         $user = mel_helper::load_user_cerbere($user);
         return $user !== null && $user >= 1;
     }
 
+    /**
+     * Affiche si l'utilisateur courant dispose de Cerbère (fonctionnalité/permission).
+     *
+     * Récupère l'utilisateur courant via driver_mel et affiche le résultat
+     * de la méthode statique `user_have_cerbere` appliquée à cet utilisateur.
+     * Termine ensuite le script avec un exit.
+     *
+     * @return void
+     */
     public function get_have_cerbere()
     {
         echo self::user_have_cerbere(driver_mel::gi()->getUser());
         exit;
     }
 
+    /**
+     * Ajoute un commentaire à un e-mail en modifiant son en-tête personnalisé `X-Suivimel`
+     * et, si fourni, met à jour le sujet. Le message est ensuite réenregistré et l’original supprimé.
+     *
+     * Fonctionnement :
+     * - Récupère l'e-mail brut via son UID dans un dossier donné.
+     * - Insère ou modifie l'en-tête `X-Suivimel` avec le commentaire de l'utilisateur.
+     * - Met à jour le sujet si nécessaire.
+     * - Réenregistre le message avec ses en-têtes et drapeaux d'origine.
+     * - Marque le nouveau message comme `~commente` et `SEEN`.
+     * - Supprime l'ancien message.
+     *
+     * @return void Affiche l'identifiant du nouveau message si réussi, ou "false" sinon, puis termine le script avec `exit`.
+     *
+     * @global string $_POST['_folder']   Dossier du message (par défaut : "INBOX")
+     * @global int    $_POST['_uid']      UID du message à commenter
+     * @global string $_POST['_comment']  Commentaire à insérer
+     * @global string $_POST['_subject']  Nouveau sujet (optionnel)
+     * @global string $_POST['_user']     Adresse e-mail de l'utilisateur commentateur
+     */
     public function comment_mail()
     {
         $folder = rcube_utils::get_input_value('_folder', rcube_utils::INPUT_POST) ?? 'INBOX';
@@ -2896,6 +3635,21 @@ class mel_metapage extends bnum_plugin
         exit;
     }
 
+    /**
+     * Gère l'enregistrement du message de notification d'un événement envoyé aux participants.
+     *
+     * Cette méthode est appelée lorsque les participants à un événement ont été notifiés.
+     * Elle reformate les en-têtes du message, puis l'enregistre dans le dossier "Envoyés"
+     * de l'organisateur, que ce soit une boîte personnelle ou une boîte partagée.
+     *
+     * @param array $args Tableau associatif contenant :
+     * - 'orga'     : array Informations sur l'organisateur (doit contenir 'email')
+     * - 'attendees': array Liste des participants, chacun avec 'email' et 'name'
+     * - 'message'  : rcube_message Objet message contenant le contenu à enregistrer
+     * - 'event'    : array Données de l'événement (non utilisées directement ici)
+     *
+     * @return void
+     */
     public function on_attendees_notified($args)
     {
         $orga = $args['orga'];
@@ -2951,6 +3705,18 @@ class mel_metapage extends bnum_plugin
         }
     }
 
+    /**
+     * Méthode de test et de débogage.
+     *
+     * Cette méthode est utilisée pour charger des scripts de test et afficher une page dédiée au débogage.
+     * - Charge le système de gestion de dépendances avec `IncludeLoader()`.
+     * - Inclut le script `test.js` situé dans `js/actions`.
+     * - Rend la vue `mel_metapage.test` pour affichage dans l'interface.
+     *
+     * @note Cette méthode est probablement destinée à un usage en environnement de développement uniquement.
+     *
+     * @return void
+     */
     public function debug_and_test()
     {
         //$this->include_script('js/program/webconf_video_manager.js');
@@ -2959,11 +3725,35 @@ class mel_metapage extends bnum_plugin
         $this->rc->output->send('mel_metapage.test');
     }
 
+    /**
+     * Affiche le gabarit de chargement (loading frame).
+     *
+     * Cette méthode rend le template `mel_metapage.loader` à l'aide de l'objet `output`.
+     * Utilisée pour afficher une animation ou un écran de chargement temporaire dans l'interface utilisateur.
+     *
+     * @return void
+     */
     public function action_loading_frame()
     {
         $this->rc->output->send('mel_metapage.loader');
     }
 
+    /**
+     * Point d'entrée public pour charger les événements du calendrier.
+     *
+     * Cette méthode récupère les paramètres depuis la requête GET :
+     * - start : timestamp de début
+     * - end : timestamp de fin
+     * - q : terme de recherche (optionnel)
+     * - source : identifiant du calendrier (optionnel)
+     * - last : identifiant de dernière récupération (optionnel)
+     * - force : détermine si le rechargement doit être forcé ('true', 'false', ou 'random')
+     *
+     * Elle utilise la méthode interne `_calendar_load_events` pour récupérer les événements,
+     * les encode en JSON, puis les renvoie comme réponse HTTP.
+     *
+     * @return void
+     */
     public function calendar_load_events()
     {
 
@@ -2981,6 +3771,29 @@ class mel_metapage extends bnum_plugin
         exit;
     }
 
+    /**
+     * Charge les événements d'un calendrier sur une période donnée, avec options de forçage et d'encodage.
+     *
+     * Cette méthode interagit avec le plugin `calendar` (s'il est disponible) pour récupérer les événements
+     * entre deux timestamps, avec prise en charge du filtrage par requête, identifiant de calendrier,
+     * forçage de rechargement ou d'utilisation du cache, et option d'encodage du résultat.
+     *
+     * @param int         $start   Timestamp de début de la période.
+     * @param int         $end     Timestamp de fin de la période.
+     * @param string|null $querry  Terme de recherche pour filtrer les événements.
+     * @param string|null $calid   Identifiant du calendrier à interroger.
+     * @param mixed       $last    Valeur de cache ou de référence pour la récupération différentielle.
+     * @param string|bool $force   Contrôle du forçage : 'true', 'false', 'random' ou booléen.
+     *                             Si 'random', une chance sur 11 d'imposer le forçage.
+     * @param bool        $encode  Si vrai, encode les événements avec la méthode du plugin.
+     *
+     * @return array {
+     *     @type mixed  $forced  Indique si le chargement a été forcé.
+     *     @type mixed  $events  Liste des événements récupérés.
+     *     @type bool   $encoded Indique si les événements ont été encodés.
+     *     @type string $cal     Identifiant du calendrier interrogé.
+     * }
+     */
     private function _calendar_load_events($start, $end, $querry, $calid, $last, $force = 'random', $encode = false)
     {
         if (class_exists('calendar')) {
@@ -3015,6 +3828,22 @@ class mel_metapage extends bnum_plugin
         ];
     }
 
+    /**
+     * Récupère une valeur d'entrée (GET, POST, etc.) et la convertit en timestamp Unix si nécessaire.
+     *
+     * Cette méthode utilise `rcube_utils::get_input_value()` pour extraire une valeur
+     * (par exemple une date ou un datetime) à partir d'une source d'entrée spécifiée,
+     * et tente de la convertir en timestamp Unix.
+     *
+     * Si la valeur contient le caractère 'T' (comme dans les formats ISO 8601), ou
+     * si ce n’est pas un entier numérique, elle est convertie en objet `DateTime`
+     * selon le fuseau horaire courant, puis transformée en timestamp.
+     *
+     * @param string $name Nom du paramètre à récupérer.
+     * @param int    $type Type d’entrée (ex. : `rcube_utils::INPUT_POST`, `rcube_utils::INPUT_GET`).
+     *
+     * @return int|null Timestamp Unix correspondant à la valeur, ou `null` si aucun ou invalide.
+     */
     protected function input_timestamp($name, $type)
     {
         $ts = rcube_utils::get_input_value($name, $type);
@@ -3027,6 +3856,25 @@ class mel_metapage extends bnum_plugin
         return $ts;
     }
 
+    /**
+     * Initialise et affiche la page Bnum (page principale de l'environnement MEL).
+     *
+     * Cette méthode prépare l'environnement JavaScript côté client avec certaines
+     * valeurs nécessaires à la navigation, telles que :
+     * - Une éventuelle redirection (`bnum.redirect`)
+     * - Le task et action initiaux (`bnum.init_task`, `bnum.init_action`)
+     * - L'état d'activation de certains plugins (via `set_plugin_env_exist()`)
+     * - Les options de multi-fenêtrage (`frames.multi_frame_enabled`, `frames.max_multi_frame`)
+     *
+     * Elle ajoute également un lien vers le fichier `manifest.json` pour le support
+     * des Progressive Web Apps (PWA).
+     *
+     * Si l'utilisateur n'est pas authentifié (`user_id` non présent en session),
+     * la méthode redirige vers la page de déconnexion.
+     * Sinon, elle affiche la vue `mel_metapage.empty`.
+     *
+     * @return void
+     */
     public function bnum_page()
     {
         $request = rcube_utils::get_input_value('_initial_request', rcube_utils::INPUT_GET) ?: null;
@@ -3059,6 +3907,27 @@ class mel_metapage extends bnum_plugin
         } else $this->rc->output->send('mel_metapage.empty');
     }
 
+    /**
+     * Définit dans l'environnement client les plugins disponibles.
+     *
+     * Cette méthode vérifie la présence de certaines classes correspondant à des plugins
+     * (tels que mel_workspace, calendar, tasklist, etc.) et définit des variables d'environnement
+     * (`set_env`) côté client pour indiquer leur disponibilité. Cela permet à l'interface utilisateur
+     * de s'adapter dynamiquement en fonction des plugins réellement activés.
+     *
+     * Variables d'environnement définies (si la classe correspondante existe) :
+     * - plugin_list_workspace
+     * - plugin_list_agenda
+     * - plugin_list_tache
+     * - plugin_list_document
+     * - plugin_list_sondage
+     * - plugin_list_chat
+     * - plugin_list_notifications
+     * - plugin_list_help
+     * - plugin_list_visio
+     *
+     * @return void
+     */
     private function set_plugin_env_exist()
     {
 
@@ -3100,11 +3969,25 @@ class mel_metapage extends bnum_plugin
         }
     }
 
+    /**
+     * Vérifie si la fonctionnalité de visioconférence est activée.
+     *
+     * @return bool True si la visioconférence est activée, false sinon.
+     */
     public function visio_enabled()
     {
         return $this->rc->config->get('visio_enabled', false);
     }
 
+    /**
+     * Récupère la liste des dossiers email d'un utilisateur à partir de son identifiant.
+     *
+     * Se connecte au serveur IMAP correspondant à l'utilisateur (en SSL ou non)
+     * et récupère directement la liste des dossiers.
+     *
+     * @param string $id Identifiant de l'utilisateur (login).
+     * @return array Liste des dossiers email récupérés, ou tableau vide en cas d'échec.
+     */
     public function get_folder_email_from_id($id)
     {
         // Récupération de la boite a restaurer
@@ -3133,6 +4016,16 @@ class mel_metapage extends bnum_plugin
         return $folders;
     }
 
+    /**
+     * Refactore la liste des dossiers email en fonction d'un ID donné.
+     * 
+     * Transforme, trie et formate les noms des dossiers en fonction du label BALP et du délimiteur IMAP.
+     *
+     * @param string $id Identifiant utilisé pour filtrer et transformer les dossiers.
+     * @param array $folders Liste initiale des dossiers email.
+     * 
+     * @return array Liste des dossiers refactorés, clé = nom original, valeur = nom formaté.
+     */
     public function refactor_email_folders_from_id($id, $folders)
     {
         //Initialisation
@@ -3211,6 +4104,15 @@ class mel_metapage extends bnum_plugin
         return $folders;
     }
 
+    /**
+     * Récupère l'identité utilisateur correspondant à un UID donné.
+     *
+     * Si aucun UID n'est fourni, utilise celui de l'utilisateur courant.
+     * Utilise un cache local pour éviter les appels répétés.
+     *
+     * @param string|null $uid UID de l'utilisateur (optionnel)
+     * @return array|null Identité utilisateur ou null si non trouvée
+     */
     public function get_user_identity_from_uid($uid = null)
     {
         $uid = $uid ?? driver_mel::gi()->getUser()->uid;
@@ -3228,6 +4130,15 @@ class mel_metapage extends bnum_plugin
         return $this->idendity_cache[$uid];
     }
 
+    /**
+     * Charge les paramètres et le HTML d'une option spécifique.
+     *
+     * Récupère l'option via GET, exécute des hooks pour modifier le comportement,
+     * charge le template HTML correspondant et prépare les valeurs par défaut des paramètres.
+     * Renvoie un JSON contenant le HTML et les valeurs par défaut.
+     *
+     * @return void
+     */
     public function load_option()
     {
         $parameters_default_values = [];
@@ -3281,6 +4192,14 @@ class mel_metapage extends bnum_plugin
         exit;
     }
 
+    /**
+     * Modifie dynamiquement la valeur par défaut d'une option utilisateur.
+     *
+     * Utilisé pour injecter des valeurs spécifiques selon le paramètre demandé.
+     *
+     * @param array $args Données contenant l'option, le paramètre et la valeur par défaut
+     * @return array Arguments avec la valeur par défaut potentiellement ajustée
+     */
     public function hook_load_option($args)
     {
         $option = $args['option'];
@@ -3338,6 +4257,14 @@ class mel_metapage extends bnum_plugin
         return $args;
     }
 
+    /**
+     * Enregistre une préférence utilisateur via une requête POST.
+     *
+     * Utilise les hooks `metapage.save.option` et `metapage.save.option.after`
+     * pour permettre des ajustements avant et après la sauvegarde.
+     *
+     * @return void Répond en JSON avec la valeur enregistrée
+     */
     public function save_option()
     {
         $option = rcube_utils::get_input_value('_option_name', rcube_utils::INPUT_POST);
@@ -3361,6 +4288,15 @@ class mel_metapage extends bnum_plugin
         exit;
     }
 
+    /**
+     * Prétraite une option avant sa sauvegarde utilisateur.
+     *
+     * Convertit ou regroupe certaines options en fonction de leur type ou nom.
+     * Utilisé via le hook `metapage.save.option`.
+     *
+     * @param array $args Contient 'option' (nom) et 'value' (valeur)
+     * @return array Les arguments éventuellement modifiés
+     */
     public function hook_save_option($args)
     {
         $option = $args['option'];
@@ -3423,6 +4359,15 @@ class mel_metapage extends bnum_plugin
         return $args;
     }
 
+    /**
+     * Post-traite une option après sa sauvegarde.
+     *
+     * Recharge les paramètres du plugin calendrier si l'option concerne le calendrier.
+     * Utilisé via le hook `metapage.save.option.after`.
+     *
+     * @param array $args Contient 'option' (nom) et 'value' (valeur)
+     * @return array Les arguments modifiés si nécessaire
+     */
     public function hook_save_option_after($args)
     {
         $option = $args['option'];
@@ -3437,6 +4382,25 @@ class mel_metapage extends bnum_plugin
         return $args;
     }
 
+    /**
+     * Hook de génération dynamique d'options personnalisées pour l'interface utilisateur.
+     *
+     * Cette méthode est appelée par un hook pour générer dynamiquement des blocs HTML
+     * selon l'option fournie dans `$args['option']`. Elle remplace des marqueurs (`%%...%%`)
+     * dans le HTML fourni par des éléments interactifs (select, slider, etc.).
+     *
+     * ### Options supportées :
+     * - `calendar` : Gère des sélecteurs d'heures pour les paramètres liés au calendrier
+     *   comme `calendar_work_start`, `calendar_work_end`, `calendar_first_hour`.
+     * - `mail` : Gère l'affichage du délai d'envoi d'e-mail (`mail_delay`) via un input de type `range`.
+     *
+     * @param array $args Tableau contenant :
+     *   - string $option          Type d'option à générer (ex: "calendar", "mail")
+     *   - string $html            HTML contenant des marqueurs personnalisés à remplacer
+     *   - array  $default_values  Valeurs par défaut à utiliser si la config est vide
+     *
+     * @return array Le tableau `$args` modifié, avec le HTML mis à jour et les valeurs traitées
+     */
     public function hook_generate_option($args)
     {
         $option = $args['option'];
@@ -3524,6 +4488,16 @@ class mel_metapage extends bnum_plugin
 
         return $args;
     }
+
+    /**
+     * Nettoie les cookies sensibles après la déconnexion.
+     *
+     * Supprime les cookies liés à l'identité, à la session ou au login, sauf `roundcube_login`.
+     * Détruit également la session PHP.
+     *
+     * @param array $args Paramètres du hook logout
+     * @return array Arguments inchangés
+     */
     public function logout_after($args)
     {
         foreach ($_COOKIE as $key => $value) {
@@ -3542,7 +4516,13 @@ class mel_metapage extends bnum_plugin
         return $args;
     }
 
-
+    /**
+     * Récupère une valeur de configuration utilisateur.
+     *
+     * Lit une option via GET et renvoie sa valeur (ou une valeur par défaut) au format JSON.
+     *
+     * @return void
+     */
     public function get_setting()
     {
         $option = rcube_utils::get_input_value('_option', rcube_utils::INPUT_GET);
@@ -3552,11 +4532,24 @@ class mel_metapage extends bnum_plugin
         exit;
     }
 
+    /**
+     * Retourne l'état du mode image.
+     *
+     * @return bool True si activé, false sinon (défaut : true)
+     */
     public function get_picture_mode()
     {
         return $this->rc->config->get('picture-mode', true);
     }
 
+    /**
+     * Capture l'expéditeur d'un message lors du traitement de sa structure.
+     *
+     * Stocke l'en-tête "From" pour un usage ultérieur.
+     *
+     * @param array $args Données du message en cours d'analyse
+     * @return array Arguments inchangés
+     */
     public function hook_message_part_structure($args)
     {
         $this->from_message_reading = $args['object']->headers->get('from');
@@ -3564,6 +4557,14 @@ class mel_metapage extends bnum_plugin
         return $args;
     }
 
+    /**
+     * Marque un message comme sûr si l'expéditeur est de confiance.
+     *
+     * Utilise l'adresse extraite précédemment et la compare à la liste `trusted_mails`.
+     *
+     * @param array $args Données du message en cours d'affichage
+     * @return array Arguments éventuellement modifiés (flag 'safe')
+     */
     public function hook_message_part_before($args)
     {
         if (isset($this->from_message_reading)) {
@@ -3579,6 +4580,19 @@ class mel_metapage extends bnum_plugin
         return $args;
     }
 
+    /**
+     * Hook appelé lors de l'initialisation de la double authentification.
+     *
+     * Ce hook permet d'inclure le script JavaScript nécessaire au chargement du module
+     * de double authentification dans l'interface utilisateur.
+     *
+     * @param array $args Les arguments du hook ('rcmail', 'plugin')
+     * @return void
+     */
+    public function hook_double_auth_init($args) {
+        $this->include_script('js/always_load/load_module.js');
+    }
+
     public function rc_section_list($args)
     {
         $args['sections'][] = ["id" => "mel_chat_ui", "section" => "Paramètres Bnum"];
@@ -3586,6 +4600,14 @@ class mel_metapage extends bnum_plugin
         return $args;
     }
 
+    /**
+     * Sauvegarde un domaine utilisateur dans les préférences.
+     *
+     * Récupère le domaine depuis la requête POST et l'ajoute à la liste
+     * des domaines stockés dans la préférence `mel_user_domain`.
+     *
+     * @return void
+     */
     public function save_user_pref_domain()
     {
         $domain = rcube_utils::get_input_value('_domain', rcube_utils::INPUT_POST);
@@ -3594,6 +4616,13 @@ class mel_metapage extends bnum_plugin
         $this->rc->user->save_prefs(['mel_user_domain' => $user_domain]);
     }
 
+    /**
+     * Active ou désactive un dossier comme favori dans les préférences utilisateur.
+     *
+     * Met à jour la préférence `favorite_folders` selon l'état reçu en POST.
+     *
+     * @return void
+     */
     public function toggle_favorite_folder()
     {
         $folder = rcube_utils::get_input_value('_folder', rcube_utils::INPUT_POST);
@@ -3613,6 +4642,13 @@ class mel_metapage extends bnum_plugin
         exit;
     }
 
+    /**
+     * Modifie l'état d'affichage (déplié ou non) d'un dossier dans les préférences utilisateur.
+     *
+     * Met à jour la préférence `favorite_folders` avec la clé `expended`.
+     *
+     * @return void
+     */
     public function toggle_display_folder()
     {
         $folder = rcube_utils::get_input_value('_folder', rcube_utils::INPUT_POST);
@@ -3630,12 +4666,25 @@ class mel_metapage extends bnum_plugin
         exit;
     }
 
+    /**
+     * Retourne la configuration des dossiers favoris depuis les préférences utilisateur.
+     *
+     * @return void
+     */
     public function get_display_folder()
     {
         echo json_encode($this->rc->config->get('favorite_folders', []));
         exit;
     }
 
+    /**
+     * Gère la mise à jour des préférences utilisateur lors du renommage d'un dossier.
+     *
+     * Met à jour les préférences liées aux dossiers favoris et à leurs couleurs.
+     *
+     * @param array $args Données contenant l'ancien et le nouveau nom du dossier.
+     * @return array Arguments éventuellement modifiés.
+     */
     public function folder_update($args)
     {
         $old = $args['record']['oldname'];
@@ -3645,6 +4694,13 @@ class mel_metapage extends bnum_plugin
         return $args;
     }
 
+    /**
+     * mets à jour les dossiers favoris dans les préférences utilisateur.
+     *
+     * @param string $old Ancien nom du dossier.
+     * @param string $new Nouveau nom du dossier.
+     * @return void
+     */
     function _update_folders_pref($old, $new)
     {
         $prefs = $this->rc->config->get('favorite_folders', []);
@@ -3657,6 +4713,15 @@ class mel_metapage extends bnum_plugin
         $this->rc->user->save_prefs(['favorite_folders' => $prefs]);
     }
 
+    /**
+     * Met à jour la couleur d’un dossier lors de son renommage.
+     *
+     * Transfère la couleur de l’ancien nom de dossier vers le nouveau.
+     *
+     * @param string $old Ancien nom du dossier
+     * @param string $new Nouveau nom du dossier
+     * @return void
+     */
     function _update_folder_color_on_rename($old, $new)
     {
         $prefs = $this->rc->config->get('folders_colors', []);
@@ -3669,6 +4734,13 @@ class mel_metapage extends bnum_plugin
         $this->rc->user->save_prefs(['folders_colors' => $prefs]);
     }
 
+    /**
+     * Met à jour la couleur d’un dossier dans les préférences utilisateur.
+     *
+     * Si la couleur est vide, elle est supprimée. Renvoie les préférences mises à jour si _color_break n’est pas défini.
+     *
+     * @return void
+     */
     public function update_color_folder()
     {
         $folder = rcube_utils::get_input_value('_folder', rcube_utils::INPUT_POST);
@@ -3689,6 +4761,13 @@ class mel_metapage extends bnum_plugin
         }
     }
 
+    /**
+     * Met à jour l'icône d'un dossier.
+     *
+     * Enregistre ou supprime une icône personnalisée pour un dossier donné.
+     *
+     * @return void
+     */
     public function update_icon_folder()
     {
         $folder = rcube_utils::get_input_value('_folder', rcube_utils::INPUT_POST);
@@ -3707,6 +4786,13 @@ class mel_metapage extends bnum_plugin
         exit;
     }
 
+    /**
+     * Récupère les couleurs des dossiers utilisateur.
+     *
+     * Retourne les préférences de couleurs des dossiers au format JSON.
+     *
+     * @return void
+     */
     public function get_folder_colors()
     {
         $prefs = $this->rc->config->get('folders_colors', []);
@@ -3715,6 +4801,13 @@ class mel_metapage extends bnum_plugin
         exit;
     }
 
+    /**
+     * Récupère les icônes personnalisées des dossiers.
+     *
+     * Affiche les préférences d'icônes des dossiers au format JSON.
+     *
+     * @return void
+     */
     public function get_folder_icons()
     {
         $prefs = $this->rc->config->get('folders_icons', []);
@@ -3723,6 +4816,11 @@ class mel_metapage extends bnum_plugin
         exit;
     }
 
+    /**
+     * Génère un message HTML contenant un texte et un lien vers la documentation de connexion.
+     *
+     * @return string HTML formaté du message avec lien.
+     */
     public function _login_doc_message()
     {
         $url =  $this->rc->config->get('login_doc_url');
@@ -3730,6 +4828,11 @@ class mel_metapage extends bnum_plugin
         return html::div([], $txt . ' ' . html::a(['href' => $url], $url) . '.');
     }
 
+    /**
+     * Récupère et retourne le nombre d'éléments pour un scroll infini via un hook.
+     *
+     * @return void Affiche en JSON le nombre d'éléments puis termine l'exécution.
+     */
     public function infiniteScrollCount()
     {
         $namespace = rcube_utils::get_input_value('_for', rcube_utils::INPUT_POST);
@@ -3740,6 +4843,11 @@ class mel_metapage extends bnum_plugin
         exit;
     }
 
+    /**
+     * Récupère et retourne les données HTML d'une page spécifique pour un scroll infini via un hook.
+     *
+     * @return void Affiche en JSON le contenu HTML puis termine l'exécution.
+     */
     public function infiniteScrollData()
     {
         $page = rcube_utils::get_input_value('_page', rcube_utils::INPUT_POST);
@@ -3751,6 +4859,16 @@ class mel_metapage extends bnum_plugin
         exit;
     }
 
+    /**
+     * Gère la récupération et l'affichage de l'avatar d'un utilisateur.
+     *  
+     * - Renvoie une image par défaut si aucun avatar n'est disponible ou expiré.
+     * - Utilise un hook pour récupérer une URL ou données d'avatar personnalisées.
+     * - Redirige vers l'URL fournie par un plugin ou affiche l'image retournée.
+     * - En cas d'erreur, renvoie un code HTTP 204 ou une image GIF vide.
+     *
+     * @return void Sort directement la réponse HTTP et termine l'exécution.
+     */
     public function avatar_url()
     {
         $data = null;
@@ -3819,6 +4937,15 @@ class mel_metapage extends bnum_plugin
         }
     }
 
+    /**
+     * Génère une image d'avatar par défaut avec la première lettre de l'email.
+     *
+     * - Utilise une couleur de fond basée sur un paramètre ou la configuration.
+     * - Calcule une couleur de texte contrastante pour une bonne lisibilité.
+     * - Dessine la première lettre majuscule de l'email au centre de l'image.
+     *
+     * @return resource Image GD créée.
+     */
     public function _generate_no_picture()
     {
         $image = imagecreate(200, 200);
@@ -3851,6 +4978,13 @@ class mel_metapage extends bnum_plugin
         return $image;
     }
 
+    /**
+     * Retourne une couleur de texte contrastante (noir ou blanc)
+     * selon la luminosité d'une couleur de fond donnée en hexadécimal.
+     *
+     * @param string $bgColor Couleur de fond au format hexadécimal (#RRGGBB)
+     * @return string Couleur de texte contrastante ('#000000' ou '#FFFFFF')
+     */
     function getContrastingColor($bgColor)
     {
         // Convertir la couleur hexadécimale en RGB
@@ -3865,6 +4999,14 @@ class mel_metapage extends bnum_plugin
         return $luminance > 186 ? '#000000' : '#FFFFFF'; // Texte noir pour fond clair, blanc pour fond sombre
     }
 
+    /**
+     * Génère une couleur de fond basée sur une chaîne, 
+     * et retourne une couleur de texte contrastante.
+     *
+     * @param string $name Chaîne pour générer la couleur de fond
+     * @param bool $toHexa Si true, retourne les couleurs en format hexadécimal
+     * @return array|string Couleurs (fond et texte) au format demandé
+     */
     function getRandomColorWithContrast($name, $toHexa = false)
     {
         $bgColor = $this->stringToColorCode($name);
@@ -3877,6 +5019,14 @@ class mel_metapage extends bnum_plugin
         ];
     }
 
+    /**
+     * Convertit deux couleurs hexadécimales en tableaux RGB.
+     *
+     * @param string $bgColor  Couleur de fond au format hex (ex: "#RRGGBB")
+     * @param string $textColor Couleur de texte au format hex (ex: "#RRGGBB")
+     * @return array Tableau associatif avec clés 'background' et 'text',
+     *               chacune contenant un tableau RGB [R, G, B]
+     */
     function getColor($bgColor, $textColor)
     {
         $r = hexdec(substr($bgColor, 1, 2));
@@ -3893,6 +5043,12 @@ class mel_metapage extends bnum_plugin
         ];
     }
 
+    /**
+     * Génère un code couleur hexadécimal (#RRGGBB) à partir d'une chaîne.
+     *
+     * @param string $str Chaîne d'entrée pour générer la couleur
+     * @return string Code couleur hexadécimal
+     */
     function stringToColorCode($str)
     {
         return "#" . substr(md5($str), 0, 6);
@@ -3911,7 +5067,14 @@ class mel_metapage extends bnum_plugin
         // return "#$val";
     }
 
-
+    /**
+     * Gère le cas où aucun contact n'est trouvé lors d'une requête d'avatar.
+     * Si l'action courante est 'avatar' et qu'aucun enregistrement ou donnée n'est trouvé,
+     * force l'affichage d'un avatar par défaut en appelant la méthode avatar_url().
+     *
+     * @param array $args Données de contexte, incluant 'record', 'data', 'email' et autres.
+     * @return array Arguments éventuellement modifiés.
+     */
     public function no_contact_found($args)
     {
         if ((is_null($args['record']) || is_null($args['data'])) && $this->get_current_action() === 'avatar') {
@@ -3928,11 +5091,17 @@ class mel_metapage extends bnum_plugin
         return $args;
     }
 
+    /**
+     * Inclut le composant JavaScript d'avatar dans la page.
+     */
     public static function IncludeAvatar()
     {
         rcmail::get_instance()->plugins->get_plugin('mel_metapage')->include_component('avatar.js');
     }
 
+    /**
+     * Inclut le composant JavaScript 'bootstrap-loader.js' via le plugin mel_metapage.
+     */
     public static function IncludeLoader()
     {
         rcmail::get_instance()->plugins->get_plugin('mel_metapage')->include_component('bootstrap-loader.js');

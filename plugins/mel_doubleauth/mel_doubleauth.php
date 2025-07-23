@@ -365,6 +365,11 @@ class mel_doubleauth extends bnum_plugin
     {
         $this->add_texts('localization/', true);
 
+        $this->exec_hook('plugin.mel_doubleauth.init', [
+            'rcmail' => $this->rc,
+            'plugin' => $this
+        ]);
+
         if ($this->rc->task == 'settings' && $this->rc->action == 'plugin.mel_doubleauth') {
             $this->register_handler('plugin.body', array($this, 'mel_doubleauth_form'));
         }

@@ -484,11 +484,11 @@ $labels['existing_guest'] = 'Le participant %0 éxiste déjà !';
 $labels['add_guests'] = 'Ajoutez des participants';
 $labels['req_guest'] = 'Participants obligatoires';
 
-$labels['error_empty_event_visio_room'] = 'Le nom de la visioconférence ne doit être vide !';
+$labels['error_empty_event_visio_room'] = 'Le nom de la visioconférence ne doit pas être vide !';
 $labels['error_too_small_event_visio_room'] = 'Le nom de la visioconférence doit avoir au moins 10 charactères !';
 $labels['error_less_number_event_visio_room'] = 'Le nom de la visioconférence doit avoir au moins 3 chiffres !';
 $labels['unknown_error'] = 'Erreur inconnue !';
-$labels['error_empty_event_audio'] = 'Le numéro de téléphone ne doit être vide !';
+$labels['error_empty_event_audio'] = 'Le numéro de téléphone ne doit pas être vide !';
 
 $labels['found_audio_date'] = 'Réserver une audio-conférence';
 $labels['add'] = 'Ajouter';
@@ -512,3 +512,5 @@ $labels['return_to_creation_modal'] = 'Retour à la modale de création';
 $labels['create_workspace_title'] = 'Création d\'un espace de travail';
 $labels['gotoaddressbook'] = 'Afficher dans l\'annuaire';
 $labels['noinaddressbook'] = 'Le contact n\'est pas dans l\'annuaire';
+
+$labels['calendar_add_mail_to_event'] = 'Ajouter les destinataires du mail';

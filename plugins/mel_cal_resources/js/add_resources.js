@@ -1,6 +1,7 @@
 import { EventView } from '../../mel_metapage/js/lib/calendar/event/event_view.js';
 import { GuestsPart } from '../../mel_metapage/js/lib/calendar/event/parts/guestspart.js';
 import { TimePartManager } from '../../mel_metapage/js/lib/calendar/event/parts/timepart.js';
+import { BaseStorage } from '../../mel_metapage/js/lib/classes/base_storage.js';
 import {
   BnumMessage,
   eMessageType,
@@ -44,6 +45,7 @@ export { ResourceDialog };
  * @property {string} name Nom de la ressource
  * @property  {boolean} is_option Si la ressource doit être affiché dans la liste des modes d'évènements ou non
  * @property {string} load_data Nom de la fonction qui permettra de récupérer les données de la ressource associée
+ * @property {boolean} [busy=true] Si la ressource est occupée ou non. Si true, on ne peut pas la réserver.
  */
 
 /**
@@ -174,7 +176,10 @@ class ResourceDialog extends MelObject {
      */
     this.all_day = null;
 
-    //this.selected_resource = null;
+    /**
+     * @type {BaseStorage<boolean>}
+     */
+    this._initialized_rsc = new BaseStorage();
   }
 
   /**
@@ -319,6 +324,15 @@ class ResourceDialog extends MelObject {
           .observed.tabs.on('api:tabswitched', (e) => {
             const page = e.originalEvent.detail;
             this.dialog.switch_page(page);
+
+            const rsc = this.get_current_page_resource()._name;
+
+            if (!this._initialized_rsc.has(rsc)) {
+              //On affiche la bonne localité si elle existe
+              this.#_autoSelectOption(rsc);
+              this._initialized_rsc.add(rsc, true);
+            }
+
             this.get_current_page_resource().rerender();
           });
 
@@ -466,8 +480,20 @@ class ResourceDialog extends MelObject {
     this._location.onchange.call();
 
     //Changer le status si besoin
-    if (!(EventView.INSTANCE.parts.status._$field.val() || false))
+    if (
+      !(EventView.INSTANCE.parts.status._$field.val() || false) &&
+      !(
+        this.get_env('cal_resources')?.resources?.[this._resource_type]?.busy ??
+        true
+      )
+    )
       EventView.INSTANCE.parts.status._$field.val('FREE').change();
+    else if (
+      !EventView.INSTANCE.parts.status._$field.val() &&
+      (this.get_env('cal_resources')?.resources?.[this._resource_type]?.busy ??
+        true)
+    )
+      EventView.INSTANCE.parts.status._$field.val('CONFIRMED').change();
 
     //Changer la réccurence
     EventView.INSTANCE.parts.recurrence._$fakeField
@@ -506,19 +532,34 @@ class ResourceDialog extends MelObject {
   }
 
   /**
-   * Selectionne automatiquement la valeur d'un filtre via la localité de l'utilisateur en cours
-   * @returns {void}
+   * Sélectionne automatiquement la valeur d'un filtre selon la localité ou le code postal
+   * de l'utilisateur courant. Si une option correspondante est trouvée, elle est sélectionnée
+   * et le filtre déclenche un événement de changement.
+   *
    * @private
+   * @param {?string} resource Nom de la ressource (optionnel)
+   * @returns {this} Chaînage de l'objet courant
    */
-  #_autoSelectOption() {
-    let option = Utils.GetOptionByDescription(this.get_env('user_location'));
+  #_autoSelectOption(resource = null) {
+    let option =
+      Utils.GetOptionByPostalCode(
+        this.get_env('user_postalcode') ?? EMPTY_STRING,
+        { resource },
+      ) ||
+      Utils.GetOptionByDescription(
+        (this.get_env('user_location') ?? EMPTY_STRING).toUpperCase(),
+        { resource },
+      );
 
-    if (option.length) {
-      const value = option.attr('value');
-      option.parent().val(value).change();
+    if (option) {
+      const value = option.getAttribute('value');
+      option.parentElement.value = value;
+      option.parentElement.dispatchEvent(new Event('change'));
     }
 
     option = null;
+
+    return this;
   }
 
   /**

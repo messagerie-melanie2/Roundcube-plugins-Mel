@@ -29,8 +29,8 @@
   --main-panel-border-radius: 15px;
 
   //Box shadow
-  --main-box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.132),
-    0 0.3px 0.9px 0 rgba(0, 0, 0, 0.108);
+  --main-box-shadow:
+    0 1.6px 3.6px 0 rgba(0, 0, 0, 0.132), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.108);
 
   //Main margin
   --main-margin: 10px 0px;
@@ -99,6 +99,8 @@
   --bureau-app-text-color: var(--main-text-color);
 
   //Buttons
+  --button-pj-text-color: var(--main-text-color);
+
   --mel-button-background-color: var(--main-bckg-color);
   --mel-button-hover-background-color: var(--tierciary-bckg-color);
   --mel-button-border-color: var(--main-border-color);
@@ -430,12 +432,37 @@
   --wsp-nav-button-hover-text-color: var(--main-text-color);
 }
 
+.update-theme-super-classique-mail-color {
+  --secondary-text-color: var(--main-text-color);
+
+  &:hover {
+    --secondary-text-color: #ffffff;
+  }
+}
+
 .theme-super-classique-main {
   .task-settings #layout-list #filtersetslistbox {
     padding: 0;
   }
 
-  body.task-mail.action-compose a.filename .attachment-name {
-    --secondary-text-color: var(--main-text-color);
+  body.task-mail.action-compose a {
+    &:hover {
+      &:extend(.update-theme-super-classique-mail-color:hover);
+    }
+
+    &.filename .attachment- {
+      &size,
+      &name {
+        &:extend(.update-theme-super-classique-mail-color);
+      }
+    }
+
+    &.delete,
+    &.skip-content {
+      &:extend(.update-theme-super-classique-mail-color);
+      &:hover {
+        &:extend(.update-theme-super-classique-mail-color:hover);
+      }
+    }
   }
 }

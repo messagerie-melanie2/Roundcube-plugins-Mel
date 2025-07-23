@@ -115,12 +115,14 @@ function rcube_calendar_ui(settings) {
       month: {
         columnFormat: 'ddd', // Mon
         titleFormat: 'MMMM YYYY',
-        eventLimit: 4,
+        //PAMELA - Choix du nombre d'event à afficher
+        eventLimit: +rcmail.env.event_limit,
       },
       monthWork: {
         columnFormat: 'ddd', // Mon
         titleFormat: 'MMMM YYYY',
-        eventLimit: 4,
+        //PAMELA - Choix du nombre d'event à afficher
+        eventLimit: +rcmail.env.event_limit,
         hiddenDays: [0, 6],
       },
       // PAMELA - View week days of work
@@ -129,7 +131,8 @@ function rcube_calendar_ui(settings) {
         titleFormat: settings.dates_long,
         hiddenDays: [0, 6],
         // Problème avec les journées entières
-        eventLimit: 4,
+        //PAMELA - Choix du nombre d'event à afficher
+        eventLimit: +rcmail.env.event_limit,
       },
       // PAMELA - Fullcalendar premium
       agendaResource: {
@@ -152,7 +155,8 @@ function rcube_calendar_ui(settings) {
         groupByResource: true,
         groupByDateAndResource: true,
         // PAMELA - Problème avec les journées entières
-        eventLimit: 4,
+        //PAMELA - Choix du nombre d'event à afficher
+        eventLimit: +rcmail.env.event_limit,
       },
       agendaThreeDay: {
         type: 'agenda',
@@ -161,19 +165,22 @@ function rcube_calendar_ui(settings) {
         groupByResource: true,
         groupByDateAndResource: true,
         // PAMELA - Problème avec les journées entières
-        eventLimit: 4,
+        //PAMELA - Choix du nombre d'event à afficher
+        eventLimit: +rcmail.env.event_limit,
       },
       week: {
         columnFormat: 'ddd ' + settings.date_short, // Mon 9/7
         titleFormat: settings.dates_long,
         // PAMELA - Problème avec les journées entières
-        eventLimit: 4,
+        //PAMELA - Choix du nombre d'event à afficher
+        eventLimit: +rcmail.env.event_limit,
       },
       day: {
         columnFormat: 'dddd ' + settings.date_short, // Monday 9/7
         titleFormat: 'dddd ' + settings.date_long,
         // PAMELA - Problème avec les journées entières
-        eventLimit: 4,
+        //PAMELA - Choix du nombre d'event à afficher
+        eventLimit: +rcmail.env.event_limit,
       },
     },
     timeFormat: settings.time_format,

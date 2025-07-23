@@ -11,6 +11,8 @@ $config['rc_resources'] = [
         'is_option' => true,
         //Fonction de la ressource dans driver_mel
         'load_data' => 'resources_flex_office',
+        //A la sauvegarde de la ressource mettre l'évènement en occupé ou non (true par défaut)
+        'busy' => false
     ]
 ];
 

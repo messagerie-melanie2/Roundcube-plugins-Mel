@@ -609,9 +609,16 @@ class Workspace {
         $list = [];
 
         foreach ($user->list->members as $value) {
-            $value = $value->uid;
-            $list[] = $value;
-            yield $value;
+          if ($value->uid === null) continue;
+
+          $currentUser = driver_mel::gi()->getUser($value->uid);
+
+          if ($currentUser === null || $currentUser->email === null) continue;
+          unset($currentUser);
+
+          $value = $value->uid;
+          $list[] = $value;
+          yield $value;
         }
 
         $lists = $this->settings()->get('lists') ?? [];//$this->get_setting($workspace, 'lists') ?? [];

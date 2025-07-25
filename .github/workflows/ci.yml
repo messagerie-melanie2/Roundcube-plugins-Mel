@@ -91,7 +91,7 @@ jobs:
         if: steps.php_files.outputs.files != ''
         run: |
           echo "🔍 Checking PHP syntax on modified files:"
-          for file in ${{ steps.php_files.outputs.files }}; do
+          for file in $(echo "${{ steps.php_files.outputs.files }}" | tr '\n' ' '); do
             echo "🔍 Checking $file"
             php -l "$file"
           done

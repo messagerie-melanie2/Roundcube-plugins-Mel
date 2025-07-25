@@ -618,21 +618,27 @@ class mel_notification extends rcube_plugin
 
     public static function notify($category, $title, $content, $action = null, $user = null)
     {
+        $notified = false;
+
         $user = driver_mel::gi()->getUser($user);
 
-        $notification = driver_mel::gi()->notification([$user]);
+        if ($user) {
+            $notification = driver_mel::gi()->notification([$user]);
 
-        $notification->category = $category;
-        $notification->title = $title;
-        $notification->content = $content;
+            $notification->category = $category;
+            $notification->title = $title;
+            $notification->content = $content;
 
-        if ($action !== null) {
-            if (isset($action->title)) $action = $action->get();
-            $notification->action = serialize($action);
+            if ($action !== null) {
+                if (isset($action->title)) $action = $action->get();
+                $notification->action = serialize($action);
+            }
+
+            // Ajouter la notification au User
+            $notified = $user->addNotification($notification);
         }
 
-        // Ajouter la notification au User
-        return $user->addNotification($notification);
+        return $notified;
     }
 }
             

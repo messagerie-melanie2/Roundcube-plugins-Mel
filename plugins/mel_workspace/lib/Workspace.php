@@ -611,10 +611,10 @@ class Workspace {
         foreach ($user->list->members as $value) {
           if ($value->uid === null) continue;
 
-          $user = driver_mel::gi()->getUser($value->uid);
+          $currentUser = driver_mel::gi()->getUser($value->uid);
 
-          if ($user === null || $user->email === null) continue;
-          unset($user);
+          if ($currentUser === null || $currentUser->email === null) continue;
+          unset($currentUser);
 
           $value = $value->uid;
           $list[] = $value;

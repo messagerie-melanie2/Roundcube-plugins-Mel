@@ -610,7 +610,7 @@ class mel_labels_sync extends rcube_plugin
       $this->rc->output->add_script('function rcube_label_add_label() {
           var name = $("#rcmfd_new_label").val();
           var label = name.replace(/ /g, "_");
-          if (name.trim().length > 0) {
+          if (name.length /*name.trim().length > 0*/) {
             var input = $("<input>").addClass("form-control").attr("type", "text").attr("name", "_labels["+label+"]").attr("size", 30).val(name);
             var color = $("<input>").addClass("form-control").attr("type", "text").attr("readonly", true).attr("name", "_colors["+label+"]").attr("size", 6).addClass("colors").val("");
             var button = $("<button>").addClass("btn btn-secondary mel-button no-margin-button no-button-margin").attr("type", "button").addClass("material-symbols-outlined").html("delete").addClass("button").click(function(){ $(this).parent().parent().remove() });
@@ -622,9 +622,9 @@ class mel_labels_sync extends rcube_plugin
             //.append(input).append("&nbsp;").append(color).append("&nbsp;").append(button).appendTo("#labelslist");
             color.miniColors({ colorValues:(' . json_encode($colors) . ') });
             $("#rcmfd_new_label").val("");
-          } else {
+          } /*else {
             alert("Le nom de l\'étiquette ne peut pas être vide.");
-            }
+            }*/
         }');
 
       // include color picker
@@ -654,18 +654,6 @@ class mel_labels_sync extends rcube_plugin
       $_post_labels = (array) rcube_utils::get_input_value('_labels', rcube_utils::INPUT_POST);
       $_post_colors = (array) rcube_utils::get_input_value('_colors', rcube_utils::INPUT_POST);
       $old_labels = $this->driver->get_user_labels($this->_get_current_user_name());
-
-      // Détecter les étiquettes vides 
-      $empty_labels = array_filter($_post_labels, function ($name) {
-        return is_string($name) && trim($name) !== '';
-      });
-
-      // Si rien à sauvegarder générer un message d'erreur
-      if (empty($empty_labels)) {
-        $this->rc->output->command('display_message', $this->gettext('empty_label_error'), 'error');
-        $p['abort'] = true; // Empêche le message de succès par défaut
-        return $p;
-      }
 
       // Parcours des labels retournés par le post
       foreach ($_post_labels as $key => $label_name) {

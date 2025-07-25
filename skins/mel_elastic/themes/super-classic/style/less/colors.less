@@ -432,12 +432,37 @@
   --wsp-nav-button-hover-text-color: var(--main-text-color);
 }
 
+.update-theme-super-classique-mail-color {
+  --secondary-text-color: var(--main-text-color);
+
+  &:hover {
+    --secondary-text-color: #ffffff;
+  }
+}
+
 .theme-super-classique-main {
   .task-settings #layout-list #filtersetslistbox {
     padding: 0;
   }
 
-  body.task-mail.action-compose a.filename .attachment-name {
-    --secondary-text-color: var(--main-text-color);
+  body.task-mail.action-compose a {
+    &:hover {
+      &:extend(.update-theme-super-classique-mail-color:hover);
+    }
+
+    &.filename .attachment- {
+      &size,
+      &name {
+        &:extend(.update-theme-super-classique-mail-color);
+      }
+    }
+
+    &.delete,
+    &.skip-content {
+      &:extend(.update-theme-super-classique-mail-color);
+      &:hover {
+        &:extend(.update-theme-super-classique-mail-color:hover);
+      }
+    }
   }
 }

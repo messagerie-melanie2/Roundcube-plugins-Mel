@@ -417,7 +417,11 @@ class MelLinkVisualizer extends MelLink {
       icon = null;
     }
 
-    if (link && (link.includes('https://') || link.includes('http://')))
+    if (
+      rcmail.env.external_icon_url &&
+      link &&
+      (link.includes('https://') || link.includes('http://'))
+    )
       link = rcmail.env.external_icon_url.replace('%0', extractDomain(link));
 
     if (image && !image.includes('plugins/mel_useful_link')) image = link;

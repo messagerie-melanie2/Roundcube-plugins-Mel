@@ -7,6 +7,7 @@ import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { MelLinkVisualizer, MelFolderLink, MelStoreLink } from './mel_link.js';
 import { MelIconPrevisualiser } from '../../../mel_metapage/skins/mel_elastic/js_templates/blocks/icon_previsualiser.js';
+import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 
 export class LinkManager extends MelObject {
   constructor({
@@ -1209,7 +1210,7 @@ export class LinkManager extends MelObject {
 
     const apiUrl = LinkManager.fetchIcon(url);
 
-    $(LinkManager.SELECTOR_MODAL_IMAGE).attr('src', apiUrl);
+    $(LinkManager.SELECTOR_MODAL_IMAGE).attr('src', apiUrl ?? EMPTY_STRING);
   }
 
   /**

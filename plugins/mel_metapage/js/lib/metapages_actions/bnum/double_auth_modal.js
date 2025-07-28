@@ -100,8 +100,9 @@ class double_auth_modal extends module_bnum {
     return this;
   }
 
-  intro_modal() {    
+  intro_modal() {   
     if (!rcmail.env.internet_access_enable) {
+      $('.2fa_error_message').text(rcmail.gettext('mel_metapage.no_internet_access'));
       return;
     }
     const self = this;

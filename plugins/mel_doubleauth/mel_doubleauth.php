@@ -467,6 +467,10 @@ class mel_doubleauth extends bnum_plugin
             );
 
             $div_container .= row(
+                col('', '2fa_error_message text-danger')
+            );
+
+            $div_container .= row(
                 col($this->gettext('info_activer'))
             );
 

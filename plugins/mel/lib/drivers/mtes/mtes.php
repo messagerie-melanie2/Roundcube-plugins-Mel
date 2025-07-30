@@ -205,6 +205,12 @@ class mtes_driver_mel extends mce_driver_mel
       $infos->load(['server_host']);
       $hostname = $infos->server_host;
     }
+
+    // Mapping
+    $root_mapping = rcmail::get_instance()->config->get('root_mapping', []);
+
+    if (isset($root_mapping[$hostname])) $hostname = $root_mapping[$hostname];
+    
     return $hostname;
   }
 

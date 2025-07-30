@@ -1,3 +1,5 @@
+import { BnumLog } from '../../../lib/classes/bnum_log';
+
 class Windows_Like_PopUp extends MetapageObject {
   constructor($parent, config = null) {
     super($parent, config);
@@ -182,7 +184,12 @@ class Windows_Like_PopUp extends MetapageObject {
   destroy() {
     try {
       this.settings.context.$(`#minified-${this.id}`).remove();
-    } catch (error) {}
+    } catch (error) {
+      BnumLog.warning(
+        `Error removing minified header for popup ${this.id}:`,
+        error,
+      );
+    }
 
     this.box.get.remove();
     delete Windows_Like_PopUp.popUps[this.id];

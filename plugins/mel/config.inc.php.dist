@@ -31,3 +31,6 @@ $rcmail_config['is_internal'] = true;
 
 // Driver name configuration (mce, mtes, ...)
 $rcmail_config['mel_driver'] = 'mce';
+
+// Mapping des routes ldap
+$config['root_mapping'] = [];

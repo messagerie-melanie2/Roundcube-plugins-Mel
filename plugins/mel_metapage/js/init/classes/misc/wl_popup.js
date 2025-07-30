@@ -1,5 +1,3 @@
-import { BnumLog } from '../../../lib/classes/bnum_log';
-
 class Windows_Like_PopUp extends MetapageObject {
   constructor($parent, config = null) {
     super($parent, config);
@@ -84,8 +82,8 @@ class Windows_Like_PopUp extends MetapageObject {
     //Création du header
     html += `<div class="${class_header}">`;
     html += `<span class="${class_title}"><h${h} style="display:inline-block;">${settings.title}</h${h}></span>`;
-    html += `<span style="float:right;margin-right: 15px;"><button title="Minimiser" class="${class_size} mel-button btn btn-secondary dark-no-border-default" style="margin:0"><span class="${settings.icon_minify}"></span></button>
-        <button title="Fermer" class="${class_close} btn-danger danger inverse mel-button btn btn-secondary dark-no-border-default" style="margin:0"><span class="${settings.icon_close}"></span></button></span>`;
+    html += `<span style="float:right;margin-right: 15px;"><button title="${rcmail.gettext('minimise', 'mel_metapage')}" class="${class_size} mel-button btn btn-secondary dark-no-border-default" style="margin:0"><span class="${settings.icon_minify}"></span></button>
+        <button title="${rcmail.gettext('close_popup', 'mel_metapage')}" class="${class_close} btn-danger danger inverse mel-button btn btn-secondary dark-no-border-default" style="margin:0"><span class="${settings.icon_close}"></span></button></span>`;
     html += '</div>';
 
     //Création du content
@@ -159,7 +157,7 @@ class Windows_Like_PopUp extends MetapageObject {
       })
       .parent()
       .find('.wlp-minixpand')
-      .attr('title', 'Développer')
+      .attr('title', rcmail.gettext('maximise', 'mel_metapage'))
       .click(() => {
         //expand
         if (this.settings.onexpand !== null) this.settings.onexpand();
@@ -174,7 +172,7 @@ class Windows_Like_PopUp extends MetapageObject {
     this._minified_header.remove();
     this._minified_header = null;
     this.box.minifier
-      .attr('title', 'Minimiser')
+      .attr('title', rcmail.gettext('minimise', 'mel_metapage'))
       .find('span')
       .addClass(this.settings.icon_minify)
       .removeClass(this.settings.icon_expend);
@@ -185,7 +183,7 @@ class Windows_Like_PopUp extends MetapageObject {
     try {
       this.settings.context.$(`#minified-${this.id}`).remove();
     } catch (error) {
-      BnumLog.warning(
+      console.warning(
         `Error removing minified header for popup ${this.id}:`,
         error,
       );

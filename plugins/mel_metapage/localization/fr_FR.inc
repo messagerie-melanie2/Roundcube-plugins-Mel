@@ -515,3 +515,7 @@ $labels['gotoaddressbook'] = 'Afficher dans l\'annuaire';
 $labels['noinaddressbook'] = 'Le contact n\'est pas dans l\'annuaire';
 
 $labels['calendar_add_mail_to_event'] = 'Ajouter les destinataires du mail';
+
+$labels['minimise'] = 'Minimiser';
+$labels['maximise'] = 'Dévelloper';
+$labels['close_popup'] = 'Fermer la popup';

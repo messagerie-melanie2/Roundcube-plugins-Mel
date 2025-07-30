@@ -82,8 +82,8 @@ class Windows_Like_PopUp extends MetapageObject {
     //Création du header
     html += `<div class="${class_header}">`;
     html += `<span class="${class_title}"><h${h} style="display:inline-block;">${settings.title}</h${h}></span>`;
-    html += `<span style="float:right;margin-right: 15px;"><button class="${class_size} mel-button btn btn-secondary dark-no-border-default" style="margin:0"><span class="${settings.icon_minify}"></span></button>
-        <button class="${class_close} btn-danger danger inverse mel-button btn btn-secondary dark-no-border-default" style="margin:0"><span class="${settings.icon_close}"></span></button></span>`;
+    html += `<span style="float:right;margin-right: 15px;"><button title="Minimiser" class="${class_size} mel-button btn btn-secondary dark-no-border-default" style="margin:0"><span class="${settings.icon_minify}"></span></button>
+        <button title="Fermer" class="${class_close} btn-danger danger inverse mel-button btn btn-secondary dark-no-border-default" style="margin:0"><span class="${settings.icon_close}"></span></button></span>`;
     html += '</div>';
 
     //Création du content
@@ -157,6 +157,7 @@ class Windows_Like_PopUp extends MetapageObject {
       })
       .parent()
       .find('.wlp-minixpand')
+      .attr('title', 'Développer')
       .click(() => {
         //expand
         if (this.settings.onexpand !== null) this.settings.onexpand();
@@ -171,6 +172,7 @@ class Windows_Like_PopUp extends MetapageObject {
     this._minified_header.remove();
     this._minified_header = null;
     this.box.minifier
+      .attr('title', 'Minimiser')
       .find('span')
       .addClass(this.settings.icon_minify)
       .removeClass(this.settings.icon_expend);

@@ -5,7 +5,7 @@ export { WrapperObject };
  * @classdesc Contient une instance d'un objet, utile pour la création d'un singleton.
  * @template {!Tt} T
  */
-class WrapperObject {
+calass WrapperObject {
   /**
    * Instance de la classe
    * @private
@@ -56,4 +56,6 @@ class WrapperObject {
   static Create(typeofitem, ...args) {
     return new WrapperObject(typeofitem, ...args);
   }
+
+  statc test(t) {}
 }

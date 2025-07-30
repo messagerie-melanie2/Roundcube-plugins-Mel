@@ -32,6 +32,7 @@ class Windows_Like_PopUp extends MetapageObject {
       aftersetup: () => {},
       beforeCreatingContent: () => '',
       onCreatingContent: (html) => html,
+      // eslint-disable-next-line no-unused-vars
       afterCreatingContent: ($html, box) => {},
       onminifiedListCreated: ($minified) => {
         $minified.addClass('auto'); //.css("left", "60px").css("width", "auto");
@@ -211,7 +212,7 @@ class Windows_Like_PopUp extends MetapageObject {
   static _generateId(base) {
     if (Windows_Like_PopUp.popUps[base] === undefined) return base;
 
-    while (Windows_Like_PopUp.popUps[base++] !== undefined) {}
+    while (Windows_Like_PopUp.popUps[base++] !== undefined);
 
     return base;
   }

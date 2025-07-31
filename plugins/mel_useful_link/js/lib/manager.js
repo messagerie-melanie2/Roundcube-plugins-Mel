@@ -8,6 +8,7 @@ import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { MelLinkVisualizer, MelFolderLink, MelStoreLink } from './mel_link.js';
 import { MelIconPrevisualiser } from '../../../mel_metapage/skins/mel_elastic/js_templates/blocks/icon_previsualiser.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
+import HTMLBnumButton from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/button/HTMLBnumButton.js';
 
 export class LinkManager extends MelObject {
   constructor({
@@ -99,7 +100,8 @@ export class LinkManager extends MelObject {
           id: 'icon-image',
           class: `link-icon-image ${icon ? 'hidden' : ''}`,
           src: '',
-          onerror: "imgError(this.id, 'no-image')",
+          //prettier-ignore
+          onerror: 'imgError(this.id, \'no-image\')',
           style: 'display:none',
         })
         .span({
@@ -543,23 +545,42 @@ export class LinkManager extends MelObject {
    * Affiche le bouton de création sur la page web
    */
   displayButton(selector) {
-    let button = MelHtml.start
-      .div({ class: 'mul_right_buttons' })
-      .button({
-        class: 'fixed_mulba',
+    let addButton = HTMLBnumButton.StartCreate.setIcon('add_circle')
+      .setContent('Ajouter')
+      .generate()
+      .addClass('fixed_mulba')
+      .attrs({
         id: 'mulba',
-      })
-      .text('Ajouter')
-      .icon('add_circle')
-      .end()
-      .end('button')
-      .button({ id: 'app_store', class: 'mel-button-icon' })
-      .text("Bibliothèque d'applications")
-      .icon('widgets')
-      .end()
-      .end('button')
-      .end('div');
-    selector.append(button.generate());
+        title: 'Ajouter un lien',
+        'data-hide': 'small',
+      });
+
+    let appStoreButton = HTMLBnumButton.StartCreate.setSecondaryVariation()
+      .setIcon('widgets')
+      .setContent(
+        //prettier-ignore
+        'Bibliothèque d\'applications',
+      )
+      .generate()
+      .addClass('fixed_app_store')
+      .attrs({
+        id: 'app_store',
+        //prettier-ignore
+        title: 'Bibliothèque d\'applications',
+        'data-hide': 'small',
+      });
+    let container = document.createElement('div');
+
+    container.classList.add('mul_right_buttons');
+
+    container.append(addButton, appStoreButton);
+
+    selector.append(container);
+
+    //free
+    addButton = null;
+    appStoreButton = null;
+    container = null;
   }
 
   /**
@@ -962,9 +983,9 @@ export class LinkManager extends MelObject {
 
         let data = JSON.parse(event.dataTransfer.getData('text/plain'));
 
-        let id = data.id;
+        let dataId = data.id;
 
-        let movedElement = $('#link-block-' + id);
+        let movedElement = $('#link-block-' + dataId);
         let movedContainer = movedElement.closest('.link-block-container');
 
         let targetElement = $(event.target);
@@ -981,13 +1002,13 @@ export class LinkManager extends MelObject {
         }
         //Si on sort un lien d'un dossier
         if (data.inFolder) {
-          let link = self.findLinkById(id);
+          let link = self.findLinkById(dataId);
           let folder = self.findParentFolder(link);
           //TODO Mettre à jours rcmail.env.mul_items
           self.TakeOutLinkFromFolder(
             folder,
             link,
-            id,
+            dataId,
             targetIndex,
             targetElement.hasClass('link-space-end') ? null : targetContainer,
           );
@@ -998,11 +1019,11 @@ export class LinkManager extends MelObject {
         if (targetElement.hasClass('link-space-between')) {
           targetElement.removeClass('link-space-hovered');
 
-          self.updateList(id, targetIndex, targetContainer, movedContainer);
+          self.updateList(dataId, targetIndex, targetContainer, movedContainer);
           return;
         }
         if (targetElement.hasClass('link-space-end')) {
-          self.updateList(id, targetIndex, targetElement, movedContainer);
+          self.updateList(dataId, targetIndex, targetElement, movedContainer);
           return;
         }
 
@@ -1036,9 +1057,9 @@ export class LinkManager extends MelObject {
               rcmail.env.mul_items[elementIndex],
               rcmail.env.mul_items[targetIndex],
             ]);
-            _melFolder.callFolderUpdate().then((data) => {
-              if (data !== _melFolder.id) {
-                _melFolder.id = data;
+            _melFolder.callFolderUpdate().then((folderData) => {
+              if (folderData !== _melFolder.id) {
+                _melFolder.id = folderData;
                 self.displayFolder(_melFolder, targetContainer);
               }
             });
@@ -1079,9 +1100,10 @@ export class LinkManager extends MelObject {
           { _list: rcmail.env.mul_items, _key: rcmail.env.mul_items_key },
           (data) => {
             rcmail.set_busy(false, 'loading', busy);
-            if (data != 1) {
+            if (![1, '1', true].includes(data)) {
               rcmail.display_message(
-                "Erreur lors de l'enregistrement",
+                //prettier-ignore
+                'Erreur lors de l\'enregistrement',
                 'error',
               );
             } else {
@@ -1117,7 +1139,10 @@ export class LinkManager extends MelObject {
     });
 
     $(LinkManager.ADD_STORE_BUTTON).on('click', () => {
-      LinkManager.previsualiser.create_popup("Changer d'icone");
+      LinkManager.previsualiser.create_popup(
+        //prettier-ignore
+        'Changer d\'icone',
+      );
     });
 
     MEL_ELASTIC_UI.update_tabs();

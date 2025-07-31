@@ -166,6 +166,15 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
   }
 
   /**
+   * Cache le texte du bouton selon la taille de l'écran
+   * @type {'small' | 'touch' | null}
+   * @readonly
+   */
+  get hideTextInWhichMode() {
+    return this._p_get_data('hide')?.toLowerCase?.();
+  }
+
+  /**
    * Est appelé à l'affichage
    * @override
    */
@@ -185,6 +194,11 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
       .addClass('internal__wrapper--main', CLASS_LOADING_RECEIVER)
       .append(...this.childNodes);
     wrapper.setAttribute('data-parent', this.internalId);
+
+    if (this.hideTextInWhichMode) {
+      wrapper.addClass(`hide-on-${this.hideTextInWhichMode}`);
+      this.addClass(`button-icon-hide-on-${this.hideTextInWhichMode}`);
+    }
 
     this.appendChild(wrapper);
 

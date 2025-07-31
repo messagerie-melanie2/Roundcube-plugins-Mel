@@ -8,6 +8,7 @@ import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { MelLinkVisualizer, MelFolderLink, MelStoreLink } from './mel_link.js';
 import { MelIconPrevisualiser } from '../../../mel_metapage/skins/mel_elastic/js_templates/blocks/icon_previsualiser.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
+import HTMLBnumButton from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/button/HTMLBnumButton.js';
 
 export class LinkManager extends MelObject {
   constructor({
@@ -543,23 +544,38 @@ export class LinkManager extends MelObject {
    * Affiche le bouton de création sur la page web
    */
   displayButton(selector) {
-    let button = MelHtml.start
-      .div({ class: 'mul_right_buttons' })
-      .button({
-        class: 'fixed_mulba',
+    let addButton = HTMLBnumButton.StartCreate.setIcon('add_circle')
+      .setContent('Ajouter')
+      .generate()
+      .addClass('fixed_mulba')
+      .attrs({
         id: 'mulba',
-      })
-      .text('Ajouter')
-      .icon('add_circle')
-      .end()
-      .end('button')
-      .button({ id: 'app_store', class: 'mel-button-icon' })
-      .text("Bibliothèque d'applications")
-      .icon('widgets')
-      .end()
-      .end('button')
-      .end('div');
-    selector.append(button.generate());
+        title: 'Ajouter un lien',
+        'data-hide': 'small',
+      });
+
+    let appStoreButton = HTMLBnumButton.StartCreate.setSecondaryVariation()
+      .setIcon('widgets')
+      .setContent("Bibliothèque d'applications")
+      .generate()
+      .addClass('fixed_app_store')
+      .attrs({
+        id: 'app_store',
+        title: "Bibliothèque d'applications",
+        'data-hide': 'small',
+      });
+    let container = document.createElement('div');
+
+    container.classList.add('mul_right_buttons');
+
+    container.append(addButton, appStoreButton);
+
+    selector.append(container);
+
+    //free
+    addButton = null;
+    appStoreButton = null;
+    container = null;
   }
 
   /**

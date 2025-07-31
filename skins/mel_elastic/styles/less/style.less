@@ -3968,10 +3968,23 @@ a.rcmContactAddress {
   }
 }
 
+.button-icon-hide-on-small {
+  html@{layout-phone} &,
+  html@{layout-small} & {
+    --custom-button-icon-margin: 0;
+  }
+}
+
 .hide-on-small {
   html@{layout-phone} &,
   html@{layout-small} & {
     display: none;
+  }
+}
+
+.button-icon-hide-on-touch {
+  html@{touch} & {
+    --custom-button-icon-margin: 0;
   }
 }
 
@@ -5913,10 +5926,11 @@ bnum-separate {
   }
 }
 
-.attendee, .rsvp-status {
+.attendee,
+.rsvp-status {
   &.tentative {
-    &::before{
-      color: #ecc550!important;
+    &::before {
+      color: #ecc550 !important;
     }
   }
 }

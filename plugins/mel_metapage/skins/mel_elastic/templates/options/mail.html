@@ -64,7 +64,7 @@
         <div class="col-4 text-center px-1">
           <input type="radio" data-command="update_mail_css" name="mel-message-space" id="mel-message-space-larger" data-value="Plus grand"
             onclick="save_option('mel-message-space', rcmail.gettext('mel_metapage.larger'), this)">
-          <label for="mel-message-space-larger" class="option">
+          <label for="mel-message-space-larger" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <div class="option-image mails_large"></div>
           </label>
           <div class="switch-overlay"></div>
@@ -74,7 +74,7 @@
         <div class="col-4 text-center px-1">
           <input type="radio" data-command="update_mail_css" name="mel-message-space" id="mel-message-space-normal" data-value="Normal"
             onclick="save_option('mel-message-space', rcmail.gettext('mel_metapage.normal'), this)">
-          <label for="mel-message-space-normal" class="option">
+          <label for="mel-message-space-normal" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <div class="option-image mails_medium"></div>
           </label>
           <div class="switch-overlay"></div>
@@ -84,7 +84,7 @@
         <div class="col-4 text-center px-1">
           <input type="radio" data-command="update_mail_css" name="mel-message-space" id="mel-message-space-smaller" data-value="Plus petit"
             onclick="save_option('mel-message-space', rcmail.gettext('mel_metapage.smaller'), this)">
-          <label for="mel-message-space-smaller" class="option">
+          <label for="mel-message-space-smaller" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <div class="option-image mails_small"></div>
           </label>
           <div class="switch-overlay"></div>
@@ -102,7 +102,7 @@
         <div class="col-4 text-center px-1">
           <input type="radio" data-command="update_mail_css" name="mel-folder-space" id="mel-folder-space-larger" data-value="Plus grand"
             onclick="save_option('mel-folder-space', rcmail.gettext('mel_metapage.larger'), this)">
-          <label for="mel-folder-space-larger" class="option">
+          <label for="mel-folder-space-larger" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <div class="option-image folder_large"></div>
           </label>
           <div class="switch-overlay"></div>
@@ -112,7 +112,7 @@
         <div class="col-4 text-center px-1">
           <input type="radio" data-command="update_mail_css" name="mel-folder-space" id="mel-folder-space-normal" data-value="Normal"
             onclick="save_option('mel-folder-space', rcmail.gettext('mel_metapage.normal'), this)">
-          <label for="mel-folder-space-normal" class="option">
+          <label for="mel-folder-space-normal" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <div class="option-image folder_medium"></div>
           </label>
           <div class="switch-overlay"></div>
@@ -122,7 +122,7 @@
         <div class="col-4 text-center px-1">
           <input type="radio" data-command="update_mail_css" name="mel-folder-space" id="mel-folder-space-smaller" data-value="Plus petit"
             onclick="save_option('mel-folder-space', rcmail.gettext('mel_metapage.smaller'), this)">
-          <label for="mel-folder-space-smaller" class="option">
+          <label for="mel-folder-space-smaller" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <div class="option-image folder_small"></div>
           </label>
           <div class="switch-overlay"></div>
@@ -140,7 +140,7 @@
         <div class="col-4 text-center px-1">
           <input type="radio" name="mailboxes_display" id="mel_mailboxes_display-default" data-value="default"
             onclick="save_option('mailboxes_display', 'default', this)">
-          <label for="mel_mailboxes_display-default" class="option">
+          <label for="mel_mailboxes_display-default" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <div class="option-image grouping_default"></div>
           </label>
           <div class="switch-overlay"></div>
@@ -150,7 +150,7 @@
         <div class="col-4 text-center px-1">
           <input type="radio" name="mailboxes_display" id="mel_mailboxes_display-subfolders" data-value="subfolders"
             onclick="save_option('mailboxes_display', 'subfolders', this)">
-          <label for="mel_mailboxes_display-subfolders" class="option">
+          <label for="mel_mailboxes_display-subfolders" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <div class="option-image grouping_grouped"></div>
           </label>
           <div class="switch-overlay"></div>
@@ -160,7 +160,7 @@
         <div class="col-4 text-center px-1">
           <input type="radio" name="mailboxes_display" id="mel_mailboxes_display-unified" data-value="unified"
             onclick="save_option('mailboxes_display', 'unified', this)">
-          <label for="mel_mailboxes_display-unified" class="option">
+          <label for="mel_mailboxes_display-unified" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <div class="option-image grouping_unified"></div>
           </label>
           <div class="switch-overlay"></div>
@@ -178,7 +178,7 @@
         <div class="col-4 text-center px-1">
           <input type="radio" data-command="refresh_messages_list" name="mel_messages_list_clear_headers" id="mel-clear-headers-full" data-value="full"
             onclick="save_option('mel_messages_list_clear_headers', 'full', this)">
-          <label for="mel-clear-headers-full" class="option">
+          <label for="mel-clear-headers-full" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <span class="material-symbols-outlined icon-large color-icon">
               subject
             </span>
@@ -190,7 +190,7 @@
         <div class="col-4 text-center px-1">
           <input type="radio" data-command="refresh_messages_list" name="mel_messages_list_clear_headers" id="mel-clear-headers-service" data-value="service"
             onclick="save_option('mel_messages_list_clear_headers', 'service', this)">
-          <label for="mel-clear-headers-service" class="option">
+          <label for="mel-clear-headers-service" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <span class="material-symbols-outlined icon-large color-icon">
               notes
             </span>
@@ -202,7 +202,7 @@
         <div class="col-4 text-center px-1">
           <input type="radio" data-command="refresh_messages_list" name="mel_messages_list_clear_headers" id="mel-clear-headers-name" data-value="name"
             onclick="save_option('mel_messages_list_clear_headers', 'name', this)">
-          <label for="mel-clear-headers-name" class="option">
+          <label for="mel-clear-headers-name" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <span class="material-symbols-outlined icon-large color-icon">
               short_text
             </span>
@@ -222,7 +222,7 @@
         <div class="col-6 text-center px-1">
           <input type="radio" data-command="update_mail_css" name="mel-icon-size" id="mel-icon-size-default" data-value="Normal"
             onclick="save_option('mel-icon-size', rcmail.gettext('mel_metapage.normal'), this)">
-          <label for="mel-icon-size-default" class="option">
+          <label for="mel-icon-size-default" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <span class="material-symbols-outlined icon-large color-icon">
               border_color
             </span>
@@ -234,7 +234,7 @@
         <div class="col-6 text-center px-1">
           <input type="radio" data-command="update_mail_css" name="mel-icon-size" id="mel-icon-size-smaller" data-value="Plus petit"
             onclick="save_option('mel-icon-size', rcmail.gettext('mel_metapage.smaller'), this)">
-          <label for="mel-icon-size-smaller" class="option">
+          <label for="mel-icon-size-smaller" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <span class="material-symbols-outlined icon-small color-icon">
               border_color
             </span>

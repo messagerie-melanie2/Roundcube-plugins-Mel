@@ -3440,6 +3440,23 @@ function save_option(_option_name, _option_value, element, reload = false) {
   );
 }
 
+/**
+ *
+ * @param {HTMLLabelElement} label
+ * @param {KeyboardEvent} event
+ */
+function key_option(label, event) {
+  switch (event.key) {
+    case ' ':
+    case 'Enter':
+      label.parentElement.querySelector('input').click();
+      break;
+
+    default:
+      break;
+  }
+}
+
 //0007910: Popup d'information lors du clic sur un lien dans un mail
 function external_link_modal(_url, isSuspect = false) {
   let url = new URL(_url);

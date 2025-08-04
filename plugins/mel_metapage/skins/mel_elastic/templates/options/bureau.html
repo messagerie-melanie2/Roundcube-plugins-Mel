@@ -6,7 +6,7 @@
         <div class="col-4 text-center px-1">
           <input data-command="updateScollBarMode" type="radio" name="mel-scrollbar-size" id="mel-scrollbar-size-default" data-value="<roundcube:label name='mel_metapage.default' />"
             onclick="save_option('mel-scrollbar-size', rcmail.gettext('default', 'mel_metapage'), this)">
-          <label for="mel-scrollbar-size-default" class="option">
+          <label for="mel-scrollbar-size-default" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <div class="option-image scrollbar_default"></div>
           </label>
           <div class="switch-overlay"></div>
@@ -15,7 +15,7 @@
         <div class="col-4 text-center px-1">
           <input type="radio" data-command="updateScollBarMode" name="mel-scrollbar-size" id="mel-scrollbar-size-normal" data-value="<roundcube:label name='mel_metapage.normal'/>"
             onclick="save_option('mel-scrollbar-size', rcmail.gettext('normal', 'mel_metapage'), this)">
-          <label for="mel-scrollbar-size-normal" class="option">
+          <label for="mel-scrollbar-size-normal" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <div class="option-image scrollbar_normal"></div>
           </label>
           <div class="switch-overlay"></div>
@@ -24,7 +24,7 @@
         <div class="col-4 text-center px-1">
           <input type="radio" data-command="updateScollBarMode" name="mel-scrollbar-size" id="mel-scrollbar-size-large" data-value="<roundcube:label name='mel_metapage.large'/>"
             onclick="save_option('mel-scrollbar-size', rcmail.gettext('large', 'mel_metapage'), this)">
-          <label for="mel-scrollbar-size-large" class="option">
+          <label for="mel-scrollbar-size-large" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <div class="option-image scrollbar_large"></div>
           </label>
           <div class="switch-overlay"></div>
@@ -46,7 +46,7 @@
         <div class="col-6 text-center px-1">
           <input data-command="updateMainNavDep" type="radio" name="main_nav_can_deploy" id="deploy-nav-default" data-value="true"
             onclick="save_option('main_nav_can_deploy', true, this)">
-          <label for="deploy-nav-default" class="option">
+          <label for="deploy-nav-default" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <div class="option-image candeploy"></div>
           </label>
           <div class="switch-overlay"></div>
@@ -55,7 +55,7 @@
         <div class="col-6 text-center px-1">
           <input data-command="updateMainNavDep" type="radio" name="main_nav_can_deploy" id="deploy-nav-no" data-value="false"
             onclick="save_option('main_nav_can_deploy', false, this)">
-          <label for="deploy-nav-no" class="option">
+          <label for="deploy-nav-no" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <div class="option-image cannotdeploy"></div>
           </label>
           <div class="switch-overlay"></div>

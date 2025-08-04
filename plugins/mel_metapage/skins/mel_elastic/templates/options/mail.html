@@ -1,10 +1,12 @@
 <div class="container">
+  <!-- Titre principal des options de messagerie -->
   <div class="row mt-4">
     <div class="col-12">
       <div class="options-custom-title"><roundcube:label name='mail' /></div>
       <hr>
     </div>
   </div>
+  <!-- Option : ouvrir les courriels dans une nouvelle fenêtre -->
   <div class="row">
     <div class="col-12 d-flex justify-content-between align-items-center mt-2">
       <div class="d-flex justify-content-center align-items-center">
@@ -22,6 +24,7 @@
       </div>
     </div>
   </div>
+  <!-- Option : composer dans une nouvelle fenêtre -->
   <div class="row">
     <div class="col-12 d-flex justify-content-between align-items-center mt-2">
       <div class="d-flex justify-content-center align-items-center">
@@ -36,47 +39,52 @@
       </div>
     </div>
   </div>
+  <!-- Option : délai d'envoi des messages -->
   <div class="row" <delay_enabled/>>
-  <div class="col-12 justify-content-between mt-2">
-    <div class="d-flex options-custom-title">
-      <roundcube:label name='mel_metapage.delay_speed' />
-      <span class="material-symbols-outlined options-help ml-2" title="<roundcube:label name='mel_metapage.delay_setting_help' />">
-        help
-      </span>
-      <label class="sr-only" for="speed-delay"><roundcube:label name='mel_metapage.delay_setting_help' /></label>
-    </div>
-    <div class="custom-control custom-switch no-click-focus d-flex">
-      <delay/>
-      <p style="margin:0;align-self: center;" class="col-5" id="delay-number"><delay_start/> secondes</p>
+    <div class="col-12 justify-content-between mt-2">
+      <div class="d-flex options-custom-title">
+        <roundcube:label name='mel_metapage.delay_speed' />
+        <span class="material-symbols-outlined options-help ml-2" title="<roundcube:label name='mel_metapage.delay_setting_help' />">
+          help
+        </span>
+        <label class="sr-only" for="speed-delay"><roundcube:label name='mel_metapage.delay_setting_help' /></label>
+      </div>
+      <div class="custom-control custom-switch no-click-focus d-flex">
+        <delay/>
+        <p style="margin:0;align-self: center;" class="col-5" id="delay-number"><delay_start/> secondes</p>
+      </div>
     </div>
   </div>
-</div>
+  <!-- Option : espacement des messages -->
   <div class="row mt-3">
     <div class="col-12">
       <div class="options-custom-title"><roundcube:label name="mel_metapage.mel-message-space-nomail"/></div>
       <div class="option_radio_wrapper">
+        <!-- Plus grand -->
         <div class="col-4 text-center px-1">
           <input type="radio" data-command="update_mail_css" name="mel-message-space" id="mel-message-space-larger" data-value="Plus grand"
             onclick="save_option('mel-message-space', rcmail.gettext('mel_metapage.larger'), this)">
-          <label for="mel-message-space-larger" class="option">
+          <label for="mel-message-space-larger" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <div class="option-image mails_large"></div>
           </label>
           <div class="switch-overlay"></div>
           <roundcube:label name='mel_metapage.larger' />
         </div>
+        <!-- Normal -->
         <div class="col-4 text-center px-1">
           <input type="radio" data-command="update_mail_css" name="mel-message-space" id="mel-message-space-normal" data-value="Normal"
             onclick="save_option('mel-message-space', rcmail.gettext('mel_metapage.normal'), this)">
-          <label for="mel-message-space-normal" class="option">
+          <label for="mel-message-space-normal" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <div class="option-image mails_medium"></div>
           </label>
           <div class="switch-overlay"></div>
           <roundcube:label name='mel_metapage.normal' />
         </div>
+        <!-- Plus petit -->
         <div class="col-4 text-center px-1">
           <input type="radio" data-command="update_mail_css" name="mel-message-space" id="mel-message-space-smaller" data-value="Plus petit"
             onclick="save_option('mel-message-space', rcmail.gettext('mel_metapage.smaller'), this)">
-          <label for="mel-message-space-smaller" class="option">
+          <label for="mel-message-space-smaller" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <div class="option-image mails_small"></div>
           </label>
           <div class="switch-overlay"></div>
@@ -85,32 +93,36 @@
       </div>
     </div>
   </div>
+  <!-- Option : espacement des dossiers -->
   <div class="row row-options">
     <div class="col-12">
       <div class="options-custom-title"><roundcube:label name="mel_metapage.mel-folder-space-nomail"/></div>
       <div class="option_radio_wrapper">
+        <!-- Plus grand -->
         <div class="col-4 text-center px-1">
           <input type="radio" data-command="update_mail_css" name="mel-folder-space" id="mel-folder-space-larger" data-value="Plus grand"
             onclick="save_option('mel-folder-space', rcmail.gettext('mel_metapage.larger'), this)">
-          <label for="mel-folder-space-larger" class="option">
+          <label for="mel-folder-space-larger" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <div class="option-image folder_large"></div>
           </label>
           <div class="switch-overlay"></div>
           <roundcube:label name='mel_metapage.larger' />
         </div>
+        <!-- Normal -->
         <div class="col-4 text-center px-1">
           <input type="radio" data-command="update_mail_css" name="mel-folder-space" id="mel-folder-space-normal" data-value="Normal"
             onclick="save_option('mel-folder-space', rcmail.gettext('mel_metapage.normal'), this)">
-          <label for="mel-folder-space-normal" class="option">
+          <label for="mel-folder-space-normal" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <div class="option-image folder_medium"></div>
           </label>
           <div class="switch-overlay"></div>
           <roundcube:label name='mel_metapage.normal' />
         </div>
+        <!-- Plus petit -->
         <div class="col-4 text-center px-1">
           <input type="radio" data-command="update_mail_css" name="mel-folder-space" id="mel-folder-space-smaller" data-value="Plus petit"
             onclick="save_option('mel-folder-space', rcmail.gettext('mel_metapage.smaller'), this)">
-          <label for="mel-folder-space-smaller" class="option">
+          <label for="mel-folder-space-smaller" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <div class="option-image folder_small"></div>
           </label>
           <div class="switch-overlay"></div>
@@ -119,32 +131,36 @@
       </div>
     </div>
   </div>
+  <!-- Option : affichage des dossiers (groupement) -->
   <div class="row row-options">
     <div class="col-12">
       <div class="options-custom-title"><roundcube:label name='mel_metapage.mel-folder-grouping' /></div>
       <div class="option_radio_wrapper">
+        <!-- Affichage par défaut -->
         <div class="col-4 text-center px-1">
           <input type="radio" name="mailboxes_display" id="mel_mailboxes_display-default" data-value="default"
             onclick="save_option('mailboxes_display', 'default', this)">
-          <label for="mel_mailboxes_display-default" class="option">
+          <label for="mel_mailboxes_display-default" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <div class="option-image grouping_default"></div>
           </label>
           <div class="switch-overlay"></div>
           <roundcube:label name='mel_metapage.default' />
         </div>
+        <!-- Affichage par sous-dossiers -->
         <div class="col-4 text-center px-1">
           <input type="radio" name="mailboxes_display" id="mel_mailboxes_display-subfolders" data-value="subfolders"
             onclick="save_option('mailboxes_display', 'subfolders', this)">
-          <label for="mel_mailboxes_display-subfolders" class="option">
+          <label for="mel_mailboxes_display-subfolders" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <div class="option-image grouping_grouped"></div>
           </label>
           <div class="switch-overlay"></div>
           <roundcube:label name='mel.subfolders_pref_text' />
         </div>
+        <!-- Affichage unifié -->
         <div class="col-4 text-center px-1">
           <input type="radio" name="mailboxes_display" id="mel_mailboxes_display-unified" data-value="unified"
             onclick="save_option('mailboxes_display', 'unified', this)">
-          <label for="mel_mailboxes_display-unified" class="option">
+          <label for="mel_mailboxes_display-unified" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <div class="option-image grouping_unified"></div>
           </label>
           <div class="switch-overlay"></div>
@@ -153,14 +169,16 @@
       </div>
     </div>
   </div>
+  <!-- Option : affichage des en-têtes des messages -->
   <div class="row row-options">
     <div class="col-12">
       <div class="options-custom-title"><roundcube:label name='mel_metapage.mel-clear-headers' /></div>
       <div class="option_radio_wrapper">
+        <!-- En-tête complet -->
         <div class="col-4 text-center px-1">
           <input type="radio" data-command="refresh_messages_list" name="mel_messages_list_clear_headers" id="mel-clear-headers-full" data-value="full"
             onclick="save_option('mel_messages_list_clear_headers', 'full', this)">
-          <label for="mel-clear-headers-full" class="option">
+          <label for="mel-clear-headers-full" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <span class="material-symbols-outlined icon-large color-icon">
               subject
             </span>
@@ -168,10 +186,11 @@
           <div class="switch-overlay"></div>
           <roundcube:label name='mel_metapage.full' />
         </div>
+        <!-- En-tête service -->
         <div class="col-4 text-center px-1">
           <input type="radio" data-command="refresh_messages_list" name="mel_messages_list_clear_headers" id="mel-clear-headers-service" data-value="service"
             onclick="save_option('mel_messages_list_clear_headers', 'service', this)">
-          <label for="mel-clear-headers-service" class="option">
+          <label for="mel-clear-headers-service" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <span class="material-symbols-outlined icon-large color-icon">
               notes
             </span>
@@ -179,10 +198,11 @@
           <div class="switch-overlay"></div>
           <roundcube:label name='mel_metapage.service' />
         </div>
+        <!-- En-tête nom -->
         <div class="col-4 text-center px-1">
           <input type="radio" data-command="refresh_messages_list" name="mel_messages_list_clear_headers" id="mel-clear-headers-name" data-value="name"
             onclick="save_option('mel_messages_list_clear_headers', 'name', this)">
-          <label for="mel-clear-headers-name" class="option">
+          <label for="mel-clear-headers-name" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <span class="material-symbols-outlined icon-large color-icon">
               short_text
             </span>
@@ -193,14 +213,16 @@
       </div>
     </div>
   </div>
+  <!-- Option : taille des icônes -->
   <div class="row row-options">
     <div class="col-12">
       <div class="options-custom-title"><roundcube:label name='mel_metapage.mel-icon-size-nomail' /></div>
       <div class="option_radio_wrapper">
+        <!-- Taille normale -->
         <div class="col-6 text-center px-1">
           <input type="radio" data-command="update_mail_css" name="mel-icon-size" id="mel-icon-size-default" data-value="Normal"
             onclick="save_option('mel-icon-size', rcmail.gettext('mel_metapage.normal'), this)">
-          <label for="mel-icon-size-default" class="option">
+          <label for="mel-icon-size-default" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <span class="material-symbols-outlined icon-large color-icon">
               border_color
             </span>
@@ -208,10 +230,11 @@
           <div class="switch-overlay"></div>
           <roundcube:label name='mel_metapage.normal' />
         </div>
+        <!-- Plus petit -->
         <div class="col-6 text-center px-1">
           <input type="radio" data-command="update_mail_css" name="mel-icon-size" id="mel-icon-size-smaller" data-value="Plus petit"
             onclick="save_option('mel-icon-size', rcmail.gettext('mel_metapage.smaller'), this)">
-          <label for="mel-icon-size-smaller" class="option">
+          <label for="mel-icon-size-smaller" class="option" onkeydown="key_option(this, event)" tabindex="0">
             <span class="material-symbols-outlined icon-small color-icon">
               border_color
             </span>

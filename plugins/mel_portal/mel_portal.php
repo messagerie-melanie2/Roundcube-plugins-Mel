@@ -56,7 +56,6 @@ class mel_portal extends bnum_plugin
     function init()
     {
         $this->setup();
-        $this->include_depedencies();
         if ($this->rc()->task === $this->taskName)
         {
             $this->load_modules_actions();
@@ -111,30 +110,7 @@ class mel_portal extends bnum_plugin
 
             // Recuperation de la configuration
             $config = scandir(getcwd()."/plugins/mel_portal/modules"); 
-            $size = count($config);
             $existing = [];
-            //$modules = [];
-            // for ($i=0; $i < $size; ++$i) { 
-            //     if (strpos($config[$i], '.php') !== false || $config[$i] === "." || $config[$i] == "..") continue;
-
-            //     include_once 'modules/'.$config[$i]."/".$config[$i].".php";
-            //     $classname = ucfirst($config[$i]);
-            //     $object = new $classname($config[$i], $this, $i);
-            //     $modules[$object];
-            //     // $object->init();
-            //     // $confModule = $this->rc()->config->get($config[$pageName]["modules"][$i]);
-
-            //     // if ($confModule !== null) //Si il existe une config, on fait quelque chose.
-            //     //     $object->set_config($confModule, $this->rc()->config->get($config[$pageName]["modules"][$i]."_classes"));
-            //     // if ($existing[$config[$pageName]["modules"][$i]] == null) //Ca ne sert à rien de charger le module plusieurs fois.
-            //     // {
-            //     //     $object->include_module();
-            //     //     $existing[$config[$pageName]["modules"][$i]] = true;
-            //     // }
-
-            //     // //Ajout du module.
-            //     // $this->add_module($config[$pageName]["modules"][$i], $object->item_html(), $object->row_size());
-            // }
 
             $classname = '';
             $confModule = null;
@@ -155,10 +131,8 @@ class mel_portal extends bnum_plugin
             })
             ->orderBy(function ($k, $v) {return $v->order();})
             ->select(function ($k, $object) use(&$confModule, &$existing) {
-                //$confModule = $this->rc()->config->get($config[$pageName]["modules"][$i]);
-
-                //if ($confModule !== null) $object->set_config($confModule, $this->rc()->config->get($config[$pageName]["modules"][$i]."_classes"));
                 $confModule = get_class($object);
+
                 if ($existing[$confModule] !== true) //Ca ne sert à rien de charger le module plusieurs fois.
                 {
                     $object->include_module();
@@ -185,9 +159,7 @@ class mel_portal extends bnum_plugin
     {
       $this->include_page_css();
       $this->include_js();
-      $this->setup_env_js_vars();
       $this->load_modules($current_page);
-//      $this->load_menu($current_page);
       $this->generate_html();
     }
 
@@ -213,7 +185,6 @@ class mel_portal extends bnum_plugin
               $object->load_actions();
               $object->add_to_menu();
           } catch (\Throwable $th) {
-              $a = 0;
           }
       }
     }
@@ -224,8 +195,6 @@ class mel_portal extends bnum_plugin
     function portal()
     {
       $this->register_action('index', array($this, 'index'));
-      //$this->register_action('action', array($this, 'action'));
-      //$this->register_action('flux', array($this, 'flux'));
     }
 
     /**
@@ -244,6 +213,7 @@ class mel_portal extends bnum_plugin
     {
         // Ajout du css
         $this->include_stylesheet($this->local_skin_path().'/'.$this->cssName);
+
         if ($this->rc()->config->get('skin') != 'mel_elastic')
           $this->include_stylesheet($this->local_skin_path().'/icofont.min.css');
     }
@@ -253,26 +223,7 @@ class mel_portal extends bnum_plugin
      */
     function include_js()
     {
-        //$this->include_script('js/main.js');
         $this->load_script_module();
-    }
-
-    /**
-     * Récupère les dépendances utile pour ce plugin.
-     */
-    function include_depedencies()
-    {
-        // $this->include_script('lib/js/moment.js');
-        // $this->include_script('lib/js/linq.min.js');
-    }
-
-    /**
-     * Met en place les variables pour le js.
-     */
-    function setup_env_js_vars()
-    {
-        // $this->rc()->output->set_env('ev_calendar_url', $this->rc()->config->get('calendar_url'));
-        // $this->rc()->output->set_env('ev_remove_calendar_url', $this->rc()->config->get('delete_calendar_url'));
     }
 
     /**

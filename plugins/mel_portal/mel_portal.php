@@ -233,7 +233,8 @@ class mel_portal extends bnum_plugin
     {
         $this->rc()->output->add_handlers(array(
             'modules'    => array($this, 'creates_modules'),
-            'maintenancetext' => [$this, 'maintenancetext']
+            'maintenancetext' => [$this, 'maintenancetext'],
+            'feedback_button' => [$this, 'handler_feedback_button']
         ));
         $this->rc()->output->send('mel_portal.'.$this->templateName);
     }
@@ -264,6 +265,15 @@ class mel_portal extends bnum_plugin
     {
         $this->require_plugin('mel_helper');
         return mel_helper::get_maintenance_text($this->rc());
+    }
+
+    /**
+     * Callback, renvoie le bouton de feedback.
+     *
+     * @return void
+     */
+    public function handler_feedback_button() {
+        return mel_metapage::GetSurveyButton();
     }
 
     /**

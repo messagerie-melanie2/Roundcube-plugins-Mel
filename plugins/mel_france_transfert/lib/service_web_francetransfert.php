@@ -129,7 +129,7 @@ class ServiceWebFranceTransfert {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "ServiceWebFranceTransfert::initPli($COMPOSE_ID, $from)");
 
-    $COMPOSE =& $_SESSION['compose_data_' . $COMPOSE_ID];
+    $COMPOSE = rcmail_action_mail_compose::get_compose_data($COMPOSE_ID);
     $COMPOSE['ft_action'] = 'Initialisation du pli sur France Transfert';
 
     $fichiers = [];
@@ -193,6 +193,7 @@ class ServiceWebFranceTransfert {
       //
       $COMPOSE['ft_pli'] = $content;
       $COMPOSE['ft_from'] = $from;
+      rcmail_action_mail_compose::set_compose_data($COMPOSE_ID, $COMPOSE);
       return true;
     }
     else if ($this->_httpCode == 403) {
@@ -244,7 +245,7 @@ class ServiceWebFranceTransfert {
     //   return false;
     // }
 
-    $COMPOSE =& $_SESSION['compose_data_' . $COMPOSE_ID];
+    $COMPOSE = rcmail_action_mail_compose::get_compose_data($COMPOSE_ID);
     $COMPOSE['ft_action'] = "Envoi du fichier '$name' vers France Transfert";
     $COMPOSE['ft_value'] = 0;
 
@@ -302,6 +303,7 @@ class ServiceWebFranceTransfert {
         $this->_errorMessage = 'Erreur d’authentification sur le service France Transfert (erreur interne)';
         mel_logs::get_instance()->log(mel_logs::ERROR, "ServiceWebFranceTransfert::sendFile() Erreur [".$this->_httpCode."] : " . $this->_errorMessage);
         fclose($handle);
+        rcmail_action_mail_compose::set_compose_data($COMPOSE_ID, $COMPOSE);
         return false;
       }
       else { // En théorie on a httpcode = 422
@@ -315,6 +317,7 @@ class ServiceWebFranceTransfert {
         }
         mel_logs::get_instance()->log(mel_logs::ERROR, "ServiceWebFranceTransfert::sendFile() Erreur [".$this->_httpCode."] : " . $this->_errorMessage);
         fclose($handle);
+        rcmail_action_mail_compose::set_compose_data($COMPOSE_ID, $COMPOSE);
         return false;
       }
   
@@ -328,6 +331,7 @@ class ServiceWebFranceTransfert {
 
     $COMPOSE['ft_action'] = "Fichier '$name' envoyé vers France Transfert";
     $COMPOSE['ft_value'] = null;
+    rcmail_action_mail_compose::set_compose_data($COMPOSE_ID, $COMPOSE);
     return true;
   }
 
@@ -410,7 +414,7 @@ class ServiceWebFranceTransfert {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "ServiceWebFranceTransfert::getStatus($COMPOSE_ID)");
 
-    $COMPOSE =& $_SESSION['compose_data_' . $COMPOSE_ID];
+    $COMPOSE = rcmail_action_mail_compose::get_compose_data($COMPOSE_ID);
 
     if (isset($COMPOSE['ft_pli']->idPli)) {
       $idPli = $COMPOSE['ft_pli']->idPli;
@@ -449,6 +453,7 @@ class ServiceWebFranceTransfert {
       //         }
       //
       $COMPOSE['ft_pli'] = $content;
+      rcmail_action_mail_compose::set_compose_data($COMPOSE_ID, $COMPOSE);
       return true;
     }
     else if ($this->_httpCode == 403) {

@@ -208,7 +208,7 @@ class mel_france_transfert extends rcube_plugin {
 
     $unlock = rcube_utils::get_input_value('_unlock', rcube_utils::INPUT_POST);
     $COMPOSE_ID = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
-    $COMPOSE = & $_SESSION['compose_data_' . $COMPOSE_ID];
+    $COMPOSE = rcmail_action_mail_compose::get_compose_data($COMPOSE_ID);
     $use_francetransfert = false;
     $over_size_francetransfert = false;
     $francetransfert_up = true;
@@ -253,7 +253,7 @@ class mel_france_transfert extends rcube_plugin {
     $unlock = rcube_utils::get_input_value('_unlock', rcube_utils::INPUT_POST);
     $nb_days = rcube_utils::get_input_value('_nb_days', rcube_utils::INPUT_POST);
     $COMPOSE_ID = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
-    $COMPOSE =& $_SESSION['compose_data_' . $COMPOSE_ID];
+    $COMPOSE = rcmail_action_mail_compose::get_compose_data($COMPOSE_ID);
 
     // set default charset
     $message_charset = isset($_POST['_charset']) ? $_POST['_charset'] : $this->rc->output->get_charset();
@@ -290,6 +290,7 @@ class mel_france_transfert extends rcube_plugin {
 
     if ($this->ws->initPli($COMPOSE_ID, $nb_days, 'fr_FR', $from, $mailto, $mailcc, $mailbcc, $subject, $message_body)) {
       $success = true;
+      $COMPOSE = rcmail_action_mail_compose::get_compose_data($COMPOSE_ID);
 
       // Parcours des pièces jointes pour les lister
       if (is_array($COMPOSE['attachments'])) {
@@ -299,6 +300,7 @@ class mel_france_transfert extends rcube_plugin {
             break;
           }
         }
+        $COMPOSE = rcmail_action_mail_compose::get_compose_data($COMPOSE_ID);
       }
     }
     else {
@@ -319,6 +321,8 @@ class mel_france_transfert extends rcube_plugin {
     //   mel_logs::get_instance()->log(mel_logs::INFO, "mel_france_transfert::sendMessageByFranceTransfert() [success] to $mailto cc $mailcc bcc $mailbcc");
     // }
 
+    rcmail_action_mail_compose::set_compose_data($COMPOSE_ID, $COMPOSE);
+
     // Retourne le résultat au javascript
     $result = array(
             'action' => 'plugin.send_francetransfert',
@@ -336,12 +340,13 @@ class mel_france_transfert extends rcube_plugin {
    */
   public function updateProgressBar() {
     $COMPOSE_ID = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
-    $COMPOSE = & $_SESSION['compose_data_' . $COMPOSE_ID];
+    $COMPOSE = rcmail_action_mail_compose::get_compose_data($COMPOSE_ID);
     $finish = false;
     $success = false;
 
     // Actualisation du statut
     if (!$this->ws->getStatus($COMPOSE_ID, $COMPOSE['ft_from'])) {
+      $COMPOSE = rcmail_action_mail_compose::get_compose_data($COMPOSE_ID);
       $finish = true;
 
       unset($COMPOSE['ft_pli']);
@@ -389,6 +394,7 @@ class mel_france_transfert extends rcube_plugin {
             'errorMessage'    => $this->ws->getErrorMessage(),
             'success'         => $success,
     );
+
     echo json_encode($result);
     exit();
   }
@@ -510,7 +516,8 @@ class mel_france_transfert extends rcube_plugin {
    * clear message composing settings
    */
   public function rcmail_compose_cleanup($id) {
-    if (! isset($_SESSION['compose_data_' . $id])) {
+    $COMPOSE = rcmail_action_mail_compose::get_compose_data($id);
+    if (!isset($COMPOSE)) {
       return;
     }
 
@@ -518,7 +525,8 @@ class mel_france_transfert extends rcube_plugin {
     $rcmail->plugins->exec_hook('attachments_cleanup', array(
             'group' => $id
     ));
-    $rcmail->session->remove('compose_data_' . $id);
+    
+    rcmail_action_mail_compose::remove_compose_data($id);
 
     $_SESSION['last_compose_session'] = $id;
   }

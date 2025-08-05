@@ -197,6 +197,7 @@ class mel_workspace extends bnum_plugin
         $this->add_handler('publics', [$this, 'handler_publics']);
         $this->add_handler('archived', [$this, 'handler_archived']);
         $this->add_handler('publiccount', [$this, 'handler_public_count']);
+        $this->add_handler('feedback_button', [$this, 'handler_feedback_button']);
 
         $this->ignore_footer();
         $this->rc()->output->set_env('visu-mode', $this->get_config('wsp-visu-mode', 'cards'));
@@ -1718,6 +1719,15 @@ class mel_workspace extends bnum_plugin
         if ($args['app'] === self::KEY_TASK) $args['continue'] = false;
 
         return $args;
+    }
+
+    /**
+     * Callback, renvoie le bouton de feedback.
+     *
+     * @return void
+     */
+    public function handler_feedback_button() {
+        return mel_metapage::GetSurveyButton();
     }
     #endregion
 

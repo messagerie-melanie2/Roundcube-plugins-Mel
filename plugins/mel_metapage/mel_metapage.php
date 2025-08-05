@@ -5094,4 +5094,27 @@ class mel_metapage extends bnum_plugin
     {
         rcmail::get_instance()->plugins->get_plugin('mel_metapage')->include_component('bootstrap-loader.js');
     }
+
+    /**
+     * Récupère le bouton de sondage configuré dans les préférences.
+     *
+     * @return string HTML du bouton de sondage ou chaîne vide si non configuré.
+     */
+    public static function GetSurveyButton() : string {
+        $html = '';
+        $rc = rcmail::get_instance();
+        $surveyConfig = $rc->config->get('survey', false);
+
+        if ($surveyConfig !== false) {
+            $html .= html::a([
+                'href' => $surveyConfig['url'],
+                'class' => 'mel-button no-margin-button no-button-margin survey-button bottom-right btn',
+                'target' => '_blank',
+                'rel' => 'noopener noreferrer',
+                'title' => $surveyConfig['text'].' - Ouvrir le sondage dans un nouvel onglet'
+            ], $surveyConfig['icon'] ? html::img(['src' => $surveyConfig['icon']]) : html::div(['style' => 'display:flex;'], html::span([], $surveyConfig['text']).'<bnum-icon class="ml-3" data-icon="rate_review"></bnum-icon>') );
+        }
+
+        return $html;
+    }
 }

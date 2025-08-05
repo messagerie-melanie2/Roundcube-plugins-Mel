@@ -1150,7 +1150,7 @@ class mel_doubleauth extends bnum_plugin
      */
     private function is_auth_strong()
     {
-        return self::date_grace_enabled() || (mel::is_auth_strong() && $this->rc->config->get('is_auth_strong', true));
+        return (self::date_grace_enabled() || (mel::is_auth_strong() && $this->rc->config->get('is_auth_strong', true))  && !$this->rc->config->get('is_preprod'));
     }
 
     /**

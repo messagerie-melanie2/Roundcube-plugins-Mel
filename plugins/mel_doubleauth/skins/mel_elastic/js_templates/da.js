@@ -10,7 +10,7 @@ function input_style() {
 function button_code_forgotten(...args) {
     const [update_page] = args;
     return MelHtml.start
-    .card_link({onclick:update_page}).accessibilty_setup_button({}).text('Impossible d\'utiliser son code ?').end();
+    .card_link('#', { onclick: update_page }).accessibilty_setup_button({}).text('Impossible d\'utiliser son code ?').end();
 }
 
 async function update_page() {

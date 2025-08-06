@@ -1,5 +1,6 @@
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { MelTemplate } from '../../../mel_metapage/js/lib/html/JsHtml/MelTemplate.js';
+import { BnumLog } from '../../../mel_metapage/js/lib/classes/bnum_log.js';
 
 export class Refresh extends MelObject {
   constructor() {
@@ -26,8 +27,8 @@ export class Refresh extends MelObject {
    * Vérifie si de nouveaux posts sont disponibles
    */
   checkPostCount() {
-    console.log('[REFRESH] Vérification de nouveaux posts...');
-    console.trace('[REFRESH] post_seen_count (session):', this.seenCount);
+    BnumLog.info('[REFRESH] Vérification de nouveaux posts...');
+    BnumLog.debug('[REFRESH] post_seen_count (session):', this.seenCount);
 
     this.http_internal_post({
       task: 'forum',
@@ -45,11 +46,11 @@ export class Refresh extends MelObject {
           if (diff > 0) {
             // Nouveaux articles
             if (this.dismissedCount === latestCount) {
-              console.log('[REFRESH] Banniere déjà ignorée pour ce count :', latestCount);
+              BnumLog.info('[REFRESH] Banniere déjà ignorée pour ce count :', latestCount);
               return;
             }
 
-            console.log('[REFRESH] Nouveaux articles détectés:', diff);
+            BnumLog.info('[REFRESH] Nouveaux articles détectés:', diff);
             if (window.ForumRefreshBanner) ForumRefreshBanner.remove();
             this.displayBanner(diff, latestCount);
 
@@ -59,20 +60,20 @@ export class Refresh extends MelObject {
             const dismissId = `d${latestCount}`;
 
             if (this.dismissedCount === dismissId) {
-              console.log('[REFRESH] Bannière suppression déjà ignorée pour ce count :', dismissId);
+              BnumLog.info('[REFRESH] Bannière suppression déjà ignorée pour ce count :', dismissId);
               return;
             }
 
-            console.log('[REFRESH] Articles supprimés détectés :', deletedCount);
+            BnumLog.info('[REFRESH] Articles supprimés détectés :', deletedCount);
             if (window.ForumRefreshBanner) ForumRefreshBanner.remove();
             this.displayBanner(deletedCount, latestCount, true); // <--- true = suppression
 
           } else {
-            console.log('[REFRESH] Aucun changement');
+            BnumLog.info('[REFRESH] Aucun changement');
           }
 
         } catch (e) {
-          console.error("Erreur JSON.parse:", e);
+          BnumLog.error("Erreur JSON.parse:", e);
         }
       }
     });
@@ -91,7 +92,7 @@ export class Refresh extends MelObject {
       },
       on_success: () => {
         this.seenCount = count;
-        console.log("[REFRESH] Compteur vu mis à jour avec succès, rechargement...");
+        BnumLog.info("[REFRESH] Compteur vu mis à jour avec succès, rechargement...");
         window.location.reload();
       }
     });
@@ -108,7 +109,7 @@ export class Refresh extends MelObject {
 
     if (count !== null) {
       this.dismissedCount = count;
-      console.log('[REFRESH] Banniere fermée — dismissedCount =', count);
+      BnumLog.info('[REFRESH] Banniere fermée — dismissedCount =', count);
     }
   }
 
@@ -118,7 +119,7 @@ export class Refresh extends MelObject {
   displayBanner(diff, newCount, isDeleted = false) {
     const templateElement = document.querySelector('#forum_refresh_banner_template');
     if (!templateElement) {
-      console.warn('[BANNER] Template non trouvé dans le DOM');
+      BnumLog.warning('[BANNER] Template non trouvé dans le DOM');
       return;
     }
 
@@ -164,8 +165,9 @@ export class Refresh extends MelObject {
         },
       );
 
-    $('#banner-area').empty();
-    $('#banner-area').append(...template.render());
+    const bannerArea = document.getElementById('banner-area');
+    bannerArea.innerHTML = '';
+    bannerArea.append(...template.render());
 
     window.ForumRefreshBanner = document.querySelector('#banner-area .forum-refresh-banner');
   }

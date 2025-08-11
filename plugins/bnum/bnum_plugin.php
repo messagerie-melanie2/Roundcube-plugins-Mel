@@ -428,9 +428,18 @@ abstract class bnum_plugin extends rcube_plugin
      */
     protected function add_handler($name, $callback)
     {
-        $this->rc()->output->add_handlers(array(
+        $this->rc()->output->add_handlers([
             $name    => $callback,
-        ));
+        ]);
+    }
+
+    /**
+     * Ajoute plusieurs gestionnaires d'événements.
+     *
+     * @param array $handlers Tableau associatif où la clé est le nom du gestionnaire et la valeur est la fonction de rappel.
+     */
+    protected function add_handlers(array $handlers) {
+        $this->rc()->output->add_handlers($handlers);
     }
 
     /**

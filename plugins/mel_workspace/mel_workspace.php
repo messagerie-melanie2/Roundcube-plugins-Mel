@@ -376,6 +376,13 @@ class mel_workspace extends bnum_plugin
 
     public function create()
     {
+        $user = driver_mel::gi()->getUser();
+
+        if ($user->is_external) {
+            // Si l'utilisateur est externe, on ne lui permet pas de créer un espace de travail
+            $this->sendEncodedExit(['error' => 'Unauthorized']);
+        }
+
         try {
             $data = [
                 "avatar" => rcube_utils::get_input_value("avatar", rcube_utils::INPUT_POST),
@@ -398,8 +405,6 @@ class mel_workspace extends bnum_plugin
                 "errored_user" => [],
                 "existing_users" => []
             ];
-
-            $user = driver_mel::gi()->getUser();
             $workspace = new Workspace($data["uid"]);
             $workspace->title($data['title'])
                 ->logo($data['avatar'])

@@ -42,6 +42,7 @@ class mel_external_users extends rcube_plugin {
     // Hooks
     $this->add_hook('storage_connect', array($this, 'storage_connect'));
     $this->add_hook('startup', array($this, 'startup'));
+    $this->add_hook('wsp.enable_create_button', [$this, 'hook_wsp_enable_create_button']);
 
     // Css dédié aux externes
     if (driver_mel::gi()->getUser()->is_external) {
@@ -90,6 +91,15 @@ class mel_external_users extends rcube_plugin {
   public function main_nav_manager($args) {
     if (in_array($args['plugin'], array('rizomo', 'wekan'))) {
       $args['need_button'] = false;
+    }
+
+    return $args;
+  }
+
+  public function hook_wsp_enable_create_button($args) {
+    // Si l'utilisateur est externe, on désactive le bouton de création d'espace de travail
+    if ($args['enabled'] && driver_mel::gi()->getUser()->is_external) {
+        $args['enabled'] = false;
     }
 
     return $args;

@@ -54,6 +54,9 @@ use LibMelanie\Api\Defaut\Workspaces\Share;
 - workspace.service.get => Récupère le service
     - arguments => workspace, objet de type Workspace. Contient tout les données de l'espace
                    services, liste des services, à ajouter le votre
+- wsp.enable_create_button => Permet de désactiver le bouton de création d'espace de travail
+    - arguments => enabled, booléen, si le bouton doit être affiché ou non
+                   plugin, plugin mel_workspace
 */
 
 class mel_workspace extends bnum_plugin
@@ -202,6 +205,11 @@ class mel_workspace extends bnum_plugin
         ]);
 
         $this->ignore_footer();
+
+        $plugin = $this->exec_hook('wsp.enable_create_button', ['enabled' => true, 'plugin' => $this]);
+
+        if ($plugin !== null && $plugin['enabled'] === false) $this->set_env('wsp_usr_can_create', false);
+        
         $this->set_env('visu-mode', $this->get_config('wsp-visu-mode', 'cards'));
 
         $this->send_and_exit('mel_workspace.index');

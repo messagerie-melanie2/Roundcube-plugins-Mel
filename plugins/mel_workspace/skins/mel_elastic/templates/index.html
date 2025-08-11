@@ -1,13 +1,19 @@
+<!-- Inclusion du layout principal -->
 <roundcube:include file="includes/layout.html" />
+<!-- Inclusion du menu de navigation -->
 <roundcube:include file="includes/menu.html" />
 
+<!-- Titre principal de la page -->
 <h1 class="voice">
   <roundcube:label name="workspaces" />
 </h1>
 
+<!-- Contenu principal de la page Workspaces -->
 <div id="layout-content" class="wsp-content wsp-index only-content" role="main">
+  <!-- En-tête de la section workspaces -->
   <div class="wsp-header">
     <div class="row">
+      <!-- Colonne : icône et titre "Mes espaces" -->
       <div class="col-12 col-md-4 mb-3 mb-md-0 d-flex align-items-center justify-content-center justify-content-md-start">
         <span class="material-symbols-outlined colored-wsp-icon calendar_app only-current no-hover only-background">
           workspaces
@@ -16,6 +22,7 @@
           <roundcube:label name="mel_workspace.my_workspaces" />
         </h2>
       </div>
+      <!-- Colonne : barre de recherche des espaces -->
       <div class="col-12 col-md-4 d-flex align-items-center justify-content-center">
         <div class="wsp-search-wsp">
           <div class="input-group mel-search-group mel-centered">
@@ -29,38 +36,49 @@
           </div>
         </div>
       </div>
+      <roundcube:if condition="env:wsp_usr_can_create !== false" />
+      <!-- Colonne : bouton pour créer un nouvel espace -->
       <div class="col-12 col-md-4 d-flex align-items-center justify-content-center justify-content-md-end mt-3 mt-md-0">
         <button class="mel-button no-margin-button no-button-margin create-wsp-button">Créer un espace<bnum-icon
             class="plus" data-icon="add_circle"></bnum-icon></button>
       </div>
+      <roundcube:endif />
     </div>
   </div>
 
+  <!-- Corps principal avec les onglets des espaces -->
   <div class="body">
+    <!-- Composant onglets pour naviguer entre les différents types d'espaces -->
     <bnum-tabs id="main-pannel" data-navs="subscribed, publics, archived" data-ex-label="mel_workspace"
       data-description="Liste des différents espaces auquel on a souscris" data-shadow="false">
       <bnum-tab-container class="row my-3 align-items-center justify-content-center">
         <bnum-tab-receiver class="col-12 col-md-10"></bnum-tab-receiver>
-        <div class="col-12 col-md-2 mt-3 mt-md-0 d-flex justify-content-md-end"><div class="btn-group pressed-list" role="group" aria-label="Mode d'affichage">
-          <bnum-pressed-button id="mode-list"
-            class="btn btn-secondary mel-button no-margin-button no-button-margin cannot-unpress">
-            <bnum-icon>splitscreen</bnum-icon>
-          </bnum-pressed-button>
-          <bnum-pressed-button data-start-pressed="true" id="mode-block"
-            class="btn btn-secondary mel-button no-margin-button no-button-margin cannot-unpress">
-            <bnum-icon>grid_view</bnum-icon>
-          </bnum-pressed-button>
-        </div></div>
+        <!-- Boutons pour changer le mode d'affichage (liste ou grille) -->
+        <div class="col-12 col-md-2 mt-3 mt-md-0 d-flex justify-content-md-end">
+          <div class="btn-group pressed-list" role="group" aria-label="Mode d'affichage">
+            <bnum-pressed-button id="mode-list"
+              class="btn btn-secondary mel-button no-margin-button no-button-margin cannot-unpress">
+              <bnum-icon>splitscreen</bnum-icon>
+            </bnum-pressed-button>
+            <bnum-pressed-button data-start-pressed="true" id="mode-block"
+              class="btn btn-secondary mel-button no-margin-button no-button-margin cannot-unpress">
+              <bnum-icon>grid_view</bnum-icon>
+            </bnum-pressed-button>
+          </div>
+        </div>
       </bnum-tab-container>
+      <!-- Onglet : espaces auxquels l'utilisateur est abonné -->
       <div data-linked-to="subscribed">
         <roundcube:object name="subscribed" />
       </div>
 
+      <!-- Onglet : espaces publics avec scroll infini -->
       <bnum-infinite-scroll-container data-scrollspace="workspace.publics"
         data-pagecount="<roundcube:object name=publiccount />" data-linked-to="publics">
         <roundcube:object name="publics" />
       </bnum-infinite-scroll-container>
 
+      <!-- Onglet : espaces archivés -->
       <div data-linked-to="archived">
         <roundcube:object name="archived" />
       </div>
@@ -68,6 +86,8 @@
   </div>
 </div>
 
+<!-- Bouton de feedback utilisateur -->
 <roundcube:object name="feedback_button"  />
 
+<!-- Inclusion du pied de page -->
 <roundcube:include file="includes/footer.html" />

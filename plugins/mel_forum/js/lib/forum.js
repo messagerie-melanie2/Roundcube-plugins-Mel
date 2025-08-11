@@ -7,6 +7,7 @@ import { MelTemplate } from '../../../mel_metapage/js/lib/html/JsHtml/MelTemplat
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { CursorUtils } from '../../../mel_metapage/js/lib/helpers/cursorUtils.js';
 import { formatPostDate } from './utils.js';
+import { Refresh } from './refresh.js';
 
 export class Forum extends MelObject {
   constructor() {
@@ -33,6 +34,10 @@ export class Forum extends MelObject {
     this.initButtons();
     this.initSortSelect();
     this.initPostDisplay();
+
+    if (!window._refreshInstance) {
+    window._refreshInstance = new Refresh();
+  }
   }
 
   /**

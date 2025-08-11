@@ -4,6 +4,9 @@
   <roundcube:label name="mel_forum" />
 </h1>
 
+<!-- Conteneur pour la bannière -->
+<div id="banner-area"></div>
+
 <div id="layout-content" role="main">
   <div class="content">
     <div class="row return-header d-flex justify-content-between mb-3">
@@ -224,6 +227,24 @@
 <template id="tag_template">
   <span class="tag tag-clickable tag-%%TAG_ID%%" data-tag-id="%%TAG_ID%%" tabindex="0" role="button"
     aria-label="Tag %%TAG_NAME%%">%%TAG_NAME%%</span>
+</template>
+
+<template id="forum_refresh_banner_template">
+  <div class="forum-refresh-banner custom-banner d-flex justify-content-between align-items-center p-3">
+    <span class="banner-message mb-0">
+      %%MESSAGE%%
+    </span>
+    <div class="banner-actions ml-3 d-flex">
+      <!-- Rafraîchir -->
+      <primary-button class="refresh-btn" data-icon="refresh" data-icon-pos="right" square>
+        <roundcube:label name="mel_forum.refresh_button" />
+      </primary-button>
+      <!-- Fermer -->
+      <secondary-button class="dismiss-btn" data-icon="close" data-icon-pos="right" square>
+        <roundcube:label name="mel_forum.dismiss_button" />
+      </secondary-button>
+    </div>
+  </div>
 </template>
 
 <roundcube:include file="includes/footer.html" />

@@ -193,16 +193,19 @@ class mel_workspace extends bnum_plugin
         $this->load_script_module('index');
         self::IncludeWorkspaceBlockComponent();
 
-        $this->add_handler('subscribed', [$this, 'handler_subscribed']);
-        $this->add_handler('publics', [$this, 'handler_publics']);
-        $this->add_handler('archived', [$this, 'handler_archived']);
-        $this->add_handler('publiccount', [$this, 'handler_public_count']);
-        $this->add_handler('feedback_button', [$this, 'handler_feedback_button']);
+        $this->add_handlers([
+            'subscribed' => [$this, 'handler_subscribed'],
+            'publics' => [$this, 'handler_publics'],
+            'archived' => [$this, 'handler_archived'],
+            'publiccount' => [$this, 'handler_public_count'],
+            'feedback_button' => [$this, 'handler_feedback_button'],
+        ]);
 
         $this->ignore_footer();
-        $this->rc()->output->set_env('visu-mode', $this->get_config('wsp-visu-mode', 'cards'));
+        $this->set_env('visu-mode', $this->get_config('wsp-visu-mode', 'cards'));
 
-        $this->rc()->output->send('mel_workspace.index');
+        $this->send_and_exit('mel_workspace.index');
+
     }
 
     public function show_workspace()

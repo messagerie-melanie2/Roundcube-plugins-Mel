@@ -103,6 +103,19 @@ const style = `
     animation: spin var(--bnum-button-spin-duration, 0.75s) var(--bnum-button-spin-timing, linear) var(--bnum-button-spin-iteration, infinite);
 }
 
+:host-context(html.touch) :host(:state(hide-text-on-touch)) > .wrapper,
+:host-context(html.layout-phone) :host(:state(hide-text-on-small)) > .wrapper,
+:host-context(html.layout-small) :host(:state(hide-text-on-small)) > .wrapper {
+    display:none;
+}
+
+:host-context(html.touch) :host(:state(hide-text-on-touch)) .icon,
+:host-context(html.layout-small) :host(:state(hide-text-on-small)) .icon,
+:host-context(html.layout-phone) :host(:state(hide-text-on-small)) .icon {
+    margin-right: 0!important;
+    margin-left: 0!important;
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);

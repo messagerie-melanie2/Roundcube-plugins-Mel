@@ -1,4 +1,6 @@
-//compress:false
+//compress:true
+
+@import 'variables/screen_size.less';
 // material or custom
 @icon-mode: custom;
 
@@ -189,6 +191,39 @@
   /* MARK: Icon */
   &.bnum-button--icon {
     padding: var(--bnum-button-padding, 6px 10px);
+
+    html@{layout-small} & {
+      &.hide-text-on-small {
+        .bnum-button__text {
+          display: none;
+        }
+
+        .bnum-button__icon,
+        bnum-shadow-icon,
+        bnum-icon {
+          margin-left: 0 !important;
+          margin-right: 0 !important;
+        }
+      }
+    }
+
+    html@{touch} & {
+      &.hide-text-on-touch {
+        .bnum-button__text {
+          &:extend(html.layout-small
+            .bnum-button.bnum-button--icon.hide-text-on-small
+            .bnum-button__text);
+        }
+
+        .bnum-button__icon,
+        bnum-shadow-icon,
+        bnum-icon {
+          &:extend(html.layout-small
+            .bnum-button.bnum-button--icon.hide-text-on-small
+            .bnum-button__icon);
+        }
+      }
+    }
 
     > .bnum-button__wrapper {
       > .bnum-button__icon,

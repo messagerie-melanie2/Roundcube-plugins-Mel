@@ -269,6 +269,18 @@ export default class BnumHTMLButton extends ABnumHTMLElement {
   }
 
   /**
+   * Indique si le texte doit être masqué en fonction de la taille de la mise en page.
+   * @type {?('small' | 'touch')}
+   * @readonly
+   */
+  get hideTextOnLayoutSize() {
+    const data = this.data('hide');
+
+    if (['small', 'touch', null, undefined].includes(data)) return data;
+    else return null;
+  }
+
+  /**
    * Rendu du composant.
    * @protected
    * @returns {string}
@@ -300,6 +312,11 @@ export default class BnumHTMLButton extends ABnumHTMLElement {
       else txt += icon;
 
       this.#_internals.states.add('icon');
+
+      if (this.hideTextOnLayoutSize)
+        this.#_internals.states.add(
+          `hide-text-on-${this.hideTextOnLayoutSize}`,
+        );
     } else if (isLoading) {
       this.#_internals.states.add('without-icon-loading');
       txt += `<${BnumHtmlShadowIcon.TAG} class="loader" data-icon="${ICON_LOADER}"></${BnumHtmlShadowIcon.TAG}>`;
@@ -453,6 +470,61 @@ export default class BnumHTMLButton extends ABnumHTMLElement {
   }
 
   /**
+   * Applique les options de style au bouton.
+   * @param {HTMLElement} button - Bouton à mettre en forme
+   * @param {Object} [options={}]
+   * @param {string} [options.variation='primary'] - Variation du bouton
+   * @param {?string} [options.icon=null] - Icône à ajouter, si elle n'existe déjà pas.
+   * @param {'left' | 'right'} [options.iconPos='right'] - Position de l'icône
+   * @param {boolean} [options.square=false] - Avoir des bordure complètement ronde ou légèrement carrée
+   * @param {boolean} [options.loading=false] - Si il est en mode "chargement" ou non
+   * @param {?('small' | 'touch')} [option.hide=null] - Si on cache le texte en fonction de la taille de l'écran (seulement si une icône éxiste)
+   * @return {HTMLElement} - Bouton mis en forme
+   */
+  static Design(
+    button,
+    {
+      variation = 'primary',
+      icon = null,
+      iconPos = 'right',
+      square = false,
+      loading = false,
+      hide = null,
+    } = {},
+  ) {
+    button.classList.add('bnum-button', `bnum-button--${variation}`);
+
+    if (square) button.classList.add('bnum-button--square');
+    if (loading) button.classList.add('bnum-button--loading');
+
+    let wrapper = document.createElement('div');
+    wrapper.classList.add('bnum-button__wrapper');
+
+    //On cherche une icône
+    let iconElement =
+      button.querySelector('bnum-icon') ??
+      button.querySelector('bnum-shadow-icon');
+
+    if (!iconElement && icon) iconElement = BnumHtmlIcon.Create({ icon });
+
+    let textWrapper = document.createElement('span');
+    textWrapper.classList.add('bnum-button__text');
+
+    textWrapper.append(...button.childNodes);
+
+    if (iconElement) {
+      if (hide) button.classList.add(`hide-text-on-${hide}`);
+
+      if (iconPos === 'left') wrapper.append(iconElement, textWrapper);
+      else wrapper.append(textWrapper, iconElement);
+    }
+
+    button.appendChild(wrapper);
+
+    return button;
+  }
+
+  /**
    *
    * Méthode statique de création d'un bouton Bnum.
    * Permet de créer dynamiquement un élément bouton personnalisé avec les propriétés spécifiées.
@@ -467,6 +539,7 @@ export default class BnumHTMLButton extends ABnumHTMLElement {
    * @param {'primary'|'secondary'|'danger'|null} [options.variation=null] - Variation du bouton.
    * @param {boolean} [options.square=false] - Indique si le bouton est carré.
    * @param {boolean} [options.loading=false] - Indique si le bouton est en état de chargement.
+   * @param {?('small' | 'touch')} [options.hideOn=null] - Indique si le texte doit être masqué en fonction de la taille de la mise en page.
    * @returns {BnumHTMLButton | BnumHTMLDangerButton | BnumHTMLSecondaryButton | BnumHTMLPrimaryButton} Élément bouton Bnum configuré.
    */
   static _p_Create(
@@ -479,6 +552,7 @@ export default class BnumHTMLButton extends ABnumHTMLElement {
       variation = null,
       square = false,
       loading = false,
+      hideOn = null,
     } = {},
   ) {
     let node = document.createElement(buttonClass.TAG);
@@ -492,6 +566,7 @@ export default class BnumHTMLButton extends ABnumHTMLElement {
     if (variation) node.setAttribute('data-variation', variation);
     if (square) node.setAttribute('square', true);
     if (loading) node.setAttribute('loading', true);
+    if (hideOn) node.setAttribute('data-hide', hideOn);
 
     return node;
   }
@@ -508,6 +583,7 @@ export default class BnumHTMLButton extends ABnumHTMLElement {
    * @param {'primary'|'secondary'|'danger'} [options.variation=EButtonType.PRIMARY] - Variation du bouton.
    * @param {boolean} [options.square=false] - Indique si le bouton est carré.
    * @param {boolean} [options.loading=false] - Indique si le bouton est en état de chargement.
+   * @param {?('small' | 'touch')} [options.hideOn=null] - Indique si le texte doit être masqué en fonction de la taille de la mise en page.
    * @returns {BnumHTMLButton} Élément bouton Bnum configuré.
    */
   static Create({
@@ -518,6 +594,7 @@ export default class BnumHTMLButton extends ABnumHTMLElement {
     variation = EButtonType.PRIMARY,
     square = false,
     loading = false,
+    hideOn = null,
   } = {}) {
     return this._p_Create(this, {
       text,
@@ -527,6 +604,7 @@ export default class BnumHTMLButton extends ABnumHTMLElement {
       variation,
       square,
       loading,
+      hideOn,
     });
   }
 
@@ -604,6 +682,7 @@ export class BnumHTMLPrimaryButton extends BnumHTMLButton {
    * @param {?string} [options.iconMargin=null] - Marge CSS appliquée à l'icône.
    * @param {boolean} [options.square=false] - Indique si le bouton est carré.
    * @param {boolean} [options.loading=false] - Indique si le bouton est en état de chargement.
+   * @param {?('small' | 'touch')} [options.hideOn=null] - Indique si le texte doit être masqué en fonction de la taille de la mise en page.
    * @returns {HTMLElement} Élément bouton Bnum configuré.
    */
   static Create({
@@ -613,6 +692,7 @@ export class BnumHTMLPrimaryButton extends BnumHTMLButton {
     iconMargin = null,
     square = false,
     loading = false,
+    hideOn = null,
   } = {}) {
     return this._p_Create(this, {
       text,
@@ -621,6 +701,7 @@ export class BnumHTMLPrimaryButton extends BnumHTMLButton {
       iconMargin,
       square,
       loading,
+      hideOn,
     });
   }
 
@@ -682,6 +763,7 @@ export class BnumHTMLSecondaryButton extends BnumHTMLButton {
    * @param {?string} [options.iconMargin=null] - Marge CSS appliquée à l'icône.
    * @param {boolean} [options.square=false] - Indique si le bouton est carré.
    * @param {boolean} [options.loading=false] - Indique si le bouton est en état de chargement.
+   * @param {?('small' | 'touch')} [options.hideOn=null] - Indique si le texte doit être masqué en fonction de la taille de la mise en page.
    * @returns {HTMLElement} Élément bouton Bnum configuré.
    */
   static Create({
@@ -691,6 +773,7 @@ export class BnumHTMLSecondaryButton extends BnumHTMLButton {
     iconMargin = null,
     square = false,
     loading = false,
+    hideOn = null,
   } = {}) {
     return this._p_Create(this, {
       text,
@@ -699,6 +782,7 @@ export class BnumHTMLSecondaryButton extends BnumHTMLButton {
       iconMargin,
       square,
       loading,
+      hideOn,
     });
   }
 
@@ -760,6 +844,7 @@ export class BnumHTMLDangerButton extends BnumHTMLButton {
    * @param {?string} [options.iconMargin=null] - Marge CSS appliquée à l'icône.
    * @param {boolean} [options.square=false] - Indique si le bouton est carré.
    * @param {boolean} [options.loading=false] - Indique si le bouton est en état de chargement.
+   * @param {?('small' | 'touch')} [options.hideOn=null] - Indique si le texte doit être masqué en fonction de la taille de la mise en page.
    * @returns {HTMLElement} Élément bouton Bnum configuré.
    */
   static Create({
@@ -769,6 +854,7 @@ export class BnumHTMLDangerButton extends BnumHTMLButton {
     iconMargin = null,
     square = false,
     loading = false,
+    hideOn = null,
   } = {}) {
     return this._p_Create(this, {
       text,
@@ -777,6 +863,7 @@ export class BnumHTMLDangerButton extends BnumHTMLButton {
       iconMargin,
       square,
       loading,
+      hideOn,
     });
   }
 

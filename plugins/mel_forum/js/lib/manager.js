@@ -511,17 +511,28 @@ export class Manager extends MelObject {
   }
 
   /**
-   * copie dans le presse papier l'url de la page
+   * Copie dans le presse-papier l’URL workspace
    */
   copyPostLink() {
-    let url = window.location.href.replaceAll(
-      '&_is_from=iframe',
-      '&_force_bnum=1',
-    );
-    navigator.clipboard.writeText(url).then(() => {
+    const workspaceUid  = rcmail?.env?.workspace_uid;
+    const postUid = rcmail?.env?.post_uid;
+    if (!workspaceUid || !postUid) {
+      console.error('[forum] workspace_uid ou post_uid manquant');
+      return;
+    }
+
+    const url = new URL('/', window.location.origin);
+    url.searchParams.set('_task', 'workspace');
+    url.searchParams.set('_action', 'workspace');
+    url.searchParams.set('_uid', workspaceUid);
+    url.searchParams.set('_page', 'forum');
+    url.searchParams.set('_post_uid', postUid);
+    url.searchParams.set('_force_bnum', '1');
+
+    navigator.clipboard.writeText(url.toString()).then(() => {
       BnumMessage.DisplayMessage(
         rcmail.gettext('mel_forum.link_copied'),
-        eMessageType.Confirmation,
+        eMessageType.Confirmation
       );
     });
   }

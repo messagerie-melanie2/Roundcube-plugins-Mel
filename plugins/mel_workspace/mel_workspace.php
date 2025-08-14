@@ -314,7 +314,14 @@ class mel_workspace extends bnum_plugin
 
             self::IncludeNavBarComponent();
 
-            if ($this->get_input('_page')) $this->rc()->output->set_env('start_page', $this->get_input('_page'));
+            if ($this->get_input('_page')) {
+            $this->rc()->output->set_env('start_page', $this->get_input('_page'));
+            }
+
+            // AJOUT : publier l’UID du post à ouvrir directement depuis son URL
+            if ($this->get_input('_post_uid')) {
+                $this->rc()->output->set_env('start_post_uid', $this->get_input('_post_uid'));
+            }
         } else {
             $this->load_script_module('page.not_in_workspace.js', '/js/lib/program/actions/');
             $this->rc()->output->set_env('current_workspace_uid', $uid);

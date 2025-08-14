@@ -299,15 +299,57 @@ export class WorkspacePage extends WorkspaceObject {
   _display_add_user_modal(context) {
     context.getElementById('add-user-modal').style.display = 'block';
   }
-
+  
   /**
-   * Set the startup page based on the environment variable.
-   * @returns {Promise<void>}
-   * @private
+   * Ouvre la page de démarrage. Si _post_uid est présent,on ouvre directement l’article.
    */
   async _setStartupPage() {
-    await NavBarManager.WaitLoading(),
-      this.switch_workspace_page(this.get_env('start_page'));
+    await NavBarManager.WaitLoading();
+
+    const startPage = this.get_env('start_page');
+    const postUid   = this.get_env('start_post_uid');
+    const wsUid     = this.workspace?.uid;
+    const topRcmail = this.rcmail(true) || window.rcmail;
+
+    // workspace?_page=forum&_post_uid=<uid>
+    if (startPage === 'forum' && postUid && wsUid) {
+      // Si la frame forum n’existe pas encore = on attend sa création,
+      // puis on force l’ouverture de l’article.
+      if (!FramesManager.Instance.has_frame('forum')) {
+        topRcmail.add_event_listener_ex(
+          'switch_frame.after',
+          'forum_deeplink_startup',
+          (args) => {
+            if (args?.task !== 'forum') return;
+            // one-shot
+            topRcmail.remove_handler_ex('switch_frame.after', 'forum_deeplink_startup');
+
+            this.switch_workspace_page('forum', {
+              action: 'post',
+              newArgs: { _uid: postUid, _workspace_uid: wsUid },
+            });
+          }
+        );
+
+        // Déclenche la création de la frame forum
+        try { NavBarManager.currentNavBar.select('forum', { background: false }); } catch {}
+      } else {
+        // Frame déjà là = on ouvre directement l’article
+        this.switch_workspace_page('forum', {
+          action: 'post',
+          newArgs: { _uid: postUid, _workspace_uid: wsUid },
+        });
+      }
+
+      // Consommer le paramètre pour ne pas ré-ouvrir ensuite
+      try { delete topRcmail.env.start_post_uid; } catch {}
+      return;
+    }
+
+    // Comportement standard
+    if (startPage) {
+      this.switch_workspace_page(startPage);
+    }
   }
 
   #_get_row(number = 0) {

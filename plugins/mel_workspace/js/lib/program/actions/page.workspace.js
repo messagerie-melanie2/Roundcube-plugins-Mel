@@ -301,13 +301,14 @@ export class WorkspacePage extends WorkspaceObject {
   }
 
   /**
-   * Set the startup page based on the environment variable.
-   * @returns {Promise<void>}
-   * @private
+   * Ouvre la page de démarrage. Si _post_uid est présent,on ouvre directement l’article.
    */
   async _setStartupPage() {
-    await NavBarManager.WaitLoading(),
-      this.switch_workspace_page(this.get_env('start_page'));
+    await NavBarManager.WaitLoading();
+
+    const startPage = this.get_env('start_page');
+
+    if (startPage) this.switch_workspace_page(startPage);
   }
 
   #_get_row(number = 0) {

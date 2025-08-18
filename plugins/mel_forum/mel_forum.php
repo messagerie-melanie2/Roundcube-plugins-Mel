@@ -638,12 +638,6 @@ class mel_forum extends bnum_plugin
             // Récupérer le nombre de commentaire
             $comment_count = $post->countComments();
             $is_fav = $this->_is_fav($post->uid, $workspace_uid);
-            $post_link = $this->rc()->url(array(
-                "_task" => "forum",
-                "_action" => "post",
-                "_uid" => $post->uid,
-                "workspace_uid" => $workspace_uid,
-            ), false, true, true);
 
             // Récupérer la première image du post et son URL
             $first_image = $post->firstImage();
@@ -670,7 +664,7 @@ class mel_forum extends bnum_plugin
                 'favorite' => $is_fav,
                 'isliked' => $isliked,
                 'isdisliked' => $isdisliked,
-                'post_link' => $post_link,
+                'workspace_id' => $workspace_uid,
                 'image_url' => $image_url,
                 'has_owner_rights' => $this->_has_owner_rights($post, $workspace_uid),
                 'settings' => $post->settings,

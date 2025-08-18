@@ -6,7 +6,7 @@ import {
 import { MelTemplate } from '../../../mel_metapage/js/lib/html/JsHtml/MelTemplate.js';
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { CursorUtils } from '../../../mel_metapage/js/lib/helpers/cursorUtils.js';
-import { formatPostDate } from './utils.js';
+import { createPostLink, formatPostDate } from './utils.js';
 import { Refresh } from './refresh.js';
 
 export class Forum extends MelObject {
@@ -592,18 +592,14 @@ export class Forum extends MelObject {
    * Récupère le lien a href le plus proche et le copie dans le presse papier
    * @param {*} event
    */
-  copyPostLink(event) {
+  copyPostLink(postId, wspId, event) {
     event.preventDefault();
     event.stopPropagation();
-    let url = event.currentTarget
-      .closest('a')
-      .getAttribute('href')
-      .replaceAll('&_is_from=iframe', '&_force_bnum=1');
-    navigator.clipboard.writeText(url).then(() => {
-      BnumMessage.DisplayMessage(
-        rcmail.gettext('mel_forum.link_copied'),
-        eMessageType.Confirmation,
-      );
+
+    const url = createPostLink(postId, wspId);
+
+    this.copy_to_clipboard(url, {
+      text: rcmail.gettext('mel_forum.link_copied'),
     });
   }
 
@@ -914,9 +910,14 @@ export class Forum extends MelObject {
 
       // Vérifiez si une image est présente
       const hasImage = post.image_url && post.image_url.trim() !== '';
-
       data = {
-        POST_LINK: post.post_link,
+        POST_LINK: this.url('forum', {
+          action: 'post',
+          params: {
+            _uid: postId,
+            _workspace_uid: post.workspace_id,
+          },
+        }),
         POST_CREATOR: post.post_creator,
         CREATOR_EMAIL: post.creator_email,
         POST_DATE: formatPostDate(post.creation_date),
@@ -1052,12 +1053,12 @@ export class Forum extends MelObject {
         .addEvent(
           '.post-options-button.copy-post',
           'click',
-          this.copyPostLink.bind(this),
+          this.copyPostLink.bind(this, postId, post.workspace_id),
         )
         .addEvent(
           '.post-options-button.copy-post',
-          'Keydown',
-          this.copyPostLink.bind(this),
+          'keydown',
+          this.copyPostLink.bind(this, postId, post.workspace_id),
         ) // Gestion au clavier
         .addEvent(
           '.post-options-button.pin-post',

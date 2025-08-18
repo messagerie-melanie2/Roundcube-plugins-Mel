@@ -328,7 +328,13 @@ class mel_metapage extends bnum_plugin
 
                 case 'preview':
                 case 'show':
-                    if (rcube_charset::convert(rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GPC), 'UTF7-IMAP') === $this->rc->config->get('models_mbox')) {
+                    $current_mbox_name = rcube_charset::convert(rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GPC), 'UTF7-IMAP');
+
+                    //On vérifie si on est sur une boite partagée
+                    if (strpos($current_mbox_name, 'Boite partagée') !== false) {
+                        $current_mbox_name = end(explode('/',$current_mbox_name));
+                    }
+                    if ($current_mbox_name === $this->rc->config->get('models_mbox')) {
                         $this->rc->output->set_env("is_model", true);
                     }
                     break;

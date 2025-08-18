@@ -160,6 +160,14 @@ export class ModuleForum extends WorkspaceObject {
 
     //Avant le switch de frame
     NavBarManager.AddEventListener().OnBeforeSwitch((args) => {
+      if (this.get_env('start_page') === 'forum' && this.get_env('start_bag')) {
+        return {
+          _workspace_uid: this.workspace.uid,
+          askedTask: args.task,
+          _uid: this.get_env('start_bag'),
+          _action: 'post',
+        };
+      }
       if (
         args.task === 'forum' &&
         (!FramesManager.Instance.has_frame('forum') ||

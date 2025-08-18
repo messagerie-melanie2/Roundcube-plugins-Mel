@@ -310,17 +310,18 @@ class mel_workspace extends bnum_plugin
             $navbar->add_css(__DIR__ . '/' . $this->local_skin_path() . '/navbar.css');
             $navbar->add_css(__DIR__ . '/../../' . $this->local_skin_path() . '/material-symbols.css');
 
-            $this->rc()->output->set_env('navbar', $navbar->get());
+            $this->set_env('navbar', $navbar->get());
 
             self::IncludeNavBarComponent();
 
+            // Permet de récupérer la page en cours pour l'ouvrir directement
             if ($this->get_input('_page')) {
-            $this->rc()->output->set_env('start_page', $this->get_input('_page'));
+                $this->set_env('start_page', $this->get_input('_page'));
             }
 
-            // AJOUT : publier l’UID du post à ouvrir directement depuis son URL
-            if ($this->get_input('_post_uid')) {
-                $this->rc()->output->set_env('start_post_uid', $this->get_input('_post_uid'));
+            // Permet de récupérer une donnée
+            if ($this->get_input('_bag')) {
+                $this->set_env('start_bag', $this->get_input('_bag'));
             }
         } else {
             $this->load_script_module('page.not_in_workspace.js', '/js/lib/program/actions/');
@@ -329,8 +330,8 @@ class mel_workspace extends bnum_plugin
         }
 
         $this->ignore_footer();
-        $this->rc()->output->set_pagetitle($this->gettext(['name' => 'page_title', 'name' => $workspace->title()]));
-        $this->rc()->output->send('mel_workspace.workspace');
+        $this->set_page_title($this->gettext(['name' => 'page_title', 'name' => $workspace->title()]));
+        $this->send_and_exit('mel_workspace.workspace');
     }
 
     public function action_workspace()

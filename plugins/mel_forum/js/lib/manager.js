@@ -12,6 +12,7 @@ import {
 } from '../../../mel_metapage/js/lib/classes/modal.js';
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { CursorUtils } from '../../../mel_metapage/js/lib/helpers/cursorUtils.js';
+import { createPostLink } from './utils.js';
 export class Manager extends MelObject {
   constructor() {
     super();
@@ -514,26 +515,17 @@ export class Manager extends MelObject {
    * Copie dans le presse-papier l’URL workspace
    */
   copyPostLink() {
-    const workspaceUid  = rcmail?.env?.workspace_uid;
+    const workspaceUid = rcmail?.env?.workspace_uid;
     const postUid = rcmail?.env?.post_uid;
     if (!workspaceUid || !postUid) {
       console.error('[forum] workspace_uid ou post_uid manquant');
       return;
     }
 
-    const url = new URL('/', window.location.origin);
-    url.searchParams.set('_task', 'workspace');
-    url.searchParams.set('_action', 'workspace');
-    url.searchParams.set('_uid', workspaceUid);
-    url.searchParams.set('_page', 'forum');
-    url.searchParams.set('_post_uid', postUid);
-    url.searchParams.set('_force_bnum', '1');
+    const url = createPostLink(postUid, workspaceUid);
 
-    navigator.clipboard.writeText(url.toString()).then(() => {
-      BnumMessage.DisplayMessage(
-        rcmail.gettext('mel_forum.link_copied'),
-        eMessageType.Confirmation
-      );
+    this.copy_to_clipboard(url, {
+      text: rcmail.gettext('mel_forum.link_copied'),
     });
   }
 

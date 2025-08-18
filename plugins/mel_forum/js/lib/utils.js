@@ -1,4 +1,4 @@
-export { parseFrenchDate, formatPostDate, formatCommentDate };
+export { parseFrenchDate, formatPostDate, formatCommentDate, createPostLink };
 
 /**
  * Analyse une date française sous forme de chaîne et la convertit en objet Moment.
@@ -58,4 +58,24 @@ function formatCommentDate(createdDate) {
   }
 
   return commentDate.format('D MMMM YYYY');
+}
+
+/**
+ * Génère un lien URL vers un post du forum dans un espace de travail donné.
+ *
+ * @param {string} postId - L'identifiant du post à afficher.
+ * @param {string} wspId - L'identifiant de l'espace de travail.
+ * @returns {string} L'URL générée pour accéder au post dans le forum.
+ */
+function createPostLink(postId, wspId) {
+  const url = new URL('/', window.location.origin);
+
+  url.searchParams.set('_task', 'workspace');
+  url.searchParams.set('_action', 'workspace');
+  url.searchParams.set('_uid', wspId);
+  url.searchParams.set('_page', 'forum');
+  url.searchParams.set('_bag', postId);
+  url.searchParams.set('_force_bnum', '1');
+
+  return url.toString();
 }

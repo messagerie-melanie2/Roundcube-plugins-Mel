@@ -416,20 +416,21 @@ if (rcmail && window.mel_metapage) {
     });
 
     if (rcmail.env.task === 'settings') {
-      if(parent.rcmail.env.event_limit && parent.rcmail.env.event_limit !==
-        rcmail.env.event_limit
+      if (
+        parent.rcmail.env.event_limit &&
+        parent.rcmail.env.event_limit !== rcmail.env.event_limit
       ) {
         parent.rcmail.env.event_limit = rcmail.env.event_limit;
         (async () => {
           const manager = await (async () => {
             try {
-              return PageManager.Instance; 
+              return PageManager.Instance;
             } catch (error) {
               return await PageManager.Load();
             }
           })();
 
-          if(manager.Instance.has_frame('calendar')){
+          if (manager.Instance.has_frame('calendar')) {
             manager.Instance.get_window().remove_frame('calendar');
           }
         })();
@@ -1977,12 +1978,54 @@ if (rcmail && window.mel_metapage) {
     return current_bal;
   }
 
+  /**
+   * Build the source for the labels context menu
+   * @param {*} parentMenu
+   * @returns {any[]}
+   */
+  // eslint-disable-next-line no-inner-declarations
+  function build_labels_source(parentMenu) {
+    const src = [];
+    // entrée "Gérer les étiquettes" dans le SOUS-menu
+    src.push({
+      label: 'Gérer les étiquettes',
+      command: 'gestion_labels',
+      classes: 'manage-labels tb_label_div_manage_labels',
+    });
+
+    for (const key in rcmail.env.labels_translate) {
+      if (
+        !Object.prototype.hasOwnProperty.call(rcmail.env.labels_translate, key)
+      )
+        continue;
+
+      const labelText = rcmail.env.labels_translate[key];
+      const haveLabel = Enumerable.from(parentMenu.selected_object.classList)
+        .toArray()
+        .includes('label_' + key);
+
+      src.push({
+        label: labelText,
+        command: haveLabel ? 'remove_label' : 'add_label',
+        props: { label: key, message: parentMenu.selected_object },
+        classes:
+          (haveLabel ? 'selected ' : '') + 'label ' + key + ' label_' + key,
+      });
+    }
+
+    return src;
+  }
+
+  /**
+   * Context menu for managing labels
+   */
+  let manageLabelsMenu = null;
+
   rcmail.addEventListener('contextmenu_init', function (menu) {
     // identify the folder list context menu
-    if (menu.menu_name == 'messagelist') {
+    if (menu.menu_name === 'messagelist') {
       // add a shortcut to the folder management screen to the end of the menu
       //menu.menu_source.push({label: rcmail.gettext('new-mail-from', "mel_metapage"), command: 'new-mail-from', classes: 'compose mel-new-compose options'});
-
       menu.menu_source.unshift({
         label: 'Editer le modèle',
         command: 'edit_model',
@@ -2000,9 +2043,53 @@ if (rcmail && window.mel_metapage) {
         classes: 'ct-cm',
       });
       menu.menu_source.push({
-        label: 'Gérer les étiquettes',
-        command: 'gestion_labels',
+        label: 'Etiquettes du message',
+        command: 'manage_sub_labels',
         classes: 'ct-tb',
+      });
+
+      if (!menu.isInit) {
+        const old = menu.hide_menu;
+        menu.hide_menu = function (...args) {
+          if (menu.no_hide) {
+            menu.no_hide = false;
+            return;
+          }
+          old.call(menu, args);
+        };
+      }
+
+      // Intercepter le clic sur l'item parent pour ouvrir le sous-menu
+      menu.addEventListener('beforecommand', function (p) {
+        if (p.command !== 'manage_sub_labels') return;
+
+        // (re)créer le sous-menu avec la source dynamique courante
+        if (manageLabelsMenu) {
+          manageLabelsMenu.destroy(); // proprement, sinon doublons
+          manageLabelsMenu.container = null; // proprement, sinon doublons
+          manageLabelsMenu = null;
+          rcmail.env.contextmenus['manage_sub_labels'] = null;
+        }
+
+        manageLabelsMenu = rcmail.contextmenu.init({
+          menu_name: 'manage_sub_labels',
+          menu_source: build_labels_source(menu), // JSON array supporté
+          list_object: menu.list_object,
+        });
+
+        // Le positionner comme un vrai sous-menu
+        manageLabelsMenu.is_submenu = true;
+        manageLabelsMenu.parent_menu = menu;
+        manageLabelsMenu.parent_object = p.el; // ancre visuelle à côté de l’item cliqué
+
+        // Ouvrir le sous-menu à côté de l’item
+        rcmail.contextmenu.hide_all(p.evt, true); // ferme autres sous-menus ouverts
+        manageLabelsMenu.show_menu(null, p.evt);
+
+        menu.no_hide = true;
+
+        // Empêcher l’exécution "normale" d’une commande
+        return false;
       });
 
       menu.addEventListener('beforeactivate', (p) => {
@@ -2019,7 +2106,6 @@ if (rcmail && window.mel_metapage) {
         const balp = 'balpartagee.';
         //AUTRE
         const bap = 'Boite partag&AOk-e/';
-        const splited_key = '.-.';
         let current_bal = rcmail.get_message_mailbox();
 
         if (current_bal.includes(balp)) {
@@ -2041,58 +2127,6 @@ if (rcmail && window.mel_metapage) {
         )
           $('.ct-cm').css('display', '');
         else $('.ct-cm').css('display', 'none');
-
-        $('.ct-tb')
-          .on('mouseover', (e) => {
-            let source = [];
-
-            for (const key in rcmail.env.labels_translate) {
-              if (
-                Object.hasOwnProperty.call(rcmail.env.labels_translate, key)
-              ) {
-                const element = rcmail.env.labels_translate[key];
-                const haveLabel = Enumerable.from(
-                  menu.selected_object.classList,
-                )
-                  .toArray()
-                  .includes('label_' + key);
-
-                source.push({
-                  label: element,
-                  command: haveLabel ? 'remove_label' : 'add_label',
-                  props: { label: key, message: menu.selected_object },
-                  classes:
-                    (haveLabel ? 'selected' : '') +
-                    ' label ' +
-                    key +
-                    ' label_' +
-                    key,
-                });
-              }
-            }
-
-            var a = rcmail.contextmenu.init({
-              menu_name: 'labellist',
-              menu_source: source,
-            });
-
-            a.show_menu($('.ct-tb'), e);
-            menu.labels_submenu = a;
-          })
-          .on('mouseout', (e) => {
-            let target = $(e.relatedTarget);
-            while (target[0].nodeName !== 'BODY') {
-              if (target[0].id == 'rcm_labellist') return;
-              target = target.parent();
-            }
-
-            menu.labels_submenu.destroy();
-            delete menu.labels_submenu;
-          });
-      });
-
-      menu.addEventListener('hide_menu', (p) => {
-        $('.ct-tb').off('mouseover').off('mouseout');
       });
 
       // make sure this new shortcut is always active
@@ -2101,32 +2135,26 @@ if (rcmail && window.mel_metapage) {
         switch (p.command) {
           case 'move':
             $(p.el).attr('aria-disabled', 'false').parent().css('display', '');
+            break;
           case 'gestion_labels':
+          case 'add_label':
+          case 'remove_label':
+          case 'manage_sub_labels':
             return true;
           default:
             break;
         }
       });
-    } else if (menu.menu_name == 'labellist') {
+
       menu.addEventListener('beforeactivate', (p) => {
-        rcm_tb_label_init_onclick($('#rcm_labellist li a'), () => {
-          menu.triggerEvent('hide_menu');
-          menu.destroy();
-        });
-        $('#rcm_labellist').on('mouseout', (e) => {
-          let target = $(e.relatedTarget);
-          while (target[0].nodeName !== 'BODY') {
-            if (target[0].id == 'rcm_labellist' || target.hasClass('ct-tb'))
-              return;
-            target = target.parent();
-          }
-
-          menu.destroy();
-        });
-      });
-
-      menu.addEventListener('hide_menu', (p) => {
-        $('#rcm_labellist').off('mouseout');
+        if (p.ref.menu_name !== 'manage_sub_labels') return;
+        rcm_tb_label_init_onclick(
+          $('#rcm_manage_sub_labels li a.label'),
+          () => {
+            menu.triggerEvent('hide_menu');
+            menu.destroy();
+          },
+        );
       });
     }
   });

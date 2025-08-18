@@ -101,6 +101,9 @@ class mel_forum extends bnum_plugin
                 $this->register_action('download_article', [$this, 'download_article']);
                 // Affichage de l'historique d'un post
                 $this->register_action('history', [$this, 'history']);
+                $this->register_action('count_posts', [$this, 'count_posts']);
+                $this->register_action('update_seen_post_count', [$this, 'update_seen_post_count']);
+
 
                 $this->register_action('create_zip_with_md_and_images', [$this, 'create_zip_with_md_and_images']);
             } else if (!$this->rc()->action === 'load_image') {
@@ -673,15 +676,39 @@ class mel_forum extends bnum_plugin
     }
 
     /**
-     * Met dans l'env roundcube une liste de post.
+     * Affiche les publications dans l'interface Roundcube pour un espace de travail donné.
      *
-     * Cette fonction récupère toutes les publications d'un espace de travail, 
-     * formate chaque publication avec ses détails (créateur, date, titre, résumé, image, tags, 
-     * et nombre de réactions et commentaires) et génère le HTML correspondant.
+     * Cette méthode récupère les publications d’un espace de travail spécifique, les formate
+     * et les transmet à l’environnement Roundcube pour affichage côté client.
+     * Elle initialise également les compteurs nécessaires pour suivre le nombre total de publications
+     * et le nombre de publications déjà vues par l’utilisateur.
+     *
+     * Fonctionnement :
+     * - Récupère l'identifiant de l’espace de travail depuis les paramètres de requête.
+     * - Génère les données des publications au format JSON et les envoie à l’environnement JavaScript.
+     * - Calcule le nombre total de publications dans l’espace de travail.
+     * - Stocke, si nécessaire, le nombre de publications vues dans la session utilisateur.
+     * - Met à jour l’environnement Roundcube avec les compteurs "total" et "vu".
+     *
+     * @return void
      */
     protected function _show_posts()
     {
+        $workspace_uid = rcube_utils::get_input_value('_workspace_uid', rcube_utils::INPUT_GPC);
+        
         $this->rc()->output->set_env('posts_data', $this->_post_object_to_JSON(null, self::POST_DEFAULT_LIMIT, true));
+
+        // Compteur total actuel d’articles publiés
+        $count = $this->_get_post_count_internal($workspace_uid);
+
+        // Compteur vu stocké dans la session utilisateur
+        if (!isset($_SESSION["forum_seen_count_{$workspace_uid}"])) {
+            $_SESSION["forum_seen_count_{$workspace_uid}"] = $count;
+        }
+        $seen = $_SESSION["forum_seen_count_{$workspace_uid}"];
+
+        $this->rc()->output->set_env('post_new_count', $count); // compteur total actuel
+        $this->rc()->output->set_env('post_seen_count', $seen); // compteur "vu" stocké pour l’utilisateur
     }
 
     /**
@@ -694,6 +721,112 @@ class mel_forum extends bnum_plugin
         $pin = $this->get_input('_pin', rcube_utils::INPUT_GET) === "true";
         echo json_encode($this->_post_object_to_JSON(null, $limit ?? self::POST_DEFAULT_LIMIT, $pin));
         exit;
+    }
+
+    /**
+     * Compte le nombre de publications publiées dans un espace de travail.
+     *
+     * Cette méthode récupère l'identifiant de l'espace de travail à partir des paramètres de requête,
+     * puis utilise l'API interne pour filtrer et compter les publications qui ne sont pas des brouillons
+     * (i.e., qui sont publiées) et qui ont un titre non vide.
+     *
+     * Fonctionnement :
+     * - Initialise un objet de publication avec l’UID de l’espace de travail.
+     * - Définit les filtres pour exclure les brouillons et les publications sans titre.
+     * - Utilise les opérateurs de filtre définis dans la configuration de l’API.
+     * - Récupère le nombre de publications correspondant à ces critères.
+     * - Retourne ce nombre au format JSON puis termine l’exécution du script.
+     *
+     * @return void
+     */
+    public function count_posts()
+    {
+        $workspace_uid = rcube_utils::get_input_value('_workspace_uid', rcube_utils::INPUT_GPC);
+
+        // Initialiser le post et ses filtres
+        $post = new \LibMelanie\Api\Defaut\Posts\Post();
+        $post->workspace = $workspace_uid;
+
+        $post->isdraft = true;
+        $post->title = '';
+
+        $operators = [
+            'workspace' => \LibMelanie\Config\MappingMce::eq,
+            'title'     => \LibMelanie\Config\MappingMce::diff,
+            'isdraft'   => \LibMelanie\Config\MappingMce::diff,
+        ];
+
+        $result = $post->getList('count', "", $operators);
+        $count = isset($result[0]->count) ? (int) $result[0]->count : 0;
+
+        echo json_encode(['count' => $count]);
+        exit;
+    }
+
+    /**
+     * Met à jour le compteur de publications vues par l'utilisateur dans un espace de travail.
+     *
+     * Cette méthode reçoit en POST l'identifiant de l’espace de travail ainsi que le nouveau
+     * compteur de publications vues. Elle enregistre cette valeur dans la session utilisateur,
+     * puis répond avec un statut JSON.
+     *
+     * Fonctionnement :
+     * - Récupère l’UID de l’espace de travail et le compteur depuis les données POST.
+     * - Si les données sont valides, met à jour le compteur dans la session PHP.
+     * - Ferme explicitement la session pour s'assurer que la donnée est bien enregistrée.
+     * - Retourne une réponse JSON indiquant le succès ou l’échec de l’opération.
+     *
+     * @return void
+     */
+    public function update_seen_post_count()
+    {
+        $workspace_uid = rcube_utils::get_input_value('_workspace_uid', rcube_utils::INPUT_POST);
+        $count = (int) rcube_utils::get_input_value('_count', rcube_utils::INPUT_POST);
+
+        if ($workspace_uid && $count > 0) {
+            $_SESSION["forum_seen_count_{$workspace_uid}"] = $count;
+            session_write_close(); // Forcer php à écrire la session.
+            echo json_encode(['status' => 'success']);
+            exit;
+        }
+
+        echo json_encode(['status' => 'error', 'message' => 'Missing data']);
+        exit;
+    }
+
+    /**
+     * Récupère le nombre de publications publiées pour un espace de travail donné.
+     *
+     * Cette méthode initialise un objet de type Post avec l'identifiant de l’espace de travail
+     * et applique des filtres pour exclure les brouillons et les publications sans titre. Elle interroge ensuite
+     * l'API pour obtenir le nombre total de publications correspondant à ces critères.
+     *
+     * Fonctionnement :
+     * - Initialise un objet Post lié à l’espace de travail spécifié.
+     * - Applique les filtres suivants :
+     *     - Le titre ne doit pas être vide.
+     *     - La publication ne doit pas être un brouillon.
+     * - Exécute la requête de comptage via l’API interne.
+     * - Retourne le nombre obtenu, ou 0 si aucune donnée n'est disponible.
+     *
+     * @param string $workspace_uid L'identifiant de l’espace de travail.
+     * @return int Le nombre de publications publiées (hors brouillons et titres vides).
+     */
+    protected function _get_post_count_internal($workspace_uid) 
+    {
+        $post = new \LibMelanie\Api\Defaut\Posts\Post();
+        $post->workspace = $workspace_uid;
+        $post->isdraft = true;
+        $post->title = '';
+
+        $operators = [
+            'workspace' => \LibMelanie\Config\MappingMce::eq,
+            'title'     => \LibMelanie\Config\MappingMce::diff,
+            'isdraft'   => \LibMelanie\Config\MappingMce::diff,
+        ];
+
+        $result = $post->getList('count', "", $operators);
+        return isset($result[0]->count) ? (int) $result[0]->count : 0;
     }
 
     #endregion
@@ -2204,7 +2337,7 @@ class mel_forum extends bnum_plugin
      */
     function refresh($args)
     {
-        return array('abort' => true);
+        return [];
     }
 
     #region Téléchargements

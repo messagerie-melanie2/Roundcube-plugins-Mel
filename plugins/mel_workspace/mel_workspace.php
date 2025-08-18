@@ -54,6 +54,9 @@ use LibMelanie\Api\Defaut\Workspaces\Share;
 - workspace.service.get => Récupère le service
     - arguments => workspace, objet de type Workspace. Contient tout les données de l'espace
                    services, liste des services, à ajouter le votre
+- wsp.enable_create_button => Permet de désactiver le bouton de création d'espace de travail
+    - arguments => enabled, booléen, si le bouton doit être affiché ou non
+                   plugin, plugin mel_workspace
 */
 
 class mel_workspace extends bnum_plugin
@@ -193,16 +196,24 @@ class mel_workspace extends bnum_plugin
         $this->load_script_module('index');
         self::IncludeWorkspaceBlockComponent();
 
-        $this->add_handler('subscribed', [$this, 'handler_subscribed']);
-        $this->add_handler('publics', [$this, 'handler_publics']);
-        $this->add_handler('archived', [$this, 'handler_archived']);
-        $this->add_handler('publiccount', [$this, 'handler_public_count']);
-        $this->add_handler('feedback_button', [$this, 'handler_feedback_button']);
+        $this->add_handlers([
+            'subscribed' => [$this, 'handler_subscribed'],
+            'publics' => [$this, 'handler_publics'],
+            'archived' => [$this, 'handler_archived'],
+            'publiccount' => [$this, 'handler_public_count'],
+            'feedback_button' => [$this, 'handler_feedback_button'],
+        ]);
 
         $this->ignore_footer();
-        $this->rc()->output->set_env('visu-mode', $this->get_config('wsp-visu-mode', 'cards'));
 
-        $this->rc()->output->send('mel_workspace.index');
+        $plugin = $this->exec_hook('wsp.enable_create_button', ['enabled' => true, 'plugin' => $this]);
+
+        if ($plugin !== null && $plugin['enabled'] === false) $this->set_env('wsp_usr_can_create', false);
+        
+        $this->set_env('visu-mode', $this->get_config('wsp-visu-mode', 'cards'));
+
+        $this->send_and_exit('mel_workspace.index');
+
     }
 
     public function show_workspace()
@@ -373,6 +384,13 @@ class mel_workspace extends bnum_plugin
 
     public function create()
     {
+        $user = driver_mel::gi()->getUser();
+
+        if ($user->is_external) {
+            // Si l'utilisateur est externe, on ne lui permet pas de créer un espace de travail
+            $this->sendEncodedExit(['error' => 'Unauthorized']);
+        }
+
         try {
             $data = [
                 "avatar" => rcube_utils::get_input_value("avatar", rcube_utils::INPUT_POST),
@@ -395,8 +413,6 @@ class mel_workspace extends bnum_plugin
                 "errored_user" => [],
                 "existing_users" => []
             ];
-
-            $user = driver_mel::gi()->getUser();
             $workspace = new Workspace($data["uid"]);
             $workspace->title($data['title'])
                 ->logo($data['avatar'])
@@ -1539,7 +1555,7 @@ class mel_workspace extends bnum_plugin
             $bodymail->wsp_creator = $workspace->creator;
             $bodymail->wsp_last__action_text = $workspace->created === $workspace->modified ? 'Crée le' : 'Mise à jour';
             $bodymail->wsp_last__action_date = DateTime::createFromFormat('Y-m-d H:i:s', $workspace->modified)->format('d/m/Y');
-            $bodymail->logobnum = MailBody::load_image(__DIR__ . '/skins/elastic/pictures/logobnum.png', 'png');
+            $bodymail->logobnum = MailBody::load_image(__DIR__ . '/skins/mel_elastic/pictures/logobnum.png', 'png');
             $bodymail->bnum_base__url = 'http://mtes.fr/2';
             $bodymail->url = 'https://bnum.din.gouv.fr/?_task=workspace&_action=workspace&_uid=' . $workspace->uid;
 

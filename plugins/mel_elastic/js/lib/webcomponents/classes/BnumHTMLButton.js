@@ -1,13 +1,10 @@
 import { EMPTY_STRING } from '../../../../../mel_metapage/js/lib/constants/constants.js';
 import { REG_XSS_SAFE } from '../../../../../mel_metapage/js/lib/constants/regexp.js';
-import {
-  BnumHtmlIcon,
-  BnumHtmlShadowIcon,
-} from '../../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/js_html_base_web_elements';
 import { BnumEvent } from '../../../../../mel_metapage/js/lib/mel_events.js';
 import ABnumHTMLElement from '../abstract/ABnumHTMLElement.js';
 import ElementChangedEvent from '../events/ElementChangedEvent.js';
 import style from '../style/bnum-button-style.js';
+import BnumHTMLIcon from './BnumHTMLIcon.js';
 
 /**
  * Tag HTML du bouton Bnum.
@@ -21,21 +18,21 @@ const TAG = 'bnum-button';
  * @constant
  * @type {string}
  */
-const TAG_PRIMARY = 'bnum-primary-button';
+const TAG_PRIMARY = 'primary-button';
 
 /**
  * Tag HTML du bouton Bnum de type "secondary".
  * @constant
  * @type {string}
  */
-const TAG_SECONDARY = 'bnum-secondary-button';
+const TAG_SECONDARY = 'secondary-button';
 
 /**
  * Tag HTML du bouton Bnum de type "danger".
  * @constant
  * @type {string}
  */
-const TAG_DANGER = 'bnum-danger-button';
+const TAG_DANGER = 'danger-button';
 
 /**
  * Icône de chargement par défaut.
@@ -306,7 +303,7 @@ export default class BnumHTMLButton extends ABnumHTMLElement {
 
     if (iconData) {
       this.data('icon-pos', { value: iconData.first ? 'left' : 'right' });
-      const icon = `<${BnumHtmlShadowIcon.TAG} class="icon" data-icon="${isLoading ? ICON_LOADER : iconData.icon}"></${BnumHtmlShadowIcon.TAG}>`;
+      const icon = `<${BnumHTMLIcon.TAG} class="icon" data-icon="${isLoading ? ICON_LOADER : iconData.icon}"></${BnumHTMLIcon.TAG}>`;
 
       if (iconData.first) txt = `${icon}${txt}`;
       else txt += icon;
@@ -319,7 +316,7 @@ export default class BnumHTMLButton extends ABnumHTMLElement {
         );
     } else if (isLoading) {
       this.#_internals.states.add('without-icon-loading');
-      txt += `<${BnumHtmlShadowIcon.TAG} class="loader" data-icon="${ICON_LOADER}"></${BnumHtmlShadowIcon.TAG}>`;
+      txt += `<${BnumHTMLIcon.TAG} class="loader" data-icon="${ICON_LOADER}"></${BnumHTMLIcon.TAG}>`;
     } else {
       this.#_internals.states.add('without-icon');
     }
@@ -399,10 +396,7 @@ export default class BnumHTMLButton extends ABnumHTMLElement {
       let foundNode = true;
 
       for (const child of children) {
-        if (
-          child.nodeName === BnumHtmlShadowIcon.TAG.toUpperCase() ||
-          child.nodeName === BnumHtmlIcon.TAG.toUpperCase()
-        ) {
+        if (child.nodeName === BnumHTMLIcon.TAG.toUpperCase()) {
           this._p_setData('icon', child.icon);
           const icon = child.icon;
           child.remove();
@@ -505,7 +499,7 @@ export default class BnumHTMLButton extends ABnumHTMLElement {
       button.querySelector('bnum-icon') ??
       button.querySelector('bnum-shadow-icon');
 
-    if (!iconElement && icon) iconElement = BnumHtmlIcon.Create({ icon });
+    if (!iconElement && icon) iconElement = BnumHTMLIcon.Create(icon);
 
     let textWrapper = document.createElement('span');
     textWrapper.classList.add('bnum-button__text');

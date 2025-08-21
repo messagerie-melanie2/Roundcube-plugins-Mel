@@ -319,7 +319,7 @@ class WebComponnents
     {
         // Configuration des composants Web
         $components = [
-            ['bnum-icon', 'js_html_base_web_elements.js'],
+            ['bnum-icon', 'BnumHTMLIcon.js', '/js/lib/webcomponents/classes', 'mel_elastic'],
             ['bnum-shadow-icon', 'js_html_base_web_elements.js'],
             ['bnum-screen-reader', 'js_html_base_web_elements.js'],
             ['bnum-voice', 'js_html_base_web_elements.js'],

@@ -433,6 +433,14 @@ export default class ABnumHTMLElement extends HTMLElement {
   _p_hasData(name) {
     return this.#_data.has(name);
   }
+
+  /**
+   * @readonly
+   */
+  get _p_isInsideShadowRoot() {
+    const root = this.getRootNode();
+    return root instanceof ShadowRoot;
+  }
   //#endregion
 
   //#region Virtual

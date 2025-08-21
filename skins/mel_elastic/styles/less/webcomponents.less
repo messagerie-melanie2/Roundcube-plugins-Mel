@@ -192,6 +192,12 @@
   &.bnum-button--icon {
     padding: var(--bnum-button-padding, 6px 10px);
 
+    .bnum-button__icon,
+    bnum-icon {
+      height: var(--bnum-button-icon-height, 24px);
+      width: var(--bnum-button-icon-width, 24px);
+    }
+
     html@{layout-small} & {
       &.hide-text-on-small {
         .bnum-button__text {

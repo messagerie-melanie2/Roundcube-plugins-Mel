@@ -88,12 +88,12 @@ const style = `
     align-items: var(--bnum-button-wrapper-align-items, center);
 }
 
-:host bnum-shadow-icon.icon {
+:host bnum-icon.icon {
     display: var(--bnum-button-icon-display, flex);
     margin-%0: %1; /*var(--bnum-button-icon-margin-%0, 20px);*/
 }
 
-:host bnum-shadow-icon.loader {
+:host bnum-icon.loader {
     display: var(--bnum-button-loader-display, flex);
 }
 

@@ -24,17 +24,22 @@
 <center><img src="{{logobnum}}" title="Logo du bureau numérique" alt="Logo du bureau numérique" style="width: 100%;max-width: 300px;" /></center>
 <br/>
 <br/>
-<h2>Vous êtes invité à collaborer sur un espace de travail !</h2>
-<p style="margin-bottom: 5px;"><strong>{{user.name}}</strong> ({{user.email}}) vous a invité à collaborer au sein de l'espace de travail <strong>{{wsp.name}}</strong></p>
+<h2>Vous êtes invité à collaborer sur un espace de travail <a href="{{bnum.base_url}}" title="Adresse du bureau numérique">[du bnum]</a> !</h2>
+<br>
 <div style="width:100%;text-align:center;margin-bottom:10px;">
-    <p>Pour vous connecter au Bnum et avant de pouvoir rejoindre l'espace, vous devez initialiser votre compte une première fois en suivant ce lien : <a href="{{user.url}}" title="Lien pour initialiser votre compte sur le Bnum">{{user.url}}</a></p>
+   <p>Pour vous connecter au Bnum et avant de pouvoir rejoindre l'espace, vous devez initialiser votre compte une première fois en suivant <a href="{{user.url}}" title="Lien pour initialiser votre compte sur le Bnum">[ce lien]</a></p>
 </div>
-<div style="background-color:#f0f0f0;width:100%;text-align:center;border-radius:5px;padding:15px 0;margin-bottom:10px;">
+<br>
+<p style="margin-bottom: 5px;"><strong>{{user.name}}</strong> ({{user.email}}) vous a invité à collaborer au sein de l'espace de travail <strong>{{wsp.name}}</strong></p>
+<div style="background-color: #f0f0f0;width:100%;text-align: center;border-radius: 5px;    padding: 15px 0;margin-bottom: 10px;">
     <h2>{{wsp.name}}</h2>
     <div style="padding-top: 5px;padding-bottom: 15px;">
-        <a href="{{wsp.url}}" title="Rejoindre l'espace de travail {{wsp.name}}" target="_blank" class="mel-button">Rejoindre maintenant</a>
+        <a href="{{url}}" title="Rejoindre l'espace de travail {{wsp.name}}" target="_blank" class="mel-button">Rejoindre maintenant</a>
     </div>
     <div>
+        <div style="display:inline-block;vertical-align: bottom;">
+            {{wsp.shares.rounded}}
+        </div>
         <div style="display:inline-block">
             Crée par {{wsp.creator}}
             <br/>
@@ -44,9 +49,15 @@
 </div>
 
 <p>
-    Une fois que vous aurez rejoint cet espace de travail, vous pourrez également y accéder directement depuis cette adresse : <a href="{{wsp.url}}" title="Rejoindre l'espace de travail {{wsp.name}}" target="_blank">{{wsp.url}}</a>
+    Une fois que vous aurez rejoint cet espace de travail, vous pourrez également y accéder directement depuis <a href="{{url}}" title="Rejoindre l'espace de travail {{wsp.name}}" target="_blank">[cette adresse]</a>
 </p>
 <br/>
 <h2>Qu'est ce que le Bnum ?</h2>
-<p>Pour plus d'informations sur le fonctionnement du Bnum, nous vous invitons à consulter <a href="{{documentation.url}}" title="Lien vers la documentation du Bnum">notre article dédié</a>.</p>
-<strong><u><a href="{{bnum.base_url}}" title="Adresse du bureau numérique">Découvrir le Bnum</a></u></strong>
+
+<p>Le Bnum est une application qui rassemble simplement, et sur une seule page web les outils que vous utilisez au quotidien : mails, agenda, listes de tâches etc...</p>
+
+<p>Nous vous conseillons <a href="https://aide.din.developpement-durable.gouv.fr/bnum_tutoriels-apprendre_14_inviter_externes/#mise-en-place-de-la-double-authentification"  target="_blank">[d'activer l'authentification à double facteur]</a> pour une meilleure sécurité de votre compte de manière générale, et surtout parce que sans cette méthode d'authentification vous ne pourrez pas accéder aux documents partagés dans l'espace de travail.</p>
+
+Pour plus d'informations sur le fonctionnement du Bnum, nous vous invitons à consulter <a href="https://aide.din.developpement-durable.gouv.fr/bnum_tutoriels-apprendre_14_inviter_externes/#cest-quoi-le-bnum"  target="_blank">[notre article dédié.]</a>
+<br>
+<h4>Bienvenue sur le Bnum !</h4>

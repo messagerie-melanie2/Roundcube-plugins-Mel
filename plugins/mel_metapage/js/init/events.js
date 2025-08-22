@@ -2086,6 +2086,8 @@ if (rcmail && window.mel_metapage) {
         rcmail.contextmenu.hide_all(p.evt, true); // ferme autres sous-menus ouverts
         manageLabelsMenu.show_menu(null, p.evt);
 
+        menu.submenus['manage_sub_labels'] = manageLabelsMenu;
+
         menu.no_hide = true;
 
         // Empêcher l’exécution "normale" d’une commande
@@ -2155,6 +2157,11 @@ if (rcmail && window.mel_metapage) {
             menu.destroy();
           },
         );
+        $('#rcm_manage_sub_labels li a.label').each((i, e) => {
+          $(e).off('mouseover');
+        });
+
+        $('#rcm_manage_sub_labels .manage-labels').off('mouseover');
       });
     }
   });

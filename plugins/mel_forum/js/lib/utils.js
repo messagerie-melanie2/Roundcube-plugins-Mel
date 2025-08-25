@@ -1,3 +1,5 @@
+import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
+
 export { parseFrenchDate, formatPostDate, formatCommentDate, createPostLink };
 
 /**
@@ -68,14 +70,14 @@ function formatCommentDate(createdDate) {
  * @returns {string} L'URL générée pour accéder au post dans le forum.
  */
 function createPostLink(postId, wspId) {
-  const url = new URL('/', window.location.origin);
-
-  url.searchParams.set('_task', 'workspace');
-  url.searchParams.set('_action', 'workspace');
-  url.searchParams.set('_uid', wspId);
-  url.searchParams.set('_page', 'forum');
-  url.searchParams.set('_bag', postId);
-  url.searchParams.set('_force_bnum', '1');
-
-  return url.toString();
+  return MelObject.Empty().url('workspace', {
+    action: 'workspace',
+    params: {
+      _uid: wspId,
+      _bag: postId,
+      _page: 'forum',
+      _force_bnum: '1',
+    },
+    removeIsFromIframe: true,
+  });
 }

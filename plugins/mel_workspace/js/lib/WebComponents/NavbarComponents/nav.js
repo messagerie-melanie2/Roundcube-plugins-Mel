@@ -191,8 +191,8 @@ export class WspPageNavigation extends NavBarComponent {
     }
 
     hiddenIcon.classList.add('maximised-hidden');
-    button.afterstyle.push((icon, button) => {
-      button.prepend(icon);
+    button.afterstyle.push((cIcon, cButton) => {
+      cButton.prepend(cIcon);
     }, hiddenIcon);
 
     li.appendChild(button);

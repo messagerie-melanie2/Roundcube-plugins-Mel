@@ -80,7 +80,7 @@ export class ModuleForum extends WorkspaceObject {
    * - Attend que `NavBarManager` soit prêt avant de continuer.
    * - Ajoute une gestion asynchrone des changements d'état via `onstatetoggle`.
    * - Désactive et réactive l'élément déclencheur pendant le traitement.
-   * - Gère les étatsargs.task === 'forum' spécifiques de la tâche "forum" et initialise le composant principal si nécessaire.
+   * - Gère les états spécifiques de la tâche "forum" et initialise le composant principal si nécessaire.
    *
    * @returns {Promise<void>} Une promesse résolue une fois que l'écouteur est ajouté et opérationnel.
    */

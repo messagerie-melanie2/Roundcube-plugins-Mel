@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
 import { BnumModules } from '../../../../mel_metapage/js/lib/helpers/dynamic_load_modules.js';
 import {

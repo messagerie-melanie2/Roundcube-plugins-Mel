@@ -109,6 +109,9 @@ class mel_forum extends bnum_plugin
             } else if (!$this->rc()->action === 'load_image') {
                 $this->_display_error_page();
             }
+            else {
+                mel_logs::get_instance()->log(mel_logs::ERROR, '###[mel_forum]L\'utilisateur ' . driver_mel::gi()->getUser()->uid . ' n\'a pas les droits pour accéder à l\'espace de travail ' . $workspace_uid);
+            }
         } else if ($this->get_current_task() === 'workspace') {
             $this->add_hook('workspace.services.set', [$this, 'workspace_services_set']);
             $this->add_hook('wsp.show', [$this, 'wsp_show']);
@@ -132,13 +135,18 @@ class mel_forum extends bnum_plugin
     {
         $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
         $this->load_script_module('forum');
+
+        $this->add_handler('post_search', [$this, '_show_search']);
+
+        $this->set_envs([
+            'workspace_uid' => $workspace_uid,
+            'user_fullname' => driver_mel::gi()->getUser()->name,
+            'is_admin' => driver_mel::gi()->getUser()->isWorkspaceOwner($workspace_uid),
+            'wsp_tags' => $this->_get_all_tags_by_workspace($workspace_uid),
+        ]);
+
         $this->_show_posts();
-        $this->rc()->output->set_env('workspace_uid', $workspace_uid);
-        $this->rc()->output->set_env('user_fullname', driver_mel::gi()->getUser()->name);
-        $this->rc()->output->set_env('is_admin', driver_mel::gi()->getUser()->isWorkspaceOwner($workspace_uid));
-        $this->rc()->output->set_env('wsp_tags', $this->_get_all_tags_by_workspace($workspace_uid));
-        $this->rc()->output->add_handlers(['post_search' => [$this, '_show_search']]);
-        $this->rc()->output->send('mel_forum.forum');
+        $this->send_and_exit('mel_forum.forum');
     }
 
     // Fonctions nécessaires à l'affichage d'un article
@@ -148,7 +156,7 @@ class mel_forum extends bnum_plugin
      *
      * @return string La recherche.
      */
-    protected function _show_search()
+    public function _show_search()
     {
         $search = '""';
         if ($this->get_input('_from_other_frame', rcube_utils::INPUT_GET)) {

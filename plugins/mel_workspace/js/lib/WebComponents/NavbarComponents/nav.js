@@ -92,7 +92,7 @@ export class WspPageNavigation extends NavBarComponent {
     const voiceId = this.generateId(NAMESPACE);
 
     let nav = document.createElement('ul');
-    let voice = new BnumHtmlSrOnly();
+    let voice = BnumHtmlSrOnly.Create();
 
     nav.setAttribute('id', this.#id);
     nav.setAttribute('role', 'menu');

@@ -133,7 +133,7 @@ export class WspButton extends NavBarComponent {
     this.appendChild(span);
 
     if (this.#icon || false) {
-      let icon = new BnumHtmlIcon(this.#icon);
+      let icon = BnumHtmlIcon.Create({ icon: this.#icon });
       switch (this.pos) {
         case 'left':
           this.prepend(icon);

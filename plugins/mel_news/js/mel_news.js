@@ -1733,15 +1733,25 @@ $(document).ready(async () => {
         {
           _url: this.id,
         },
-        (datas) => {
+        (data) => {
           //headlines-contents
-          if (mode === modes.all) this._refresh_mode_all(JSON.parse(datas));
+          try {
+            data = JSON.parse(data);
+            this.$news.attr('data-loaded', 'true').parent().css('display', '');
+          } catch (error) {
+            this.$news
+              .attr('data-loaded', 'false')
+              .parent()
+              .css('display', 'none');
+            return data;
+          }
+
+          if (mode === modes.all) this._refresh_mode_all(data);
           else {
-            datas = JSON.parse(datas);
-            const uid = $(datas[0]).data('uid');
-            this.$news.parent().html(datas[0]);
+            const uid = $(data[0]).data('uid');
+            this.$news.parent().html(data[0]);
             this.$news = $(`[data-uid="${uid}"]`);
-            rcmail.env.news_vignette_all_news_datas[this.id] = datas;
+            rcmail.env.news_vignette_all_news_datas[this.id] = data;
             delete this.original;
             delete this.current;
             this.setup_vignette();
@@ -2060,9 +2070,17 @@ $(document).ready(async () => {
 
     static async Filter(doAfter = null) {
       let enum_news = Enumerable.from(MelCustomNews.allCustomNews);
-      enum_news.forEach((x, i) => {
-        x.$news.parent().css('display', '');
-      });
+      enum_news
+        .where((x) => x.$news.attr('data-loaded') !== 'false')
+        .forEach((x) => {
+          x.$news.parent().css('display', '');
+        });
+
+      enum_news
+        .where((x) => x.$news.attr('data-loaded') === 'false')
+        .forEach((x) => {
+          x.$news.parent().css('display', 'none');
+        });
 
       if (NewsPopup.fabric().filters === undefined) return;
 

@@ -135,7 +135,7 @@ class Core {
                 $user->firstname = $firstname;
                 $user->lastname = $lastname;
             }
-            $user->password = Password::SSHA1PasswordGenerator($password);
+            $user->password = Password::ARGON2Generator($password);
 
             $ret = $user->save();
 

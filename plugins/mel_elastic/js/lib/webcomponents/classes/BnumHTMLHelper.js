@@ -14,7 +14,7 @@ const ICON = "help";
  * @class
  * @extends ABnumHTMLElement
  */
-export default class BnumHTMLHelperElement extends ABnumHTMLElement {
+export default class BnumHTMLHelper extends ABnumHTMLElement {
   /**
    * Crée une instance de BnumHTMLHelperElement.
    * @constructor
@@ -61,11 +61,11 @@ export default class BnumHTMLHelperElement extends ABnumHTMLElement {
   /**
    * Crée une nouvelle instance de BnumHTMLHelperElement avec le texte d'aide spécifié.
    * @param {string} title Texte d'aide à afficher dans l'attribut title.
-   * @returns {BnumHTMLHelperElement} L'instance créée de l'élément d'aide.
+   * @returns {BnumHTMLHelper} L'instance créée de l'élément d'aide.
    * @static
    */
   static Create(title) {
-    const element = document.createElement(BnumHTMLHelperElement.TAG);
+    const element = document.createElement(BnumHTMLHelper.TAG);
     element.setAttribute("title", title);
     return element;
   }
@@ -81,4 +81,4 @@ export default class BnumHTMLHelperElement extends ABnumHTMLElement {
   }
 }
 
-BnumHTMLHelperElement.TryDefine();
+BnumHTMLHelper.TryDefine();

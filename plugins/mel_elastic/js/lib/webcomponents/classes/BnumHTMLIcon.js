@@ -50,9 +50,6 @@ export default class BnumHTMLIcon extends ABnumHTMLElement {
    */
   constructor() {
     super();
-    if (!this.hasClass(BnumHTMLIcon.HTML_CLASS))
-      this.addClass(BnumHTMLIcon.HTML_CLASS);
-
     this._p_on_attribute_changed.push((name, _, newVal) => {
       switch (name) {
         case "data-icon":
@@ -116,9 +113,10 @@ export default class BnumHTMLIcon extends ABnumHTMLElement {
   }
 
   _p_preload() {
-    if (this.#_firstRender && this._p_isInsideShadowRoot) {
+    if (this._p_isInsideShadowRoot && this.hasClass(BnumHTMLIcon.HTML_CLASS)) {
       this.removeClass(BnumHTMLIcon.HTML_CLASS);
-    }
+    } else if (!this.hasClass(BnumHTMLIcon.HTML_CLASS))
+      this.addClass(BnumHTMLIcon.HTML_CLASS);
   }
 
   /**

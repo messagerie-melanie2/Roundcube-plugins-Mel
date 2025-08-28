@@ -44,7 +44,7 @@ export default class BnumHTMLHelper extends ABnumHTMLElement {
   _p_render() {
     super._p_render();
 
-    return `<${BnumHTMLIcon.TAG} icon="${ICON}"></${BnumHTMLIcon.TAG}>`;
+    return `<${BnumHTMLIcon.TAG} data-icon="${ICON}"></${BnumHTMLIcon.TAG}>`;
   }
 
   /**

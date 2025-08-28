@@ -1,6 +1,6 @@
-@import 'main.less';
-@import 'style_mixin.less';
-@import './variables/apps.less';
+@import "main.less";
+@import "style_mixin.less";
+@import "./variables/apps.less";
 /** BODY **/
 
 body {
@@ -253,21 +253,21 @@ html {
   a {
     /** ICONS **/
     &.icofont-plus-circle:before {
-      content: '\efc0' !important;
+      content: "\efc0" !important;
       font-family: var(--secondary-icon-font) !important;
     }
     &.icofont-question-circle:before {
-      content: '\efca' !important;
+      content: "\efca" !important;
       font-family: var(--secondary-icon-font) !important;
     }
 
     &.icofont-favourite:before {
-      content: '\ef25' !important;
+      content: "\ef25" !important;
       font-family: var(--secondary-icon-font) !important;
     }
 
     &.icofont-search:before {
-      content: '\ed1b' !important;
+      content: "\ed1b" !important;
       font-family: var(--secondary-icon-font) !important;
     }
   }
@@ -295,7 +295,7 @@ html {
   a {
     &.icon-mel-undo {
       &::before {
-        content: '\e936' !important;
+        content: "\e936" !important;
         font-family: var(--main-icon-font) !important;
       }
     }
@@ -473,7 +473,7 @@ ul.treelist {
       &.tasklist {
         .listname {
           &::before {
-            content: '\e932' !important;
+            content: "\e932" !important;
             font-family: var(--main-icon-font) !important;
           }
         }
@@ -481,7 +481,7 @@ ul.treelist {
         &.readonly {
           .listname {
             &::before {
-              content: '\e966' !important;
+              content: "\e966" !important;
               font-family: var(--main-icon-font) !important;
             }
 
@@ -845,7 +845,7 @@ a.button.icon:not(.disabled):focus {
     &.boite {
       & > a {
         &::before {
-          content: '\f01c';
+          content: "\f01c";
           font-weight: 900;
         }
       }
@@ -1027,7 +1027,7 @@ a {
 
 #compose-contacts {
   #annuaire-list {
-    [aria-expanded='true'] {
+    [aria-expanded="true"] {
       background-color: var(--default-background) !important;
       color: var(--alternate-text-color) !important;
     }
@@ -1128,7 +1128,7 @@ a {
 
 #stockage-space-text {
   &::before {
-    content: '\e94f';
+    content: "\e94f";
     font-family: var(--main-icon-font);
     margin-right: 5px;
   }
@@ -1811,7 +1811,7 @@ framed_item {
     border: none !important;
 
     &:after {
-      content: '\f002';
+      content: "\f002";
       height: 36px;
       color: var(--main-text-color);
       margin: 0 0.75rem 0 0;
@@ -1820,7 +1820,7 @@ framed_item {
       display: block;
       float: left;
       width: 1.18em;
-      font-family: 'Icons';
+      font-family: "Icons";
       font-style: normal;
       font-weight: 900;
       text-decoration: inherit;
@@ -2051,7 +2051,7 @@ ul#directorylist {
   & > a {
     ::before {
       font-family: var(--secondary-icon-font);
-      content: '\eaa0';
+      content: "\eaa0";
     }
   }
 
@@ -2059,7 +2059,7 @@ ul#directorylist {
     & > a {
       ::before {
         font-family: var(--secondary-icon-font);
-        content: '\ea99';
+        content: "\ea99";
       }
     }
   }
@@ -2071,7 +2071,7 @@ ul#directorylist {
   & > a {
     ::before {
       font-family: var(--secondary-icon-font);
-      content: '\eaa0';
+      content: "\eaa0";
     }
   }
 
@@ -2079,7 +2079,7 @@ ul#directorylist {
     & > a {
       ::before {
         font-family: var(--secondary-icon-font);
-        content: '\ea99';
+        content: "\ea99";
       }
     }
   }
@@ -2264,7 +2264,7 @@ body {
         background-color: var(--roundbadge-bckg-color);
 
         &::before {
-          content: '\eed8' !important;
+          content: "\eed8" !important;
         }
       }
     }
@@ -2277,7 +2277,7 @@ body {
 
     &:hover {
       background-color: var(--roundbadge-default-bckg-color);
-      font-variation-settings: 'FILL' 1;
+      font-variation-settings: "FILL" 1;
     }
 
     bnum-icon {
@@ -2286,10 +2286,10 @@ body {
 
     &.active {
       // background-color: #fdcf42;
-      font-variation-settings: 'FILL' 1;
+      font-variation-settings: "FILL" 1;
 
       &:hover {
-        font-variation-settings: 'FILL' 0;
+        font-variation-settings: "FILL" 0;
       }
     }
   }
@@ -2693,7 +2693,7 @@ body {
 
     &.loading {
       &::before {
-        content: '';
+        content: "";
         width: 100%;
         display: block !important;
         // background: linear-gradient(
@@ -2869,7 +2869,7 @@ form {
 /* INPUT TEXT */
 ._red-star {
   /** MIXIN **/
-  content: '*';
+  content: "*";
   color: var(--red-star);
 }
 
@@ -2933,7 +2933,7 @@ td.mel-fit-content {
 
 a.button.icon.attach::before,
 button.btn.attach::before {
-  content: '\e91c';
+  content: "\e91c";
   font-family: var(--main-icon-font);
   font-weight: normal;
   font-size: unset;
@@ -3031,7 +3031,7 @@ tr.elementmoveup > td {
       }
 
       &::after {
-        content: '\e92d';
+        content: "\e92d";
         font-family: var(--main-icon-font) !important;
       }
     }
@@ -3280,7 +3280,7 @@ tr.elementmoveup > td {
       .icon {
         &::before {
           font-family: var(--main-icon-font) !important;
-          content: '\e966' !important;
+          content: "\e966" !important;
           font-weight: normal !important;
         }
       }
@@ -3291,7 +3291,7 @@ tr.elementmoveup > td {
 
       &::before {
         font-family: var(--main-icon-font) !important;
-        content: '\e964' !important;
+        content: "\e964" !important;
         font-weight: normal !important;
       }
     }
@@ -3314,29 +3314,29 @@ tr.elementmoveup > td {
 }
 
 .icon-mel-send::before {
-  content: '\e954' !important;
+  content: "\e954" !important;
 }
 
 .icon-mel-videoconference::before {
-  content: '\e938' !important;
+  content: "\e938" !important;
 }
 
 .icon-mel-plus::before {
-  content: '\e929' !important;
+  content: "\e929" !important;
 }
 
 .icon-mel-close::before {
-  content: '\e908' !important;
+  content: "\e908" !important;
   font-family: var(--main-icon-font) !important;
 }
 
 .icon-mel-save::before {
-  content: '\e161' !important;
+  content: "\e161" !important;
   font-family: var(--third-icon-font) !important;
 }
 
 a.roadmap::before {
-  content: '\efd8' !important;
+  content: "\efd8" !important;
   font-family: var(--secondary-icon-font) !important;
   font-weight: normal !important;
 }
@@ -3344,52 +3344,52 @@ a.roadmap::before {
 #mel_envoi_differe::before {
   font-family: var(--secondary-icon-font) !important;
   font-weight: normal !important;
-  content: '\eedc' !important;
+  content: "\eedc" !important;
 }
 
 .menu a.folders::before {
-  content: '\e951' !important;
+  content: "\e951" !important;
   font-family: var(--main-icon-font) !important;
   font-weight: normal !important;
 }
 
 .menu a.source::before {
-  content: '\eef0' !important;
+  content: "\eef0" !important;
   font-family: var(--secondary-icon-font) !important;
   font-weight: normal !important;
 }
 
 .menu a.move::before {
-  content: '\e2c8' !important;
+  content: "\e2c8" !important;
   ._material-icon() !important;
 }
 
 .menu a.extwin::before {
-  content: '\e910' !important;
+  content: "\e910" !important;
   font-family: var(--main-icon-font) !important;
   font-weight: normal !important;
 }
 
 .menu a.calendarlink::before {
-  content: '\e901' !important;
+  content: "\e901" !important;
   font-family: var(--main-icon-font) !important;
   font-weight: normal !important;
 }
 
 .menu a.tasklistlink::before,
 .menu a.taskaddlink::before {
-  content: '\e931' !important;
+  content: "\e931" !important;
   font-family: var(--main-icon-font) !important;
   font-weight: normal !important;
 }
 
 html .menu a.selection::before {
   ._material-icon() !important;
-  content: '\e834' !important;
+  content: "\e834" !important;
 }
 
 .menu a.select.page::before {
-  content: '\e5d2' !important;
+  content: "\e5d2" !important;
   ._material-icon() !important;
 }
 
@@ -3397,23 +3397,23 @@ html .menu a.selection::before {
 .menu a.expand.unread::before,
 .menu a.select.unread::before {
   ._material-icon() !important;
-  content: '\e158' !important;
+  content: "\e158" !important;
 }
 
 .menu a.flag::before,
 .menu a.select.flagged::before {
   ._material-icon() !important;
-  content: '\e153' !important;
+  content: "\e153" !important;
 }
 
 /***/
 .menu a.select.invert::before {
   ._material-icon() !important;
-  content: '\e834' !important;
+  content: "\e834" !important;
   font-variation-settings:
-    'wght' 300,
-    'opsz' 48,
-    'FILL' 1 !important;
+    "wght" 300,
+    "opsz" 48,
+    "FILL" 1 !important;
 }
 
 // .menu a.select.invert:hover:before {
@@ -3422,73 +3422,73 @@ html .menu a.selection::before {
 // }
 
 .menu a.select.none::before {
-  content: '\e5c9' !important;
+  content: "\e5c9" !important;
   ._material-icon() !important;
 }
 
 .menu a.logout::before {
-  content: '\e967' !important;
+  content: "\e967" !important;
   font-family: var(--main-icon-font) !important;
   font-weight: normal !important;
 }
 
 .icon-mel-videoconference::before {
   font-family: var(--main-icon-font) !important;
-  content: '\e938' !important;
+  content: "\e938" !important;
   font-weight: normal !important;
 }
 
 .icon-mel-mail::before {
   font-family: var(--main-icon-font) !important;
-  content: '\e91e' !important;
+  content: "\e91e" !important;
   font-weight: normal !important;
 }
 
 .icon-mel-workplace::before {
   font-family: var(--main-icon-font) !important;
-  content: '\e93a' !important;
+  content: "\e93a" !important;
   font-weight: normal !important;
 }
 
 .icon-mel-calendar::before {
   font-family: var(--main-icon-font) !important;
-  content: '\e901' !important;
+  content: "\e901" !important;
   font-weight: normal !important;
 }
 
 .icon-mel-survey::before {
   font-family: var(--main-icon-font) !important;
-  content: '\e931' !important;
+  content: "\e931" !important;
   font-weight: normal !important;
 }
 
 .icon-mel-folder::before {
   font-family: var(--main-icon-font) !important;
-  content: '\e915' !important;
+  content: "\e915" !important;
   font-weight: normal !important;
 }
 
 .icon-mel-sondage::before {
   font-family: var(--main-icon-font) !important;
-  content: '\e930' !important;
+  content: "\e930" !important;
   font-weight: normal !important;
 }
 
 .icon-mel-notes::before {
   font-family: var(--main-icon-font) !important;
-  content: '\e923' !important;
+  content: "\e923" !important;
   font-weight: normal !important;
 }
 
 .icon-mel-parameters-invert::before {
   font-family: var(--main-icon-font) !important;
-  content: '\e925' !important;
+  content: "\e925" !important;
   font-weight: normal !important;
 }
 
 .listing.iconized li a.news::before {
   font-family: var(--main-icon-font) !important;
-  content: '\e91a';
+  content: "\e91a";
 }
 
 .mel-button.iconized-mel-button:after {
@@ -3497,36 +3497,36 @@ html .menu a.selection::before {
 }
 
 .mel-button.iconized-mel-button.edit:after {
-  content: '\e95c';
+  content: "\e95c";
 }
 
 .mel-button.iconized-mel-button.create:after {
-  content: '\e929';
+  content: "\e929";
 }
 
 .button.down-icon::before {
-  content: '\e907';
+  content: "\e907";
   font-family: var(--main-icon-font) !important;
 }
 
 .button.up-icon::before {
-  content: '\e906';
+  content: "\e906";
   font-family: var(--main-icon-font) !important;
 }
 
 .button.search-icon::before {
-  content: '\e92d';
+  content: "\e92d";
   font-family: var(--main-icon-font) !important;
 }
 
 .menu a.phone::before {
-  content: '\e927' !important;
+  content: "\e927" !important;
   font-family: var(--main-icon-font) !important;
   font-weight: normal !important;
 }
 
 .menu a.background::before {
-  content: '\e968' !important;
+  content: "\e968" !important;
   font-family: var(--main-icon-font) !important;
   font-weight: normal !important;
 }
@@ -3658,7 +3658,7 @@ html .menu a.selection::before {
         margin-top: 0;
 
         &::before {
-          content: '\ee66';
+          content: "\ee66";
           font-family: var(--secondary-icon-font);
           margin: 0 !important;
           position: absolute;
@@ -3670,7 +3670,7 @@ html .menu a.selection::before {
         }
 
         &:after {
-          content: '';
+          content: "";
           // border: solid var(--alternate-primary-border-color) thin;
           border: none;
           background-color: var(--default-background);
@@ -3695,7 +3695,7 @@ html .menu a.selection::before {
     .mel-icofont-theme {
       &::before {
         font-family: var(--secondary-icon-font);
-        content: '\ee7e';
+        content: "\ee7e";
       }
     }
   }
@@ -3809,7 +3809,7 @@ ul.folderlist.treelist li ul li a {
 }
 
 table.messagelist .unread td.subject span.msgicon::before {
-  content: '\e94d' !important;
+  content: "\e94d" !important;
   color: var(--tierciary-text-color) !important;
 }
 
@@ -3943,11 +3943,11 @@ a.rcmContactAddress {
 
 /** END **/
 ._material-icon() {
-  font-family: 'Material Symbols Outlined';
+  font-family: "Material Symbols Outlined";
   font-weight: normal;
   font-variation-settings:
-    'wght' 300,
-    'opsz' 48;
+    "wght" 300,
+    "opsz" 48;
   font-size: 17px;
   transform: scale(1.5);
 }
@@ -3977,7 +3977,7 @@ a.rcmContactAddress {
 .menu a.ct-cm {
   &::before {
     ._material-icon() !important;
-    content: '\e0bf' !important;
+    content: "\e0bf" !important;
   }
 }
 
@@ -4016,20 +4016,20 @@ a.rcmContactAddress {
 button {
   &.btn {
     &.import:before {
-      content: '\f090' !important;
-      font-family: 'Material Symbols Outlined' !important;
+      content: "\f090" !important;
+      font-family: "Material Symbols Outlined" !important;
       font-variation-settings:
-        'wght' 400,
-        'opsz' 48;
+        "wght" 400,
+        "opsz" 48;
       font-size: 17px;
       transform: scale(1.5) !important;
     }
     &.export:before {
-      content: '\f09b' !important;
-      font-family: 'Material Symbols Outlined' !important;
+      content: "\f09b" !important;
+      font-family: "Material Symbols Outlined" !important;
       font-variation-settings:
-        'wght' 400,
-        'opsz' 48;
+        "wght" 400,
+        "opsz" 48;
       font-size: 17px;
       transform: scale(1.5) !important;
     }
@@ -4427,7 +4427,7 @@ button {
 
 .material-symbols-outlined {
   &.fill-on-hover:hover {
-    font-variation-settings: 'FILL' 1;
+    font-variation-settings: "FILL" 1;
   }
 
   .fill-on-hover:hover & {
@@ -4435,7 +4435,7 @@ button {
   }
 
   &.force-fill {
-    font-variation-settings: 'FILL' 1;
+    font-variation-settings: "FILL" 1;
   }
 
   .force-fill & {
@@ -4445,7 +4445,7 @@ button {
 
 .mv2-app {
   &.fill-on-hover:hover {
-    font-variation-settings: 'FILL' 1;
+    font-variation-settings: "FILL" 1;
   }
 }
 
@@ -4461,10 +4461,10 @@ button {
     .listing.iconized {
       li {
         a::before {
-          font-family: 'Material Symbols Outlined' !important;
+          font-family: "Material Symbols Outlined" !important;
           font-variation-settings:
-            'wght' 500,
-            'opsz' 40;
+            "wght" 500,
+            "opsz" 40;
           font-weight: normal !important;
           font-size: 20px;
           height: 1em;
@@ -4473,99 +4473,99 @@ button {
         a:hover {
           &::before {
             font-variation-settings:
-              'wght' 500,
-              'opsz' 40,
-              'FILL' 1;
+              "wght" 500,
+              "opsz" 40,
+              "FILL" 1;
           }
         }
 
         &.preferences > a::before {
-          content: '\e429';
+          content: "\e429";
         }
 
         &.folders > a::before {
-          content: '\e2c7';
+          content: "\e2c7";
         }
 
         &.identities > a::before {
-          content: '\e7fd';
+          content: "\e7fd";
         }
 
         &.signatures.identities > a::before {
-          content: '\f74c';
+          content: "\f74c";
         }
 
         &.nextcloud > a::before {
-          content: '\e2c8';
+          content: "\e2c8";
         }
 
         &.filter > a::before {
-          content: '\ef4f';
+          content: "\ef4f";
         }
 
         &.roadmap > a::before {
-          content: '\ef3b' !important;
+          content: "\ef3b" !important;
         }
 
         &.news > a::before {
-          content: '\f009';
+          content: "\f009";
         }
 
         &.mel_doubleauth > a::before {
-          content: '\e0dc';
+          content: "\e0dc";
         }
 
         &.resources > a::before {
-          content: '\e5cc';
+          content: "\e5cc";
         }
 
         &.resources._selected > a::before {
-          content: '\e5cf';
+          content: "\e5cf";
         }
 
         &#settingstabpluginmel_resources_bal > a::before {
-          content: '\e156';
+          content: "\e156";
           height: 2em;
         }
 
         &#settingstabpluginmel_resources_agendas > a::before {
-          content: '\ebcc';
+          content: "\ebcc";
           height: 2em;
         }
 
         &#settingstabpluginmel_resources_contacts > a::before {
-          content: '\e7fd';
+          content: "\e7fd";
           height: 2em;
         }
 
         &#settingstabpluginmel_resources_tasks > a::before {
-          content: '\e834';
+          content: "\e834";
           height: 2em;
         }
 
         &.moncompte > a::before {
-          content: '\f02e';
+          content: "\f02e";
         }
 
         &.mel.statistics > a::before {
-          content: '\e5cc';
+          content: "\e5cc";
         }
 
         &.mel.statistics._selected > a::before {
-          content: '\e5cf';
+          content: "\e5cf";
         }
 
         &.mel.statistics.mobile > a::before {
-          content: '\e325';
+          content: "\e325";
           height: 2em;
         }
 
         &.mel_suggestion_box > a::before {
-          content: '\e175';
+          content: "\e175";
         }
 
         &.rocketchat > a::before {
-          content: '\e0b7';
+          content: "\e0b7";
         }
       }
     }
@@ -4576,10 +4576,10 @@ button {
     .listing.iconized.settings-default-icon {
       tr {
         td.section::before {
-          font-family: 'Material Symbols Outlined' !important;
+          font-family: "Material Symbols Outlined" !important;
           font-variation-settings:
-            'wght' 500,
-            'opsz' 40;
+            "wght" 500,
+            "opsz" 40;
           font-weight: normal !important;
           font-size: 20px;
           height: 1em;
@@ -4588,82 +4588,82 @@ button {
         td.section:hover {
           &::before {
             font-variation-settings:
-              'wght' 500,
-              'opsz' 40,
-              'FILL' 1;
+              "wght" 500,
+              "opsz" 40,
+              "FILL" 1;
           }
         }
 
         &.general > td.section::before {
-          content: '\e30c';
+          content: "\e30c";
         }
 
         &.mailbox > td.section::before {
-          content: '\e158';
+          content: "\e158";
         }
 
         &.mailview > td.section::before {
-          content: '\e156';
+          content: "\e156";
         }
 
         &.compose > td.section::before {
-          content: '\e163';
+          content: "\e163";
         }
 
         &.addressbook > td.section::before {
-          content: '\f233';
+          content: "\f233";
         }
 
         &.server > td.section::before {
-          content: '\e875';
+          content: "\e875";
         }
 
         &.encryption > td.section::before {
-          content: '\e898';
+          content: "\e898";
         }
 
         &.globalsearch > td.section::before {
-          content: '\e8b6';
+          content: "\e8b6";
         }
 
         &.visio > td.section::before {
-          content: '\e04b';
+          content: "\e04b";
         }
 
         &.chat > td.section::before {
-          content: '\e0b7';
+          content: "\e0b7";
         }
 
         &.navigation > td.section::before {
-          content: '\e5d2';
+          content: "\e5d2";
         }
 
         &.bnum-experimental > td.section::before {
-          content: '\ea4b';
+          content: "\ea4b";
         }
 
         &.labels > td.section::before {
-          content: '\e892';
+          content: "\e892";
         }
 
         &.notifications > td.section::before {
-          content: '\e7f4';
+          content: "\e7f4";
         }
 
         &.calendar > td.section::before {
-          content: '\ebcc';
+          content: "\ebcc";
         }
 
         &.a_mel_news_flux > td.section::before {
-          content: '\e8b8';
+          content: "\e8b8";
         }
 
         &#section_mel_chat_settings > td::before {
-          content: '\f02e';
+          content: "\f02e";
         }
 
         &#rcmrowmel_chat_ui > td::before {
-          content: '\e3c4';
+          content: "\e3c4";
         }
       }
     }
@@ -4788,7 +4788,7 @@ button {
   padding: 5px;
   padding-left: 10px;
 
-  &[data-ignore-date='true'] {
+  &[data-ignore-date="true"] {
     box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
     margin-left: 0;
     margin-right: 0;
@@ -4854,7 +4854,7 @@ button {
   height: calc(100% - 30.2px);
   margin-top: 3px;
 
-  [data-ignore-date='true'] & {
+  [data-ignore-date="true"] & {
     height: unset;
   }
 }
@@ -5027,7 +5027,7 @@ button.melv2-sec-nav-correction {
   &.dragover {
     &::before {
       height: 158px;
-      content: '';
+      content: "";
       width: 4px;
       display: block;
       position: absolute;
@@ -5055,7 +5055,7 @@ button.melv2-sec-nav-correction {
 #button-notes {
   &.on-focus {
     .material-symbols-outlined {
-      font-variation-settings: 'FILL' 1;
+      font-variation-settings: "FILL" 1;
     }
   }
 }
@@ -5198,7 +5198,7 @@ each(@apps, {
 });
 
 .app-icon-color(@name) {
-  @color: e('var(--@{name}-app-color)');
+  @color: e("var(--@{name}-app-color)");
   .@{name}_app {
     .mv2-app-icon {
       background-color: @color;
@@ -5254,7 +5254,7 @@ html.dark-mode {
   border-radius: 8px;
   margin: auto;
   padding: 6px;
-  font-variation-settings: 'wght' 300;
+  font-variation-settings: "wght" 300;
 }
 
 .colored-wsp-icon {
@@ -5262,7 +5262,7 @@ html.dark-mode {
   border-radius: 8px;
   margin-right: 10px;
   padding: 6px;
-  font-variation-settings: 'wght' 300;
+  font-variation-settings: "wght" 300;
 }
 
 .colored-header-title {
@@ -5539,7 +5539,7 @@ html.dark-mode .external_url {
     .material-symbols-outlined {
       font-size: 68px;
       color: #fff;
-      font-variation-settings: 'wght' 600;
+      font-variation-settings: "wght" 600;
     }
   }
 
@@ -5761,10 +5761,10 @@ bnum-separate {
 }
 
 .icon-weight-400 {
-  font-variation-settings: 'wght' 400;
+  font-variation-settings: "wght" 400;
 }
 .icon-weight-300 {
-  font-variation-settings: 'wght' 300;
+  font-variation-settings: "wght" 300;
 }
 
 .close-button {
@@ -5800,7 +5800,7 @@ bnum-separate {
 
 .button-icon-hover:hover {
   span {
-    font-variation-settings: 'FILL' 1;
+    font-variation-settings: "FILL" 1;
   }
 }
 
@@ -5875,9 +5875,9 @@ bnum-separate {
       vertical-align: middle;
 
       &::before {
-        content: '\e836';
-        font-variation-settings: 'FILL' 1;
-        font-family: 'Material Symbols Outlined';
+        content: "\e836";
+        font-variation-settings: "FILL" 1;
+        font-family: "Material Symbols Outlined";
         font-weight: normal !important;
         margin: 0;
         font-size: 16px !important;
@@ -5886,13 +5886,13 @@ bnum-separate {
 
       &.loading {
         &::before {
-          content: '\e917';
+          content: "\e917";
         }
       }
 
       &.unknown {
         &::before {
-          content: '\e887';
+          content: "\e887";
         }
       }
     }
@@ -5986,7 +5986,7 @@ div.all-day {
 .location-container {
   .material-symbols-outlined {
     color: var(--input-mel-text-color);
-    font-variation-settings: 'wght' 300;
+    font-variation-settings: "wght" 300;
   }
 }
 
@@ -6073,13 +6073,13 @@ html.layout-phone .task-mail {
   }
 }
 
-input[type='date']::-webkit-calendar-picker-indicator {
+input[type="date"]::-webkit-calendar-picker-indicator {
   filter: brightness(0) saturate(100%) invert(22%) sepia(19%) saturate(1076%)
     hue-rotate(195deg) brightness(93%) contrast(93%);
 }
 
 html.dark-mode-custom {
-  input[type='date']::-webkit-calendar-picker-indicator {
+  input[type="date"]::-webkit-calendar-picker-indicator {
     filter: brightness(0) saturate(100%) invert(80%) sepia(47%) saturate(262%)
       hue-rotate(358deg) brightness(93%) contrast(89%);
   }
@@ -6094,7 +6094,7 @@ html.dark-mode-custom {
   &.clock-loader {
     &.animate {
       &::before {
-        content: '';
+        content: "";
         animation: materialsymbolclockanimate 1s infinite;
       }
     }
@@ -6257,7 +6257,7 @@ iframe {
             }
           }
 
-          &[data-mef='true'] {
+          &[data-mef="true"] {
             padding: 5px !important;
           }
         }
@@ -6299,11 +6299,11 @@ iframe {
     &:before {
       &:extend(.bnum-popover .bnum-popover-arrow);
       visibility: visible;
-      content: '';
+      content: "";
       transform: rotate(45deg);
     }
 
-    [data-popper-placement^='top']& {
+    [data-popper-placement^="top"]& {
       bottom: -3px;
 
       &:before {
@@ -6312,7 +6312,7 @@ iframe {
       }
     }
 
-    [data-popper-placement^='bottom']& {
+    [data-popper-placement^="bottom"]& {
       top: -4px;
 
       &:before {
@@ -6321,7 +6321,7 @@ iframe {
       }
     }
 
-    [data-popper-placement^='left']& {
+    [data-popper-placement^="left"]& {
       right: -3px;
 
       &:before {
@@ -6330,7 +6330,7 @@ iframe {
       }
     }
 
-    [data-popper-placement^='right']& {
+    [data-popper-placement^="right"]& {
       left: -4px;
 
       &:before {
@@ -6421,7 +6421,7 @@ iframe {
     &.alpha-sort-icon {
       &::before {
         ._material-icon() !important;
-        content: '\e053';
+        content: "\e053";
       }
     }
   }
@@ -6429,7 +6429,7 @@ iframe {
 
 bnum-pressed-button {
   &.mel-button {
-    &[aria-pressed='true']&.cannot-unpress {
+    &[aria-pressed="true"]&.cannot-unpress {
       &:extend(.mel-button.selected-item);
     }
   }
@@ -6469,7 +6469,7 @@ bnum-infinite-scroll-container {
   display: block;
 }
 
-[component-mode='div'] {
+[component-mode="div"] {
   display: block;
 
   &.customMode {
@@ -6477,7 +6477,7 @@ bnum-infinite-scroll-container {
   }
 }
 
-[component-mode='flex'] {
+[component-mode="flex"] {
   display: flex;
 
   &.customMode {
@@ -6485,7 +6485,7 @@ bnum-infinite-scroll-container {
   }
 }
 
-[component-mode='inline-block'] {
+[component-mode="inline-block"] {
   display: inline-block;
 
   &.customMode {
@@ -6493,7 +6493,7 @@ bnum-infinite-scroll-container {
   }
 }
 
-[component-mode='inline-flex'] {
+[component-mode="inline-flex"] {
   display: inline-flex;
 
   &.customMode {
@@ -6583,13 +6583,13 @@ html@{touch} {
 
 .footer {
   &.ignore {
-    display: 'none' !important;
+    display: "none" !important;
   }
 }
 
 #filterslist {
   tr.disabled td.name:before {
-    content: '\f00d';
+    content: "\f00d";
   }
 }
 
@@ -6611,7 +6611,7 @@ bnum-helper {
   border-bottom: dotted thin;
   cursor: help;
 
-  ._webcomponent_loading(bnum-helper);
+  // ._webcomponent_loading(bnum-helper);
 
   bnum-icon {
     font-size: var(--bnum-helper-icon-font-size, inherit);

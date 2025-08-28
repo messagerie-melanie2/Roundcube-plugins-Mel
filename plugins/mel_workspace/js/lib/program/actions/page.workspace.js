@@ -277,10 +277,23 @@ export class WorkspacePage extends WorkspaceObject {
     });
 
     if (this.get_env('start_page')) {
-      //Si le document est chargé, on l'applique
-      if (document.readyState === 'complete') this._setStartupPage();
-      //Sinon, on attend que toute les dépendances soient chargées
-      else window.addEventListener('load', this._setStartupPage.bind(this));
+      // this.listen('init', () => this._setStartupPage());
+      // //Si le document est chargé, on l'applique
+      // if (document.readyState === 'complete') this._setStartupPage();
+      // //Sinon, on attend que toute les dépendances soient chargées
+      // else window.addEventListener('load', this._setStartupPage.bind(this));
+      $(document).ready(() => {
+        this.docready = true;
+      });
+
+      window.addEventListener('load', () => (this.windowready = true));
+
+      const interval = setInterval(() => {
+        if (this.docready && this.windowready) {
+          clearInterval(interval);
+          this._setStartupPage();
+        }
+      }, 300);
     }
   }
 

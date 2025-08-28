@@ -1,5 +1,7 @@
 <?php
 class mel_news extends rcube_plugin {
+  private const RSS_ENABLED = false;
+
   /**
    *
    * @var string
@@ -130,6 +132,7 @@ class mel_news extends rcube_plugin {
     $this->rc->output->set_env("news_mode", $this->get_news_mode());
     $this->rc->output->set_env("news_starting_nb_rows", $this->get_starting_nb_rows());
     $this->rc->output->set_env("news_service_for_publish", self::get_user_service_list(null, $this));
+     $this->rc->output->set_env("RSS_ENABLED", self::RSS_ENABLED);
 
     $this->rc->html_editor();
 
@@ -211,6 +214,8 @@ class mel_news extends rcube_plugin {
 
     switch ($section) {
       case 'mel_news_flux':
+        if (!self::RSS_ENABLED) break;
+
         include_once "lib/flux_page.php";
 
         $intra = $this->rc->config->get('intranet_list', []);
@@ -396,6 +401,11 @@ class mel_news extends rcube_plugin {
 
     if (count(driver_mel::gi()->getUser()->getUserNewsShares()) === 0)
       unset($list[2]);
+
+
+    if (!self::RSS_ENABLED) {
+      unset($list[1]);
+    }
 
     // create XHTML table
     $out = rcmail_action::table_output($attrib, $list, $cols, 'id');
@@ -1095,6 +1105,7 @@ class mel_news extends rcube_plugin {
     $news = [];
 
     foreach ($this->generate_dn_news($user_dn) as $raw_new) {
+      if (!self::RSS_ENABLED && anews_datas::isRss($raw_new)) continue;
       $news[] = anews_datas::isRss($raw_new) ? new rss_datas($raw_new) : new news_datas($raw_new);
     }
 
@@ -1109,9 +1120,11 @@ class mel_news extends rcube_plugin {
     driver_mel::gi()->getUser()->cleanNews();
 
     $raw_news = [
-      driver_mel::gi()->getUser()->getUserNews(),
-      driver_mel::gi()->getUser()->getUserRss()
+      driver_mel::gi()->getUser()->getUserNews()
     ];
+
+    if (self::RSS_ENABLED)
+      $raw_news[] = driver_mel::gi()->getUser()->getUserRss();
 
     $intra = $this->rc->config->get('intranet_list', []);
     $my_fluxs = new flux_page_disposition($this->rc->config->get('custom_flux', []));
@@ -1174,6 +1187,8 @@ class mel_news extends rcube_plugin {
 
     $intra = $this->rc->config->get('intranet_list', []);
     foreach ($my_fluxs->generator_flux() as $value) {
+
+      if (!self::RSS_ENABLED) continue;
 
       if (!is_array($value["datas"]))
         continue;

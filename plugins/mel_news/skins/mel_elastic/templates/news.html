@@ -55,6 +55,7 @@
             <roundcube:label name="mel_news.publish" />
             <span class="plus icon-mel-plus"></span>
           </button>
+            <roundcube:if condition="env:RSS_ENABLED" />
           <button
             id="news-button-publish-flux"
             class="btn btn-secondary mel-button no-button-margin disabled"
@@ -63,6 +64,7 @@
             <roundcube:label name="mel_news.publish_flux" />
             <span class="plus icon-mel-plus"></span>
           </button>
+          <roundcube:endif />
         </div>
       </div>
       <div>
@@ -82,6 +84,7 @@
         <div class="right">
           <!-- <button id="news-button-sort" disabled class="disabled btn btn-secondary mel-button no-button-margin">Trier <span class="plus icofont-sort"></span></button> -->
           <roundcube:object name="button_sort" />
+          <roundcube:if condition="env:RSS_ENABLED" />
           <button
             id="news-button-filter"
             style="margin: 0 15px"
@@ -97,6 +100,8 @@
             <roundcube:label name="mel_news.add" />
             <span class="plus icon-mel-plus"></span>
           </button>
+          <roundcube:endif />
+        
         </div>
       </div>
       <div id="i-custom-news">

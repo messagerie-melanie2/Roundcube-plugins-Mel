@@ -279,21 +279,17 @@ export class WorkspacePage extends WorkspaceObject {
     if (this.get_env('start_page')) {
       // this.listen('init', () => this._setStartupPage());
       // //Si le document est chargé, on l'applique
-      // if (document.readyState === 'complete') this._setStartupPage();
-      // //Sinon, on attend que toute les dépendances soient chargées
-      // else window.addEventListener('load', this._setStartupPage.bind(this));
-      $(document).ready(() => {
-        this.docready = true;
-      });
-
-      window.addEventListener('load', () => (this.windowready = true));
-
-      const interval = setInterval(() => {
-        if (this.docready && this.windowready) {
-          clearInterval(interval);
+      if (document.readyState === 'complete')
+        setTimeout(() => {
           this._setStartupPage();
-        }
-      }, 300);
+        }, 1000);
+      //Sinon, on attend que toute les dépendances soient chargées
+      else
+        window.addEventListener('load', () => {
+          setTimeout(() => {
+            this._setStartupPage();
+          }, 1000);
+        });
     }
   }
 
@@ -317,6 +313,7 @@ export class WorkspacePage extends WorkspaceObject {
    * Ouvre la page de démarrage. Si _post_uid est présent,on ouvre directement l’article.
    */
   async _setStartupPage() {
+    console.log('[BUILD]Setting startup page !');
     await NavBarManager.WaitLoading();
 
     const startPage = this.get_env('start_page');

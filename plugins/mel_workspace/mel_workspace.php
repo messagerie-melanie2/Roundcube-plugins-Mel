@@ -54,6 +54,9 @@ use LibMelanie\Api\Defaut\Workspaces\Share;
 - workspace.service.get => Récupère le service
     - arguments => workspace, objet de type Workspace. Contient tout les données de l'espace
                    services, liste des services, à ajouter le votre
+- wsp.enable_create_button => Permet de désactiver le bouton de création d'espace de travail
+    - arguments => enabled, booléen, si le bouton doit être affiché ou non
+                   plugin, plugin mel_workspace
 */
 
 class mel_workspace extends bnum_plugin
@@ -193,15 +196,24 @@ class mel_workspace extends bnum_plugin
         $this->load_script_module('index');
         self::IncludeWorkspaceBlockComponent();
 
-        $this->add_handler('subscribed', [$this, 'handler_subscribed']);
-        $this->add_handler('publics', [$this, 'handler_publics']);
-        $this->add_handler('archived', [$this, 'handler_archived']);
-        $this->add_handler('publiccount', [$this, 'handler_public_count']);
+        $this->add_handlers([
+            'subscribed' => [$this, 'handler_subscribed'],
+            'publics' => [$this, 'handler_publics'],
+            'archived' => [$this, 'handler_archived'],
+            'publiccount' => [$this, 'handler_public_count'],
+            'feedback_button' => [$this, 'handler_feedback_button'],
+        ]);
 
         $this->ignore_footer();
-        $this->rc()->output->set_env('visu-mode', $this->get_config('wsp-visu-mode', 'cards'));
 
-        $this->rc()->output->send('mel_workspace.index');
+        $plugin = $this->exec_hook('wsp.enable_create_button', ['enabled' => true, 'plugin' => $this]);
+
+        if ($plugin !== null && $plugin['enabled'] === false) $this->set_env('wsp_usr_can_create', false);
+        
+        $this->set_env('visu-mode', $this->get_config('wsp-visu-mode', 'cards'));
+
+        $this->send_and_exit('mel_workspace.index');
+
     }
 
     public function show_workspace()
@@ -309,11 +321,19 @@ class mel_workspace extends bnum_plugin
             $navbar->add_css(__DIR__ . '/' . $this->local_skin_path() . '/navbar.css');
             $navbar->add_css(__DIR__ . '/../../' . $this->local_skin_path() . '/material-symbols.css');
 
-            $this->rc()->output->set_env('navbar', $navbar->get());
+            $this->set_env('navbar', $navbar->get());
 
             self::IncludeNavBarComponent();
 
-            if ($this->get_input('_page')) $this->rc()->output->set_env('start_page', $this->get_input('_page'));
+            // Permet de récupérer la page en cours pour l'ouvrir directement
+            if ($this->get_input('_page')) {
+                $this->set_env('start_page', $this->get_input('_page'));
+            }
+
+            // Permet de récupérer une donnée
+            if ($this->get_input('_bag')) {
+                $this->set_env('start_bag', $this->get_input('_bag'));
+            }
         } else {
             $this->load_script_module('page.not_in_workspace.js', '/js/lib/program/actions/');
             $this->rc()->output->set_env('current_workspace_uid', $uid);
@@ -321,8 +341,8 @@ class mel_workspace extends bnum_plugin
         }
 
         $this->ignore_footer();
-        $this->rc()->output->set_pagetitle($this->gettext(['name' => 'page_title', 'name' => $workspace->title()]));
-        $this->rc()->output->send('mel_workspace.workspace');
+        $this->set_page_title($this->gettext(['name' => 'page_title', 'name' => $workspace->title()]));
+        $this->send_and_exit('mel_workspace.workspace');
     }
 
     public function action_workspace()
@@ -364,6 +384,13 @@ class mel_workspace extends bnum_plugin
 
     public function create()
     {
+        $user = driver_mel::gi()->getUser();
+
+        if ($user->is_external) {
+            // Si l'utilisateur est externe, on ne lui permet pas de créer un espace de travail
+            $this->sendEncodedExit(['error' => 'Unauthorized']);
+        }
+
         try {
             $data = [
                 "avatar" => rcube_utils::get_input_value("avatar", rcube_utils::INPUT_POST),
@@ -386,8 +413,6 @@ class mel_workspace extends bnum_plugin
                 "errored_user" => [],
                 "existing_users" => []
             ];
-
-            $user = driver_mel::gi()->getUser();
             $workspace = new Workspace($data["uid"]);
             $workspace->title($data['title'])
                 ->logo($data['avatar'])
@@ -1530,7 +1555,7 @@ class mel_workspace extends bnum_plugin
             $bodymail->wsp_creator = $workspace->creator;
             $bodymail->wsp_last__action_text = $workspace->created === $workspace->modified ? 'Crée le' : 'Mise à jour';
             $bodymail->wsp_last__action_date = DateTime::createFromFormat('Y-m-d H:i:s', $workspace->modified)->format('d/m/Y');
-            $bodymail->logobnum = MailBody::load_image(__DIR__ . '/skins/elastic/pictures/logobnum.png', 'png');
+            $bodymail->logobnum = MailBody::load_image(__DIR__ . '/skins/mel_elastic/pictures/logobnum.png', 'png');
             $bodymail->bnum_base__url = 'http://mtes.fr/2';
             $bodymail->url = 'https://bnum.din.gouv.fr/?_task=workspace&_action=workspace&_uid=' . $workspace->uid;
 
@@ -1718,6 +1743,15 @@ class mel_workspace extends bnum_plugin
         if ($args['app'] === self::KEY_TASK) $args['continue'] = false;
 
         return $args;
+    }
+
+    /**
+     * Callback, renvoie le bouton de feedback.
+     *
+     * @return void
+     */
+    public function handler_feedback_button() {
+        return mel_metapage::GetSurveyButton();
     }
     #endregion
 

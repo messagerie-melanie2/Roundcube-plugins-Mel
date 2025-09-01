@@ -71,6 +71,42 @@ export class ModuleForum extends WorkspaceObject {
     }
 
     // Ajout de l'écouteur via addListener()
+    const callback = (args) => {
+      if (
+        args.task === 'forum' &&
+        this.get_env('start_page') === 'forum' &&
+        this.get_env('start_bag')
+      ) {
+        return {
+          _workspace_uid: this.workspace.uid,
+          askedTask: args.task,
+          _uid: this.get_env('start_bag'),
+          _action: 'post',
+        };
+      }
+      if (
+        args.task === 'forum' &&
+        (!FramesManager.Instance.has_frame('forum') ||
+          !FramesManager.Instance.get_frame('forum', {
+            jquery: false,
+          }).contentWindow.location.href.includes(this.workspace.uid))
+      ) {
+        return { _workspace_uid: this.workspace.uid, askedTask: args.task };
+      }
+    };
+    console.log(
+      '[BUILD]Adding event listener for workspace.nav.beforeswitch for forum',
+    );
+    rcmail.add_event_listener_ex(
+      'workspace.nav.beforeswitch',
+      'forum',
+      callback,
+    );
+    top.rcmail.add_event_listener_ex(
+      'workspace.nav.beforeswitch',
+      'forum',
+      callback,
+    );
     this.addListener();
   }
 
@@ -159,17 +195,9 @@ export class ModuleForum extends WorkspaceObject {
     });
 
     //Avant le switch de frame
-    NavBarManager.AddEventListener().OnBeforeSwitch((args) => {
-      if (
-        args.task === 'forum' &&
-        (!FramesManager.Instance.has_frame('forum') ||
-          !FramesManager.Instance.get_frame('forum', {
-            jquery: false,
-          }).contentWindow.location.href.includes(this.workspace.uid))
-      ) {
-        return { _workspace_uid: this.workspace.uid, askedTask: args.task };
-      }
-    }, 'forum');
+    // NavBarManager.AddEventListener().OnBeforeSwitch((args) => {
+
+    // }, 'forum');
   }
 
   /**

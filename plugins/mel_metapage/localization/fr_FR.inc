@@ -422,7 +422,8 @@ $labels['download_app'] = 'Télécharger l\'application';
 $labels['show_me'] = 'Configurer maintenant';
 $labels['later'] = 'Plus tard';
 $labels['close_double_auth'] = 'Fermer';
-$labels['double_authentication_validation'] = 'L’authentification à deux facteurs à correctement été configuré !';
+$labels['double_authentication_validation'] = 'L\'authentification à deux facteurs à correctement été configuré !';
+$labels['no_internet_access'] = 'L\'accès à Internet n\'est pas activé sur votre compte. Pour activer la double authentification, rendez-vous dans Mon compte > Accès Internet et activez l\'accès à Internet.';
 $labels['send_code'] = 'Envoyer le code';
 $labels['email_format_error'] = 'Le format de l\'adresse mail n\'est pas valide';
 $labels['code_expired'] = 'Le code à expiré';
@@ -514,3 +515,7 @@ $labels['gotoaddressbook'] = 'Afficher dans l\'annuaire';
 $labels['noinaddressbook'] = 'Le contact n\'est pas dans l\'annuaire';
 
 $labels['calendar_add_mail_to_event'] = 'Ajouter les destinataires du mail';
+
+$labels['minimise'] = 'Minimiser';
+$labels['maximise'] = 'Dévelloper';
+$labels['close_popup'] = 'Fermer la popup';

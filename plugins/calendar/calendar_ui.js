@@ -4596,6 +4596,8 @@ function rcube_calendar_ui(settings) {
   this.event_copy = function (event) {
     if (event && event.id) {
       var copy = $.extend(true, {}, event);
+      // PAMELA L'utilisateur qui duplique devient l'organisateur de la copie
+      let hasUser = false;
 
       delete copy.id;
       delete copy._id;
@@ -4605,7 +4607,12 @@ function rcube_calendar_ui(settings) {
       delete copy.attachments; // @TODO
 
       $.each(copy.attendees, function (k, v) {
-        if (v.role != 'ORGANIZER') {
+        // PAMELA L'utilisateur qui duplique devient l'organisateur de la copie
+        if (v.email === rcmail.env.current_user.email) {
+          v.role = 'ORGANIZER';
+
+          if (!hasUser) hasUser = true;
+        } else if (v.role !== 'ORGANIZER') {
           v.status = 'NEEDS-ACTION';
         }
         // PAMELA - Ne pas conserver l'organisateur lors d'un copy
@@ -4614,6 +4621,16 @@ function rcube_calendar_ui(settings) {
           v.role = 'REQ-PARTICIPANT';
         }
       });
+
+      // PAMELA L'utilisateur qui duplique devient l'organisateur de la copie
+      if (!hasUser && copy && copy.attendees) {
+        copy.attendees.push({
+          email: rcmail.env.current_user.email,
+          name: rcmail.env.current_user.name,
+          role: 'ORGANIZER',
+          internal: true,
+        });
+      }
 
       setTimeout(function () {
         event_edit_dialog('new', copy);

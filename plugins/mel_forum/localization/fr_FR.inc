@@ -292,3 +292,11 @@ $labels['settings'] = 'paramètres';
 $labels['the'] = 'Le';
 $labels['at_modify'] = 'a modifié';
 $labels['return_to_post'] = 'Retour à l\'article';
+
+#region Refresh
+$labels['refresh_button'] = 'Rafraîchir';
+$labels['dismiss_button'] = 'Fermer';
+$labels['new_single_post_available'] = 'nouvel article est disponible !';
+$labels['new_multiple_post_available'] = 'nouveaux articles sont disponibles !';
+$labels['deleted_single_post'] = 'article a été supprimé !';
+$labels['deleted_multiple_post'] = 'articles ont été supprimés !';

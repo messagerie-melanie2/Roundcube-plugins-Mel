@@ -467,6 +467,10 @@ class mel_doubleauth extends bnum_plugin
             );
 
             $div_container .= row(
+                col('', '2fa_error_message text-danger')
+            );
+
+            $div_container .= row(
                 col($this->gettext('info_activer'))
             );
 
@@ -1146,7 +1150,7 @@ class mel_doubleauth extends bnum_plugin
      */
     private function is_auth_strong()
     {
-        return self::date_grace_enabled() || (mel::is_auth_strong() && $this->rc->config->get('is_auth_strong', true));
+        return (self::date_grace_enabled() || (mel::is_auth_strong() && $this->rc->config->get('is_auth_strong', true))  && !$this->rc->config->get('is_preprod'));
     }
 
     /**

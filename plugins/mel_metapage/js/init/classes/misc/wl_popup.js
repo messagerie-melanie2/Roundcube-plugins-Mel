@@ -32,6 +32,7 @@ class Windows_Like_PopUp extends MetapageObject {
       aftersetup: () => {},
       beforeCreatingContent: () => '',
       onCreatingContent: (html) => html,
+      // eslint-disable-next-line no-unused-vars
       afterCreatingContent: ($html, box) => {},
       onminifiedListCreated: ($minified) => {
         $minified.addClass('auto'); //.css("left", "60px").css("width", "auto");
@@ -82,8 +83,8 @@ class Windows_Like_PopUp extends MetapageObject {
     //Création du header
     html += `<div class="${class_header}">`;
     html += `<span class="${class_title}"><h${h} style="display:inline-block;">${settings.title}</h${h}></span>`;
-    html += `<span style="float:right;margin-right: 15px;"><button class="${class_size} mel-button btn btn-secondary dark-no-border-default" style="margin:0"><span class="${settings.icon_minify}"></span></button>
-        <button class="${class_close} btn-danger danger inverse mel-button btn btn-secondary dark-no-border-default" style="margin:0"><span class="${settings.icon_close}"></span></button></span>`;
+    html += `<span style="float:right;margin-right: 15px;"><button title="${rcmail.gettext('minimise', 'mel_metapage')}" class="${class_size} mel-button btn btn-secondary dark-no-border-default" style="margin:0"><span class="${settings.icon_minify}"></span></button>
+        <button title="${rcmail.gettext('close_popup', 'mel_metapage')}" class="${class_close} btn-danger danger inverse mel-button btn btn-secondary dark-no-border-default" style="margin:0"><span class="${settings.icon_close}"></span></button></span>`;
     html += '</div>';
 
     //Création du content
@@ -157,6 +158,7 @@ class Windows_Like_PopUp extends MetapageObject {
       })
       .parent()
       .find('.wlp-minixpand')
+      .attr('title', rcmail.gettext('maximise', 'mel_metapage'))
       .click(() => {
         //expand
         if (this.settings.onexpand !== null) this.settings.onexpand();
@@ -171,6 +173,7 @@ class Windows_Like_PopUp extends MetapageObject {
     this._minified_header.remove();
     this._minified_header = null;
     this.box.minifier
+      .attr('title', rcmail.gettext('minimise', 'mel_metapage'))
       .find('span')
       .addClass(this.settings.icon_minify)
       .removeClass(this.settings.icon_expend);
@@ -180,7 +183,12 @@ class Windows_Like_PopUp extends MetapageObject {
   destroy() {
     try {
       this.settings.context.$(`#minified-${this.id}`).remove();
-    } catch (error) {}
+    } catch (error) {
+      console.warning(
+        `Error removing minified header for popup ${this.id}:`,
+        error,
+      );
+    }
 
     this.box.get.remove();
     delete Windows_Like_PopUp.popUps[this.id];
@@ -204,7 +212,7 @@ class Windows_Like_PopUp extends MetapageObject {
   static _generateId(base) {
     if (Windows_Like_PopUp.popUps[base] === undefined) return base;
 
-    while (Windows_Like_PopUp.popUps[base++] !== undefined) {}
+    while (Windows_Like_PopUp.popUps[base++] !== undefined);
 
     return base;
   }

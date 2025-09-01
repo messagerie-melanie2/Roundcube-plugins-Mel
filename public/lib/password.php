@@ -36,6 +36,25 @@ class Password {
 	}
 
 	/**
+	 * Génération du mot de passe ARGON2
+	 * 
+	 * @param string $password Le mot de passe à hasher
+	 * @param int $algo L'algorithme à utiliser
+	 * @param int $memory_cost
+	 * @param int $time_cost
+	 * @param int $threads 
+	 * 
+	 * @return string Le mot de passe hashé en ARGON2
+	 */
+	public static function ARGON2Generator($password, $algo = PASSWORD_ARGON2ID, $memory_cost = 9216, $time_cost = 4, $threads = 1) {
+		return "{ARGON2}" . password_hash($password, $algo, [
+			'memory_cost' 	=> $memory_cost,
+			'time_cost' 	=> $time_cost,
+			'threads' 		=> $threads,
+		]);
+	}
+
+	/**
 	 * Validation du mot de passe
 	 * 
 	 * @param string $password

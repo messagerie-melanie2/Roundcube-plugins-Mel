@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
 import { BnumModules } from '../../../../mel_metapage/js/lib/helpers/dynamic_load_modules.js';
 import {
@@ -419,7 +420,7 @@ class WspNavBar extends HtmlCustomTag {
       { text: "L'url de l'espace a bien été copié !" },
     );
 
-    let icon = new BnumHtmlIcon('content_copy');
+    let icon = BnumHtmlIcon.Create('content_copy');
     button.append(icon);
 
     // span.append(button);
@@ -540,7 +541,7 @@ class WspNavBar extends HtmlCustomTag {
       }
 
       if (plugin.addSeparateAtEnd) {
-        let separate = new BnumHtmlSeparate({ mode: EWebComponentMode.div });
+        let separate = BnumHtmlSeparate.Create();
         separate.style.display = 'block';
         separate.style.opacity = 1;
         separate.style.margin = '20px 30px';

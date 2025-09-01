@@ -1,4 +1,6 @@
-export { parseFrenchDate, formatPostDate, formatCommentDate };
+import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
+
+export { parseFrenchDate, formatPostDate, formatCommentDate, createPostLink };
 
 /**
  * Analyse une date française sous forme de chaîne et la convertit en objet Moment.
@@ -58,4 +60,24 @@ function formatCommentDate(createdDate) {
   }
 
   return commentDate.format('D MMMM YYYY');
+}
+
+/**
+ * Génère un lien URL vers un post du forum dans un espace de travail donné.
+ *
+ * @param {string} postId - L'identifiant du post à afficher.
+ * @param {string} wspId - L'identifiant de l'espace de travail.
+ * @returns {string} L'URL générée pour accéder au post dans le forum.
+ */
+function createPostLink(postId, wspId) {
+  return MelObject.Empty().url('workspace', {
+    action: 'workspace',
+    params: {
+      _uid: wspId,
+      _bag: postId,
+      _page: 'forum',
+      _force_bnum: '1',
+    },
+    removeIsFromIframe: true,
+  });
 }

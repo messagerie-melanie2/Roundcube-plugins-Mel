@@ -1356,6 +1356,25 @@ async function m_mp_CreateWorkSpace() {
     data: datas,
     url: mel_metapage.Functions.url('workspace', 'create'), //"/?_task=workspace&_action=create",
     success: function (data) {
+      if (data) {
+        const tmp = typeof data === 'string' ? JSON.parse(data) : data;
+
+        if (tmp.error) {
+          switch (tmp['error']) {
+            case 'Unauthorized':
+              rcmail.display_message(
+                "Vous n'avez pas les droits pour créer un espace de travail !",
+                'error',
+              );
+              m_mp_step3_param.datas = null;
+              return null;
+
+            default:
+              break;
+          }
+        }
+      }
+
       m_mp_create_workspace_success(data, busy);
 
       m_mp_step3_param.datas = null;
@@ -3438,6 +3457,23 @@ function save_option(_option_name, _option_value, element, reload = false) {
       }
     },
   );
+}
+
+/**
+ *
+ * @param {HTMLLabelElement} label
+ * @param {KeyboardEvent} event
+ */
+function key_option(label, event) {
+  switch (event.key) {
+    case ' ':
+    case 'Enter':
+      label.parentElement.querySelector('input').click();
+      break;
+
+    default:
+      break;
+  }
 }
 
 //0007910: Popup d'information lors du clic sur un lien dans un mail

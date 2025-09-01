@@ -355,3 +355,16 @@ $config['metrics_prod_url'] = null;
 $config['metrics_url'] = $config['metrics_preprod_url'];
 $config['metrics_token'] = '123456789';
 $config['metrics_send_interval'] = 60; // en secondes
+
+// Peut être `false` ou : 
+/*
+[
+  // Url du sondage
+	'url' => '',
+  // Texte si "picture" n'est pas défini, titre sinon
+	'text' => 'Donnez votre avis',
+  // Image dans la skin elastic/pictures
+  'icon' => null
+];
+*/
+$config['survey'] = false;

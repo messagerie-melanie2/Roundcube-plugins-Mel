@@ -3,6 +3,7 @@ import { MelEnumerable } from '../classes/enum.js';
 import { MainNav } from '../classes/main_nav.js';
 import { DATE_TIME_FORMAT } from '../constants/constants.dates.js';
 import { MelObject } from '../mel_object.js';
+import { CONST_EVENT_DISPO_VACATION } from './constants.js';
 
 /**
  * Sélecteur de la pastille agenda de la navigation principale
@@ -122,7 +123,8 @@ class CalendarLoader extends MelObject {
         (x) =>
           moment(x.end) > now &&
           x.free_busy !== CONST_EVENT_DISPO_FREE &&
-          x.free_busy !== CONST_EVENT_DISPO_TELEWORK,
+          x.free_busy !== CONST_EVENT_DISPO_TELEWORK &&
+          x.free_busy !== CONST_EVENT_DISPO_VACATION,
       )
       .orderBy((x) => moment(x.start));
 

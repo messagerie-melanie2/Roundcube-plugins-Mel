@@ -92,7 +92,7 @@ export class WspPageNavigation extends NavBarComponent {
     const voiceId = this.generateId(NAMESPACE);
 
     let nav = document.createElement('ul');
-    let voice = new BnumHtmlSrOnly();
+    let voice = BnumHtmlSrOnly.Create();
 
     nav.setAttribute('id', this.#id);
     nav.setAttribute('role', 'menu');
@@ -191,8 +191,8 @@ export class WspPageNavigation extends NavBarComponent {
     }
 
     hiddenIcon.classList.add('maximised-hidden');
-    button.afterstyle.push((icon, button) => {
-      button.prepend(icon);
+    button.afterstyle.push((cIcon, cButton) => {
+      cButton.prepend(cIcon);
     }, hiddenIcon);
 
     li.appendChild(button);

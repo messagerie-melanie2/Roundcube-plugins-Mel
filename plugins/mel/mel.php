@@ -797,16 +797,6 @@ class mel extends rcube_plugin
         }
         $keeplogin = "keeplogin";
         $class_tr = "hidden_login_input";
-        $login_div = html::div(array(
-          'class' => 'login_div'
-        ), html::div(array(
-          'class' => 'img'
-        ), " ") . html::div(array(
-          'class' => 'name'
-        ), $cn) . html::a(array(
-          'id' => 'rcmchangeuserbutton',
-          'href' => '#'
-        ), $this->gettext('change_user')));
       } else if (isset($_POST['_keeplogin']) && !$this->rc->config->get('hide_keep_login_button', false)) {
         $keeplogin = "keeplogin";
       }

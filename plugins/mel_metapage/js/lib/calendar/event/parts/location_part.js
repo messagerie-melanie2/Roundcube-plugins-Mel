@@ -182,11 +182,11 @@ class ALocationPart extends IDestroyable {
   static OptionValue() {}
 
   /**
- * Texte à mettre si on ne veux pas passer par le système de langue de roundcube
- * @protected
- * @return {?string}
- * @static
- */
+   * Texte à mettre si on ne veux pas passer par le système de langue de roundcube
+   * @protected
+   * @return {?string}
+   * @static
+   */
   static CustomText() {
     return null;
   }
@@ -254,6 +254,7 @@ class AExternalLocationPart extends ALocationPart {
    * @param {*} event Event du plugin calendar
    * @returns {Array<Tuple<typeof AExternalLocationPart, *>>}
    */
+  // eslint-disable-next-line no-unused-vars
   static Instantiate(event) {
     return [];
   }
@@ -372,13 +373,31 @@ class VisioManager extends ALocationPart {
   _on_select_change(event) {
     const val = $(event.currentTarget).val();
 
-    $('.visio-mode').css('display', 'none');
+    for (const element of $('.visio-mode').css('display', 'none')) {
+      const $element = $(element);
+
+      if ($element.hasClass('d-flex'))
+        $element.removeClass('d-flex').attr('data-dflex', true);
+    }
 
     this._cached[this._current.option_value()] = this._current;
 
     if (this._cached[val]) {
       this._current = this._cached[val];
       this._cached[val] = null;
+
+      let element = document.querySelector(
+        `#visio-${this.id}-container [data-locationmode="${val}"]`,
+      );
+
+      if (element.hasAttribute('data-dflex')) {
+        element.classList.add('d-flex');
+        element.removeAttribute('data-dflex');
+      }
+
+      element.style.display = null;
+
+      element = null;
     } else {
       this._current = new ([IntegratedVisio, ExternalVisio].find(
         (x) => x.OptionValue() === val,

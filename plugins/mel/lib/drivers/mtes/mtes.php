@@ -803,7 +803,7 @@ class mtes_driver_mel extends mce_driver_mel
             'wsp.last_action.date'  => DateTime::createFromFormat('Y-m-d H:i:s', $workspace->modified)->format('d/m/Y'),
             'bnum.base_url'         => 'http://mtes.fr/2',
             'documentation.url'     => 'https://fabrique-numerique.gitbook.io/bnum/ressources/guide-des-fonctionnalites/espaces-de-travail',
-            'logobnum'              => MailBody::load_image(__DIR__ . '/../../../../mel_workspace/skins/elastic/pictures/logobnum.png', 'png'),
+            'logobnum'              => MailBody::load_image(__DIR__ . '/../../../../mel_workspace/skins/mel_elastic/pictures/logobnum.png', 'png'),
           ]);
 
           return \LibMelanie\Mail\Mail::Send('bnum', $email, $bodymail->subject(), $bodymail->body());

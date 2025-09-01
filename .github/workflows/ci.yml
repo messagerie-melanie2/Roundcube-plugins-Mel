@@ -20,7 +20,7 @@ jobs:
       - name: Get modified JS files
         id: js_files
         run: |
-          FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep '\.js$' || true)
+          FILES=$(git diff --diff-filter=d --name-only origin/${{ github.base_ref }}...HEAD | grep '\.js$' || true)
           echo "$FILES"
           echo "files<<EOF" >> $GITHUB_OUTPUT
           echo "$FILES" >> $GITHUB_OUTPUT
@@ -40,9 +40,13 @@ jobs:
         if: steps.js_files.outputs.files != ''
         run: |
           echo "🔍 Checking JS syntax on modified files:"
-          for file in ${{ steps.js_files.outputs.files }}; do
-            echo "🔍 Checking $file"
-            node --check "$file"
+          for file in $(echo "${{ steps.js_files.outputs.files }}"); do
+            if [ -f "$file" ]; then
+              echo "🔍 Checking $file"
+              node --check "$file"
+            else
+              echo "Skipping $file (not a file)"
+            fi
           done
 
       - name: Run ESLint (optional)
@@ -51,8 +55,14 @@ jobs:
           if [ -f package.json ]; then
             npm install
             echo "Running ESLint on:"
-            echo "${{ steps.js_files.outputs.files }}" | tr ' ' '\n'
-            npx eslint ${{ steps.js_files.outputs.files }}
+            for file in $(echo "${{ steps.js_files.outputs.files }}"); do
+              if [ -f "$file" ]; then
+                echo "ESLint $file"
+                npx eslint "$file"
+              else
+                echo "Skipping $file (not a file)"
+              fi
+            done
           else
             echo "No package.json found. Skipping ESLint."
           fi
@@ -71,7 +81,7 @@ jobs:
       - name: Get modified PHP files
         id: php_files
         run: |
-          FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep '\.php$' || true)
+          FILES=$(git diff --diff-filter=d --name-only origin/${{ github.base_ref }}...HEAD | grep '\.php$' || true)
           echo "$FILES"
           echo "files<<EOF" >> $GITHUB_OUTPUT
           echo "$FILES" >> $GITHUB_OUTPUT
@@ -91,7 +101,11 @@ jobs:
         if: steps.php_files.outputs.files != ''
         run: |
           echo "🔍 Checking PHP syntax on modified files:"
-          for file in $(echo "${{ steps.php_files.outputs.files }}" | tr '\n' ' '); do
-            echo "🔍 Checking $file"
-            php -l "$file"
+          for file in $(echo "${{ steps.php_files.outputs.files }}"); do
+            if [ -f "$file" ]; then
+              echo "🔍 Checking $file"
+              php -l "$file"
+            else
+              echo "Skipping $file (not a file)"
+            fi
           done

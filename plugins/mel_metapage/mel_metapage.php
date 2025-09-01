@@ -328,7 +328,13 @@ class mel_metapage extends bnum_plugin
 
                 case 'preview':
                 case 'show':
-                    if (rcube_charset::convert(rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GPC), 'UTF7-IMAP') === $this->rc->config->get('models_mbox')) {
+                    $current_mbox_name = rcube_charset::convert(rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GPC), 'UTF7-IMAP');
+
+                    //On vérifie si on est sur une boite partagée
+                    if (strpos($current_mbox_name, 'Boite partagée') !== false) {
+                        $current_mbox_name = end(explode('/',$current_mbox_name));
+                    }
+                    if ($current_mbox_name === $this->rc->config->get('models_mbox')) {
                         $this->rc->output->set_env("is_model", true);
                     }
                     break;
@@ -2329,13 +2335,6 @@ class mel_metapage extends bnum_plugin
     public function preferences_sections_list($p)
     {
         $dir = __DIR__;
-        // if (is_dir("$dir/program/search_page") && file_exists("$dir/program/search_page/search.php"))
-        // {
-        //     $p['list']['globalsearch'] = [
-        //         'id'      => 'globalsearch',
-        //         'section' => $this->gettext('globalsearch', 'mel_metapage'),
-        //     ];
-        // }
 
         if ($this->visio_enabled() && is_dir("$dir/program/webconf") && file_exists("$dir/program/webconf/webconf.php")) {
             $p['list']['visio'] = [
@@ -2344,12 +2343,7 @@ class mel_metapage extends bnum_plugin
             ];
         }
 
-        if (!class_exists("rocket_chat")) {
-            $p['list']['chat'] = [
-                'id'      => 'chat',
-                'section' => $this->gettext('tchap', 'mel_metapage'),
-            ];
-        } else {
+        if (class_exists("rocket_chat")) {
             $p['list']['mel_chat_ui'] = [
                 'id'      => 'mel_chat_ui',
                 'section' => 'Paramètres visuels',
@@ -5105,5 +5099,28 @@ class mel_metapage extends bnum_plugin
     public static function IncludeLoader()
     {
         rcmail::get_instance()->plugins->get_plugin('mel_metapage')->include_component('bootstrap-loader.js');
+    }
+
+    /**
+     * Récupère le bouton de sondage configuré dans les préférences.
+     *
+     * @return string HTML du bouton de sondage ou chaîne vide si non configuré.
+     */
+    public static function GetSurveyButton() : string {
+        $html = '';
+        $rc = rcmail::get_instance();
+        $surveyConfig = $rc->config->get('survey', false);
+
+        if ($surveyConfig !== false) {
+            $html .= html::a([
+                'href' => $surveyConfig['url'],
+                'class' => 'mel-button no-margin-button no-button-margin survey-button bottom-right btn',
+                'target' => '_blank',
+                'rel' => 'noopener noreferrer',
+                'title' => $surveyConfig['text'].' - Ouvrir le sondage dans un nouvel onglet'
+            ], $surveyConfig['icon'] ? html::img(['src' => $surveyConfig['icon']]) : html::div(['style' => 'display:flex;'], html::span([], $surveyConfig['text']).'<bnum-icon class="ml-3" data-icon="rate_review"></bnum-icon>') );
+        }
+
+        return $html;
     }
 }

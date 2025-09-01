@@ -133,7 +133,7 @@ export class WspButton extends NavBarComponent {
     this.appendChild(span);
 
     if (this.#icon || false) {
-      let icon = new BnumHtmlIcon(this.#icon);
+      let icon = BnumHtmlIcon.Create({ icon: this.#icon });
       switch (this.pos) {
         case 'left':
           this.prepend(icon);
@@ -461,24 +461,24 @@ export class WspNavigationButton extends NavBarComponent {
         /**
          * @type {PressedButton}
          */
-        let button = this.querySelector(`#${this.taskButtonId}`);
+        let cButton = this.querySelector(`#${this.taskButtonId}`);
 
-        $(button).css({
+        $(cButton).css({
           '--navigation-border-radius-top-right': 0,
           '--navigation-border-radius-bottom-right': 0,
         });
-        button = null;
+        cButton = null;
       };
       visibilityButton.onmouseleave = () => {
         /**
          * @type {PressedButton}
          */
-        let button = this.querySelector(`#${this.taskButtonId}`);
-        $(button).css({
+        let cButton = this.querySelector(`#${this.taskButtonId}`);
+        $(cButton).css({
           '--navigation-border-radius-top-right': EMPTY_STRING,
           '--navigation-border-radius-bottom-right': EMPTY_STRING,
         });
-        button = null;
+        cButton = null;
       };
 
       this.appendChild(visibilityButton);

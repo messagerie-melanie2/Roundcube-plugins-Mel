@@ -12,6 +12,7 @@ import {
 } from '../../../mel_metapage/js/lib/classes/modal.js';
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { CursorUtils } from '../../../mel_metapage/js/lib/helpers/cursorUtils.js';
+import { createPostLink } from './utils.js';
 export class Manager extends MelObject {
   constructor() {
     super();
@@ -511,18 +512,20 @@ export class Manager extends MelObject {
   }
 
   /**
-   * copie dans le presse papier l'url de la page
+   * Copie dans le presse-papier l’URL workspace
    */
   copyPostLink() {
-    let url = window.location.href.replaceAll(
-      '&_is_from=iframe',
-      '&_force_bnum=1',
-    );
-    navigator.clipboard.writeText(url).then(() => {
-      BnumMessage.DisplayMessage(
-        rcmail.gettext('mel_forum.link_copied'),
-        eMessageType.Confirmation,
-      );
+    const workspaceUid = rcmail?.env?.workspace_uid;
+    const postUid = rcmail?.env?.post_uid;
+    if (!workspaceUid || !postUid) {
+      console.error('[forum] workspace_uid ou post_uid manquant');
+      return;
+    }
+
+    const url = createPostLink(postUid, workspaceUid);
+
+    this.copy_to_clipboard(url, {
+      text: rcmail.gettext('mel_forum.link_copied'),
     });
   }
 

@@ -335,6 +335,7 @@ class ResourceBaseFunctions {
         this.get_env('fav_resources')[this._name.toUpperCase()]?.[data.email] ??
         false,
       value: data.email,
+      city: data.locality,
     });
 
     node.onradioclicked.push(this._functions.on_resource_selected);

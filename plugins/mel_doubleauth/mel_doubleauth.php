@@ -667,7 +667,10 @@ class mel_doubleauth extends bnum_plugin
         // $cid = 'bnumlogo';
         driver_mel::gi()->getUser()->token_otp = $otp;
         driver_mel::gi()->getUser()->token_otp_expire = time() + $expire;
-        driver_mel::gi()->getUser()->double_authentification_adresse_valide = false;
+
+        if ($this->get_input_post('_from_login') + '' !== 'true')
+            driver_mel::gi()->getUser()->double_authentification_adresse_valide = false;
+
         $mail = driver_mel::gi()->getUser()->double_authentification_adresse_recuperation;
 
         $bodymail = new MailBody('mel_doubleauth.email', [

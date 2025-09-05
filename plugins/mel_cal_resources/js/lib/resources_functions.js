@@ -354,15 +354,59 @@ class ResourceBaseFunctions {
    */
   resource_render(resourceObj, labelTds) {
     if (resourceObj.id !== 'resources') {
+
+      const city = resourceObj.data.locality;
+      const locatedText = MelObject.Empty().gettext('resource_located_at', 'mel_cal_resources');
+      const cityText = MelObject.Empty().gettext('city', 'mel_cal_resources');
+
+      // Mise en place d'un title
+      if (city) {
+        labelTds.find('.fc-cell-text')
+          .attr('title', `${locatedText} ${city}`);
+      }
+
       labelTds
         .find('.fc-cell-content')
         .addClass('cfc-resource')
         .append(this._functions.resource_render_element(resourceObj.data));
+
+        // Accessibilité : aria-label sur l’input type="radio"
+      if (city) {
+        const node = labelTds.find('bnum-resource-selector').get(0);
+
+        const accessibleNameOnRadioInput = () => {
+          const radioInput = node?.querySelector('input[id^="radio-"]');
+          
+          const resourceLabel =
+            labelTds.find('label.fc-cell-text, .fc-cell-text').get(0) ||
+            node?.querySelector('label.fc-cell-text');
+
+          if (radioInput && resourceLabel) {
+            const visibleLabelText = (resourceLabel.textContent || '').trim();
+            // Ex. "Bureau Bureau 139 Place 1 ville : L’Isle d’Abeau"
+            radioInput.setAttribute('aria-label', `${visibleLabelText} ${cityText} ${city}`);
+            
+            return true;
+          }
+          return false;
+        };
+
+        // Essai immédiat, sinon on observe brièvement jusqu’à ce que le webcomponent finisse
+        if (!accessibleNameOnRadioInput()) {
+          const observer = new MutationObserver(() => {
+            if (accessibleNameOnRadioInput()) observer.disconnect();
+          });
+          if (node) {
+            observer.observe(node, { childList: true, subtree: true });
+            setTimeout(() => mo.disconnect(), 2000);
+          }
+        }
+      }
     }
   }
 
   /**
-   * Charge les évènements et es affiches dans `fullcalendar`
+   * Charge les évènements et les affiches dans `fullcalendar`
    * @this ResourcesBase
    * @param {external:moment} start Date de départ
    * @param {external:moment} end Date de fin
@@ -375,7 +419,7 @@ class ResourceBaseFunctions {
   }
 
   /**
-   * Charge les évènements et es affiches dans `fullcalendar`.
+   * Charge les évènements et les affiches dans `fullcalendar`.
    *
    * Ajoute les évènements au fur et à mesure. Cela ne permet de charger les évènements que lors de certaines actions et de ne pas
    * recharger ceux que l'on connaît déjà.

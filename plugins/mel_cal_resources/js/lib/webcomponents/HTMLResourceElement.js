@@ -53,16 +53,6 @@ class HTMLResourceElement extends AHTMLCustomTemplateElement {
         if (label) {
           data.element.appendChild(label);
           label.setAttribute('for', this.radioData.id);
-
-          const city = this.getAttribute('data-city');
-          if (city) {
-            label.setAttribute('title', city);
-
-            let nameForAria = ''; 
-            try {nameForAria = this.radioData?.value || ''; } catch (_) {}
-            const aria = nameForAria ? `${nameForAria} - ${city}` : city;
-            label.setAttribute('aria-label', aria);
-          }
           label.outerHTML = label.outerHTML.replaceAll('span', 'label');
         }
       }
@@ -148,7 +138,6 @@ class HTMLResourceElement extends AHTMLCustomTemplateElement {
     email,
     favorite,
     value,
-    city,
   }) {
     const id = `${rcsId}-${locationId}`;
     /**
@@ -163,8 +152,6 @@ class HTMLResourceElement extends AHTMLCustomTemplateElement {
     node.setAttribute('data-button-id', `button-${id}`);
     node.setAttribute('data-button-email', email);
     node.setAttribute('data-button-favorite', favorite);
-    node.setAttribute('data-city', city);
-
 
     if (selected) node.setAttribute('data-selected', selected);
 

@@ -192,7 +192,7 @@ class standard_driver_mel extends driver_mel
    */
   public function userHasAccessToStockage()
   {
-    return false;
+    return true;
   }
 
   /**

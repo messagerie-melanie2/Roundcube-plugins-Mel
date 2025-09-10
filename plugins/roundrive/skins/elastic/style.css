@@ -395,6 +395,11 @@ table.propform td.source table.propform td {
   background-color: inherit;
 }
 
+/* Modification pour affichage correcte des icônes en mode sombre */
+.propform td.rowbuttons a::before {
+  color: var(--main-text-color);
+}
+
 .auth-options {
   margin-top: 5px;
 }

@@ -2705,10 +2705,15 @@ function sendMessageToAriane(data) {
     'https://rcube.preprod.m2.e2.rie.gouv.fr',
   ];
 
-  const pegaze_url =
+  const pegase_url =
     rcmail.env.sondage_url ||
     parent.rcmail.env.sondage_url ||
     top.rcmail.env.sondage_url;
+
+  const pegase_email_url = 
+    rcmail.env.sondage_email_url ||
+    parent.rcmail.env.sondage_email_url ||
+    top.rcmail.env.sondage_email_url;
 
   const suggestionUrl = 'suggestionUrl'; //type/value
   const suggestionId = 'suggestionId';
@@ -2736,7 +2741,7 @@ function sendMessageToAriane(data) {
         //Url au clique
         let link = event.data[datas_url_accepted];
 
-        if (link.includes(pegaze_url))
+        if (link.includes(pegase_url) || link.includes(pegase_email_url))
           link = mel_metapage.Functions.url('sondage', null, { _url: link });
 
         $('<a>')

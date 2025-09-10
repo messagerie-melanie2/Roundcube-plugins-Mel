@@ -54,6 +54,7 @@ class mel_sondage extends rcube_plugin
     	}
         
         $rcmail->output->set_env('sondage_url', $sondage_url);
+        $rcmail->output->set_env('sondage_email_url', $rcmail->config->get('sondage_email_url', $sondage_url));
         
         if (class_exists("mel_metapage")) mel_metapage::add_url_spied($sondage_url, 'sondage');
         // Ajoute le bouton en fonction de la skin

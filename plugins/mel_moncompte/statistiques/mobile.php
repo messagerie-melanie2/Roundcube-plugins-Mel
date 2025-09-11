@@ -274,7 +274,10 @@ class Mobile_Stats
                         $wiperequestedon = (isset($device['wiperequestedon']) ? date('r', $device['wiperequestedon']) : "");
                         $wipeactionon = (isset($device['wipeactionon']) ? date('r', $device['wipeactionon']) : "");
 
-                        $attrib['id'] = 'rcmdeviceinfo';
+                        // Table 1 : Informations sur l'appareil
+                        $attrib_device = $attrib;
+                        $attrib_device['id'] = 'rcmdeviceinfo';
+                        $attrib_device['escape'] = false; 
 
                         // define list of cols to be displayed
                         $a_show_cols = array(
@@ -301,12 +304,24 @@ class Mobile_Stats
                             'class' => '',
                         ));
 
-                        $out .= html::div(null, $this->plugin->gettext('device_info'));
-                        // create XHTML table
-                        $out .= $this->rc->table_output($attrib, $result, $a_show_cols, 'id');
+                        $table = $this->rc->table_output($attrib_device, $result, $a_show_cols, 'id');
+                        // Ajoute scope="col" aux <th> si absent
+                        $table = preg_replace('/<th\b(?![^>]*\bscope=)/i', '<th scope="col" ', $table);
 
+                        // Wrapper focusable (scroll clavier) + focus visible sans CSS global
+                        $out .= html::div([
+                            'tabindex' => '0',
+                            'role' => 'region',
+                            'aria-label' => $this->plugin->gettext('device_info'),
+                            'onfocus' => "this.style.outline='2px solid';this.style.outlineOffset='2px'",
+                            'onblur' => "this.style.outline='';this.style.outlineOffset=''",
+                        ], $table);
+
+                        // Table 2 : Informations sur ActiveSync
                         if ($versionzpush >= 2) {
-                            $attrib['id'] = 'rcmactivesyncinfo';
+                            $attrib_as = $attrib;
+                            $attrib_as['id'] = 'rcmactivesyncinfo';
+                            $attrib_as['escape']= false;
 
                             // define list of cols to be displayed
                             $a_show_cols = array(
@@ -327,9 +342,16 @@ class Mobile_Stats
                                 'class' => '',
                             ));
 
-                            $out .= html::div(null, $this->plugin->gettext('activesync_info'));
-                            // create XHTML table
-                            $out .= $this->rc->table_output($attrib, $result, $a_show_cols, 'id');
+                            $table = $this->rc->table_output($attrib_as, $result, $a_show_cols, 'id');
+                            $table = preg_replace('/<th\b(?![^>]*\bscope=)/i', '<th scope="col" ', $table);
+
+                            $out .= html::div([
+                                'tabindex' => '0',
+                                'role' => 'region',
+                                'aria-label' => $this->plugin->gettext('activesync_info'),
+                                'onfocus' => "this.style.outline='2px solid';this.style.outlineOffset='2px'",
+                                'onblur' => "this.style.outline='';this.style.outlineOffset=''",
+                            ], $table);
                         }
 
                         $one = false;
@@ -340,34 +362,49 @@ class Mobile_Stats
                     $lastsync = date('D d M y H:i:s', $device['lastupdatetime']);
                     $maxzpushvers = $device['zpushversion'];
 
+                    // Bouton Resync
+                    $btn_resync = html::tag('button', [
+                        'type' => 'button',
+                        'class' => 'button resync icon-btn',
+                        'aria-label' => $this->plugin->gettext('device_resync') . ' ' . $userDevice,
+                        'onclick' => "zpush_command('ResyncUserDevice', '$deviceId', '$userDevice')",
+                    ], $this->plugin->gettext('device_resync'));
+
+                    // Bouton Remove
+                    $btn_remove = html::tag('button', [
+                        'type' => 'button',
+                        'class' => 'button remove icon-btn danger',
+                        'aria-label' => $this->plugin->gettext('device_remove') . ' ' . $userDevice,
+                        'onclick' => "zpush_command('DeleteUserDevice', '$deviceId', '$userDevice')",
+                    ], $this->plugin->gettext('device_remove'));
+
                     $result_accounts[] = array(
                         'id' => 'rcmaccountsinfo--' . $deviceId . '--' . $userDevice,
                         'mel_moncompte.user' => $userDevice,
                         'mel_moncompte.first_sync' => $firstsync,
                         'mel_moncompte.last_sync' => $lastsync,
                         'mel_moncompte.z-push' => $maxzpushvers,
-                        'mel_moncompte.resync' => ['html' => html::tag('button', [
-                            'type' => 'button',
-                            'class' => 'button resync',
-                            'title' => $this->plugin->gettext('device_resync'),
-                            'onclick' => "zpush_command('ResyncUserDevice', '$deviceId', '$userDevice')",
-                            'tabindex' => '0'
-                        ], $this->plugin->gettext('device_resync'))],
-                        'mel_moncompte.remove' => ['html' => html::tag('button', [
-                            'type' => 'button',
-                            'class' => 'button remove',
-                            'title' => $this->plugin->gettext('device_remove'),
-                            'onclick' => "zpush_command('DeleteUserDevice', '$deviceId', '$userDevice')",
-                            'tabindex' => '0'
-                        ], $this->plugin->gettext('device_remove'))],
+                        'mel_moncompte.resync' => ['html' => $btn_resync],
+                        'mel_moncompte.remove' => ['html' => $btn_remove],
                         'class' => '',
                     );
                 }
 
-                $attrib['id'] = 'rcmaccountsinfo';
-                $out .= html::div(null, $this->plugin->gettext('accounts_list'));
-                // create XHTML table
-                $out .= $this->rc->table_output($attrib, $result_accounts, $a_show_cols_accounts, 'id');
+                // Table 3: Liste des comptes configurés sur l'appareil
+                $attrib_accounts = $attrib;
+                $attrib_accounts['id'] = 'rcmaccountsinfo';
+                $attrib_accounts['escape'] = false; // autoriser le HTML des boutons
+
+                $table = $this->rc->table_output($attrib_accounts, $result_accounts, $a_show_cols_accounts, 'id');
+                $table = preg_replace('/<th\b(?![^>]*\bscope=)/i', '<th scope="col" ', $table);
+
+                $out .= html::div([
+                    'tabindex' => '0',
+                    'role' => 'region',
+                    'aria-label' => $this->plugin->gettext('accounts_list'),
+                    'onfocus' => "this.style.outline='2px solid';this.style.outlineOffset='2px'",
+                    'onblur' => "this.style.outline='';this.style.outlineOffset=''",
+                ], $table);
             }
         } catch (Exception $ex) {
             mel_logs::get_instance()->log(mel_logs::ERROR, "[mobiles_list] " . $ex->getTraceAsString());
@@ -429,6 +466,14 @@ class Mobile_Stats
                             $id_folderid = str_replace('.', '_-p-_', $id_folderid);
                             $id_userFolder = str_replace('.', '_-p-_', $userFolder);
 
+                            // Bouton Resync avec aria-label spécifique
+                            $btn_resync = html::tag('button', [
+                                'type' => 'button',
+                                'class' => 'button resync icon-btn',
+                                'aria-label' => $this->plugin->gettext('device_resync') . ' : ' . $userFolder . ' (' . $type . ')',
+                                'onclick' => "zpush_command('ResyncFolderId', '$deviceId', '$id_userFolder', '$id_folderid')",
+                            ], $this->plugin->gettext('device_resync'));
+
                             $result[] = array(
                                 'id' => 'rcmsyncdetails--' . $deviceId . '--' . $id_userFolder . '--' . $id_folderid,
                                 'mel_moncompte.mailbox' => $userFolder,
@@ -436,22 +481,27 @@ class Mobile_Stats
                                 'mel_moncompte.foldersync' => $folderidname,
                                 'mel_moncompte.last_sync' => $lastsync,
                                 'mel_moncompte.z-push' => $zpushversion,
-                                'mel_moncompte.resync' => ['html' => html::tag('button', [
-                                    'type' => 'button',
-                                    'class' => 'button resync',
-                                    'title' => $this->plugin->gettext('device_resync'),
-                                    'onclick' => "zpush_command('ResyncFolderId', '$deviceId', '$id_userFolder', '$id_folderid')",
-                                    'tabindex' => '0'
-                                ], $this->plugin->gettext('device_resync'))],
+                                'mel_moncompte.resync' => ['html' => $btn_resync],
                                 'mel_moncompte.remaining' => $synced . " / " . $total,
                             );
                         }
                     }
                 }
 
-                $out .= html::div(null, $this->plugin->gettext('sync_details'));
-                // create XHTML table
-                $out .= $this->rc->table_output($attrib, $result, $a_show_cols, 'id');
+                // rendre la table accessible : escape = false
+                $attrib_table = $attrib;
+                $attrib_table['escape'] = false;
+
+                $table = $this->rc->table_output($attrib_table, $result, $a_show_cols, 'id');
+                $table = preg_replace('/<th\b(?![^>]*\bscope=)/i', '<th scope="col" ', $table);
+
+                $out .= html::div([
+                    'tabindex' => '0',
+                    'role' => 'region',
+                    'aria-label' => $this->plugin->gettext('sync_details'),
+                    'onfocus' => "this.style.outline='2px solid';this.style.outlineOffset='2px'",
+                    'onblur' => "this.style.outline='';this.style.outlineOffset=''",
+                ], $table);
             }
         } catch (Exception $ex) {
             mel_logs::get_instance()->log(mel_logs::ERROR, "[mobiles_list] " . $ex->getTraceAsString());

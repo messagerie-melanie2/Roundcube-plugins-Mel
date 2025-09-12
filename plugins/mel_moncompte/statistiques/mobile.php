@@ -305,7 +305,14 @@ class Mobile_Stats
                         ));
 
                         $table = $this->rc->table_output($attrib_device, $result, $a_show_cols, 'id');
-                        // Ajoute scope="col" aux <th> si absent
+
+                        // Accessibilité : focus clavier sur la table + légende + scope="col" sur th si absent
+                        $table = preg_replace('/<table\b(?![^>]*\btabindex=)/i', '<table tabindex="0"', $table, 1);
+                        if (stripos($table, '<caption') === false) {
+                            $cap = htmlspecialchars($this->plugin->gettext('device_info'), ENT_QUOTES, 'UTF-8');
+                            $table = preg_replace('/<table\b[^>]*>/i', '$0<caption id="rcmdeviceinfo-caption">'.$cap.'</caption>', $table, 1);
+                        }
+
                         $table = preg_replace('/<th\b(?![^>]*\bscope=)/i', '<th scope="col" ', $table);
 
                         // Wrapper focusable (scroll clavier) + focus visible sans CSS global
@@ -343,6 +350,14 @@ class Mobile_Stats
                             ));
 
                             $table = $this->rc->table_output($attrib_as, $result, $a_show_cols, 'id');
+
+                            // Accessibilité : focus clavier sur la table + légende + scope="col" sur th si absent
+                            $table = preg_replace('/<table\b(?![^>]*\btabindex=)/i', '<table tabindex="0"', $table, 1);
+                            if (stripos($table, '<caption') === false) {
+                                $cap = htmlspecialchars($this->plugin->gettext('activesync_info'), ENT_QUOTES, 'UTF-8');
+                                $table = preg_replace('/<table\b[^>]*>/i', '$0<caption id="rcmactivesyncinfo-caption">'.$cap.'</caption>', $table, 1);
+                            }
+
                             $table = preg_replace('/<th\b(?![^>]*\bscope=)/i', '<th scope="col" ', $table);
 
                             $out .= html::div([
@@ -396,6 +411,13 @@ class Mobile_Stats
                 $attrib_accounts['escape'] = false; // autoriser le HTML des boutons
 
                 $table = $this->rc->table_output($attrib_accounts, $result_accounts, $a_show_cols_accounts, 'id');
+
+                // Accessibilité : focus clavier sur la table + légende + scope="col" sur th si absent
+                $table = preg_replace('/<table\b(?![^>]*\btabindex=)/i', '<table tabindex="0"', $table, 1);
+                if (stripos($table, '<caption') === false) {
+                    $cap = htmlspecialchars($this->plugin->gettext('accounts_list'), ENT_QUOTES, 'UTF-8');
+                    $table = preg_replace('/<table\b[^>]*>/i', '$0<caption id="rcmaccountsinfo-caption">'.$cap.'</caption>', $table, 1);
+                }
                 $table = preg_replace('/<th\b(?![^>]*\bscope=)/i', '<th scope="col" ', $table);
 
                 $out .= html::div([
@@ -493,6 +515,13 @@ class Mobile_Stats
                 $attrib_table['escape'] = false;
 
                 $table = $this->rc->table_output($attrib_table, $result, $a_show_cols, 'id');
+
+                // Accessibilité : focus clavier sur la table + légende + scope="col" sur th si absent
+                $table = preg_replace('/<table\b(?![^>]*\btabindex=)/i', '<table tabindex="0"', $table, 1);
+                if (stripos($table, '<caption') === false) {
+                    $cap = htmlspecialchars($this->plugin->gettext('sync_details'), ENT_QUOTES, 'UTF-8');
+                    $table = preg_replace('/<table\b[^>]*>/i', '$0<caption id="rcmsyncdetails-caption">'.$cap.'</caption>', $table, 1);
+                }
                 $table = preg_replace('/<th\b(?![^>]*\bscope=)/i', '<th scope="col" ', $table);
 
                 $out .= html::div([

@@ -6672,3 +6672,82 @@ bnum-helper {
   right: 20px;
   padding: 10px 20px;
 }
+
+/* Bouton : fond + centrage */
+a.mel-button.survey-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: #fdcf42d9;
+  border: none;
+  border-radius: 50px;
+  text-decoration: none;
+  color: #1f2328;
+  line-height: 1.2;
+  font-weight: 600;
+  min-width: 175px;
+  max-height: 50px;
+
+  &:hover { background: darken(#fdcf42, 6%); }
+  &:focus { outline: none; box-shadow: 0 0 0 3px fade(#fdcf42, 45%); }
+}
+
+/* Conteneur interne (image + texte) centré en colonne */
+a.mel-button.survey-button .survey-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .25rem; /* petit espace entre les lignes / image */
+}
+
+/* Texte sur 2 lignes, centré */
+a.mel-button.survey-button .survey-text {
+  text-align: center;
+  line-height: 1;
+}
+
+a.mel-button.survey-button .survey-line1 {
+  font-size: 16px; /* Donnez */
+  font-weight: 400;
+}
+
+a.mel-button.survey-button .survey-line2 {
+  font-size: 25px; /* votre avis */
+  font-weight: 700;
+  white-space: nowrap; /* “votre avis” reste sur la même ligne */
+}
+
+/* Image masquée par défaut */
+a.mel-button.survey-button .survey-icon {
+  display: none !important;
+}
+
+/* Quand l'image est activée : .show-icon sur le <a> */
+a.mel-button.survey-button.show-icon .survey-content {
+  flex-direction: row; /* texte + image sur une ligne */
+  align-items: center;
+  justify-content: center; /* toujours centré dans le bouton */
+  gap: .5rem;
+}
+
+/* Ordre : texte puis image */
+a.mel-button.survey-button.show-icon .survey-text  { order: 1; text-align: center; }
+a.mel-button.survey-button.show-icon .survey-icon  { order: 2; }
+
+/* Affichage et taille de l’image à droite */
+a.mel-button.survey-button.show-icon .survey-icon {
+  display: inline-block !important;  /* supprime le display:none de base */
+  height: 28px;
+  width: auto;
+  margin-left: .25rem;
+}
+
+/* Ajustement pour les petits écrans */
+@media (max-width: 420px) {
+  a.mel-button.survey-button.show-icon .survey-icon {
+    height: 24px;
+  }
+}
+
+

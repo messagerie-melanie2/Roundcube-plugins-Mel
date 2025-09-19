@@ -356,15 +356,27 @@ $config['metrics_url'] = $config['metrics_preprod_url'];
 $config['metrics_token'] = '123456789';
 $config['metrics_send_interval'] = 60; // en secondes
 
-// Peut être `false` ou : 
-/*
-[
-  // Url du sondage
-	'url' => '',
-  // Texte si "picture" n'est pas défini, titre sinon
-	'text' => 'Donnez votre avis',
-  // Image dans la skin elastic/pictures
-  'icon' => null
+///////////SONDAGE///////////
+// Activer/Désactiver le bouton de sondage "SurveyLime"
+$config['survey'] = true;
+// Valeurs par défaut utilisées si $config['survey'] === true
+$config['survey_defaults'] = [
+  'url'  => 'https://enqueteur.dnum.sg.developpement-durable.gouv.fr/index.php?r=survey/index&sid=666192&lang=fr',
+  'text' => 'Donnez<br>votre avis',
+	// False = texte seul / True = texte + image
+	'show_picture' =>false,
+	// Pour changer d'image il suffit de changer Survey.svg par le nom de l'image présente
+	// dans le dossier mel_metapage>skins>mel_elastic>pictures>dwp_icons
+  'picture' => 'dwp_icons/Survey.svg',
+	// Possibilité de définir une période de visualisation du bouton, si pas de date renseignée le
+	// bouton apparaît si $config['survey'] = true. Utiliser des dates au format français dd/mm/yyyy
+	'visible_from'  => '01/09/2025',
+	'visible_until' => '',
+	// Mapping des pages sur lesquelles le bouton est visible.
+  'visibility' => [
+    'map' => [
+      'mel_portal' => '/^home$/i',     // Accueil
+      'workspace'  => '/^(?:|index)$/i', // Workspace
+    ],
+  ],
 ];
-*/
-$config['survey'] = false;

@@ -5139,7 +5139,9 @@ class mel_metapage extends bnum_plugin
         // Affiche-t-on le bouton sur cette page ?
         if ($surveyConfig !== false && self::shouldDisplaySurvey($surveyConfig)) {
 
-            $pluginSkinUrl = rtrim(self::$plugin->local_skin_path(), '/');
+            // URL simplifiée vers la skin du plugin
+            $skinDir = basename(self::$plugin->local_skin_path());
+            $pluginSkinUrl = self::$plugin->url('skins/' . $skinDir);
 
             // Texte sur 2 lignes
             $full = (string) ($surveyConfig['text'] ?? '');

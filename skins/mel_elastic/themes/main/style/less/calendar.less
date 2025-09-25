@@ -132,6 +132,36 @@
     .ui-datepicker-inline .ui-datepicker-activerange {
       &:extend(.task-calendar #datepicker);
     }
+
+    .ui-datepicker-header a.ui-datepicker-prev,
+    .ui-datepicker-header a.ui-datepicker-next {
+      color: var(--calendar-widget-text-color) !important;
+    }
+
+    /* neutralise le sprite jQuery UI (sinon icône grise) */
+    .ui-datepicker-header .ui-icon {
+      background: none !important;
+    }
+
+    /* chevrons CSS qui héritent de la couleur ci-dessus */
+    .ui-datepicker-prev::after,
+    .ui-datepicker-next::after {
+      content: "";
+      display: inline-block;
+      width: .5rem;
+      height: .5rem;
+      border-right: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      transform-origin: center;
+    }
+    .ui-datepicker-prev::after { transform: rotate(135deg); }
+    .ui-datepicker-next::after { transform: rotate(-45deg); }
+
+    /* (optionnel) hover */
+    .ui-datepicker-header a.ui-datepicker-prev:hover,
+    .ui-datepicker-header a.ui-datepicker-next:hover {
+      background-color: var(--hover-background-color);
+    }
   }
 
   #calendaroptionsmenulink:hover,
@@ -141,7 +171,7 @@
 
   button.mel-calendar-button {
     background-color: transparent;
-    color: var(--secondary-mel-button-text-color)!important;
+    color: var(--secondary-mel-button-text-color) !important;
 
     &:hover {
       background-color: var(--mel-button-hover-background-color);

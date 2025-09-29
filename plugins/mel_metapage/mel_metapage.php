@@ -49,7 +49,7 @@ class mel_metapage extends bnum_plugin
      * 
      * @var rcube_plugin plugin courant
      */
-    static private $plugin;
+    private static $plugin;
 
     /**
      * Ajoute une URL surveillée avec la tâche associée.

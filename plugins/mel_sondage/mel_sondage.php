@@ -56,9 +56,12 @@ class mel_sondage extends rcube_plugin
         $rcmail->output->set_env('sondage_url', $sondage_url);
         $rcmail->output->set_env('sondage_email_url', $rcmail->config->get('sondage_email_url', $sondage_url));
         
-        if (class_exists("mel_metapage")) mel_metapage::add_url_spied($sondage_url, 'sondage');
-        // Ajoute le bouton en fonction de la skin
+        if (class_exists("mel_metapage")) {
+            mel_metapage::add_url_spied($sondage_url, 'sondage');
+            mel_metapage::add_url_spied($rcmail->config->get('sondage_email_url', $sondage_url), 'sondage');
+        } 
         
+        // Ajoute le bouton en fonction de la skin
         $need_button = $rcmail->config->get('skin') == 'mel_larry' ? 'taskbar_mel' : 'taskbar';
 
         if (class_exists("mel_metapage")) {
@@ -117,7 +120,13 @@ class mel_sondage extends rcube_plugin
         ));
 
         $startupUrl =  rcube_utils::get_input_value("_url", rcube_utils::INPUT_GPC); 
-        if ($startupUrl !== null && $startupUrl !== "") $rcmail->output->set_env("sondage_startup_url", $startupUrl);
+        $emailUrl = $rcmail->config->get('sondage_email_url', null);
+        if ($startupUrl !== null && $startupUrl !== "") {
+            if (isset($emailUrl) && strpos($startupUrl, $emailUrl) === 0) {
+                $startupUrl = str_replace($emailUrl, $rcmail->config->get('sondage_url'), $startupUrl);
+            }
+            $rcmail->output->set_env("sondage_startup_url", $startupUrl);
+        }
 
         // Chargement du template d'affichage
         $rcmail->output->set_pagetitle($this->gettext('title'));

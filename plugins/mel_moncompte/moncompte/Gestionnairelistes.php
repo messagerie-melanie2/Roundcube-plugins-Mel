@@ -353,7 +353,7 @@ class Gestionnairelistes extends Moncompteobject {
 			// Authentification
 			if ($user->authentification(Moncompte::get_current_user_password(), true)) {
 				$group = driver_mel::gi()->getGroup($dn_list, false, true, 'webmail.moncompte.grouplistes');
-				if ($group->load(['owners', 'fullname', 'members_email', 'is_dynamic', 'liens_import']) 
+				if ($group->load(['owners', 'fullname', 'members', 'members_email', 'is_dynamic', 'liens_import']) 
 						&& $group->isOwner($user) && !$group->is_dynamic && empty($group->liens_import)) {
 					if ($filepath = $_FILES['_listes_csv']['tmp_name']) {
 						$lines = file($filepath);

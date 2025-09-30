@@ -107,7 +107,7 @@ $(document).on(
     click: handleResyncAction,
     keydown: handleResyncAction,
   },
-  'tbody td.mel_moncompte\\.resync button',
+  'tbody td.actions\\.resync button',
 );
 
 $(document).on(
@@ -115,7 +115,7 @@ $(document).on(
     click: handleRemoveAction,
     keydown: handleRemoveAction,
   },
-  'tbody td.mel_moncompte\\.remove button',
+  'tbody td.actions\\.remove button',
 );
 
 $(document).on(

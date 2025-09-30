@@ -60,7 +60,8 @@
   margin-bottom: 30px;
   font-size: 12px;
 }
-.m2_stats_device_table thead td {
+.m2_stats_device_table thead td,
+.m2_stats_device_table thead th {
   background-color: #005d76;
   margin-top: 0px;
   margin-bottom: 0px;
@@ -68,6 +69,7 @@
   font-weight: bold;
   color: #fff;
   height: 20px;
+  vertical-align: middle;
 }
 .m2_stats_device_table td {
   font-size: inherit;
@@ -80,6 +82,11 @@
   background-color: #fafafa;
   background-color: var(--table-body-bg-color);
   text-align: center;
+}
+.m2_stats_device_table td,
+.m2_stats_device_table th {
+  text-align: center;
+  vertical-align: middle;
 }
 .m2_stats_device_table tbody td.mel_moncompte\.resync {
   background-image: url('images/1411751212_refresh.png');
@@ -100,4 +107,57 @@ html.dark-mode-custom .m2_stats_device_table tbody td.mel_moncompte\.resync {
 }
 .m2_stats_device_table tbody td.mel_moncompte\.remove:hover {
   cursor: pointer;
+}
+.m2_stats_device_table tbody td.actions\ {
+  /* Le bouton occupe tout le TD (clic & focus au centre de l'icône) */
+  /* Focus clavier visible (optionnel) */
+}
+.m2_stats_device_table tbody td.actions\.resync {
+  background-image: url('images/1411751212_refresh.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  /* Dark mode */
+}
+.m2_stats_device_table tbody td.actions\.resync:hover {
+  cursor: pointer;
+}
+html.dark-mode .m2_stats_device_table tbody td.actions\.resync,
+html.dark-mode-custom .m2_stats_device_table tbody td.actions\.resync {
+  background-image: url('images/1411751212_refresh_dark.png');
+}
+.m2_stats_device_table tbody td.actions\.remove {
+  background-image: url('images/1411751862_error.png');
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.m2_stats_device_table tbody td.actions\.remove:hover {
+  cursor: pointer;
+}
+.m2_stats_device_table tbody td.actions\.resync > button,
+.m2_stats_device_table tbody td.actions\.remove > button {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  line-height: 0;
+}
+.m2_stats_device_table tbody td.actions\.resync > button:focus,
+.m2_stats_device_table tbody td.actions\.remove > button:focus {
+  outline: 2px solid currentColor;
+  outline-offset: -2px;
+}
+/* Utilitaire : texte accessible masqué visuellement pour <span class="sr-only"> */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

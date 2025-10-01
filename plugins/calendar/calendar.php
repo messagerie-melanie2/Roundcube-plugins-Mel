@@ -306,18 +306,20 @@ class calendar extends rcube_plugin
         $first      = null;
 
         // PAMELA - Fix if calendar not empty no need to search more
-        if (!$calendar && $sensitivity) {
+        if (!$calendar) {
             foreach ($calendars as $cal) {
                 if ($sensitivity && !empty($cal['subtype']) && $cal['subtype'] == $sensitivity) {
                     $calendar = $cal;
                     break;
                 }
-                if (!empty($cal['default']) && $cal['editable']) {
-                    $calendar = $cal;
-                }
                 // PAMELA - Fix first ?
                 if ($cal['editable'] && !isset($first)) {
                     $first = $cal;
+                }
+                // PAMELA - Default calendar
+                if (!empty($cal['default']) && $cal['editable']) {
+                    $calendar = $cal;
+                    break;
                 }
             }
         }

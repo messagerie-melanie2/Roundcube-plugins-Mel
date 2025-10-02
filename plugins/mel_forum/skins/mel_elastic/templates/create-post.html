@@ -14,87 +14,126 @@
         </span>
       </div>
     </div>
+
     <div class="row forum-header">
       <div class="text-header">
         <h2 class="title">
           <roundcube:if condition="env:is_editing === true">
             <roundcube:label name="mel_forum.edit_article" />
             <roundcube:endif />
-            <roundcube:if condition="env:is_editing === false">
-              <roundcube:label name="mel_forum.create_article" />
-              <roundcube:endif />
+          <roundcube:if condition="env:is_editing === false">
+            <roundcube:label name="mel_forum.create_article" />
+            <roundcube:endif />
         </h2>
       </div>
     </div>
+
     <div class="row forum-content">
       <div class="col-8">
-        <div class="row">
-          <div class="form-floating border-bottom-input-icon title-input">
-            <input type="text" class="form-control input-mel border-bottom-input large-input" name="title"
-              id="edit-title" required="true" />
-            <label for="edit-title">
-              <roundcube:label name="mel_forum.add_title" />
-            </label>
-            <button id="reset-title-button" class="border-bottom-input-button close-button btn btn-secondary"
-              type="button">
-              <span class="material-symbols-outlined"> close </span>
-            </button>
-          </div>
-        </div>
-        <div class="row" style="margin-left: -30px !important">
-          <label for="add-tag" class="col-12">
-            <roundcube:label name="mel_forum.tags" />
-          </label>
-          <div class="tag-list">
-            <!-- Liste des tags ici -->
-          </div>
-          <div class="col-10 col-sm-6 col-md-4 col-lg-3 col-xl-2" style="padding-left: 0px !important">
 
-            <div class="border-bottom-input-icon position-relative">
-              <span id="add-tag-button" role="button"
-                class="material-symbols-outlined add-circle-icon">add_circle</span>
-              <input list="suggestions" placeholder="Ajouter un tag" class="form-control input-mel border-bottom-input"
-                name="add-tag" id="add-tag" maxlength="25" />
-              <datalist id="suggestions" class="autocomplete-list"></datalist>
-              <!-- <button
-                id="reset-tag-button"
-                class="border-bottom-input-button close-button btn btn-secondary"
-                type="button"
-              >
-              </button>-->
+        <!-- Mode édition : miniature + Titre/Tags décalés -->
+        <roundcube:if condition="env:is_editing === true">
+          <div class="row mb-4">
+            <div id="thumbnail-col" class="col-12 col-md-2 mb-5 mb-md-3 text-center" style="display: none;">
+            <div id="article-thumbnail-container" class="article-thumbnail-container">
+              <!-- L'image est injectée ici dynamiquement -->
             </div>
           </div>
 
-        </div>
-        <div class="row mt-4 ">
+            <div class="col-10">
+              <!-- Titre -->
+              <div class="row">
+                <div class="form-floating border-bottom-input-icon title-input">
+                  <input type="text" class="form-control input-mel border-bottom-input large-input"
+                         name="title" id="edit-title" required="true" />
+                  <label for="edit-title"><roundcube:label name="mel_forum.add_title" /></label>
+                  <button id="reset-title-button"
+                          class="border-bottom-input-button close-button btn btn-secondary" type="button">
+                    <span class="material-symbols-outlined">close</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Tags -->
+              <div class="row ml-4" style="margin-left:-30px !important">
+                <label for="add-tag" class="col-12">
+                  <roundcube:label name="mel_forum.tags" />
+                </label>
+
+                <div class="tag-list"><!-- Liste des tags --></div>
+
+                <div class="col-10 col-sm-6 col-md-4 col-lg-3 col-xl-2 tag-input-container">
+                  <div class="border-bottom-input-icon position-relative">
+                    <span id="add-tag-button" role="button"
+                          class="material-symbols-outlined add-circle-icon">add_circle</span>
+                    <input list="suggestions" placeholder="Ajouter un tag"
+                           class="form-control input-mel border-bottom-input"
+                           name="add-tag" id="add-tag" maxlength="25" />
+                    <datalist id="suggestions" class="autocomplete-list"></datalist>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <roundcube:endif />
+
+        <!-- Mode Création : pas de miniature. -->
+        <roundcube:if condition="env:is_editing === false">
+          <!-- Titre -->
+          <div class="row">
+            <div class="form-floating border-bottom-input-icon title-input">
+              <input type="text" class="form-control input-mel border-bottom-input large-input"
+                     name="title" id="edit-title" required="true" />
+              <label for="edit-title"><roundcube:label name="mel_forum.add_title" /></label>
+              <button id="reset-title-button"
+                      class="border-bottom-input-button close-button btn btn-secondary" type="button">
+                <span class="material-symbols-outlined">close</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Tags -->
+          <div class="row" style="margin-left:-30px !important">
+            <label for="add-tag" class="col-12">
+              <roundcube:label name="mel_forum.tags" />
+            </label>
+
+            <div class="tag-list"></div>
+
+            <div class="col-10 col-sm-6 col-md-4 col-lg-3 col-xl-2" style="padding-left:0px !important">
+              <div class="border-bottom-input-icon position-relative">
+                <span id="add-tag-button" role="button"
+                      class="material-symbols-outlined add-circle-icon">add_circle</span>
+                <input list="suggestions" placeholder="Ajouter un tag"
+                       class="form-control input-mel border-bottom-input"
+                       name="add-tag" id="add-tag" maxlength="25" />
+                <datalist id="suggestions" class="autocomplete-list"></datalist>
+              </div>
+            </div>
+          </div>
+          <roundcube:endif />
+
+        <!-- Éditeur de texte (commun, ne bouge pas) -->
+        <div class="row mt-4">
           <label for="edit-title">
             <roundcube:label name="mel_forum.add_content" />
           </label>
           <div id="forum-content" class="forum-content mce_editor" placeholder="Ajouter votre contenu"></div>
-          <!-- <textarea id="MyID"></textarea> -->
         </div>
-        <!-- <div class="row my-2">
-          <div class="custom-control custom-switch no-click-focus d-flex align-items-center">
-            <input name="message_extwin" id="rcmfd_message_extwin" type="checkbox"
-              class="form-check-input custom-control-input no-click-focus"/>
-            <label for="rcmfd_message_extwin" class="custom-control-label option-switch no-click-focus">
-            </label>
-            <div class="d-flex justify-content-center align-items-center ml-2">
-              <roundcube:label name="mel_forum.admin_edit_only" />
-            </div>
-          </div>
-        </div> -->
+
+        <!-- ====== Switch commentaires -->
         <div class="row my-2">
           <div class="custom-control custom-switch no-click-focus d-flex align-items-center">
             <input name="enable-comment" id="enable_comment" type="checkbox" checked
-              class="form-check-input custom-control-input no-click-focus" />
-            <label for="enable_comment" class="custom-control-label option-switch no-click-focus">
-            </label>
+                   class="form-check-input custom-control-input no-click-focus" />
+            <label for="enable_comment" class="custom-control-label option-switch no-click-focus"></label>
             <div class="d-flex justify-content-center align-items-center ml-2">
               <roundcube:label name="mel_forum.enable_comments" />
             </div>
           </div>
         </div>
+
+        <!-- ====== Boutons -->
         <div class="row d-flex justify-content-end align-items-center">
           <error-button id="cancel-post" class="modal-close-footer mr-2" data-dismiss="modal">
             <roundcube:label name="mel_forum.cancel" />
@@ -109,6 +148,7 @@
             <bnum-icon>arrow_right_alt</bnum-icon>
           </primary-button>
         </div>
+
       </div>
     </div>
   </div>

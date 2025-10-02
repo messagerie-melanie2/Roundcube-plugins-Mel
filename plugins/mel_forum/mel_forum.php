@@ -103,6 +103,7 @@ class mel_forum extends bnum_plugin
                 $this->register_action('history', [$this, 'history']);
                 $this->register_action('count_posts', [$this, 'count_posts']);
                 $this->register_action('update_seen_post_count', [$this, 'update_seen_post_count']);
+                
 
 
                 $this->register_action('create_zip_with_md_and_images', [$this, 'create_zip_with_md_and_images']);
@@ -436,6 +437,31 @@ class mel_forum extends bnum_plugin
                 $post->load(); // Charger les données de l'article créé
             }
 
+            // AJOUT: Récupérer l'URL de l'image
+            $image_url = '';
+
+            $post_images = [];
+
+            if ($is_editing) {
+                // Décoder les settings
+                $settings = is_string($post->settings) ? json_decode($post->settings, true) : $post->settings;
+                
+                if (isset($settings['miniature_url']) && $settings['miniature_url'] !== null) {
+                    $image_url = $settings['miniature_url'];
+                } else {
+                    $first_image = $post->firstImage();
+                    $image_url = $first_image ? $this->_get_image_url($first_image->uid) : '';
+                }
+
+                $image_uids = $this->_get_all_images_by_post($post->id);
+                foreach ($image_uids as $uid) {
+                    $post_images[] = [
+                        'uid' => $uid,
+                        'url' => $this->_get_image_url($uid) // Générer l'URL complète
+                    ];
+                }
+            }
+
             // Préparer les données de l'article pour le frontend
             $post_data = [
                 'title' => $post->title,
@@ -447,7 +473,9 @@ class mel_forum extends bnum_plugin
                 'settings' => $post->settings,
                 'workspace' => $post->workspace,
                 'id' => $post->id,
-                'isdraft' => (bool) $post->isdraft
+                'isdraft' => (bool) $post->isdraft,
+                'image_url' => $image_url,
+                'images' => $post_images
             ];
             $this->rc()->output->set_env('post', $post_data);
             $this->rc()->output->set_env('is_editing', $is_editing);
@@ -647,11 +675,15 @@ class mel_forum extends bnum_plugin
             $comment_count = $post->countComments();
             $is_fav = $this->_is_fav($post->uid, $workspace_uid);
 
-            // Récupérer la première image du post et son URL
+            // Récupérer la miniature
+            $settings = is_string($post->settings) ? json_decode($post->settings, true) : $post->settings;
+
             $first_image = $post->firstImage();
             $image_url = $first_image ? $this->_get_image_url($first_image->uid) : null;
-            if ($post->settings['miniature_url'] !== null) {
-                $image_url = $post->settings['miniature_url'];
+            
+            $settings = is_string($post->settings) ? json_decode($post->settings, true) : $post->settings;
+            if (isset($settings['miniature_url']) && $settings['miniature_url'] !== null) {
+                $image_url = $settings['miniature_url'];
             }
 
             $posts_data[$post->uid] = [
@@ -928,10 +960,17 @@ class mel_forum extends bnum_plugin
         $post->uid = $uid;
         $post->load();
 
-        //gestion de miniature url
-        preg_match_all('/<img[^>]+src="([^"]+)"[^>]*>/i', $content, $matches);
+        // Section miniature
         $settings = json_decode($settings);
-        $settings->miniature_url = $matches[1][0];
+
+        // Conserver la miniature_url existante si elle est déjà définie
+        if (!isset($settings->miniature_url) || empty($settings->miniature_url)) {
+            preg_match_all('/<img[^>]+src="([^"]+)"[^>]*>/i', $content, $matches);
+            if (!empty($matches[1])) {
+                $settings->miniature_url = $matches[1][0];
+            }
+        }
+
         $settings = json_encode($settings);
 
         // Préparer les nouvelles données pour l'historique
@@ -2039,7 +2078,7 @@ class mel_forum extends bnum_plugin
     }
 
     /**
-     * Upload une image dont les paramètre sont passé dans le post
+     * Upload une image dont les paramètres sont passés dans le post
      */
     public function upload_image()
     {

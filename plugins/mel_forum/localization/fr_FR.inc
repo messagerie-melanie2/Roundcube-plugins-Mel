@@ -300,3 +300,11 @@ $labels['new_single_post_available'] = 'nouvel article est disponible !';
 $labels['new_multiple_post_available'] = 'nouveaux articles sont disponibles !';
 $labels['deleted_single_post'] = 'article a été supprimé !';
 $labels['deleted_multiple_post'] = 'articles ont été supprimés !';
+
+#region Selection Miniature
+$labels['thumbnail_updated'] = 'Miniature mise à jour avec succès';
+$labels['error_select_picture'] = 'Veuillez sélectionner une image';
+$labels['select_picture'] = 'Sélectionnez votre image :';
+$labels['no_picture'] = 'Aucune image trouvée dans l\'article';
+$labels['change_thumbnail'] = 'Changer la miniature de l\'article';
+

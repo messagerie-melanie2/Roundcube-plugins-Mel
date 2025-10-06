@@ -321,7 +321,7 @@ class mel_workspace extends bnum_plugin
             $navbar->add_css(__DIR__ . '/' . $this->local_skin_path() . '/navbar.css');
             $navbar->add_css(__DIR__ . '/../../' . $this->local_skin_path() . '/material-symbols.css');
 
-            $this->set_env('navbar', $navbar->get());
+            $this->set_env('navbar', $navbar->get($this->workspace));
 
             self::IncludeNavBarComponent();
 
@@ -2043,7 +2043,15 @@ class mel_workspace extends bnum_plugin
 
     public static function Workspace($uid): Workspace
     {
-        return Workspace::GetLoad($uid);
+        if (!is_array(self::$_workspaces)) {
+            self::$_workspaces = [];
+        }
+
+        if (!isset(self::$_workspaces[$uid])) {
+            self::$_workspaces[$uid] = Workspace::GetLoad($uid);
+        }
+
+        return self::$_workspaces[$uid];
     }
 
     private static function _CurrentUser()

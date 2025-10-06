@@ -155,9 +155,13 @@ class NavBar {
     $this->css[] = file_get_contents($file);
   }
 
-  public function get() {
+  public function get($workspace = null) {
     include_once __DIR__.'/Workspace.php';
-    $workspace = new Workspace($this->uid, true);
+
+    if (!isset($workspace)) {
+      $workspace = new Workspace($this->uid, true);
+    }
+
     // $picture = mel_workspace::GetWorkspaceLogo($workspace->get());
     // $description = str_replace('"', "''", $workspace->description());
     // $title = $workspace->title();

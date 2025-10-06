@@ -476,10 +476,7 @@ class AvatarElement extends HtmlCustomTag {
     if (this.saved) return this._on_load();
 
     let url = AVATAR_URL.replace('%0', this._email);
-
-    if (this._errorBackgroundColor)
-      url += `&_background=${this._errorBackgroundColor.replaceAll('#', EMPTY_STRING)}`;
-
+    
     this.setAttribute('data-state', 'loading');
     let img = this.navigator.querySelector('img');
     img.onload = this._on_load.bind(this);

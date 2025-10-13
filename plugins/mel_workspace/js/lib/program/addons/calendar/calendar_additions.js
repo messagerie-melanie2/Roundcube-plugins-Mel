@@ -5,6 +5,7 @@
 
 import { BaseStorage } from '../../../../../../mel_metapage/js/lib/classes/base_storage.js';
 import { MelEnumerable } from '../../../../../../mel_metapage/js/lib/classes/enum.js';
+import { MelCurrentUser } from '../../../../../../mel_metapage/js/lib/classes/user.js';
 import { EMPTY_STRING } from '../../../../../../mel_metapage/js/lib/constants/constants.js';
 import { WorkspaceObject } from '../../WorkspaceObject.js';
 
@@ -244,6 +245,27 @@ class CalendarAddition extends WorkspaceObject {
           data.attendees.push(waitingAttendee);
           waitingAttendee = {};
         }
+      }
+
+      // On vérifie si il y a un organisateur
+      if (
+        this.getData(calendarEvent.id).hasAttendees &&
+        !MelEnumerable.from(data.attendees).any((x) => x.role === 'ORGANIZER')
+      ) {
+        console.warn(
+          "[EVENT]L'évènement n'a pas d'organisateur !\r\nTentative de correction...",
+        );
+        const organizer = MelEnumerable.from(
+          calendarEvent.attendees,
+        ).firstOrDefault((x) => x.role === 'ORGANIZER');
+
+        if (organizer) data.attendees.push(organizer);
+        else
+          data.attendees.push({
+            name: MelCurrentUser.fullname,
+            email: MelCurrentUser.email,
+            role: 'ORGANIZER',
+          });
       }
 
       // On vérifie si il y a des problèmes avec la catégorie

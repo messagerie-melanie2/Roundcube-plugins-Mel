@@ -972,6 +972,11 @@ export class GuestsPart extends FakePart {
 
       this.update_free_busy();
 
+      // Mettre à jour la localisation
+      if ($('#edit-location').val() === EMPTY_STRING) {
+        $('.event-location-select').first().val('visio').change();
+      }
+
       return true;
     }
 

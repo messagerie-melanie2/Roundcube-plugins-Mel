@@ -1575,11 +1575,14 @@ export class LocationPartManager extends IDestroyable {
    * @package
    */
   _on_select_changed(event) {
-    const VISIBLE = '';
+    const VISIBLE = EMPTY_STRING;
 
     let $select = $(event.target);
     const id = $select.data('id');
-    const val = $select.val() || '';
+    const val = $select.val() || EMPTY_STRING;
+
+    // Si la valeur est vide, on ne fait rien
+    if (val === EMPTY_STRING) return;
 
     //On cache toutes les locations
     $(`#location-${id}-container .location-mode`)

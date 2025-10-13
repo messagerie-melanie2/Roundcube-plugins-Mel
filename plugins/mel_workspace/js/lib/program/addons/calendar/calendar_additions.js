@@ -253,7 +253,8 @@ class CalendarAddition extends WorkspaceObject {
         !MelEnumerable.from(data.attendees).any((x) => x.role === 'ORGANIZER')
       ) {
         console.warn(
-          "[EVENT]L'évènement n'a pas d'organisateur !\r\nTentative de correction...",
+          //prettier-ignore
+          '[EVENT]L\'évènement n\'a pas d\'organisateur !\r\nTentative de correction...',
         );
         const organizer = MelEnumerable.from(
           calendarEvent.attendees,
@@ -275,7 +276,8 @@ class CalendarAddition extends WorkspaceObject {
       ) {
         // eslint-disable-next-line quotes
         console.warn(
-          "[EVENT]La catégorie n'a pas été chargé correctement !\r\nTentative de correction...",
+          //prettier-ignore
+          '[EVENT]La catégorie n\'a pas été chargé correctement !\r\nTentative de correction...',
         );
         hasModifications = true;
         data.categories = `ws#${this.load('current_wsp')}`;

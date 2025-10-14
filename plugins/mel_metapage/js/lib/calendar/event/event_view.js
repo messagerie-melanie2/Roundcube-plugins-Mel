@@ -21,6 +21,7 @@
  * @local EventViewDialog
  */
 
+import ABaseMelObject from '../../base_mel_object.js';
 import { MelEnumerable } from '../../classes/enum.js';
 import { EMPTY_STRING } from '../../constants/constants.js';
 import { MelHtml } from '../../html/JsHtml/MelHtml.js';
@@ -673,7 +674,113 @@ export class EventView {
       is_valid = false;
     }
 
+    this.#_setModifier();
+
     return is_valid;
+  }
+
+  /**
+   * Execute les modifications des composants avant la sauvegarde.
+   * @private
+   */
+  #_setModifier() {
+    ABaseMelObject.Empty().trigger('event-editor.modifier.before', {
+      view: this,
+    });
+    this.#_descriptionModifier();
+    ABaseMelObject.Empty().trigger('event-editor.modifier.after', {
+      view: this,
+    });
+  }
+
+  /**
+   * Execute la modification de la description avant la sauvegarde.
+   *
+   * Execute un trigger avant et après la modification.
+   * La modification ajoute un texte si il y a une visio.
+   * @returns {EventView} - Chaîne
+   */
+  #_descriptionModifier() {
+    let $desc = $('#edit-description');
+    let desc_modifier = EMPTY_STRING;
+
+    {
+      const plugin = ABaseMelObject.Empty().trigger(
+        'event-editor.desc-modifier.before',
+        { views: this },
+      );
+
+      if (typeof plugin === 'string') desc_modifier = plugin;
+      else if (Array.isArray(plugin)) {
+        for (const element of plugin) {
+          if (typeof element === 'string') desc_modifier += `${element}\n`;
+        }
+      }
+    }
+
+    // On check si il y a au moins une loca de visio conférence intégré
+    if (
+      MelEnumerable.from($('.event-location-select')).any(
+        (x) => x.value === 'visio',
+      ) &&
+      MelEnumerable.from($('.location-mode > select')).any(
+        (x) => x.value === 'visio-internal',
+      )
+    ) {
+      const desc_help_visio = ABaseMelObject.Empty().getLocalization(
+        'visios-agenda-help',
+        {
+          plugin: 'mel_metapage',
+          variables: { url: ABaseMelObject.Empty().get_env('visio_help_url') },
+        },
+      );
+
+      // EVite les doublons
+      if (!$desc.val().includes(desc_help_visio)) {
+        desc_modifier += `${desc_help_visio}\n`;
+      }
+    }
+
+    {
+      const plugin = ABaseMelObject.Empty().trigger(
+        'event-editor.desc-modifier.after',
+        { views: this },
+      );
+
+      if (typeof plugin === 'string') desc_modifier = plugin;
+      else if (Array.isArray(plugin)) {
+        for (const element of plugin) {
+          if (typeof element === 'string') desc_modifier += `${element}\n`;
+        }
+      }
+    }
+
+    if (desc_modifier !== EMPTY_STRING) {
+      if ($desc.val() !== EMPTY_STRING) {
+        desc_modifier +=
+          `${/**
+           * Affiche x '-'
+           *
+           * On fait une boucle et pour réduire le nombre de boucles, on augmente le nombre de '-'.
+           * @returns {string}
+           */
+          (() => {
+            const c = '----------------';
+            const nb = 10;
+            let txt = [];
+
+            for (let index = 0; index < nb; ++index) {
+              txt.push(c);
+            }
+
+            return txt.join(EMPTY_STRING);
+          })()}\n` + $desc.val();
+      }
+      $desc.val(desc_modifier);
+    }
+
+    $desc = null;
+    return this;
   }
 
   /**

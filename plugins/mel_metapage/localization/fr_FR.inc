@@ -519,3 +519,4 @@ $labels['calendar_add_mail_to_event'] = 'Ajouter les destinataires du mail';
 $labels['minimise'] = 'Minimiser';
 $labels['maximise'] = 'Dévelloper';
 $labels['close_popup'] = 'Fermer la popup';
+$labels['visios-agenda-help'] = 'Pour plus d\'informations sur l\'utilisation de la Web-conférence de l\'État, consultez : $url';

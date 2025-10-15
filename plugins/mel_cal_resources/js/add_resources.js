@@ -183,10 +183,56 @@ class ResourceDialog extends MelObject {
   }
 
   /**
+   * Démarre un chargement.
+   *
+   * On passe par un tableau pour gérer les chargements imbriqués.
+   */
+  startLoading() {
+    this._loading ??= [];
+    this._loading.push(false);
+
+    let save = document.querySelector('.ui-dialog-buttonset .save-btn');
+    if (
+      save &&
+      (this._loading.length === 1 || save.hasAttribute('disabled') === false)
+    ) {
+      if (!this._mid)
+        this._mid = BnumMessage.DisplayMessage('Chargement...', 'loading');
+
+      save.setAttribute('disabled', 'disabled');
+      save.classList.add('disabled');
+    }
+
+    save = null;
+  }
+
+  /**
+   * Fini un chargement.
+   * @returns {void}
+   */
+  stopLoading() {
+    this._loading.pop();
+    if (this._loading.length > 0) return;
+
+    BnumMessage.ClearMessage(this._mid);
+    this._mid = undefined;
+    this._loading = undefined;
+
+    let save = document.querySelector('.ui-dialog-buttonset .save-btn');
+
+    if (save) {
+      save.removeAttribute('disabled');
+      save.classList.remove('disabled');
+    }
+    save = null;
+  }
+
+  /**
    *
    * @returns
    */
   async _init() {
+    this.export('rscdialog');
     let page;
     let resources = [];
 
@@ -394,6 +440,22 @@ class ResourceDialog extends MelObject {
             eMessageType.Error,
           );
           return page.set_validity();
+        }
+
+        if (
+          page._functions
+            .search(page.start, page.end, {
+              id: current_resource.email,
+            })
+            .count() > 0
+        ) {
+          BnumMessage.DisplayMessage(
+            // eslint-disable-next-line quotes
+            'Vous réservez une ressource déjà utilisée à cette date !',
+            eMessageType.Error,
+          );
+
+          return false;
         }
       }
 

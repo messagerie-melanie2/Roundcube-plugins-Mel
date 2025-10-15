@@ -362,7 +362,6 @@ class Mobile_Stats
                         'class'      => 'button icon refresh resync',
                         'title'      => $label_resync,
                         'aria-label' => $label_resync . ' ' . $userDevice,
-                        'onclick'    => "zpush_command('ResyncUserDevice', '" . rcube::JQ($deviceId) . "', '" . rcube::JQ($userDevice) . "')",
                     ], html::tag('span', ['class' => 'sr-only'], $label_resync));
                     $configureAccountsList->add('actions.resync', $resync_btn);
 
@@ -373,7 +372,6 @@ class Mobile_Stats
                         'class'      => 'button icon delete remove',
                         'title'      => $label_remove,
                         'aria-label' => $label_remove . ' ' . $userDevice,
-                        'onclick'    => "zpush_command('DeleteUserDevice', '" . rcube::JQ($deviceId) . "', '" . rcube::JQ($userDevice) . "')",
                     ], html::tag('span', ['class' => 'sr-only'], $label_remove));
                     $configureAccountsList->add('action.remove', $remove_btn);
                 }
@@ -459,7 +457,6 @@ class Mobile_Stats
                                 'class'      => 'button icon refresh resync',
                                 'title'      => $label_resync_folder,
                                 'aria-label' => $label_resync_folder . ' ' . $userFolder . ' / ' . $folderidname,
-                                'onclick'    => "zpush_command('ResyncFolderId', '" . rcube::JQ($deviceId) . "', '" . rcube::JQ($id_userFolder) . "', '" . rcube::JQ($id_folderid) . "')",
                             ], html::tag('span', ['class' => 'sr-only'], $label_resync_folder));
                             $deviceSyncDetails->add('actions.resync', $resync_btn);
 

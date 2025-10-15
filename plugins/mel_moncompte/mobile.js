@@ -8,7 +8,7 @@ function handleResyncAction(e) {
     e.preventDefault();
     var id = $(this).closest('tr').attr('id').split('--');
     switch (id[0]) {
-      case 'rcmrowrcmaccountsinfo':
+      case 'rcmaccountsinfo':
         if (id.length == 3 && id[1] == rcmail.env.deviceid) {
           var param = {
             _command: 'ResyncUserDevice',
@@ -40,7 +40,7 @@ function handleRemoveAction(e) {
     e.preventDefault();
     var id = $(this).closest('tr').attr('id').split('--');
     switch (id[0]) {
-      case 'rcmrowrcmaccountsinfo':
+      case 'rcmaccountsinfo':
         if (id.length == 3 && id[1] == rcmail.env.deviceid) {
           var param = {
             _command:

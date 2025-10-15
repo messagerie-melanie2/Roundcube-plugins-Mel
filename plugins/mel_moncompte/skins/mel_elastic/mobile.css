@@ -101,16 +101,34 @@ html.dark-mode-custom .m2_stats_device_table tbody td.mel_moncompte\.resync {
   background-image: url('images/1411751212_refresh_dark.png');
 }
 .m2_stats_device_table tbody td.mel_moncompte\.remove {
-  background-image: url('images/1411751862_error.png');
   background-repeat: no-repeat;
   background-position: center;
+  /* Nouvelle icône croix rouge épaisse */
+  /* Dark mode pour remove */
+}
+.m2_stats_device_table tbody td.mel_moncompte\.remove::before {
+  content: "✕";
+  color: #d00;
+  font-weight: bold;
+  font-size: 16px;
+  display: block;
+  text-align: center;
+  line-height: 1;
 }
 .m2_stats_device_table tbody td.mel_moncompte\.remove:hover {
   cursor: pointer;
 }
+.m2_stats_device_table tbody td.mel_moncompte\.remove:hover::before {
+  color: #f00;
+  /* Rouge plus vif au survol */
+}
+html.dark-mode .m2_stats_device_table tbody td.mel_moncompte\.remove::before,
+html.dark-mode-custom .m2_stats_device_table tbody td.mel_moncompte\.remove::before {
+  color: #ff6b6b;
+  /* Rouge plus clair en dark mode */
+}
 .m2_stats_device_table tbody td.actions\ {
-  /* Le bouton occupe tout le TD (clic & focus au centre de l'icône) */
-  /* Focus clavier visible (optionnel) */
+  /* Focus clavier visible */
 }
 .m2_stats_device_table tbody td.actions\.resync {
   background-image: url('images/1411751212_refresh.png');
@@ -126,12 +144,17 @@ html.dark-mode-custom .m2_stats_device_table tbody td.actions\.resync {
   background-image: url('images/1411751212_refresh_dark.png');
 }
 .m2_stats_device_table tbody td.actions\.remove {
-  background-image: url('images/1411751862_error.png');
   background-repeat: no-repeat;
   background-position: center;
+  /* Dark mode pour remove */
 }
 .m2_stats_device_table tbody td.actions\.remove:hover {
   cursor: pointer;
+}
+html.dark-mode .m2_stats_device_table tbody td.actions\.remove::before,
+html.dark-mode-custom .m2_stats_device_table tbody td.actions\.remove::before {
+  color: #ff6b6b;
+  /* Rouge plus clair en dark mode */
 }
 .m2_stats_device_table tbody td.actions\.resync > button,
 .m2_stats_device_table tbody td.actions\.remove > button {

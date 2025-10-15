@@ -128,8 +128,35 @@ e('@CHARSET "UTF-8";') #body {
           background-image: url('images/1411751862_error.png');
           background-repeat: no-repeat;
           background-position: center;
+          
+          /* Nouvelle icône croix rouge épaisse */
+          &::before {
+            content: "✕";
+            color: #d00;
+            font-weight: bold;
+            font-size: 16px;
+            display: block;
+            text-align: center;
+            line-height: 1;
+          }
+          
+          /* Masquer l'ancienne image de fond */
+          background-image: none !important;
+
           &:hover {
             cursor: pointer;
+            
+            &::before {
+              color: #f00; /* Rouge plus vif au survol */
+            }
+          }
+
+          /* Dark mode pour remove */
+          html.dark-mode &,
+          html.dark-mode-custom & {
+            &::before {
+              color: #ff6b6b; /* Rouge plus clair en dark mode */
+            }
           }
         }
       }
@@ -158,9 +185,16 @@ e('@CHARSET "UTF-8";') #body {
           &:hover {
             cursor: pointer;
           }
+
+          /* Dark mode pour remove */
+          html.dark-mode &,
+          html.dark-mode-custom & {
+            &::before {
+              color: #ff6b6b; /* Rouge plus clair en dark mode */
+            }
+          }
         }
 
-        /* Le bouton occupe tout le TD (clic & focus au centre de l'icône) */
         &.resync > button,
         &.remove > button {
           display: block;
@@ -170,10 +204,10 @@ e('@CHARSET "UTF-8";') #body {
           margin: 0;
           background: transparent;
           border: 0;
-          line-height: 0; // évite de gonfler la ligne
+          line-height: 0;
         }
 
-        /* Focus clavier visible (optionnel) */
+        /* Focus clavier visible */
         &.resync > button:focus,
         &.remove > button:focus {
           outline: 2px solid currentColor;

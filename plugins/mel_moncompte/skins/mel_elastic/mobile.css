@@ -101,12 +101,9 @@ html.dark-mode-custom .m2_stats_device_table tbody td.mel_moncompte\.resync {
   background-image: url('images/1411751212_refresh_dark.png');
 }
 .m2_stats_device_table tbody td.mel_moncompte\.remove {
-  background-image: url('images/1411751862_error.png');
   background-repeat: no-repeat;
   background-position: center;
   /* Nouvelle icône croix rouge épaisse */
-  /* Masquer l'ancienne image de fond */
-  background-image: none !important;
   /* Dark mode pour remove */
 }
 .m2_stats_device_table tbody td.mel_moncompte\.remove::before {
@@ -147,7 +144,6 @@ html.dark-mode-custom .m2_stats_device_table tbody td.actions\.resync {
   background-image: url('images/1411751212_refresh_dark.png');
 }
 .m2_stats_device_table tbody td.actions\.remove {
-  background-image: url('images/1411751862_error.png');
   background-repeat: no-repeat;
   background-position: center;
   /* Dark mode pour remove */

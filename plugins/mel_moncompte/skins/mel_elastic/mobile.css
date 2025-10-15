@@ -109,8 +109,7 @@ html.dark-mode-custom .m2_stats_device_table tbody td.mel_moncompte\.resync {
   cursor: pointer;
 }
 .m2_stats_device_table tbody td.actions\ {
-  /* Le bouton occupe tout le TD (clic & focus au centre de l'icône) */
-  /* Focus clavier visible (optionnel) */
+  /* Focus clavier visible */
 }
 .m2_stats_device_table tbody td.actions\.resync {
   background-image: url('images/1411751212_refresh.png');

@@ -160,7 +160,6 @@ e('@CHARSET "UTF-8";') #body {
           }
         }
 
-        /* Le bouton occupe tout le TD (clic & focus au centre de l'icône) */
         &.resync > button,
         &.remove > button {
           display: block;
@@ -170,10 +169,10 @@ e('@CHARSET "UTF-8";') #body {
           margin: 0;
           background: transparent;
           border: 0;
-          line-height: 0; // évite de gonfler la ligne
+          line-height: 0;
         }
 
-        /* Focus clavier visible (optionnel) */
+        /* Focus clavier visible */
         &.resync > button:focus,
         &.remove > button:focus {
           outline: 2px solid currentColor;

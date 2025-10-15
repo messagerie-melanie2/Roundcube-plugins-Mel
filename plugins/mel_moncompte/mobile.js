@@ -8,7 +8,7 @@ function handleResyncAction(e) {
     e.preventDefault();
     var id = $(this).closest('tr').attr('id').split('--');
     switch (id[0]) {
-      case 'rcmrowrcmaccountsinfo':
+      case 'rcmaccountsinfo':
         if (id.length == 3 && id[1] == rcmail.env.deviceid) {
           var param = {
             _command: 'ResyncUserDevice',
@@ -17,7 +17,7 @@ function handleResyncAction(e) {
           };
         }
         break;
-      case 'rcmrowrcmsyncdetails':
+      case 'rcmsyncdetails':
         if (id.length == 4 && id[1] == rcmail.env.deviceid) {
           var param = {
             _command: 'ResyncFolderId',
@@ -40,7 +40,7 @@ function handleRemoveAction(e) {
     e.preventDefault();
     var id = $(this).closest('tr').attr('id').split('--');
     switch (id[0]) {
-      case 'rcmrowrcmaccountsinfo':
+      case 'rcmaccountsinfo':
         if (id.length == 3 && id[1] == rcmail.env.deviceid) {
           var param = {
             _command:

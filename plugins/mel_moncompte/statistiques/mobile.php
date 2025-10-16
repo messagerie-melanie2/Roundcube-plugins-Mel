@@ -373,7 +373,7 @@ class Mobile_Stats
                         'title'      => $label_remove,
                         'aria-label' => $label_remove . ' ' . $userDevice,
                     ], html::tag('span', ['class' => 'sr-only'], $label_remove));
-                    $configureAccountsList->add('action.remove', $remove_btn);
+                    $configureAccountsList->add('actions.remove', $remove_btn);
                 }
 
                 $out .= html::tag('div', ['class'=>'boxtitle'], $this->plugin->gettext('accounts_list'));

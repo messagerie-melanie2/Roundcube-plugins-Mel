@@ -17,7 +17,7 @@ function handleResyncAction(e) {
           };
         }
         break;
-      case 'rcmrowrcmsyncdetails':
+      case 'rcmsyncdetails':
         if (id.length == 4 && id[1] == rcmail.env.deviceid) {
           var param = {
             _command: 'ResyncFolderId',

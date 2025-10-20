@@ -115,7 +115,7 @@ rcube_webmail.prototype.acl_save = function () {
     data,
     objects = '';
 
-  if (this.env.type && this.env.type == 'm2mailbox') {
+  if (this.env.type && this.env.type === 'm2mailbox') {
     $(
       this.env.acl_advanced ? '#advancedrights :radio' : '#simplerights :radio',
       this.acl_form,
@@ -286,7 +286,7 @@ rcube_webmail.prototype.acl_get_usernames = function () {
       users.push(selection[n]);
     } else if ((row = list.rows[selection[n]])) {
       cell = $('td.user', row.obj);
-      if (cell.length == 1) users.push(cell.text());
+      if (cell.length == 1) users.push(cell.attr('data-uid') || cell.text());
     }
   }
 
@@ -322,15 +322,19 @@ rcube_webmail.prototype.acl_add_row = function (o, sel) {
 
   // Update new row
   $('th', row).map(function () {
+    debugger;
     var td = $('<td>'),
-      title = $(this).attr('title'),
+      title = $(this).attr('title') || o.title,
       cl = this.className.replace(/^acl/, '');
 
     if (title) td.attr('title', title);
 
     if (items && items[cl]) cl = items[cl];
 
-    if (cl == 'user') td.addClass(cl).append($('<a>').text(o.username));
+    if (cl === 'user')
+      td.addClass(cl)
+        .attr('data-uid', o.username)
+        .append($('<a>').text(o.display));
     else
       td.addClass(this.className + ' ' + rcmail.acl_class(o.acl, cl)).text('');
 
@@ -424,7 +428,7 @@ rcube_webmail.prototype.acl_init_form = function (id) {
       !this.env.acl_specials.length ||
       $.inArray(id, this.env.acl_specials) < 0
     )
-      val = $('td.user', row).text();
+      val = $('td.user', row).attr('data-uid') || $('td.user', row).text();
     else type = id;
   }
   // mark read (lrs) rights by default

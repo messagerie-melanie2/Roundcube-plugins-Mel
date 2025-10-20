@@ -66,7 +66,7 @@ const ping = async function (url, useSSL = true) {
 const mceToRcId = function (txt = '') {
   return txt
     .replaceAll('.', '_-P-_')
-    .replaceAll('@', "'_-A-_'")
+    .replaceAll('@', '_-A-_')
     .replaceAll('%', '_-C-_');
 };
 

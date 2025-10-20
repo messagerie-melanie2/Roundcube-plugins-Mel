@@ -46,6 +46,12 @@ class mel_metapage extends bnum_plugin
     private static $widgets;
 
     /**
+     * 
+     * @var rcube_plugin plugin courant
+     */
+    private static $plugin;
+
+    /**
      * Ajoute une URL surveillée avec la tâche associée.
      *
      * Initialise la liste des URLs surveillées si elle n'existe pas encore.
@@ -197,6 +203,9 @@ class mel_metapage extends bnum_plugin
 
     function init()
     {
+        // Enregistre l’instance pour les méthodes statiques
+        self::$plugin = $this;
+
         try {
             $this->setup();
         } catch (\Throwable $th) {
@@ -5107,20 +5116,170 @@ class mel_metapage extends bnum_plugin
      * @return string HTML du bouton de sondage ou chaîne vide si non configuré.
      */
     public static function GetSurveyButton() : string {
+
+        if (!self::$plugin) {
+        return '';
+        }
+
         $html = '';
         $rc = rcmail::get_instance();
-        $surveyConfig = $rc->config->get('survey', false);
 
-        if ($surveyConfig !== false) {
+        // Vérification si le bouton doit être activé
+        $surveyRaw = $rc->config->get('survey', false);
+        if ($surveyRaw === false) return '';
+
+        $defaults = (array) $rc->config->get('survey_defaults', []);
+        $surveyConfig = ($surveyRaw === true) ? $defaults : $surveyRaw;
+
+        // Filtre par dates
+        if (!self::isInDateWindow($surveyConfig)) {
+            return '';
+        }
+
+        // Affiche-t-on le bouton sur cette page ?
+        if ($surveyConfig !== false && self::shouldDisplaySurvey($surveyConfig)) {
+
+            // URL simplifiée vers la skin du plugin
+            $skinDir = basename(self::$plugin->local_skin_path());
+            $pluginSkinUrl = self::$plugin->url('skins/' . $skinDir);
+
+            // Texte sur 2 lignes
+            $full = (string) ($surveyConfig['text'] ?? '');
+            list($first, $rest) = array_pad(explode('<br>', $full, 2), 2, '');
+
+            $first = trim($first);
+            $rest  = trim($rest);
+
+           $textTwoLinesHtml = $rest !== ''
+                ? '<span class="survey-line1">' . htmlspecialchars($first, ENT_QUOTES, 'UTF-8') . '</span><br>'
+                . '<span class="survey-line2">' . htmlspecialchars($rest, ENT_QUOTES, 'UTF-8') . '</span>'
+                : '<span class="survey-line1">' . htmlspecialchars($first, ENT_QUOTES, 'UTF-8') . '</span>';
+
+            // Gestion de l'image
+            $showPicture = !empty($surveyConfig['show_picture']);  // true => on veut l'image
+            $file = trim((string) ($surveyConfig['picture'] ?? '')); // chemin relatif dans /pictures/
+
+            // uniquement chemin relatif .svg
+            if ($file !== '' && !preg_match('~^[a-z0-9/_-]+\.svg$~i', $file)) {
+                $file = '';
+            }
+
+            // Contenu
+            if ($showPicture && $file !== '') {
+                $iconPath = $pluginSkinUrl . '/pictures/' . ltrim($file, '/');
+                $content  = html::div(['class' => 'survey-content'],
+                    // texte
+                    '<span class="survey-text">'.$textTwoLinesHtml.'</span>'.
+                    // puis l’image à droite si activée
+                    html::img([
+                        'src'   => $iconPath,
+                        'alt'   => $surveyConfig['text'] ?? '',
+                        'class' => 'survey-icon'
+                    ])
+                );
+            } else {
+                // Texte seul
+                $content = html::div(['class' => 'survey-content'],
+                    '<span class="survey-text">'.$textTwoLinesHtml.'</span>'
+                );
+            }
+
+            // Classes du lien
+            $classes = 'mel-button survey-button bottom-right';
+            if ($showPicture && $file !== '') {
+                $classes .= ' show-icon';
+            }
+
+            // Lien final
             $html .= html::a([
-                'href' => $surveyConfig['url'],
-                'class' => 'mel-button no-margin-button no-button-margin survey-button bottom-right btn',
-                'target' => '_blank',
-                'rel' => 'noopener noreferrer',
-                'title' => $surveyConfig['text'].' - Ouvrir le sondage dans un nouvel onglet'
-            ], $surveyConfig['icon'] ? html::img(['src' => $surveyConfig['icon']]) : html::div(['style' => 'display:flex;'], html::span([], $surveyConfig['text']).'<bnum-icon class="ml-3" data-icon="rate_review"></bnum-icon>') );
+                'href'        => $surveyConfig['url'],
+                'class'       => $classes,
+                'target'      => '_blank',
+                'rel'         => 'noopener noreferrer',
+                'title'       => ($surveyConfig['text'] ?? '').' - Ouvrir le sondage dans un nouvel onglet',
+                'aria-label'  => $surveyConfig['text'] ?? '',
+            ], $content);
         }
 
         return $html;
+    }
+
+    /**
+     * Détermine si le bouton de sondage doit être affiché sur la page courante
+     * 
+     * @param array $surveyConfig Configuration du sondage
+     * @return bool True si le bouton doit être affiché
+     */
+    protected static function shouldDisplaySurvey($surveyConfig) : bool {
+        // Page par défaut si aucune configuration n'est définie
+        if (!isset($surveyConfig['pages']) || empty($surveyConfig['pages'])) {
+            return true;
+        }
+        
+        // Récupérer l'URL courante
+        $currentUrl = $_SERVER['REQUEST_URI'] ?? '';
+        
+        // Vérifier si l'URL correspond à l'une des regex configurées
+        foreach ($surveyConfig['pages'] as $pattern) {
+            if (preg_match('#' . $pattern . '#', $currentUrl)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    /**
+     * Retourne true si "maintenant" est entre visible_from et visible_until (inclus)
+     * Format de date accepté: 'd/m/Y'
+     */
+    protected static function isInDateWindow(array $cfg): bool {
+        // Si aucune borne -> toujours visible
+        $fromStr = trim((string)($cfg['visible_from']  ?? ''));
+        $untilStr= trim((string)($cfg['visible_until'] ?? ''));
+
+        if ($fromStr === '' && $untilStr === '') {
+            return true;
+        }
+
+        // Timezone (prend celle de Roundcube si dispo, sinon Europe/Paris)
+        $rc = rcmail::get_instance();
+        $tzName = $rc->config->get('timezone', 'Europe/Paris');
+        try { $tz = new DateTimeZone($tzName); } catch (Exception $e) { $tz = new DateTimeZone('Europe/Paris'); }
+
+        $now = new DateTimeImmutable('now', $tz);
+
+        // Parse dates (debut = 00:00:00, fin = 23:59:59)
+        $from  = self::parseConfigDate($fromStr, $tz, true); // début de journée
+        $until = self::parseConfigDate($untilStr, $tz, false); // fin de journée
+
+        if ($from && $now < $from)   return false;
+        if ($until && $now > $until) return false;
+        return true;
+    }
+
+    /**
+     * Parse une date config au format strict 'd/m/Y'.
+     * $startOfDay=true => 00:00:00 ; false => 23:59:59
+     */
+    protected static function parseConfigDate(string $s, DateTimeZone $tz, bool $startOfDay): ?DateTimeImmutable {
+        $s = trim($s);
+        if ($s === '') return null;
+
+        // Vérif stricte du format dd/mm/yyyy (avec zéros ou non)
+        if (!preg_match('~^\d{1,2}/\d{1,2}/\d{4}$~', $s)) {
+            return null; // format non conforme
+        }
+
+        // Parse strict
+        $dt = DateTimeImmutable::createFromFormat('d/m/Y', $s, $tz);
+        $errors = DateTimeImmutable::getLastErrors();
+        if (!$dt || !empty($errors['warning_count']) || !empty($errors['error_count'])) {
+            return null; // date invalide (ex: 31/02/2025)
+        }
+
+        // Normalise au début/fin de journée
+        $time = $startOfDay ? '00:00:00' : '23:59:59';
+        return DateTimeImmutable::createFromFormat('d/m/Y H:i:s', $dt->format('d/m/Y') . ' ' . $time, $tz);
     }
 }

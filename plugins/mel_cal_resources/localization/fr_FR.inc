@@ -19,3 +19,5 @@ $labels['me'] = 'Moi';
 $labels['prev_day'] = 'Jour précédent';
 $labels['next_day'] = 'Jour suivant';
 $labels['change_date'] = 'Changement de date';
+$labels['resource_located_at'] = 'Ressource située à :';
+$labels['city'] = 'Ville :';

@@ -208,11 +208,10 @@ class Mobile_Stats
     public function device_info($attrib)
     {
         // add id to message list table if not specified
-        if (!strlen($attrib['id']))
+        if (empty($attrib['id']))
             $attrib['id'] = 'rcmdeviceinfo';
 
         $out = "";
-        $result = array();
 
         try {
             $fid = rcube_utils::get_input_value('_fid', rcube_utils::INPUT_GPC);
@@ -223,20 +222,8 @@ class Mobile_Stats
             // Appel une méthode du webservice
             $devices = $this->client->ListDeviceUsers($deviceId);
 
-            if (count($devices) > 0) {
+            if (!empty($devices)) {
                 $one = true;
-
-                // define list of cols to be displayed
-                $a_show_cols_accounts = array(
-                    'mel_moncompte.user',
-                    'mel_moncompte.first_sync',
-                    'mel_moncompte.last_sync',
-                    'mel_moncompte.z-push',
-                    'mel_moncompte.resync',
-                    'mel_moncompte.remove',
-                );
-
-                $result_accounts = array();
 
                 // Parcour la liste des appareils
                 foreach ($devices as $device) {
@@ -252,9 +239,9 @@ class Mobile_Stats
                         $imei = $device['deviceimei'];
                         $operator = $device['devicemobileoperator'];
                         $versionzpush = $device['zpushversion'];
-
                         $announcedasversion = $device['announcedasversion'];
                         $asversion = $device['asversion'];
+
                         switch ($device['wipestatus']) {
                             case SYNC_PROVISION_RWSTATUS_PENDING:
                                 $wipestatus = "En attente";
@@ -274,100 +261,123 @@ class Mobile_Stats
                         $wiperequestedon = (isset($device['wiperequestedon']) ? date('r', $device['wiperequestedon']) : "");
                         $wipeactionon = (isset($device['wipeactionon']) ? date('r', $device['wipeactionon']) : "");
 
-                        $attrib['id'] = 'rcmdeviceinfo';
+                        // Table 1 :Informations sur l'appareil
+                        $deviceInformationTable = new html_table([
+                            'id' => 'rcmdeviceinfo',
+                            'class' => 'listing m2_stats_device_table',
+                            'summary' => 'Device informations',
+                            'tabindex' => '0',
+                        ]);
 
-                        // define list of cols to be displayed
-                        $a_show_cols = array(
-                            'mel_moncompte.deviceid',
-                            'mel_moncompte.imei',
-                            'mel_moncompte.devicetype',
-                            'mel_moncompte.devicemodel',
-                            'mel_moncompte.operator',
-                            'mel_moncompte.user-agent',
-                            'mel_moncompte.version',
-                            'mel_moncompte.language',
-                        );
+                    // En-têtes
+                    $deviceInformationTable->add_header('mel_moncompte.deviceid', $this->plugin->gettext('mel_moncompte.deviceid'));
+                    $deviceInformationTable->add_header('mel_moncompte.imei', 'IMEI');
+                    $deviceInformationTable->add_header('mel_moncompte.devicetype', $this->plugin->gettext('mel_moncompte.devicetype'));
+                    $deviceInformationTable->add_header('mel_moncompte.devicemodel', $this->plugin->gettext('mel_moncompte.devicemodel'));
+                    $deviceInformationTable->add_header('mel_moncompte.operator', $this->plugin->gettext('mel_moncompte.operator'));
+                    $deviceInformationTable->add_header('mel_moncompte.user-agent', $this->plugin->gettext('mel_moncompte.user-agent'));
+                    $deviceInformationTable->add_header('mel_moncompte.version', $this->plugin->gettext('mel_moncompte.version'));
+                    $deviceInformationTable->add_header('mel_moncompte.language', $this->plugin->gettext('mel_moncompte.language'));
 
-                        $result = array(array(
-                            'id' => $attrib['id'] . $deviceId,
-                            'mel_moncompte.deviceid' => $deviceId,
-                            'mel_moncompte.imei' => $imei,
-                            'mel_moncompte.devicetype' => $devicetype,
-                            'mel_moncompte.devicemodel' => $devicemodel,
-                            'mel_moncompte.operator' => $operator,
-                            'mel_moncompte.user-agent' => $useragent,
-                            'mel_moncompte.version' => $deviceos,
-                            'mel_moncompte.language' => $deviceoslanguage,
-                            'class' => '',
-                        ));
+                    // Ligne
+                    $deviceInformationTable->add_row(['id' => 'rcmdeviceinfo--' . $deviceId]);
+                    $deviceInformationTable->add('mel_moncompte.deviceid', rcube::Q($deviceId));
+                    $deviceInformationTable->add('mel_moncompte.imei', rcube::Q($imei));
+                    $deviceInformationTable->add('mel_moncompte.devicetype', rcube::Q($devicetype));
+                    $deviceInformationTable->add('mel_moncompte.devicemodel', rcube::Q($devicemodel));
+                    $deviceInformationTable->add('mel_moncompte.operator', rcube::Q($operator));
+                    $deviceInformationTable->add('mel_moncompte.user-agent', rcube::Q($useragent));
+                    $deviceInformationTable->add('mel_moncompte.version', rcube::Q($deviceos));
+                    $deviceInformationTable->add('mel_moncompte.language', rcube::Q($deviceoslanguage));
 
-                        $out .= html::div(null, $this->plugin->gettext('device_info'));
-                        // create XHTML table
-                        $out .= $this->rc->table_output($attrib, $result, $a_show_cols, 'id');
+                    // Titre + table
+                    $out .= html::tag('div', ['class'=>'boxtitle'], $this->plugin->gettext('device_info'));
+                    $out .= $deviceInformationTable->show();
 
+                        // Table 2 : Informations sur ActiveSync
                         if ($versionzpush >= 2) {
-                            $attrib['id'] = 'rcmactivesyncinfo';
+                            $activeSyncInformationTable = new html_table([
+                            'id' => 'rcmactivesyncinfo',
+                            'class' => 'listing m2_stats_device_table',
+                            'summary' => 'ActiveSync informations',
+                            'tabindex' => '0',
+                        ]);
 
-                            // define list of cols to be displayed
-                            $a_show_cols = array(
-                                'mel_moncompte.asversion',
-                                'mel_moncompte.wipestatus',
-                                'mel_moncompte.wiperequestedby',
-                                'mel_moncompte.wiperequestedon',
-                                'mel_moncompte.wipeactionon',
-                            );
+                        $activeSyncInformationTable->add_header('mel_moncompte.asversion', $this->plugin->gettext('mel_moncompte.asversion'));
+                        $activeSyncInformationTable->add_header('mel_moncompte.wipestatus', $this->plugin->gettext('mel_moncompte.wipestatus'));
+                        $activeSyncInformationTable->add_header('mel_moncompte.wiperequestedby', $this->plugin->gettext('mel_moncompte.wiperequestedby'));
+                        $activeSyncInformationTable->add_header('mel_moncompte.wiperequestedon', $this->plugin->gettext('mel_moncompte.wiperequestedon'));
+                        $activeSyncInformationTable->add_header('mel_moncompte.wipeactionon', $this->plugin->gettext('mel_moncompte.wipeactionon'));
 
-                            $result = array(array(
-                                'id' => $attrib['id'] . $deviceId,
-                                'mel_moncompte.asversion' => $asversion,
-                                'mel_moncompte.wipestatus' => $wipestatus,
-                                'mel_moncompte.wiperequestedby' => $wiperequestedby,
-                                'mel_moncompte.wiperequestedon' => $wiperequestedon,
-                                'mel_moncompte.wipeactionon' => $wipeactionon,
-                                'class' => '',
-                            ));
+                        $activeSyncInformationTable->add_row(['id' => 'rcmactivesyncinfo--' . $deviceId]);
 
-                            $out .= html::div(null, $this->plugin->gettext('activesync_info'));
-                            // create XHTML table
-                            $out .= $this->rc->table_output($attrib, $result, $a_show_cols, 'id');
-                        }
+                        $activeSyncInformationTable->add('mel_moncompte.asversion', rcube::Q($asversion));
+                        $activeSyncInformationTable->add('mel_moncompte.wipestatus', $wipestatus);
+                        $activeSyncInformationTable->add('mel_moncompte.wiperequestedby', rcube::Q($wiperequestedby));
+                        $activeSyncInformationTable->add('mel_moncompte.wiperequestedon', rcube::Q($wiperequestedon));
+                        $activeSyncInformationTable->add('mel_moncompte.wipeactionon', rcube::Q($wipeactionon));
+
+                        $out .= html::tag('div', ['class'=>'boxtitle'], $this->plugin->gettext('activesync_info'));
+                        $out .= $activeSyncInformationTable->show();
+                    }
 
                         $one = false;
                     }
-                    // Récupération des données
+                }
+                    
+                // Table 3 : Liste des comptes configurés sur l'appareil
+                $configureAccountsList = new html_table([
+                    'id' => 'rcmaccountsinfo',
+                    'class' => 'listing m2_stats_device_table',
+                    'summary' => 'Device informations',
+                    'tabindex' => '0',
+                ]);
+
+                // En-têtes
+                $configureAccountsList->add_header('mel_moncompte.user', $this->plugin->gettext('mel_moncompte.user'));
+                $configureAccountsList->add_header('mel_moncompte.first_sync', $this->plugin->gettext('mel_moncompte.first_sync'));
+                $configureAccountsList->add_header('mel_moncompte.last_sync', $this->plugin->gettext('mel_moncompte.last_sync'));
+                $configureAccountsList->add_header('mel_moncompte.z-push', 'Z-Push');
+                $configureAccountsList->add_header('mel_moncompte.resync', $this->plugin->gettext('device_resync'));
+                $configureAccountsList->add_header('mel_moncompte.remove', $this->plugin->gettext('device_remove'));
+
+                foreach ($devices as $device) {
                     $userDevice = $device['deviceuser'];
                     $firstsync = date('D d M y H:i:s', $device['firstsynctime']);
                     $lastsync = date('D d M y H:i:s', $device['lastupdatetime']);
                     $maxzpushvers = $device['zpushversion'];
 
-                    $result_accounts[] = array(
-                        'id' => 'rcmaccountsinfo--' . $deviceId . '--' . $userDevice,
-                        'mel_moncompte.user' => $userDevice,
-                        'mel_moncompte.first_sync' => $firstsync,
-                        'mel_moncompte.last_sync' => $lastsync,
-                        'mel_moncompte.z-push' => $maxzpushvers,
-                        'mel_moncompte.resync' => ['html' => html::tag('button', [
-                            'type' => 'button',
-                            'class' => 'button resync',
-                            'title' => $this->plugin->gettext('device_resync'),
-                            'onclick' => "zpush_command('ResyncUserDevice', '$deviceId', '$userDevice')",
-                            'tabindex' => '0'
-                        ], $this->plugin->gettext('device_resync'))],
-                        'mel_moncompte.remove' => ['html' => html::tag('button', [
-                            'type' => 'button',
-                            'class' => 'button remove',
-                            'title' => $this->plugin->gettext('device_remove'),
-                            'onclick' => "zpush_command('DeleteUserDevice', '$deviceId', '$userDevice')",
-                            'tabindex' => '0'
-                        ], $this->plugin->gettext('device_remove'))],
-                        'class' => '',
-                    );
+                    $row_id = 'rcmaccountsinfo--' . $deviceId . '--' . $userDevice;
+                    $configureAccountsList->add_row(['id' => $row_id]);
+
+                    $configureAccountsList->add('mel_moncompte.user', rcube::Q($userDevice));
+                    $configureAccountsList->add('mel_moncompte.first_sync', rcube::Q($firstsync));
+                    $configureAccountsList->add('mel_moncompte.last_sync', rcube::Q($lastsync));
+                    $configureAccountsList->add('mel_moncompte.z-push', rcube::Q($maxzpushvers));
+
+                    // Bouton Resync
+                    $label_resync = $this->plugin->gettext('device_resync');
+                    $resync_btn = html::tag('button', [
+                        'type'       => 'button',
+                        'class'      => 'button icon refresh resync',
+                        'title'      => $label_resync,
+                        'aria-label' => $label_resync . ' ' . $userDevice,
+                    ], html::tag('span', ['class' => 'sr-only'], $label_resync));
+                    $configureAccountsList->add('actions.resync', $resync_btn);
+
+                    // Bouton Enlever
+                    $label_remove = $this->plugin->gettext('device_remove');
+                    $remove_btn = html::tag('button', [
+                        'type'       => 'button',
+                        'class'      => 'button icon delete remove',
+                        'title'      => $label_remove,
+                        'aria-label' => $label_remove . ' ' . $userDevice,
+                    ], html::tag('span', ['class' => 'sr-only'], $label_remove));
+                    $configureAccountsList->add('actions.remove', $remove_btn);
                 }
 
-                $attrib['id'] = 'rcmaccountsinfo';
-                $out .= html::div(null, $this->plugin->gettext('accounts_list'));
-                // create XHTML table
-                $out .= $this->rc->table_output($attrib, $result_accounts, $a_show_cols_accounts, 'id');
+                $out .= html::tag('div', ['class'=>'boxtitle'], $this->plugin->gettext('accounts_list'));
+                $out .= $configureAccountsList->show();
             }
         } catch (Exception $ex) {
             mel_logs::get_instance()->log(mel_logs::ERROR, "[mobiles_list] " . $ex->getTraceAsString());
@@ -378,14 +388,14 @@ class Mobile_Stats
     }
 
     /**
-     * Génération de la table hmlt d'information sur les synchronisations
+     * Génération de la table html : Détail des synchronisation sur l'appareil
      * @param array $attrib
      * @return string
      */
     public function sync_details($attrib)
     {
         // add id to message list table if not specified
-        if (!strlen($attrib['id']))
+        if (empty($attrib['id']))
             $attrib['id'] = 'rcmsyncdetails';
 
         $out = "";
@@ -399,18 +409,21 @@ class Mobile_Stats
             // Récupère les détails d'un appareil
             $foldersinfos = $this->client->GetDeviceDetails($deviceId);
 
-            if (count($foldersinfos) > 0) {
-                // define list of cols to be displayed
-                $a_show_cols = array(
-                    'mel_moncompte.mailbox',
-                    'mel_moncompte.type',
-                    'mel_moncompte.foldersync',
-                    'mel_moncompte.last_sync',
-                    'mel_moncompte.z-push',
-                    'mel_moncompte.resync',
-                    'mel_moncompte.remaining',
-                );
-                $result = array();
+            if (!empty($foldersinfos)) {
+                $deviceSyncDetails = new html_table([
+                    'id' => 'rcmsyncdetails',
+                    'class' => 'listing m2_stats_device_table',
+                    'summary' => 'Sync details',
+                    'tabindex' => '0',
+                ]);
+
+                $deviceSyncDetails->add_header('mel_moncompte.mailbox', $this->plugin->gettext('mel_moncompte.mailbox'));
+                $deviceSyncDetails->add_header('mel_moncompte.type', $this->plugin->gettext('mel_moncompte.type'));
+                $deviceSyncDetails->add_header('mel_moncompte.foldersync', $this->plugin->gettext('mel_moncompte.foldersync'));
+                $deviceSyncDetails->add_header('mel_moncompte.last_sync', $this->plugin->gettext('mel_moncompte.last_sync'));
+                $deviceSyncDetails->add_header('mel_moncompte.z-push', 'Z-Push');
+                $deviceSyncDetails->add_header('mel_moncompte.resync', $this->plugin->gettext('device_resync'));
+                $deviceSyncDetails->add_header('mel_moncompte.remaining', $this->plugin->gettext('mel_moncompte.remaining'));
 
                 // Pour chaque folder : c'est à dire pour chaque backend
                 mel_logs::get_instance()->log(mel_logs::DEBUG, "[sync_details] " . print_r($foldersinfos, 1));
@@ -421,42 +434,45 @@ class Mobile_Stats
                             $type = $data['contentclass'];
                             $folderidname = $data['folderid'];
                             $lastsync = date('D d M y H:i:s', $data['lastsynctime']);
-                            $total = (!isset($data['foldersynctotal']) || $data['foldersynctotal'] != '') ? $data['foldersynctotal'] : "-";
-                            $remaining = (!is_null($data['foldersyncremaining']) || $data['foldersyncremaining'] != '') ? $data['foldersyncremaining'] : "-";
-                            $synced = (is_integer($total) && is_integer($remaining)) ? $data['foldersynctotal'] - $data['foldersyncremaining'] : "-";
+                            $total = (isset($data['foldersynctotal']) && $data['foldersynctotal'] !== '') ? $data['foldersynctotal'] : "-";
+                            $remaining = (isset($data['foldersyncremaining']) && $data['foldersyncremaining'] !== '') ? $data['foldersyncremaining'] : "-";
+                            $synced = (is_numeric($total) && is_numeric($remaining)) ? ((int)$total - (int)$remaining) : "-";
                             // MANTIS 3592: La ré initialisation d'un conteneur spécifique resynchronise toutes les données du compte
                             $id_folderid = str_replace('/', '_-s-_', $folderid);
                             $id_folderid = str_replace('.', '_-p-_', $id_folderid);
                             $id_userFolder = str_replace('.', '_-p-_', $userFolder);
 
-                            $result[] = array(
-                                'id' => 'rcmsyncdetails--' . $deviceId . '--' . $id_userFolder . '--' . $id_folderid,
-                                'mel_moncompte.mailbox' => $userFolder,
-                                'mel_moncompte.type' => $type,
-                                'mel_moncompte.foldersync' => $folderidname,
-                                'mel_moncompte.last_sync' => $lastsync,
-                                'mel_moncompte.z-push' => $zpushversion,
-                                'mel_moncompte.resync' => ['html' => html::tag('button', [
-                                    'type' => 'button',
-                                    'class' => 'button resync',
-                                    'title' => $this->plugin->gettext('device_resync'),
-                                    'onclick' => "zpush_command('ResyncFolderId', '$deviceId', '$id_userFolder', '$id_folderid')",
-                                    'tabindex' => '0'
-                                ], $this->plugin->gettext('device_resync'))],
-                                'mel_moncompte.remaining' => $synced . " / " . $total,
-                            );
+                            $row_id = 'rcmsyncdetails--' . $deviceId . '--' . $id_userFolder . '--' . $id_folderid;
+                            $deviceSyncDetails->add_row(['id' => $row_id]);
+
+                            $deviceSyncDetails->add('mel_moncompte.mailbox', rcube::Q($userFolder));
+                            $deviceSyncDetails->add('mel_moncompte.type', rcube::Q($type));
+                            $deviceSyncDetails->add('mel_moncompte.foldersync', rcube::Q($folderidname));
+                            $deviceSyncDetails->add('mel_moncompte.last_sync', rcube::Q($lastsync));
+                            $deviceSyncDetails->add('mel_moncompte.z-push', rcube::Q($zpushversion));
+
+                            $label_resync_folder = $this->plugin->gettext('device_resync');
+                            $resync_btn = html::tag('button', [
+                                'type'       => 'button',
+                                'class'      => 'button icon refresh resync',
+                                'title'      => $label_resync_folder,
+                                'aria-label' => $label_resync_folder . ' ' . $userFolder . ' / ' . $folderidname,
+                            ], html::tag('span', ['class' => 'sr-only'], $label_resync_folder));
+                            $deviceSyncDetails->add('actions.resync', $resync_btn);
+
+                            $deviceSyncDetails->add('mel_moncompte.remaining', rcube::Q($synced . ' / ' . $total));
                         }
                     }
                 }
 
-                $out .= html::div(null, $this->plugin->gettext('sync_details'));
-                // create XHTML table
-                $out .= $this->rc->table_output($attrib, $result, $a_show_cols, 'id');
+                $out .= html::tag('div', ['class'=>'boxtitle'], $this->plugin->gettext('sync_details'));
+                $out .= $deviceSyncDetails->show();
             }
         } catch (Exception $ex) {
             mel_logs::get_instance()->log(mel_logs::ERROR, "[mobiles_list] " . $ex->getTraceAsString());
             return "";
         }
+
         return $out;
     }
 

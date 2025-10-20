@@ -79,7 +79,8 @@ e('@CHARSET "UTF-8";') #body {
   margin-bottom: 30px;
   font-size: 12px;
   thead {
-    td {
+    td,
+    th {
       background-color: #005d76;
       margin-top: 0px;
       margin-bottom: 0px;
@@ -87,6 +88,7 @@ e('@CHARSET "UTF-8";') #body {
       font-weight: bold;
       color: #fff;
       height: 20px;
+      vertical-align: middle;
     }
   }
   td {
@@ -100,6 +102,11 @@ e('@CHARSET "UTF-8";') #body {
     background-color: #fafafa;
     background-color: var(--table-body-bg-color);
     text-align: center;
+  }
+  td,
+  th {
+    text-align: center;
+    vertical-align: middle;
   }
   tbody {
     td {
@@ -118,14 +125,103 @@ e('@CHARSET "UTF-8";') #body {
           }
         }
         &.remove {
-          background-image: url('images/1411751862_error.png');
           background-repeat: no-repeat;
           background-position: center;
+          
+          /* Nouvelle icône croix rouge épaisse */
+          &::before {
+            content: "✕";
+            color: #d00;
+            font-weight: bold;
+            font-size: 16px;
+            display: block;
+            text-align: center;
+            line-height: 1;
+          }
+
+          &:hover {
+            cursor: pointer;
+            
+            &::before {
+              color: #f00; /* Rouge plus vif au survol */
+            }
+          }
+
+          /* Dark mode pour remove */
+          html.dark-mode &,
+          html.dark-mode-custom & {
+            &::before {
+              color: #ff6b6b; /* Rouge plus clair en dark mode */
+            }
+          }
+        }
+      }
+
+      &.actions\ {
+        &.resync {
+          background-image: url('images/1411751212_refresh.png');
+          background-repeat: no-repeat;
+          background-position: center;
+
           &:hover {
             cursor: pointer;
           }
+
+          /* Dark mode */
+          html.dark-mode &,
+          html.dark-mode-custom & {
+            background-image: url('images/1411751212_refresh_dark.png');
+          }
+        }
+        &.remove {
+          background-repeat: no-repeat;
+          background-position: center;
+
+          &:hover {
+            cursor: pointer;
+          }
+
+          /* Dark mode pour remove */
+          html.dark-mode &,
+          html.dark-mode-custom & {
+            &::before {
+              color: #ff6b6b; /* Rouge plus clair en dark mode */
+            }
+          }
+        }
+
+        &.resync > button,
+        &.remove > button {
+          display: block;
+          width: 100%;
+          height: 100%;
+          padding: 0;
+          margin: 0;
+          background: transparent;
+          border: 0;
+          line-height: 0;
+        }
+
+        /* Focus clavier visible */
+        &.resync > button:focus,
+        &.remove > button:focus {
+          outline: 2px solid currentColor;
+          outline-offset: -2px;
         }
       }
     }
   }
+}
+
+/* Utilitaire : texte accessible masqué visuellement pour <span class="sr-only"> */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

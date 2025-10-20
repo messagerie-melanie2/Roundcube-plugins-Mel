@@ -2681,6 +2681,13 @@ $(document).ready(() => {
     intercept_click(event);
   });
 
+  // Mantis 0008546 : Interception du clic molette
+  $(document).on('auxclick', 'a', (event) => {
+    if (event.button === 1) {
+      intercept_click(event);
+    }
+  });
+
   rcmail.addEventListener('event.click', (params) => {
     intercept_click(params.e === undefined ? params.obj : params.e);
   });

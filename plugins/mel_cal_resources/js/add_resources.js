@@ -444,9 +444,14 @@ class ResourceDialog extends MelObject {
 
         if (
           page._functions
-            .search(page.start, page.end, {
-              id: current_resource.email,
-            })
+            .search(
+              page.start,
+              page.end,
+              {
+                id: current_resource.email,
+              },
+              { includesNonPlainDate: true },
+            )
             .count() > 0
         ) {
           BnumMessage.DisplayMessage(

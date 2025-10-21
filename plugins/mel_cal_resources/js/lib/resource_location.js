@@ -203,7 +203,7 @@ class ResourceLocation extends AExternalLocationPart {
       if (Object.hasOwnProperty.call(objs, key)) {
         const element = objs[key];
 
-        if (element.location === this.location) {
+        if (element.location.includes(this.location)) {
           EventView.INSTANCE.parts.location.remove(element.id);
           break;
         }

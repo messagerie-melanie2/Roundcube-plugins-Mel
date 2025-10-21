@@ -29,6 +29,10 @@ export class create_or_edit_post extends MelObject {
 
     this.post_id = post.id;
 
+    if (this.get_env('is_editing') === true) {
+      this.displayArticleThumbnail(post.image_url);
+    }
+
     $('#reset-title-button').click(() => {
       $('#edit-title').val('');
     });
@@ -240,6 +244,10 @@ export class create_or_edit_post extends MelObject {
     $('#submit-post').click(() => {
       this.post_id = this.get_env('post').id;
 
+      // Récupérer l'URL de la miniature actuelle
+      const thumbnailContainer = document.getElementById('article-thumbnail-container');
+      const currentThumbnail = thumbnailContainer?.querySelector('img')?.src || '';
+
       // Vérifier s'il s'agit d'une création ou d'une modification
       const isModification = !!this.post_id; // true si post_id est défini (modification)
       let content = tinymce.activeEditor.getContent();
@@ -260,6 +268,7 @@ export class create_or_edit_post extends MelObject {
             _settings: JSON.stringify({
               extwin: true,
               comments: $('#enable_comment')[0].checked,
+              miniature_url: currentThumbnail // AJOUT: Inclure la miniature
             }),
             _tags: this.tags,
             _post_id: this.post_id,
@@ -313,6 +322,10 @@ export class create_or_edit_post extends MelObject {
       this.post_id = this.get_env('post').id;
       this.post_uid = this.get_env('post').uid;
 
+      // Récupérer l'URL de la miniature actuelle
+      const thumbnailContainer = document.getElementById('article-thumbnail-container');
+      const currentThumbnail = thumbnailContainer?.querySelector('img')?.src || '';
+
       // Vérifier s'il s'agit d'une création ou d'une modification
       const isModification = !!this.post_id; // true si un identifiant existe (modification)
       const isEditing = this.get_env('is_editing');
@@ -337,6 +350,7 @@ export class create_or_edit_post extends MelObject {
             _settings: JSON.stringify({
               extwin: true,
               comments: $('#enable_comment')[0].checked,
+              miniature_url: currentThumbnail // AJOUT: Inclure la miniature
             }),
             _tags: this.tags,
             _post_id: this.post_id,
@@ -524,4 +538,175 @@ export class create_or_edit_post extends MelObject {
   }
 
   // endregion
+  // region Choix de la miniature
+
+  /**
+   * Affiche (ou masque) la miniature de l'article
+   * @param {string} imageUrl - L'URL de l'image de l'article
+   */
+  displayArticleThumbnail(imageUrl) {
+    const container = document.getElementById('article-thumbnail-container');
+    const col = document.getElementById('thumbnail-col');
+    
+    if (!container || !col) return;
+
+    container.innerHTML = '';
+
+    if (imageUrl && imageUrl.trim() !== '') {
+      col.style.display = 'block';
+      
+      const imageHtml = `
+        <div class="thumbnail-wrapper position-relative d-inline-block">
+          <img src="${imageUrl}" alt="Miniature de l'article"
+              class="img-thumbnail post-image clickable-thumbnail w-100"
+              style="cursor:pointer;"
+              title="Cliquer pour changer la miniature">
+          <!-- Icône visible en permanence -->
+          <div class="thumbnail-icon position-absolute" style="bottom: 8px; left: 8px;">
+            <span class="material-symbols-outlined text-dark bg-white bg-opacity-90 rounded-circle p-1 shadow-lg">
+              edit
+            </span>
+          </div>
+        </div>
+      `;
+      container.innerHTML = imageHtml;
+      
+      const img = container.querySelector('.clickable-thumbnail');
+      if (img) {
+        img.addEventListener('click', () => {
+          this.openThumbnailModal();
+        });
+      }
+    } 
+  }
+
+  /**
+   * Ouvre une modale MelDialog pour sélectionner la miniature
+   */
+  openThumbnailModal() {
+    const postData = this.get_env('post');
+    const imgs = postData.images || [];
+
+    let picturesDialog;
+
+    const gallery = this._buildGallery(imgs);
+
+    const thumbPage = new DialogPage('thumbnail-selection', {
+      content: gallery,
+      title: rcmail.gettext('mel_forum.change_thumbnail'),
+      buttons: [
+        new RcmailDialogButton('Fermer', {
+          click: () => picturesDialog.hide(),
+        }),
+        new RcmailDialogButton('Valider', {
+          click: () => {
+            this._confirmThumbnailSelection();
+            picturesDialog.hide();
+          },
+        }),
+      ],
+    });
+
+    picturesDialog = new MelDialog(thumbPage, { height: 400, width: 600 });
+    picturesDialog.show();
+    this.dialog = picturesDialog;
+
+    setTimeout(() => {
+      this._setupThumbnailSelection();
+    }, 100);
+  }
+
+  /**
+   * Construit la galerie d'images avec JsHtml et retourne builder
+   */
+  _buildGallery(imgs) {
+    if (!imgs || imgs.length === 0) {
+      return JsHtml.start
+        .div({ class: 'text-center p-4' })
+          .p({ class: 'text-muted' })
+            .text(rcmail.gettext('mel_forum.no_picture'))
+          .end()
+        .end();
+    }
+
+    let html = JsHtml.start
+      .div({ class: 'p-3' })
+        .p({ class: 'text-center mb-3' })
+          .text(rcmail.gettext('mel_forum.select_picture'))
+        .end()
+        .div({ class: 'row' });
+
+    imgs.forEach((img, i) => {
+      html = html
+        .div({ class: 'col-6 col-md-4 mb-3' })
+          .div({
+            class: 'thumbnail-item text-center border rounded p-2',
+            style: 'cursor: pointer;',
+            'data-image-url': img.url,
+            'data-image-index': i
+          })
+            .img({
+              src: img.url,
+              alt: `Image ${i + 1}`,
+              style: 'max-width: 100%; max-height: 100px; object-fit: cover;'
+            })
+          .end()
+          .div({ class: 'small text-muted mt-1' })
+            .text(`Image ${i + 1}`)
+          .end()
+        .end();
+    });
+
+    return html
+          .end()
+        .end();
+  }
+
+  /**
+   * Configure la sélection des miniatures dans la modale
+   */
+  _setupThumbnailSelection() {
+    const thumbnailItems = document.querySelectorAll('.thumbnail-item');
+    this.selectedThumbnail = null;
+
+    thumbnailItems.forEach(item => {
+      item.addEventListener('click', () => {
+        // Retirer la sélection précédente
+        thumbnailItems.forEach(i => {
+          i.classList.remove('border-primary', 'selected');
+          i.style.borderWidth = '1px';
+        });
+        
+        // Ajouter la sélection actuelle
+        item.classList.add('border-primary', 'selected');
+        item.style.borderWidth = '2px';
+        
+        // Stocker l'URL sélectionnée
+        this.selectedThumbnail = item.dataset.imageUrl;
+      });
+    });
+  }
+
+  /**
+   * Confirme la sélection et met à jour la miniature
+   */
+  _confirmThumbnailSelection() {
+    if (this.selectedThumbnail) {
+      
+      // Mettre à jour l'affichage
+      this.displayArticleThumbnail(this.selectedThumbnail);
+      
+      // Message de confirmation
+      BnumMessage.DisplayMessage(
+        rcmail.gettext('mel_forum.thumbnail_updated'),
+        eMessageType.Confirmation,
+      );
+      
+    } else {
+      BnumMessage.DisplayMessage(
+        rcmail.gettext('mel_forum.error_select_picture'),
+        eMessageType.Warning,
+      );
+    }
+  }
 }

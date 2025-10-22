@@ -1020,6 +1020,28 @@ class mtes_driver_mel extends mce_driver_mel
   }
 
   /**
+   * Lister les ressources VRoom disponibles pour une localité
+   * 
+   * @param string $locality_uid Identifiant de la localité
+   * 
+   * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources Flex Office
+   */
+  public function resources_vroom($locality_uid)
+  {
+    if (mel_logs::is(mel_logs::DEBUG))
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "[driver_mel] mtes::resources_vroom($locality_uid)");
+
+    $locality = new LibMelanie\Api\Mel\Resources\Locality();
+    $locality->uid = $locality_uid;
+
+    if ($locality->load()) {
+      return $locality->listResources(LibMelanie\Api\Mel\Resource::TYPE_VROOM);
+    } else {
+      return [];
+    }
+  }
+
+  /**
    * Lister les ressources Véhicule disponibles pour une localité
    * 
    * @param string $locality_uid Identifiant de la localité

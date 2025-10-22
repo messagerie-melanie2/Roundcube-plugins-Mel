@@ -612,6 +612,15 @@ abstract class driver_mel {
   abstract public function resources_salle($locality_uid);
 
   /**
+   * Lister les ressources VRoom disponibles pour une localité
+   * 
+   * @param string $locality_uid Identifiant de la localité
+   * 
+   * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources Flex Office
+   */
+  abstract public function resources_vroom($locality_uid);
+
+  /**
    * Lister les ressources Véhicule disponibles pour une localité
    * 
    * @param string $locality_uid Identifiant de la localité

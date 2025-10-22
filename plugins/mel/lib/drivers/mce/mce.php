@@ -742,6 +742,18 @@ class mce_driver_mel extends driver_mel
   }
 
   /**
+   * Lister les ressources VRoom disponibles pour une localité
+   * 
+   * @param string $locality_uid Identifiant de la localité
+   * 
+   * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources Flex Office
+   */
+  public function resources_vroom($locality_uid)
+  {
+    return [];
+  }
+
+  /**
    * Lister les ressources Véhicule disponibles pour une localité
    * 
    * @param string $locality_uid Identifiant de la localité

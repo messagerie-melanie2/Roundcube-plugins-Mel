@@ -203,7 +203,7 @@ class ResourceLocation extends AExternalLocationPart {
       if (Object.hasOwnProperty.call(objs, key)) {
         const element = objs[key];
 
-        if (element.location === this.location) {
+        if (element.location.includes(this.location)) {
           EventView.INSTANCE.parts.location.remove(element.id);
           break;
         }
@@ -411,6 +411,7 @@ class ResourceLocation extends AExternalLocationPart {
             ResourceLocation,
           );
           tmp.resource_type = key;
+          tmp.cutype = iterator.cutype;
           tmp.rcs_labels = iterator.labels;
           tmp.OptionValue = function () {
             return this.resource_type;
@@ -422,8 +423,7 @@ class ResourceLocation extends AExternalLocationPart {
             return (
               ResourceLocation.Has(event) &&
               MelEnumerable.from(event.attendees).any(
-                (x) =>
-                  x.resource_type === `X-${this.resource_type.toUpperCase()}`,
+                (x) => x.resource_type === this.cutype,
               )
             );
           }.bind(tmp);
@@ -431,10 +431,7 @@ class ResourceLocation extends AExternalLocationPart {
             if (event.attendees && event.attendees.length) {
               return MelEnumerable.from(event.attendees)
                 .where((a) => a.cutype === GuestsPart.ROLES.resource)
-                .where(
-                  (x) =>
-                    x.resource_type === `X-${this.resource_type.toUpperCase()}`,
-                )
+                .where((x) => x.resource_type === this.cutype)
                 .select((x) => new Tuple(this, x))
                 .toArray();
             } else return [];

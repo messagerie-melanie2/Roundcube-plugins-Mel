@@ -38,7 +38,7 @@ import {
   TAG_WSP_CATEGORY,
 } from './parts.constants.js';
 
-export { ALocationPart, AExternalLocationPart };
+export { ALocationPart, AExternalLocationPart, IntegratedVisio };
 
 MelHtml.start.constructor.prototype.foreach = function () {
   return MelHtml.start;
@@ -789,14 +789,19 @@ class IntegratedVisio extends AVisio {
       .end()
       .end()
       .end()
-      .generate()
-      .appendTo($parent);
+      .generate();
+
+    this._afterGenerated(this._$div).appendTo($parent);
 
     this._on_room_updated({
       currentTarget: this._$div.find(`#integrated-${this.id}`),
     });
     this.onchange.call();
     return this;
+  }
+
+  _afterGenerated($element) {
+    return $element;
   }
 
   /**
@@ -1294,7 +1299,7 @@ class Phone extends ALocationPart {
  * @augments ALocationPart
  * @package
  */
-class Location extends ALocationPart {
+export class Location extends ALocationPart {
   /**
    *
    * @param {string} location Localisation de l'évènement
@@ -1563,6 +1568,11 @@ export class LocationPartManager extends IDestroyable {
     this._update_selects(id);
 
     this._on_change_action();
+
+    rcmail.triggerEvent('location.remove', {
+      manager: this,
+      id,
+    });
   }
 
   /**

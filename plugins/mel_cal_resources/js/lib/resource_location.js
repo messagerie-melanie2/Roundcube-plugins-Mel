@@ -2,7 +2,9 @@ import { EventView } from '../../../mel_metapage/js/lib/calendar/event/event_vie
 import { GuestsPart } from '../../../mel_metapage/js/lib/calendar/event/parts/guestspart.js';
 import {
   AExternalLocationPart,
+  IntegratedVisio,
   LocationPartManager,
+  Location as EventLocation,
 } from '../../../mel_metapage/js/lib/calendar/event/parts/location_part.js';
 import { BnumLog } from '../../../mel_metapage/js/lib/classes/bnum_log.js';
 import {
@@ -12,6 +14,7 @@ import {
 import { MelEnumerable } from '../../../mel_metapage/js/lib/classes/enum.js';
 import { Tuple } from '../../../mel_metapage/js/lib/classes/tuple.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
+import HTMLBnumButton from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/button/HTMLBnumButton.js';
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { BnumEvent } from '../../../mel_metapage/js/lib/mel_events.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
@@ -494,3 +497,82 @@ if (!window.mel_cal_resource_loaded) {
   //Signifie que les données de ce plugin sont chargés
   window.mel_cal_resource_loaded = true;
 }
+
+////////////////////////////////////////////////////////
+// IntegratedVisio
+////////////////////////////////////////////////////////
+// On écrase la méthode _afterGenerated pour cacher les champs lié au téléphone
+////////////////////////////////////////////////////////
+const OPTION_KEY = 'vroom';
+const IntegratedVisio_prototype_afterGenerated =
+  IntegratedVisio.prototype._afterGenerated;
+
+IntegratedVisio.prototype._afterGenerated = function ($element) {
+  var buttonText = EMPTY_STRING;
+  const locations = EventView.INSTANCE.parts.location.locations;
+  let alreadyExists = false;
+
+  if (
+    MelEnumerable.from(locations)
+      .where((x) => x.value.option_value() === OPTION_KEY)
+      .any()
+  ) {
+    buttonText = 'Vroom déjà réservé';
+    alreadyExists = true;
+  } else {
+    buttonText = 'Réserver une Vroom';
+  }
+
+  let button = HTMLBnumButton.StartCreate.setContent(buttonText)
+    .setSecondaryVariation()
+    .setIcon('meeting_room')
+    .setSquare();
+
+  if (alreadyExists) button = button.setDisabled();
+
+  button = button.generate();
+
+  button.addEventListener('click', () => {
+    EventView.INSTANCE.parts.location.add(EventLocation, EMPTY_STRING);
+    $('.event-location-select').last().val(OPTION_KEY).change();
+  });
+
+  button.addClass('btn-location');
+  button.setAttribute(
+    'style',
+    `--input-mel-text-color: hiner;margin-top: 5px;${alreadyExists ? 'display:none;' : EMPTY_STRING}`,
+  );
+  $element = IntegratedVisio_prototype_afterGenerated.call(this, $element);
+  $element.find('.btn-location').remove();
+  $('.mt-2.row', $element)
+    .css('display', 'none')
+    .parent()
+    .append($('<center>').append(button));
+  return $element;
+};
+
+IntegratedVisio.LocationChanged = function () {
+  if ($('#events-type .btn-location').length) {
+    const locations = EventView.INSTANCE.parts.location.locations;
+
+    if (
+      MelEnumerable.from(locations)
+        .where((x) => x.value.option_value() === OPTION_KEY)
+        .any()
+    ) {
+      $('#events-type .btn-location')[0].innerCustomText = 'Vroom déjà réservé';
+      $('#events-type .btn-location').css('display', 'none')[0].disable();
+    } else {
+      $('#events-type .btn-location')[0].innerCustomText = 'Réserver une Vroom';
+      $('#events-type .btn-location').css('display', EMPTY_STRING)[0].enable();
+    }
+  }
+};
+
+rcmail.addEventListener('location.changed', () => {
+  IntegratedVisio.LocationChanged();
+});
+
+rcmail.addEventListener('location.remove', () => {
+  IntegratedVisio.LocationChanged();
+});

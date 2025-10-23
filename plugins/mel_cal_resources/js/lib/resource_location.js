@@ -503,11 +503,23 @@ if (!window.mel_cal_resource_loaded) {
 ////////////////////////////////////////////////////////
 // On écrase la méthode _afterGenerated pour cacher les champs lié au téléphone
 ////////////////////////////////////////////////////////
+/**
+ * Clé qui représente la valeur à séléctionner pour choisir une VRoom
+ * @constant
+ * @type {string}
+ * @default 'vroom'
+ */
 const OPTION_KEY = 'vroom';
+const HIDE_ON_EXISTING = true;
+/**
+ * Fonctionnement par défaut de la méthode `_p_afterGenerated`.
+ * @constant
+ * @type {(external:jQuery) => external:jQuery}
+ */
 const IntegratedVisio_prototype_afterGenerated =
-  IntegratedVisio.prototype._afterGenerated;
+  IntegratedVisio.prototype._p_afterGenerated;
 
-IntegratedVisio.prototype._afterGenerated = function ($element) {
+IntegratedVisio.prototype._p_afterGenerated = function ($element) {
   var buttonText = EMPTY_STRING;
   const locations = EventView.INSTANCE.parts.location.locations;
   let alreadyExists = false;
@@ -517,10 +529,10 @@ IntegratedVisio.prototype._afterGenerated = function ($element) {
       .where((x) => x.value.option_value() === OPTION_KEY)
       .any()
   ) {
-    buttonText = 'Vroom déjà réservé';
+    buttonText = MelObject.Empty().gettext('existing_vroom');
     alreadyExists = true;
   } else {
-    buttonText = 'Réserver une Vroom';
+    buttonText = MelObject.Empty().gettext('no_existing_vroom');
   }
 
   let button = HTMLBnumButton.StartCreate.setContent(buttonText)
@@ -540,7 +552,7 @@ IntegratedVisio.prototype._afterGenerated = function ($element) {
   button.addClass('btn-location');
   button.setAttribute(
     'style',
-    `--input-mel-text-color: hiner;margin-top: 5px;${alreadyExists ? 'display:none;' : EMPTY_STRING}`,
+    `--input-mel-text-color: hiner;margin-top: 5px;${alreadyExists && HIDE_ON_EXISTING ? 'display:none;' : EMPTY_STRING}`,
   );
   $element = IntegratedVisio_prototype_afterGenerated.call(this, $element);
   $element.find('.btn-location').remove();
@@ -551,8 +563,13 @@ IntegratedVisio.prototype._afterGenerated = function ($element) {
   return $element;
 };
 
+/**
+ * Met à jours le bouton de réservation de Vroom en fonction de la présence ou non d'une Vroom dans les localisations.
+ * @static
+ */
 IntegratedVisio.LocationChanged = function () {
-  if ($('#events-type .btn-location').length) {
+  let btn = document.querySelector('#events-type .btn-location');
+  if (btn) {
     const locations = EventView.INSTANCE.parts.location.locations;
 
     if (
@@ -560,13 +577,25 @@ IntegratedVisio.LocationChanged = function () {
         .where((x) => x.value.option_value() === OPTION_KEY)
         .any()
     ) {
-      $('#events-type .btn-location')[0].innerCustomText = 'Vroom déjà réservé';
-      $('#events-type .btn-location').css('display', 'none')[0].disable();
+      btn.innerCustomText = MelObject.Empty().gettext(
+        'existing_vroom',
+        'mel_cal_resources',
+      );
+      btn.disable();
+
+      if (HIDE_ON_EXISTING) btn.style.display = 'none';
     } else {
-      $('#events-type .btn-location')[0].innerCustomText = 'Réserver une Vroom';
-      $('#events-type .btn-location').css('display', EMPTY_STRING)[0].enable();
+      btn.innerCustomText = MelObject.Empty().gettext(
+        'no_existing_vroom',
+        'mel_cal_resources',
+      );
+      btn.enable();
+
+      if (HIDE_ON_EXISTING) btn.style.display = EMPTY_STRING;
     }
   }
+
+  btn = null;
 };
 
 rcmail.addEventListener('location.changed', () => {

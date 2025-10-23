@@ -791,7 +791,7 @@ class IntegratedVisio extends AVisio {
       .end()
       .generate();
 
-    this._afterGenerated(this._$div).appendTo($parent);
+    this._p_afterGenerated(this._$div).appendTo($parent);
 
     this._on_room_updated({
       currentTarget: this._$div.find(`#integrated-${this.id}`),
@@ -800,7 +800,13 @@ class IntegratedVisio extends AVisio {
     return this;
   }
 
-  _afterGenerated($element) {
+  /**
+   * Permet de faire des actions après la génération du html.
+   * @param {external:jQuery} $element
+   * @returns {external:jQuery}
+   * @protected
+   */
+  _p_afterGenerated($element) {
     return $element;
   }
 

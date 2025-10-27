@@ -540,10 +540,11 @@ class mel_labels_sync extends rcube_plugin
     if (!$this->_is_gestionnaire($this->_get_current_user_name())) {
       $p['blocks']['show_labels']['options']['labels_list']['content'] = $this->_labels_balp_list() . html::br() . html::br() . html::div(array('class' => 'texte_explic'), $this->gettext('labels_editable_by_gestionnaire'));
     } else {
+      $fromCache = false;
       $labels_list = '';
       $i = 0;
 
-      foreach ($this->driver->get_user_labels($this->_get_current_user_name()) as $label) {
+      foreach ($this->driver->get_user_labels($this->_get_current_user_name(), $fromCache) as $label) {
         $field_class = 'rcmfd_label_' . $this->_convert_key_to_css($label->key);
         $color = $label->color;
         //On désactive les labels par défaut pour éviter les modifications (ticket : 0007707)

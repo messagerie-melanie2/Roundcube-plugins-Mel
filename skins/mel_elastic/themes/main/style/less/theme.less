@@ -961,3 +961,12 @@ html body a.filename .attachment-name {
 .task-addressbook #layout-sidebar .scroller > .listing li .treetoggle {
   color: var(--annuaire-sidebar-icon-color);
 }
+
+/* Suppression du bandeau présent dans le footer du Kanban en mode mobile - ticket 0008862 */
+@media (max-width: 768px) {
+  .task-wekan {
+    .footer.menu.toolbar.content-frame-navigation.hide-nav-buttons.ignore {
+      display: none !important;
+    }
+  }
+}

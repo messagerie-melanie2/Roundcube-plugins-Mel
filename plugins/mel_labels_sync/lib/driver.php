@@ -109,8 +109,8 @@ class Driver {
    * @param string $username
    * @return Label[]
    */
-  public function get_user_labels($username) {
-    if (isset($this->_labels_cache[$username])) {
+  public function get_user_labels($username, $fromCache = true) {
+    if ($fromCache && isset($this->_labels_cache[$username])) {
       return $this->_labels_cache[$username];
     }
     else {

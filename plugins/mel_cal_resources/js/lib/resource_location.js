@@ -4,7 +4,6 @@ import {
   AExternalLocationPart,
   IntegratedVisio,
   LocationPartManager,
-  Location as EventLocation,
 } from '../../../mel_metapage/js/lib/calendar/event/parts/location_part.js';
 import { BnumLog } from '../../../mel_metapage/js/lib/classes/bnum_log.js';
 import {
@@ -545,8 +544,9 @@ IntegratedVisio.prototype._p_afterGenerated = function ($element) {
   button = button.generate();
 
   button.addEventListener('click', () => {
-    EventView.INSTANCE.parts.location.add(EventLocation, EMPTY_STRING);
-    $('.event-location-select').last().val(OPTION_KEY).change();
+    $('#location-' + this.id)
+      .val(OPTION_KEY)
+      .change();
   });
 
   button.addClass('btn-location');

@@ -4,7 +4,6 @@ import {
   AExternalLocationPart,
   IntegratedVisio,
   LocationPartManager,
-  Location as EventLocation,
 } from '../../../mel_metapage/js/lib/calendar/event/parts/location_part.js';
 import { BnumLog } from '../../../mel_metapage/js/lib/classes/bnum_log.js';
 import {

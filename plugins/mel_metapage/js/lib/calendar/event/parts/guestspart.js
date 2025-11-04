@@ -1196,7 +1196,7 @@ export class GuestsPart extends FakePart {
 
       $('<div>')
         .addClass('dispo-freebusy-text')
-        .text('Premières disponibilité commune')
+        .text('Premières disponibilités communes')
         .css('margin-bottom', '5px')
         .prependTo($main_div);
     } else

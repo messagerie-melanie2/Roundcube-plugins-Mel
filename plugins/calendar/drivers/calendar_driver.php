@@ -210,6 +210,15 @@ abstract class calendar_driver
     abstract function edit_event($event);
 
     /**
+     * Renvoie une erreur que l'on veut traiter
+     *
+     * @return \Throwable|null
+     */
+    function get_error() {
+        return null;
+    }
+
+    /**
      * Extended event editing with possible changes to the argument
      *
      * @param array  &$event    Hash array with event properties

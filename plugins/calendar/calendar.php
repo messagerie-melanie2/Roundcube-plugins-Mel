@@ -1097,6 +1097,8 @@ $("#rcmfd_new_category").keypress(function(event) {
         }
     }
 
+
+
     /**
      * Dispatcher for event actions initiated by the client
      */
@@ -1659,13 +1661,20 @@ $("#rcmfd_new_category").keypress(function(event) {
             break;
         }
 
+        $errorMsg = 'calendar.errorsaving';
+        if ($this->driver->get_error()) {
+            $error = $this->driver->get_error();
+            $errorMsg = $error->getMessage() ?? $errorMsg;
+            $reload = 2;
+        }
+
         // show confirmation/error message
         if (!$got_msg) {
             if ($success) {
                 $this->rc->output->show_message('successfullysaved', 'confirmation');
             }
             else {
-                $this->rc->output->show_message('calendar.errorsaving', 'error');
+                $this->rc->output->show_message($errorMsg, 'error');
             }
         }
 
@@ -1684,6 +1693,7 @@ $("#rcmfd_new_category").keypress(function(event) {
                 $args['update'] = $this->_client_event($this->driver->get_event($event), true);
             }
             $this->rc->output->command('plugin.refresh_calendar', $args);
+            $this->rc->output->command('refresh');
         }
         // else if ($action === 'share') 
         // {

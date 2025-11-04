@@ -49,6 +49,7 @@ class mel_driver extends calendar_driver {
   public $alarm_types = array('DISPLAY');
   public $alarm_absolute = false;
   public $categoriesimmutable = false;
+  public $lastError = null;
 
   /**
    *
@@ -1606,7 +1607,8 @@ class mel_driver extends calendar_driver {
           }
 
           if ($status === 'BUSY') {
-            throw new Exception("Error Processing Request", 1);
+            $this->lastError = new Exception("La ressource $attendee->name est occupée", 5);
+            throw $this->lastError;
           }
         }
       }
@@ -1616,6 +1618,10 @@ class mel_driver extends calendar_driver {
     $_event->modified = time();
 
     return $_event;
+  }
+
+  function get_error() {
+    return $this->lastError;
   }
 
   /**

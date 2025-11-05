@@ -460,8 +460,10 @@ class FilterBase extends MelObject {
 
         default:
           return (
-            // eslint-disable-next-line quotes
-            resource.data[this._filterId].replaceAll('’', "'").toUpperCase() ===
+            (resource.data[this._filterId] ?? EMPTY_STRING)
+              // eslint-disable-next-line quotes
+              .replaceAll('’', "'")
+              .toUpperCase() ===
             this._$filter
               .find(`[value="${this.value}"]`)
               .text()

@@ -1196,7 +1196,7 @@ export class GuestsPart extends FakePart {
 
       $('<div>')
         .addClass('dispo-freebusy-text')
-        .text('Premières disponibilités communes')
+        .text(rcmail.gettext('next_common_availabilities', 'mel_metapage'))
         .css('margin-bottom', '5px')
         .prependTo($main_div);
     } else

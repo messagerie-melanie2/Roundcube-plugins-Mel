@@ -475,6 +475,10 @@ class FilterBase extends MelObject {
     }
   }
 
+  /**
+   * Vérifie si le filtre ne contient que des valeurs numériques
+   * @returns {boolean}
+   */
   has_only_number_values() {
     return this._number;
   }

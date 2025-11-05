@@ -411,7 +411,7 @@ class ResourcesBase extends MelObject {
         else if (isNext) {
           const filterName = currentSelect.dataset.fname;
           const filterTrueName =
-            currentSelect.dataset.tname || filterName.toLowerCase();
+            currentSelect.dataset.filterid || filterName.toLowerCase();
           let needUpdated = false;
 
           // Réinitialisation des options
@@ -592,14 +592,14 @@ class ResourcesBase extends MelObject {
     let values;
     let resources;
     for (let index = 0, len = this._p_filters.length; index < len; ++index) {
-      if (this._p_filters[index]._name !== filter._name) {
+      if (this._p_filters[index].filterId !== filter.filterId) {
         //Réinitialise le filtre
-        this._p_filters[index]._$filter
+        this._p_filters[index].$filter
           .html(
             $('<option value="/"></option>')
               .text(
                 rcmail.gettext(
-                  this._p_filters[index]._name,
+                  this._p_filters[index].filterId,
                   'mel_cal_resources',
                 ),
               )
@@ -608,7 +608,7 @@ class ResourcesBase extends MelObject {
           .append($('<option value=""></option>').text(EMPTY_STRING));
 
         if (this._p_filters[index]._input_type === eInputType.multi_select)
-          this._p_filters[index]._$filter.html(EMPTY_STRING);
+          this._p_filters[index].$filter.html(EMPTY_STRING);
 
         values = {};
         resources = rcs;
@@ -617,66 +617,64 @@ class ResourcesBase extends MelObject {
           resources = MelEnumerable.from(rcs);
           if (this._p_filters[index].has_only_number_values()) {
             resources = resources.orderBy(
-              (x) => +x[this._p_filters[index]._name],
+              (x) => +x[this._p_filters[index].filterId],
             );
           } else
             resources = resources.orderBy(
-              (x) => x[this._p_filters[index]._name],
+              (x) => x[this._p_filters[index].filterId],
             );
         }
 
         for (const iterator of resources) {
           //Si la données éxiste et qu'elle n'a pas déjà été traitée
           if (
-            !values[iterator[this._p_filters[index]._name]] &&
-            iterator[this._p_filters[index]._name]
+            !values[iterator[this._p_filters[index].filterId]] &&
+            iterator[this._p_filters[index].filterId]
           ) {
             //En multiselect, ce sont les clés des valeurs possible qui servent de filtre
-            if (
-              this._p_filters[index]._input_type === eInputType.multi_select
-            ) {
+            if (this._p_filters[index].inputType === eInputType.multi_select) {
               for (const current_filter of Object.keys(
-                JSON.parse(iterator[this._p_filters[index]._name]),
+                JSON.parse(iterator[this._p_filters[index].filterId]),
               )) {
                 if (!values[current_filter]) {
                   values[current_filter] = true;
                 }
               }
             } else {
-              values[iterator[this._p_filters[index]._name]] = true;
+              values[iterator[this._p_filters[index].filterId]] = true;
               this._p_filters[index]._$filter.append(
                 $(
-                  `<option value="${iterator[this._p_filters[index]._name]}">${iterator[this._p_filters[index]._name]}</option>`,
+                  `<option value="${iterator[this._p_filters[index].filterId]}">${iterator[this._p_filters[index].filterId]}</option>`,
                 ),
               );
             }
           }
         }
 
-        if (this._p_filters[index]._$filter.children().length > 1)
-          this._p_filters[index]._$filter
+        if (this._p_filters[index].$filter.children().length > 1)
+          this._p_filters[index].$filter
             .removeAttr('disabled')
             .removeClass('disabled');
         else
-          this._p_filters[index]._$filter
+          this._p_filters[index].$filter
             .attr('disabled', 'disabled')
             .removeClass('disabled');
       }
 
-      if (this._p_filters[index]._input_type === eInputType.multi_select) {
+      if (this._p_filters[index].inputType === eInputType.multi_select) {
         if (Object.keys(values).length) {
           for (const current_filter of MelEnumerable.from(
             Object.keys(values),
           ).orderBy((x) => x)) {
-            this._p_filters[index]._$filter.append(
+            this._p_filters[index].$filter.append(
               $(`<option value="${current_filter}">${current_filter}</option>`),
             );
           }
 
-          this._p_filters[index]._$filter.multiselect('enable');
-        } else this._p_filters[index]._$filter.multiselect('disable');
+          this._p_filters[index].$filter.multiselect('enable');
+        } else this._p_filters[index].$filter.multiselect('disable');
 
-        this._p_filters[index]._$filter.multiselect('rebuild');
+        this._p_filters[index].$filter.multiselect('rebuild');
       }
     }
 
@@ -688,7 +686,7 @@ class ResourcesBase extends MelObject {
     this._$calendar.fullCalendar('refetchResources');
     this._$calendar.fullCalendar('refetchEvents');
 
-    this.#_autoSelectFloor(this._name);
+    this.#_autoSelectFloor(this.filterId);
   }
 
   /**

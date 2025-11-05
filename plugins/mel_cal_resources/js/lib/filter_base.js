@@ -38,6 +38,43 @@ const eInputType = {
  */
 class FilterBase extends MelObject {
   #_row_name = EMPTY_STRING;
+
+  /**
+   * Id du filtre côté serveur
+   * @type {string}
+   * @readonly
+   */
+  get filterId() {
+    return this._filterId;
+  }
+
+  /**
+   * Id généré du filtre dans le html
+   * @type {string}
+   * @readonly
+   */
+  get generatedId() {
+    return this._id;
+  }
+
+  /**
+   * jQuery du filtre
+   * @type {?external:jQuery}
+   * @readonly
+   */
+  get $filter() {
+    return this._$filter;
+  }
+
+  /**
+   * Type de l'input
+   * @type {eInputType}
+   * @readonly
+   */
+  get inputType() {
+    return this._input_type;
+  }
+
   /**
    * Constructeur du filtre
    * @param {string} name Nom du filtre
@@ -93,7 +130,7 @@ class FilterBase extends MelObject {
      * @private
      * @type {string}
      */
-    this._name = EMPTY_STRING;
+    this._filterId = EMPTY_STRING;
     /**
      * Taille de la colonne du filtre
      * @private
@@ -188,7 +225,7 @@ class FilterBase extends MelObject {
     number,
     rowname,
   ) {
-    this._name = name;
+    this._filterId = name;
     this._size = size;
     this._load_data_on_change = load_data_on_change;
     this._load_data_on_start = load_data_on_start;
@@ -250,7 +287,7 @@ class FilterBase extends MelObject {
               true,
             )
             .attr('data-fname', this.name)
-            .attr('data-tname', this._name)
+            .attr('data-filterid', this._filterId)
             .attr('data-row-name', this.rowName)
             .addClass('pretty-select')
             .attr(
@@ -258,7 +295,7 @@ class FilterBase extends MelObject {
               localities.length ? 'enabled' : 'disabled',
             )
             .option({ value: '' }).css('display', 'none')
-              .text(rcmail.gettext(this._name, 'mel_cal_resources'))
+              .text(rcmail.gettext(this._filterId, 'mel_cal_resources'))
             .end()
             .attr('id', `filter-${this._id}`)
             .each(
@@ -424,7 +461,7 @@ class FilterBase extends MelObject {
         default:
           return (
             // eslint-disable-next-line quotes
-            resource.data[this._name].replaceAll('’', "'").toUpperCase() ===
+            resource.data[this._filterId].replaceAll('’', "'").toUpperCase() ===
             this._$filter
               .find(`[value="${this.value}"]`)
               .text()

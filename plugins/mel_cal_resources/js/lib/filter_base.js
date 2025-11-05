@@ -478,6 +478,4 @@ class FilterBase extends MelObject {
   has_only_number_values() {
     return this._number;
   }
-
-  static ToUid(item) {}
 }

@@ -60,7 +60,10 @@ export { ResourcesBase, ResourceSettings };
 
 /**
  * @class
- * @classdesc Représente une ressource
+ * @classdesc Représente une ressource et gère l'affichage et la sélection dans le calendrier.
+ * Cette classe permet de filtrer, d'afficher et de manipuler les ressources (salles, équipements, etc.)
+ * dans une interface de type calendrier. Elle gère également la logique de sélection, de filtrage dynamique,
+ * et d'interaction utilisateur.
  * @extends MelObject
  */
 class ResourcesBase extends MelObject {
@@ -76,7 +79,8 @@ class ResourcesBase extends MelObject {
   }
 
   /**
-   * Vérifie si la date est valide
+   * Vérifie si la date sélectionnée est valide.
+   * Retourne true si les champs de date et heure sont valides, false sinon.
    * @type {boolean}
    * @readonly
    */
@@ -85,19 +89,21 @@ class ResourcesBase extends MelObject {
   }
 
   /**
-   * Fonction principale
+   * Fonction principale d'initialisation et de configuration.
+   * Initialise les variables et configure les filtres.
    * @override
    * @private
-   * @param  {...any} args
+   * @param  {...any} args Arguments d'initialisation (nom, filtres, etc.)
    */
   main(...args) {
     this._init()._setup(...args);
   }
 
   /**
-   * Initialise les variables
+   * Initialise les variables internes de la classe.
+   * Prépare les listes de ressources, filtres, événements et autres paramètres.
    * @private
-   * @returns {ResourcesBase} Chaînage
+   * @returns {ResourcesBase} Chaînage de l'objet courant
    */
   _init() {
     /**
@@ -353,9 +359,10 @@ class ResourcesBase extends MelObject {
   }
 
   /**
-   * Récupère les données pour le fullcalendar
+   * Récupère les ressources à afficher dans le calendrier.
+   * Charge les favoris et les ressources initiales, puis met à jour les filtres dynamiquement.
    * @package
-   * @param {function} callback
+   * @param {function} callback Fonction de rappel pour transmettre les ressources
    */
   _fetch_resources(callback, iterator = 0) {
     FavoriteLoader.Load(this._name).then((values) => {
@@ -388,16 +395,13 @@ class ResourcesBase extends MelObject {
   }
 
   /**
-   * Met à jour dynamiquement les options des listes déroulantes (select) des filtres,
-   * en fonction des données filtrées et du filtre récemment modifié.
-   * Cette méthode gère l'affichage, l'activation/désactivation et la réinitialisation
-   * des options des filtres dépendants, afin de garantir la cohérence des choix proposés à l'utilisateur.
-   * Elle est appelée lors d'un changement de filtre pour adapter les autres filtres en cascade.
-   *
+   * Met à jour dynamiquement les options des listes déroulantes des filtres
+   * en fonction des ressources filtrées et du filtre modifié.
+   * Permet d'assurer la cohérence des choix proposés à l'utilisateur.
    * @private
-   * @param {Array<Object>} data Les ressources filtrées à utiliser pour mettre à jour les options.
-   * @param {number} iterator Compteur d'itérations pour éviter les boucles infinies lors des mises à jour en cascade.
-   * @returns {(number|false)} Retourne le nouvel indice d'itération si une mise à jour supplémentaire est nécessaire, sinon false.
+   * @param {Array<Object>} data Ressources filtrées
+   * @param {number} iterator Compteur d'itérations pour éviter les boucles infinies
+   * @returns {(number|false)} Nouvel indice d'itération ou false si aucune mise à jour
    */
   #_update_selects_options(data, iterator) {
     if (this._filterUpdated) {
@@ -499,10 +503,11 @@ class ResourcesBase extends MelObject {
   }
 
   /**
-   * Formatte les ressources et récupère seulement celles qui sont filtrés ou non
-   * @param {ResourceObject[]} resources
-   * @param {FilterBase[]} filters
-   * @returns {ResourceObject[]}
+   * Formatte les ressources selon les filtres actifs.
+   * Retourne uniquement les ressources correspondant aux filtres.
+   * @param {ResourceObject[]} resources Liste des ressources
+   * @param {FilterBase[]} filters Liste des filtres
+   * @returns {ResourceObject[]} Liste filtrée des ressources
    * @frommoduleparam Resources/Filters filters {@linkto FilterBase}
    * @frommodulereturn Resources {@linkto ResourceObject}
    */
@@ -520,7 +525,8 @@ class ResourcesBase extends MelObject {
   }
 
   /**
-   * Met les input en rouge si la date n'est pas bonne
+   * Met à jour la validité des champs de date et heure.
+   * Ajoute ou retire la classe d'invalidité selon la validité des inputs.
    * @private
    */
   _set_validity() {
@@ -542,8 +548,8 @@ class ResourcesBase extends MelObject {
   }
 
   /**
-   * Check si les input de temps sont valides ou non
-   * @returns {boolean}
+   * Vérifie si les champs de temps sont valides.
+   * @returns {boolean} True si invalide, false sinon
    */
   _has_invalid() {
     return (
@@ -554,10 +560,11 @@ class ResourcesBase extends MelObject {
   }
 
   /**
-   * Fonction get pour la page de dialog retournée
+   * Fonction de récupération de la page de dialogue.
+   * Initialise le calendrier et la validité des champs.
    * @package
    * @param {Function} old Ancienne fonction get bind
-   * @returns {external:jQuery}
+   * @returns {external:jQuery} Élément jQuery de la page
    */
   _get(old) {
     let $rtn = old();
@@ -582,10 +589,11 @@ class ResourcesBase extends MelObject {
   }
 
   /**
-   * Action appelé lorsque les données d'un filtre on été chargés
+   * Action appelée lors du chargement des données d'un filtre.
+   * Met à jour les options des filtres et les ressources affichées.
    * @package
-   * @param {ResourceData[]} rcs
-   * @param {FilterBase} filter
+   * @param {ResourceData[]} rcs Liste des ressources chargées
+   * @param {FilterBase} filter Filtre concerné
    * @frommoduleparam Resources/Filters filter
    */
   _on_data_loaded(rcs, filter) {
@@ -731,7 +739,8 @@ class ResourcesBase extends MelObject {
   }
 
   /**
-   * Action à faire lorsqe'un filtre à changer de valeur
+   * Action à effectuer lors d'un changement de filtre.
+   * Met à jour les ressources et les événements du calendrier.
    * @package
    */
   _on_data_changed(_, filter) {
@@ -741,7 +750,7 @@ class ResourcesBase extends MelObject {
   }
 
   /**
-   * Met à jour la validité des inputs
+   * Met à jour la validité des inputs.
    * @returns {void}
    */
   set_validity() {
@@ -749,8 +758,9 @@ class ResourcesBase extends MelObject {
   }
 
   /**
-   * Créer une page de dialog à partir de cette ressource
-   * @returns {Promise<DialogPage>}
+   * Crée une page de dialogue pour la ressource.
+   * Ajoute les boutons de sauvegarde et d'annulation, et prépare l'affichage.
+   * @returns {Promise<DialogPage>} Page de dialogue générée
    * @frommodulereturn Modal {@linkto DialogPage}
    * @async
    */
@@ -799,9 +809,10 @@ class ResourcesBase extends MelObject {
   }
 
   /**
-   * Ajoute une ressource à la liste des ressources si elle n'existe pas
+   * Ajoute une ressource à la liste si elle n'existe pas déjà.
+   * Met à jour le calendrier si nécessaire.
    * @param {ResourceData} rc Ressource à ajouter
-   * @param {boolean} [refetch=true] Si vrai, récupère les ressources et le évènements
+   * @param {boolean} [refetch=true] Si vrai, met à jour le calendrier
    * @returns {ResourcesBase} Chaînage
    */
   try_add_resource(rc, refetch = true) {
@@ -824,7 +835,7 @@ class ResourcesBase extends MelObject {
   }
 
   /**
-   * Ajoute plusieurs ressources si elles éxistent
+   * Ajoute plusieurs ressources à la liste.
    * @param {ResourceData[]} rcs Liste des ressources à ajouter
    * @returns {ResourcesBase} Chaînage
    */
@@ -837,8 +848,8 @@ class ResourcesBase extends MelObject {
   }
 
   /**
-   * Met à jours le texte de la date du planning
-   * @returns {string}
+   * Met à jour le texte de la date affichée dans le calendrier.
+   * @returns {string} Texte de la date affichée
    */
   refresh_calendar_date() {
     let $div = this._$calendar.parent();
@@ -854,6 +865,9 @@ class ResourcesBase extends MelObject {
     this._$calendar.fullCalendar('rerender');
   }
 
+  /**
+   * Force le redimensionnement et le réaffichage du calendrier.
+   */
   rerender() {
     $(window).trigger('resize');
   }
@@ -861,11 +875,13 @@ class ResourcesBase extends MelObject {
 
 /**
  * @class
- * @classdesc Représentation d'un paramètre de ressource
+ * @classdesc Représentation d'un paramètre de ressource (filtre avancé).
+ * Permet de manipuler et de vérifier la correspondance des paramètres de ressource.
  */
 class ResourceSettings {
   /**
-   * Constructeur de la classe
+   * Constructeur de la classe.
+   * Initialise le paramètre à partir d'une chaîne ou d'un objet.
    * @param {string} setting Valeur du filtre
    */
   constructor(setting) {
@@ -878,17 +894,17 @@ class ResourceSettings {
   }
 
   /**
-   * Change le paramètre en string
-   * @returns {string}
+   * Convertit le paramètre en chaîne lisible.
+   * @returns {string} Représentation textuelle du paramètre
    */
   toString() {
     return ResourceSettings.ToString(this._setting);
   }
 
   /**
-   * Check si la ressource correspond au filtre
-   * @param {ResourceObject} ressource Ressource à chacker
-   * @returns {boolean}
+   * Vérifie si la ressource correspond au filtre paramétré.
+   * @param {ResourceObject} ressource Ressource à vérifier
+   * @returns {boolean} True si correspond, false sinon
    */
   is(ressource) {
     if (!this._setting?.length) return true;
@@ -904,10 +920,10 @@ class ResourceSettings {
   }
 
   /**
-   * Change le paramètre en string
+   * Convertit le paramètre en chaîne lisible (statique).
    * @static
-   * @param {string} setting
-   * @returns {string}
+   * @param {string} setting Paramètre à convertir
+   * @returns {string} Représentation textuelle du paramètre
    */
   static ToString(setting) {
     if (typeof setting === 'string') setting = JSON.parse(setting);

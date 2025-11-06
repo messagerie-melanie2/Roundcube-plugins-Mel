@@ -62,7 +62,10 @@ abstract class AMel_Enumerable implements IMel_Enumerable
 
     protected function is_assoc($array)
     {
-        if ([] === $array) return false;
+        if ([] === $array || $array === null) return false;
+
+        if (is_string($array) || !is_array($array)) return true;
+
         return array_keys($array) !== range(0, count($array) - 1);
     }
 }
@@ -262,7 +265,7 @@ class Mel_Enumerable extends AMel_Enumerable implements IMel_Enumerable
         {
             if (is_string($this->array_like)) $this->array_like = str_split($this->array_like);
             foreach ($this->array_like as $key => $value) {
-                yield $key => $value;//new Mel_KeyValue($key, $value);
+                yield $key => $value;
             }
         }
         else {

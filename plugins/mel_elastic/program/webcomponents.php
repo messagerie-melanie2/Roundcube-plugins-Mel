@@ -153,7 +153,7 @@ class WebComponnents
     {
         if ($keys) {
             // Regex pour trouver les balises <script> avec des modules déjà inclus
-            $regex = '<script\s+src=(["\'])[\w\d\/\.\?=]+\1\s+type=\1module\1\s*>';
+            $regex = '#<script\s+src=(["\'])[\w\d\/\.\?=]+\1\s+type=\1module\1\s*>#';
 
             // Trouver toutes les correspondances dans le contenu HTML
             preg_match_all($regex, $html, $matches);
@@ -175,7 +175,7 @@ class WebComponnents
                 })->join('|');
 
                 // Échapper les points dans les noms pour éviter des erreurs dans la regex
-                $regex = str_replace('.', '\.', $regex);
+                $regex = "#" . str_replace('.', '\.', $regex) . "#";
 
                 // Générer les composants manquants
                 yield from mel_helper::Enumerable($keys)->where(function ($_, $keyTag) use ($regex, $matches) {

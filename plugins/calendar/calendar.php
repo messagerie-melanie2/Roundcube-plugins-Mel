@@ -1097,6 +1097,8 @@ $("#rcmfd_new_category").keypress(function(event) {
         }
     }
 
+
+
     /**
      * Dispatcher for event actions initiated by the client
      */
@@ -1659,13 +1661,20 @@ $("#rcmfd_new_category").keypress(function(event) {
             break;
         }
 
+        $errorMsg = 'calendar.errorsaving';
+        if ($this->driver->get_error()) {
+            $error = $this->driver->get_error();
+            $errorMsg = $error->getMessage() ?? $errorMsg;
+            $reload = 2;
+        }
+
         // show confirmation/error message
         if (!$got_msg) {
             if ($success) {
                 $this->rc->output->show_message('successfullysaved', 'confirmation');
             }
             else {
-                $this->rc->output->show_message('calendar.errorsaving', 'error');
+                $this->rc->output->show_message($errorMsg, 'error');
             }
         }
 
@@ -1684,6 +1693,7 @@ $("#rcmfd_new_category").keypress(function(event) {
                 $args['update'] = $this->_client_event($this->driver->get_event($event), true);
             }
             $this->rc->output->command('plugin.refresh_calendar', $args);
+            $this->rc->output->command('refresh');
         }
         // else if ($action === 'share') 
         // {
@@ -2927,17 +2937,17 @@ $("#rcmfd_new_category").keypress(function(event) {
         return $sent;
     }
 
-    /**
-     * Echo simple free/busy status text for the given user and time range
-     */
-    public function freebusy_status()
-    {
-        $email = rcube_utils::get_input_value('email', rcube_utils::INPUT_GPC);
-        $start = $this->input_timestamp('start', rcube_utils::INPUT_GPC);
-        $end   = $this->input_timestamp('end', rcube_utils::INPUT_GPC);
-
+    private function _freebusy_status($email, $start, $end) {
         if (!$start) $start = time();
         if (!$end) $end = $start + 3600;
+
+        if ($start instanceof DateTime) {
+            $start = $start->format('Y-m-d H:i:s');
+        }
+
+        if ($end instanceof DateTime) {
+            $end = $end->format('Y-m-d H:i:s');
+        }
 
         $status = 'UNKNOWN';
         $fbtypemap = [
@@ -2953,7 +2963,13 @@ $("#rcmfd_new_category").keypress(function(event) {
         ];
 
         // if the backend has free-busy information
-        $fblist = $this->driver->get_freebusy_list($email, $start, $end);
+        try {
+            $fblist = $this->driver->get_freebusy_list($email, $start, $end);
+        } catch (\Throwable $th) {
+            $fblist = null;
+            throw $th;
+            
+        }
 
         if (is_array($fblist)) {
             $status = 'FREE';
@@ -2969,6 +2985,20 @@ $("#rcmfd_new_category").keypress(function(event) {
 
         // let this information be cached for 5min
         $this->rc->output->future_expire_header(300);
+
+        return $status;
+    } 
+
+    /**
+     * Echo simple free/busy status text for the given user and time range
+     */
+    public function freebusy_status()
+    {
+        $email = rcube_utils::get_input_value('email', rcube_utils::INPUT_GPC);
+        $start = $this->input_timestamp('start', rcube_utils::INPUT_GPC);
+        $end   = $this->input_timestamp('end', rcube_utils::INPUT_GPC);
+
+        $status = $this->_freebusy_status($email, $start, $end);
 
         echo $status;
         exit;

@@ -5128,14 +5128,17 @@ function rcube_calendar_ui(settings) {
 
       // PAMELA - gestion du cache
       let sources = [];
-      for (const key in p.cals) {
-        if (me.calendars[key].token != p.cals[key].token) {
-          me.calendars[key].token = p.cals[key].token;
-          sources.push(me.calendars[key]);
+      if (!p.refetch) {
+        for (const key in p.cals) {
+          if (me.calendars[key].token != p.cals[key].token) {
+            me.calendars[key].token = p.cals[key].token;
+            sources.push(me.calendars[key]);
+          }
         }
-      }
-      fc.fullCalendar('refetchEventSources', sources);
-      // fc.fullCalendar('refetchEventSources', source.id);
+
+        fc.fullCalendar('refetchEventSources', sources);
+      } else fc.fullCalendar('refetchEvents');
+
       fetch_counts();
     }
     // add/update single event object

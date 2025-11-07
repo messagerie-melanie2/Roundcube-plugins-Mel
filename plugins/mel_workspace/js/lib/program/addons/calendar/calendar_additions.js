@@ -258,10 +258,22 @@ class CalendarAddition extends WorkspaceObject {
         );
         const organizer = MelEnumerable.from(
           calendarEvent.attendees,
-        ).firstOrDefault((x) => x.role === 'ORGANIZER');
+        ).firstOrDefault(null, (x) => x.role === 'ORGANIZER');
 
-        if (organizer) data.attendees.push(organizer);
-        else
+        if (organizer) {
+          if (
+            MelEnumerable.from(data.attendees).any(
+              (x) => x.email === organizer.email,
+            )
+          ) {
+            data.attendees = data.attendees.map((x) => {
+              if (x.email === organizer.email) {
+                x.role = 'ORGANIZER';
+              }
+              return x;
+            });
+          } else data.attendees.push(organizer);
+        } else
           data.attendees.push({
             name: MelCurrentUser.fullname,
             email: MelCurrentUser.email,

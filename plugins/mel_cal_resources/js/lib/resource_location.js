@@ -415,6 +415,7 @@ class ResourceLocation extends AExternalLocationPart {
           tmp.resource_type = key;
           tmp.cutype = iterator.cutype;
           tmp.rcs_labels = iterator.labels;
+          tmp.initBeforeInternal = iterator.initBeforeInternal;
           tmp.OptionValue = function () {
             return this.resource_type;
           }.bind(tmp);
@@ -438,6 +439,9 @@ class ResourceLocation extends AExternalLocationPart {
                 .toArray();
             } else return [];
           }.bind(tmp);
+          tmp.InitBeforeInternal = function () {
+            return this.initBeforeInternal;
+          };
           tmp.Max = ResourceLocation.Max.bind(tmp);
           eval(`tmp.prototype.resource_type = () => '${key}'`);
           LocationPartManager.AddExtraLocationType(tmp);

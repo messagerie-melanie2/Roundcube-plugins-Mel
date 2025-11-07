@@ -297,6 +297,15 @@ class AExternalLocationPart extends ALocationPart {
   static PluginName() {
     return 'mel_metapage';
   }
+
+  /**
+   * A initialiser avant la création de la partie
+   * @virtual
+   * @returns {boolean}
+   */
+  static InitBeforeInternal() {
+    return false;
+  }
 }
 
 /**
@@ -1477,8 +1486,23 @@ export class LocationPartManager extends IDestroyable {
    * @param {*} event Evènement du plugin `Calendar`
    */
   init(event) {
+    var tmp;
     let no_location = true;
     this._$locations.html(EMPTY_STRING);
+
+    for (const ExtraPart of MelEnumerable.from(
+      LocationPartManager.FAKE_LOCATION_PART,
+    ).where((x) => x.InitBeforeInternal?.() ?? false)) {
+      if (ExtraPart.Has(event)) {
+        if (no_location) no_location = false;
+
+        tmp = ExtraPart.Instantiate(event);
+
+        for (const tuple of tmp) {
+          this.add(tuple.item1, tuple.item2);
+        }
+      }
+    }
 
     if (event.location?.trim?.() || false) {
       let location = event.location.split(LOCATION_SEPARATOR);
@@ -1495,8 +1519,9 @@ export class LocationPartManager extends IDestroyable {
       }
     }
 
-    let tmp;
-    for (const ExtraPart of LocationPartManager.FAKE_LOCATION_PART) {
+    for (const ExtraPart of MelEnumerable.from(
+      LocationPartManager.FAKE_LOCATION_PART,
+    ).where((x) => !(x.InitBeforeInternal?.() ?? false))) {
       if (ExtraPart.Has(event)) {
         if (no_location) no_location = false;
 

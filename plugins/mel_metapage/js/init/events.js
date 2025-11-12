@@ -1607,10 +1607,18 @@ if (rcmail && window.mel_metapage) {
               rcmail.triggerEvent('edit-event', event);
             }),
           );
+
+        $('#eventoptionsmenu .duplicate')
+          .removeClass('hidden')
+          .removeAttr('hidden');
+      } else {
+        $('#eventoptionsmenu .duplicate')
+          .addClass('hidden')
+          .attr('hidden', 'hidden');
       }
 
       //Options
-      if (!datas.temp && !event.temporary && event.calendar != '_resource') {
+      if (!datas.temp && !event.temporary && event.calendar !== '_resource') {
         $('<button>')
           .attr({
             href: '#',

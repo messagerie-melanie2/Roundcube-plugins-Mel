@@ -481,7 +481,7 @@ $labels['custom_alarm_title'] = 'Alarme personnalisée';
 $labels['validate'] = 'Valider';
 
 $labels['invalid_guests'] = 'Impossible d\'ajouter certains participants !';
-$labels['existing_guest'] = 'Le participant %0 éxiste déjà !';
+$labels['existing_guest'] = 'Le participant %0 existe déjà !';
 
 $labels['add_guests'] = 'Ajoutez des participants';
 $labels['req_guest'] = 'Participants obligatoires';

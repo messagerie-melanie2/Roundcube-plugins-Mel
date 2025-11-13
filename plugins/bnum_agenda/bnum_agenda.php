@@ -1,6 +1,10 @@
 <?php 
 /**
- * Classe du plugin bnum_agenda pour la gestion de l'agenda.
+ * Plugin Roundcube pour la gestion de l'agenda Bnum.
+ * 
+ * Ce plugin permet d'ajouter des fonctionnalités avancées à l'agenda,
+ * telles que la gestion des catégories, la personnalisation de l'affichage,
+ * et l'intégration de liens de prise de rendez-vous.
  */
 class bnum_agenda extends bnum_plugin {
   /**
@@ -96,6 +100,11 @@ class bnum_agenda extends bnum_plugin {
     $this->sendEncodedExit(json_encode($this->get_categories()));
   }
 
+  /**
+   * Action pour récupérer un événement maître à partir de son identifiant.
+   *
+   * @return void
+   */
   public function action_get_master_event() {
     $id = $this->get_input('event_id', rcube_utils::INPUT_GET);
 
@@ -109,6 +118,13 @@ class bnum_agenda extends bnum_plugin {
          ->sendEncodedExit(json_encode($event));
   }
   
+  /**
+   * Vérifie et formate les champs de type DateTime dans un événement.
+   *
+   * @param array $event  L'événement à traiter (par référence)
+   * @param array $fields Liste des champs à vérifier et formater
+   * @return self
+   */
   private function _check_and_format_fields(&$event, $fields) {
     foreach ($fields as $field) {
       $this->_check_and_format($event, $field);
@@ -117,6 +133,13 @@ class bnum_agenda extends bnum_plugin {
     return $this;
   }
 
+  /**
+   * Vérifie et formate un champ de type DateTime dans un événement.
+   *
+   * @param array  $event L'événement à traiter (par référence)
+   * @param string $field Le champ à vérifier et formater
+   * @return self
+   */
   private function _check_and_format(&$event, $field) {
     if ($event && $event[$field] && $event[$field] instanceof DateTime) {
       $event[$field] = $event[$field]->format('Y-m-d H:i');

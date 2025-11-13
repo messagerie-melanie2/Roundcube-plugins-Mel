@@ -25,7 +25,12 @@ class bnum_agenda extends bnum_plugin {
     switch ($this->get_current_task()) {
       case 'agenda':
       case 'calendar':
-        $this->register_action('get_categories', [$this, 'action_get_categories']);
+        $this->register_actions([
+          'get_categories' => [$this, 'action_get_categories'],
+          'get_master_event' => [$this, 'action_get_master_event']
+        ]);
+
+        if ($this->rc()->output !== null) $this->include_module('main.js');
         break;
       
       default:
@@ -86,8 +91,37 @@ class bnum_agenda extends bnum_plugin {
    *
    * @return never
    */
-  public function action_get_categories() : never {
+  public function action_get_categories() {
     $this->sendEncodedExit(json_encode($this->get_categories()));
+  }
+
+  public function action_get_master_event() {
+    $id = $this->get_input('event_id', rcube_utils::INPUT_GET);
+
+    /**
+     * @var calendar
+     */
+    $calendar = $this->rc()->plugins->get_plugin('calendar');
+    $event = $calendar->__get('driver')->get_event(['id' => $id, 'uid' => $id]);
+
+    $this->_check_and_format_fields($event, ['start', 'end', 'created', 'modified'])
+         ->sendEncodedExit(json_encode($event));
+  }
+  
+  private function _check_and_format_fields(&$event, $fields) {
+    foreach ($fields as $field) {
+      $this->_check_and_format($event, $field);
+    }
+
+    return $this;
+  }
+
+  private function _check_and_format(&$event, $field) {
+    if ($event && $event[$field] && $event[$field] instanceof DateTime) {
+      $event[$field] = $event[$field]->format('Y-m-d H:i');
+    }
+
+    return $this;
   }
 
   /**

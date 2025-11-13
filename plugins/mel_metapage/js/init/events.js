@@ -1584,6 +1584,15 @@ if (rcmail && window.mel_metapage) {
         }),
       );
 
+      $('#eventoptionsmenu .copy').each((_, e) => {
+        e = $(e);
+        e.text(e.data('original-text') ?? e.text());
+      });
+
+      $('#eventoptionsmenu .duplicate')
+        .removeClass('hidden')
+        .removeAttr('hidden', 'hidden');
+
       if (
         rcmail.env.calendars[event.calendar].editable &&
         event.editable !== false
@@ -1608,9 +1617,18 @@ if (rcmail && window.mel_metapage) {
             }),
           );
 
-        $('#eventoptionsmenu .duplicate')
-          .removeClass('hidden')
-          .removeAttr('hidden');
+        if (event.isexception || event.master_start) {
+          $('#eventoptionsmenu .copy').each((_, e) => {
+            e = $(e);
+            e.data('original-text', e.data('original-text') ?? e.text());
+            e.text(
+              rcmail.gettext(
+                e.hasClass('duplicate') ? 'duplicateevent' : 'copyeventseries',
+                'mel_metapage',
+              ),
+            );
+          });
+        }
       } else {
         $('#eventoptionsmenu .duplicate')
           .addClass('hidden')

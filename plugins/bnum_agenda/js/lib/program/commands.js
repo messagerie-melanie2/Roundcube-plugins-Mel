@@ -1,43 +1,36 @@
 import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';
 import { AgendaHelper } from './helper.js';
 
+/**
+ * Classe de gestion des commandes liées à l'agenda.
+ * Fournit des méthodes pour manipuler les événements de l'agenda.
+ */
 export class AgendaCommands extends MelObject {
   constructor() {
     super();
   }
 
-  main() {
-    this.rcmail().register_command(
-      'event-self-copy',
-      this.command_self_copy.bind(this),
-      true,
-    );
-  }
-
+  /**
+   * Commande permettant de copier l'événement sélectionné.
+   * Si l'événement est récurrent, il est modifié avant la copie.
+   * Les participants (attendees) sont supprimés de la copie.
+   */
   async command_self_copy() {
     let event = $.extend(true, {}, ui_cal.selected_event);
 
-    if (event.master_start) {
-      if (
-        !confirm(
-          "Attention, vous allez copier la série complète de la récurrence, la copie d'une seule occurrence n'est pas possible. \r\nVoulez-vous quand même continuer ?",
-        )
-      )
-        return;
-
-      const result = await AgendaHelper.Instance.getMasterEvent(event);
-
-      if (result.has_error) {
-        console.error(
-          "Erreur lors de la récupération de l'événement maître",
-          result.error,
-        );
-      } else {
-        event = result.datas;
-      }
-    }
+    event = await AgendaHelper.Instance.modifieEventCopyIfRecurrent(event);
 
     delete event.attendees;
     ui_cal.event_copy(event);
+  }
+
+  /**
+   * Retourne l'instance unique de la classe AgendaCommands (singleton).
+   */
+  static get Instance() {
+    if (!this._instance) {
+      this._instance = new AgendaCommands();
+    }
+    return this._instance;
   }
 }

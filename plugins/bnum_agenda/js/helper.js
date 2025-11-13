@@ -7,6 +7,11 @@ bnum_modules.agenda = bnum_modules.agenda || {};
 bnum_modules.agenda.helper = bnum_modules.agenda.helper || {};
 
 (() => {
+  /**
+   * Récupère un évènement maître.
+   * @param {any} selected_event L'évènement sélectionné
+   * @returns {Promise<{datas: any, has_error: boolean, error: any | null}>} L'évènement maître
+   */
   async function getMasterEvent(selected_event) {
     return await (
       await loadJsModule('bnum_agenda', 'lib/program/helper')

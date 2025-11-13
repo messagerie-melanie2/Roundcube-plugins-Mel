@@ -2,6 +2,8 @@ import { AAgendaModifier } from '../../amodifier.js';
 import { AgendaCommands } from '../commands';
 import { AgendaHelper } from '../helper.js';
 
+const COMMAND_SELF_COPY = 'event-self-copy';
+
 /**
  * Modificateur d'agenda permettant la copie d'événements.
  * Cette classe ajoute la commande de copie d'événement et gère la duplication,
@@ -24,7 +26,7 @@ export class EventCopyModifer extends AAgendaModifier {
     super.start();
 
     this._p_addCommand(
-      'event-self-copy',
+      COMMAND_SELF_COPY,
       AgendaCommands.Instance.command_self_copy.bind(AgendaCommands.Instance),
     );
 

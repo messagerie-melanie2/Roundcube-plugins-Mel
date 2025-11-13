@@ -25,6 +25,7 @@ class bnum_agenda extends bnum_plugin {
     switch ($this->get_current_task()) {
       case 'agenda':
       case 'calendar':
+        $this->add_texts('localization/', true);
         $this->register_actions([
           'get_categories' => [$this, 'action_get_categories'],
           'get_master_event' => [$this, 'action_get_master_event']

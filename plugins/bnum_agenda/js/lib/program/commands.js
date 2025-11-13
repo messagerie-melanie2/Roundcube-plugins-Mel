@@ -16,12 +16,12 @@ export class AgendaCommands extends MelObject {
    * Les participants (attendees) sont supprimés de la copie.
    */
   async command_self_copy() {
-    let event = $.extend(true, {}, ui_cal.selected_event);
+    let event = $.extend(true, {}, cal.selected_event);
 
     event = await AgendaHelper.Instance.modifieEventCopyIfRecurrent(event);
 
     delete event.attendees;
-    ui_cal.event_copy(event);
+    cal.event_copy(event);
   }
 
   /**

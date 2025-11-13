@@ -2,6 +2,12 @@ import { BnumConnector } from '../../../../mel_metapage/js/lib/helpers/bnum_conn
 import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';
 import AGENDA_CONNECTORS from '../connectors.js';
 
+const FIELDS_TO_CHECK_DATE = ['start', 'end', 'created', 'modified'];
+const PLUGIN = 'bnum_agenda';
+const TEXT_KEY_EVENT_IS_RECUR = 'event-is-recur';
+const TEXT_KEY_EVENT_ERROR = 'event-get-error';
+const TEXT_KEY_EVENT_NOT_RECUR = 'event-not-recur';
+
 /**
  * Classe utilitaire pour la gestion des événements d'agenda.
  */
@@ -38,6 +44,10 @@ export class AgendaHelper extends MelObject {
     return this;
   }
 
+  #_gettext(msgid, { variables = null } = {}) {
+    return this.getLocalization(msgid, { plugin: PLUGIN, variables });
+  }
+
   /**
    * Copie un événement récurrent après confirmation utilisateur.
    * @param {Object} event - L'événement à copier.
@@ -45,20 +55,12 @@ export class AgendaHelper extends MelObject {
    */
   async modifieEventCopyIfRecurrent(event) {
     if (event.master_start) {
-      if (
-        !confirm(
-          "Attention, vous allez copier la série complète de la récurrence, la copie d'une seule occurrence n'est pas possible. \r\nVoulez-vous quand même continuer ?",
-        )
-      )
-        return;
+      if (!confirm(this.#_gettext(TEXT_KEY_EVENT_IS_RECUR))) return;
 
       const result = await this.getMasterEvent(event);
 
       if (result.has_error) {
-        console.error(
-          "Erreur lors de la récupération de l'événement maître",
-          result.error,
-        );
+        console.error(this.#_gettext(TEXT_KEY_EVENT_ERROR), result.error);
       } else {
         event = result.datas;
       }
@@ -77,9 +79,7 @@ export class AgendaHelper extends MelObject {
 
     if (!selected_event.isexception && !selected_event.master_start) {
       result.has_error = true;
-      result.error =
-        //prettier-ignore
-        'L\'évènement sélectionné n\'est pas une exception ou récurrent.';
+      result.error = this.#_gettext(TEXT_KEY_EVENT_NOT_RECUR);
       result.datas = selected_event;
     }
 
@@ -89,12 +89,7 @@ export class AgendaHelper extends MelObject {
       );
     }
 
-    this.#_check_and_format_fields(result.datas, [
-      'start',
-      'end',
-      'created',
-      'modified',
-    ]);
+    this.#_check_and_format_fields(result.datas, FIELDS_TO_CHECK_DATE);
 
     return result;
   }

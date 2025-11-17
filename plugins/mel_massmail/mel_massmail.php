@@ -106,7 +106,7 @@ class mel_massmail extends rcube_plugin
     // Compte le nombre de destinataires
     $nb = count($to) + count($cc) + count($bcc);
     // Configuration des destinataires du mail d'alerte
-    $mail_dest = $this->rc->config->get('alert_message_dest', null);
+    $mail_dest = $this->rc->config->get('mail_warning_emails', null) ?? $this->rc->config->get('alert_message_dest', null);
     // Configuration de la valeur pour griller un mot de passe
     $pwdgrille = $this->rc->config->get('grilled_password_prefix', null);
     // Récupération de l'uid de l'utilisateur connecté

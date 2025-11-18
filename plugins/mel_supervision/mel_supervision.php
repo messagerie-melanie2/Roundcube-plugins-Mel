@@ -32,6 +32,10 @@ class mel_supervision extends bnum_plugin {
    */
   const FIELD_BCC = 'bcc';
   /**
+   * Champ "sieve_redirect" surveillé.
+   */
+  const FIELD_SIEVE_REDIRECT = 'sieve_redirect';
+  /**
    * Expéditeur des mails d'avertissement.
    */
   const MAIL_SENDER = 'bnum';
@@ -90,18 +94,33 @@ class mel_supervision extends bnum_plugin {
     return $args;
   }
 
+  /**
+   * Hook appelé après la sauvegarde des règles Sieve.
+   *
+   * @param any[] $_ Arguments du hook.
+   * @return any[]
+   */
   public function hook_managesieve_save_after($_) {
-    $actions_types = rcube_utils::get_input_value('_action_type', rcube_utils::INPUT_POST, true);
+    $INPUT_ACTION_TYPE = '_action_type';
+    $INPUT_ACTION_TARGET = '_action_target';
+    $CASE_REDIRECT = 'redirect';
+    $CASE_REDIRECT_COPY = 'redirect_copy';
+
+    $this->load_config();
+    $this->add_texts(self::FOLDER_LOCALIZATION);
+    $actions_types = rcube_utils::get_input_value($INPUT_ACTION_TYPE, rcube_utils::INPUT_POST, true);
 
     if ($actions_types !== null && is_array($actions_types)) {
-      $act_targets    = rcube_utils::get_input_value('_action_target', rcube_utils::INPUT_POST, true);
+      $act_targets = rcube_utils::get_input_value($INPUT_ACTION_TARGET, rcube_utils::INPUT_POST, true);
 
+      // Les types d'actions et leurs cibles sont tout les deux des tableaux de même tailles,
+      // les indexes correspondent entre les deux tableaux.
       $mails = [];
 
       foreach ($actions_types as $idx => $type) {
         switch ($type) {
-          case 'redirect':
-          case 'redirect_copy':
+          case $CASE_REDIRECT:
+          case $CASE_REDIRECT_COPY:
             $target = $this->strip_value($act_targets[$idx]);
             $mail = $this->get_user_from_email($target);
 
@@ -117,7 +136,7 @@ class mel_supervision extends bnum_plugin {
       }
 
       if (!empty($mails)) {
-        $this->_sendMessageIfExternal('sieve_redirect', null, false, implode(', ', $mails));
+        $this->_sendMessageIfExternal(self::FIELD_SIEVE_REDIRECT, null, false, implode('<br/>', $mails));
       }
     }
 

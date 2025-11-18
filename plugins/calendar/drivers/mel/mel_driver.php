@@ -49,6 +49,7 @@ class mel_driver extends calendar_driver {
   public $alarm_types = array('DISPLAY');
   public $alarm_absolute = false;
   public $categoriesimmutable = false;
+  public $lastError = null;
 
   /**
    *
@@ -1569,10 +1570,58 @@ class mel_driver extends calendar_driver {
         $_event->attendees = $_attendees;
       }
     }
+
+    if (isset($_event->attendees) && count($_event->attendees) > 0) {    
+      $fbtypemap = [
+              calendar::FREEBUSY_UNKNOWN   => 'UNKNOWN',
+              calendar::FREEBUSY_FREE      => 'FREE',
+              calendar::FREEBUSY_BUSY      => 'BUSY',
+              calendar::FREEBUSY_TENTATIVE => 'TENTATIVE',
+              calendar::FREEBUSY_OOF       => 'OUT-OF-OFFICE',
+              // MANTIS 0006913: Ajouter un statut « travail ailleurs » sur les événements
+              calendar::FREEBUSY_TELEWORK  => 'TELEWORK',
+              // MANTIS 0008012: Ajouter un statut "Congés"
+              calendar::FREEBUSY_VACATION  => 'VACATION',
+          ];
+      foreach ($_event->attendees as $attendee) {
+        if ($attendee->is_ressource) {
+          $status = 'UNKNOWN';
+          $start = strtotime($_event->start);
+          $end = strtotime($_event->end);
+          $fblist = $this->get_freebusy_list($attendee->email, $start, $end);
+
+            if (is_array($fblist)) {
+              $status = 'FREE';
+
+              foreach ($fblist as $slot) {
+                  list($from, $to, $type, $who) = $slot;
+                  $who = explode('/', $who)[0];
+
+                  if ($who === driver_mel::gi()->getUser()->uid) continue;
+
+                  if ($from < $end && $to > $start) {
+                      $status = isset($type) && !empty($fbtypemap[$type]) ? $fbtypemap[$type] : 'BUSY';
+                      break;
+                  }
+              }
+          }
+
+          if ($status === 'BUSY') {
+            $this->lastError = new Exception("La ressource $attendee->name est occupée", 5);
+            throw $this->lastError;
+          }
+        }
+      }
+    }
+
     // Modified time
     $_event->modified = time();
 
     return $_event;
+  }
+
+  function get_error() {
+    return $this->lastError;
   }
 
   /**

@@ -150,6 +150,7 @@ $labels["choose_calendar"] = "Choisissez un agenda";
 $labels["choose_event_state"] = "Choisissez le statut de l'évènement";
 $labels["choose_sensivity"] = "Choisissez la sensibilité de l'évènement";
 $labels["attach_to_workspace_or_category"] = "Lier à un espace de travail ou une catégorie";
+$labels['next_common_availabilities'] = 'Premières disponibilités communes';
 
 $labels["continue"] = "Continuer";
 $labels["add_all_member_from_a_workspace"] = "Ajouter tous les membres de l'espace de travail";
@@ -519,3 +520,4 @@ $labels['calendar_add_mail_to_event'] = 'Ajouter les destinataires du mail';
 $labels['minimise'] = 'Minimiser';
 $labels['maximise'] = 'Dévelloper';
 $labels['close_popup'] = 'Fermer la popup';
+$labels['visios-agenda-help'] = 'Pour plus d\'informations sur l\'utilisation de la Web-conférence de l\'État, consultez : $url';

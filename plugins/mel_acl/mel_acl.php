@@ -488,8 +488,17 @@ class mel_acl extends rcube_plugin
             $userrights = array_intersect($rights, $supported);
             $userid = rcube_utils::html_identifier($user);
 
+            if (strpos($user, 'mineqRDN') !== false)
+                $userText = explode('=', explode(',', $user)[0])[1];
+            else 
+            {
+                $userText = driver_mel::get_instance()->getUser($user);
+                $userTitle = $userText->fullname;
+                $userText = $userText->name;
+            }
+
             $table->add_row(array('id' => 'rcmrow'.$userid));
-            $table->add(array('class' => 'user', 'title' => $user), rcube::Q($user));
+            $table->add(array('class' => 'user', 'data-uid' => $user, 'title' => $userTitle ?? $user), $userText);
 
             foreach ($items as $key => $right) {
                 $in = $this->acl_compare($userrights, $right);
@@ -564,8 +573,18 @@ class mel_acl extends rcube_plugin
             	// PAMELA
                 if ($object->setAcl($user, $acl)) {
                     $js_table_objects[$user] = $objects;
+
+                    if (strpos($user, 'mineqRDN') !== false)
+                        $userText = explode('=', explode(',', $user)[0])[1];
+                    else 
+                    {
+                        $userText = driver_mel::get_instance()->getUser($user);
+                        $userTitle = $userText->fullname;
+                        $userText = $userText->name;
+                    }
+                    
                     $ret = array('id' => rcube_utils::html_identifier($user),
-                         'username' => $username, 'acl' => implode($acl), 'old' => $oldid);
+                         'username' => $username, 'acl' => implode($acl), 'old' => $oldid, 'title' => $userTitle ?? $user, 'display' => $userText ?? $user);
                     $this->rc->output->command('acl_update', $ret);
                     $result++;
                 }

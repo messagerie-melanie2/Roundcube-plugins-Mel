@@ -17,7 +17,10 @@ class bnum_agenda extends bnum_plugin {
   public function init() {
     $this->load_config();
 
-    $this->set_env('event_limit', $this->get_config('event_limit', 4));
+    $this->set_envs([
+      'event_limit' => $this->get_config('event_limit', 4),
+      'visio_help_url' => $this->get_config('visio-help', ''),
+    ]);
 
     switch ($this->get_current_task()) {
       case 'agenda':

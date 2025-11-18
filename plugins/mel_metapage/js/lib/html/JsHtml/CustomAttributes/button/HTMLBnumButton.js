@@ -366,9 +366,9 @@ export default class HTMLBnumButton extends AHTMLCustomInternalElement {
     /**
      * @type {HTMLBnumButton}
      */
-    let node = document.createElement(this.tag);
+    let node = document.createElement(this.TAG);
     node.appendChild(
-      typeof node === 'string' ? document.createTextNode(content) : content,
+      typeof content === 'string' ? document.createTextNode(content) : content,
     );
 
     if (form) node.setAttribute('data-variation', EButtonType.toString(form));

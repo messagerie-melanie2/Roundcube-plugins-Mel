@@ -5,6 +5,7 @@
 
 import { BaseStorage } from '../../../../../../mel_metapage/js/lib/classes/base_storage.js';
 import { MelEnumerable } from '../../../../../../mel_metapage/js/lib/classes/enum.js';
+import { MelCurrentUser } from '../../../../../../mel_metapage/js/lib/classes/user.js';
 import { EMPTY_STRING } from '../../../../../../mel_metapage/js/lib/constants/constants.js';
 import { WorkspaceObject } from '../../WorkspaceObject.js';
 
@@ -246,6 +247,40 @@ class CalendarAddition extends WorkspaceObject {
         }
       }
 
+      // On vérifie si il y a un organisateur
+      if (
+        this.getData(calendarEvent.id).hasAttendees &&
+        !MelEnumerable.from(data.attendees).any((x) => x.role === 'ORGANIZER')
+      ) {
+        console.warn(
+          //prettier-ignore
+          '[EVENT]L\'évènement n\'a pas d\'organisateur !\r\nTentative de correction...',
+        );
+        const organizer = MelEnumerable.from(
+          calendarEvent.attendees,
+        ).firstOrDefault(null, (x) => x.role === 'ORGANIZER');
+
+        if (organizer) {
+          if (
+            MelEnumerable.from(data.attendees).any(
+              (x) => x.email === organizer.email,
+            )
+          ) {
+            data.attendees = data.attendees.map((x) => {
+              if (x.email === organizer.email) {
+                x.role = 'ORGANIZER';
+              }
+              return x;
+            });
+          } else data.attendees.push(organizer);
+        } else
+          data.attendees.push({
+            name: MelCurrentUser.fullname,
+            email: MelCurrentUser.email,
+            role: 'ORGANIZER',
+          });
+      }
+
       // On vérifie si il y a des problèmes avec la catégorie
       if (
         this.getData(calendarEvent.id).hasCategories &&
@@ -253,7 +288,8 @@ class CalendarAddition extends WorkspaceObject {
       ) {
         // eslint-disable-next-line quotes
         console.warn(
-          "[EVENT]La catégorie n'a pas été chargé correctement !\r\nTentative de correction...",
+          //prettier-ignore
+          '[EVENT]La catégorie n\'a pas été chargé correctement !\r\nTentative de correction...',
         );
         hasModifications = true;
         data.categories = `ws#${this.load('current_wsp')}`;

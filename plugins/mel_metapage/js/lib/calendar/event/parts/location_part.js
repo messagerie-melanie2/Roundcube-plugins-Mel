@@ -38,7 +38,7 @@ import {
   TAG_WSP_CATEGORY,
 } from './parts.constants.js';
 
-export { ALocationPart, AExternalLocationPart };
+export { ALocationPart, AExternalLocationPart, IntegratedVisio };
 
 MelHtml.start.constructor.prototype.foreach = function () {
   return MelHtml.start;
@@ -296,6 +296,15 @@ class AExternalLocationPart extends ALocationPart {
    */
   static PluginName() {
     return 'mel_metapage';
+  }
+
+  /**
+   * A initialiser avant la création de la partie
+   * @virtual
+   * @returns {boolean}
+   */
+  static InitBeforeInternal() {
+    return false;
   }
 }
 
@@ -789,14 +798,25 @@ class IntegratedVisio extends AVisio {
       .end()
       .end()
       .end()
-      .generate()
-      .appendTo($parent);
+      .generate();
+
+    this._p_afterGenerated(this._$div).appendTo($parent);
 
     this._on_room_updated({
       currentTarget: this._$div.find(`#integrated-${this.id}`),
     });
     this.onchange.call();
     return this;
+  }
+
+  /**
+   * Permet de faire des actions après la génération du html.
+   * @param {external:jQuery} $element
+   * @returns {external:jQuery}
+   * @protected
+   */
+  _p_afterGenerated($element) {
+    return $element;
   }
 
   /**
@@ -1294,7 +1314,7 @@ class Phone extends ALocationPart {
  * @augments ALocationPart
  * @package
  */
-class Location extends ALocationPart {
+export class Location extends ALocationPart {
   /**
    *
    * @param {string} location Localisation de l'évènement
@@ -1466,8 +1486,23 @@ export class LocationPartManager extends IDestroyable {
    * @param {*} event Evènement du plugin `Calendar`
    */
   init(event) {
+    var tmp;
     let no_location = true;
     this._$locations.html(EMPTY_STRING);
+
+    for (const ExtraPart of MelEnumerable.from(
+      LocationPartManager.FAKE_LOCATION_PART,
+    ).where((x) => x.InitBeforeInternal?.() ?? false)) {
+      if (ExtraPart.Has(event)) {
+        if (no_location) no_location = false;
+
+        tmp = ExtraPart.Instantiate(event);
+
+        for (const tuple of tmp) {
+          this.add(tuple.item1, tuple.item2);
+        }
+      }
+    }
 
     if (event.location?.trim?.() || false) {
       let location = event.location.split(LOCATION_SEPARATOR);
@@ -1484,8 +1519,9 @@ export class LocationPartManager extends IDestroyable {
       }
     }
 
-    let tmp;
-    for (const ExtraPart of LocationPartManager.FAKE_LOCATION_PART) {
+    for (const ExtraPart of MelEnumerable.from(
+      LocationPartManager.FAKE_LOCATION_PART,
+    ).where((x) => !(x.InitBeforeInternal?.() ?? false))) {
       if (ExtraPart.Has(event)) {
         if (no_location) no_location = false;
 
@@ -1563,6 +1599,11 @@ export class LocationPartManager extends IDestroyable {
     this._update_selects(id);
 
     this._on_change_action();
+
+    rcmail.triggerEvent('location.remove', {
+      manager: this,
+      id,
+    });
   }
 
   /**
@@ -1575,11 +1616,14 @@ export class LocationPartManager extends IDestroyable {
    * @package
    */
   _on_select_changed(event) {
-    const VISIBLE = '';
+    const VISIBLE = EMPTY_STRING;
 
     let $select = $(event.target);
     const id = $select.data('id');
-    const val = $select.val() || '';
+    const val = $select.val() || EMPTY_STRING;
+
+    // Si la valeur est vide, on ne fait rien
+    if (val === EMPTY_STRING) return;
 
     //On cache toutes les locations
     $(`#location-${id}-container .location-mode`)

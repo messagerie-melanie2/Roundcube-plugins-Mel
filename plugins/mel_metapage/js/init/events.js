@@ -1629,9 +1629,7 @@ if (rcmail && window.mel_metapage) {
           )
           .prependTo(modal.footer.querry)
           .find('span')
-          .click((e) => {
-            $(e.currentTarget).parent().click();
-          });
+          .css('pointer-events', 'none');
         $('#eventoptionsmenu .send').css('display', 'none');
 
         if (!$('#eventoptionsmenu .copy').hasClass('mel-edited'))
@@ -2681,6 +2679,13 @@ $(document).ready(() => {
     intercept_click(event);
   });
 
+  // Mantis 0008546 : Interception du clic molette
+  $(document).on('auxclick', 'a', (event) => {
+    if (event.button === 1) {
+      intercept_click(event);
+    }
+  });
+
   rcmail.addEventListener('event.click', (params) => {
     intercept_click(params.e === undefined ? params.obj : params.e);
   });
@@ -2710,7 +2715,7 @@ function sendMessageToAriane(data) {
     parent.rcmail.env.sondage_url ||
     top.rcmail.env.sondage_url;
 
-  const pegase_email_url = 
+  const pegase_email_url =
     rcmail.env.sondage_email_url ||
     parent.rcmail.env.sondage_email_url ||
     top.rcmail.env.sondage_email_url;

@@ -354,15 +354,16 @@ class ResourceBaseFunctions {
    */
   resource_render(resourceObj, labelTds) {
     if (resourceObj.id !== 'resources') {
-
       const city = resourceObj.data.locality;
-      const locatedText = MelObject.Empty().gettext('resource_located_at', 'mel_cal_resources');
+      const locatedText = MelObject.Empty().gettext(
+        'resource_located_at',
+        'mel_cal_resources',
+      );
       const cityText = MelObject.Empty().gettext('city', 'mel_cal_resources');
 
       // Mise en place d'un title
       if (city) {
-        labelTds.find('.fc-cell-text')
-          .attr('title', `${locatedText} ${city}`);
+        labelTds.find('.fc-cell-text').attr('title', `${locatedText} ${city}`);
       }
 
       labelTds
@@ -370,13 +371,13 @@ class ResourceBaseFunctions {
         .addClass('cfc-resource')
         .append(this._functions.resource_render_element(resourceObj.data));
 
-        // Accessibilité : aria-label sur l’input type="radio"
+      // Accessibilité : aria-label sur l’input type="radio"
       if (city) {
         const node = labelTds.find('bnum-resource-selector').get(0);
 
         const accessibleNameOnRadioInput = () => {
           const radioInput = node?.querySelector('input[id^="radio-"]');
-          
+
           const resourceLabel =
             labelTds.find('label.fc-cell-text, .fc-cell-text').get(0) ||
             node?.querySelector('label.fc-cell-text');
@@ -384,8 +385,11 @@ class ResourceBaseFunctions {
           if (radioInput && resourceLabel) {
             const visibleLabelText = (resourceLabel.textContent || '').trim();
             // Ex. "Bureau Bureau 139 Place 1 ville : L’Isle d’Abeau"
-            radioInput.setAttribute('aria-label', `${visibleLabelText} ${cityText} ${city}`);
-            
+            radioInput.setAttribute(
+              'aria-label',
+              `${visibleLabelText} ${cityText} ${city}`,
+            );
+
             return true;
           }
           return false;
@@ -433,6 +437,9 @@ class ResourceBaseFunctions {
    */
   async event_loader_async(start, end, timezone, callback) {
     const key = `${start.format()}-${end.format()}`;
+    //rscdialog est défini dans add_resources.js
+    //Il s'agit de la modale et permet 'accéder directement à celle-ci.
+    window.rscdialog.startLoading();
 
     let emails = this._p_resources
       .map((x) => x.data.email)
@@ -478,6 +485,8 @@ class ResourceBaseFunctions {
         this._$calendar.fullCalendar('refetchEvents');
       }, 100);
     }
+
+    window.rscdialog.stopLoading();
   }
 
   /**

@@ -207,12 +207,14 @@ class mel_mapping {
         ICS::CUTYPE_GROUP      => Attendee::TYPE_GROUP,
         ICS::CUTYPE_RESOURCE   => Attendee::TYPE_RESOURCE,
         ICS::CUTYPE_ROOM       => Attendee::TYPE_ROOM,
+        ICS::CUTYPE_VROOM      => Attendee::TYPE_VROOM,
         ICS::CUTYPE_UNKNOWN    => Attendee::TYPE_UNKNOWN,
     ];
 
     $mappingRessourceType = [
         ICS::CUTYPE_RESOURCE    => Attendee::TYPE_RESOURCE,
         ICS::CUTYPE_ROOM        => Attendee::TYPE_ROOM,
+        ICS::CUTYPE_VROOM       => Attendee::TYPE_VROOM,
         ICS::CUTYPE_UNKNOWN     => Attendee::TYPE_UNKNOWN,
         ICS::CUTYPE_FLEX_OFFICE => Attendee::TYPE_FLEX_OFFICE,
         ICS::CUTYPE_HARDWARE    => Attendee::TYPE_HARDWARE,
@@ -245,6 +247,7 @@ class mel_mapping {
         Attendee::TYPE_GROUP        => ICS::CUTYPE_GROUP,
         Attendee::TYPE_RESOURCE     => ICS::CUTYPE_RESOURCE,
         Attendee::TYPE_ROOM         => ICS::CUTYPE_RESOURCE,
+        Attendee::TYPE_VROOM        => ICS::CUTYPE_RESOURCE,
         Attendee::TYPE_UNKNOWN      => ICS::CUTYPE_RESOURCE,
         Attendee::TYPE_FLEX_OFFICE  => ICS::CUTYPE_RESOURCE,
         Attendee::TYPE_HARDWARE     => ICS::CUTYPE_RESOURCE,
@@ -253,6 +256,7 @@ class mel_mapping {
     $mappingRessourceType = [
         Attendee::TYPE_RESOURCE     => ICS::CUTYPE_RESOURCE,
         Attendee::TYPE_ROOM         => ICS::CUTYPE_ROOM,
+        Attendee::TYPE_VROOM        => ICS::CUTYPE_VROOM,
         Attendee::TYPE_UNKNOWN      => ICS::CUTYPE_UNKNOWN,
         Attendee::TYPE_FLEX_OFFICE  => ICS::CUTYPE_FLEX_OFFICE,
         Attendee::TYPE_HARDWARE     => ICS::CUTYPE_HARDWARE,

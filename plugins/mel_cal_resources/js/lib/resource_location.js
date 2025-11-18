@@ -2,6 +2,7 @@ import { EventView } from '../../../mel_metapage/js/lib/calendar/event/event_vie
 import { GuestsPart } from '../../../mel_metapage/js/lib/calendar/event/parts/guestspart.js';
 import {
   AExternalLocationPart,
+  IntegratedVisio,
   LocationPartManager,
 } from '../../../mel_metapage/js/lib/calendar/event/parts/location_part.js';
 import { BnumLog } from '../../../mel_metapage/js/lib/classes/bnum_log.js';
@@ -12,6 +13,7 @@ import {
 import { MelEnumerable } from '../../../mel_metapage/js/lib/classes/enum.js';
 import { Tuple } from '../../../mel_metapage/js/lib/classes/tuple.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
+import HTMLBnumButton from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/button/HTMLBnumButton.js';
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { BnumEvent } from '../../../mel_metapage/js/lib/mel_events.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
@@ -203,7 +205,7 @@ class ResourceLocation extends AExternalLocationPart {
       if (Object.hasOwnProperty.call(objs, key)) {
         const element = objs[key];
 
-        if (element.location === this.location) {
+        if (element.location.includes(this.location)) {
           EventView.INSTANCE.parts.location.remove(element.id);
           break;
         }
@@ -411,7 +413,9 @@ class ResourceLocation extends AExternalLocationPart {
             ResourceLocation,
           );
           tmp.resource_type = key;
+          tmp.cutype = iterator.cutype;
           tmp.rcs_labels = iterator.labels;
+          tmp.initBeforeInternal = iterator.initBeforeInternal;
           tmp.OptionValue = function () {
             return this.resource_type;
           }.bind(tmp);
@@ -422,8 +426,7 @@ class ResourceLocation extends AExternalLocationPart {
             return (
               ResourceLocation.Has(event) &&
               MelEnumerable.from(event.attendees).any(
-                (x) =>
-                  x.resource_type === `X-${this.resource_type.toUpperCase()}`,
+                (x) => x.resource_type === this.cutype,
               )
             );
           }.bind(tmp);
@@ -431,14 +434,14 @@ class ResourceLocation extends AExternalLocationPart {
             if (event.attendees && event.attendees.length) {
               return MelEnumerable.from(event.attendees)
                 .where((a) => a.cutype === GuestsPart.ROLES.resource)
-                .where(
-                  (x) =>
-                    x.resource_type === `X-${this.resource_type.toUpperCase()}`,
-                )
+                .where((x) => x.resource_type === this.cutype)
                 .select((x) => new Tuple(this, x))
                 .toArray();
             } else return [];
           }.bind(tmp);
+          tmp.InitBeforeInternal = function () {
+            return this.initBeforeInternal;
+          };
           tmp.Max = ResourceLocation.Max.bind(tmp);
           eval(`tmp.prototype.resource_type = () => '${key}'`);
           LocationPartManager.AddExtraLocationType(tmp);
@@ -497,3 +500,112 @@ if (!window.mel_cal_resource_loaded) {
   //Signifie que les données de ce plugin sont chargés
   window.mel_cal_resource_loaded = true;
 }
+
+////////////////////////////////////////////////////////
+// IntegratedVisio
+////////////////////////////////////////////////////////
+// On écrase la méthode _afterGenerated pour cacher les champs lié au téléphone
+////////////////////////////////////////////////////////
+/**
+ * Clé qui représente la valeur à séléctionner pour choisir une VRoom
+ * @constant
+ * @type {string}
+ * @default 'vroom'
+ */
+const OPTION_KEY = 'vroom';
+const HIDE_ON_EXISTING = true;
+/**
+ * Fonctionnement par défaut de la méthode `_p_afterGenerated`.
+ * @constant
+ * @type {(external:jQuery) => external:jQuery}
+ */
+const IntegratedVisio_prototype_afterGenerated =
+  IntegratedVisio.prototype._p_afterGenerated;
+
+IntegratedVisio.prototype._p_afterGenerated = function ($element) {
+  var buttonText = EMPTY_STRING;
+  const locations = EventView.INSTANCE.parts.location.locations;
+  let alreadyExists = false;
+
+  if (
+    MelEnumerable.from(locations)
+      .where((x) => x.value.option_value() === OPTION_KEY)
+      .any()
+  ) {
+    buttonText = MelObject.Empty().gettext('existing_vroom');
+    alreadyExists = true;
+  } else {
+    buttonText = MelObject.Empty().gettext('no_existing_vroom');
+  }
+
+  let button = HTMLBnumButton.StartCreate.setContent(buttonText)
+    .setSecondaryVariation()
+    .setIcon('meeting_room')
+    .setSquare();
+
+  if (alreadyExists) button = button.setDisabled();
+
+  button = button.generate();
+
+  button.addEventListener('click', () => {
+    $('#location-' + this.id)
+      .val(OPTION_KEY)
+      .change();
+  });
+
+  button.addClass('btn-location');
+  button.setAttribute(
+    'style',
+    `--input-mel-text-color: hiner;margin-top: 5px;${alreadyExists && HIDE_ON_EXISTING ? 'display:none;' : EMPTY_STRING}`,
+  );
+  $element = IntegratedVisio_prototype_afterGenerated.call(this, $element);
+  $element.find('.btn-location').remove();
+  $('.mt-2.row', $element)
+    .css('display', 'none')
+    .parent()
+    .append($('<center>').append(button));
+  return $element;
+};
+
+/**
+ * Met à jours le bouton de réservation de Vroom en fonction de la présence ou non d'une Vroom dans les localisations.
+ * @static
+ */
+IntegratedVisio.LocationChanged = function () {
+  let btn = document.querySelector('#events-type .btn-location');
+  if (btn) {
+    const locations = EventView.INSTANCE.parts.location.locations;
+
+    if (
+      MelEnumerable.from(locations)
+        .where((x) => x.value.option_value() === OPTION_KEY)
+        .any()
+    ) {
+      btn.innerCustomText = MelObject.Empty().gettext(
+        'existing_vroom',
+        'mel_cal_resources',
+      );
+      btn.disable();
+
+      if (HIDE_ON_EXISTING) btn.style.display = 'none';
+    } else {
+      btn.innerCustomText = MelObject.Empty().gettext(
+        'no_existing_vroom',
+        'mel_cal_resources',
+      );
+      btn.enable();
+
+      if (HIDE_ON_EXISTING) btn.style.display = EMPTY_STRING;
+    }
+  }
+
+  btn = null;
+};
+
+rcmail.addEventListener('location.changed', () => {
+  IntegratedVisio.LocationChanged();
+});
+
+rcmail.addEventListener('location.remove', () => {
+  IntegratedVisio.LocationChanged();
+});

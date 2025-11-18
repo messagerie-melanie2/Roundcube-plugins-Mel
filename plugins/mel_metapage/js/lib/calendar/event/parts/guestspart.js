@@ -972,6 +972,15 @@ export class GuestsPart extends FakePart {
 
       this.update_free_busy();
 
+      // Mettre à jour la localisation
+      if (
+        $('.event-location-select').length === 1 &&
+        $('.event-location-select').val() === 'location' &&
+        $('#edit-location').val() === EMPTY_STRING
+      ) {
+        $('.event-location-select').first().val('visio').change();
+      }
+
       return true;
     }
 
@@ -1187,7 +1196,7 @@ export class GuestsPart extends FakePart {
 
       $('<div>')
         .addClass('dispo-freebusy-text')
-        .text('Premières disponibilité commune')
+        .text(rcmail.gettext('next_common_availabilities', 'mel_metapage'))
         .css('margin-bottom', '5px')
         .prependTo($main_div);
     } else

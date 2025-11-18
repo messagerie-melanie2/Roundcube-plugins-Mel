@@ -412,6 +412,10 @@ ul.treelist li.selected > div > a,
 
 #layout #layout-content {
   margin-right: var(--space-margin) !important;
+
+  @media (max-width: 767.98px) {
+    margin-left: var(--space-margin) !important;
+  }
 }
 
 .task-mail.action-compose #layout-content,
@@ -956,4 +960,13 @@ html body a.filename .attachment-name {
 /* Correction couleur de la flèche ticket 0009212 */
 .task-addressbook #layout-sidebar .scroller > .listing li .treetoggle {
   color: var(--annuaire-sidebar-icon-color);
+}
+
+/* Suppression du bandeau présent dans le footer du Kanban en mode mobile - ticket 0008862 */
+@media (max-width: 768px) {
+  .task-wekan {
+    .footer.menu.toolbar.content-frame-navigation.hide-nav-buttons.ignore {
+      display: none !important;
+    }
+  }
 }

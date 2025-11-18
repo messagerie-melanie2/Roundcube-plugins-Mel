@@ -61,7 +61,8 @@ class mel_supervision extends bnum_plugin {
     $this->require_plugin(self::REQUIRED_PLUGIN);
     $this->add_hooks(
       [
-        self::HOOK_IDENTITY_UPDATE => [$this, self::CALLBACK_IDENTITY_UPDATE]
+        self::HOOK_IDENTITY_UPDATE => [$this, self::CALLBACK_IDENTITY_UPDATE],
+        'managesieve_save_after' => [$this, 'hook_managesieve_save_after']
       ]
     );
   }
@@ -81,12 +82,48 @@ class mel_supervision extends bnum_plugin {
     $replyto = $args[$RECORD][self::FIELD_TO] ?? EMPTY_STRING;
     $bcc = $args[$RECORD][self::FIELD_BCC] ?? EMPTY_STRING;
 
-    $replyto = $this->get_user_from_email($replyto);
-    $bcc = $this->get_user_from_email($bcc);
+    $uReplyto = $this->get_user_from_email($replyto);
+    $uBcc = $this->get_user_from_email($bcc);
 
-    $this->_sendMessageIfExternal(self::FIELD_TO, $replyto)->_sendMessageIfExternal(self::FIELD_BCC, $bcc);
+    $this->_sendMessageIfExternal(self::FIELD_TO, $uReplyto, true, $replyto)->_sendMessageIfExternal(self::FIELD_BCC, $uBcc, true, $bcc);
 
     return $args;
+  }
+
+  public function hook_managesieve_save_after($_) {
+    $actions_types = rcube_utils::get_input_value('_action_type', rcube_utils::INPUT_POST, true);
+
+    if ($actions_types !== null && is_array($actions_types)) {
+      $act_targets    = rcube_utils::get_input_value('_action_target', rcube_utils::INPUT_POST, true);
+
+      $mails = [];
+
+      foreach ($actions_types as $idx => $type) {
+        switch ($type) {
+          case 'redirect':
+          case 'redirect_copy':
+            $target = $this->strip_value($act_targets[$idx]);
+            $mail = $this->get_user_from_email($target);
+
+            if (!$mail || ($mail && ($mail->is_external || !$mail->exists()))) {
+              $mails[] = $target;
+            }
+
+            break;
+          
+          default:
+            break;
+        }
+      }
+
+      if (!empty($mails)) {
+        $this->_sendMessageIfExternal('sieve_redirect', null, false, implode(', ', $mails));
+      }
+    }
+
+
+
+    return $_;
   }
 
   /**
@@ -95,17 +132,25 @@ class mel_supervision extends bnum_plugin {
    *
    * @param string $key Nom du champ surveillé.
    * @param \LibMelanie\Api\Defaut\User|null $item Utilisateur correspondant à l'adresse.
+   * @param bool $userPref Si on sauvegarde dans les prefs utilisateurs
+   * @param string|null $emails Adresse(s) à utiliser dans le mail (si différente de l'utilisateur ou si $item peut être null)
    * @return self
    */
-  private function _sendMessageIfExternal(string $key, ?\LibMelanie\Api\Defaut\User $item): self {
+  private function _sendMessageIfExternal(string $key, ?\LibMelanie\Api\Defaut\User $item, bool $userPref = true, ?string $emails = null): self {
     $VAR_EMAIL = 'email';
     $VAR_KEY = 'key';
     $IDENTITY_UPDATE = "identity_update_$key";
 
     // On vérifie si l'adresse à changer entre temps
-    $config = $this->get_config($IDENTITY_UPDATE);
+    $config = $userPref ? $this->get_config($IDENTITY_UPDATE) : null;
 
-    if ($item !== null && $config !== $item->email && (!$item->exists() || $item->is_external)) {
+    $hasEmailDefine = $item === null && $emails !== null && $emails !== EMPTY_STRING;
+    $isExternal = $item !== null && (!$item->exists() || $item->is_external);
+    $isChanged = $config !== ($item === null ? $emails : $item->email);
+    $testingEmail = $hasEmailDefine || ($isChanged && $isExternal);
+    // Si on a pas d'email (($item null et $emails non null et non vide) => Pas d'utilisateur mais une adresse a été défini => externe => on rentre dans le if
+    // Si l'eamil a changé et que c'est une adresse externe => externe => on rentre dans le if 
+    if ($testingEmail) {
       // Si c'est le cas, on envoie un mail d'avertissement
       $email = self::MAIL_SENDER;
       $to = $this->get_config(self::CONFIG_MAIL_RECEIVER);
@@ -119,7 +164,7 @@ class mel_supervision extends bnum_plugin {
       $to = explode(',', $to);
 
       $subject = $this->gettext(['name' => self::TEXT_MAIL_SUBJECT, 'vars' => [$VAR_EMAIL => $this->get_user()->uid]]);
-      $message = $this->gettext(['name' => self::TEXT_MAIL_BODY, 'vars' => [$VAR_KEY => $item->email]]);
+      $message = $this->gettext(['name' => self::TEXT_MAIL_BODY."_$key", 'vars' => [$VAR_KEY => $emails ?? $item->email]]);
 
       if ($this->get_config(self::CONFIG_AMEDEE_ADMIN, false)) {
         $admins = mel_helper::SearchOperatorsMelByDn($this->get_user()->uid);
@@ -132,10 +177,43 @@ class mel_supervision extends bnum_plugin {
       if (mel_logs::gi()->is(mel_logs::WARN)) mel_logs::gi()->log(mel_logs::WARN, "Modification de l'adresse $key vers une adresse externe détectée pour l'utilisateur " . $this->rc()->user->get_username());
       
       // On sauvegarde la nouvelle adresse pour eviter de SPAM
-      $this->rc()->user->save_prefs([$IDENTITY_UPDATE => $item->email]);
+      if ($userPref) $this->rc()->user->save_prefs([$IDENTITY_UPDATE => $item === null ? $emails : $item->email]);
     }
-    else if($item !== null) $this->rc()->user->save_prefs([$IDENTITY_UPDATE => EMPTY_STRING]);
+    else if($item !== null && $config !== $item->email && $userPref) $this->rc()->user->save_prefs([$IDENTITY_UPDATE => EMPTY_STRING]);
 
     return $this;
   }
+
+
+      /**
+     * Trims and makes safe an input value
+     *
+     * @param string|array $str        Input value
+     * @param bool         $allow_html Allow HTML tags in the value
+     * @param bool         $trim       Trim the value
+     *
+     * @return string|array
+     */
+    protected function strip_value($str, $allow_html = false, $trim = true)
+    {
+        if (is_array($str)) {
+            foreach ($str as $idx => $val) {
+                $str[$idx] = $this->strip_value($val, $allow_html, $trim);
+
+                if ($str[$idx] === '') {
+                    unset($str[$idx]);
+                }
+            }
+
+            return $str;
+        }
+
+        $str = (string) $str;
+
+        if (!$allow_html) {
+            $str = strip_tags($str);
+        }
+
+        return $trim ? trim($str) : $str;
+    }
 }

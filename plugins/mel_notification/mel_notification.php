@@ -322,7 +322,7 @@ class mel_notification extends rcube_plugin
                 $mailbox = driver_mel::gi()->getUser()->uid;
                 
                 if ($mbox != 'INBOX') {
-                    $content = $content . " > " . rcube_charset::utf7imap_to_utf8($mbox);
+                    $content = $content . " > " . rcube_charset::convert($mbox, 'UTF7-IMAP', 'UTF-8');
                     $endText = $this->gettext(['name' => 'notification_on_', 'vars' => ['mbox' => $content]]);
                 }
                 else $endText = $this->gettext('notification_on_ur_bal');

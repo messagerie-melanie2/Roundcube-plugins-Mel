@@ -241,4 +241,9 @@ class bnum_agenda extends bnum_plugin {
     }
     return $args;
   }
+
+  public static function CreateEvent(string $title, DateTime $start, DateTime $end): CalendarEvent {
+    include_once __DIR__ . '/program/Event.php';
+    return new CalendarEvent($title, $start, $end);
+  }
 }

@@ -28,6 +28,8 @@ use Sabre\CalDAV\Schedule\Outbox;
  */
 class Gestionnaireabsence extends Moncompteobject
 {
+  private const EVENT_UID_KEY = 'moncompte_absence_event_uid';
+
   /**
    * Est-ce que cet objet Mon compte doit être affiché
    * 
@@ -418,8 +420,10 @@ class Gestionnaireabsence extends Moncompteobject
         $outofoffices[] = $outofoffice_externe;
       }
 
-      // Gestion des absences hebdo
       $i = 0;
+      $nb = 0;
+      $last_hebdo = rcmail::get_instance()->config->get('moncompte_nb_outofoffices', 0);
+      // Gestion des absences hebdo
       while (isset($_POST["message$i"])) {
         if (!empty($_POST["hour_start$i"]) || !empty("all_day$i")) {
           $outofoffice = driver_mel::gi()->users_outofoffice();
@@ -445,7 +449,9 @@ class Gestionnaireabsence extends Moncompteobject
           if (isset($_POST["day_sunday$i"])) {
             $days[] = Outofoffice::DAY_SUNDAY;
           }
+
           if (!empty($days)) {
+            ++$nb;
             $outofoffice->enable = true;
             $outofoffice->order = 70;
             $outofoffice->days = $days;
@@ -459,21 +465,101 @@ class Gestionnaireabsence extends Moncompteobject
             } else {
               $hour_start = trim(rcube_utils::get_input_value("hour_start$i", rcube_utils::INPUT_POST));
               $hour_end = trim(rcube_utils::get_input_value("hour_end$i", rcube_utils::INPUT_POST));
+
+              if ($hour_start === '') {
+                $hour_start = '00:00';
+              }
+
+              if ($hour_end === '') {
+                $hour_end = '00:00';
+              }
+
               $outofoffice->hour_start = \DateTime::createFromFormat('H:i', $hour_start, new \DateTimeZone($timezone));
               $outofoffice->hour_end = \DateTime::createFromFormat('H:i', $hour_end, new \DateTimeZone($timezone));
             }
             $outofoffices[] = $outofoffice;
+
+            $key = self::EVENT_UID_KEY."_$i";
+            $rec = [
+              'FREQ' => 'WEEKLY',
+              'INTERVAL' => 1,
+              'BYDAY' => array_map(function($day) {
+                $map = [
+                  Outofoffice::DAY_MONDAY => 'MO',
+                  Outofoffice::DAY_TUESDAY => 'TU',
+                  Outofoffice::DAY_WEDNESDAY => 'WE',
+                  Outofoffice::DAY_THURSDAY => 'TH',
+                  Outofoffice::DAY_FRIDAY => 'FR',
+                  Outofoffice::DAY_SATURDAY => 'SA',
+                  Outofoffice::DAY_SUNDAY => 'SU',
+                ];
+                return $map[$day];
+              }, $days),
+            ];
+
+            $day = array_map(function($day) {
+                $map = [
+                  Outofoffice::DAY_MONDAY => 'monday',
+                  Outofoffice::DAY_TUESDAY => 'tuesday',
+                  Outofoffice::DAY_WEDNESDAY => 'wednesday',
+                  Outofoffice::DAY_THURSDAY => 'thursday',
+                  Outofoffice::DAY_FRIDAY => 'friday',
+                  Outofoffice::DAY_SATURDAY => 'saturday',
+                  Outofoffice::DAY_SUNDAY => 'sunday',
+                ];
+                return $map[$day];
+              }, $days)[0];
+
+            $otherday = $hour_start === $hour_end && !$all_day ? $day. ' + 1 day' : $day;
+
+            self::_set_event(
+  (new \DateTime('next ' . $day, new \DateTimeZone($timezone)))->setTime((int)substr($hour_start, 0, 2), (int)substr($hour_start, 3, 2)),
+  (new \DateTime('next ' . $otherday, new \DateTimeZone($timezone)))->setTime((int)substr($hour_end, 0, 2), (int)substr($hour_end, 3, 2)),
+              $outofoffice->message,
+              $key,
+              $all_day ? 1 : 0,
+              $rec
+            );
           }
         }
         $i++;
       }
       $user->outofoffices = $outofoffices;
 
+      {
+        $nbooo = $nb;
+
+        rcmail::get_instance()->user->save_prefs(['moncompte_nb_outofoffices' => $nbooo]);
+        // Suppression des éventuels événements hebdo en trop
+        if ($last_hebdo > $nbooo) {
+          for ($j = $last_hebdo; $j > $nbooo; --$j) {
+            $uid = $j-1;
+            $key = self::EVENT_UID_KEY."_$uid";
+            self::_remove_event($key);
+          }
+        }
+      }
+
+
       // Enregistrement de l'utilisateur avec les nouvelles données
       $ret = $user->save();
       if (!is_null($ret)) {
         // Ok
         rcmail::get_instance()->output->show_message('mel_moncompte.absence_ok', 'confirmation');
+
+        $key = self::EVENT_UID_KEY;
+        if ($status_interne == '1' || $status_externe == '1')
+          self::_set_event(
+            \DateTime::createFromFormat('d/m/Y', $date_debut),
+            \DateTime::createFromFormat('d/m/Y', $date_fin),
+            isset($message_externe) && !empty($message_externe)
+              ? (isset($radio_externe) && $radio_externe == 'abs_texte_nodiff' ? $message_interne : $message_externe)
+              : $message_interne, 
+            $key
+          );
+        else self::_remove_event($key);
+
+
         return true;
       } else {
         // Erreur
@@ -492,6 +578,78 @@ class Gestionnaireabsence extends Moncompteobject
     }
   }
 
+
+  private static function _set_event(DateTime $start, DateTime $end, $message, $key, $allday = 1, $rec = null) {
+    bnum::ForceCalendarDriver();
+
+    $beforemsg = "/!\\ Attention ! Modifier cette évènement ne modifie pas l'absence associée !\r\n---------------------------------------\r\n";
+    $rcmail = rcmail::get_instance();
+    /**
+     * @var calendar $calendar
+     */
+    $calendar = $rcmail->plugins->get_plugin('calendar');
+    /**
+     * @var calendar_driver $driver
+     */
+    $driver = $calendar->__get('driver');
+    $event_uid = $rcmail->config->get($key, null);
+    $event = $driver->get_event(['id' => $event_uid]);
+
+    if (!$event_uid || !$event || ($event && is_array($event) && $event['uid'] !== $event_uid)) {
+      $title = $rec ? '🤖 Absence hebdomadaire' : '🤖 Absence ponctuelle';
+      $event = bnum_agenda::CreateEvent($title, $start, $end);
+      $event->description = $beforemsg.$message;
+      $event->allDay = $allday;
+      $event->freeBusy = 'busy';
+      $event->calendar = driver_mel::gi()->mceToRcId(driver_mel::get_instance()->getUser()->uid);
+
+      if ($rec) $event->setRecurrence($rec);
+
+      $event = $event->toArray();
+      $event_uid = $event['uid'] = $calendar->generate_uid();
+
+      if ($driver->new_event($event)) $rcmail->user->save_prefs([$key =>  $event_uid]);
+      else rcmail::get_instance()->output->show_message('Impossible de créer l\'événement lié à l\'absence', 'error');
+    }
+    else {
+      $event['start'] = $start;
+      $event['end'] = $end;
+      $event['description'] = $beforemsg.$message;
+      $event['allday'] = $allday;
+
+      if ($rec) {
+        $event['recurrence'] = $rec;
+      } else {
+        $event['recurrence'] = null;
+      }
+
+      $driver->edit_event($event);
+    }
+
+    bnum::UnforceCalendarDriver();
+  }
+
+  private static function _remove_event($key) {
+    $_ENV['_force_driver'] = true;
+
+    $rcmail = rcmail::get_instance();
+    /**
+     * @var calendar $calendar
+     */
+    $calendar = $rcmail->plugins->get_plugin('calendar');
+    /**
+     * @var calendar_driver $driver
+     */
+    $driver = $calendar->__get('driver');
+    $event_uid = $rcmail->config->get($key, null);
+    $event = $driver->get_event(['id' => $event_uid]);
+
+    if ($event) $driver->remove_event($event);
+    
+    if ($event_uid) $rcmail->user->save_prefs([$key =>  null]);
+    
+    unset($_ENV['_force_driver']);
+  }
 
   public static function get_ponctual_dates()
   {
@@ -554,6 +712,20 @@ class Gestionnaireabsence extends Moncompteobject
       $outoffice[Outofoffice::TYPE_EXTERNAL] = self::update_ponctual($user->outofoffices[Outofoffice::TYPE_EXTERNAL], $start, $end);
     $outoffice = self::try_enable_ponctual_date($outoffice);
     $user->outofoffices = $outoffice;
+
+    if ($outoffice[Outofoffice::TYPE_INTERNAL] !== null || $outoffice[Outofoffice::TYPE_EXTERNAL]) {
+      $external = $outoffice[Outofoffice::TYPE_EXTERNAL];
+      $message = $external ? $outoffice[Outofoffice::TYPE_EXTERNAL]->message : $outoffice[Outofoffice::TYPE_INTERNAL]->message;
+      self::_set_event(
+        \DateTime::createFromFormat('d/m/Y', $start),
+        \DateTime::createFromFormat('d/m/Y', $end),
+        $message,
+        self::EVENT_UID_KEY
+      );
+    }
+    else 
+        self::_remove_event(self::EVENT_UID_KEY);
+
     return $user->save();
   }
 

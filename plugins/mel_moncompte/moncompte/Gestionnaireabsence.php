@@ -5,17 +5,17 @@
  *
  * plugin mel_Moncompte pour roundcube
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2
- * as published by the Free Software Foundation.
+ * Ce programme est un logiciel libre ; vous pouvez le redistribuer et/ou le modifier
+ * selon les termes de la Licence Publique Générale GNU version 2
+ * telle que publiée par la Free Software Foundation.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * Ce programme est distribué dans l'espoir qu'il sera utile,
+ * mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de
+ * QUALITÉ MARCHANDE ou D'ADÉQUATION À UN USAGE PARTICULIER. Voir la
+ * Licence Publique Générale GNU pour plus de détails.
  *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU
+ * avec ce programme ; si ce n'est pas le cas, écrivez à la Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 require_once 'Moncompteobject.php';
@@ -24,14 +24,19 @@ use LibMelanie\Api\Defaut\Users\Outofoffice;
 use Sabre\CalDAV\Schedule\Outbox;
 
 /**
- * Classe de modification de l'absence de l'utilisateur
+ * Classe de modification de l'absence de l'utilisateur.
+ * Permet de gérer les absences ponctuelles et hebdomadaires, 
+ * d'afficher et de modifier les messages d'absence, et de synchroniser avec le calendrier.
  */
 class Gestionnaireabsence extends Moncompteobject
 {
+  private const EVENT_UID_KEY = 'ponct.gestionnaireabsence';
+  private const EVENT_HEBDO_UID_KEY = 'hebdo.gestionnaireabsence';
+
   /**
-   * Est-ce que cet objet Mon compte doit être affiché
+   * Indique si la gestion des absences doit être affichée dans le compte utilisateur.
    * 
-   * @return boolean true si l'objet doit être affiché false sinon
+   * @return boolean true si l'objet doit être affiché, false sinon
    */
   public static function isEnabled()
   {
@@ -39,7 +44,8 @@ class Gestionnaireabsence extends Moncompteobject
   }
 
   /**
-   * Chargement des données de l'utilisateur depuis l'annuaire
+   * Charge les données d'absence de l'utilisateur depuis l'annuaire LDAP.
+   * Initialise l'environnement pour l'affichage du gestionnaire d'absence.
    */
   public static function load($plugin = null)
   {
@@ -90,7 +96,8 @@ class Gestionnaireabsence extends Moncompteobject
   }
 
   /**
-   * Handler for moncompte_absence_hebdomadaire
+   * Génère le contenu HTML pour la gestion des absences hebdomadaires.
+   * Affiche les absences existantes et permet d'en ajouter/modifier.
    */
   public static function absence_hebdomadaire($attrib)
   {
@@ -139,7 +146,10 @@ class Gestionnaireabsence extends Moncompteobject
   }
 
   /**
-   * Génération de la liste déroulante des timezones pour les absence hebdo
+   * Génère la liste déroulante des fuseaux horaires pour les absences hebdomadaires.
+   * 
+   * @param string $timezone Fuseau horaire sélectionné
+   * @return string HTML du select
    */
   private static function generate_timezone($timezone)
   {
@@ -168,7 +178,16 @@ class Gestionnaireabsence extends Moncompteobject
   }
 
   /**
-   * Génération du template pour les absence hebdo
+   * Génère le template HTML pour une ligne d'absence hebdomadaire.
+   * 
+   * @param int|string $i Index ou identifiant de la ligne
+   * @param bool $all_day Indique si l'absence est sur toute la journée
+   * @param string $hour_start Heure de début
+   * @param string $hour_end Heure de fin
+   * @param array $days Jours sélectionnés
+   * @param string $message Message d'absence
+   * @param string $perimeter Périmètre de l'absence (interne/externe/tous)
+   * @return string HTML du template
    */
   private static function absence_template($i, $all_day = false, $hour_start = '', $hour_end = '', $days = [], $message = '', $perimeter = Outofoffice::TYPE_ALL)
   {
@@ -258,11 +277,10 @@ class Gestionnaireabsence extends Moncompteobject
   }
 
   /**
-   * Localize timezone identifiers
-   *
-   * @param string $tz Timezone name
-   *
-   * @return string Localized timezone name
+   * Retourne le nom localisé d'un fuseau horaire.
+   * 
+   * @param string $tz Nom du fuseau horaire
+   * @return string Nom localisé
    */
   public static function timezone_label($tz)
   {
@@ -297,7 +315,10 @@ class Gestionnaireabsence extends Moncompteobject
   }
 
   /**
-   * Returns timezone offset in standard time
+   * Retourne les informations de fuseau horaire en heure standard (hors DST).
+   * 
+   * @param string $tzname Nom du fuseau horaire
+   * @return array|null Données du fuseau horaire ou null en cas d'erreur
    */
   public static function timezone_standard_time_data($tzname)
   {
@@ -324,14 +345,12 @@ class Gestionnaireabsence extends Moncompteobject
     }
   }
 
-
   /**
-   * Generation for the days checkbox form
+   * Génère les cases à cocher pour la sélection des jours de la semaine.
    * 
-   * @param array $days list of checked days
-   * @param string $id id of the line
-   * 
-   * @return string $html
+   * @param array $days Liste des jours cochés
+   * @param string $id Identifiant de la ligne
+   * @return string HTML des cases à cocher
    */
   private static function days_checkbox($days, $id)
   {
@@ -366,7 +385,10 @@ class Gestionnaireabsence extends Moncompteobject
   }
 
   /**
-   * Modification des données de l'utilisateur depuis l'annuaire
+   * Modifie les données d'absence de l'utilisateur dans l'annuaire.
+   * Traite les absences ponctuelles et hebdomadaires, met à jour les événements de calendrier.
+   * 
+   * @return bool true si la modification a réussi, false sinon
    */
   public static function change()
   {
@@ -418,8 +440,10 @@ class Gestionnaireabsence extends Moncompteobject
         $outofoffices[] = $outofoffice_externe;
       }
 
-      // Gestion des absences hebdo
       $i = 0;
+      $nb = 0;
+      $last_hebdo = rcmail::get_instance()->config->get('moncompte_nb_outofoffices', 0);
+      // Gestion des absences hebdo
       while (isset($_POST["message$i"])) {
         if (!empty($_POST["hour_start$i"]) || !empty("all_day$i")) {
           $outofoffice = driver_mel::gi()->users_outofoffice();
@@ -445,7 +469,9 @@ class Gestionnaireabsence extends Moncompteobject
           if (isset($_POST["day_sunday$i"])) {
             $days[] = Outofoffice::DAY_SUNDAY;
           }
+
           if (!empty($days)) {
+            ++$nb;
             $outofoffice->enable = true;
             $outofoffice->order = 70;
             $outofoffice->days = $days;
@@ -459,21 +485,100 @@ class Gestionnaireabsence extends Moncompteobject
             } else {
               $hour_start = trim(rcube_utils::get_input_value("hour_start$i", rcube_utils::INPUT_POST));
               $hour_end = trim(rcube_utils::get_input_value("hour_end$i", rcube_utils::INPUT_POST));
+
+              if ($hour_start === '') {
+                $hour_start = '00:00';
+              }
+
+              if ($hour_end === '') {
+                $hour_end = '00:00';
+              }
+
               $outofoffice->hour_start = \DateTime::createFromFormat('H:i', $hour_start, new \DateTimeZone($timezone));
               $outofoffice->hour_end = \DateTime::createFromFormat('H:i', $hour_end, new \DateTimeZone($timezone));
             }
             $outofoffices[] = $outofoffice;
+
+            $key = self::_get_hebdo_event_uid($i);
+            $rec = [
+              'FREQ' => 'WEEKLY',
+              'INTERVAL' => 1,
+              'BYDAY' => array_map(function($day) {
+                $map = [
+                  Outofoffice::DAY_MONDAY => 'MO',
+                  Outofoffice::DAY_TUESDAY => 'TU',
+                  Outofoffice::DAY_WEDNESDAY => 'WE',
+                  Outofoffice::DAY_THURSDAY => 'TH',
+                  Outofoffice::DAY_FRIDAY => 'FR',
+                  Outofoffice::DAY_SATURDAY => 'SA',
+                  Outofoffice::DAY_SUNDAY => 'SU',
+                ];
+                return $map[$day];
+              }, $days),
+            ];
+
+            $day = array_map(function($day) {
+                $map = [
+                  Outofoffice::DAY_MONDAY => 'monday',
+                  Outofoffice::DAY_TUESDAY => 'tuesday',
+                  Outofoffice::DAY_WEDNESDAY => 'wednesday',
+                  Outofoffice::DAY_THURSDAY => 'thursday',
+                  Outofoffice::DAY_FRIDAY => 'friday',
+                  Outofoffice::DAY_SATURDAY => 'saturday',
+                  Outofoffice::DAY_SUNDAY => 'sunday',
+                ];
+                return $map[$day];
+              }, $days)[0];
+
+            $otherday = $hour_start === $hour_end && !$all_day ? $day. ' + 1 day' : $day;
+
+            self::_set_event(
+  (new \DateTime('next ' . $day, new \DateTimeZone($timezone)))->setTime((int)substr($hour_start, 0, 2), (int)substr($hour_start, 3, 2)),
+  (new \DateTime('next ' . $otherday, new \DateTimeZone($timezone)))->setTime((int)substr($hour_end, 0, 2), (int)substr($hour_end, 3, 2)),
+              $outofoffice->message,
+              $key,
+              $all_day ? 1 : 0,
+              $rec
+            );
           }
         }
         $i++;
       }
       $user->outofoffices = $outofoffices;
 
+      {
+        $nbooo = $nb;
+
+        rcmail::get_instance()->user->save_prefs(['moncompte_nb_outofoffices' => $nbooo]);
+        // Suppression des éventuels événements hebdo en trop
+        if ($last_hebdo > $nbooo) {
+          for ($j = $last_hebdo; $j > $nbooo; --$j) {
+            $uid = $j-1;
+            self::_remove_event(self::_get_hebdo_event_uid($uid));
+          }
+        }
+      }
+
+
       // Enregistrement de l'utilisateur avec les nouvelles données
       $ret = $user->save();
       if (!is_null($ret)) {
         // Ok
         rcmail::get_instance()->output->show_message('mel_moncompte.absence_ok', 'confirmation');
+
+        $event_uid = self::_get_ponct_event_uid();
+        if ($status_interne == '1' || $status_externe == '1')
+          self::_set_event(
+            \DateTime::createFromFormat('d/m/Y', $date_debut),
+            \DateTime::createFromFormat('d/m/Y', $date_fin),
+            isset($message_externe) && !empty($message_externe)
+              ? (isset($radio_externe) && $radio_externe == 'abs_texte_nodiff' ? $message_interne : $message_externe)
+              : $message_interne, 
+            $event_uid
+          );
+        else self::_remove_event($event_uid);
+
+
         return true;
       } else {
         // Erreur
@@ -492,7 +597,121 @@ class Gestionnaireabsence extends Moncompteobject
     }
   }
 
+  /**
+   * Génère un identifiant unique pour l'événement d'absence ponctuelle de l'utilisateur.
+   *
+   * Cet identifiant est utilisé pour retrouver ou manipuler l'événement correspondant
+   * dans le calendrier de l'utilisateur.
+   *
+   * @return string Identifiant unique de l'événement ponctuel
+   */
+  private static function _get_ponct_event_uid() : string {
+    return driver_mel::gi()->getUser()->uid . '@' . self::EVENT_UID_KEY;
+  }
 
+  /**
+   * Génère un identifiant unique pour un événement d'absence hebdomadaire de l'utilisateur.
+   *
+   * L'identifiant est construit à partir de l'UID de l'utilisateur et d'un index,
+   * permettant de différencier plusieurs absences hebdomadaires.
+   *
+   * @param string $i Index de l'absence hebdomadaire
+   * @return string Identifiant unique de l'événement hebdomadaire
+   */
+  private static function _get_hebdo_event_uid(string $i) : string {
+    return driver_mel::gi()->getUser()->uid . '@' . self::EVENT_HEBDO_UID_KEY."-$i";
+  }
+
+  /**
+   * Crée ou met à jour un événement d'absence dans le calendrier de l'utilisateur.
+   * 
+   * @param DateTime $start Date/heure de début
+   * @param DateTime $end Date/heure de fin
+   * @param string $message Message d'absence
+   * @param string $key Clé d'identification de l'événement
+   * @param int $allday Indique si l'événement est sur toute la journée
+   * @param array|null $rec Récurrence éventuelle
+   */
+  private static function _set_event(DateTime $start, DateTime $end, $message, $event_uid, $allday = 1, $rec = null) {
+    bnum::ForceCalendarDriver();
+
+    $rcmail = rcmail::get_instance();
+    $beforemsg = $rcmail->gettext('mel_moncompte.event_abs_msg_before');
+    /**
+     * @var calendar $calendar
+     */
+    $calendar = $rcmail->plugins->get_plugin('calendar');
+    /**
+     * @var calendar_driver $driver
+     */
+    $driver = $calendar->__get('driver');
+    $event = $driver->get_event(['id' => $event_uid]);
+
+    if (!$event) {
+      $title = $rec ? $rcmail->gettext('mel_moncompte.abs_hebdo_event') : $rcmail->gettext('mel_moncompte.abs_ponct_event');
+      $event = bnum_agenda::CreateEvent($title, $start, $end);
+      $event->description = $beforemsg.$message;
+      $event->allDay = $allday;
+      $event->freeBusy = 'busy';
+      $event->calendar = driver_mel::gi()->mceToRcId(driver_mel::get_instance()->getUser()->uid);
+
+      if ($rec) $event->setRecurrence($rec);
+
+      $event = $event->toArray();
+      $event['uid'] = $event_uid;
+
+      if (!$driver->new_event($event)) rcmail::get_instance()->output->show_message($rcmail->gettext('mel_moncompte.create_error'), 'error');
+    }
+    else {
+      $event['start'] = $start;
+      $event['end'] = $end;
+      $event['description'] = $beforemsg.$message;
+      $event['allday'] = $allday;
+
+      if ($rec) {
+        $event['recurrence'] = $rec;
+      } else {
+        $event['recurrence'] = null;
+      }
+ 
+      if (!$driver->edit_event($event)) {
+        rcmail::get_instance()->output->show_message($rcmail->gettext('mel_moncompte.update_error'), 'error');
+      }
+    }
+
+    bnum::UnforceCalendarDriver();
+  }
+
+  /**
+   * Supprime un événement d'absence du calendrier de l'utilisateur.
+   * 
+   * @param string $key Clé d'identification de l'événement
+   */
+  private static function _remove_event($event_uid) {
+    bnum::ForceCalendarDriver();
+
+    $rcmail = rcmail::get_instance();
+    /**
+     * @var calendar $calendar
+     */
+    $calendar = $rcmail->plugins->get_plugin('calendar');
+    /**
+     * @var calendar_driver $driver
+     */
+    $driver = $calendar->__get('driver');
+    $event = $driver->get_event(['id' => $event_uid]);
+
+    if ($event && !$driver->remove_event($event)) {
+      rcmail::get_instance()->output->show_message($rcmail->gettext('mel_moncompte.delete_error'), 'error');
+    }
+    
+    bnum::UnforceCalendarDriver();
+  }
+
+  /**
+   * Récupère les dates d'absence ponctuelle de l'utilisateur (pour affichage rapide).
+   * Retourne les dates au format JSON.
+   */
   public static function get_ponctual_dates()
   {
     // Récupération de l'utilisateur
@@ -529,6 +748,10 @@ class Gestionnaireabsence extends Moncompteobject
     exit;
   }
 
+  /**
+   * Met à jour rapidement les dates d'absence ponctuelle de l'utilisateur.
+   * Utilisé pour la modification rapide depuis l'interface.
+   */
   public static function set_quick_ponctual_dates()
   {
     $date_debut = trim(rcube_utils::get_input_value('absence_date_debut', rcube_utils::INPUT_POST));
@@ -545,6 +768,14 @@ class Gestionnaireabsence extends Moncompteobject
     exit;
   }
 
+  /**
+   * Applique les nouvelles dates d'absence ponctuelle à l'utilisateur.
+   * 
+   * @param object $user Utilisateur
+   * @param string $start Date de début
+   * @param string $end Date de fin
+   * @return bool Résultat de la sauvegarde
+   */
   private static function set_ponctual_dates(&$user, $start, $end)
   {
     $outoffice = $user->outofoffices;
@@ -554,9 +785,31 @@ class Gestionnaireabsence extends Moncompteobject
       $outoffice[Outofoffice::TYPE_EXTERNAL] = self::update_ponctual($user->outofoffices[Outofoffice::TYPE_EXTERNAL], $start, $end);
     $outoffice = self::try_enable_ponctual_date($outoffice);
     $user->outofoffices = $outoffice;
+
+    if ($outoffice[Outofoffice::TYPE_INTERNAL] !== null || $outoffice[Outofoffice::TYPE_EXTERNAL]) {
+      $external = $outoffice[Outofoffice::TYPE_EXTERNAL];
+      $message = $external ? $outoffice[Outofoffice::TYPE_EXTERNAL]->message : $outoffice[Outofoffice::TYPE_INTERNAL]->message;
+      self::_set_event(
+        \DateTime::createFromFormat('d/m/Y', $start),
+        \DateTime::createFromFormat('d/m/Y', $end),
+        $message,
+        self::_get_ponct_event_uid()
+      );
+    }
+    else 
+        self::_remove_event(self::_get_ponct_event_uid());
+
     return $user->save();
   }
 
+  /**
+   * Met à jour les dates de début et de fin dans un objet d'absence ponctuelle.
+   * 
+   * @param object $outoffice Objet d'absence
+   * @param string $start Nouvelle date de début
+   * @param string $end Nouvelle date de fin
+   * @return object Objet d'absence mis à jour
+   */
   private static function update_ponctual($outoffice, $start, $end)
   {
     $outoffice->start = \DateTime::createFromFormat('d/m/Y', $start);
@@ -569,6 +822,12 @@ class Gestionnaireabsence extends Moncompteobject
     return $outoffice;
   }
 
+  /**
+   * Active les absences ponctuelles si elles existent.
+   * 
+   * @param array $outoffice Liste des absences
+   * @return array Liste mise à jour
+   */
   private static function try_enable_ponctual_date($outoffice)
   {
     if ($outoffice[Outofoffice::TYPE_EXTERNAL] === null & $outoffice[Outofoffice::TYPE_INTERNAL] === null) {

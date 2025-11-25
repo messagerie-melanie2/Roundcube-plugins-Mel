@@ -241,4 +241,17 @@ class bnum_agenda extends bnum_plugin {
     }
     return $args;
   }
+
+  /**
+   * Crée un nouvel événement de calendrier.
+   *
+   * @param string   $title Titre de l'événement
+   * @param DateTime $start Date et heure de début de l'événement
+   * @param DateTime $end   Date et heure de fin de l'événement
+   * @return CalendarEvent  Instance de l'événement créé
+   */
+  public static function CreateEvent(string $title, DateTime $start, DateTime $end): CalendarEvent {
+    include_once __DIR__ . '/program/Event.php';
+    return new CalendarEvent($title, $start, $end);
+  }
 }

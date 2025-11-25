@@ -830,9 +830,10 @@ class mel_driver extends calendar_driver {
    */
   public function new_event($event, $new = true) {
     // Charge les données seulement si on est dans la tâche calendrier
-    if ($this->rc->task != 'calendar') {
+    if ($this->rc->task != 'calendar' && !bnum::IsCalendarDriverForced()) {
       return false;
     }
+
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::new_event(" . $event['title'] . ", $new)");
     if (mel_logs::is(mel_logs::TRACE))
@@ -1099,9 +1100,10 @@ class mel_driver extends calendar_driver {
    */
   public function edit_event($event) {
     // Charge les données seulement si on est dans la tâche calendrier
-    if ($this->rc->task != 'calendar') {
+    if ($this->rc->task != 'calendar' && !bnum::IsCalendarDriverForced()) {
       return false;
     }
+
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::edit_event()");
     if (mel_logs::is(mel_logs::TRACE))
@@ -1633,7 +1635,7 @@ class mel_driver extends calendar_driver {
    */
   public function remove_event($event, $force = true) {
     // Charge les données seulement si on est dans la tâche calendrier
-    if ($this->rc->task != 'calendar') {
+    if ($this->rc->task != 'calendar' && !bnum::IsCalendarDriverForced()) {
       return false;
     }
     if (mel_logs::is(mel_logs::DEBUG))
@@ -1850,7 +1852,7 @@ class mel_driver extends calendar_driver {
    */
   public function get_event($event, $scope = 0, $full = false) {
     // Charge les données seulement si on est dans la tâche calendrier
-    if ($this->rc->task != 'calendar' && $this->rc->task != 'mail') {
+    if ($this->rc->task != 'calendar' && $this->rc->task != 'mail' && !bnum::IsCalendarDriverForced()) {
       return false;
     }
 

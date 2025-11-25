@@ -582,8 +582,8 @@ class Gestionnaireabsence extends Moncompteobject
   private static function _set_event(DateTime $start, DateTime $end, $message, $key, $allday = 1, $rec = null) {
     bnum::ForceCalendarDriver();
 
-    $beforemsg = "/!\\ Attention ! Modifier cette évènement ne modifie pas l'absence associée !\r\n---------------------------------------\r\n";
     $rcmail = rcmail::get_instance();
+    $beforemsg = $rcmail->gettext('mel_moncompte.event_abs_msg_before');
     /**
      * @var calendar $calendar
      */
@@ -596,7 +596,7 @@ class Gestionnaireabsence extends Moncompteobject
     $event = $driver->get_event(['id' => $event_uid]);
 
     if (!$event_uid || !$event || ($event && is_array($event) && $event['uid'] !== $event_uid)) {
-      $title = $rec ? '🤖 Absence hebdomadaire' : '🤖 Absence ponctuelle';
+      $title = $rec ? $rcmail->gettext('mel_moncompte.abs_hebdo_event') : $rcmail->gettext('mel_moncompte.abs_ponct_event');
       $event = bnum_agenda::CreateEvent($title, $start, $end);
       $event->description = $beforemsg.$message;
       $event->allDay = $allday;
@@ -609,7 +609,7 @@ class Gestionnaireabsence extends Moncompteobject
       $event_uid = $event['uid'] = $calendar->generate_uid();
 
       if ($driver->new_event($event)) $rcmail->user->save_prefs([$key =>  $event_uid]);
-      else rcmail::get_instance()->output->show_message('Impossible de créer l\'événement lié à l\'absence', 'error');
+      else rcmail::get_instance()->output->show_message($rcmail->gettext('mel_moncompte.create_error'), 'error');
     }
     else {
       $event['start'] = $start;
@@ -622,15 +622,17 @@ class Gestionnaireabsence extends Moncompteobject
       } else {
         $event['recurrence'] = null;
       }
-
-      $driver->edit_event($event);
+ 
+      if (!$driver->edit_event($event)) {
+        rcmail::get_instance()->output->show_message($rcmail->gettext('mel_moncompte.update_error'), 'error');
+      }
     }
 
     bnum::UnforceCalendarDriver();
   }
 
   private static function _remove_event($key) {
-    $_ENV['_force_driver'] = true;
+    bnum::ForceCalendarDriver();
 
     $rcmail = rcmail::get_instance();
     /**
@@ -644,11 +646,13 @@ class Gestionnaireabsence extends Moncompteobject
     $event_uid = $rcmail->config->get($key, null);
     $event = $driver->get_event(['id' => $event_uid]);
 
-    if ($event) $driver->remove_event($event);
+    if ($event && !$driver->remove_event($event)) {
+      rcmail::get_instance()->output->show_message($rcmail->gettext('mel_moncompte.delete_error'), 'error');
+    }
     
     if ($event_uid) $rcmail->user->save_prefs([$key =>  null]);
     
-    unset($_ENV['_force_driver']);
+    bnum::UnforceCalendarDriver();
   }
 
   public static function get_ponctual_dates()

@@ -30,7 +30,8 @@ use Sabre\CalDAV\Schedule\Outbox;
  */
 class Gestionnaireabsence extends Moncompteobject
 {
-  private const EVENT_UID_KEY = 'moncompte_absence_event_uid';
+  private const EVENT_UID_KEY = 'ponct.gestionnaireabsence';
+  private const EVENT_HEBDO_UID_KEY = 'hebdo.gestionnaireabsence';
 
   /**
    * Indique si la gestion des absences doit être affichée dans le compte utilisateur.
@@ -498,7 +499,7 @@ class Gestionnaireabsence extends Moncompteobject
             }
             $outofoffices[] = $outofoffice;
 
-            $key = self::EVENT_UID_KEY."_$i";
+            $key = self::_get_hebdo_event_uid($i);
             $rec = [
               'FREQ' => 'WEEKLY',
               'INTERVAL' => 1,
@@ -553,8 +554,7 @@ class Gestionnaireabsence extends Moncompteobject
         if ($last_hebdo > $nbooo) {
           for ($j = $last_hebdo; $j > $nbooo; --$j) {
             $uid = $j-1;
-            $key = self::EVENT_UID_KEY."_$uid";
-            self::_remove_event($key);
+            self::_remove_event(self::_get_hebdo_event_uid($uid));
           }
         }
       }
@@ -566,7 +566,7 @@ class Gestionnaireabsence extends Moncompteobject
         // Ok
         rcmail::get_instance()->output->show_message('mel_moncompte.absence_ok', 'confirmation');
 
-        $key = self::EVENT_UID_KEY;
+        $event_uid = self::_get_ponct_event_uid();
         if ($status_interne == '1' || $status_externe == '1')
           self::_set_event(
             \DateTime::createFromFormat('d/m/Y', $date_debut),
@@ -574,9 +574,9 @@ class Gestionnaireabsence extends Moncompteobject
             isset($message_externe) && !empty($message_externe)
               ? (isset($radio_externe) && $radio_externe == 'abs_texte_nodiff' ? $message_interne : $message_externe)
               : $message_interne, 
-            $key
+            $event_uid
           );
-        else self::_remove_event($key);
+        else self::_remove_event($event_uid);
 
 
         return true;
@@ -598,6 +598,31 @@ class Gestionnaireabsence extends Moncompteobject
   }
 
   /**
+   * Génère un identifiant unique pour l'événement d'absence ponctuelle de l'utilisateur.
+   *
+   * Cet identifiant est utilisé pour retrouver ou manipuler l'événement correspondant
+   * dans le calendrier de l'utilisateur.
+   *
+   * @return string Identifiant unique de l'événement ponctuel
+   */
+  private static function _get_ponct_event_uid() : string {
+    return driver_mel::gi()->getUser()->uid . '@' . self::EVENT_UID_KEY;
+  }
+
+  /**
+   * Génère un identifiant unique pour un événement d'absence hebdomadaire de l'utilisateur.
+   *
+   * L'identifiant est construit à partir de l'UID de l'utilisateur et d'un index,
+   * permettant de différencier plusieurs absences hebdomadaires.
+   *
+   * @param string $i Index de l'absence hebdomadaire
+   * @return string Identifiant unique de l'événement hebdomadaire
+   */
+  private static function _get_hebdo_event_uid(string $i) : string {
+    return driver_mel::gi()->getUser()->uid . '@' . self::EVENT_HEBDO_UID_KEY."-$i";
+  }
+
+  /**
    * Crée ou met à jour un événement d'absence dans le calendrier de l'utilisateur.
    * 
    * @param DateTime $start Date/heure de début
@@ -607,7 +632,7 @@ class Gestionnaireabsence extends Moncompteobject
    * @param int $allday Indique si l'événement est sur toute la journée
    * @param array|null $rec Récurrence éventuelle
    */
-  private static function _set_event(DateTime $start, DateTime $end, $message, $key, $allday = 1, $rec = null) {
+  private static function _set_event(DateTime $start, DateTime $end, $message, $event_uid, $allday = 1, $rec = null) {
     bnum::ForceCalendarDriver();
 
     $rcmail = rcmail::get_instance();
@@ -620,10 +645,9 @@ class Gestionnaireabsence extends Moncompteobject
      * @var calendar_driver $driver
      */
     $driver = $calendar->__get('driver');
-    $event_uid = $rcmail->config->get($key, null);
     $event = $driver->get_event(['id' => $event_uid]);
 
-    if (!$event_uid || !$event || ($event && is_array($event) && $event['uid'] !== $event_uid)) {
+    if (!$event) {
       $title = $rec ? $rcmail->gettext('mel_moncompte.abs_hebdo_event') : $rcmail->gettext('mel_moncompte.abs_ponct_event');
       $event = bnum_agenda::CreateEvent($title, $start, $end);
       $event->description = $beforemsg.$message;
@@ -634,10 +658,9 @@ class Gestionnaireabsence extends Moncompteobject
       if ($rec) $event->setRecurrence($rec);
 
       $event = $event->toArray();
-      $event_uid = $event['uid'] = $calendar->generate_uid();
+      $event['uid'] = $event_uid;
 
-      if ($driver->new_event($event)) $rcmail->user->save_prefs([$key =>  $event_uid]);
-      else rcmail::get_instance()->output->show_message($rcmail->gettext('mel_moncompte.create_error'), 'error');
+      if (!$driver->new_event($event)) rcmail::get_instance()->output->show_message($rcmail->gettext('mel_moncompte.create_error'), 'error');
     }
     else {
       $event['start'] = $start;
@@ -664,7 +687,7 @@ class Gestionnaireabsence extends Moncompteobject
    * 
    * @param string $key Clé d'identification de l'événement
    */
-  private static function _remove_event($key) {
+  private static function _remove_event($event_uid) {
     bnum::ForceCalendarDriver();
 
     $rcmail = rcmail::get_instance();
@@ -676,14 +699,11 @@ class Gestionnaireabsence extends Moncompteobject
      * @var calendar_driver $driver
      */
     $driver = $calendar->__get('driver');
-    $event_uid = $rcmail->config->get($key, null);
     $event = $driver->get_event(['id' => $event_uid]);
 
     if ($event && !$driver->remove_event($event)) {
       rcmail::get_instance()->output->show_message($rcmail->gettext('mel_moncompte.delete_error'), 'error');
     }
-    
-    if ($event_uid) $rcmail->user->save_prefs([$key =>  null]);
     
     bnum::UnforceCalendarDriver();
   }
@@ -773,11 +793,11 @@ class Gestionnaireabsence extends Moncompteobject
         \DateTime::createFromFormat('d/m/Y', $start),
         \DateTime::createFromFormat('d/m/Y', $end),
         $message,
-        self::EVENT_UID_KEY
+        self::_get_ponct_event_uid()
       );
     }
     else 
-        self::_remove_event(self::EVENT_UID_KEY);
+        self::_remove_event(self::_get_ponct_event_uid());
 
     return $user->save();
   }

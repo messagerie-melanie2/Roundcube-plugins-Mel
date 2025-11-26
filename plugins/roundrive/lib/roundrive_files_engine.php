@@ -81,6 +81,18 @@ class roundrive_files_engine
         $this->client = $client;
     }
 
+    public function file_exists($path)
+    {
+        return $this->filesystem->has($path);
+    }
+
+    public function create_folder_if_not_exists($path)
+    {
+        if (!$this->filesystem->has($path)) {
+            $this->filesystem->createDir($path);
+        }
+    }
+
     /**
      * User interface initialization
      */
@@ -799,22 +811,9 @@ class roundrive_files_engine
         $this->rc->output->send('roundrive.filepreview');
     }
 
-    /**
-     * Handler for "save all attachments into cloud" action
-     */
-    protected function action_save_file()
-    {
-        if (mel_logs::is(mel_logs::DEBUG))
-          mel_logs::get_instance()->log(mel_logs::DEBUG, "[roundrive] roundrive_files_engine::action_attach_file()");
-        
-        $source = rcube_utils::get_input_value('source', rcube_utils::INPUT_POST);
-        $uid    = rcube_utils::get_input_value('uid', rcube_utils::INPUT_POST);
-        $dest   = rcube_utils::get_input_value('dest', rcube_utils::INPUT_POST);
-        $id     = rcube_utils::get_input_value('id', rcube_utils::INPUT_POST);
-        $name   = rcube_utils::get_input_value('name', rcube_utils::INPUT_POST);
-
+    private function _save_file($uid, $dest, $id = '', $name = '', $folder = null) : array {
         $temp_dir = unslashify($this->rc->config->get('temp_dir'));
-        $message  = new rcube_message($uid);
+        $message  = new rcube_message($uid, $folder);
         $files    = array();
         $errors   = array();
         $attachments = array();
@@ -842,6 +841,7 @@ class roundrive_files_engine
                     'code' => 500, 'type' => 'php', 'line' => __LINE__, 'file' => __FILE__,
                     'message' => "Unable to save attachment into file $path"),
                     true, false);
+                    $files[] = $attach_name;
                 continue;
             }
 
@@ -861,12 +861,31 @@ class roundrive_files_engine
                     'code' => 500, 'type' => 'php', 'line' => __LINE__, 'file' => __FILE__,
                     'message' => $e->getMessage()),
                     true, false);
+                    $files[] = $attach_name;
                 continue;
             }
 
             // clean up
             unlink($path);
         }
+        return [$files, $errors];
+    }
+
+    /**
+     * Handler for "save all attachments into cloud" action
+     */
+    protected function action_save_file()
+    {
+        if (mel_logs::is(mel_logs::DEBUG))
+          mel_logs::get_instance()->log(mel_logs::DEBUG, "[roundrive] roundrive_files_engine::action_attach_file()");
+        
+        $source = rcube_utils::get_input_value('source', rcube_utils::INPUT_POST);
+        $uid    = rcube_utils::get_input_value('uid', rcube_utils::INPUT_POST);
+        $dest   = rcube_utils::get_input_value('dest', rcube_utils::INPUT_POST);
+        $id     = rcube_utils::get_input_value('id', rcube_utils::INPUT_POST);
+        $name   = rcube_utils::get_input_value('name', rcube_utils::INPUT_POST);
+
+        list($files, $errors) = $this->_save_file($uid, $dest, $id, $name);
 
         if ($count = count($files)) {
             $msg = $this->plugin->gettext(array('name' => 'saveallnotice', 'vars' => array('n' => $count)));
@@ -879,6 +898,68 @@ class roundrive_files_engine
 
         // @TODO: update quota indicator, make this optional in case files aren't stored in IMAP
 
+        $this->rc->output->send();
+    }
+
+    private function _save_files_generator($source, $dest, $uids = null) {
+        $rcmail = rcmail::get_instance();
+
+        if ($uids) {
+            foreach ($uids as $uid) {
+                list($files, $errors) = $this->_save_file($uid, $dest, '', '', $source);
+                yield [$files, $errors, $uid];
+            }
+        }
+        else {
+            $search_criteria = 'HAS ATTACHMENT';
+            $result_headers = $rcmail->storage->search($source, $search_criteria, null, 'ALL');
+
+            if ($result_headers->count()) {
+                foreach ($result_headers as $msg) {
+                    list($files, $errors) = $this->_save_file($msg->uid, $dest, '', '', $source);
+                    yield [$files, $errors, $msg->uid];
+                }
+            }
+        }
+    }
+
+    private function _save_files($source, $dest) {
+        $all_files = [];
+        $all_errors = [];
+
+        foreach ($this->_save_files_generator($source, $dest) as [$files, $errors]) {
+            $all_files = array_merge($all_files, $files);
+            $all_errors = array_merge($all_errors, $errors);
+        }
+
+        return [$all_files, $all_errors];
+    }
+
+    public function save_files($source, $dest) {
+        return $this->_save_files($source, $dest);
+    }
+
+    public function save_files_generator($source, $dest, $uids = null) {
+        foreach ($this->_save_files_generator($source, $dest, $uids) as  $value) {
+            yield $value;
+        }
+    }
+
+    protected function action_save_files() {
+        $source = rcube_utils::get_input_value('source', rcube_utils::INPUT_POST);
+        $dest   = rcube_utils::get_input_value('dest', rcube_utils::INPUT_POST);
+
+        list($files, $errors) = $this->_save_files($source, $dest);
+
+        if ($count = count($files)) {
+            $msg = $this->plugin->gettext(array('name' => 'saveallnotice', 'vars' => array('n' => $count)));
+            $this->rc->output->show_message($msg, 'confirmation');
+        }
+        if ($count = count($errors)) {
+            $msg = $this->plugin->gettext(array('name' => 'saveallerror', 'vars' => array('n' => $count)));
+            $this->rc->output->show_message($msg, 'error');
+        }
+        
         $this->rc->output->send();
     }
 

@@ -155,4 +155,21 @@ class roundrive extends rcube_plugin
             $engine->actions();
         }
     }
+
+    public function save_files($mbox, $dest) {
+      return $this->engine->save_files($mbox, $dest);
+    }
+
+    public function save_files_generator($mbox, $dest, $uids) {
+      return $this->engine->save_files_generator($mbox, $dest, $uids);
+    }
+
+    public function create_folder_if_not_exists($path): self {
+      try {
+        $this->engine->create_folder_if_not_exists($path);
+      } catch (\Throwable $th) {
+        return $this;
+      }
+      return $this;
+    }
 }

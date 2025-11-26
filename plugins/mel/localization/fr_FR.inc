@@ -103,8 +103,8 @@ $labels['name identity'] = 'Nom affiché dans le webmail';
 
 $labels['error_block'] = 'Echec de connexion, votre compte est bloqué';
 
-$labels['computer_private'] = 'Enregistrer mes informations d\'identification sur cet ordinateur';
-$labels['device_private'] = 'Enregistrer mes informations d\'identification sur cet ordinateur';
+$labels['computer_private'] = 'Faire confiance à cet ordinateur';
+$labels['device_private'] = 'Faire confiance à cet ordinateur';
 $labels['computer_private_title'] = 'Le nom d\'utilisateur ainsi que les codes de double authentification ne vous seront plus demandés lors de vos prochaines connexions depuis cet ordinateur, \nNe cochez pas cette case s\'il s\'agit d\'un ordinateur public.';
 $labels['change_user'] = 'Changer d\'utilisateur';
 

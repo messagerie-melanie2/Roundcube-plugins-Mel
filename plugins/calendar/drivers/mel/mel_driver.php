@@ -1571,44 +1571,54 @@ class mel_driver extends calendar_driver {
       }
     }
 
-    if (isset($_event->attendees) && count($_event->attendees) > 0) {    
-      $fbtypemap = [
-              calendar::FREEBUSY_UNKNOWN   => 'UNKNOWN',
-              calendar::FREEBUSY_FREE      => 'FREE',
-              calendar::FREEBUSY_BUSY      => 'BUSY',
-              calendar::FREEBUSY_TENTATIVE => 'TENTATIVE',
-              calendar::FREEBUSY_OOF       => 'OUT-OF-OFFICE',
-              // MANTIS 0006913: Ajouter un statut « travail ailleurs » sur les événements
-              calendar::FREEBUSY_TELEWORK  => 'TELEWORK',
-              // MANTIS 0008012: Ajouter un statut "Congés"
-              calendar::FREEBUSY_VACATION  => 'VACATION',
-          ];
-      foreach ($_event->attendees as $attendee) {
-        if ($attendee->is_ressource) {
-          $status = 'UNKNOWN';
-          $start = strtotime($_event->start);
-          $end = strtotime($_event->end);
-          $fblist = $this->get_freebusy_list($attendee->email, $start, $end);
-
-            if (is_array($fblist)) {
-              $status = 'FREE';
-
-              foreach ($fblist as $slot) {
-                  list($from, $to, $type, $who) = $slot;
-                  $who = explode('/', $who)[0];
-
-                  if ($who === driver_mel::gi()->getUser()->uid) continue;
-
-                  if ($from < $end && $to > $start) {
-                      $status = isset($type) && !empty($fbtypemap[$type]) ? $fbtypemap[$type] : 'BUSY';
-                      break;
-                  }
-              }
+    // Vérification des conflits de ressources
+    if (isset($_event->attendees) && count($_event->attendees) > 0) {   
+      $resourcesToCheck = [];
+      
+      $attendees = $_event->attendees;
+      foreach ($attendees as $attendee) {
+          if ($attendee->is_ressource) {
+              // On utilise l'email comme clé pour une recherche rapide (hash map)
+              $resourcesToCheck[$attendee->email] = $attendee;
           }
+      }
+      unset($attendees);
+      
 
-          if ($status === 'BUSY') {
-            $this->lastError = new Exception("La ressource $attendee->name est occupée", 5);
-            throw $this->lastError;
+      if (!empty($resourcesToCheck)) {
+        $start = strtotime($_event->start);
+        $end   = strtotime($_event->end);
+
+        $events = $this->load_events($start, $end);
+
+        if ($events && count($events) >= 1) {
+          foreach ($events as $checkEvent) {
+
+            // Si l'évènement est le même on l'ignore
+            if (isset($checkEvent['uid']) && $checkEvent['uid'] === $event['uid']) continue;
+                
+            $checkEventStart = $checkEvent['start'] instanceof DateTime 
+                    ? $checkEvent['start']->getTimestamp() 
+                    : strtotime($checkEvent['start']);
+
+            // Si l'évènement vérifié commence après la fin de l'évènement à créer/modifier on l'ignore
+            if ($checkEventStart >= $end) continue;
+              
+            // Si l'évènement n'a pas d'invités on l'ignore
+            if (empty($checkEvent['attendees'])) continue;
+                
+            foreach ($checkEvent['attendees'] as $checkAttendee) {
+              // On vérifie si cet invité est une ressource et s'il fait partie des ressources à vérifier
+              if (
+                  isset($checkAttendee['cutype']) && 
+                  $checkAttendee['cutype'] === 'RESOURCE' && 
+                  isset($resourcesToCheck[$checkAttendee['email']])
+              ) {
+                  $conflictedResource = $resourcesToCheck[$checkAttendee['email']];
+                  $this->lastError = new Exception("La ressource {$conflictedResource->name} est occupée", 5);
+                  throw $this->lastError;
+              }
+            }
           }
         }
       }

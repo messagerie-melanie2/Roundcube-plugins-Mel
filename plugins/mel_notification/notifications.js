@@ -106,8 +106,9 @@ if (window.rcmail) {
         for (const notification of evt.response.notifications) {
           if (!notifications[notification.uid] && !notification.isread) {
             // On ne fait poper que les nouvelles notifications
-            m_mp_ShowNotification(notification);
-
+            if (current_desktop_notification < (rcmail.env.notifications_limit - 1)) {
+                m_mp_ShowNotification(notification);
+            }
             // Ajoute la notification à la liste des nouvelles notifications
             newNotifications[notification.uid] = notification;
           } else if (notifications[notification.uid]) {
@@ -120,6 +121,11 @@ if (window.rcmail) {
             newNotifications[notification.uid] = notification;
           }
         }
+
+        if (newNotifications) {
+          m_mp_ShowNotification(displayLastNotification(newNotifications))
+        }
+
         // Merge les notifications
         m_mp_NotificationsMerge(
           m_mp_NotificationsDelete(notifications),
@@ -384,7 +390,7 @@ function m_mp_NotificationSettings(key, notification) {
 function m_mp_ShowNotification(notification) {
   // Gérer les notifications multiples
   setTimeout(() => {
-    if (m_mp_NotificationSettings('inside_notification', notification)) {
+    if (m_mp_NotificationSettings('inside_notification', notification)) { 
       let notificationstack = document.getElementById('notificationstack'),
         article = m_mp_NotificationGetElement(notification, false);
 
@@ -409,6 +415,14 @@ function m_mp_ShowNotification(notification) {
         break;
     }
   }, current_desktop_notification++ * 1000);
+}
+
+function displayLastNotification(newNotifications) {
+  return {
+    'title' : (Object.keys(newNotifications).length - (rcmail.env.notifications_limit-1))+ " notifications supplémentaires non lues",
+    'category' : "notifications",
+    'uid': "unread_notification_counter"
+  }
 }
 
 function PlaySound(sound = 'sound', ext = 'mp3') {

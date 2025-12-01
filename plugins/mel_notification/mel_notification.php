@@ -59,7 +59,8 @@ class mel_notification extends rcube_plugin
         'notifications_material_icons'          => [],
         'notifications_set_read_on_click'       => false,
         'notifications_set_read_on_panel_close' => false,
-        'notifications_sound_on_new_mail'       => false
+        'notifications_sound_on_new_mail'       => false,
+        'notifications_limit'                   => 3
     ];
     
     /**
@@ -71,7 +72,7 @@ class mel_notification extends rcube_plugin
         
         // Charge la conf du plugin
         $this->load_config();
-        
+
         // Liste des actions pour lesquels on ne load pas le js
         $nojs_actions = [
             'mail.compose',
@@ -96,6 +97,7 @@ class mel_notification extends rcube_plugin
                 $this->rc->output->set_env('notifications_set_read_on_panel_close', $this->rc->config->get('notifications_set_read_on_panel_close', $this->defaults['notifications_set_read_on_panel_close']));
                 $this->rc->output->set_env('notifications_sound_on_new_mail',       $this->rc->config->get('notifications_sound_on_new_mail',       $this->defaults['notifications_sound_on_new_mail']));
                 $this->rc->output->set_env('notifications_settings',                $this->rc->config->get('notifications_settings',                []));
+                $this->rc->output->set_env('notifications_limit',                   $this->rc->config->get('notifications_limit',                   $this->defaults['notifications_limit']));
                 
                 // Charger le js
                 $this->include_script('notifications.js');

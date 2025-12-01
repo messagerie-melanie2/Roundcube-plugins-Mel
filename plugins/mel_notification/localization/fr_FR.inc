@@ -68,3 +68,4 @@ $labels['notification_on_'] = 'sur la boîte $mbox';
 $labels['notification_on_ur_bal'] = 'sur votre boîte aux lettres';
 $labels['new_notifications'] = 'Vous avez reçu $count nouveaux messages $end';
 $labels['INBOX'] = 'Courrier entrant';
+$labels['number_unread_notifications'] = '$nb notifications supplémentaires non lues';

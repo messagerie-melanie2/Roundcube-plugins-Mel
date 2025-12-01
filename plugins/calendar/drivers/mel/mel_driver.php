@@ -1572,58 +1572,45 @@ class mel_driver extends calendar_driver {
     }
 
     // Vérification des conflits de ressources
-    if (isset($_event->attendees) && count($_event->attendees) > 0) {   
-      $resourcesToCheck = [];
-      
+    if (isset($_event->attendees) && count($_event->attendees) > 0) {     
       $attendees = $_event->attendees;
+
+      $start = (new DateTime($_event->start, new DateTimeZone($_event->timezone)))->getTimestamp();
+      $end = (new DateTime($_event->end, new DateTimeZone($_event->timezone)))->getTimestamp();
+
       foreach ($attendees as $attendee) {
-          if ($attendee->is_ressource) {
-              // On utilise l'email comme clé pour une recherche rapide (hash map)
-              $resourcesToCheck[$attendee->email] = $attendee;
-          }
-      }
-      unset($attendees);
-      
 
-      if (!empty($resourcesToCheck)) {
-        $start = strtotime($_event->start);
-        $end   = strtotime($_event->end);
+        if (!$attendee->is_ressource) continue;
 
-        $events = $this->load_events($start, $end);
+        $events = $this->load_events($start, $end, null, [$attendee->uid], 1, null, true);
 
-        if ($events && count($events) >= 1) {
+        if (!empty($events) && count($events) > 0) {
           foreach ($events as $checkEvent) {
-
             // Si l'évènement est le même on l'ignore
             if (isset($checkEvent['uid']) && $checkEvent['uid'] === $event['uid']) continue;
-                
+        
             $checkEventStart = $checkEvent['start'] instanceof DateTime 
                     ? $checkEvent['start']->getTimestamp() 
                     : strtotime($checkEvent['start']);
 
+            $checkEventEnd = $checkEvent['end'] instanceof DateTime 
+                    ? $checkEvent['end']->getTimestamp() 
+                    : strtotime($checkEvent['end']);
+
             // Si l'évènement vérifié commence après la fin de l'évènement à créer/modifier on l'ignore
             if ($checkEventStart >= $end) continue;
-              
-            // Si l'évènement n'a pas d'invités on l'ignore
-            if (empty($checkEvent['attendees'])) continue;
-                
-            foreach ($checkEvent['attendees'] as $checkAttendee) {
-              // On vérifie si cet invité est une ressource et s'il fait partie des ressources à vérifier
-              if (
-                  isset($checkAttendee['cutype']) && 
-                  $checkAttendee['cutype'] === 'RESOURCE' && 
-                  isset($resourcesToCheck[$checkAttendee['email']])
-              ) {
-                  $conflictedResource = $resourcesToCheck[$checkAttendee['email']];
-                  $this->lastError = new Exception("La ressource {$conflictedResource->name} est occupée", 5);
-                  throw $this->lastError;
-              }
-            }
+
+            // Si l'évènement vérifié commence avant le début de l'évènement à créer/modifier on l'ignore
+            if ($checkEventEnd <= $start) continue;
+
+            // On vérifie si cet invité est une ressource et s'il fait partie des ressources à vérifier
+            $this->lastError = new Exception(rcmail::get_instance()->gettext(['name' => 'calendar.rsc-denied', 'vars' => ['name' => $attendee->name]]), 5);
+            throw $this->lastError;
           }
         }
       }
     }
-
+    
     // Modified time
     $_event->modified = time();
 

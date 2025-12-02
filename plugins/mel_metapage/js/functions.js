@@ -874,8 +874,8 @@ function m_mp_step3_param(type) {
             <div style=margin-top:15px>
                 <h4 class="span-mel t2 first">Pour trouver l'identifiant interne d'un canal cliquer sur le nom du canal -> Paramètres -> Avancé</h34>
             </div>
-            <img src="${image_src.parametres}" width=100% alt="Pour trouver l'identifiant interne d'un canal cliquer sur le nom du canal -> Paramètres -> Avancé"/>
-            <img src="${image_src.channel_uid}" width=100% alt="Pour trouver l'identifiant interne d'un canal cliquer sur le nom du canal -> Paramètres -> Avancé"/>
+            <img src="${image_src.parametres}" width=80% style="margin-left:15%;" alt="Pour trouver l'identifiant interne d'un canal cliquer sur le nom du canal -> Paramètres -> Avancé"/>
+            <img src="${image_src.channel_uid}" width=80% style="margin-left:15%;" alt="Pour trouver l'identifiant interne d'un canal cliquer sur le nom du canal -> Paramètres -> Avancé"/>
             `,
         )
           .on('change', () => {

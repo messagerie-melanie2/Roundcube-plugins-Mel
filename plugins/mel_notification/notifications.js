@@ -125,7 +125,9 @@ if (window.rcmail) {
         }
 
         if (newNotifications && displayedNotifications) {
-          m_mp_ShowNotification(displayLastNotification(newNotifications, displayedNotifications))
+          if (Object.keys(newNotifications).length >= rcmail.env.notifications_limit) {
+            m_mp_ShowNotification(displayLastNotification(newNotifications, displayedNotifications))
+          }
         }
 
         // Merge les notifications
@@ -420,6 +422,7 @@ function m_mp_ShowNotification(notification) {
 }
 
 function displayLastNotification(newNotifications, displayedNotifications) {
+  debugger
   let countNotifications = Object.keys(newNotifications).length - displayedNotifications;
   return {    
     'title' : rcmail.gettext('number_unread_notifications', 'mel_notification', {'nb' :countNotifications}),

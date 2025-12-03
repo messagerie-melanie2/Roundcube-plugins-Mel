@@ -99,7 +99,7 @@ if (window.rcmail) {
         // Récupération des notifications du storage
         let notifications = m_mp_NotificationsGet(),
           newNotifications = {};
-          displayedNotifications = 0;
+          displayedNotifications = false;
 
         // Initialisation de la current
         current_desktop_notification = 0;
@@ -109,7 +109,7 @@ if (window.rcmail) {
             // On ne fait poper que les nouvelles notifications
             if (current_desktop_notification < (rcmail.env.notifications_limit - 1)) {
                 m_mp_ShowNotification(notification);
-                displayedNotifications++;
+                displayedNotifications = true;
             }
             // Ajoute la notification à la liste des nouvelles notifications
             newNotifications[notification.uid] = notification;
@@ -126,7 +126,7 @@ if (window.rcmail) {
 
         if (newNotifications && displayedNotifications) {
           if (Object.keys(newNotifications).length >= rcmail.env.notifications_limit) {
-            m_mp_ShowNotification(displayLastNotification(newNotifications, displayedNotifications))
+            m_mp_ShowNotification(displayLastNotification(newNotifications))
           }
         }
 
@@ -421,9 +421,8 @@ function m_mp_ShowNotification(notification) {
   }, current_desktop_notification++ * 1000);
 }
 
-function displayLastNotification(newNotifications, displayedNotifications) {
-  debugger
-  let countNotifications = Object.keys(newNotifications).length - displayedNotifications;
+function displayLastNotification(newNotifications) {
+  let countNotifications = Object.keys(newNotifications).length - (rcmail.env.notifications_limit - 1);
   return {    
     'title' : rcmail.gettext('number_unread_notifications', 'mel_notification', {'nb' :countNotifications}),
     'category' : "notifications",

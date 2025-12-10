@@ -375,6 +375,17 @@ class standard_driver_mel extends driver_mel
   }
 
   /**
+   * Méthode permettant de déclencher une commande unexpunge sur les serveurs de messagerie
+   * Utilisé pour la restauration d'un dossier
+   * 
+   * @param string $mbox Identifiant de la boite concernée par la restauration
+   * @param string $folder Dossier IMAP à restaurer
+   */
+  public function unexpunge($mbox, $folder, $hours) {
+    return false;
+  }
+
+  /**
    * Formate un numéro de téléphone en supprimant les espaces et les tirets,
    * puis en remplaçant le préfixe par un 0 si nécessaire, et enfin en ajoutant
    * des espaces tous les deux chiffres.

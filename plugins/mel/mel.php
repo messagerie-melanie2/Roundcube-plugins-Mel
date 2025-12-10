@@ -472,7 +472,7 @@ class mel extends rcube_plugin
 
     $user = driver_mel::gi()->getUser();
 
-    if (isset($user->dn)) {
+    if (!isset($user->dn)) {
       return $args;
     }
 

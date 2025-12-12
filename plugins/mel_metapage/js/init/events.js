@@ -2262,14 +2262,14 @@ if (rcmail && window.mel_metapage) {
 
       //Gère les différents cas de phishing
       rcmail.addEventListener('insertrow', function (event) {
-        if (event.row.flags.BLOQUED === true) {
+        if (event.row.flags && event.row.flags.BLOQUED === true) {
           $(event.row.obj)
             .addClass('bloqued')
             .attr(
               'title',
               "Ce message est bloqué sur le Bnum car il s'agit de phishing !",
             );
-        } else if (event.row.flags.SUSPECT === true) {
+        } else if (event.row.flags && event.row.flags.SUSPECT === true) {
           $(event.row.obj)
             .addClass('suspect')
             .attr(

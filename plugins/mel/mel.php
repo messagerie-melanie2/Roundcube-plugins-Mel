@@ -408,21 +408,24 @@ class mel extends rcube_plugin
     if (mel_logs::is(mel_logs::INFO))
       mel_logs::get_instance()->log(mel_logs::INFO, "[user_create] Création de l'utilisateur '" . $args['user_name'] . "@" . $args['host'] . "' dans la base de données Roundcube");
 
-    // Test du calendrier
-    $calendar = $user->getDefaultCalendar();
-    if (!isset($calendar)) {
-      $user->createDefaultCalendar($this->rc->config->get('default_calendar_name', null));
+    if (isset($user->dn)) {
+      // Test du calendrier
+      $calendar = $user->getDefaultCalendar();
+      if (!isset($calendar)) {
+        $user->createDefaultCalendar($this->rc->config->get('default_calendar_name', null));
+      }
+      // Test du carnet d'adresses
+      $addressbook = $user->getDefaultAddressbook();
+      if (!isset($addressbook)) {
+        $user->createDefaultAddressbook($this->rc->config->get('default_addressbook_name', null));
+      }
+      // Test de la liste de tâches
+      $taskslist = $user->getDefaultTaskslist();
+      if (!isset($taskslist)) {
+        $user->createDefaultTaskslist($this->rc->config->get('default_taskslist_name', null));
+      }
     }
-    // Test du carnet d'adresses
-    $addressbook = $user->getDefaultAddressbook();
-    if (!isset($addressbook)) {
-      $user->createDefaultAddressbook($this->rc->config->get('default_addressbook_name', null));
-    }
-    // Test de la liste de tâches
-    $taskslist = $user->getDefaultTaskslist();
-    if (!isset($taskslist)) {
-      $user->createDefaultTaskslist($this->rc->config->get('default_taskslist_name', null));
-    }
+    
     return $args;
   }
 
@@ -466,6 +469,13 @@ class mel extends rcube_plugin
         $args['_task'] = 'bureau';
       }
     }
+
+    $user = driver_mel::gi()->getUser();
+
+    if (!isset($user->dn)) {
+      return $args;
+    }
+
     // Gestion des identities de l'utilisateur
     $rc_identities = $this->rc->user->list_identities();
     $m2_identities = $this->m2_list_identities();

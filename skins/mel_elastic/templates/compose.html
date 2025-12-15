@@ -264,20 +264,30 @@
   <ul class="menu listing" role="menu">
     <li role="menuitem" id="sigmenu-full">
       <a href="#"
-         onclick="rcmail.env.signature_type = 'full'; rcmail.command('insert-sig'); return false;">
-        <span class="sig-checkmark" style="display:none">✓ </span>Signature complète
+         onclick="return rcmail.command('insert-sig-full', '', this);">
+        <span class="sig-checkmark" style="display:none">✓ </span>
+        <roundcube:label name="signature_full" />
       </a>
     </li>
     <li role="menuitem" id="sigmenu-intermediaire">
       <a href="#"
-         onclick="rcmail.env.signature_type = 'intermediaire'; rcmail.command('insert-sig'); return false;">
-        <span class="sig-checkmark" style="display:none">✓ </span>Signature intermédiaire
+         onclick="return rcmail.command('insert-sig-medium', '', this);">
+        <span class="sig-checkmark" style="display:none">✓ </span>
+        <roundcube:label name="signature_medium" />
       </a>
     </li>
     <li role="menuitem" id="sigmenu-simple">
       <a href="#"
-         onclick="rcmail.env.signature_type = 'simple'; rcmail.command('insert-sig'); return false;">
-        <span class="sig-checkmark" style="display:none">✓ </span>Signature simple
+         onclick="return rcmail.command('insert-sig-simple', '', this);">
+        <span class="sig-checkmark" style="display:none">✓ </span>
+        <roundcube:label name="signature_simple" />
+      </a>
+    </li>
+		<li role="menuitem" id="sigmenu-none">
+      <a href="#"
+         onclick="return rcmail.command('insert-sig-none', '', this);">
+        <span class="sig-checkmark" style="display:none">✓ </span>
+        <roundcube:label name="signature_none" />
       </a>
     </li>
   </ul>

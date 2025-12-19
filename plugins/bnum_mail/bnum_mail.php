@@ -3,6 +3,12 @@ class bnum_mail extends bnum_plugin {
   public $task = 'mail|settings';
 
   function init() {
+    // PAMELA - 0008128 - Plusieurs signatures
+    // Charger le JS uniquement pour la tâche "mail"
+    if ($this->rc()->task === 'mail') {
+      $this->include_script('js/lib/main.js');
+    }
+
     if ($this->is_index_action()) {
         $this->load_config();
 

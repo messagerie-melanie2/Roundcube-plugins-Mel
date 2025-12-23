@@ -118,6 +118,9 @@ class mel_suspects_urls extends bnum_plugin
    */
   public function get_all_urls()
   {
+
+      $this->require_admin_rights('plugin.mel_suspects_urls_urls_data');
+
       try {
 
           $sql = "SELECT * FROM mel_suspects_urls ORDER BY url_id ASC";
@@ -152,9 +155,13 @@ class mel_suspects_urls extends bnum_plugin
   }
 
   /** Ajout d'une URL suspecte en BDD
+   * Seuls les admins ont les accès pour ajouter une URL suspecte
   */
   function add_suspect_url()
   {
+
+      $this->require_admin_rights('plugin.mel_suspects_urls_add_url_response');
+
       $url = trim(rcube_utils::get_input_value('_url', rcube_utils::INPUT_POST));
 
       if (!$url) {
@@ -214,9 +221,13 @@ class mel_suspects_urls extends bnum_plugin
   }
 
   /** Suppression d'une URL suspecte en BDD
+   * Seuls les admins ont les accès pour supprimer une URL suspecte
   */
   function delete_suspect_url()
   {
+
+      $this->require_admin_rights('plugin.mel_suspects_urls_delete_url_response');
+
       $url_id = intval(rcube_utils::get_input_value('_url_id', rcube_utils::INPUT_POST));
 
       try {
@@ -245,10 +256,14 @@ class mel_suspects_urls extends bnum_plugin
 
 
   /** Mise à jour du statut d'une URL en BDD
-  * (0 = suspecte, 1 = bloquée) 
+  * (0 = suspecte, 1 = bloquée)
+  * Seuls les admins ont les accès pour modifier une URL suspecte
   */
   function update_url_status()
   {
+
+      $this->require_admin_rights('plugin.mel_suspects_urls_update_status_response');
+
       $url_id = intval(rcube_utils::get_input_value('_url_id', rcube_utils::INPUT_POST));
       $statut = intval(rcube_utils::get_input_value('_statut', rcube_utils::INPUT_POST));
 
@@ -286,6 +301,23 @@ class mel_suspects_urls extends bnum_plugin
     $admin_users = $this->get_config('suspectsurls_admin_list', []);
 
     return in_array($current_user, $admin_users);
+  }
+
+  /**
+ * Coupe l'exécution si l'utilisateur n'a pas les droits admin.
+ *
+ * @param string $event Nom de l'event JS à utiliser dans send_command()
+ */
+  private function require_admin_rights($event)
+  {
+    if (!$this->check_rights_user()) {
+      $this->send_command($event, [
+        'success' => false,
+        'message' => $this->gettext('mel_suspects_urls.access_denied'),
+      ]);
+
+      $this->send_and_exit();
+    }
   }
 
   /**

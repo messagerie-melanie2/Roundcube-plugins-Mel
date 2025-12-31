@@ -2061,6 +2061,8 @@ class HTMLBnumButton extends BnumElement {
   #_wrapper;
   #_iconEl;
   #_renderScheduler = null;
+  #_onClick = null;
+  #_lastClick = null;
   //#endregion Private fields
   //#region Public fields
   /**
@@ -2079,6 +2081,15 @@ class HTMLBnumButton extends BnumElement {
    * Événement déclenché lors du changement de variation du bouton.
    */
   onvariationchange = new JsEvent();
+  get linkedClickEvent() {
+    if (this.#_onClick === null) {
+      this.#_onClick = new JsEvent();
+      this.addEventListener('click', () => {
+        this.#_onClick?.call?.();
+      });
+    }
+    return this.#_onClick;
+  }
   //#endregion Public fields
   //#region Getter/setter
   /**
@@ -2215,6 +2226,7 @@ class HTMLBnumButton extends BnumElement {
       );
     }
     this.#_updateDOM();
+    HTMLBnumButton.ToButton(this);
   }
   _p_update(name, oldVal, newVal) {
     if (!this.#_wrapper) return;
@@ -2275,6 +2287,34 @@ class HTMLBnumButton extends BnumElement {
     // Accessibilité (Internals gère aria-disabled, mais tabindex doit être géré ici)
     this.#_internals.ariaDisabled = String(isDisabled || isLoading);
     this.tabIndex = isDisabled || isLoading ? -1 : 0;
+    if (this.hasAttribute('click')) {
+      const click = this.getAttribute('click');
+      if (click !== this.#_lastClick) {
+        if (this.linkedClickEvent.has('click'))
+          this.linkedClickEvent.remove('click');
+        if (click && REG_XSS_SAFE.test(click)) {
+          this.#_lastClick = click;
+          this.linkedClickEvent.add(
+            'click',
+            (click) => {
+              // Si c'est un id unique
+              var elementToClick = document.getElementById(click);
+              if (elementToClick) elementToClick.click();
+              else {
+                // Sinon on part du principe que c'est un sélecteur CSS
+                const elements = document.querySelector(click);
+                if (elements) elements.click();
+                else
+                  throw new Error(
+                    `[${TAG$1}] L'attribut 'click' ne référence aucun élément.`,
+                  );
+              }
+            },
+            click,
+          );
+        }
+      }
+    }
   }
   /**
    * Indique si le bouton est arrondi.
@@ -2348,6 +2388,7 @@ class HTMLBnumButton extends BnumElement {
       HTMLBnumButton.ATTR_ROUNDED,
       HTMLBnumButton.ATTR_LOADING,
       HTMLBnumButton.ATTR_DISABLED,
+      'click',
     ];
   }
   /**
@@ -14209,7 +14250,7 @@ HTMLBnumCardAgenda.TryDefine();
 //#endregion TryDefine
 
 var css_248z$3 =
-  ':host{cursor:pointer;font-variation-settings:"wght" 400;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}:host(:hover){font-variation-settings:"FILL" 1,"GRAD" -25,"opsz" 48}:host(:active){font-variation-settings:"FILL" 1,"wght" 700,"GRAD" 200,"opsz" 20}:host(:disabled),:host([disabled]){cursor:not-allowed;opacity:var(--bnum-button-disabled-opacity,.6);pointer-events:var(--bnum-button-disabled-pointer-events,none)}';
+  ':host{cursor:pointer;font-variation-settings:"wght" 400;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}:host(:hover){font-variation-settings:"FILL" 1 "wght" 400}:host(:active){font-variation-settings:"FILL" 1,"wght" 700,"GRAD" 200,"opsz" 20}:host(:disabled),:host([disabled]){cursor:not-allowed;opacity:var(--bnum-button-disabled-opacity,.6);pointer-events:var(--bnum-button-disabled-pointer-events,none)}';
 
 const SHEET$2 = BnumElement.ConstructCSSStyleSheet(css_248z$3);
 /**
@@ -14243,8 +14284,19 @@ class HTMLBnumButtonIcon extends BnumElement {
    * Référence vers l'élément icône à l'intérieur du bouton
    */
   #_icon = null;
+  #_onClick = null;
+  #_lastClick = null;
   //#endregion Private fields
   //#region Getters/Setters
+  get #_linkedClickEvent() {
+    if (this.#_onClick === null) {
+      this.#_onClick = new JsEvent();
+      this.addEventListener('click', () => {
+        this.#_onClick?.call?.();
+      });
+    }
+    return this.#_onClick;
+  }
   /**
    * Référence vers l'élément icône à l'intérieur du bouton.
    *
@@ -14292,15 +14344,52 @@ class HTMLBnumButtonIcon extends BnumElement {
   /**
    * @inheritdoc
    */
-  _p_buildDOM(container) {
+  _p_buildDOM(_) {
     HTMLBnumButton.ToButton(this);
     if (this.title === EMPTY_STRING)
       console.warn(
         'Icon button should have a title for accessibility purposes',
       );
+    if (this.hasAttribute('click')) {
+      const click = this.getAttribute('click');
+      this.#_updateAttributeClick(click ?? EMPTY_STRING);
+    }
+  }
+  _p_update(name, oldVal, newVal) {
+    if (oldVal === newVal) return;
+    if (name === 'click') {
+      this.#_updateAttributeClick(newVal ?? EMPTY_STRING);
+    }
   }
   //#endregion Lifecycle
   //#region Private methods
+  #_updateAttributeClick(val) {
+    if (val !== this.#_lastClick) {
+      this.#_lastClick = val;
+      if (this.#_linkedClickEvent.has('click'))
+        this.#_linkedClickEvent.remove('click');
+      if (val && REG_XSS_SAFE.test(val)) {
+        this.#_linkedClickEvent.add(
+          'click',
+          (click) => {
+            // Si c'est un id unique
+            var elementToClick = document.getElementById(click);
+            if (elementToClick) elementToClick.click();
+            else {
+              // Sinon on part du principe que c'est un sélecteur CSS
+              const elements = document.querySelector(click);
+              if (elements) elements.click();
+              else
+                throw new Error(
+                  `[${HTMLBnumButtonIcon.TAG}] L'attribut 'click' ne référence aucun élément.`,
+                );
+            }
+          },
+          val,
+        );
+      }
+    }
+  }
   /**
    * Permet de lancer une erreur avec un message spécifique dans une expression inline.
    * @param msg Message à envoyer dans l'erreur.
@@ -14310,6 +14399,12 @@ class HTMLBnumButtonIcon extends BnumElement {
   }
   //#endregion Private methods
   //#region Static methods
+  /**
+   * Retourne la liste des attributs observés par le composant.
+   */
+  static _p_observedAttributes() {
+    return ['click'];
+  }
   /**
    * Génère un bouton icône avec l'icône spécifiée.
    * @param icon Icône à afficher dans le bouton.

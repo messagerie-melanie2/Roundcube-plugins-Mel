@@ -5,8 +5,51 @@
   <roundcube:label name="mail" />
 </h1>
 
+ <bnum-column id="layout-sidebar" class="listbox" role="navigation" aria-labelledby="aria-label-folderlist">
+  <!-- <div class="header" slot="header"> -->
+      <bnum-hide breakpoint="touch" mode="up" slot="header"> 
+            <a class="button icon back-list-button" href="#back"><span class="inner">
+        <roundcube:label name="back" />
+      </span></a>
+        <!-- <bnum-icon-button class="button icon back-list-button" title="<roundcube:label name="back" />">arrow_back</bnum-icon-button> -->
+      </bnum-hide> 
+      <bnum-hide breakpoint="touch" mode="up" slot="header">
+        <span class="header-title username">
+          <roundcube:object name="username" />
+        </span>
+      </bnum-hide>
+
+    <bnum-hide breakpoint="touch" mode="down" slot="header">
+      <bnum-primary-button data-hide="touch" block data-icon="border_color">Nouveau message</bnum-primary-button>
+    </bnum-hide>
+
+    <bnum-icon-button name="folderactions" title="folderactions" label="actions"
+    class="sidebar-menu" data-popup="mailboxoptions-menu"
+    style="display: block!important;" slot="header"
+    >more_vert</bnum-icon-button>
+  <!-- </div> -->
+
+  <h2 id="aria-label-folderlist" class="voice">
+    <roundcube:label name="arialabelfolderlist" />
+  </h2>
+  <div id="folderlist-content" class="scroller">
+    <roundcube:object name="mailboxlist" id="mailboxlist" class="treelist listing folderlist" folder_filter="mail"
+      unreadwrap="%s" />
+  </div>
+  <div slot="footer" class="footer small">
+    <roundcube:if condition="env:quota" />
+    <div id="quotadisplay" class="quota-widget">
+      <span class="voice">
+        <roundcube:label name="quota">
+      </span>
+      <roundcube:object name="quotaDisplay" class="count" display="text" />
+    </div>
+    <roundcube:endif />
+  </div>
+ </bnum-column> 
+
 <!-- folders list -->
-<div id="layout-sidebar" class="listbox" role="navigation" aria-labelledby="aria-label-folderlist">
+ <!-- <div id="layout-sidebar" class="listbox" role="navigation" aria-labelledby="aria-label-folderlist">
   <div class="header">
     <a class="button icon back-list-button" href="#back"><span class="inner">
         <roundcube:label name="back" />
@@ -14,8 +57,6 @@
     <span class="header-title username">
       <roundcube:object name="username" />
     </span>
-    <!-- <roundcube:button name="folderactions" type="link" title="folderactions" label="actions"
-			class="button icon sidebar-menu" innerclass="inner" data-popup="mailboxoptions-menu" /> -->
   </div>
   <h2 id="aria-label-folderlist" class="voice">
     <roundcube:label name="arialabelfolderlist" />
@@ -36,7 +77,7 @@
     </div>
     <roundcube:endif />
   </div>
-</div>
+</div>  -->
 
 <!-- messages list -->
 <div id="layout-list" class="initial listbox selected">

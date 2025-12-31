@@ -50,7 +50,7 @@ class mel_elastic extends bnum_plugin
      *
      * @var array
      */
-    private $css = ["icofont.css", "jquery.datetimepicker.min.css", "mel-icons.css", "material-symbols.css"];
+    private $css = ["icofont.css", "jquery.datetimepicker.min.css", "mel-icons.css", "material-symbols.css", "design-system/css/global.css", "design-system/css/parts/page-columns.css"];
 
     /**
      * Thème actuellement chargé.
@@ -100,6 +100,7 @@ class mel_elastic extends bnum_plugin
             $this->include_script('../../skins/mel_elastic/dependencies/poppers.js');
             $this->include_script('../../skins/mel_elastic/ui.js');
             $this->include_module('elastic_ui.js', '../../skins/mel_elastic', 'foot');
+            // $this->include_component('ds-module-bnum.js', '../../skins/mel_elastic/design-system', 'mel_elastic');
             $this->include_script('../../skins/mel_elastic/jquery.datetimepicker.full.min.js');
             $this->rc->output->set_env('mel_themes', $this->mep_themes());
             $this->rc->output->set_env('mel_themes_pictures', Background::from_path($this->skinPath.'/images/backgrounds/backgrounds.json'));

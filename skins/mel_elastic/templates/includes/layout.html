@@ -50,6 +50,7 @@
 		} catch (e) { }
 		</script>
 	<roundcube:endif />
+		<script src="skins/mel_elastic/design-system/ds-module-bnum.js" type="module"></script>
 	<<elastic:modules/>>
 </head>
 <body class="task-<roundcube:exp expression="env:error_task ?: env:task ?: 'error'"> action-<roundcube:exp expression="asciiwords(env:action, true, '-') ?: 'none'">">

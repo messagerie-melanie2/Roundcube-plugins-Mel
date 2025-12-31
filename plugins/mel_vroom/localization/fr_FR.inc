@@ -1,0 +1,46 @@
+<?php
+
+$labels['vroom'] = 'Gestion des VRooms';
+$labels['vroom_title'] = 'Ouvrir le menu de gestion des VRooms';
+$labels['access_denied'] = "Accès refusé. Vous n'avez pas les droits nécessaires.";
+$labels['load_error'] = "Erreur de chargement des ressources.";
+$labels['example'] = 'Rechercher une VRoom';
+$labels['delete_field'] = 'Effacer le champ';
+$labels['title_search_vroom'] = 'Rechercher une VRoom';
+$labels['add_vroom'] = 'Créér une VRoom';
+$labels['resource_name'] = 'Nom de la ressource';
+$labels['resource_floor'] = 'Etage';
+$labels['resource_capacity'] = 'Capacité';
+$labels['resource_building'] = 'Bâtiment';
+$labels['resource_room'] = 'Bureau';
+$labels['show'] = 'Voir';
+$labels['show_resource_title'] = 'Voir la ressource';
+$labels['delete'] = 'Supprimer';
+$labels['modify'] = 'Modifier';
+$labels['back'] = 'Retour';
+$labels['vroom_room_info'] = 'Informations sur la salle';
+$labels['vroom_address'] = 'Adresse de la salle';
+$labels['vroom_info'] = 'Informations sur la VRoom';
+$labels['street'] = 'Nom de rue';
+$labels['postalcode'] = 'Code postal';
+$labels['locality'] = 'Ville';
+$labels['resource_uid'] = 'Uid de la ressource';
+$labels['resource_email'] = 'Adresse email de la ressource';
+$labels['resource_zoom_email'] = 'Adresse email interne Zoom';
+$labels['vroom_calendar_shares'] = 'Partages du calendrier de la ressource';
+$labels['share_name'] = 'Utilisateur';
+$labels['share_value'] = 'Partage';
+$labels['vroom_no_calendar_share'] = 'Aucun partage positionné sur le calendrier de cette ressource.';
+$labels['vroom_calendar_share_rw'] = 'Lecture/Écriture';
+$labels['vroom_calendar_share_r'] = 'Lecture seule';
+$labels['add_calendar_share'] = 'Ajouter un partage au calendrier';
+$labels['button_add_calendar_share'] = 'Ajouter';
+$labels['button_title_add_calendar_share'] = 'Ajouter un partage pour cet utilisateur sur le calendrier de la VRoom';
+$labels['share_added'] = 'Droit de partage "$type" ajouté pour l\'utilisateur $name sur le calendrier de la VRoom.';
+$labels['confirm_delete_share'] = 'Êtes-vous sûr de vouloir supprimer le partage du calendrier pour l\'utilisateur $name ?';
+$labels['calendar does not exist'] = 'Le calendrier de cette ressource n\'existe pas.';
+$labels['bad acl value'] = 'La valeur de partage spécifiée est incorrecte.';
+$labels['cannot add share'] = 'Impossible d\'ajouter le partage au calendrier de la ressource.';
+$labels['cannot delete share'] = 'Impossible de supprimer le partage du calendrier de la ressource.';
+$labels['share_deleted'] = 'Partage du calendrier supprimé pour l\'utilisateur $name.';
+

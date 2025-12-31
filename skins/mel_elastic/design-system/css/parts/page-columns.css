@@ -1,0 +1,82 @@
+/* Nuances de bleu */
+/* Nuances de gris */
+/* Danger */
+/* Warnings */
+/*  - Espace interne des boutons            */
+/*  - Espace entre items de liste           */
+/*  - Padding interne des cartes            */
+/*  - Espace entre les cartes (organismes)  */
+/* - Espace entre sections                 */
+/* Composites */
+@keyframes rotate360 {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+#layout-sidebar {
+  --layout-sidebar-background-color: var(
+    --bnum-layout-sidebar-bg,
+    var(--bnum-color-left-column, #f6f6f6)
+  );
+  --layout-sidebar-text-color: var(
+    --bnum-layout-sidebar-color,
+    var(--bnum-text-primary, #3a3a3a)
+  );
+  --mail-header-layout-list-background-color: var(
+    --bnum-layout-sidebar-bg,
+    var(--bnum-color-left-column, #f6f6f6)
+  );
+  background-color: var(
+    --layout-sidebar-background-color,
+    var(--bnum-layout-sidebar-bg, var(--bnum-color-left-column, #f6f6f6))
+  );
+  color: var(
+    --layout-sidebar-text-color,
+    var(--bnum-layout-sidebar-color, var(--bnum-text-primary, #3a3a3a))
+  );
+}
+#layout-sidebar .header {
+  --layout-sidebar-background-color: var(
+    --bnum-layout-sidebar-bg,
+    var(--bnum-color-left-column, #f6f6f6)
+  );
+  --layout-sidebar-text-color: var(
+    --bnum-layout-sidebar-color,
+    var(--bnum-text-primary, #3a3a3a)
+  );
+  --mail-header-layout-list-background-color: var(
+    --bnum-layout-sidebar-bg,
+    var(--bnum-color-left-column, #f6f6f6)
+  );
+  background-color: var(
+    --layout-sidebar-background-color,
+    var(--bnum-layout-sidebar-bg, var(--bnum-color-left-column, #f6f6f6))
+  );
+  color: var(
+    --layout-sidebar-text-color,
+    var(--bnum-layout-sidebar-color, var(--bnum-text-primary, #3a3a3a))
+  );
+  padding: var(--layout-sidebar-header-padding, 12px 16px 12px 16px);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  align-content: center;
+  justify-content: space-between;
+}
+#layout-sidebar .old-header {
+  width: 100%;
+}
+html.framed bnum-column#layout-sidebar,
+html.framed bnum-column-sidebar#layout-sidebar {
+  margin-top: 0;
+  margin-left: 0;
+}
+html.layout-large .task-mail bnum-column#layout-sidebar > .header,
+html.layout-large .task-mail bnum-column-sidebar#layout-sidebar > .header,
+html.layout-large .task-mail #layout-sidebar > .header {
+  display: flex;
+  margin: 0;
+}

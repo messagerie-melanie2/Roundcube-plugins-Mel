@@ -493,6 +493,24 @@ abstract class bnum_plugin extends rcube_plugin
     }
 
     /**
+     * Récupère un utilisateur à partir de son DN.
+     *
+     * @param string $dn DN de l'utilisateur.
+     */
+    protected function get_user_from_dn($dn) {
+        return  driver_mel::gi()->getUser(null, true, false, $dn);
+    }
+
+    /**
+     * Récupère un groupe à partir de son DN.
+     *
+     * @param string $dn DN du groupe.
+     */
+    protected function get_group($dn) {
+        return driver_mel::gi()->getGroup($dn);
+    }
+
+    /**
      * Indique au footer que le footer doit être caché.
      */
     protected function ignore_footer() {

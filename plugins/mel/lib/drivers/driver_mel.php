@@ -195,6 +195,17 @@ abstract class driver_mel {
   }
 
   /**
+   * Generate group resource from the ORM with the right Namespace
+   * 
+   * @param array $params [Optionnal] parameters of the constructor
+   * 
+   * @return \LibMelanie\Api\Defaut\Resource
+   */
+  public function resource($params = []) {
+    return $this->object('Resource', $params);
+  }
+
+  /**
    * Generate share object from the ORM with the right Namespace
    * 
    * @param array $params [Optionnal] parameters of the constructor
@@ -401,6 +412,17 @@ abstract class driver_mel {
    */
   public function notification($params = []) {
     return $this->object('Notification', $params);
+  }
+
+  /**
+   * Return a constant from the ORM with the right Namespace
+   * 
+   * @param string $constantName Constant name
+   * 
+   * @return mixed Constant value
+   */
+  public function constant($constantName) {
+    return constant(static::$_objectsNS . $constantName);
   }
 
   /**

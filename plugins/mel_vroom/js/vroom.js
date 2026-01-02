@@ -37,13 +37,23 @@
     'plugin.mel_vroom_add_calendar_share',
     function (response) {
       if (response.success) {
+        const label = response.group ? 'share_group_added' : 'share_added';
         rcmail.display_message(
-          rcmail.get_label('share_added', 'mel_vroom', {name: response.data.displayname, type: rcmail.get_label('mel_vroom.vroom_calendar_share_' + response.data.share)}),
+          rcmail.get_label(label, 'mel_vroom', {name: response.data.displayname, type: rcmail.get_label('mel_vroom.vroom_calendar_share_' + response.data.share)}),
           'confirmation'
         );
-        rcmail.env.vroom_calendar_shares.push(response.data);
-        rcmail.env.vroom_calendar_shares.sort((a,b) => (a.displayname > b.displayname) ? 1 : ((b.displayname > a.displayname) ? -1 : 0));
-        refreshSharesList();
+
+        if (response.group) {
+          rcmail.env.vroom_calendar_group_shares.push(response.data);
+          rcmail.env.vroom_calendar_group_shares.sort((a,b) => (a.displayname > b.displayname) ? 1 : ((b.displayname > a.displayname) ? -1 : 0));
+          refreshSharesGroupList();
+        }
+        else {
+          rcmail.env.vroom_calendar_shares.push(response.data);
+          rcmail.env.vroom_calendar_shares.sort((a,b) => (a.displayname > b.displayname) ? 1 : ((b.displayname > a.displayname) ? -1 : 0));
+          refreshSharesList();
+        }
+        
       } else {
         console.error('Erreur lors de l\'ajout du partage au calendrier :', response.error);
         rcmail.display_message(
@@ -59,14 +69,24 @@
     'plugin.mel_vroom_delete_calendar_share',
     function (response) {
       if (response.success) {
+        const label = response.group ? 'share_group_deleted' : 'share_deleted';
         rcmail.display_message(
-          rcmail.get_label('share_deleted', 'mel_vroom', {name: response.data.user}),
+          rcmail.get_label(label, 'mel_vroom', {name: response.data.user}),
           'confirmation'
         );
-        rcmail.env.vroom_calendar_shares = rcmail.env.vroom_calendar_shares.filter((obj) => {
-          return obj.user !== response.data.user;
-        });
-        refreshSharesList();
+
+        if (response.group) {
+          rcmail.env.vroom_calendar_group_shares = rcmail.env.vroom_calendar_group_shares.filter((obj) => {
+            return obj.user !== response.data.user;
+          });
+          refreshSharesGroupList();
+        }
+        else {
+          rcmail.env.vroom_calendar_shares = rcmail.env.vroom_calendar_shares.filter((obj) => {
+            return obj.user !== response.data.user;
+          });
+          refreshSharesList();
+        }
       } else {
         console.error('Erreur lors de la suppression du partage au calendrier :', response.error);
         rcmail.display_message(
@@ -84,6 +104,9 @@
   window.addEventListener('load', async function () {
     if (this.document.querySelector('.resources-list')) {
       await initResourcesUI();
+    }
+    else if (this.document.querySelector('.resource-create')) {
+      await initCreateResourceUI();
     }
     else {
       await initResourceUI();
@@ -133,20 +156,13 @@
 
       if (searchTerm) {
         filteredResourcesList = allResourcesList.filter((item) =>
-          item.name.toLowerCase().includes(searchTerm),
+          item.name.toLowerCase().includes(searchTerm) || item.building.toLowerCase().includes(searchTerm),
         );
       } else {
         filteredResourcesList = [...allResourcesList];
       }
       currentPage = 1;
       updateResourcesUI();
-    });
-
-    // Ajout avec la touche Entrée
-    input?.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        addBtn.click();
-      }
     });
 
     clearBtn?.addEventListener('click', () => {
@@ -160,26 +176,25 @@
     });
 
     addBtn?.addEventListener('click', () => {
-      const value = input.value.trim();
+      rcmail.location_href(
+        rcmail.url('plugin.mel_vroom', '_act=create&_is_from=iframe')
+        , window, true);
+    });
+  }
 
-      if (!value) return;
-
-      const alreadyExists = filteredResourcesList.some(
-        (item) => item.url.toLowerCase() === value.toLowerCase(),
+  /**
+   * Initialise l'interface utilisateur pour la gestion d'une ressource
+   * Configure les écouteurs d'événements pour le bouton backBtn
+   * @returns {Promise<void>}
+   */
+  async function initCreateResourceUI() {
+    // Retour à la liste des ressources
+    document.getElementById('resource-back-btn')?.addEventListener('click', () => {
+      rcmail.location_href(
+        rcmail.url('plugin.mel_vroom', '_is_from=iframe'),
+        window,
+        true,
       );
-
-      if (alreadyExists) {
-        rcmail.display_message(
-          rcmail.gettext('url_already_exist', 'mel_suspects_urls'),
-          'error',
-        );
-        return;
-      }
-
-      addBtn.setLoadingMode();
-      rcmail
-        .http_post('suspect_urls/add_suspect_url', { _url: value })
-        .then(() => addBtn.stopLoadingMode());
     });
   }
 
@@ -208,6 +223,27 @@
       for (const value of values) {
         rcmail.http_post('settings/plugin.mel_vroom', {
           _act: 'add_calendar_share',
+          _group: false,
+          _user: value,
+          _acl: type,
+          _resource_uid: rcmail.env.vroom_uid,
+        }, rcmail.set_busy(true, 'loading'));
+      }
+
+      // Réinitialiser l'input
+      input.value = '';
+    });
+
+    // Ajout d'un partage d'agenda vers un groupe
+    document.getElementById('calendar-group-share-add-btn')?.addEventListener('click', () => {
+      const input = document.getElementById('calendar-group-share-input');
+      const values = input.value.split(', ').filter(i => i);
+      const type = document.getElementById('calendar-group-share-select').value;
+
+      for (const value of values) {
+        rcmail.http_post('settings/plugin.mel_vroom', {
+          _act: 'add_calendar_share',
+          _group: true,
           _user: value,
           _acl: type,
           _resource_uid: rcmail.env.vroom_uid,
@@ -227,13 +263,31 @@
       }
     });
 
+    // Enter sur l'input de partage vers les groupes
+    document.getElementById('calendar-group-share-input')?.addEventListener('keydown', (e) => {
+      if (document.getElementById('calendar-group-share-input').getAttribute('aria-expanded') === 'true') return; // Ignorer si le menu déroulant est ouvert
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('calendar-group-share-add-btn').click();
+      }
+    });
+
     if (rcmail.env.vroom_calendar_shares.length) {
       refreshSharesList();
+    }
+
+    if (rcmail.env.vroom_calendar_group_shares.length) {
+      refreshSharesGroupList();
     }
 
     // Init autocomplète sur les partages d'agenda
     rcmail.init_address_input_events($('#calendar-share-input'), {
       action: 'settings/plugin.acl-autocomplete',
+    });
+
+    // Init autocomplète sur les partages d'agenda vers les groupes
+    rcmail.init_address_input_events($('#calendar-group-share-input'), {
+      action: 'settings/plugin.acl-autocomplete-group',
     });
   }
 
@@ -243,6 +297,17 @@
   function refreshSharesList() {
     const sharesList = document.querySelector('table#vroom_calendar_shares tbody');
     sharesList.innerHTML = '';
+
+    if (rcmail.env.vroom_calendar_shares.length === 0) {
+      const tr = document.createElement('tr'),
+            td = createTd(rcmail.gettext('vroom_no_calendar_share', 'mel_vroom'));
+      td.colSpan = 3;
+      tr.appendChild(td);
+      tr.className = 'no_calendar_share';
+      sharesList.appendChild(tr);
+      return;
+    }
+
     rcmail.env.vroom_calendar_shares.forEach((share) => {
       const tr = document.createElement('tr');
 
@@ -262,6 +327,57 @@
         if (confirm(rcmail.gettext('confirm_delete_share', 'mel_vroom', {name: share.displayname}))) {
           rcmail.http_post('settings/plugin.mel_vroom', {
             _act: 'delete_calendar_share',
+            _group: false,
+            _user: share.user,
+            _resource_uid: rcmail.env.vroom_uid,
+          }, rcmail.set_busy(true, 'loading'));
+        }
+      });
+
+      delTd.appendChild(delBtn);
+      tr.appendChild(delTd);
+      
+      sharesList.appendChild(tr);
+    });
+  }
+
+  /**
+   * Met à jour la liste des partages d'agenda vers les groupes dans l'interface utilisateur
+   */
+  function refreshSharesGroupList() {
+    const sharesList = document.querySelector('table#vroom_calendar_group_shares tbody');
+    sharesList.innerHTML = '';
+
+    if (rcmail.env.vroom_calendar_group_shares.length === 0) {
+      const tr = document.createElement('tr'),
+            td = createTd(rcmail.gettext('vroom_no_calendar_group_share', 'mel_vroom'));
+      td.colSpan = 3;
+      tr.appendChild(td);
+      tr.className = 'no_calendar_share';
+      sharesList.appendChild(tr);
+      return;
+    }
+
+    rcmail.env.vroom_calendar_group_shares.forEach((share) => {
+      const tr = document.createElement('tr');
+
+      tr.appendChild(createTd(share.displayname, 'col-5'));
+      tr.appendChild(createTd(share.share_label, 'col-2'));
+
+      // Colonne Supprimer
+      const delTd = createTd('', 'col-2'), 
+            delBtn = document
+                        .getElementById('su-custom-elements')
+                        .content.querySelector('#base-template-button')
+                        .cloneNode(true);
+
+      delBtn.removeAttribute('id');
+
+      delBtn.addEventListener('click', async () => {
+        if (confirm(rcmail.gettext('confirm_delete_group_share', 'mel_vroom', {name: share.displayname}))) {
+          rcmail.http_post('settings/plugin.mel_vroom', {
+            _act: 'delete_calendar_share',
+            _group: true,
             _user: share.user,
             _resource_uid: rcmail.env.vroom_uid,
           }, rcmail.set_busy(true, 'loading'));

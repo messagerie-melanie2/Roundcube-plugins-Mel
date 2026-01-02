@@ -21,13 +21,19 @@
             <roundcube:label name="mel_vroom.title_search_vroom" />
           </h3>
           <div class="row align-items-center">
-            <div class="col-md-12 mb-2 mb-md-0">
+            <div class="col-md-8 mb-2 mb-md-0">
               <div class="mel-add-resource-group">
                 <input id="resource-input" class="form-control" type="text"
                   placeholder="<roundcube:label name='mel_vroom.example' />" value="">
                 <button id="clear-button" class="btn-clear-input" type="button" title="<roundcube:label name='mel_vroom.delete_field' />"
                   aria-label="<roundcube:label name='mel_vroom.delete_field' />">✖</button>
               </div>
+            </div>
+            <div class="col-md-4">
+              <primary-button data-icon="add_circle" id="resource-add-btn" aria-label="<roundcube:label name='mel_vroom.create_title' />"
+                title="<roundcube:label name='mel_vroom.create_title' />">
+                  <roundcube:label name="mel_vroom.create" />
+              </button>
             </div>
           </div>
         </div>

@@ -83,9 +83,7 @@ class mel_vroom extends bnum_plugin
         $this,
         'action_settings'
       ]);
-      $this->add_handlers([
-        'mel_vroom_building_select'    => array($this, 'vroom_building_select'),
-      ]);
+      
       $this->include_stylesheet($this->local_skin_path() . '/vroom.css');
     }
     return $this;
@@ -133,8 +131,12 @@ class mel_vroom extends bnum_plugin
       $this->send_and_exit();
     }
 
-    $vrooms = driver_mel::gi()->resources_vroom($this->get_user_locality());
+    $vrooms = [];
     $data = [];
+
+    foreach ($this->get_user_localities() as $locality) {
+      $vrooms = array_merge($vrooms, driver_mel::gi()->resources_vroom($locality));
+    }
 
     foreach ($vrooms as $vroom) {
       $data[] = [
@@ -167,14 +169,18 @@ class mel_vroom extends bnum_plugin
   }
 
   /**
-   * Récupère la localité de l'utilisateur courant basé sur la configuration
+   * Récupère les localités de l'utilisateur courant basé sur la configuration
    * 
-   * @return string
+   * @return array
    */
-  protected function get_user_locality()
+  protected function get_user_localities()
   {
     $current_user = driver_mel::gi()->getUser()->uid;
     $admin_users = $this->get_config('vrooms_admin_list', []);
+
+    if (!is_array($admin_users[$current_user])) {
+      $admin_users[$current_user] = [$admin_users[$current_user]];
+    }
 
     return $admin_users[$current_user];
   }
@@ -189,15 +195,20 @@ class mel_vroom extends bnum_plugin
     $resource_uid = rcube_utils::get_input_value('_resource_uid', rcube_utils::INPUT_GPC);
 
     if (!empty($resource_uid)) {
-      $resources = driver_mel::gi()->resources([$resource_uid]);
+      if (isset($_POST['vroom_name'])) {
+        $resource = driver_mel::gi()->resource([null, 'webmail.resource']);
+      }
+      else {
+        $resource = driver_mel::gi()->resource();
+      }
+      
+      $resource->uid = $resource_uid;
 
-      if (count($resources) === 1) {
-        $this->resource = $resources[0];
-        $locality = $this->get_user_locality();
-        $cn = $this->resource->fullname;
-  
-        // Si le dn matche la localité de l'utilisateur on autorise l'accès
-        return strpos($this->resource->dn, "cn=$cn,ou=$locality,") === 0;
+      if ($resource->load()) {
+        $this->resource = $resource;
+        $localities = $this->get_user_localities();
+
+        return in_array($this->get_resource_locality(), $localities);
       }
       else {
         return false;
@@ -206,6 +217,17 @@ class mel_vroom extends bnum_plugin
     else {
       return false;
     }
+  }
+
+  /**
+   * Récupère la localité de la ressource couranteen se basant sur le dn.
+   * 
+   * @return string|null
+   */
+  protected function get_resource_locality()
+  {
+    $dn = explode(',', $this->resource->dn, 3);
+    return $dn[1] ? substr($dn[1], 3) : null;
   }
 
   /**
@@ -233,10 +255,11 @@ class mel_vroom extends bnum_plugin
    * Récupère les partages du calendrier pour une ressource donnée.
    * 
    * @param Resource $resource La ressource dont on veut récupérer les partages du calendrier.
+   * @param bool $group Indique si les partages sont pour des groupes (true) ou des utilisateurs (false).
    * 
    * @return array Un tableau associatif contenant les partages et leurs droits.
    */
-  protected function get_calendar_shares($resource)
+  protected function get_calendar_shares($resource, $group = false)
   {
     $result = [];
     $calendar = driver_mel::gi()->calendar([$resource]);
@@ -244,7 +267,7 @@ class mel_vroom extends bnum_plugin
 
     if ($calendar->load()) {
       $_share = driver_mel::gi()->share([$calendar]);
-      $_share->type = \LibMelanie\Api\Defaut\Share::TYPE_USER;
+      $_share->type = $group ? \LibMelanie\Api\Defaut\Share::TYPE_GROUP : \LibMelanie\Api\Defaut\Share::TYPE_USER;
       
       foreach ($_share->getList() as $share) {
         if ($share->name == $resource->uid) {
@@ -253,7 +276,7 @@ class mel_vroom extends bnum_plugin
 
         $acl = [
           'user'        => $share->name,
-          'displayname' => $this->get_user($share->name)->name,
+          'displayname' => $group ? $this->get_group($share->name)->fullname : $this->get_user($share->name)->name,
           'share'       => "none",
         ];
 
@@ -288,15 +311,90 @@ class mel_vroom extends bnum_plugin
     }
 
     $html_select = new html_select($attrib);
-    $buildings = $this->get_config('vrooms_address_list', []);
+    $buildings = $this->get_config('vrooms_address_list', []);  
 
-    $html_select->add('---', '---');
+    if (isset($this->resource)) {
+      foreach ($buildings[$this->get_resource_locality()] as $building => $address) {
+        $html_select->add($address['name'], $building);
+      }
 
-    foreach ($buildings[$this->get_user_locality()] as $building => $address) {
-      $html_select->add($building, $building);
+      return $html_select->show($this->get_resource_building_key());
+    }
+    else {
+      foreach ($this->get_user_localities() as $locality) {
+        foreach ($buildings[$locality] as $building => $address) {
+          $html_select->add($address['name'], $locality. '/' . $building);
+        }
+      }
+
+      return $html_select->show();
+    }
+  }
+
+  /**
+   * Génère un sélecteur HTML pour les capacités des VRooms.
+   */
+  public function vroom_capacity_select($attrib)
+  {
+    if (!$attrib['id']) {
+      $attrib['id'] = 'rcmvroomcapacityselect';
     }
 
-    return $html_select->show($this->resource->batiment);
+    $html_select = new html_select($attrib);
+
+    for ($i = 0; $i <= 50; $i++) {
+      $html_select->add("$i", "$i");
+    }
+
+    for ($i = 60; $i <= 200; $i += 10) {
+      $html_select->add("$i", "$i");
+    }
+
+    for ($i = 300; $i <= 1000; $i += 100) {
+      $html_select->add("$i", "$i");
+    }
+
+    if (isset($this->resource)) {
+      return $html_select->show($this->resource->capacite);
+    }
+    else {
+      return $html_select->show("10");
+    }
+  }
+
+  /**
+   * Récupère la clé du bâtiment de la ressource courante.
+   * 
+   * @return string|null La clé du bâtiment ou null si non trouvée.
+   */
+  protected function get_resource_building_key()
+  {
+    $buildings = $this->get_config('vrooms_address_list', []);
+    $locality = $this->get_resource_locality();
+
+    foreach ($buildings[$locality] as $building => $address) {
+      if ($address['name'] == $this->resource->batiment) {
+        return $building;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Récupère les informations du bâtiment de la ressource courante.
+   * 
+   * @param string $batiment La clé du bâtiment.
+   * @param string $locality_uid L'UID de la localité.
+   * 
+   * @return array Les informations du bâtiment ou un tableau vide si non trouvée.
+   */
+  protected function get_resource_building_infos($batiment, $locality_uid)
+  {
+    $buildings = $this->get_config('vrooms_address_list', []);
+
+    return isset($buildings[$locality_uid][$batiment]) ? 
+        array_merge($buildings[$locality_uid][$batiment], ['key' => $batiment]) : [];
   }
 
   /**
@@ -311,9 +409,9 @@ class mel_vroom extends bnum_plugin
       // Affichage normal de la page de configuration
       $this->include_script('js/vroom.js');
 
-      if ($this->check_user_access_to_ressource()) {
-        $action = trim(rcube_utils::get_input_value('_act', rcube_utils::INPUT_GPC));
+      $action = trim(rcube_utils::get_input_value('_act', rcube_utils::INPUT_GPC));
 
+      if ($this->check_user_access_to_ressource()) {
         switch ($action) {
           case 'show':
             $this->action_show_ressource();
@@ -332,6 +430,20 @@ class mel_vroom extends bnum_plugin
             break;
         }
       }
+      else if ($action === 'create') {
+        $this->add_handlers([
+          'vroom_building'    => [$this, 'vroom_building_select'],
+          'vroom_capacity'    => [$this, 'vroom_capacity_select'],
+        ]);
+
+        // Gestion du POST pour enregistrer la VRoom
+        if (isset($_POST['vroom_name'])) {
+          $this->action_create_ressource();
+        }
+        
+        $this->set_page_title($this->gettext('create_title'));
+        $this->send_and_exit('mel_vroom.vroom_creation');
+      }
       else {
         $this->set_page_title($this->gettext('vroom'));
         $this->send_and_exit('mel_vroom.vroom_settings');
@@ -349,6 +461,26 @@ class mel_vroom extends bnum_plugin
   {
     $this->set_page_title($this->gettext('vroom') . ' - ' . $this->resource->fullname);
 
+    $this->add_handlers([
+      'vroom_building'    => [$this, 'vroom_building_select'],
+      'vroom_capacity'    => [$this, 'vroom_capacity_select'],
+    ]);
+
+    // Gestion du POST pour enregistrer la VRoom
+    if (isset($_POST['vroom_name'])) {
+      $this->action_modify_ressource();
+    }
+
+    $this->set_envs_from_ressource();
+
+    $this->send_and_exit('mel_vroom.vroom_show');
+  }
+
+  /**
+   * Remplit les variables d'environnement à partir de la ressource courante.
+   */
+  protected function set_envs_from_ressource()
+  {
     $this->set_envs([
       'vroom_uid'         => $this->resource->uid,
       'vroom_fullname'    => $this->resource->fullname,
@@ -362,10 +494,127 @@ class mel_vroom extends bnum_plugin
       'vroom_locality'    => $this->resource->locality,
       'vroom_email'       => $this->resource->email,
       'vroom_zoom_email'  => $this->resource->zoom_internal_email,
-      'vroom_calendar_shares' => $this->get_calendar_shares($this->resource),
+      'vroom_calendar_shares'       => $this->get_calendar_shares($this->resource),
+      'vroom_calendar_group_shares' => $this->get_calendar_shares($this->resource, true),
     ]);
+  }
 
-    $this->send_and_exit('mel_vroom.vroom_show');
+  /**
+   * Création d'une ressource VRoom.
+   */
+  protected function action_create_ressource()
+  {
+    $resource = driver_mel::gi()->resource([null, 'webmail.resource']);
+    
+    $resource = $this->resource_from_post($resource);
+
+    $resource->uid = $this->generate_uid();
+    $resource->type = LibMelanie\Api\Defaut\Resource::TYPE_VROOM;
+    $resource->service = "Bnum/Ressources/$resource->locality";
+    $resource->zoom_account_id = $this->get_config('vrooms_zoom_account_id', '');
+
+    $ret = $resource->save();
+
+    if (is_null($ret)) {
+      $this->show_message_error($this->gettext('error_add_vroom'));
+    } else {
+      $this->show_message($this->gettext('vroom_added'), 'confirmation');
+      $this->resource = $resource;
+      $this->set_envs_from_ressource();
+      $this->set_page_title($this->gettext('vroom') . ' - ' . $this->resource->fullname);
+      $this->send_and_exit('mel_vroom.vroom_show');
+    }
+  }
+
+  /**
+   * Modifie les informations d'une ressource VRoom.
+   */
+  protected function action_modify_ressource()
+  {
+    $resource = clone $this->resource;
+    
+    $resource = $this->resource_from_post($resource);
+
+    $ret = $resource->save();
+
+    if (is_null($ret)) {
+      $this->show_message_error($this->gettext('error_modify_vroom'));
+    } else {
+      $this->resource = $resource;
+      $this->show_message($this->gettext('vroom_modified'), 'confirmation');
+    }
+  }
+
+  /**
+   * Remplit une ressource VRoom avec les données provenant du POST.
+   * 
+   * @param Resource $resource La ressource à remplir.
+   * 
+   * @return Resource La ressource remplie avec les données du POST.
+   */
+  protected function resource_from_post($resource) 
+  {
+    $resource->name         = trim(rcube_utils::get_input_value('vroom_name', rcube_utils::INPUT_GPC));
+    $resource->etage        = trim(rcube_utils::get_input_value('vroom_floor', rcube_utils::INPUT_GPC));
+    $resource->roomnumber   = trim(rcube_utils::get_input_value('vroom_room', rcube_utils::INPUT_GPC));
+    $resource->capacite     = trim(rcube_utils::get_input_value('vroom_capacity', rcube_utils::INPUT_GPC));
+    $resource->zoom_internal_email     = trim(rcube_utils::get_input_value('vroom_zoom_email', rcube_utils::INPUT_GPC));
+    $resource->fullname     = LibMelanie\Api\Defaut\Resource::TYPE_VROOM . " $resource->name";
+    $resource->displayname  = LibMelanie\Api\Defaut\Resource::TYPE_VROOM . " $resource->name";
+
+    $vroom_building = trim(rcube_utils::get_input_value('vroom_building', rcube_utils::INPUT_GPC));
+
+    if (strpos($vroom_building, '/') !== false) {
+      // Format locality/building
+      list($locality_uid, $vroom_building) = explode('/', $vroom_building, 2);
+
+      $resource->dn = "cn=$resource->fullname,ou=$locality_uid," . driver_mel::gi()->constant('Resource::DN');
+    }
+    else {
+      // Format building only
+      $locality_uid = $this->get_resource_locality();
+    }
+
+    $building = $this->get_resource_building_infos($vroom_building, $locality_uid);
+
+    if (!empty($building)) {
+      $resource->batiment     = $building['name'];
+      $resource->street       = $building['street'];
+      $resource->postalcode   = $building['postalcode'];
+      $resource->locality     = $building['locality'];
+    }
+
+    $resource->email = $this->resource_email(
+      $resource,
+      $locality_uid,
+      $building['key']
+    );
+
+    $resource->email_list = [$resource->email];
+
+    return $resource;
+  }
+
+  /**
+   * Génération d'un uid alpha numérique aléatoire de 32 caractères
+   */
+  protected function generate_uid()
+  {
+    return bin2hex(random_bytes(16));
+  }
+
+  /**
+   * Génère l'adresse e-mail pour une ressource VRoom.
+   * 
+   * @param Resource $resource La ressource pour laquelle générer l'adresse e-mail.
+   * @param string $locality_uid L'UID de la localité.
+   * @param string $building_key La clé du bâtiment.
+   * 
+   * @return string L'adresse e-mail générée pour la ressource VRoom.
+   */
+  protected function resource_email($resource, $locality_uid, $building_key)
+  {
+    return str_replace(' ', '-', strtolower("vroom-{$resource->name}-{$building_key}-{$locality_uid}@" . $this->get_config('vrooms_email_domain', '')));
   }
 
   /**
@@ -374,7 +623,10 @@ class mel_vroom extends bnum_plugin
   protected function action_add_calendar_share()
   {
     $user  = trim(rcube_utils::get_input_value('_user', rcube_utils::INPUT_GPC));
+    $group  = trim(rcube_utils::get_input_value('_group', rcube_utils::INPUT_GPC));
     $acl   = trim(rcube_utils::get_input_value('_acl', rcube_utils::INPUT_GPC));
+
+    $group = $group === 'true' ? true : false;
 
     $calendar = driver_mel::gi()->calendar();
     $calendar->owner = $this->resource->uid;
@@ -396,17 +648,17 @@ class mel_vroom extends bnum_plugin
       $calendar->load();
     }
 
-    if ($this->get_user($user) === null) {
+    if ($group && $this->get_group($user) === null || !$group && $this->get_user($user) === null) {
       $this->send_command('plugin.mel_vroom_add_calendar_share', [
         'success' => false,
-        'error'   => $this->gettext('user does not exist'),
+        'error'   => $group ? $this->gettext('group does not exist') : $this->gettext('user does not exist'),
         'data'    => [],
       ]);
       $this->send_and_exit();
     }
 
     $share = driver_mel::gi()->share([$calendar]);
-    $share->type = LibMelanie\Api\Defaut\Share::TYPE_USER;
+    $share->type = $group ? LibMelanie\Api\Defaut\Share::TYPE_GROUP : LibMelanie\Api\Defaut\Share::TYPE_USER;
     $share->name = $user;
 
     // Compléter automatiquement les droits
@@ -441,9 +693,10 @@ class mel_vroom extends bnum_plugin
     } else {
       $this->send_command('plugin.mel_vroom_add_calendar_share', [
         'success' => true,
+        'group'   => $group,
         'data'    => [
           'user'        => $user,
-          'displayname' => $this->get_user($user)->name,
+          'displayname' => $group ? $this->get_group($user)->fullname : $this->get_user($user)->name,
           'share'       => $acl,
           'share_label' => $this->gettext('vroom_calendar_share_' . $acl),
         ],
@@ -457,6 +710,9 @@ class mel_vroom extends bnum_plugin
   protected function action_delete_calendar_share()
   {
     $user  = trim(rcube_utils::get_input_value('_user', rcube_utils::INPUT_GPC));
+    $group  = trim(rcube_utils::get_input_value('_group', rcube_utils::INPUT_GPC));
+
+    $group = $group === 'true' ? true : false;
 
     $calendar = driver_mel::gi()->calendar();
     $calendar->owner = $this->resource->uid;
@@ -472,12 +728,13 @@ class mel_vroom extends bnum_plugin
     }
 
     $share = driver_mel::gi()->share([$calendar]);
-    $share->type = LibMelanie\Api\Defaut\Share::TYPE_USER;
+    $share->type = $group ? LibMelanie\Api\Defaut\Share::TYPE_GROUP : LibMelanie\Api\Defaut\Share::TYPE_USER;
     $share->name = $user;
 
     if ($share->delete()) {
       $this->send_command('plugin.mel_vroom_delete_calendar_share', [
         'success' => true,
+        'group'   => $group,
         'data'    => [
           'user' => $user,
         ],

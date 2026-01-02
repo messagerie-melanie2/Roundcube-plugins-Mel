@@ -276,7 +276,7 @@ class mel_nextcloud extends rcube_plugin {
     }
     // Configuration de l'environnement
     $rcmail->output->set_env('nextcloud_username', $rcmail->user->get_username());
-    $rcmail->output->set_env('nextcloud_password', urlencode($this->encrypt($rcmail->get_user_password())));
+    $rcmail->output->set_env('nextcloud_password', urlencode($rcmail->encrypt($rcmail->get_user_password(), 'roundcube_nextcloud_des_key')));
     $rcmail->output->set_env('nextcloud_url', $nextcloud_url);
 
     if ($settings) {

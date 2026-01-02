@@ -1214,26 +1214,6 @@ class mel extends rcube_plugin
   }
 
   /**
-   * Retourne l'adresse ip
-   * @return string
-   * @private
-   */
-  private function _get_address_ip()
-  {
-    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-      $ip = $_SERVER['HTTP_CLIENT_IP'];
-      $ip = "[" . $_SERVER['REMOTE_ADDR'] . "]/[$ip]";
-    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-      $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-      $ip = "[" . $_SERVER['REMOTE_ADDR'] . "]/[$ip]";
-    } else {
-      $ip = $_SERVER['REMOTE_ADDR'];
-      $ip = "[$ip]/[" . $_SERVER['REMOTE_ADDR'] . "]";
-    }
-    return $ip;
-  }
-
-  /**
    * Format l'affichage du service pour la barre d'utilisateur
    * @return string
    * @private

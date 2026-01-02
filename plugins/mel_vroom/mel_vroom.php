@@ -691,6 +691,7 @@ class mel_vroom extends bnum_plugin
       ]);
       $this->send_and_exit();
     } else {
+      \mel::unsetCache('users');
       $this->send_command('plugin.mel_vroom_add_calendar_share', [
         'success' => true,
         'group'   => $group,
@@ -732,6 +733,7 @@ class mel_vroom extends bnum_plugin
     $share->name = $user;
 
     if ($share->delete()) {
+      \mel::unsetCache('users');
       $this->send_command('plugin.mel_vroom_delete_calendar_share', [
         'success' => true,
         'group'   => $group,

@@ -8,6 +8,7 @@ $labels['example'] = 'Rechercher une VRoom';
 $labels['delete_field'] = 'Effacer le champ';
 $labels['title_search_vroom'] = 'Rechercher une VRoom';
 $labels['add_vroom'] = 'Créér une VRoom';
+$labels['vroom_name'] = 'Nom de la VRoom';
 $labels['resource_name'] = 'Nom de la ressource';
 $labels['resource_floor'] = 'Etage';
 $labels['resource_capacity'] = 'Capacité';
@@ -51,7 +52,7 @@ $labels['bad acl value'] = 'La valeur de partage spécifiée est incorrecte.';
 $labels['cannot add share'] = 'Impossible d\'ajouter le partage au calendrier de la ressource.';
 $labels['cannot delete share'] = 'Impossible de supprimer le partage du calendrier de la ressource.';
 $labels['share_deleted'] = 'Partage du calendrier supprimé pour l\'utilisateur $name.';
-$labels['share_group_deleted'] = 'Partage du calendrier supprimé pour l\'utilisateur $name.';
+$labels['share_group_deleted'] = 'Partage du calendrier supprimé pour le groupe $name.';
 $labels['save'] = 'Enregistrer';
 $labels['save_title'] = 'Enregistrer les modifications sur la VRoom';
 $labels['user does not exist'] = 'L\'utilisateur spécifié n\'existe pas.';
@@ -65,4 +66,11 @@ $labels['error_modify_vroom'] = 'Une erreur est survenue lors de la modification
 $labels['error_delete_vroom'] = 'Une erreur est survenue lors de la suppression de la VRoom.';
 $labels['create_title'] = 'Création d\'une nouvelle VRoom';
 $labels['create'] = 'Ajouter une VRoom';
+$labels['vroom_caracteristiques'] = 'Caractéristiques de la salle';
+$labels['caracteristique'] = 'Caractéristique';
+$labels['no_caracteristique'] = 'Cette salle n\'a pas encore de caractéristique';
+$labels['button_add_caracteristique'] = 'Ajouter une caractéristique';
+$labels['button_title_add_caracteristique'] = 'Ajouter une caractéristique à cette salle';
+
+
 

@@ -34,7 +34,7 @@
         <table class="resource-table table-striped table-bordered">
           <thead>
             <tr>
-              <th class="col-2"><roundcube:label name="mel_vroom.resource_name" /></th>
+              <th class="col-2"><roundcube:label name="mel_vroom.vroom_name" /></th>
               <th class="col-2"><roundcube:label name="mel_vroom.resource_building" /></th>
               <th class="col-2"><roundcube:label name="mel_vroom.resource_floor" /></th>
               <th class="col-2"><roundcube:label name="mel_vroom.resource_room" /></th>
@@ -73,6 +73,35 @@
         </table>
         <br>
         <h3 class="h5 mb-2">
+          <roundcube:label name="mel_vroom.vroom_caracteristiques" />
+        </h3>
+        <div class="row align-items-center">
+          <div class="col-md-6 mb-2 mb-md-0">
+            <roundcube:object name="vroom_add_caracteristique" />
+          </div>
+          <div class="col-md-3">
+            <primary-button data-icon="add_circle" id="caracteristique-add-btn" aria-label="<roundcube:label name='mel_vroom.button_title_add_caracteristique' />"
+              title="<roundcube:label name='mel_vroom.button_title_add_caracteristique' />">
+                <roundcube:label name="mel_vroom.button_add_caracteristique" />
+            </button>
+          </div>
+        </div>
+        <br>
+        <table id="vroom_caracteristiques" class="resource-table table-striped table-bordered">
+          <thead>
+            <tr>
+              <th class="col-4"><roundcube:label name="mel_vroom.caracteristique" /></th>
+              <th class="col-2"><roundcube:label name="mel_vroom.delete" /></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="col-6" colspan="2"><roundcube:label name="mel_vroom.no_caracteristique" /></td>
+            </tr>
+          </tbody>
+        </table>
+        <br>
+        <h3 class="h5 mb-2">
           <roundcube:label name="mel_vroom.vroom_info" />
         </h3>
         <table class="resource-table table-striped table-bordered">
@@ -91,6 +120,7 @@
             </tr>
           </tbody>
         </table>
+        
         <div class="form-controls">
           <input type="submit" class="mel-button no-margin-button no-button-margin" title="<roundcube:label name="mel_vroom.save_title" />" value="<roundcube:label name="mel_vroom.save" />" />
         </div>

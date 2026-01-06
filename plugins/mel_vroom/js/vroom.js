@@ -214,6 +214,16 @@
       );
     });
 
+    // Ajouter une caractéristique
+    document.getElementById('caracteristique-add-btn')?.addEventListener('click', () => {
+      const selectedValue = document.getElementById('rcmvroomcaracteristiqueselect').value;
+
+      if (selectedValue && !rcmail.env.vroom_caracteristiques[selectedValue]) {
+        rcmail.env.vroom_caracteristiques[selectedValue] = true;
+        refreshCaracteristiquesList();
+      }
+    });
+
     // Ajout d'un partage d'agenda
     document.getElementById('calendar-share-add-btn')?.addEventListener('click', () => {
       const input = document.getElementById('calendar-share-input');
@@ -272,6 +282,10 @@
       }
     });
 
+    if (Object.keys(rcmail.env.vroom_caracteristiques).length) {
+      refreshCaracteristiquesList();
+    }
+
     if (rcmail.env.vroom_calendar_shares.length) {
       refreshSharesList();
     }
@@ -292,6 +306,82 @@
   }
 
   /**
+   * Met à jour la liste des caractéristiques dans l'interface utilisateur
+   */
+  function refreshCaracteristiquesList() {
+    const caracteristiquesList = document.querySelector('table#vroom_caracteristiques tbody');
+    caracteristiquesList.innerHTML = '';
+    let values = Object.keys(rcmail.env.vroom_caracteristiques);
+
+    if (values === 0) {
+      const tr = document.createElement('tr'),
+            td = createTd(rcmail.gettext('no_caracteristique', 'mel_vroom'), 'col-6');
+      tr.appendChild(td);
+      tr.colSpan = '2';
+      tr.className = 'no_caracteristique';
+      caracteristiquesList.appendChild(tr);
+    }
+    else {
+      values.sort();
+      let i = 0;
+      values.forEach((caracteristique) => {
+        const tr = document.createElement('tr'),
+              td = createTd('', 'col-4')
+              input = document.createElement('input');
+  
+        input.type = 'text';
+        input.className = 'form-control';
+        input.name = 'vroom_caracteristiques[' + i++ + ']';
+        input.value = caracteristique;
+        input.readOnly = true;
+  
+        td.appendChild(input);
+        tr.appendChild(td);
+
+        // Colonne Supprimer
+        const delTd = createTd('', 'col-2'), 
+              delBtn = document
+                          .getElementById('su-custom-elements')
+                          .content.querySelector('#base-template-button')
+                          .cloneNode(true);
+  
+        delBtn.removeAttribute('id');
+  
+        delBtn.addEventListener('click', async () => {
+          delete rcmail.env.vroom_caracteristiques[caracteristique];
+          refreshCaracteristiquesList();
+        });
+  
+        delTd.appendChild(delBtn);
+        tr.appendChild(delTd);
+        
+        caracteristiquesList.appendChild(tr);
+      });
+    }
+
+    resetCaracteristiqueSelect();
+  }
+
+  /**
+   * Réinitialise le select des caractéristiques additionnelles
+   */
+  function resetCaracteristiqueSelect() {
+    const select = document.getElementById('rcmvroomcaracteristiqueselect');
+    select.innerHTML = '';
+
+    rcmail.env.vroom_additionnal_caracteristiques.forEach((caracteristique) => {
+      if (!rcmail.env.vroom_caracteristiques[caracteristique]) {
+        const option = document.createElement('option');
+        option.value = caracteristique;
+        option.textContent = caracteristique;
+        select.appendChild(option);
+      }
+    });
+
+    select.selectedIndex = 0;
+  }
+
+  /**
    * Met à jour la liste des partages d'agenda dans l'interface utilisateur
    */
   function refreshSharesList() {
@@ -305,40 +395,40 @@
       tr.appendChild(td);
       tr.className = 'no_calendar_share';
       sharesList.appendChild(tr);
-      return;
     }
-
-    rcmail.env.vroom_calendar_shares.forEach((share) => {
-      const tr = document.createElement('tr');
-
-      tr.appendChild(createTd(share.displayname, 'col-5'));
-      tr.appendChild(createTd(share.share_label, 'col-2'));
-
-      // Colonne Supprimer
-      const delTd = createTd('', 'col-2'), 
-            delBtn = document
-                        .getElementById('su-custom-elements')
-                        .content.querySelector('#base-template-button')
-                        .cloneNode(true);
-
-      delBtn.removeAttribute('id');
-
-      delBtn.addEventListener('click', async () => {
-        if (confirm(rcmail.gettext('confirm_delete_share', 'mel_vroom', {name: share.displayname}))) {
-          rcmail.http_post('settings/plugin.mel_vroom', {
-            _act: 'delete_calendar_share',
-            _group: false,
-            _user: share.user,
-            _resource_uid: rcmail.env.vroom_uid,
-          }, rcmail.set_busy(true, 'loading'));
-        }
+    else {
+      rcmail.env.vroom_calendar_shares.forEach((share) => {
+        const tr = document.createElement('tr');
+  
+        tr.appendChild(createTd(share.displayname, 'col-5'));
+        tr.appendChild(createTd(share.share_label, 'col-2'));
+  
+        // Colonne Supprimer
+        const delTd = createTd('', 'col-2'), 
+              delBtn = document
+                          .getElementById('su-custom-elements')
+                          .content.querySelector('#base-template-button')
+                          .cloneNode(true);
+  
+        delBtn.removeAttribute('id');
+  
+        delBtn.addEventListener('click', async () => {
+          if (confirm(rcmail.gettext('confirm_delete_share', 'mel_vroom', {name: share.displayname}))) {
+            rcmail.http_post('settings/plugin.mel_vroom', {
+              _act: 'delete_calendar_share',
+              _group: false,
+              _user: share.user,
+              _resource_uid: rcmail.env.vroom_uid,
+            }, rcmail.set_busy(true, 'loading'));
+          }
+        });
+  
+        delTd.appendChild(delBtn);
+        tr.appendChild(delTd);
+        
+        sharesList.appendChild(tr);
       });
-
-      delTd.appendChild(delBtn);
-      tr.appendChild(delTd);
-      
-      sharesList.appendChild(tr);
-    });
+    }
   }
 
   /**
@@ -355,40 +445,40 @@
       tr.appendChild(td);
       tr.className = 'no_calendar_share';
       sharesList.appendChild(tr);
-      return;
     }
-
-    rcmail.env.vroom_calendar_group_shares.forEach((share) => {
-      const tr = document.createElement('tr');
-
-      tr.appendChild(createTd(share.displayname, 'col-5'));
-      tr.appendChild(createTd(share.share_label, 'col-2'));
-
-      // Colonne Supprimer
-      const delTd = createTd('', 'col-2'), 
-            delBtn = document
-                        .getElementById('su-custom-elements')
-                        .content.querySelector('#base-template-button')
-                        .cloneNode(true);
-
-      delBtn.removeAttribute('id');
-
-      delBtn.addEventListener('click', async () => {
-        if (confirm(rcmail.gettext('confirm_delete_group_share', 'mel_vroom', {name: share.displayname}))) {
-          rcmail.http_post('settings/plugin.mel_vroom', {
-            _act: 'delete_calendar_share',
-            _group: true,
-            _user: share.user,
-            _resource_uid: rcmail.env.vroom_uid,
-          }, rcmail.set_busy(true, 'loading'));
-        }
+    else {
+      rcmail.env.vroom_calendar_group_shares.forEach((share) => {
+        const tr = document.createElement('tr');
+  
+        tr.appendChild(createTd(share.displayname, 'col-5'));
+        tr.appendChild(createTd(share.share_label, 'col-2'));
+  
+        // Colonne Supprimer
+        const delTd = createTd('', 'col-2'), 
+              delBtn = document
+                          .getElementById('su-custom-elements')
+                          .content.querySelector('#base-template-button')
+                          .cloneNode(true);
+  
+        delBtn.removeAttribute('id');
+  
+        delBtn.addEventListener('click', async () => {
+          if (confirm(rcmail.gettext('confirm_delete_group_share', 'mel_vroom', {name: share.displayname}))) {
+            rcmail.http_post('settings/plugin.mel_vroom', {
+              _act: 'delete_calendar_share',
+              _group: true,
+              _user: share.user,
+              _resource_uid: rcmail.env.vroom_uid,
+            }, rcmail.set_busy(true, 'loading'));
+          }
+        });
+  
+        delTd.appendChild(delBtn);
+        tr.appendChild(delTd);
+        
+        sharesList.appendChild(tr);
       });
-
-      delTd.appendChild(delBtn);
-      tr.appendChild(delTd);
-      
-      sharesList.appendChild(tr);
-    });
+    }    
   }
 
   /**

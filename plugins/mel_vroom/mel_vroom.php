@@ -363,6 +363,27 @@ class mel_vroom extends bnum_plugin
   }
 
   /**
+   * Génère un sélecteur HTML pour les caractéristiques des VRooms.
+   */
+  public function vroom_add_caracteristique_select($attrib)
+  {
+    if (!$attrib['id']) {
+      $attrib['id'] = 'rcmvroomcaracteristiqueselect';
+    }
+
+    $html_select = new html_select($attrib);
+    $resource_caracteristiques = json_decode($this->resource->caracteristiques ?? '[]', true) ?: [];
+
+    foreach ($this->get_config('vrooms_caracteristiques', []) as $caracteristique) {
+      if (!isset($resource_caracteristiques[$caracteristique])) {
+        $html_select->add($caracteristique, $caracteristique);
+      }
+    }
+
+    return $html_select->show();
+  }
+
+  /**
    * Récupère la clé du bâtiment de la ressource courante.
    * 
    * @return string|null La clé du bâtiment ou null si non trouvée.
@@ -464,6 +485,7 @@ class mel_vroom extends bnum_plugin
     $this->add_handlers([
       'vroom_building'    => [$this, 'vroom_building_select'],
       'vroom_capacity'    => [$this, 'vroom_capacity_select'],
+      'vroom_add_caracteristique'    => [$this, 'vroom_add_caracteristique_select'],
     ]);
 
     // Gestion du POST pour enregistrer la VRoom
@@ -494,8 +516,10 @@ class mel_vroom extends bnum_plugin
       'vroom_locality'    => $this->resource->locality,
       'vroom_email'       => $this->resource->email,
       'vroom_zoom_email'  => $this->resource->zoom_internal_email,
+      'vroom_caracteristiques'      => json_decode($this->resource->caracteristiques ?? '[]', true) ?: [],
       'vroom_calendar_shares'       => $this->get_calendar_shares($this->resource),
       'vroom_calendar_group_shares' => $this->get_calendar_shares($this->resource, true),
+      'vroom_additionnal_caracteristiques' => $this->get_config('vrooms_caracteristiques', []),
     ]);
   }
 
@@ -591,6 +615,17 @@ class mel_vroom extends bnum_plugin
     );
 
     $resource->email_list = [$resource->email];
+
+    // Gestion des caractéristiques
+    if (isset($_POST['vroom_caracteristiques']) && is_array($_POST['vroom_caracteristiques'])) {
+      $caracteristiques = [];
+      foreach (rcube_utils::get_input_value('vroom_caracteristiques', rcube_utils::INPUT_POST) as $caracteristique) {
+        $caracteristiques[$caracteristique] = 1;
+      }
+      $resource->caracteristiques = json_encode($caracteristiques, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    } else {
+      $resource->caracteristiques = json_encode([]);
+    }
 
     return $resource;
   }

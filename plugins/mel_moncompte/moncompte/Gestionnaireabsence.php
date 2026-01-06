@@ -379,6 +379,43 @@ class Gestionnaireabsence extends Moncompteobject
     $message_externe = trim(rcube_utils::get_input_value('absence_message_externe', rcube_utils::INPUT_POST));
     $timezone = trim(rcube_utils::get_input_value('absence_timezone', rcube_utils::INPUT_POST));
 
+    // Contrôle : empêcher l'enregistrement d'un message vide
+    $interne_enabled = (isset($status_interne) && $status_interne == '1');
+    $externe_enabled = (isset($status_externe) && $status_externe == '1');
+
+    if ($interne_enabled || $externe_enabled) {
+
+      // Message Interne activé = contenu message interne obligatoire
+      if ($interne_enabled && empty($message_interne)) {
+        rcmail::get_instance()->output->show_message(
+          "Veuillez renseigner le champ message interne.", 'error'
+        );
+        return false;
+      }
+
+      // Message d'absence pour les externes activé
+      if ($externe_enabled) {
+        // si le message d'absence pour les externes et identique au message d'absence pour les internes
+        if (isset($radio_externe) && $radio_externe == 'abs_texte_nodiff') {
+          if (empty($message_interne)) {
+            rcmail::get_instance()->output->show_message(
+              "Veuillez renseigner les champs message interne et message externe.", 'error'
+            );
+            return false;
+          }
+        }
+        // si le message d'absence pour les externes est spécifique
+        else {
+          if (empty($message_externe)) {
+            rcmail::get_instance()->output->show_message(
+              "Veuillez renseigner le champ message externe.", 'error'
+            );
+            return false;
+          }
+        }
+      }
+    }
+
     // Récupération de l'utilisateur
     $user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.gestionnaireabsence');
     // Authentification

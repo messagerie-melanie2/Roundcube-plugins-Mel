@@ -532,6 +532,7 @@ class mel_resource extends bnum_plugin
       $this->show_message_error($this->gettext('error_add_vroom'));
     } else {
       $this->show_message($this->gettext('vroom_added'), 'confirmation');
+      mel_logs::get_instance()->log(mel_logs::INFO, "[Ressources] Création de la VRoom '$resource->name'");
       $this->resource = $resource;
       $this->set_envs_from_ressource();
       $this->set_page_title($this->gettext('vroom') . ' - ' . $this->resource->fullname);
@@ -554,6 +555,7 @@ class mel_resource extends bnum_plugin
       $this->show_message_error($this->gettext('error_modify_vroom'));
     } else {
       $this->resource = $resource;
+      mel_logs::get_instance()->log(mel_logs::INFO, "[Resources] Modification de la VRoom '$resource->name'");
       $this->show_message($this->gettext('vroom_modified'), 'confirmation');
     }
   }

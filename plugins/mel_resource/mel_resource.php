@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Plugin mel_vroom
+ * Plugin mel_resource
  *
- * Ce plugin gère la migration des données venant de P2R dans le Bnum pour les Zoom Room (VRoom)
+ * Ce plugin permet de gérer les resources du Bnum, pour l'instant les VRooms.
  */
-class mel_vroom extends bnum_plugin
+class mel_resource extends bnum_plugin
 {
   public $task = 'settings|vroom';
 
@@ -24,7 +24,6 @@ class mel_vroom extends bnum_plugin
   public function init()
   {
     $this->setup_plugin()->setup_task()->setup_settings();
-    $this->register_ajax_actions();
   }
 
   /**
@@ -79,33 +78,14 @@ class mel_vroom extends bnum_plugin
     if ($this->get_current_task() === 'settings') {
 
       $this->add_hook('settings_actions', array($this, 'hook_settings_actions'));
-      $this->api->register_action('plugin.mel_vroom', $this->ID, [
+      $this->api->register_action('plugin.mel_resource', $this->ID, [
         $this,
         'action_settings'
       ]);
       
-      $this->include_stylesheet($this->local_skin_path() . '/vroom.css');
+      $this->include_stylesheet($this->local_skin_path() . '/resource.css');
     }
     return $this;
-  }
-
-  /**
-   * Enregistre les actions AJAX du plugin.
-   *
-   * Cette méthode effectue les opérations suivantes :
-   * - Enregistre la tâche 'vroom' pour l'identification des requêtes AJAX associées.
-   * - Déclare les actions AJAX suivantes :
-   *   - 'get_all_vrooms' : récupère toutes les VRooms
-   *
-   * @return void
-   */
-  public function register_ajax_actions()
-  {
-    $this->register_task('vroom');
-
-    $this->register_actions([
-      'get_all_vrooms'          => [$this, 'get_all_vrooms'],
-    ]);
   }
 
   /**
@@ -120,7 +100,7 @@ class mel_vroom extends bnum_plugin
    * 
    * @return void
    */
-  public function get_all_vrooms()
+  public function action_get_all_vrooms()
   {
     if (!$this->check_rights_user()) {
       $this->send_command('plugin.mel_vroom_vrooms_data', [
@@ -241,10 +221,10 @@ class mel_vroom extends bnum_plugin
     // Vérifier les droits avant d'ajouter l'action
     if ($this->check_rights_user()) {
       $args['actions'][] = array(
-        'action' => 'plugin.mel_vroom',
-        'class'  => 'mel_vroom',
+        'action' => 'plugin.mel_resource',
+        'class'  => 'mel_resource',
         'label'  => 'vroom',
-        'domain' => 'mel_vroom',
+        'domain' => 'mel_resource',
         'title'  => 'vroom_title',
       );
     }
@@ -428,7 +408,7 @@ class mel_vroom extends bnum_plugin
   {
     if ($this->check_rights_user()) {
       // Affichage normal de la page de configuration
-      $this->include_script('js/vroom.js');
+      $this->include_script('js/resource.js');
 
       $action = trim(rcube_utils::get_input_value('_act', rcube_utils::INPUT_GPC));
 
@@ -451,23 +431,32 @@ class mel_vroom extends bnum_plugin
             break;
         }
       }
-      else if ($action === 'create') {
-        $this->add_handlers([
-          'vroom_building'    => [$this, 'vroom_building_select'],
-          'vroom_capacity'    => [$this, 'vroom_capacity_select'],
-        ]);
-
-        // Gestion du POST pour enregistrer la VRoom
-        if (isset($_POST['vroom_name'])) {
-          $this->action_create_ressource();
+      else if (!empty($action)) {
+        switch ($action) {
+          case 'create':
+            $this->add_handlers([
+              'vroom_building'    => [$this, 'vroom_building_select'],
+              'vroom_capacity'    => [$this, 'vroom_capacity_select'],
+            ]);
+    
+            // Gestion du POST pour enregistrer la VRoom
+            if (isset($_POST['vroom_name'])) {
+              $this->action_create_ressource();
+            }
+            
+            $this->set_page_title($this->gettext('create_title'));
+            $this->send_and_exit('mel_resource.vroom_creation');
+            break;
+  
+          case 'get_all_vrooms':
+            $this->action_get_all_vrooms();
+            break;
+  
         }
-        
-        $this->set_page_title($this->gettext('create_title'));
-        $this->send_and_exit('mel_vroom.vroom_creation');
       }
       else {
         $this->set_page_title($this->gettext('vroom'));
-        $this->send_and_exit('mel_vroom.vroom_settings');
+        $this->send_and_exit('mel_resource.vroom_settings');
       }
     } else {
       $this->show_message_error($this->gettext('access_denied'));
@@ -495,7 +484,7 @@ class mel_vroom extends bnum_plugin
 
     $this->set_envs_from_ressource();
 
-    $this->send_and_exit('mel_vroom.vroom_show');
+    $this->send_and_exit('mel_resource.vroom_show');
   }
 
   /**
@@ -546,7 +535,7 @@ class mel_vroom extends bnum_plugin
       $this->resource = $resource;
       $this->set_envs_from_ressource();
       $this->set_page_title($this->gettext('vroom') . ' - ' . $this->resource->fullname);
-      $this->send_and_exit('mel_vroom.vroom_show');
+      $this->send_and_exit('mel_resource.vroom_show');
     }
   }
 

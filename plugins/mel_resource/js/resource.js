@@ -25,7 +25,7 @@
       } else {
         console.error('Erreur lors du chargement des Ressources :', response.error);
         rcmail.display_message(
-          response.error || rcmail.gettext('load_error', 'mel_vroom'),
+          response.error || rcmail.gettext('load_error', 'mel_resource'),
           'error',
         );
       }
@@ -39,7 +39,7 @@
       if (response.success) {
         const label = response.group ? 'share_group_added' : 'share_added';
         rcmail.display_message(
-          rcmail.get_label(label, 'mel_vroom', {name: response.data.displayname, type: rcmail.get_label('mel_vroom.vroom_calendar_share_' + response.data.share)}),
+          rcmail.get_label(label, 'mel_resource', {name: response.data.displayname, type: rcmail.get_label('mel_resource.vroom_calendar_share_' + response.data.share)}),
           'confirmation'
         );
 
@@ -57,7 +57,7 @@
       } else {
         console.error('Erreur lors de l\'ajout du partage au calendrier :', response.error);
         rcmail.display_message(
-          response.error || rcmail.gettext('add_acl_error', 'mel_vroom'),
+          response.error || rcmail.gettext('add_acl_error', 'mel_resource'),
           'error',
         );
       }
@@ -71,7 +71,7 @@
       if (response.success) {
         const label = response.group ? 'share_group_deleted' : 'share_deleted';
         rcmail.display_message(
-          rcmail.get_label(label, 'mel_vroom', {name: response.data.user}),
+          rcmail.get_label(label, 'mel_resource', {name: response.data.user}),
           'confirmation'
         );
 
@@ -90,7 +90,7 @@
       } else {
         console.error('Erreur lors de la suppression du partage au calendrier :', response.error);
         rcmail.display_message(
-          response.error || rcmail.gettext('add_acl_error', 'mel_vroom'),
+          response.error || rcmail.gettext('add_acl_error', 'mel_resource'),
           'error',
         );
       }
@@ -117,7 +117,7 @@
    * Envoie une requête AJAX au backend pour récupérer les ressources.
    *
    * Cette fonction utilise l'API `rcmail.http_post` pour appeler l'action
-   * `vroom/get_all_vrooms`, qui déclenche la méthode PHP `get_all_vrooms`.
+   * `settings/get_all_vrooms`, qui déclenche la méthode PHP `get_all_vrooms`.
    *
    * La réponse attendue est ensuite traitée via un gestionnaire d'événement
    * (ex. : `plugin.mel_vroom_vrooms_data`) enregistré côté client.
@@ -129,7 +129,7 @@
 
     const busy = rcmail.set_busy(true, 'loading');
 
-    rcmail.http_post('vroom/get_all_vrooms', {})
+    rcmail.http_post('settings/plugin.mel_resource', {_act: "get_all_vrooms"})
       .then(() => {
         rcmail.set_busy(false, 'loading', busy);
       });
@@ -177,7 +177,7 @@
 
     addBtn?.addEventListener('click', () => {
       rcmail.location_href(
-        rcmail.url('plugin.mel_vroom', '_act=create&_is_from=iframe')
+        rcmail.url('plugin.mel_resource', '_act=create&_is_from=iframe')
         , window, true);
     });
   }
@@ -191,7 +191,7 @@
     // Retour à la liste des ressources
     document.getElementById('resource-back-btn')?.addEventListener('click', () => {
       rcmail.location_href(
-        rcmail.url('plugin.mel_vroom', '_is_from=iframe'),
+        rcmail.url('plugin.mel_resource', '_is_from=iframe'),
         window,
         true,
       );
@@ -208,7 +208,7 @@
     // Retour à la liste des ressources
     document.getElementById('resource-back-btn')?.addEventListener('click', () => {
       rcmail.location_href(
-        rcmail.url('plugin.mel_vroom', '_is_from=iframe'),
+        rcmail.url('plugin.mel_resource', '_is_from=iframe'),
         window,
         true,
       );
@@ -231,7 +231,7 @@
       const type = document.getElementById('calendar-share-select').value;
 
       for (const value of values) {
-        rcmail.http_post('settings/plugin.mel_vroom', {
+        rcmail.http_post('settings/plugin.mel_resource', {
           _act: 'add_calendar_share',
           _group: false,
           _user: value,
@@ -251,7 +251,7 @@
       const type = document.getElementById('calendar-group-share-select').value;
 
       for (const value of values) {
-        rcmail.http_post('settings/plugin.mel_vroom', {
+        rcmail.http_post('settings/plugin.mel_resource', {
           _act: 'add_calendar_share',
           _group: true,
           _user: value,
@@ -315,7 +315,7 @@
 
     if (values === 0) {
       const tr = document.createElement('tr'),
-            td = createTd(rcmail.gettext('no_caracteristique', 'mel_vroom'), 'col-6');
+            td = createTd(rcmail.gettext('no_caracteristique', 'mel_resource'), 'col-6');
       tr.appendChild(td);
       tr.colSpan = '2';
       tr.className = 'no_caracteristique';
@@ -390,7 +390,7 @@
 
     if (rcmail.env.vroom_calendar_shares.length === 0) {
       const tr = document.createElement('tr'),
-            td = createTd(rcmail.gettext('vroom_no_calendar_share', 'mel_vroom'));
+            td = createTd(rcmail.gettext('vroom_no_calendar_share', 'mel_resource'));
       td.colSpan = 3;
       tr.appendChild(td);
       tr.className = 'no_calendar_share';
@@ -413,8 +413,8 @@
         delBtn.removeAttribute('id');
   
         delBtn.addEventListener('click', async () => {
-          if (confirm(rcmail.gettext('confirm_delete_share', 'mel_vroom', {name: share.displayname}))) {
-            rcmail.http_post('settings/plugin.mel_vroom', {
+          if (confirm(rcmail.gettext('confirm_delete_share', 'mel_resource', {name: share.displayname}))) {
+            rcmail.http_post('settings/plugin.mel_resource', {
               _act: 'delete_calendar_share',
               _group: false,
               _user: share.user,
@@ -440,7 +440,7 @@
 
     if (rcmail.env.vroom_calendar_group_shares.length === 0) {
       const tr = document.createElement('tr'),
-            td = createTd(rcmail.gettext('vroom_no_calendar_group_share', 'mel_vroom'));
+            td = createTd(rcmail.gettext('vroom_no_calendar_group_share', 'mel_resource'));
       td.colSpan = 3;
       tr.appendChild(td);
       tr.className = 'no_calendar_share';
@@ -463,8 +463,8 @@
         delBtn.removeAttribute('id');
   
         delBtn.addEventListener('click', async () => {
-          if (confirm(rcmail.gettext('confirm_delete_group_share', 'mel_vroom', {name: share.displayname}))) {
-            rcmail.http_post('settings/plugin.mel_vroom', {
+          if (confirm(rcmail.gettext('confirm_delete_group_share', 'mel_resource', {name: share.displayname}))) {
+            rcmail.http_post('settings/plugin.mel_resource', {
               _act: 'delete_calendar_share',
               _group: true,
               _user: share.user,
@@ -517,7 +517,7 @@
 
       showBtn.addEventListener('click', async () => {
         rcmail.location_href(
-          rcmail.url('plugin.mel_vroom', '_act=show&_is_from=iframe&_resource_uid=' + encodeURI(item.uid))
+          rcmail.url('plugin.mel_resource', '_act=show&_is_from=iframe&_resource_uid=' + encodeURI(item.uid))
           , window, true);
       });
 

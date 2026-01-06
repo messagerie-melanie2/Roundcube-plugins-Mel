@@ -3,7 +3,7 @@
 <roundcube:include file="includes/settings-menu.html" />
 
 <template id="su-custom-elements">
-  <bnum-button data-icon="delete" data-icon-margin="0" id="base-template-button"  class="p-0" title="<roundcube:label name="mel_vroom.delete" />"></error-button>
+  <bnum-button data-icon="delete" data-icon-margin="0" id="base-template-button"  class="p-0" title="<roundcube:label name="mel_resource.delete" />"></error-button>
 </template>
 
 <div id="layout-content" role="main">
@@ -13,7 +13,7 @@
     <div class="row m-0 m-1">
       <div class="col-1 align-self-center">
         <secondary-button id="resource-back-btn" class="back" data-icon="arrow_left_alt" data-icon-pos="left">
-          <roundcube:label name="mel_vroom.back" />
+          <roundcube:label name="mel_resource.back" />
         </secondary-button>
       </div>
     </div>
@@ -29,16 +29,16 @@
     <div class="resources-info">
       <form action="" method="post">
         <h3 class="h5 mb-2">
-          <roundcube:label name="mel_vroom.vroom_room_info" />
+          <roundcube:label name="mel_resource.vroom_room_info" />
         </h3>
         <table class="resource-table table-striped table-bordered">
           <thead>
             <tr>
-              <th class="col-2"><roundcube:label name="mel_vroom.vroom_name" /></th>
-              <th class="col-2"><roundcube:label name="mel_vroom.resource_building" /></th>
-              <th class="col-2"><roundcube:label name="mel_vroom.resource_floor" /></th>
-              <th class="col-2"><roundcube:label name="mel_vroom.resource_room" /></th>
-              <th class="col-2"><roundcube:label name="mel_vroom.resource_capacity" /></th>
+              <th class="col-2"><roundcube:label name="mel_resource.vroom_name" /></th>
+              <th class="col-2"><roundcube:label name="mel_resource.resource_building" /></th>
+              <th class="col-2"><roundcube:label name="mel_resource.resource_floor" /></th>
+              <th class="col-2"><roundcube:label name="mel_resource.resource_room" /></th>
+              <th class="col-2"><roundcube:label name="mel_resource.resource_capacity" /></th>
             </tr>
           </thead>
           <tbody>
@@ -53,14 +53,14 @@
         </table>
         <br>
         <h3 class="h5 mb-2">
-          <roundcube:label name="mel_vroom.vroom_address" />
+          <roundcube:label name="mel_resource.vroom_address" />
         </h3>
         <table class="resource-table table-striped table-bordered">
           <thead>
             <tr>
-              <th class="col-3"><roundcube:label name="mel_vroom.street" /></th>
-              <th class="col-2"><roundcube:label name="mel_vroom.postalcode" /></th>
-              <th class="col-2"><roundcube:label name="mel_vroom.locality" /></th>
+              <th class="col-3"><roundcube:label name="mel_resource.street" /></th>
+              <th class="col-2"><roundcube:label name="mel_resource.postalcode" /></th>
+              <th class="col-2"><roundcube:label name="mel_resource.locality" /></th>
             </tr>
           </thead>
           <tbody>
@@ -73,16 +73,16 @@
         </table>
         <br>
         <h3 class="h5 mb-2">
-          <roundcube:label name="mel_vroom.vroom_caracteristiques" />
+          <roundcube:label name="mel_resource.vroom_caracteristiques" />
         </h3>
         <div class="row align-items-center">
           <div class="col-md-6 mb-2 mb-md-0">
             <roundcube:object name="vroom_add_caracteristique" />
           </div>
           <div class="col-md-3">
-            <primary-button data-icon="add_circle" id="caracteristique-add-btn" aria-label="<roundcube:label name='mel_vroom.button_title_add_caracteristique' />"
-              title="<roundcube:label name='mel_vroom.button_title_add_caracteristique' />">
-                <roundcube:label name="mel_vroom.button_add_caracteristique" />
+            <primary-button data-icon="add_circle" id="caracteristique-add-btn" aria-label="<roundcube:label name='mel_resource.button_title_add_caracteristique' />"
+              title="<roundcube:label name='mel_resource.button_title_add_caracteristique' />">
+                <roundcube:label name="mel_resource.button_add_caracteristique" />
             </button>
           </div>
         </div>
@@ -90,26 +90,26 @@
         <table id="vroom_caracteristiques" class="resource-table table-striped table-bordered">
           <thead>
             <tr>
-              <th class="col-4"><roundcube:label name="mel_vroom.caracteristique" /></th>
-              <th class="col-2"><roundcube:label name="mel_vroom.delete" /></th>
+              <th class="col-4"><roundcube:label name="mel_resource.caracteristique" /></th>
+              <th class="col-2"><roundcube:label name="mel_resource.delete" /></th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td class="col-6" colspan="2"><roundcube:label name="mel_vroom.no_caracteristique" /></td>
+              <td class="col-6" colspan="2"><roundcube:label name="mel_resource.no_caracteristique" /></td>
             </tr>
           </tbody>
         </table>
         <br>
         <h3 class="h5 mb-2">
-          <roundcube:label name="mel_vroom.vroom_info" />
+          <roundcube:label name="mel_resource.vroom_info" />
         </h3>
         <table class="resource-table table-striped table-bordered">
           <thead>
             <tr>
-              <th class="col-2"><roundcube:label name="mel_vroom.resource_email" /></th>
-              <th class="col-3"><roundcube:label name="mel_vroom.resource_zoom_email" /></th>
-              <th class="col-2"><roundcube:label name="mel_vroom.resource_uid" /></th>
+              <th class="col-2"><roundcube:label name="mel_resource.resource_email" /></th>
+              <th class="col-3"><roundcube:label name="mel_resource.resource_zoom_email" /></th>
+              <th class="col-2"><roundcube:label name="mel_resource.resource_uid" /></th>
             </tr>
           </thead>
           <tbody>
@@ -122,35 +122,35 @@
         </table>
         
         <div class="form-controls">
-          <input type="submit" class="mel-button no-margin-button no-button-margin" title="<roundcube:label name="mel_vroom.save_title" />" value="<roundcube:label name="mel_vroom.save" />" />
+          <input type="submit" class="mel-button no-margin-button no-button-margin" title="<roundcube:label name="mel_resource.save_title" />" value="<roundcube:label name="mel_resource.save" />" />
         </div>
       </form>
       
       <div class="separator"></div>
       <h3 class="h5 mb-2">
-        <roundcube:label name="mel_vroom.vroom_calendar_shares" />
+        <roundcube:label name="mel_resource.vroom_calendar_shares" />
       </h3>
       <br>
       <h5 class="h6 mb-2">
-        <roundcube:label name="mel_vroom.users" />
+        <roundcube:label name="mel_resource.users" />
       </h5>
       <div class="row align-items-center">
         <div class="col-md-6 mb-2 mb-md-0">
           <div class="mel-add-vroom-calendar-share">
             <input id="calendar-share-input" class="form-control" type="text"
-              placeholder="<roundcube:label name='mel_vroom.add_calendar_share' />" value="">
+              placeholder="<roundcube:label name='mel_resource.add_calendar_share' />" value="">
           </div>
         </div>
         <div class="col-md-3">
           <select id="calendar-share-select">
-            <option value="rw"><roundcube:label name='mel_vroom.vroom_calendar_share_rw' /></option>
-            <option value="r"><roundcube:label name='mel_vroom.vroom_calendar_share_r' /></option>
+            <option value="rw"><roundcube:label name='mel_resource.vroom_calendar_share_rw' /></option>
+            <option value="r"><roundcube:label name='mel_resource.vroom_calendar_share_r' /></option>
           </select>
         </div>
         <div class="col-md-3">
-          <primary-button data-icon="add_circle" id="calendar-share-add-btn" aria-label="<roundcube:label name='mel_vroom.button_title_add_calendar_share' />"
-            title="<roundcube:label name='mel_vroom.button_title_add_calendar_share' />">
-              <roundcube:label name="mel_vroom.button_add_calendar_share" />
+          <primary-button data-icon="add_circle" id="calendar-share-add-btn" aria-label="<roundcube:label name='mel_resource.button_title_add_calendar_share' />"
+            title="<roundcube:label name='mel_resource.button_title_add_calendar_share' />">
+              <roundcube:label name="mel_resource.button_add_calendar_share" />
           </button>
         </div>
       </div>
@@ -158,38 +158,38 @@
       <table id="vroom_calendar_shares" class="resource-table table-striped table-bordered">
         <thead>
           <tr>
-            <th class="col-5"><roundcube:label name="mel_vroom.share_name" /></th>
-            <th class="col-2"><roundcube:label name="mel_vroom.share_value" /></th>
-            <th class="col-2"><roundcube:label name="mel_vroom.delete" /></th>
+            <th class="col-5"><roundcube:label name="mel_resource.share_name" /></th>
+            <th class="col-2"><roundcube:label name="mel_resource.share_value" /></th>
+            <th class="col-2"><roundcube:label name="mel_resource.delete" /></th>
           </tr>
         </thead>
         <tbody>
           <tr class="no_calendar_share" >
-            <td colspan="3"><roundcube:label name="mel_vroom.vroom_no_calendar_share" /></td>
+            <td colspan="3"><roundcube:label name="mel_resource.vroom_no_calendar_share" /></td>
           </tr>       
         </tbody>
       </table>
       <br>
       <h5 class="h6 mb-2">
-        <roundcube:label name="mel_vroom.groups" />
+        <roundcube:label name="mel_resource.groups" />
       </h5>
       <div class="row align-items-center">
         <div class="col-md-6 mb-2 mb-md-0">
           <div class="mel-add-vroom-calendar-share">
             <input id="calendar-group-share-input" class="form-control" type="text"
-              placeholder="<roundcube:label name='mel_vroom.add_calendar_group_share' />" value="">
+              placeholder="<roundcube:label name='mel_resource.add_calendar_group_share' />" value="">
           </div>
         </div>
         <div class="col-md-3">
           <select id="calendar-group-share-select">
-            <option value="rw"><roundcube:label name='mel_vroom.vroom_calendar_share_rw' /></option>
-            <option value="r"><roundcube:label name='mel_vroom.vroom_calendar_share_r' /></option>
+            <option value="rw"><roundcube:label name='mel_resource.vroom_calendar_share_rw' /></option>
+            <option value="r"><roundcube:label name='mel_resource.vroom_calendar_share_r' /></option>
           </select>
         </div>
         <div class="col-md-3">
-          <primary-button data-icon="add_circle" id="calendar-group-share-add-btn" aria-label="<roundcube:label name='mel_vroom.button_title_add_calendar_share' />"
-            title="<roundcube:label name='mel_vroom.button_title_add_calendar_share' />">
-              <roundcube:label name="mel_vroom.button_add_calendar_share" />
+          <primary-button data-icon="add_circle" id="calendar-group-share-add-btn" aria-label="<roundcube:label name='mel_resource.button_title_add_calendar_share' />"
+            title="<roundcube:label name='mel_resource.button_title_add_calendar_share' />">
+              <roundcube:label name="mel_resource.button_add_calendar_share" />
           </button>
         </div>
       </div>
@@ -197,14 +197,14 @@
       <table id="vroom_calendar_group_shares" class="resource-table table-striped table-bordered">
         <thead>
           <tr>
-            <th class="col-5"><roundcube:label name="mel_vroom.share_group_name" /></th>
-            <th class="col-2"><roundcube:label name="mel_vroom.share_value" /></th>
-            <th class="col-2"><roundcube:label name="mel_vroom.delete" /></th>
+            <th class="col-5"><roundcube:label name="mel_resource.share_group_name" /></th>
+            <th class="col-2"><roundcube:label name="mel_resource.share_value" /></th>
+            <th class="col-2"><roundcube:label name="mel_resource.delete" /></th>
           </tr>
         </thead>
         <tbody>
           <tr class="no_calendar_share" >
-            <td colspan="3"><roundcube:label name="mel_vroom.vroom_no_calendar_group_share" /></td>
+            <td colspan="3"><roundcube:label name="mel_resource.vroom_no_calendar_group_share" /></td>
           </tr>       
         </tbody>
       </table>

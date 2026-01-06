@@ -39,7 +39,7 @@
       if (response.success) {
         const label = response.group ? 'share_group_added' : 'share_added';
         rcmail.display_message(
-          rcmail.get_label(label, 'mel_resource', {name: response.data.displayname, type: rcmail.get_label('mel_resource.vroom_calendar_share_' + response.data.share)}),
+          rcmail.get_label(label, 'mel_resource', { name: response.data.displayname, type: rcmail.get_label('mel_resource.vroom_calendar_share_' + response.data.share) }),
           'confirmation'
         );
 
@@ -71,7 +71,7 @@
       if (response.success) {
         const label = response.group ? 'share_group_deleted' : 'share_deleted';
         rcmail.display_message(
-          rcmail.get_label(label, 'mel_resource', {name: response.data.user}),
+          rcmail.get_label(label, 'mel_resource', { name: response.data.user }),
           'confirmation'
         );
 
@@ -129,7 +129,7 @@
 
     const busy = rcmail.set_busy(true, 'loading');
 
-    rcmail.http_post('settings/plugin.mel_resource', {_act: "get_all_vrooms"})
+    rcmail.http_post('settings/plugin.mel_resource', { _act: 'get_all_vrooms' })
       .then(() => {
         rcmail.set_busy(false, 'loading', busy);
       });
@@ -326,7 +326,7 @@
       let i = 0;
       values.forEach((caracteristique) => {
         const tr = document.createElement('tr'),
-              td = createTd('', 'col-4')
+              td = createTd('', 'col-4'),
               input = document.createElement('input');
   
         input.type = 'text';
@@ -413,7 +413,7 @@
         delBtn.removeAttribute('id');
   
         delBtn.addEventListener('click', async () => {
-          if (confirm(rcmail.gettext('confirm_delete_share', 'mel_resource', {name: share.displayname}))) {
+          if (confirm(rcmail.gettext('confirm_delete_share', 'mel_resource', { name: share.displayname }))) {
             rcmail.http_post('settings/plugin.mel_resource', {
               _act: 'delete_calendar_share',
               _group: false,
@@ -463,7 +463,7 @@
         delBtn.removeAttribute('id');
   
         delBtn.addEventListener('click', async () => {
-          if (confirm(rcmail.gettext('confirm_delete_group_share', 'mel_resource', {name: share.displayname}))) {
+          if (confirm(rcmail.gettext('confirm_delete_group_share', 'mel_resource', { name: share.displayname }))) {
             rcmail.http_post('settings/plugin.mel_resource', {
               _act: 'delete_calendar_share',
               _group: true,
@@ -486,7 +486,7 @@
    * Gère l'affichage paginé et les interactions
    * @returns {void}
    */
-  function updateResourcesUI(url_id, statut) {
+  function updateResourcesUI() {
     const tbody = document.getElementById('resource-table-body');
 
     if (!tbody) return;

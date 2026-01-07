@@ -58,9 +58,13 @@ class mel_suspects_urls extends bnum_plugin
    */
   function setup_task()
   {
-    if ($this->get_current_task() === 'settings') $this->load_config();
+      // Charge la config pour les settings et les actions de CRUD
+      $task = $this->get_current_task();
+      if (in_array($task, ['settings', 'suspect_urls'], true)) {
+          $this->load_config();
+      }
 
-    return $this;
+      return $this;
   }
 
   /**

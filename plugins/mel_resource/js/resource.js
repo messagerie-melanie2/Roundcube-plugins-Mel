@@ -214,6 +214,19 @@
       );
     });
 
+    // Validation du formulaire
+    document.getElementById('modify-resource-form')?.addEventListener('submit', (e) => {
+      // Mettre un confirm si le name ou le batiment change
+      const select = document.getElementById('rcmvroombuildingselect');
+      if ((rcmail.env.vroom_name !== document.getElementById('vroom_name').value 
+            || rcmail.env.vroom_building !== select.options[select.selectedIndex].text)
+            && !confirm(rcmail.gettext('modify_resource_confirm', 'mel_resource'))) {
+        e.preventDefault()
+        return false;
+      }
+    });
+      
+
     // Ajouter une caractéristique
     document.getElementById('caracteristique-add-btn')?.addEventListener('click', () => {
       const selectedValue = document.getElementById('rcmvroomcaracteristiqueselect').value;
@@ -221,6 +234,16 @@
       if (selectedValue && !rcmail.env.vroom_caracteristiques[selectedValue]) {
         rcmail.env.vroom_caracteristiques[selectedValue] = true;
         refreshCaracteristiquesList();
+      }
+    });
+
+    // Supprimer la VRoom
+    document.getElementById('vroom-delete-btn')?.addEventListener('click', () => {
+      if (confirm(rcmail.gettext('delete_vroom_confirm', 'mel_resource', { name: rcmail.env.vroom_name }))) {
+        rcmail.http_post('settings/plugin.mel_resource', {
+          _act: 'delete_resource',
+          _resource_uid: rcmail.env.vroom_uid,
+        }, rcmail.set_busy(true, 'loading'));
       }
     });
 

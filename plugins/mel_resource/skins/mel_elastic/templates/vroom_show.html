@@ -27,7 +27,7 @@
     
     <!-- Tableau -->
     <div class="resources-info">
-      <form action="" method="post">
+      <form action="" id="modify-resource-form" method="post">
         <h3 class="h5 mb-2">
           <roundcube:label name="mel_resource.vroom_room_info" />
         </h3>
@@ -43,7 +43,7 @@
           </thead>
           <tbody>
             <tr>
-              <td class="col-2"><input type="text" class="form-control" name="vroom_name" value="<roundcube:var name="env:vroom_name" />" ></td>
+              <td class="col-2"><input type="text" class="form-control" id="vroom_name" name="vroom_name" value="<roundcube:var name="env:vroom_name" />" ></td>
               <td class="col-2"><roundcube:object name="vroom_building" /></td>
               <td class="col-2"><input type="text" class="form-control" name="vroom_floor" value="<roundcube:var name="env:vroom_floor" />" ></td>
               <td class="col-2"><input type="text" class="form-control" name="vroom_room" value="<roundcube:var name="env:vroom_room" />" ></td>
@@ -208,6 +208,16 @@
           </tr>       
         </tbody>
       </table>
+      <div class="separator"></div>
+      <h3 class="h5 mb-2">
+        <roundcube:label name="mel_resource.vroom_delete" />
+      </h3>
+      <div>
+        <button id="vroom-delete-btn" class="mel-button btn btn-secondary btn-danger danger" title="<roundcube:label name="mel_resource.delete_vroom_title" />">
+          <roundcube:label name="mel_resource.delete" />
+          <span class="plus icon-mel-trash"></span>
+        </button>
+      </div>
     </div>
   </div>
 </div>

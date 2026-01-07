@@ -417,6 +417,10 @@ class mel_resource extends bnum_plugin
           case 'show':
             $this->action_show_ressource();
             break;
+
+          case 'delete_resource':
+            $this->action_delete_ressource();
+            break;
   
           case 'add_calendar_share':
             $this->action_add_calendar_share();
@@ -437,6 +441,7 @@ class mel_resource extends bnum_plugin
             $this->add_handlers([
               'vroom_building'    => [$this, 'vroom_building_select'],
               'vroom_capacity'    => [$this, 'vroom_capacity_select'],
+              'vroom_add_caracteristique'    => [$this, 'vroom_add_caracteristique_select'],
             ]);
     
             // Gestion du POST pour enregistrer la VRoom
@@ -557,6 +562,22 @@ class mel_resource extends bnum_plugin
       $this->resource = $resource;
       mel_logs::get_instance()->log(mel_logs::INFO, "[Resources] Modification de la VRoom '$resource->name'");
       $this->show_message($this->gettext('vroom_modified'), 'confirmation');
+    }
+  }
+
+  /**
+   * Supprime une ressource VRoom.
+   */
+  protected function action_delete_ressource()
+  {
+    if ($this->resource->delete()) {
+      mel_logs::get_instance()->log(mel_logs::INFO, "[Resources] Suppression de la VRoom '$this->resource->name'");
+      $this->show_message($this->gettext('vroom_deleted'), 'confirmation');
+      $this->send_and_exit('mel_resource.vroom_settings');
+    }
+    else {
+      $this->show_message_error($this->gettext('error_delete_vroom'));
+      $this->action_show_ressource();
     }
   }
 

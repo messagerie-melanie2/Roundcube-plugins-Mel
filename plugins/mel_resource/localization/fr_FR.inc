@@ -71,6 +71,10 @@ $labels['caracteristique'] = 'Caractéristique';
 $labels['no_caracteristique'] = 'Cette salle n\'a pas encore de caractéristique';
 $labels['button_add_caracteristique'] = 'Ajouter une caractéristique';
 $labels['button_title_add_caracteristique'] = 'Ajouter une caractéristique à cette salle';
+$labels['vroom_delete'] = 'Suppression de la VRoom';
+$labels['delete_vroom_title'] = 'Supprimer cette VRoom';
+$labels['delete_vroom_confirm'] = 'Êtes-vous sûr de vouloir supprimer la VRoom $name ? Les données de l\'agenda attachées à la VRoom ne seront pas supprimées et les réservations ne seront pas annulées. Cette action est irréversible.';
+$labels['modify_resource_confirm'] = 'Vous avez modifié le nom et/ou le bâtiment de la ressource, cela va entrainer un changement d\'adresse e-mail. Ce changement peut impacter les réservations en cours des utilisateurs. Êtes-vous sûr de vouloir continuer ?';
 
 
 

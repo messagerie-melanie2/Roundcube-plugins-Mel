@@ -28,6 +28,7 @@ $labels['locality'] = 'Ville';
 $labels['resource_uid'] = 'Uid de la ressource';
 $labels['resource_email'] = 'Adresse email de la ressource';
 $labels['resource_zoom_email'] = 'Adresse email interne Zoom';
+$labels['resource_zoom_email_info'] = 'Adresse email fournie par Zoom au format "rooms_***@developpement-durable.gouv.fr", correspondant à la Zoom Room associée à cette VRoom.';
 $labels['vroom_calendar_shares'] = 'Partages du calendrier de la ressource';
 $labels['users'] = 'Utilisateurs';
 $labels['groups'] = 'Groupes';

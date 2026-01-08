@@ -526,10 +526,10 @@ class mel_resource extends bnum_plugin
     
     $resource = $this->resource_from_post($resource);
 
-    $resource->uid = $this->generate_uid();
     $resource->type = LibMelanie\Api\Defaut\Resource::TYPE_VROOM;
     $resource->service = "Bnum/Ressources/$resource->locality";
     $resource->zoom_account_id = $this->get_config('vrooms_zoom_account_id', '');
+    $resource->uid = $this->generate_uid($resource->type);
 
     $ret = $resource->save();
 
@@ -644,10 +644,14 @@ class mel_resource extends bnum_plugin
 
   /**
    * Génération d'un uid alpha numérique aléatoire de 32 caractères
+   * 
+   * @param string $type Le type de ressource (ex: VROOM).
+   * 
+   * @return string L'UID généré.
    */
-  protected function generate_uid()
+  protected function generate_uid($type)
   {
-    return bin2hex(random_bytes(16));
+    return strtolower($type) . bin2hex(random_bytes(12));
   }
 
   /**
@@ -661,7 +665,8 @@ class mel_resource extends bnum_plugin
    */
   protected function resource_email($resource, $locality_uid, $building_key)
   {
-    return str_replace(' ', '-', strtolower("vroom-{$resource->name}-{$building_key}-{$locality_uid}@" . $this->get_config('vrooms_email_domain', '')));
+    mel_helper::load_helper($this->rc())->include_utilities();
+    return mel_utils::remove_accents(str_replace(' ', '-', strtolower("vroom-{$resource->name}-{$building_key}-{$locality_uid}@" . $this->get_config('vrooms_email_domain', ''))));
   }
 
   /**

@@ -1,5 +1,6 @@
 import { Color } from '../../classes/color.js';
 import { MelEnumerable } from '../../classes/enum.js';
+import { EMPTY_STRING } from '../../constants/constants.js';
 import { BnumConnector } from '../../helpers/bnum_connections/bnum_connections.js';
 import { MelForLoopObject } from '../../helpers/loops.js';
 import { MelJsHtml as JsHtml } from '../../html/JsHtml/JsMelHtml.js';
@@ -76,34 +77,58 @@ export class FolderColor extends AFolderModifier {
   update_visuel() {
     const colors = this.get_env('folders_colors');
 
-    {
-      const keys_to_remove = MelEnumerable.from(
-        this.get_skin().css_rules.getKeys(),
-      ).where(
-        (key) =>
-          key.startsWith('color-folder-') ||
-          key.startsWith('color-favorite-folder-'),
+    document
+      .querySelectorAll('#mailboxlist .colored-folder')
+      .forEach((selector) => {
+        selector.style.removeProperty('--bnum-folder-icon-color');
+      });
+
+    for (const { key: bal, value: color } of MelEnumerable.from(colors).select(
+      (i) => {
+        let key = i.key;
+        if (key === EMPTY_STRING) key = 'Ind&AOk-sirables';
+        return { key, value: i.value };
+      },
+    )) {
+      /**
+       * @type {HTMLElement}
+       */
+      const selector = document.querySelector(
+        `#mailboxlist [folder-id="${bal}"]`,
       );
-      keys_to_remove.any() &&
-        this.get_skin().css_rules.removeRules(...keys_to_remove);
+
+      selector.style.setProperty('--bnum-folder-icon-color', color);
+      selector.classList.add('colored-folder');
     }
 
-    let css_key;
-    let favorite_css_key;
-    MelForLoopObject.Start(colors, (color, key) => {
-      css_key = `color-folder-${key}`;
-      favorite_css_key = `color-favorite-folder-${key}`;
-      this.get_skin().css_rules.addAdvanced(
-        css_key,
-        `a[rel="${key}"]::before`,
-        `color:${color} !important;`,
-      );
-      this.get_skin().css_rules.addAdvanced(
-        favorite_css_key,
-        `li[mailid="${this._get_true_key(key)}"] > a::before`,
-        `color:${color} !important;`,
-      );
-    });
+    // {
+    //   const keys_to_remove = MelEnumerable.from(
+    //     this.get_skin().css_rules.getKeys(),
+    //   ).where(
+    //     (key) =>
+    //       key.startsWith('color-folder-') ||
+    //       key.startsWith('color-favorite-folder-'),
+    //   );
+    //   keys_to_remove.any() &&
+    //     this.get_skin().css_rules.removeRules(...keys_to_remove);
+    // }
+
+    // let css_key;
+    // let favorite_css_key;
+    // MelForLoopObject.Start(colors, (color, key) => {
+    //   css_key = `color-folder-${key}`;
+    //   favorite_css_key = `color-favorite-folder-${key}`;
+    //   this.get_skin().css_rules.addAdvanced(
+    //     css_key,
+    //     `a[rel="${key}"]::before`,
+    //     `color:${color} !important;`,
+    //   );
+    //   this.get_skin().css_rules.addAdvanced(
+    //     favorite_css_key,
+    //     `li[mailid="${this._get_true_key(key)}"] > a::before`,
+    //     `color:${color} !important;`,
+    //   );
+    // });
   }
 
   async set_to_server(

@@ -27,6 +27,10 @@ const DEFAULT_CONFIG = {
     no_mails: 'Aucun courrier...',
     last_events: 'Prochains évènements',
     no_events: 'Aucun événement...',
+    valid_input: 'Le champs est valide !',
+    invalid_input: 'Le champs est invalide !',
+    error_field: 'Ce champ contient une erreur.',
+    search_field: 'Rechercher',
   },
   console_logging: true,
   console_logging_level: LogEnum.TRACE,
@@ -164,7 +168,1437 @@ class Log {
   }
 }
 
-var css_248z$h = ':host([block]){display:block;flex:1;width:100%}';
+var css_248z$k = ':host([block]){display:block;flex:1;width:100%}';
+
+function getDefaultExportFromCjs(x) {
+  return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default')
+    ? x['default']
+    : x;
+}
+
+var constants;
+var hasRequiredConstants;
+
+function requireConstants() {
+  if (hasRequiredConstants) return constants;
+  hasRequiredConstants = 1;
+  const EMPTY_STRING = '';
+
+  constants = { EMPTY_STRING };
+  return constants;
+}
+
+var random;
+var hasRequiredRandom;
+
+function requireRandom() {
+  if (hasRequiredRandom) return random;
+  hasRequiredRandom = 1;
+  const { EMPTY_STRING } = requireConstants();
+
+  /**
+   * @class
+   * @classdesc Classe static. Contient des fonctions utiles d'aléatoire.
+   */
+  class Random {
+    /**
+     * Génère une nombre entier entre 2 limites.
+     * @param {number} min Valeur minimum
+     * @param {number} max Valeur maximum
+     * @returns {number}
+     * @static
+     */
+    static intRange(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return ~~(Math.random() * (max - min) + min);
+    }
+
+    /**
+     * Génère une nombre entre 2 limites
+     * @param {number} min Valeur minimum
+     * @param {number} max Valeur maximum
+     * @returns {number}
+     */
+    static range(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    /**
+     * Génère une chaîne aléatoire d'une taille définie
+     * @param {number} size
+     * @returns {string}
+     */
+    static random_string(size) {
+      const ALPHA = 'abcdefghijklmnopqrstuvwxyz';
+
+      let str = EMPTY_STRING;
+
+      for (let index = 0; index < size; ++index) {
+        str += ALPHA[this.intRange(0, ALPHA.length)];
+      }
+
+      return str;
+    }
+  }
+
+  random = Random;
+  return random;
+}
+
+var utils;
+var hasRequiredUtils;
+
+function requireUtils() {
+  if (hasRequiredUtils) return utils;
+  hasRequiredUtils = 1;
+  const { EMPTY_STRING } = requireConstants();
+  const Random = requireRandom();
+
+  //#region MiscFunctions
+  function isNullOrUndefined(item) {
+    return item !== null || item !== undefined;
+  }
+
+  /**
+   * Vérifie si une varible est un tableau ou quelque chose qui y ressemble
+   * @param {*} item
+   * @returns {bool}
+   */
+  function isArrayLike(item) {
+    return (
+      !!item &&
+      typeof item === 'object' &&
+      // eslint-disable-next-line no-prototype-builtins
+      item.hasOwnProperty('length') &&
+      typeof item.length === 'number' &&
+      item.length > 0 &&
+      item.length - 1 in item
+    );
+  }
+  //#endregion
+
+  utils = { EMPTY_STRING, Random, isNullOrUndefined, isArrayLike };
+  return utils;
+}
+
+var JsEnumerable_1;
+var hasRequiredJsEnumerable;
+
+function requireJsEnumerable() {
+  if (hasRequiredJsEnumerable) return JsEnumerable_1;
+  hasRequiredJsEnumerable = 1;
+  // import { isArrayLike } from '../mel.js';
+
+  const { isArrayLike } = requireUtils();
+
+  // export { MelEnumerable, MelKeyValuePair };
+
+  /**
+   * @callback WhereCallback
+   * @param {*} item
+   * @param {number} index
+   * @returns {Boolean}
+   */
+
+  /**
+   * @callback SelectCallback
+   * @param {*} item
+   * @param {number} index
+   * @returns {*}
+   */
+
+  /**
+   * @callback SelectorCallback
+   * @param {*} item
+   * @returns {*}
+   */
+
+  /**
+   * @class
+   * @classdesc Représentation d'un valeur et de sa clé
+   */
+  class KeyValuePair {
+    /**
+     *
+     * @param {!string | !number} key Clé qui est lié à la valeur
+     * @param {*} value Valeur
+     */
+    constructor(key, value) {
+      let _key = key;
+      let _value = value;
+
+      /**
+       * Clé qui est lié à la valeur
+       * @type {!string | !number}
+       * @readonly
+       */
+      this.key;
+      /**
+       * Valeur qui est lié à une clé
+       * @type {*}
+       * @readonly
+       */
+      this.value;
+      Object.defineProperties(this, {
+        key: {
+          get: () => {
+            return _key;
+          },
+          configurable: false,
+        },
+        value: {
+          get: () => {
+            return _value;
+          },
+          configurable: false,
+        },
+      });
+    }
+  }
+
+  class RotomecaGenerator {
+    constructor(iterable) {
+      this.iterable = iterable;
+    }
+
+    *[Symbol.iterator]() {
+      for (const iterator of this.next()) {
+        yield iterator;
+      }
+    }
+
+    where(callback) {
+      return new RotomecaWhereGenerator(this, callback);
+    }
+
+    select(callback) {
+      return new RotomecaSelectGenerator(this, callback);
+    }
+
+    groupBy(key_selector, value_selector = null) {
+      return new RotomecaGroupByGenerator(this, key_selector, value_selector);
+    }
+
+    orderBy(selector) {
+      return new RotomecaOrderGenerator(this, selector);
+    }
+
+    orderByDescending(selector) {
+      return new RotomecaOrderByDesendingGenerator(this, selector);
+    }
+
+    then(selector) {
+      return new RotomecaThenGenerator(this, selector);
+    }
+
+    thenDescending(selector) {
+      return new RotomecaThenDescendingGenerator(this, selector);
+    }
+
+    reverse() {
+      return new RotomecaReverseGenerator(this);
+    }
+
+    take(howMany) {
+      return new RotomecaTakeGenerator(this, howMany);
+    }
+
+    add(item) {
+      return this.aggregate(item);
+    }
+
+    aggregate(iterable) {
+      return new RotomecaAggegateGenerator(this, iterable);
+    }
+
+    remove(item) {
+      return new RotomecaRemoveGenerator(this, item);
+    }
+
+    removeAt(index) {
+      return new RotomecaRemoveAtIndexGenerator(this, index);
+    }
+
+    distinct(selector = null) {
+      return new RotomecaDistinctGenerator(this, selector);
+    }
+
+    except(array) {
+      return new RotomecaExceptGenerator(this, array);
+    }
+
+    intersect(array) {
+      return new RotomecaIntersectGenerator(this, array);
+    }
+
+    union(array, c = null) {
+      return new RotomecaUnionGenerator(this, array, c);
+    }
+
+    any(callback = null) {
+      let it = 0;
+      for (const iterator of this) {
+        if (!callback) return true;
+        else if (callback(iterator, it++)) return true;
+      }
+
+      return false;
+    }
+
+    all(callback = null) {
+      return !this.any((value, index) => {
+        return !callback(value, index);
+      });
+    }
+
+    contains(item) {
+      return this.any((value, index) => {
+        return value === item;
+      });
+    }
+
+    first(callback = null) {
+      const not_exist = Symbol();
+      const value = this.firstOrDefault(not_exist, callback);
+
+      if (value === not_exist) throw 'Item not exist';
+      else return value;
+    }
+
+    firstOrDefault(default_value = null, callback = null) {
+      let generator = callback ? this.where(callback) : this;
+
+      for (const iterator of generator) {
+        return iterator;
+      }
+
+      return default_value;
+    }
+
+    last(where = null) {
+      const not_exist = Symbol();
+      const value = this.lastOrDefault({ default_value: not_exist, where });
+
+      if (value === not_exist) throw 'Item not exist';
+      else return value;
+    }
+
+    lastOrDefault({ default_value = null, where = null }) {
+      let generator = this;
+
+      if (where) generator = generator.where(where);
+
+      let last = default_value;
+      for (const iterator of generator) {
+        last = iterator;
+      }
+
+      return last;
+    }
+
+    flat() {
+      return new RotomecaFlatGenerator(this);
+    }
+
+    *next() {
+      let iterable;
+
+      if (typeof this.iterable === 'function' && !!this.iterable.prototype.next)
+        iterable = this.iterable();
+      else iterable = this.iterable;
+
+      for (const iterator of iterable) {
+        yield iterator;
+      }
+    }
+
+    count() {
+      if (!this.length) {
+        this.length = 0;
+        for (const iterator of this) {
+          ++this.length;
+        }
+      }
+
+      return this.length;
+    }
+
+    join(separator = '') {
+      return this.toArray().join(separator);
+    }
+
+    sum({ where = null, selector = null }) {
+      let generator = this;
+
+      if (where) generator = generator.where(where);
+      if (selector) generator = generator.select(selector);
+
+      let sum = 0;
+      for (const iterator of generator) {
+        sum += iterator;
+      }
+
+      return sum;
+    }
+
+    _findMinMax() {
+      let array = this.toArray();
+      const length = array.length;
+
+      let max, min, i;
+
+      if (length % 2 !== 0) {
+        max = array[0];
+        min = array[0];
+        i = 1;
+      } else {
+        if (array[0] >= array[1]) {
+          max = array[0];
+          min = array[1];
+        } else {
+          max = array[1];
+          min = array[0];
+        }
+        i = 2;
+      }
+
+      while (i < length) {
+        if (array[i] < array[i + 1]) {
+          if (array[i] < min) min = array[i];
+          if (array[i + 1] > max) max = array[i + 1];
+        } else {
+          if (array[i + 1] < min) min = array[i + 1];
+          if (array[i] > max) max = array[i];
+        }
+        i += 2;
+      }
+
+      return { min, max };
+    }
+
+    max(selector = null) {
+      let generator = selector ? this.select(selector) : this;
+
+      return generator._findMinMax().max;
+    }
+
+    min(selector = null) {
+      let generator = selector ? this.select(selector) : this;
+
+      return generator._findMinMax().min;
+    }
+
+    toArray() {
+      let arr = [];
+      for (const iterator of this) {
+        arr.push(iterator);
+      }
+
+      return arr;
+    }
+
+    toJsonObject(key_selector, value_selector) {
+      let i = 0;
+      let obj = {};
+      for (const iterator of this) {
+        obj[key_selector(iterator, i)] = value_selector(iterator, i);
+        ++i;
+      }
+
+      return obj;
+    }
+  }
+
+  class ARotomecaCallbackGenerator extends RotomecaGenerator {
+    constructor(iterable, callback) {
+      super(iterable);
+      this.callback = callback;
+    }
+  }
+
+  class RotomecaWhereGenerator extends ARotomecaCallbackGenerator {
+    constructor(iterable, callback) {
+      super(iterable, callback);
+    }
+
+    *next() {
+      let star_parent = super.next();
+
+      let i = 0;
+      for (const iterator of star_parent) {
+        if (this.callback(iterator, i++)) yield iterator;
+      }
+    }
+  }
+
+  class RotomecaSelectGenerator extends ARotomecaCallbackGenerator {
+    constructor(iterable, callback) {
+      super(iterable, callback);
+    }
+
+    *next() {
+      let star_parent = super.next();
+
+      let i = 0;
+      for (const iterator of star_parent) {
+        yield this.callback(iterator, i++);
+      }
+    }
+  }
+
+  class ARotomecaKeyValueSelector extends ARotomecaCallbackGenerator {
+    constructor(iterable, key_selector, value_selector = null) {
+      super(iterable, value_selector);
+      this.key_selector = key_selector;
+    }
+  }
+
+  class RotomecaGroupedItems {
+    constructor(key, iterable) {
+      this.iterable = iterable;
+      this.key = key;
+    }
+
+    *next() {
+      let star_parent = this.iterable;
+
+      for (const iterator of star_parent) {
+        yield new KeyValuePair(this.key, iterator);
+      }
+    }
+
+    get_values(try_get_array = true) {
+      if (try_get_array && this.iterable instanceof JsEnumerable) {
+        if (Array.isArray(this.iterable.generator()))
+          return this.iterable.generator();
+        else if (
+          this.iterable.generator() instanceof RotomecaGenerator &&
+          Array.isArray(this.iterable.generator().iterable)
+        )
+          return this.iterable.generator().iterable;
+      }
+
+      return this.iterable;
+    }
+  }
+
+  class RotomecaGroupByGenerator extends ARotomecaKeyValueSelector {
+    constructor(iterable, key_selector, value_selector = null) {
+      super(iterable, key_selector, value_selector);
+    }
+
+    *next() {
+      let star_parent = super.next();
+
+      let key;
+      let datas = {};
+      for (const item of star_parent) {
+        key = this.key_selector(item);
+
+        if (!datas[key]) datas[key] = [];
+
+        datas[key].push(this.callback ? this.callback(item) : item);
+      }
+
+      for (const key in datas) {
+        if (Object.hasOwnProperty.call(datas, key)) {
+          const element = datas[key];
+          yield new RotomecaGroupedItems(key, JsEnumerable.from(element));
+        }
+      }
+    }
+  }
+
+  class ARotomecaOrderGenerator extends ARotomecaCallbackGenerator {
+    constructor(iterable, selector) {
+      super(iterable, selector);
+    }
+
+    sort(a, b) {
+      return 0;
+    }
+
+    *next() {
+      let star_parent = super.next();
+
+      let array = [];
+
+      for (const iterator of star_parent) {
+        array.push(iterator);
+      }
+
+      array = array.sort((a, b) => {
+        return this.sort(a, b);
+      });
+
+      for (const iterator of array) {
+        yield iterator;
+      }
+
+      array = null;
+    }
+  }
+
+  class RotomecaOrderGenerator extends ARotomecaOrderGenerator {
+    constructor(iterable, selector) {
+      super(iterable, selector);
+    }
+
+    sort(a, b) {
+      super.sort(a, b);
+      a = this.callback(a);
+      b = this.callback(b);
+      if (a > b) return 1;
+      else if (b > a) return -1;
+      return 0;
+    }
+  }
+
+  class RotomecaOrderByDesendingGenerator extends RotomecaOrderGenerator {
+    constructor(iterable, selector) {
+      super(iterable, selector);
+    }
+
+    sort(a, b) {
+      return -super.sort(a, b);
+    }
+  }
+
+  class RotomecaThenGenerator extends ARotomecaOrderGenerator {
+    constructor(iterable, selector) {
+      super(iterable, selector);
+    }
+
+    sort(a, b) {
+      super.sort(a, b);
+      if (a === b) {
+        a = this.callback(a);
+        b = this.callback(b);
+
+        if (a > b) return 1;
+        else if (b > a) return -1;
+      }
+
+      return 0;
+    }
+  }
+
+  class RotomecaThenDescendingGenerator extends RotomecaThenGenerator {
+    constructor(iterable, selector) {
+      super(iterable, selector);
+    }
+
+    sort(a, b) {
+      return -super.sort(a, b);
+    }
+  }
+
+  class ARotomecaItemModifierGenerator extends RotomecaGenerator {
+    constructor(iterable, item) {
+      super(iterable);
+      this.item = item;
+    }
+
+    *next() {
+      yield* super.next();
+    }
+  }
+
+  class RotomecaAggegateGenerator extends ARotomecaItemModifierGenerator {
+    constructor(iterable, item) {
+      super(iterable, item);
+    }
+
+    *next() {
+      let star_parent = super.next();
+
+      for (const iterator of star_parent) {
+        yield iterator;
+      }
+
+      if (
+        Array.isArray(this.item) ||
+        typeof this.item[Symbol.iterator] === 'function'
+      ) {
+        for (const iterator of this.item) {
+          yield iterator;
+        }
+      } else if (
+        typeof this.item === 'function' &&
+        !!this.item.prototype.next
+      ) {
+        for (const iterator of this.item()) {
+          yield iterator;
+        }
+      } else yield this.item;
+    }
+  }
+
+  class ARotomecaRemoverGenerator extends ARotomecaItemModifierGenerator {
+    constructor(iterable, item) {
+      super(iterable, item);
+    }
+
+    *next() {
+      let star_parent = super.next();
+      this.before();
+
+      for (const iterator of star_parent) {
+        if (this.compare(iterator) !== this.item) yield iterator;
+      }
+
+      this.after();
+    }
+
+    compare(item) {
+      return item;
+    }
+
+    before() {}
+    after() {}
+  }
+
+  class RotomecaRemoveGenerator extends ARotomecaRemoverGenerator {
+    constructor(iterable, item) {
+      super(iterable, item);
+    }
+  }
+
+  class RotomecaRemoveAtIndexGenerator extends ARotomecaRemoverGenerator {
+    constructor(iterable, item) {
+      super(iterable, item);
+      this.it = 0;
+    }
+
+    compare(item) {
+      super.compare(item);
+      return this.it++;
+    }
+
+    before() {
+      super.before();
+      this.it = 0;
+    }
+  }
+
+  class RotomecaFlatGenerator extends RotomecaGenerator {
+    constructor(iterable) {
+      super(iterable);
+    }
+
+    *next() {
+      let star_parent = super.next();
+
+      for (const iterator of star_parent) {
+        yield* this.generate(iterator);
+      }
+    }
+
+    *generate(iterator) {
+      if (this.check(iterator)) {
+        for (const item of iterator) {
+          if (this.check(item)) {
+            yield* this.generate(item);
+          } else yield item;
+        }
+      } else yield iterator;
+    }
+
+    check(iterator) {
+      return (
+        typeof iterator !== 'string' &&
+        (Array.isArray(iterator) ||
+          isArrayLike(iterator) ||
+          typeof iterator[Symbol.iterator] === 'function')
+      );
+    }
+  }
+
+  //TO ADD
+  class RotomecaDistinctGenerator extends ARotomecaCallbackGenerator {
+    constructor(iterable, selector) {
+      super(iterable, selector);
+    }
+
+    *next() {
+      let star_parent = super.next();
+      let things = [];
+      const have_selector = !!this.callback;
+
+      let item;
+      for (const iterator of star_parent) {
+        item = have_selector ? this.callback(iterator) : iterator;
+        if (!things.includes(item)) {
+          yield item;
+          things.push(item);
+        }
+      }
+
+      things = null;
+    }
+  }
+
+  //TO ADD
+  class RotomecaExceptGenerator extends ARotomecaItemModifierGenerator {
+    constructor(iterable, array) {
+      super(iterable, JsEnumerable.from(array).generator());
+    }
+
+    *next() {
+      let star_parent = super.next();
+
+      for (const iterator of star_parent) {
+        if (!this.item.contains(iterator)) {
+          yield iterator;
+        }
+      }
+    }
+  }
+
+  class RotomecaUnionGenerator extends ARotomecaItemModifierGenerator {
+    constructor(iterable, array, callback = null) {
+      super(iterable, array);
+      this.callback = callback;
+
+      this.things = [];
+      this.current = null;
+    }
+
+    *next() {
+      let star_parent = super.next();
+      const have_selector = !!this.callback;
+
+      this.things = [];
+      this.current = null;
+
+      yield* this.generate(have_selector, star_parent);
+      yield* this.generate(have_selector, this.item);
+
+      this.things = [];
+      this.current = null;
+    }
+
+    *generate(have_selector, generator) {
+      for (const iterator of generator) {
+        this.current = have_selector ? this.callback(iterator) : iterator;
+        if (!this.things.includes(this.current)) {
+          yield this.current;
+          this.things.push(this.current);
+        }
+      }
+    }
+  }
+
+  class RotomecaIntersectGenerator extends ARotomecaItemModifierGenerator {
+    constructor(iterable, array) {
+      super(iterable, array);
+    }
+
+    *next() {
+      let star_parent = super.next();
+
+      for (const iterator of star_parent) {
+        if (this.item.contains(iterator)) {
+          yield iterator;
+        }
+      }
+    }
+  }
+
+  class RotomecaReverseGenerator extends RotomecaGenerator {
+    constructor(iterable) {
+      super(iterable); //RotomecaOrderByDesendingGenerator
+    }
+
+    *next() {
+      let order = JsEnumerable.from(super.next()).toArray();
+
+      for (let len = order.length, index = len - 1; index >= 0; --index) {
+        yield order[index];
+      }
+    }
+  }
+
+  class RotomecaTakeGenerator extends ARotomecaItemModifierGenerator {
+    constructor(iterable, number) {
+      super(iterable, number);
+    }
+
+    *next() {
+      let p = super.next();
+
+      let it = 0;
+      for (const iterator of p) {
+        yield iterator;
+
+        if (++it === this.item) break;
+      }
+      it = null;
+    }
+  }
+
+  class ObjectKeyEnumerable extends RotomecaGenerator {
+    constructor(object) {
+      super();
+      this.iterable = JsEnumerable.from(this._generate.bind(this, object));
+    }
+
+    *_generate(object) {
+      for (const key in object) {
+        if (Object.hasOwnProperty.call(object, key)) {
+          const element = object[key];
+          yield new KeyValuePair(key, element);
+        }
+      }
+    }
+  }
+
+  /**
+   * @callback RGenerator
+   * @returns {JsEnumerable}
+   */
+
+  /**
+   * Classe principale des enumerations.
+   *
+   * Permet d'avoir un comportement semblable à System.Linq du C#
+   * @class
+   * @see {@link https://docs.microsoft.com/en-us/dotnet/api/system.linq}
+   * @hideconstructor
+   */
+  class JsEnumerable {
+    /**
+     * @param {Generator | Array | JsEnumerable | RotomecaGenerator | JSON} generator
+     */
+    constructor(generator) {
+      let _generator = generator;
+
+      /**
+       * Récupère le générateur.
+       * @readonly
+       * @type {RGenerator}
+       */
+      this.generator = undefined;
+      Object.defineProperty(this, 'generator', {
+        enumerable: false,
+        configurable: false,
+        writable: false,
+        value: function () {
+          return _generator;
+        },
+      });
+    }
+
+    /**
+     * Récupère que les éléments dont callback retourne "vrai"
+     * @param {WhereCallback} callback Fonction qui servira à tester les éléments
+     * @generator
+     * @returns {JsEnumerable}
+     */
+    where(callback) {
+      return new JsEnumerable(this.generator().where(callback));
+    }
+
+    /**
+     * Sélectionne une donnée à partir des éléments de l'énumération
+     * @param {SelectCallback} selector
+     * @generator
+     * @returns {JsEnumerable}
+     */
+    select(selector) {
+      return new JsEnumerable(this.generator().select(selector));
+    }
+
+    /**
+     * Groupe les données par clé et par valeur.
+     * @param {SelectorCallback} key_selector Génère les différentes clés
+     * @param {?SelectorCallback} value_selector Génère les différentes valeurs, l'élément entier est pris si null
+     * @returns {JsEnumerable}
+     * @generator
+     */
+    groupBy(key_selector, value_selector = null) {
+      return new JsEnumerable(
+        this.generator().groupBy(key_selector, value_selector),
+      );
+    }
+
+    /**
+     * Tri les données (croissant)
+     * @param {SelectorCallback} selector
+     * @returns {JsEnumerable}
+     * @generator
+     */
+    orderBy(selector) {
+      return new JsEnumerable(this.generator().orderBy(selector));
+    }
+
+    /**
+     * Tri les données (décroissant)
+     * @param {SelectorCallback} selector
+     * @returns {JsEnumerable}
+     * @generator
+     */
+    orderByDescending(selector) {
+      return new JsEnumerable(this.generator().orderByDescending(selector));
+    }
+
+    /**
+     * Tri les données (croissant), à utiliser après orderBy
+     * @param {SelectorCallback} selector
+     * @returns {JsEnumerable}
+     * @generator
+     */
+    then(selector) {
+      return new JsEnumerable(this.generator().then(selector));
+    }
+
+    /**
+     * Tri les données (décroissant), à utiliser après orderBy
+     * @param {SelectorCallback} selector
+     * @returns {JsEnumerable}
+     * @generator
+     */
+    thenDescending(selector) {
+      return new JsEnumerable(this.generator().thenDescending(selector));
+    }
+
+    /**
+     * Ajoute un objet à l'énumération
+     * @param {*} item
+     * @returns {JsEnumerable}
+     * @generator
+     */
+    add(item) {
+      return new JsEnumerable(this.generator().add(item));
+    }
+
+    /**
+     * Ajoute un itérable à l'énumération
+     * @param {Array | Generator} iterable
+     * @returns {JsEnumerable}
+     * @generator
+     */
+    aggregate(iterable) {
+      return new JsEnumerable(this.generator().aggregate(iterable));
+    }
+
+    /**
+     * Supprime un objet à l'énumération si il est présent
+     * @param {*} item
+     * @returns {JsEnumerable}
+     * @generator
+     */
+    remove(item) {
+      return new JsEnumerable(this.generator().remove(item));
+    }
+
+    /**
+     * Supprime un objet à un index de l'énumération si il est présent
+     * @param {number} index
+     * @returns {JsEnumerable}
+     * @generator
+     */
+    removeAt(index) {
+      return new JsEnumerable(this.generator().removeAt(index));
+    }
+
+    /**
+     * Empèche d'avoir 2 valeurs identiques dans l'énumération
+     * @param {?SelectorCallback} selector
+     * @returns {JsEnumerable}
+     * @generator
+     */
+    distinct(selector = null) {
+      return new JsEnumerable(this.generator().distinct(selector));
+    }
+
+    /**
+     * Empèche d'avoir les valeurs du tableau dans l'énumération
+     * @param {any[] | Generator} array
+     * @returns {JsEnumerable}
+     * @generator
+     */
+    except(array) {
+      return new JsEnumerable(this.generator().except(array));
+    }
+
+    /**
+     * Empèche d'avoir les valeurs en commun du tableau dans l'énumération
+     * @param {any[] | Generator} array
+     * @returns {JsEnumerable}
+     * @generator
+     */
+    intersect(array) {
+      return new JsEnumerable(this.generator().intersect(array));
+    }
+
+    /**
+     * Fusionne les 2 tableaux
+     * @param {any[] | Generator} array
+     * @param {?SelectorCallback} selector
+     * @returns {JsEnumerable}
+     * @generator
+     */
+    union(array, selector = null) {
+      return new JsEnumerable(this.generator().union(array, selector));
+    }
+
+    /**
+     * Renvoie l'énumération à l'envers
+     * @returns {JsEnumerable}
+     * @generator
+     */
+    reverse() {
+      return new JsEnumerable(this.generator().reverse());
+    }
+
+    /**
+     * Prend les x premiers éléments
+     * @param {number} howMany x premiers éléments à prendre
+     * @returns {JsEnumerable}
+     * @generator
+     */
+    take(howMany) {
+      return new JsEnumerable(this.generator().take(howMany));
+    }
+
+    /**
+     * Retourne vrai si il y a au moins un élément dans l'énumération.
+     * @param {?WhereCallback} callback Si défini, éffectue un `where` avant de faire le any.
+     * @returns {boolean}
+     * @see {@link JsEnumerable~where}
+     */
+    any(callback = null) {
+      return this.generator().any(callback);
+    }
+
+    /**
+     * Retourne vrai si tout les éléments existent dans l'énumération.
+     * @param {?WhereCallback} callback Si défini, éffectue un `where` avant de faire le all.
+     * @returns {boolean}
+     * @see {@link JsEnumerable~where}
+     */
+    all(callback = null) {
+      return this.generator().all(callback);
+    }
+
+    /**
+     * Retourne vrai si l'élément existe dans l'énumération.
+     * @param {*} item
+     * @returns {boolean}
+     */
+    contains(item) {
+      return this.generator().contains(item);
+    }
+
+    /**
+     * Retourne le premier élément dans l'énumération.
+     * @param {?WhereCallback} callback Si défini, éffectue un `where` avant de faire le first.
+     * @returns {*}
+     * @throws If null
+     */
+    first(callback = null) {
+      return this.generator().first(callback);
+    }
+
+    /**
+     * Retourne le premier élément dans l'énumération.
+     * @param {?any} default_value Valeur par défaut si on ne trouve rien
+     * @param {?WhereCallback} callback Si défini, éffectue un `where` avant de faire le firstOrDefault.
+     * @returns {*}
+     */
+    firstOrDefault(default_value = null, callback = null) {
+      return this.generator().firstOrDefault(default_value, callback);
+    }
+
+    /**
+     * La fonction `last` renvoie le dernier élément d'un générateur, éventuellement filtré par une
+     * condition.
+     * @param {?WhereCallback} where - Le paramètre "where" est une fonction qui détermine si un élément doit être
+     * inclus ou non dans la recherche. Il permet de filtrer les éléments avant de retrouver le dernier. Si
+     * la fonction "where" renvoie vrai pour un élément, celui-ci sera inclus dans la recherche ; sinon, ce
+     * sera
+     * @returns Le dernier élément du générateur qui satisfait la condition donnée.
+     */
+    last(where = null) {
+      return this.generator().last(where);
+    }
+
+    /**
+     * La fonction renvoie le dernier élément d'un générateur ou une valeur par défaut si le générateur est
+     * vide.
+     * @param {Object} param0
+     * @param {?any} [param0.default_value=null] Valeur par défaut si on ne trouve rien
+     * @param {?WhereCallback} [param0.where=null] Fonction where qui sera appliqué avant de récupérer le dernier élément
+     * @returns La fonction lastOrDefault renvoie le résultat de l'appel de la fonction lastOrDefault du
+     * générateur avec les paramètres fournis.
+     */
+    lastOrDefault({ default_value = null, where = null }) {
+      return this.generator().lastOrDefault({ default_value, where });
+    }
+
+    /**
+     * Si il y a des tableaux dans les tableaux, transforme tout en un seul tableau
+     * @returns {JsEnumerable}
+     * @generator
+     */
+    flat() {
+      return new JsEnumerable(this.generator().flat());
+    }
+
+    *[Symbol.iterator]() {
+      for (const iterator of this.generator()) {
+        yield iterator;
+      }
+    }
+
+    /**
+     * Change l'énumération en chaîne de charactères
+     * @param {string} separator
+     * @returns {string}
+     */
+    join(separator = '') {
+      return this.generator().join(separator);
+    }
+
+    /**
+     * Fait la somme des éléments de l'énumération
+     * @param {Object} param0 Si défini, le `where` sera pris en compte avant le `select`
+     * @param {?WhereCallback} where Prendre seulement ce qui nous intéresse dans le sum
+     * @param {?SelectCallback} selector Séléctionner le membre sur lequel on veut faire un sum
+     * @returns {number}
+     * @throws Si selector retourne autre chose qu'un nombre
+     * @see {@link WhereCallback}
+     * @see {@link SelectCallback}
+     */
+    sum({ where = null, selector = null }) {
+      return this.generator().sum({ where, selector });
+    }
+
+    /**
+     * Compte le nombre d'éléments dans l'énumération
+     * @returns {number}
+     */
+    count() {
+      return this.generator().count();
+    }
+
+    /**
+     * Récupère la valeur maximale de l'énumération
+     * @param {?SelectorCallback} selector Séléctionne la valeur à comparer
+     * @returns {number}
+     */
+    max(selector = null) {
+      return this.generator().max(selector);
+    }
+
+    /**
+     * Récupère la valeur minimale de l'énumération
+     * @param {?SelectorCallback} selector Séléctionne la valeur à comparer
+     * @returns {number}
+     */
+    min(selector = null) {
+      return this.generator().min(selector);
+    }
+
+    /**
+     * Transforme en tableau
+     * @returns {Array}
+     */
+    toArray() {
+      return this.generator().toArray();
+    }
+
+    /**
+     * Convertit en objet
+     * @param {SelectCallback} key_selector
+     * @param {SelectCallback} value_selector
+     * @returns {{}} style {index1:value1 etc....}
+     */
+    toJsonObject(key_selector, value_selector) {
+      return this.generator().toJsonObject(key_selector, value_selector);
+    }
+
+    /**
+     * Convertit un objet/un tableau en enumerable
+     * @generator
+     * @param {Array | RotomecaGenerator | JsEnumerable | {} | Generator} item Objet à convertir en enumerable
+     * @returns {JsEnumerable}
+     */
+    static from(item) {
+      const is_array_like = isArrayLike(item);
+      if (
+        Array.isArray(item) ||
+        (typeof item[Symbol.iterator] === 'function' && !is_array_like)
+      )
+        return new JsEnumerable(new RotomecaGenerator(item));
+      else if (item instanceof RotomecaGenerator) return new JsEnumerable(item);
+      else if (typeof item === 'object' && !is_array_like) {
+        return this.from(new ObjectKeyEnumerable(item));
+      } else if (is_array_like)
+        return new JsEnumerable(new RotomecaGenerator(Array.from(item)));
+      else if (typeof item === 'function' && !!item.prototype.next)
+        return new JsEnumerable(new RotomecaGenerator(item));
+      else return new JsEnumerable(new RotomecaGenerator([item]));
+    }
+
+    /**
+     * Récupère des éléments au hasard dans un tableau
+     * @param {Array | RotomecaGenerator | JsEnumerable | {} | Generator} item
+     * @param  {...any} args Autres objets qui seront pris au hasard
+     * @returns {JsEnumerable}
+     * @generator
+     */
+    static choice(item, ...args) {
+      item = JsEnumerable.from(item)
+        .aggregate(args || [])
+        .toArray();
+      const min = 0;
+      const max = item.length - 1;
+
+      const generator = function* () {
+        while (true) {
+          yield item[Math.floor(Math.random() * (max - min + 1) + min)];
+        }
+      };
+
+      return JsEnumerable.from(generator);
+    }
+
+    /**
+     * Génère les éléments sous forme d'un cycle.
+     * @param {Array | RotomecaGenerator | JsEnumerable | {} | Generator} item Initialisateur
+     * @param  {...any} args Initialisateurs
+     * @returns {JsEnumerable}
+     * @generator
+     */
+    static cycle(item, ...args) {
+      item = JsEnumerable.from(item)
+        .aggregate(args || [])
+        .toArray();
+      let it = 0;
+
+      const generator = function* () {
+        while (true) {
+          yield item[it++];
+
+          if (it === item.length) it = 0;
+        }
+      };
+
+      return JsEnumerable.from(generator);
+    }
+
+    /**
+     * Génère un énumérable vide
+     * @returns {JsEnumerable}
+     * @generator
+     */
+    static empty() {
+      return JsEnumerable.from([]);
+    }
+
+    /**
+     * Génère des valeurs commençant par "start", pendant "count" par pas de "step"
+     *
+     * (ex: (0,5,2) => [0,2,4,6,8])
+     * @param {number} start Valeur de départ
+     * @param {number} count Pendant combien d'itérations ?
+     * @param {number} step pas
+     * @returns {JsEnumerable}
+     * @generator
+     */
+    static range(start, count, step = 1) {
+      let it = 0;
+      const generator = function* () {
+        while (it++ < count) {
+          yield start;
+
+          start += step;
+        }
+      };
+
+      return JsEnumerable.from(generator);
+    }
+
+    /**
+     * Génère des valeurs commençant par "start", pendant "count" par pas de "step" (décroissant)
+     *
+     * (ex: (0,5,2) => [0, -2, -4, -6, -8])
+     * @param {number} start Valeur de départ
+     * @param {number} count Pendant combien d'itérations ?
+     * @param {number} step pas
+     * @returns {JsEnumerable}
+     * @generator
+     */
+    static rangeDown(start, count, step = 1) {
+      return JsEnumerable.range(start, count, -step);
+    }
+
+    /**
+     * Génère des valeurs commençant par "start" indéfiniment par pas de "step"
+     * @param {number} start Valeur de départ
+     * @param {number} step pas
+     * @returns {JsEnumerable}
+     * @generator
+     */
+    static toInfinity(start = 0, step = 1) {
+      return JsEnumerable.range(start, Number.POSITIVE_INFINITY, step);
+    }
+
+    /**
+     * Génère des valeurs commençant par "start" indéfiniment par pas de "step" (décroissant)
+     * @param {number} start Valeur de départ
+     * @param {number} step pas
+     * @returns {JsEnumerable}
+     * @generator
+     */
+    static toNegativeInfinity(start = 0, step = 1) {
+      return JsEnumerable.toInfinity(start, -step);
+    }
+
+    static generate(callback) {
+      const generator = function* () {
+        while (true) {
+          yield callback();
+        }
+      };
+
+      return JsEnumerable.from(generator);
+    }
+
+    /**
+     * Génère des nombres au hasard
+     * @param {number} min
+     * @param {number} max
+     * @returns
+     * @generator
+     */
+    static random(min = 0, max = 1000) {
+      return JsEnumerable.generate(() => {
+        return Math.random() * (max - min + 1) + min;
+      });
+    }
+
+    static async fromAsync(async_generator) {
+      let arr = [];
+
+      let next;
+      while ((next = await async_generator.next()) && !next.done) {
+        arr.push(next.value);
+      }
+
+      return JsEnumerable.from(arr);
+    }
+  }
+
+  JsEnumerable_1 = JsEnumerable;
+  return JsEnumerable_1;
+}
+
+var JsEnumerableExports = requireJsEnumerable();
+var JsEnumerable = /*@__PURE__*/ getDefaultExportFromCjs(JsEnumerableExports);
 
 /**
  * Classe de base pour les composants bnum personnalisés.
@@ -405,8 +1839,8 @@ class BnumElement extends HTMLElement {
    * @param detail Détail de l'événement.
    * @returns L'instance courante.
    */
-  trigger(type, detail) {
-    this.dispatchEvent(new CustomEvent(type, { detail }));
+  trigger(type, detail, options) {
+    this.dispatchEvent(new CustomEvent(type, { detail, ...options }));
     return this;
   }
   /**
@@ -821,6 +2255,13 @@ class BnumElement extends HTMLElement {
   // === Static API =======
   // ======================
   //#region static
+  static _p_WriteAttributes(attrs) {
+    if (Object.keys(attrs).length === 0) return EMPTY_STRING;
+    return JsEnumerable.from(attrs)
+      .select((x) => x)
+      .select(({ key, value }) => `${key}="${value}"`)
+      .join(' ');
+  }
   /**
    * Méthode statique pour créer une instance du composant.
    * Doit être implémentée dans les classes dérivées.
@@ -873,13 +2314,7 @@ class BnumElement extends HTMLElement {
 /**
  * Style commun à tous les BnumElement.
  */
-const BASE_STYLE = BnumElement.ConstructCSSStyleSheet(css_248z$h);
-
-function getDefaultExportFromCjs(x) {
-  return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default')
-    ? x['default']
-    : x;
-}
+const BASE_STYLE = BnumElement.ConstructCSSStyleSheet(css_248z$k);
 
 var event = { exports: {} };
 
@@ -1405,11 +2840,11 @@ class SchedulerArray {
   }
 }
 
-var css_248z$g =
+var css_248z$j =
   '@font-face{font-family:Material Symbols Outlined;font-style:normal;font-weight:200;src:url(fonts/material-symbol-v2.woff2) format("woff2")}.material-symbols-outlined{word-wrap:normal;-moz-font-feature-settings:"liga";-moz-osx-font-smoothing:grayscale;direction:ltr;display:inline-block;font-family:Material Symbols Outlined;font-size:24px;font-style:normal;font-weight:400;letter-spacing:normal;line-height:1;text-transform:none;white-space:nowrap}';
 
-var css_248z$f =
-  '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{font-size:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem));font-weight:var(--bnum-icon-font-weight,var(--bnum-font-weight-normal,normal));height:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem));width:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem))}:host(:state(loading)){opacity:0}';
+var css_248z$i =
+  '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{font-size:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem));font-variation-settings:"FILL" var(--bnum-icon-fill,0),"wght" var(--bnum-icon-weight,400),"GRAD" var(--bnum-icon-grad,0),"opsz" var(--bnum-icon-opsz,24);font-weight:var(--bnum-icon-font-weight,var(--bnum-font-weight-normal,normal));height:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem));width:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem))}:host(:state(loading)){opacity:0}';
 
 /**
  * Classe interne étendant BnumElement pour gérer les états personnalisés via ElementInternals.
@@ -1509,9 +2944,9 @@ const ICON_CLASS = 'material-symbols-outlined';
  * Feuille de style CSS pour les icônes Material Symbols.
  */
 const SYMBOLS = BnumElement.ConstructCSSStyleSheet(
-  css_248z$g.replaceAll(`.${ICON_CLASS}`, ':host'),
+  css_248z$j.replaceAll(`.${ICON_CLASS}`, ':host'),
 );
-const STYLE$1 = BnumElement.ConstructCSSStyleSheet(css_248z$f);
+const STYLE$3 = BnumElement.ConstructCSSStyleSheet(css_248z$i);
 /**
  * Composant personnalisé "bnum-icon" pour afficher une icône Material Symbol.
  *
@@ -1618,7 +3053,7 @@ class HTMLBnumIcon extends BnumElementInternal {
    * @returns {CSSStyleSheet[]} Les feuilles de style.
    */
   _p_getStylesheets() {
-    return [...super._p_getStylesheets(), SYMBOLS, STYLE$1];
+    return [...super._p_getStylesheets(), SYMBOLS, STYLE$3];
   }
   /**
    * Construit le DOM interne du composant.
@@ -1681,6 +3116,10 @@ class HTMLBnumIcon extends BnumElementInternal {
     const element = this.EMPTY;
     element.icon = icon;
     return element;
+  }
+  static Write(icon, attribs = {}) {
+    const attributes = this._p_WriteAttributes(attribs);
+    return `<${TAG_ICON} data-icon="${icon}" ${attributes}></${TAG_ICON}>`;
   }
   /**
    * Retourne le tag HTML utilisé pour ce composant.
@@ -1794,14 +3233,14 @@ HTMLBnumIcon.TryDefine();
 const REG_LIGHT_PICTURE_NAME = /(-light)\.(([\w\d]+)|\1?.+)$/;
 const REG_XSS_SAFE = /^[-.\w\s%()]+$/;
 
-var css_248z$e =
+var css_248z$h =
   '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{border-radius:var(--bnum-button-border-radius,0);cursor:var(--bnum-button-cursor,pointer);display:var(--bnum-button-display,inline-block);height:-moz-fit-content;height:fit-content;padding:var(--bnum-button-padding,6px 10px);transition:background-color .2s ease,color .2s ease;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}:host(:state(rounded)){border-radius:var(--bnum-button-rounded-border-radius,5px)}:host(:state(without-icon)){padding-bottom:var(--bnum-button-without-icon-padding-bottom,7.5px);padding-top:var(--bnum-button-without-icon-padding-top,7.5px)}:host(:disabled),:host(:state(disabled)){cursor:not-allowed;opacity:var(--bnum-button-disabled-opacity,.6);pointer-events:var(--bnum-button-disabled-pointer-events,none)}:host(:state(loading)){cursor:progress}:host(:state(icon)){--bnum-button-icon-gap:var(--custom-bnum-button-icon-margin,var(--bnum-space-s,10px))}:host(:state(icon))>.wrapper{align-items:center;display:flex;flex-direction:row;gap:var(--bnum-button-icon-gap);justify-content:center}:host(:state(icon-pos-left)) .wrapper{flex-direction:row-reverse}:host(:focus-visible){outline:2px solid #0969da;outline-offset:2px}:host>.wrapper{align-items:var(--bnum-button-wrapper-align-items,center);display:var(--bnum-button-wrapper-display,flex)}:host bnum-icon.icon{display:var(--bnum-button-icon-display,flex)}:host bnum-icon.icon.hidden{display:none}:host bnum-icon.loader{display:var(--bnum-button-loader-display,flex)}:host(:is(:state(loading):state(without-icon-loading))) slot{display:none}@keyframes spin{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host .loader,:host .spin,:host(:state(loading)) .icon{animation:spin var(--bnum-button-spin-duration,.75s) var(--bnum-button-spin-timing,linear) var(--bnum-button-spin-iteration,infinite)}:host(:state(hide-text-on-small)) .slot,:host(:state(hide-text-on-touch)) .slot{display:var(--size-display-state,inline-block)}:host(:state(hide-text-on-small)) .icon,:host(:state(hide-text-on-touch)) .icon{margin-left:var(--size-margin-left-state,var(--custom-button-icon-margin-left))!important;margin-right:var(--size-margin-right-state,var(--custom-button-icon-margin-right))!important}:host .hidden,:host [hidden]{display:none!important}:host(:state(primary)){background-color:var(--bnum-button-primary-background-color,var(--bnum-color-primary));border:var(--bnum-button-primary-border,solid thin var(--bnum-button-primary-border-color,var(--bnum-color-primary)));color:var(--bnum-button-primary-text-color,var(--bnum-text-on-primary))}:host(:state(primary):hover){background-color:var(--bnum-button-primary-hover-background-color,var(--bnum-color-primary-hover));border:var(--bnum-button-primary-hover-border,solid thin var(--bnum-button-primary-hover-border-color,var(--bnum-color-primary-hover)));color:var(--bnum-button-primary-hover-text-color,var(--bnum-text-on-primary-hover))}:host(:state(primary):active){background-color:var(--bnum-button-primary-active-background-color,var(--bnum-color-primary-active));border:var(--bnum-button-primary-active-border,solid thin var(--bnum-button-primary-active-border-color,var(--bnum-color-primary-active)));color:var(--bnum-button-primary-active-text-color,var(--bnum-text-on-primary-active))}:host(:state(secondary)){background-color:var(--bnum-button-secondary-background-color,var(--bnum-color-secondary));border:var(--bnum-button-secondary-border,solid thin var(--bnum-button-secondary-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-text-color,var(--bnum-text-on-secondary))}:host(:state(secondary):hover){background-color:var(--bnum-button-secondary-hover-background-color,var(--bnum-color-secondary-hover));border:var(--bnum-button-secondary-hover-border,solid thin var(--bnum-button-secondary-hover-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-hover-text-color,var(--bnum-text-on-secondary-hover))}:host(:state(secondary):active){background-color:var(--bnum-button-secondary-active-background-color,var(--bnum-color-secondary-active));border:var(--bnum-button-secondary-active-border,solid thin var(--bnum-button-secondary-active-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-active-text-color,var(--bnum-text-on-secondary-active))}:host(:state(danger)){background-color:var(--bnum-button-danger-background-color,var(--bnum-color-danger));border:var(--bnum-button-danger-border,solid thin var(--bnum-button-danger-border-color,var(--bnum-color-danger)));color:var(--bnum-button-danger-text-color,var(--bnum-text-on-danger))}:host(:state(danger):hover){background-color:var(--bnum-button-danger-hover-background-color,var(--bnum-color-danger-hover));border:var(--bnum-button-danger-hover-border,solid thin var(--bnum-button-danger-hover-border-color,var(--bnum-color-danger-hover)));color:var(--bnum-button-danger-hover-text-color,var(--bnum-text-on-danger-hover))}:host(:state(danger):active){background-color:var(--bnum-button-danger-active-background-color,var(--bnum-color-danger-active));border:var(--bnum-button-danger-active-border,solid thin var(--bnum-button-danger-active-border-color,var(--bnum-color-danger-active)));color:var(--bnum-button-danger-active-text-color,var(--bnum-text-on-danger-active))}';
 
 //#region External Constants
 /**
  * Style CSS du composant bouton.
  */
-const SHEET$d = BnumElement.ConstructCSSStyleSheet(css_248z$e);
+const SHEET$e = BnumElement.ConstructCSSStyleSheet(css_248z$h);
 // Constantes pour les tags des différents types de boutons
 /**
  * Tag du bouton Bnum.
@@ -2208,7 +3647,7 @@ class HTMLBnumButton extends BnumElement {
    * @returns Template utiliser pour le composant
    */
   _p_fromTemplate() {
-    return TEMPLATE$9;
+    return TEMPLATE$b;
   }
   /**
    * Construit le DOM du composant bouton.
@@ -2236,7 +3675,7 @@ class HTMLBnumButton extends BnumElement {
    * @inheritdoc
    */
   _p_getStylesheets() {
-    return [...super._p_getStylesheets(), SHEET$d];
+    return [...super._p_getStylesheets(), SHEET$e];
   }
   //#endregion Lifecycle
   //#region Private methods
@@ -2494,7 +3933,7 @@ class HTMLBnumButton extends BnumElement {
 /**
  * Template HTML du composant bouton.
  */
-const TEMPLATE$9 = BnumElement.CreateTemplate(`
+const TEMPLATE$b = BnumElement.CreateTemplate(`
   <div class="${HTMLBnumButton.CLASS_WRAPPER}">
     <span class="${HTMLBnumButton.CLASS_SLOT}">
       <slot></slot>
@@ -2614,10 +4053,10 @@ class HTMLBnumDangerButton extends HTMLBnumButton {
 }
 HTMLBnumDangerButton.TryDefine();
 
-var css_248z$d = ':host{border-bottom:thin dotted;cursor:help}';
+var css_248z$g = ':host{border-bottom:thin dotted;cursor:help}';
 
 // bnum-helper.ts
-const SHEET$c = BnumElement.ConstructCSSStyleSheet(css_248z$d);
+const SHEET$d = BnumElement.ConstructCSSStyleSheet(css_248z$g);
 /**
  * Constante représentant l'icône utilisée par défaut.
  */
@@ -2662,7 +4101,7 @@ class HTMLBnumHelper extends BnumElement {
    * @inheritdoc
    */
   _p_getStylesheets() {
-    return [...super._p_getStylesheets(), SHEET$c];
+    return [...super._p_getStylesheets(), SHEET$d];
   }
   /**
    * Crée une nouvelle instance de HTMLBnumHelper avec le texte d'aide spécifié.
@@ -2685,13 +4124,13 @@ class HTMLBnumHelper extends BnumElement {
 }
 HTMLBnumHelper.TryDefine();
 
-var css_248z$c =
+var css_248z$f =
   ':host{--_image-url:var(--_image-light);display:inline-block}img{content:var(--_image-url);height:100%;width:100%}';
 
 /**
  * Feuille de style CSS pour le composant BnumHTMLPicture.
  */
-const SHEET$b = BnumElement.ConstructCSSStyleSheet(css_248z$c);
+const SHEET$c = BnumElement.ConstructCSSStyleSheet(css_248z$f);
 /**
  * Élément web personnalisé permettant d'afficher une image qui s'adapte automatiquement au mode sombre ou clair de l'interface.
  *
@@ -2824,7 +4263,7 @@ class HTMLBnumPicture extends BnumElement {
    * @inheritdoc
    */
   _p_getStylesheets() {
-    return [...super._p_getStylesheets(), SHEET$b];
+    return [...super._p_getStylesheets(), SHEET$c];
   }
   /**
    * Construit le DOM du composant.
@@ -2949,10 +4388,10 @@ class HTMLBnumPicture extends BnumElement {
 HTMLBnumPicture.TryDefine();
 //#endregion
 
-var css_248z$b =
+var css_248z$e =
   '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host a{align-items:var(--bnum-card-title-align-items,center);display:var(--bnum-card-title-display,flex);gap:var(--bnum-card-title-gap,var(--bnum-space-s,10px))}:host(:state(url)) a{color:var(--a-color,var(--bnum-text-primary,#000));-webkit-text-decoration:var(--a-text-decoration,none);text-decoration:var(--a-text-decoration,none)}:host(:state(url)) a:hover{color:var(--a-hover-color,var(--bnum-text-primary,#000));-webkit-text-decoration:var(--a-hover-text-decoration,underline);text-decoration:var(--a-hover-text-decoration,underline)}h2{font-size:var(--bnum-card-title-font-size,var(--bnum-font-size-h6,1.25rem));margin:var(--bnum-card-title-margin,0)}';
 
-const SHEET$a = BnumElement.ConstructCSSStyleSheet(css_248z$b);
+const SHEET$b = BnumElement.ConstructCSSStyleSheet(css_248z$e);
 /**
  * Composant représentant le titre d'une carte, pouvant inclure une icône et un lien.
  * Permet d'afficher un titre enrichi avec une icône et éventuellement un lien cliquable.
@@ -3102,10 +4541,10 @@ class HTMLBnumCardTitle extends BnumElement {
     super();
   }
   _p_getStylesheets() {
-    return [...super._p_getStylesheets(), SHEET$a];
+    return [...super._p_getStylesheets(), SHEET$b];
   }
   _p_fromTemplate() {
-    return TEMPLATE$8;
+    return TEMPLATE$a;
   }
   /**
    * Construit le DOM du composant dans le conteneur donné.
@@ -3260,7 +4699,7 @@ class HTMLBnumCardTitle extends BnumElement {
     return TAG_CARD_TITLE;
   }
 }
-const TEMPLATE$8 = BnumElement.CreateTemplate(`
+const TEMPLATE$a = BnumElement.CreateTemplate(`
       <h2><a class="${HTMLBnumCardTitle.CLASS_LINK}">
         <span class="container">
           <slot id="${HTMLBnumCardTitle.ID_SLOT_ICON}" name="${HTMLBnumCardTitle.SLOT_NAME_ICON}"></slot>
@@ -3299,10 +4738,10 @@ function removeButtonRole(element) {
   return element;
 }
 
-var css_248z$a =
+var css_248z$d =
   '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{background-color:var(--bnum-card-background-color,var(--bnum-color-surface,#f6f6f6));border-bottom:var(--bnum-border-on-surface-bottom,solid 4px #000091);border-left:var(--bnum-border-on-surface-left,none);border-right:var(--bnum-border-on-surface-right,none);border-top:var(--bnum-border-on-surface-top,none);display:var(--bnum-card-display,block);height:var(--bnum-card-height,auto);padding:var(--bnum-card-padding,var(--bnum-space-m,15px));position:relative;width:var(--bnum-card-width,auto)}:host .card-loading{display:none}:host(:state(clickable)){cursor:var(--bnum-card-clickable-cursor,pointer)}:host(:hover:state(clickable)){background-color:var(--bnum-card-background-color-hover,var(--bnum-color-surface-hover,#dfdfdf))}:host(:active:state(clickable)){background-color:var(--bnum-card-background-color-active,var(--bnum-color-surface-active,#cfcfcf))}:host(:state(loading)){--bnum-card-background-color-hover:var(--bnum-card-background-color,var(--bnum-color-surface,#f6f6f6));--bnum-card-background-color-active:var(--bnum-card-background-color,var(--bnum-color-surface,#f6f6f6));opacity:.8;pointer-events:none}:host(:state(loading)) .card-loading{align-items:center;display:flex;inset:0;justify-content:center;position:absolute;z-index:10}:host(:state(loading)) .card-loading .loader{animation:var(--bnum-card-loader-animation-rotate360,var(--bnum-animation-rotate360,rotate360 1s linear infinite))}:host(:state(loading)) .card-body slot{visibility:hidden}';
 
-const SHEET$9 = BnumElementInternal.ConstructCSSStyleSheet(css_248z$a);
+const SHEET$a = BnumElementInternal.ConstructCSSStyleSheet(css_248z$d);
 /**
  * Élément à ajouter dans un slot avec un nom de slot optionnel.
  */
@@ -3594,7 +5033,7 @@ class HTMLBnumCardElement extends BnumElementInternal {
     this.addEventListener('click', this.#_handleClick.bind(this));
   }
   _p_fromTemplate() {
-    return TEMPLATE$7;
+    return TEMPLATE$9;
   }
   /**
    * Construit le DOM interne du composant.
@@ -3634,7 +5073,7 @@ class HTMLBnumCardElement extends BnumElementInternal {
     this.#_updateDOM();
   }
   _p_getStylesheets() {
-    return [...super._p_getStylesheets(), SHEET$9];
+    return [...super._p_getStylesheets(), SHEET$a];
   }
   //#endregion Lifecycle
   //#region Private methods
@@ -3845,7 +5284,7 @@ class HTMLBnumCardElement extends BnumElementInternal {
     return TAG_CARD;
   }
 }
-const TEMPLATE$7 = BnumElementInternal.CreateTemplate(`
+const TEMPLATE$9 = BnumElementInternal.CreateTemplate(`
       <div class="${HTMLBnumCardElement.CSS_CLASS_TITLE}">
         <slot name="${HTMLBnumCardElement.SLOT_TITLE}"></slot>
       </div>
@@ -3855,10 +5294,10 @@ const TEMPLATE$7 = BnumElementInternal.CreateTemplate(`
     `);
 HTMLBnumCardElement.TryDefine();
 
-var css_248z$9 =
+var css_248z$c =
   ':host{background-color:var(--bnum-card-item-background-color,var(--bnum-color-surface,#f6f6f7));cursor:var(--bnum-card-item-cursor,pointer);display:var(--bnum-card-item-display,block);padding:var(--bnum-card-item-padding,15px);user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;width:calc(var(--bnum-card-item-width-percent, 100%) - var(--bnum-card-item-width-modifier, 30px))}:host(:hover){background-color:var(--bnum-card-item-background-color-hover,var(--bnum-color-surface-hover,#eaeaea))}:host(:active){background-color:var(--bnum-card-item-background-color-active,var(--bnum-color-surface-active,#dfdfdf))}:host(:disabled),:host(:state(disabled)),:host([disabled]){cursor:not-allowed;opacity:.6;pointer-events:none}';
 
-const SHEET$8 = BnumElementInternal.ConstructCSSStyleSheet(css_248z$9);
+const SHEET$9 = BnumElementInternal.ConstructCSSStyleSheet(css_248z$c);
 /**
  * Représente un item d'une carte `<bnum-card>` qui peut être mis dans un `bnum-card-list`.
  *
@@ -3936,7 +5375,7 @@ class HTMLBnumCardItem extends BnumElementInternal {
     });
   }
   _p_fromTemplate() {
-    return BASE_TEMPLATE;
+    return BASE_TEMPLATE$1;
   }
   /**
    * Construit le DOM interne du composant.
@@ -3980,7 +5419,7 @@ class HTMLBnumCardItem extends BnumElementInternal {
     return true;
   }
   _p_getStylesheets() {
-    return [...super._p_getStylesheets(), SHEET$8];
+    return [...super._p_getStylesheets(), SHEET$9];
   }
   static CreateChildTemplate(
     childTemplate,
@@ -3998,7 +5437,7 @@ class HTMLBnumCardItem extends BnumElementInternal {
     return TAG_CARD_ITEM;
   }
 }
-const BASE_TEMPLATE = HTMLBnumCardItem.CreateChildTemplate(EMPTY_STRING);
+const BASE_TEMPLATE$1 = HTMLBnumCardItem.CreateChildTemplate(EMPTY_STRING);
 HTMLBnumCardItem.TryDefine();
 
 /**
@@ -10601,13 +12040,13 @@ class HTMLBnumDate extends BnumElementInternal {
 // Auto-définition du composant
 HTMLBnumDate.TryDefine();
 
-var css_248z$8 =
+var css_248z$b =
   '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{align-items:center;display:flex;justify-content:space-between}:host .sender{font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-size-m);font-weight:var(--bnum-card-item-mail-font-weight-bold,var(--bnum-font-weight-bold,bold));margin-bottom:var(--bnum-card-item-mail-margin-bottom,var(--bnum-space-s,10px));max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}:host .subject{font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-size-s);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}:host(:state(read)) .sender{font-weight:var(--bnum-card-item-mail-sender-read-font-weight,initial)}:host(:state(read)) .subject{font-style:var(--bnum-card-item-mail-subject-read-font-style,italic)}';
 
 const EVENT_DEFAULT = 'default';
 
 // --- Importe tes dépendances (date-fns, BnumCardItem, etc.) ---
-const SHEET$7 = HTMLBnumCardItem.ConstructCSSStyleSheet(css_248z$8);
+const SHEET$8 = HTMLBnumCardItem.ConstructCSSStyleSheet(css_248z$b);
 /**
  * Composant HTML personnalisé représentant un élément de carte mail.
  *
@@ -10925,7 +12364,7 @@ class HTMLBnumCardItemMail extends HTMLBnumCardItem {
    * @returns Liste des CSSStyleSheet à appliquer.
    */
   _p_getStylesheets() {
-    return [...super._p_getStylesheets(), SHEET$7];
+    return [...super._p_getStylesheets(), SHEET$8];
   }
   /**
    * Méthode appelée lors de la mise à jour d'un attribut observé.
@@ -10943,7 +12382,7 @@ class HTMLBnumCardItemMail extends HTMLBnumCardItem {
    * @returns Le template HTML.
    */
   _p_fromTemplate() {
-    return TEMPLATE$6;
+    return TEMPLATE$8;
   }
   //#endregion Lifecycle
   //#region Public methods
@@ -11180,7 +12619,7 @@ class HTMLBnumCardItemMail extends HTMLBnumCardItem {
     return TAG_CARD_ITEM_MAIL;
   }
 }
-const TEMPLATE$6 = HTMLBnumCardItem.CreateChildTemplate(
+const TEMPLATE$8 = HTMLBnumCardItem.CreateChildTemplate(
   `
   <div class="${HTMLBnumCardItemMail.CLASS_MAIN_CONTENT}">
     <div class="${HTMLBnumCardItemMail.CLASS_SENDER}">
@@ -11205,10 +12644,10 @@ const TEMPLATE$6 = HTMLBnumCardItem.CreateChildTemplate(
 HTMLBnumCardItemMail.TryDefine();
 //#endregion
 
-var css_248z$7 =
+var css_248z$a =
   '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}.bold{font-weight:var(--bnum-card-item-agenda-date-bold,var(--bnum-font-weight-bold,bold))}.bold-500{font-weight:var(--bnum-card-item-agenda-date-bold-medium,var(--bnum-font-weight-medium,500))}:host{display:flex;flex-direction:column;gap:var(--bnum-card-item-agenda-gap,var(--bnum-space-s,10px));position:relative}:host .bnum-card-item-agenda-horizontal{display:flex;flex-direction:row;gap:var(--bnum-card-item-agenda-gap,var(--bnum-space-s,10px));justify-content:space-between}:host .bnum-card-item-agenda-vertical{display:flex;flex:1;flex-direction:column;gap:var(--bnum-card-item-agenda-gap,var(--bnum-space-s,10px));min-width:0}:host .bnum-card-item-agenda-block{display:flex;flex:1;flex-direction:row;gap:var(--bnum-card-item-agenda-gap,var(--bnum-space-s,10px));min-width:0}:host .bnum-card-item-agenda-hour{border-bottom:var(--bnum-card-item-agenda-date-border-bottom,none);border-left:var(--bnum-card-item-agenda-date-border-left,none);border-right:var(--bnum-card-item-agenda-date-border-right,var(--bnum-border-surface,solid 4px #000091));border-top:var(--bnum-card-item-agenda-date-border-top,none);display:flex;flex-direction:column;flex-shrink:0;gap:var(--bnum-card-item-agenda-gap,var(--bnum-space-s,10px));padding:var(--bnum-card-item-agenda-padding-top-hour,0) var(--bnum-card-item-agenda-padding-right-hour,var(--bnum-space-s,10px)) var(--bnum-card-item-agenda-padding-bottom-hour,0) var(--bnum-card-item-agenda-padding-left-hour,0)}:host .bnum-card-item-agenda-location{font-size:var(--bnum-card-item-agenda-location-font-size,var(--bnum-font-size-xs,.75rem))}:host .bnum-card-item-agenda-location{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}:host .bnum-card-item-agenda-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}:host [hidden]{display:none}:host(:state(private)) .bnum-card-item-agenda-private-icon{position:absolute;right:var(--bnum-card-item-agenda-private-icon-right,10px);top:var(--bnum-card-item-agenda-private-icon-top,10px)}:host(:state(all-day)) .bnum-card-item-agenda-hour .bnum-card-item-agenda-all-day{margin-bottom:auto;margin-top:auto}:host(:state(mode-telework)){font-style:var(--bnum-card-item-agenda-telework-font-style,italic)}:host(:state(mode-telework)):before{bottom:var(--bnum-card-item-agenda-telework-icon-bottom,10px);content:var(--bnum-card-item-agenda-telework-icon-content,"\\e88a");font-family:var(--bnum-card-item-agenda-telework-icon-font-family,var(--bnum-icon-font-family,"Material Symbols Outlined"));font-size:var(--bnum-card-item-agenda-telework-icon-font-size,var(--bnum-font-size-xxl,1.5rem));font-style:normal;position:absolute;right:var(--bnum-card-item-agenda-telework-icon-right,10px)}:host(:state(mode-telework):state(action)) .bnum-card-item-agenda-action{margin-right:var(--bnum-card-item-agenda-telework-action-margin-right,20px)}';
 
-const SHEET$6 = HTMLBnumCardItem.ConstructCSSStyleSheet(css_248z$7);
+const SHEET$7 = HTMLBnumCardItem.ConstructCSSStyleSheet(css_248z$a);
 /**
  * Item de carte agenda
  *
@@ -11579,7 +13018,7 @@ class HTMLBnumCardItemAgenda extends HTMLBnumCardItem {
    * @returns Chaîne de style CSS à appliquer au composant.
    */
   _p_getStylesheets() {
-    return [...super._p_getStylesheets(), SHEET$6];
+    return [...super._p_getStylesheets(), SHEET$7];
   }
   /**
    * Précharge les données nécessaires à l'initialisation du composant.
@@ -11757,7 +13196,7 @@ class HTMLBnumCardItemAgenda extends HTMLBnumCardItem {
     } else if (this.#_privateIcon) this.#_privateIcon.hidden = true;
   }
   _p_fromTemplate() {
-    return TEMPLATE$5;
+    return TEMPLATE$7;
   }
   //#endregion
   //#region Public Methods
@@ -12083,18 +13522,18 @@ const AGENDA = `
   <${HTMLBnumIcon.TAG} class="${HTMLBnumCardItemAgenda.CLASS_BNUM_CARD_ITEM_AGENDA_PRIVATE_ICON}" hidden>${HTMLBnumCardItemAgenda.ICON_PRIVATE}</${HTMLBnumIcon.TAG}>
 `;
 // Optimisation : Le HTML est parsé une seule fois ici.
-const TEMPLATE$5 = HTMLBnumCardItem.CreateChildTemplate(AGENDA, {
+const TEMPLATE$7 = HTMLBnumCardItem.CreateChildTemplate(AGENDA, {
   defaultSlot: false,
 });
 HTMLBnumCardItemAgenda.TryDefine();
 
-var css_248z$6 =
+var css_248z$9 =
   '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{padding:var(--bnum-space-s,10px)}:host ::slotted([role=listitem]){border-bottom:var(--bnum-border-in-surface,solid 1px #ddd)}:host ::slotted([role=listitem]:last-child){border-bottom:none}:host ::slotted([hidden]),:host [hidden]{display:none}';
 
 /**
  * Feuille de style CSS pour le composant liste de cartes.
  */
-const SHEET$5 = BnumElement.ConstructCSSStyleSheet(css_248z$6);
+const SHEET$6 = BnumElement.ConstructCSSStyleSheet(css_248z$9);
 /**
  * Composant liste de cartes Bnum.
  * Permet d'afficher une liste d'éléments de type carte.
@@ -12168,7 +13607,7 @@ class HTMLBnumCardList extends BnumElement {
    * @returns {CSSStyleSheet[]} Feuilles de style CSS
    */
   _p_getStylesheets() {
-    return [...super._p_getStylesheets(), SHEET$5];
+    return [...super._p_getStylesheets(), SHEET$6];
   }
   /**
    * Construit le DOM interne du composant.
@@ -12232,10 +13671,10 @@ class HTMLBnumCardList extends BnumElement {
 }
 HTMLBnumCardList.TryDefine();
 
-var css_248z$5 =
+var css_248z$8 =
   ':host{display:var(--bnum-card-email-display,block)}[hidden]{display:none}';
 
-const SHEET$4 = BnumElement.ConstructCSSStyleSheet(css_248z$5);
+const SHEET$5 = BnumElement.ConstructCSSStyleSheet(css_248z$8);
 /**
  * Organisme qui permet d'afficher simplement une liste de mails dans une carte.
  *
@@ -12355,10 +13794,10 @@ class HTMLBnumCardEmail extends BnumElement {
     super();
   }
   get _p_styleSheets() {
-    return [SHEET$4];
+    return [SHEET$5];
   }
   _p_fromTemplate() {
-    return TEMPLATE$4;
+    return TEMPLATE$6;
   }
   _p_buildDOM(container) {
     this.#_cardTitle = container.querySelector(
@@ -12503,7 +13942,7 @@ class HTMLBnumCardEmail extends BnumElement {
     return TAG_CARD_EMAIL;
   }
 }
-const TEMPLATE$4 = BnumElement.CreateTemplate(`
+const TEMPLATE$6 = BnumElement.CreateTemplate(`
     <${HTMLBnumCardElement.TAG}>
       <${HTMLBnumCardTitle.TAG} id="${HTMLBnumCardEmail.ID_CARD_TITLE}" slot="title" data-icon="mail">${BnumConfig.Get('local_keys').last_mails}</${HTMLBnumCardTitle.TAG}>
         <${HTMLBnumCardList.TAG}>
@@ -12516,1434 +13955,10 @@ const TEMPLATE$4 = BnumElement.CreateTemplate(`
 HTMLBnumCardEmail.TryDefine();
 //#endregion TryDefine
 
-var css_248z$4 =
+var css_248z$7 =
   ':host{display:var(--bnum-card-agenda-display,block)}[hidden]{display:none}';
 
-var constants;
-var hasRequiredConstants;
-
-function requireConstants() {
-  if (hasRequiredConstants) return constants;
-  hasRequiredConstants = 1;
-  const EMPTY_STRING = '';
-
-  constants = { EMPTY_STRING };
-  return constants;
-}
-
-var random;
-var hasRequiredRandom;
-
-function requireRandom() {
-  if (hasRequiredRandom) return random;
-  hasRequiredRandom = 1;
-  const { EMPTY_STRING } = requireConstants();
-
-  /**
-   * @class
-   * @classdesc Classe static. Contient des fonctions utiles d'aléatoire.
-   */
-  class Random {
-    /**
-     * Génère une nombre entier entre 2 limites.
-     * @param {number} min Valeur minimum
-     * @param {number} max Valeur maximum
-     * @returns {number}
-     * @static
-     */
-    static intRange(min, max) {
-      min = Math.ceil(min);
-      max = Math.floor(max);
-      return ~~(Math.random() * (max - min) + min);
-    }
-
-    /**
-     * Génère une nombre entre 2 limites
-     * @param {number} min Valeur minimum
-     * @param {number} max Valeur maximum
-     * @returns {number}
-     */
-    static range(min, max) {
-      return Math.random() * (max - min) + min;
-    }
-
-    /**
-     * Génère une chaîne aléatoire d'une taille définie
-     * @param {number} size
-     * @returns {string}
-     */
-    static random_string(size) {
-      const ALPHA = 'abcdefghijklmnopqrstuvwxyz';
-
-      let str = EMPTY_STRING;
-
-      for (let index = 0; index < size; ++index) {
-        str += ALPHA[this.intRange(0, ALPHA.length)];
-      }
-
-      return str;
-    }
-  }
-
-  random = Random;
-  return random;
-}
-
-var utils;
-var hasRequiredUtils;
-
-function requireUtils() {
-  if (hasRequiredUtils) return utils;
-  hasRequiredUtils = 1;
-  const { EMPTY_STRING } = requireConstants();
-  const Random = requireRandom();
-
-  //#region MiscFunctions
-  function isNullOrUndefined(item) {
-    return item !== null || item !== undefined;
-  }
-
-  /**
-   * Vérifie si une varible est un tableau ou quelque chose qui y ressemble
-   * @param {*} item
-   * @returns {bool}
-   */
-  function isArrayLike(item) {
-    return (
-      !!item &&
-      typeof item === 'object' &&
-      // eslint-disable-next-line no-prototype-builtins
-      item.hasOwnProperty('length') &&
-      typeof item.length === 'number' &&
-      item.length > 0 &&
-      item.length - 1 in item
-    );
-  }
-  //#endregion
-
-  utils = { EMPTY_STRING, Random, isNullOrUndefined, isArrayLike };
-  return utils;
-}
-
-var JsEnumerable_1;
-var hasRequiredJsEnumerable;
-
-function requireJsEnumerable() {
-  if (hasRequiredJsEnumerable) return JsEnumerable_1;
-  hasRequiredJsEnumerable = 1;
-  // import { isArrayLike } from '../mel.js';
-
-  const { isArrayLike } = requireUtils();
-
-  // export { MelEnumerable, MelKeyValuePair };
-
-  /**
-   * @callback WhereCallback
-   * @param {*} item
-   * @param {number} index
-   * @returns {Boolean}
-   */
-
-  /**
-   * @callback SelectCallback
-   * @param {*} item
-   * @param {number} index
-   * @returns {*}
-   */
-
-  /**
-   * @callback SelectorCallback
-   * @param {*} item
-   * @returns {*}
-   */
-
-  /**
-   * @class
-   * @classdesc Représentation d'un valeur et de sa clé
-   */
-  class KeyValuePair {
-    /**
-     *
-     * @param {!string | !number} key Clé qui est lié à la valeur
-     * @param {*} value Valeur
-     */
-    constructor(key, value) {
-      let _key = key;
-      let _value = value;
-
-      /**
-       * Clé qui est lié à la valeur
-       * @type {!string | !number}
-       * @readonly
-       */
-      this.key;
-      /**
-       * Valeur qui est lié à une clé
-       * @type {*}
-       * @readonly
-       */
-      this.value;
-      Object.defineProperties(this, {
-        key: {
-          get: () => {
-            return _key;
-          },
-          configurable: false,
-        },
-        value: {
-          get: () => {
-            return _value;
-          },
-          configurable: false,
-        },
-      });
-    }
-  }
-
-  class RotomecaGenerator {
-    constructor(iterable) {
-      this.iterable = iterable;
-    }
-
-    *[Symbol.iterator]() {
-      for (const iterator of this.next()) {
-        yield iterator;
-      }
-    }
-
-    where(callback) {
-      return new RotomecaWhereGenerator(this, callback);
-    }
-
-    select(callback) {
-      return new RotomecaSelectGenerator(this, callback);
-    }
-
-    groupBy(key_selector, value_selector = null) {
-      return new RotomecaGroupByGenerator(this, key_selector, value_selector);
-    }
-
-    orderBy(selector) {
-      return new RotomecaOrderGenerator(this, selector);
-    }
-
-    orderByDescending(selector) {
-      return new RotomecaOrderByDesendingGenerator(this, selector);
-    }
-
-    then(selector) {
-      return new RotomecaThenGenerator(this, selector);
-    }
-
-    thenDescending(selector) {
-      return new RotomecaThenDescendingGenerator(this, selector);
-    }
-
-    reverse() {
-      return new RotomecaReverseGenerator(this);
-    }
-
-    take(howMany) {
-      return new RotomecaTakeGenerator(this, howMany);
-    }
-
-    add(item) {
-      return this.aggregate(item);
-    }
-
-    aggregate(iterable) {
-      return new RotomecaAggegateGenerator(this, iterable);
-    }
-
-    remove(item) {
-      return new RotomecaRemoveGenerator(this, item);
-    }
-
-    removeAt(index) {
-      return new RotomecaRemoveAtIndexGenerator(this, index);
-    }
-
-    distinct(selector = null) {
-      return new RotomecaDistinctGenerator(this, selector);
-    }
-
-    except(array) {
-      return new RotomecaExceptGenerator(this, array);
-    }
-
-    intersect(array) {
-      return new RotomecaIntersectGenerator(this, array);
-    }
-
-    union(array, c = null) {
-      return new RotomecaUnionGenerator(this, array, c);
-    }
-
-    any(callback = null) {
-      let it = 0;
-      for (const iterator of this) {
-        if (!callback) return true;
-        else if (callback(iterator, it++)) return true;
-      }
-
-      return false;
-    }
-
-    all(callback = null) {
-      return !this.any((value, index) => {
-        return !callback(value, index);
-      });
-    }
-
-    contains(item) {
-      return this.any((value, index) => {
-        return value === item;
-      });
-    }
-
-    first(callback = null) {
-      const not_exist = Symbol();
-      const value = this.firstOrDefault(not_exist, callback);
-
-      if (value === not_exist) throw 'Item not exist';
-      else return value;
-    }
-
-    firstOrDefault(default_value = null, callback = null) {
-      let generator = callback ? this.where(callback) : this;
-
-      for (const iterator of generator) {
-        return iterator;
-      }
-
-      return default_value;
-    }
-
-    last(where = null) {
-      const not_exist = Symbol();
-      const value = this.lastOrDefault({ default_value: not_exist, where });
-
-      if (value === not_exist) throw 'Item not exist';
-      else return value;
-    }
-
-    lastOrDefault({ default_value = null, where = null }) {
-      let generator = this;
-
-      if (where) generator = generator.where(where);
-
-      let last = default_value;
-      for (const iterator of generator) {
-        last = iterator;
-      }
-
-      return last;
-    }
-
-    flat() {
-      return new RotomecaFlatGenerator(this);
-    }
-
-    *next() {
-      let iterable;
-
-      if (typeof this.iterable === 'function' && !!this.iterable.prototype.next)
-        iterable = this.iterable();
-      else iterable = this.iterable;
-
-      for (const iterator of iterable) {
-        yield iterator;
-      }
-    }
-
-    count() {
-      if (!this.length) {
-        this.length = 0;
-        for (const iterator of this) {
-          ++this.length;
-        }
-      }
-
-      return this.length;
-    }
-
-    join(separator = '') {
-      return this.toArray().join(separator);
-    }
-
-    sum({ where = null, selector = null }) {
-      let generator = this;
-
-      if (where) generator = generator.where(where);
-      if (selector) generator = generator.select(selector);
-
-      let sum = 0;
-      for (const iterator of generator) {
-        sum += iterator;
-      }
-
-      return sum;
-    }
-
-    _findMinMax() {
-      let array = this.toArray();
-      const length = array.length;
-
-      let max, min, i;
-
-      if (length % 2 !== 0) {
-        max = array[0];
-        min = array[0];
-        i = 1;
-      } else {
-        if (array[0] >= array[1]) {
-          max = array[0];
-          min = array[1];
-        } else {
-          max = array[1];
-          min = array[0];
-        }
-        i = 2;
-      }
-
-      while (i < length) {
-        if (array[i] < array[i + 1]) {
-          if (array[i] < min) min = array[i];
-          if (array[i + 1] > max) max = array[i + 1];
-        } else {
-          if (array[i + 1] < min) min = array[i + 1];
-          if (array[i] > max) max = array[i];
-        }
-        i += 2;
-      }
-
-      return { min, max };
-    }
-
-    max(selector = null) {
-      let generator = selector ? this.select(selector) : this;
-
-      return generator._findMinMax().max;
-    }
-
-    min(selector = null) {
-      let generator = selector ? this.select(selector) : this;
-
-      return generator._findMinMax().min;
-    }
-
-    toArray() {
-      let arr = [];
-      for (const iterator of this) {
-        arr.push(iterator);
-      }
-
-      return arr;
-    }
-
-    toJsonObject(key_selector, value_selector) {
-      let i = 0;
-      let obj = {};
-      for (const iterator of this) {
-        obj[key_selector(iterator, i)] = value_selector(iterator, i);
-        ++i;
-      }
-
-      return obj;
-    }
-  }
-
-  class ARotomecaCallbackGenerator extends RotomecaGenerator {
-    constructor(iterable, callback) {
-      super(iterable);
-      this.callback = callback;
-    }
-  }
-
-  class RotomecaWhereGenerator extends ARotomecaCallbackGenerator {
-    constructor(iterable, callback) {
-      super(iterable, callback);
-    }
-
-    *next() {
-      let star_parent = super.next();
-
-      let i = 0;
-      for (const iterator of star_parent) {
-        if (this.callback(iterator, i++)) yield iterator;
-      }
-    }
-  }
-
-  class RotomecaSelectGenerator extends ARotomecaCallbackGenerator {
-    constructor(iterable, callback) {
-      super(iterable, callback);
-    }
-
-    *next() {
-      let star_parent = super.next();
-
-      let i = 0;
-      for (const iterator of star_parent) {
-        yield this.callback(iterator, i++);
-      }
-    }
-  }
-
-  class ARotomecaKeyValueSelector extends ARotomecaCallbackGenerator {
-    constructor(iterable, key_selector, value_selector = null) {
-      super(iterable, value_selector);
-      this.key_selector = key_selector;
-    }
-  }
-
-  class RotomecaGroupedItems {
-    constructor(key, iterable) {
-      this.iterable = iterable;
-      this.key = key;
-    }
-
-    *next() {
-      let star_parent = this.iterable;
-
-      for (const iterator of star_parent) {
-        yield new KeyValuePair(this.key, iterator);
-      }
-    }
-
-    get_values(try_get_array = true) {
-      if (try_get_array && this.iterable instanceof JsEnumerable) {
-        if (Array.isArray(this.iterable.generator()))
-          return this.iterable.generator();
-        else if (
-          this.iterable.generator() instanceof RotomecaGenerator &&
-          Array.isArray(this.iterable.generator().iterable)
-        )
-          return this.iterable.generator().iterable;
-      }
-
-      return this.iterable;
-    }
-  }
-
-  class RotomecaGroupByGenerator extends ARotomecaKeyValueSelector {
-    constructor(iterable, key_selector, value_selector = null) {
-      super(iterable, key_selector, value_selector);
-    }
-
-    *next() {
-      let star_parent = super.next();
-
-      let key;
-      let datas = {};
-      for (const item of star_parent) {
-        key = this.key_selector(item);
-
-        if (!datas[key]) datas[key] = [];
-
-        datas[key].push(this.callback ? this.callback(item) : item);
-      }
-
-      for (const key in datas) {
-        if (Object.hasOwnProperty.call(datas, key)) {
-          const element = datas[key];
-          yield new RotomecaGroupedItems(key, JsEnumerable.from(element));
-        }
-      }
-    }
-  }
-
-  class ARotomecaOrderGenerator extends ARotomecaCallbackGenerator {
-    constructor(iterable, selector) {
-      super(iterable, selector);
-    }
-
-    sort(a, b) {
-      return 0;
-    }
-
-    *next() {
-      let star_parent = super.next();
-
-      let array = [];
-
-      for (const iterator of star_parent) {
-        array.push(iterator);
-      }
-
-      array = array.sort((a, b) => {
-        return this.sort(a, b);
-      });
-
-      for (const iterator of array) {
-        yield iterator;
-      }
-
-      array = null;
-    }
-  }
-
-  class RotomecaOrderGenerator extends ARotomecaOrderGenerator {
-    constructor(iterable, selector) {
-      super(iterable, selector);
-    }
-
-    sort(a, b) {
-      super.sort(a, b);
-      a = this.callback(a);
-      b = this.callback(b);
-      if (a > b) return 1;
-      else if (b > a) return -1;
-      return 0;
-    }
-  }
-
-  class RotomecaOrderByDesendingGenerator extends RotomecaOrderGenerator {
-    constructor(iterable, selector) {
-      super(iterable, selector);
-    }
-
-    sort(a, b) {
-      return -super.sort(a, b);
-    }
-  }
-
-  class RotomecaThenGenerator extends ARotomecaOrderGenerator {
-    constructor(iterable, selector) {
-      super(iterable, selector);
-    }
-
-    sort(a, b) {
-      super.sort(a, b);
-      if (a === b) {
-        a = this.callback(a);
-        b = this.callback(b);
-
-        if (a > b) return 1;
-        else if (b > a) return -1;
-      }
-
-      return 0;
-    }
-  }
-
-  class RotomecaThenDescendingGenerator extends RotomecaThenGenerator {
-    constructor(iterable, selector) {
-      super(iterable, selector);
-    }
-
-    sort(a, b) {
-      return -super.sort(a, b);
-    }
-  }
-
-  class ARotomecaItemModifierGenerator extends RotomecaGenerator {
-    constructor(iterable, item) {
-      super(iterable);
-      this.item = item;
-    }
-
-    *next() {
-      yield* super.next();
-    }
-  }
-
-  class RotomecaAggegateGenerator extends ARotomecaItemModifierGenerator {
-    constructor(iterable, item) {
-      super(iterable, item);
-    }
-
-    *next() {
-      let star_parent = super.next();
-
-      for (const iterator of star_parent) {
-        yield iterator;
-      }
-
-      if (
-        Array.isArray(this.item) ||
-        typeof this.item[Symbol.iterator] === 'function'
-      ) {
-        for (const iterator of this.item) {
-          yield iterator;
-        }
-      } else if (
-        typeof this.item === 'function' &&
-        !!this.item.prototype.next
-      ) {
-        for (const iterator of this.item()) {
-          yield iterator;
-        }
-      } else yield this.item;
-    }
-  }
-
-  class ARotomecaRemoverGenerator extends ARotomecaItemModifierGenerator {
-    constructor(iterable, item) {
-      super(iterable, item);
-    }
-
-    *next() {
-      let star_parent = super.next();
-      this.before();
-
-      for (const iterator of star_parent) {
-        if (this.compare(iterator) !== this.item) yield iterator;
-      }
-
-      this.after();
-    }
-
-    compare(item) {
-      return item;
-    }
-
-    before() {}
-    after() {}
-  }
-
-  class RotomecaRemoveGenerator extends ARotomecaRemoverGenerator {
-    constructor(iterable, item) {
-      super(iterable, item);
-    }
-  }
-
-  class RotomecaRemoveAtIndexGenerator extends ARotomecaRemoverGenerator {
-    constructor(iterable, item) {
-      super(iterable, item);
-      this.it = 0;
-    }
-
-    compare(item) {
-      super.compare(item);
-      return this.it++;
-    }
-
-    before() {
-      super.before();
-      this.it = 0;
-    }
-  }
-
-  class RotomecaFlatGenerator extends RotomecaGenerator {
-    constructor(iterable) {
-      super(iterable);
-    }
-
-    *next() {
-      let star_parent = super.next();
-
-      for (const iterator of star_parent) {
-        yield* this.generate(iterator);
-      }
-    }
-
-    *generate(iterator) {
-      if (this.check(iterator)) {
-        for (const item of iterator) {
-          if (this.check(item)) {
-            yield* this.generate(item);
-          } else yield item;
-        }
-      } else yield iterator;
-    }
-
-    check(iterator) {
-      return (
-        typeof iterator !== 'string' &&
-        (Array.isArray(iterator) ||
-          isArrayLike(iterator) ||
-          typeof iterator[Symbol.iterator] === 'function')
-      );
-    }
-  }
-
-  //TO ADD
-  class RotomecaDistinctGenerator extends ARotomecaCallbackGenerator {
-    constructor(iterable, selector) {
-      super(iterable, selector);
-    }
-
-    *next() {
-      let star_parent = super.next();
-      let things = [];
-      const have_selector = !!this.callback;
-
-      let item;
-      for (const iterator of star_parent) {
-        item = have_selector ? this.callback(iterator) : iterator;
-        if (!things.includes(item)) {
-          yield item;
-          things.push(item);
-        }
-      }
-
-      things = null;
-    }
-  }
-
-  //TO ADD
-  class RotomecaExceptGenerator extends ARotomecaItemModifierGenerator {
-    constructor(iterable, array) {
-      super(iterable, JsEnumerable.from(array).generator());
-    }
-
-    *next() {
-      let star_parent = super.next();
-
-      for (const iterator of star_parent) {
-        if (!this.item.contains(iterator)) {
-          yield iterator;
-        }
-      }
-    }
-  }
-
-  class RotomecaUnionGenerator extends ARotomecaItemModifierGenerator {
-    constructor(iterable, array, callback = null) {
-      super(iterable, array);
-      this.callback = callback;
-
-      this.things = [];
-      this.current = null;
-    }
-
-    *next() {
-      let star_parent = super.next();
-      const have_selector = !!this.callback;
-
-      this.things = [];
-      this.current = null;
-
-      yield* this.generate(have_selector, star_parent);
-      yield* this.generate(have_selector, this.item);
-
-      this.things = [];
-      this.current = null;
-    }
-
-    *generate(have_selector, generator) {
-      for (const iterator of generator) {
-        this.current = have_selector ? this.callback(iterator) : iterator;
-        if (!this.things.includes(this.current)) {
-          yield this.current;
-          this.things.push(this.current);
-        }
-      }
-    }
-  }
-
-  class RotomecaIntersectGenerator extends ARotomecaItemModifierGenerator {
-    constructor(iterable, array) {
-      super(iterable, array);
-    }
-
-    *next() {
-      let star_parent = super.next();
-
-      for (const iterator of star_parent) {
-        if (this.item.contains(iterator)) {
-          yield iterator;
-        }
-      }
-    }
-  }
-
-  class RotomecaReverseGenerator extends RotomecaGenerator {
-    constructor(iterable) {
-      super(iterable); //RotomecaOrderByDesendingGenerator
-    }
-
-    *next() {
-      let order = JsEnumerable.from(super.next()).toArray();
-
-      for (let len = order.length, index = len - 1; index >= 0; --index) {
-        yield order[index];
-      }
-    }
-  }
-
-  class RotomecaTakeGenerator extends ARotomecaItemModifierGenerator {
-    constructor(iterable, number) {
-      super(iterable, number);
-    }
-
-    *next() {
-      let p = super.next();
-
-      let it = 0;
-      for (const iterator of p) {
-        yield iterator;
-
-        if (++it === this.item) break;
-      }
-      it = null;
-    }
-  }
-
-  class ObjectKeyEnumerable extends RotomecaGenerator {
-    constructor(object) {
-      super();
-      this.iterable = JsEnumerable.from(this._generate.bind(this, object));
-    }
-
-    *_generate(object) {
-      for (const key in object) {
-        if (Object.hasOwnProperty.call(object, key)) {
-          const element = object[key];
-          yield new KeyValuePair(key, element);
-        }
-      }
-    }
-  }
-
-  /**
-   * @callback RGenerator
-   * @returns {JsEnumerable}
-   */
-
-  /**
-   * Classe principale des enumerations.
-   *
-   * Permet d'avoir un comportement semblable à System.Linq du C#
-   * @class
-   * @see {@link https://docs.microsoft.com/en-us/dotnet/api/system.linq}
-   * @hideconstructor
-   */
-  class JsEnumerable {
-    /**
-     * @param {Generator | Array | JsEnumerable | RotomecaGenerator | JSON} generator
-     */
-    constructor(generator) {
-      let _generator = generator;
-
-      /**
-       * Récupère le générateur.
-       * @readonly
-       * @type {RGenerator}
-       */
-      this.generator = undefined;
-      Object.defineProperty(this, 'generator', {
-        enumerable: false,
-        configurable: false,
-        writable: false,
-        value: function () {
-          return _generator;
-        },
-      });
-    }
-
-    /**
-     * Récupère que les éléments dont callback retourne "vrai"
-     * @param {WhereCallback} callback Fonction qui servira à tester les éléments
-     * @generator
-     * @returns {JsEnumerable}
-     */
-    where(callback) {
-      return new JsEnumerable(this.generator().where(callback));
-    }
-
-    /**
-     * Sélectionne une donnée à partir des éléments de l'énumération
-     * @param {SelectCallback} selector
-     * @generator
-     * @returns {JsEnumerable}
-     */
-    select(selector) {
-      return new JsEnumerable(this.generator().select(selector));
-    }
-
-    /**
-     * Groupe les données par clé et par valeur.
-     * @param {SelectorCallback} key_selector Génère les différentes clés
-     * @param {?SelectorCallback} value_selector Génère les différentes valeurs, l'élément entier est pris si null
-     * @returns {JsEnumerable}
-     * @generator
-     */
-    groupBy(key_selector, value_selector = null) {
-      return new JsEnumerable(
-        this.generator().groupBy(key_selector, value_selector),
-      );
-    }
-
-    /**
-     * Tri les données (croissant)
-     * @param {SelectorCallback} selector
-     * @returns {JsEnumerable}
-     * @generator
-     */
-    orderBy(selector) {
-      return new JsEnumerable(this.generator().orderBy(selector));
-    }
-
-    /**
-     * Tri les données (décroissant)
-     * @param {SelectorCallback} selector
-     * @returns {JsEnumerable}
-     * @generator
-     */
-    orderByDescending(selector) {
-      return new JsEnumerable(this.generator().orderByDescending(selector));
-    }
-
-    /**
-     * Tri les données (croissant), à utiliser après orderBy
-     * @param {SelectorCallback} selector
-     * @returns {JsEnumerable}
-     * @generator
-     */
-    then(selector) {
-      return new JsEnumerable(this.generator().then(selector));
-    }
-
-    /**
-     * Tri les données (décroissant), à utiliser après orderBy
-     * @param {SelectorCallback} selector
-     * @returns {JsEnumerable}
-     * @generator
-     */
-    thenDescending(selector) {
-      return new JsEnumerable(this.generator().thenDescending(selector));
-    }
-
-    /**
-     * Ajoute un objet à l'énumération
-     * @param {*} item
-     * @returns {JsEnumerable}
-     * @generator
-     */
-    add(item) {
-      return new JsEnumerable(this.generator().add(item));
-    }
-
-    /**
-     * Ajoute un itérable à l'énumération
-     * @param {Array | Generator} iterable
-     * @returns {JsEnumerable}
-     * @generator
-     */
-    aggregate(iterable) {
-      return new JsEnumerable(this.generator().aggregate(iterable));
-    }
-
-    /**
-     * Supprime un objet à l'énumération si il est présent
-     * @param {*} item
-     * @returns {JsEnumerable}
-     * @generator
-     */
-    remove(item) {
-      return new JsEnumerable(this.generator().remove(item));
-    }
-
-    /**
-     * Supprime un objet à un index de l'énumération si il est présent
-     * @param {number} index
-     * @returns {JsEnumerable}
-     * @generator
-     */
-    removeAt(index) {
-      return new JsEnumerable(this.generator().removeAt(index));
-    }
-
-    /**
-     * Empèche d'avoir 2 valeurs identiques dans l'énumération
-     * @param {?SelectorCallback} selector
-     * @returns {JsEnumerable}
-     * @generator
-     */
-    distinct(selector = null) {
-      return new JsEnumerable(this.generator().distinct(selector));
-    }
-
-    /**
-     * Empèche d'avoir les valeurs du tableau dans l'énumération
-     * @param {any[] | Generator} array
-     * @returns {JsEnumerable}
-     * @generator
-     */
-    except(array) {
-      return new JsEnumerable(this.generator().except(array));
-    }
-
-    /**
-     * Empèche d'avoir les valeurs en commun du tableau dans l'énumération
-     * @param {any[] | Generator} array
-     * @returns {JsEnumerable}
-     * @generator
-     */
-    intersect(array) {
-      return new JsEnumerable(this.generator().intersect(array));
-    }
-
-    /**
-     * Fusionne les 2 tableaux
-     * @param {any[] | Generator} array
-     * @param {?SelectorCallback} selector
-     * @returns {JsEnumerable}
-     * @generator
-     */
-    union(array, selector = null) {
-      return new JsEnumerable(this.generator().union(array, selector));
-    }
-
-    /**
-     * Renvoie l'énumération à l'envers
-     * @returns {JsEnumerable}
-     * @generator
-     */
-    reverse() {
-      return new JsEnumerable(this.generator().reverse());
-    }
-
-    /**
-     * Prend les x premiers éléments
-     * @param {number} howMany x premiers éléments à prendre
-     * @returns {JsEnumerable}
-     * @generator
-     */
-    take(howMany) {
-      return new JsEnumerable(this.generator().take(howMany));
-    }
-
-    /**
-     * Retourne vrai si il y a au moins un élément dans l'énumération.
-     * @param {?WhereCallback} callback Si défini, éffectue un `where` avant de faire le any.
-     * @returns {boolean}
-     * @see {@link JsEnumerable~where}
-     */
-    any(callback = null) {
-      return this.generator().any(callback);
-    }
-
-    /**
-     * Retourne vrai si tout les éléments existent dans l'énumération.
-     * @param {?WhereCallback} callback Si défini, éffectue un `where` avant de faire le all.
-     * @returns {boolean}
-     * @see {@link JsEnumerable~where}
-     */
-    all(callback = null) {
-      return this.generator().all(callback);
-    }
-
-    /**
-     * Retourne vrai si l'élément existe dans l'énumération.
-     * @param {*} item
-     * @returns {boolean}
-     */
-    contains(item) {
-      return this.generator().contains(item);
-    }
-
-    /**
-     * Retourne le premier élément dans l'énumération.
-     * @param {?WhereCallback} callback Si défini, éffectue un `where` avant de faire le first.
-     * @returns {*}
-     * @throws If null
-     */
-    first(callback = null) {
-      return this.generator().first(callback);
-    }
-
-    /**
-     * Retourne le premier élément dans l'énumération.
-     * @param {?any} default_value Valeur par défaut si on ne trouve rien
-     * @param {?WhereCallback} callback Si défini, éffectue un `where` avant de faire le firstOrDefault.
-     * @returns {*}
-     */
-    firstOrDefault(default_value = null, callback = null) {
-      return this.generator().firstOrDefault(default_value, callback);
-    }
-
-    /**
-     * La fonction `last` renvoie le dernier élément d'un générateur, éventuellement filtré par une
-     * condition.
-     * @param {?WhereCallback} where - Le paramètre "where" est une fonction qui détermine si un élément doit être
-     * inclus ou non dans la recherche. Il permet de filtrer les éléments avant de retrouver le dernier. Si
-     * la fonction "where" renvoie vrai pour un élément, celui-ci sera inclus dans la recherche ; sinon, ce
-     * sera
-     * @returns Le dernier élément du générateur qui satisfait la condition donnée.
-     */
-    last(where = null) {
-      return this.generator().last(where);
-    }
-
-    /**
-     * La fonction renvoie le dernier élément d'un générateur ou une valeur par défaut si le générateur est
-     * vide.
-     * @param {Object} param0
-     * @param {?any} [param0.default_value=null] Valeur par défaut si on ne trouve rien
-     * @param {?WhereCallback} [param0.where=null] Fonction where qui sera appliqué avant de récupérer le dernier élément
-     * @returns La fonction lastOrDefault renvoie le résultat de l'appel de la fonction lastOrDefault du
-     * générateur avec les paramètres fournis.
-     */
-    lastOrDefault({ default_value = null, where = null }) {
-      return this.generator().lastOrDefault({ default_value, where });
-    }
-
-    /**
-     * Si il y a des tableaux dans les tableaux, transforme tout en un seul tableau
-     * @returns {JsEnumerable}
-     * @generator
-     */
-    flat() {
-      return new JsEnumerable(this.generator().flat());
-    }
-
-    *[Symbol.iterator]() {
-      for (const iterator of this.generator()) {
-        yield iterator;
-      }
-    }
-
-    /**
-     * Change l'énumération en chaîne de charactères
-     * @param {string} separator
-     * @returns {string}
-     */
-    join(separator = '') {
-      return this.generator().join(separator);
-    }
-
-    /**
-     * Fait la somme des éléments de l'énumération
-     * @param {Object} param0 Si défini, le `where` sera pris en compte avant le `select`
-     * @param {?WhereCallback} where Prendre seulement ce qui nous intéresse dans le sum
-     * @param {?SelectCallback} selector Séléctionner le membre sur lequel on veut faire un sum
-     * @returns {number}
-     * @throws Si selector retourne autre chose qu'un nombre
-     * @see {@link WhereCallback}
-     * @see {@link SelectCallback}
-     */
-    sum({ where = null, selector = null }) {
-      return this.generator().sum({ where, selector });
-    }
-
-    /**
-     * Compte le nombre d'éléments dans l'énumération
-     * @returns {number}
-     */
-    count() {
-      return this.generator().count();
-    }
-
-    /**
-     * Récupère la valeur maximale de l'énumération
-     * @param {?SelectorCallback} selector Séléctionne la valeur à comparer
-     * @returns {number}
-     */
-    max(selector = null) {
-      return this.generator().max(selector);
-    }
-
-    /**
-     * Récupère la valeur minimale de l'énumération
-     * @param {?SelectorCallback} selector Séléctionne la valeur à comparer
-     * @returns {number}
-     */
-    min(selector = null) {
-      return this.generator().min(selector);
-    }
-
-    /**
-     * Transforme en tableau
-     * @returns {Array}
-     */
-    toArray() {
-      return this.generator().toArray();
-    }
-
-    /**
-     * Convertit en objet
-     * @param {SelectCallback} key_selector
-     * @param {SelectCallback} value_selector
-     * @returns {{}} style {index1:value1 etc....}
-     */
-    toJsonObject(key_selector, value_selector) {
-      return this.generator().toJsonObject(key_selector, value_selector);
-    }
-
-    /**
-     * Convertit un objet/un tableau en enumerable
-     * @generator
-     * @param {Array | RotomecaGenerator | JsEnumerable | {} | Generator} item Objet à convertir en enumerable
-     * @returns {JsEnumerable}
-     */
-    static from(item) {
-      const is_array_like = isArrayLike(item);
-      if (
-        Array.isArray(item) ||
-        (typeof item[Symbol.iterator] === 'function' && !is_array_like)
-      )
-        return new JsEnumerable(new RotomecaGenerator(item));
-      else if (item instanceof RotomecaGenerator) return new JsEnumerable(item);
-      else if (typeof item === 'object' && !is_array_like) {
-        return this.from(new ObjectKeyEnumerable(item));
-      } else if (is_array_like)
-        return new JsEnumerable(new RotomecaGenerator(Array.from(item)));
-      else if (typeof item === 'function' && !!item.prototype.next)
-        return new JsEnumerable(new RotomecaGenerator(item));
-      else return new JsEnumerable(new RotomecaGenerator([item]));
-    }
-
-    /**
-     * Récupère des éléments au hasard dans un tableau
-     * @param {Array | RotomecaGenerator | JsEnumerable | {} | Generator} item
-     * @param  {...any} args Autres objets qui seront pris au hasard
-     * @returns {JsEnumerable}
-     * @generator
-     */
-    static choice(item, ...args) {
-      item = JsEnumerable.from(item)
-        .aggregate(args || [])
-        .toArray();
-      const min = 0;
-      const max = item.length - 1;
-
-      const generator = function* () {
-        while (true) {
-          yield item[Math.floor(Math.random() * (max - min + 1) + min)];
-        }
-      };
-
-      return JsEnumerable.from(generator);
-    }
-
-    /**
-     * Génère les éléments sous forme d'un cycle.
-     * @param {Array | RotomecaGenerator | JsEnumerable | {} | Generator} item Initialisateur
-     * @param  {...any} args Initialisateurs
-     * @returns {JsEnumerable}
-     * @generator
-     */
-    static cycle(item, ...args) {
-      item = JsEnumerable.from(item)
-        .aggregate(args || [])
-        .toArray();
-      let it = 0;
-
-      const generator = function* () {
-        while (true) {
-          yield item[it++];
-
-          if (it === item.length) it = 0;
-        }
-      };
-
-      return JsEnumerable.from(generator);
-    }
-
-    /**
-     * Génère un énumérable vide
-     * @returns {JsEnumerable}
-     * @generator
-     */
-    static empty() {
-      return JsEnumerable.from([]);
-    }
-
-    /**
-     * Génère des valeurs commençant par "start", pendant "count" par pas de "step"
-     *
-     * (ex: (0,5,2) => [0,2,4,6,8])
-     * @param {number} start Valeur de départ
-     * @param {number} count Pendant combien d'itérations ?
-     * @param {number} step pas
-     * @returns {JsEnumerable}
-     * @generator
-     */
-    static range(start, count, step = 1) {
-      let it = 0;
-      const generator = function* () {
-        while (it++ < count) {
-          yield start;
-
-          start += step;
-        }
-      };
-
-      return JsEnumerable.from(generator);
-    }
-
-    /**
-     * Génère des valeurs commençant par "start", pendant "count" par pas de "step" (décroissant)
-     *
-     * (ex: (0,5,2) => [0, -2, -4, -6, -8])
-     * @param {number} start Valeur de départ
-     * @param {number} count Pendant combien d'itérations ?
-     * @param {number} step pas
-     * @returns {JsEnumerable}
-     * @generator
-     */
-    static rangeDown(start, count, step = 1) {
-      return JsEnumerable.range(start, count, -step);
-    }
-
-    /**
-     * Génère des valeurs commençant par "start" indéfiniment par pas de "step"
-     * @param {number} start Valeur de départ
-     * @param {number} step pas
-     * @returns {JsEnumerable}
-     * @generator
-     */
-    static toInfinity(start = 0, step = 1) {
-      return JsEnumerable.range(start, Number.POSITIVE_INFINITY, step);
-    }
-
-    /**
-     * Génère des valeurs commençant par "start" indéfiniment par pas de "step" (décroissant)
-     * @param {number} start Valeur de départ
-     * @param {number} step pas
-     * @returns {JsEnumerable}
-     * @generator
-     */
-    static toNegativeInfinity(start = 0, step = 1) {
-      return JsEnumerable.toInfinity(start, -step);
-    }
-
-    static generate(callback) {
-      const generator = function* () {
-        while (true) {
-          yield callback();
-        }
-      };
-
-      return JsEnumerable.from(generator);
-    }
-
-    /**
-     * Génère des nombres au hasard
-     * @param {number} min
-     * @param {number} max
-     * @returns
-     * @generator
-     */
-    static random(min = 0, max = 1000) {
-      return JsEnumerable.generate(() => {
-        return Math.random() * (max - min + 1) + min;
-      });
-    }
-
-    static async fromAsync(async_generator) {
-      let arr = [];
-
-      let next;
-      while ((next = await async_generator.next()) && !next.done) {
-        arr.push(next.value);
-      }
-
-      return JsEnumerable.from(arr);
-    }
-  }
-
-  JsEnumerable_1 = JsEnumerable;
-  return JsEnumerable_1;
-}
-
-var JsEnumerableExports = requireJsEnumerable();
-var JsEnumerable = /*@__PURE__*/ getDefaultExportFromCjs(JsEnumerableExports);
-
-const SHEET$3 = BnumElement.ConstructCSSStyleSheet(css_248z$4);
+const SHEET$4 = BnumElement.ConstructCSSStyleSheet(css_248z$7);
 /**
  * Organisme qui permet d'afficher simplement une liste d'évènements dans une carte.
  *
@@ -14074,10 +14089,10 @@ class HTMLBnumCardAgenda extends BnumElement {
     super();
   }
   get _p_styleSheets() {
-    return [SHEET$3];
+    return [SHEET$4];
   }
   _p_fromTemplate() {
-    return TEMPLATE$3;
+    return TEMPLATE$5;
   }
   _p_buildDOM(container) {
     this.#_cardTitle = container.querySelector(
@@ -14236,7 +14251,7 @@ class HTMLBnumCardAgenda extends BnumElement {
     return TAG_CARD_AGENDA;
   }
 }
-const TEMPLATE$3 = BnumElement.CreateTemplate(`
+const TEMPLATE$5 = BnumElement.CreateTemplate(`
     <${HTMLBnumCardElement.TAG}>
       <${HTMLBnumCardTitle.TAG} id="${HTMLBnumCardAgenda.ID_CARD_TITLE}" slot="title" data-icon="today">${BnumConfig.Get('local_keys').last_events}</${HTMLBnumCardTitle.TAG}>
         <${HTMLBnumCardList.TAG}>
@@ -14249,10 +14264,10 @@ const TEMPLATE$3 = BnumElement.CreateTemplate(`
 HTMLBnumCardAgenda.TryDefine();
 //#endregion TryDefine
 
-var css_248z$3 =
-  ':host{cursor:pointer;font-variation-settings:"wght" 400;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}:host(:hover){font-variation-settings:"FILL" 1 "wght" 400}:host(:active){font-variation-settings:"FILL" 1,"wght" 700,"GRAD" 200,"opsz" 20}:host(:disabled),:host([disabled]){cursor:not-allowed;opacity:var(--bnum-button-disabled-opacity,.6);pointer-events:var(--bnum-button-disabled-pointer-events,none)}';
+var css_248z$6 =
+  ':host{cursor:pointer;font-variation-settings:"wght" 400;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}:host(:hover){--bnum-icon-fill:1}:host(:active){--bnum-icon-fill:1;--bnum-icon-weight:700;--bnum-icon-grad:200;--bnum-icon-opsz:20}:host(:disabled),:host([disabled]){cursor:not-allowed;opacity:var(--bnum-button-disabled-opacity,.6);pointer-events:var(--bnum-button-disabled-pointer-events,none)}';
 
-const SHEET$2 = BnumElement.ConstructCSSStyleSheet(css_248z$3);
+const SHEET$3 = BnumElement.ConstructCSSStyleSheet(css_248z$6);
 /**
  * Button contenant une icône.
  *
@@ -14333,13 +14348,13 @@ class HTMLBnumButtonIcon extends BnumElement {
    * @inheritdoc
    */
   _p_getStylesheets() {
-    return [...super._p_getStylesheets(), SHEET$2];
+    return [...super._p_getStylesheets(), SHEET$3];
   }
   /**
    * @inheritdoc
    */
   _p_fromTemplate() {
-    return TEMPLATE$2;
+    return TEMPLATE$4;
   }
   /**
    * @inheritdoc
@@ -14416,23 +14431,37 @@ class HTMLBnumButtonIcon extends BnumElement {
     return node;
   }
   /**
+   * Génère le code HTML d'un bouton icône avec l'icône spécifiée.
+   * @param icon Icône à afficher dans le bouton.
+   * @returns Code HTML créée.
+   */
+  static Write(icon, attrs = {}) {
+    return `<${this.TAG} ${JsEnumerable.from(attrs)
+      .select((x) => {
+        const tmp = x;
+        return `${tmp.key}="${tmp.value}"`;
+      })
+      .toArray()
+      .join(' ')}>${icon}</${this.TAG}>`;
+  }
+  /**
    * Tag de l'élément.
    */
   static get TAG() {
     return TAG_ICON_BUTTON;
   }
 }
-const TEMPLATE$2 = HTMLBnumButtonIcon.CreateTemplate(`
+const TEMPLATE$4 = HTMLBnumButtonIcon.CreateTemplate(`
     <${HTMLBnumIcon.TAG} id="${HTMLBnumButtonIcon.ID_ICON}"><slot></slot></${HTMLBnumIcon.TAG}>
     `);
 //#region TryDefine
 HTMLBnumButtonIcon.TryDefine();
 //#endregion TryDefine
 
-var css_248z$2 =
-  '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host #hint-text{--internal-gap:0.5rem;display:flex;flex-direction:column;gap:var(--internal-gap,.5rem);margin-bottom:var(--internal-gap,.5rem)}:host #hint-text__label{font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-label-size,var(--bnum-font-size-m));line-height:var(--bnum-font-label-line-height,var(--bnum-font-height-text-m))}:host #hint-text__hint{color:var(--bnum-input-hint-text-color,var(--bnum-text-hint,#666));font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-hint-size,var(--bnum-font-size-xs));line-height:var(--bnum-font-hint-line-height,var(--bnum-font-height-text-xs))}:host .addons__inner{position:relative;width:100%}:host input{background-color:var(--bnum-input-background-color,var(--bnum-color-input,#eee));border:none;border-radius:.25rem .25rem 0 0;box-shadow:var(--bnum-input-box-shadow,inset 0 -2px 0 0 var(--bnum-input-line-color,var(--bnum-color-input-border,#3a3a3a)));color:var(--bnum-input-color,var(--bnum-text-on-input,#666));display:block;font-size:1rem;line-height:1.5rem;padding:.5rem 1rem;width:100%}:host #input__button,:host #input__icon,:host #state{display:none}:host(:disabled) input,:host(:state(disabled)) input{cursor:not-allowed;opacity:.6;pointer-events:none}:host(:state(button)) .addons{display:flex;gap:0}:host(:state(button)) input{--bnum-input-line-color:#000091;border-top-right-radius:0}:host(:state(button)) #input__button{border-bottom-left-radius:0;border-bottom-right-radius:0;border-top-left-radius:0;display:block}:host(:state(button):state(obi)) #input__button{--bnum-button-icon-gap:0}:host(:state(icon)) #input__icon{display:block;position:absolute;right:var(--bnum-input-icon-right,10px);top:var(--bnum-input-icon-top,10px)}:host(:state(state)){border-left:2px solid var(--internal-border-color);display:block;padding-left:10px}:host(:state(state)) #state{align-items:center;color:var(--internal-color);display:flex;font-size:.75rem;margin-top:1rem}:host(:state(state)) #state bnum-icon{--bnum-icon-font-size:1rem;margin-right:5px}:host(:state(state)) #hint-text__label{color:var(--internal-color)}:host(:state(state)) .error,:host(:state(state)) .success{display:none;margin-bottom:-4px}:host(:state(state):state(success)){--internal-border-color:var(--bnum-semantic-success,#36b37e)}:host(:state(state):state(success)) #hint-text__label,:host(:state(state):state(success)) #state{--internal-color:var(--bnum-semantic-success,#36b37e)}:host(:state(state):state(success)) input{--bnum-input-line-color:var(--bnum-semantic-success,#36b37e)}:host(:state(state):state(success)) .success{display:block}:host(:state(state):state(error)){--internal-border-color:var(--bnum-semantic-danger,#de350b)}:host(:state(state):state(error)) #hint-text__label,:host(:state(state):state(error)) #state{--internal-color:var(--bnum-semantic-danger,#de350b)}:host(:state(state):state(error)) input{--bnum-input-line-color:var(--bnum-semantic-danger,#de350b)}:host(:state(state):state(error)) .error{display:block}';
+var css_248z$5 =
+  '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host #hint-text{--internal-gap:0.5rem;display:flex;flex-direction:column;gap:var(--internal-gap,.5rem);margin-bottom:var(--internal-gap,.5rem)}:host #hint-text__label{font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-label-size,var(--bnum-font-size-m));line-height:var(--bnum-font-label-line-height,var(--bnum-font-height-text-m))}:host #hint-text__hint{color:var(--bnum-input-hint-text-color,var(--bnum-text-hint,#666));font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-hint-size,var(--bnum-font-size-xs));line-height:var(--bnum-font-hint-line-height,var(--bnum-font-height-text-xs))}:host .addons__inner{position:relative;width:100%}:host input{background-color:var(--bnum-input-background-color,var(--bnum-color-input,#eee));border:none;border-radius:.25rem .25rem 0 0;box-shadow:var(--bnum-input-box-shadow,inset 0 -2px 0 0 var(--bnum-input-line-color,var(--bnum-color-input-border,#3a3a3a)));color:var(--bnum-input-color,var(--bnum-text-on-input,#666));display:block;font-size:1rem;line-height:1.5rem;padding:.5rem 1rem;width:100%}:host #input__button,:host #input__icon,:host #state{display:none}:host(:disabled),:host(:state(disabled)){cursor:not-allowed;opacity:.6;pointer-events:none}:host(:state(button)) .addons{display:flex;gap:0}:host(:state(button)) input{border-top-right-radius:0}:host(:state(button)) #input__button,:host(:state(button)) input{--bnum-input-line-color:#000091}:host(:state(button)) #input__button{border-bottom-left-radius:0;border-bottom-right-radius:0;border-top-left-radius:0;display:block;height:auto}:host(:state(button):state(obi)) #input__button{--bnum-button-icon-gap:0}:host(:state(icon)) #input__icon{display:block;position:absolute;right:var(--bnum-input-icon-right,10px);top:var(--bnum-input-icon-top,10px)}:host(:state(state)){border-left:2px solid var(--internal-border-color);display:block;padding-left:10px}:host(:state(state)) #state{align-items:center;color:var(--internal-color);display:flex;font-size:.75rem;margin-top:1rem}:host(:state(state)) #state bnum-icon{--bnum-icon-font-size:1rem;margin-right:5px}:host(:state(state)) #hint-text__label{color:var(--internal-color)}:host(:state(state)) .error,:host(:state(state)) .success{display:none;margin-bottom:-4px}:host(:state(state):state(success)){--internal-border-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(state):state(success)) #hint-text__label,:host(:state(state):state(success)) #state{--internal-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(state):state(success)) #input__button,:host(:state(state):state(success)) input{--bnum-input-line-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(state):state(success)) .success{display:block}:host(:state(state):state(error)){--internal-border-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}:host(:state(state):state(error)) #hint-text__label,:host(:state(state):state(error)) #state{--internal-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}:host(:state(state):state(error)) #input__button,:host(:state(state):state(error)) input{--bnum-input-line-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}:host(:state(state):state(error)) .error{display:block}';
 
-const STYLE = BnumElementInternal.ConstructCSSStyleSheet(css_248z$2);
+const STYLE$2 = BnumElementInternal.ConstructCSSStyleSheet(css_248z$5);
 /**
  * Composant Input du design system Bnum.
  * Permet de gérer un champ de saisie enrichi avec gestion d'états, d'icônes, de bouton et d'accessibilité.
@@ -14513,6 +14542,8 @@ const STYLE = BnumElementInternal.ConstructCSSStyleSheet(css_248z$2);
  * @cssvar {#eee} --bnum-input-background-color - Couleur de fond de l'input.
  * @cssvar {#666} --bnum-input-color - Couleur du texte de l'input.
  * @cssvar {#3a3a3a} --bnum-input-line-color - Couleur de la ligne/bordure de l'input.
+ * @cssvar {#36b37e} --bnum-input-state-success-color - Couleur de l'état de succès.
+ * @cssvar {#de350b} --bnum-input-state-error-color - Couleur de l'état d'erreur.
  * @cssvar {inset 0 -2px 0 0 #3a3a3a} --bnum-input-box-shadow - Ombre portée de l'input.
  *
  */
@@ -14520,6 +14551,8 @@ class HTMLBnumInput extends BnumElementInternal {
   //#region Constants
   /**
    * Événement déclenché au clic sur le bouton interne.
+   *
+   * Attention ! Vous devez écouter l'événement via la propriété `onButtonClicked` pour que le gestionnaire soit bien attaché.
    * @event bnum-input:button.click
    * @detail MouseEvent
    */
@@ -14695,6 +14728,22 @@ class HTMLBnumInput extends BnumElementInternal {
    * Variation du bouton par défaut.
    */
   static DEFAULT_BUTTON_VARIATION = EButtonType.PRIMARY;
+  /**
+   * Texte affiché en cas de succès de validation.
+   */
+  static TEXT_VALID_INPUT =
+    BnumConfig.Get('local_keys')?.valid_input || 'Le champs est valide !';
+  /**
+   * Texte affiché en cas d'erreur de validation.
+   */
+  static TEXT_INVALID_INPUT =
+    BnumConfig.Get('local_keys')?.invalid_input || 'Le champs est invalide !';
+  /**
+   * Texte affiché en cas d'erreur de champ.
+   */
+  static TEXT_ERROR_FIELD =
+    BnumConfig.Get('local_keys')?.error_field ||
+    'Ce champ contient une erreur.';
   //#endregion Constants
   //#region Private fields
   /**
@@ -14755,7 +14804,9 @@ class HTMLBnumInput extends BnumElementInternal {
       this.setAttribute(HTMLBnumInput.ATTRIBUTE_DATA_VALUE, val);
     else {
       this.#_input.value = val;
-      this._p_internal.setFormValue(val);
+      try {
+        this._p_internal.setFormValue(val);
+      } catch (error) {}
     }
   }
   /**
@@ -14789,13 +14840,13 @@ class HTMLBnumInput extends BnumElementInternal {
    * @returns Liste de stylesheet
    */
   _p_getStylesheets() {
-    return [...super._p_getStylesheets(), STYLE];
+    return [...super._p_getStylesheets(), STYLE$2];
   }
   /**
    * Retourne le template HTML utilisé pour le composant.
    */
   _p_fromTemplate() {
-    return TEMPLATE$1;
+    return TEMPLATE$3;
   }
   /**
    * Construit le DOM interne et attache les écouteurs d'événements.
@@ -14994,6 +15045,7 @@ class HTMLBnumInput extends BnumElementInternal {
    */
   #_update() {
     this._p_clearStates();
+    if (this.#_input?.value || false) this._p_addState('value');
     const btnValue = this.attr(HTMLBnumInput.ATTRIBUTE_BUTTON);
     if (btnValue !== null) {
       this._p_addState(HTMLBnumInput.STATE_BUTTON);
@@ -15140,7 +15192,7 @@ class HTMLBnumInput extends BnumElementInternal {
       try {
         this._p_internal.setValidity(
           { customError: true },
-          'Ce champ contient une erreur.',
+          HTMLBnumInput.TEXT_ERROR_FIELD,
           this.#_input,
         );
       } catch (error) {}
@@ -15216,10 +15268,25 @@ class HTMLBnumInput extends BnumElementInternal {
    * @param e Evénement de changement de valeur.
    */
   #_inputValueChangedCallback(e) {
+    this._p_inputValueChangedCallback(e);
+  }
+  _p_inputValueChangedCallback(e) {
     try {
       this._p_internal.setFormValue(this.#_input.value);
     } catch (error) {}
-    this.#_update().dispatchEvent(e);
+    this.#_update();
+    try {
+      this.dispatchEvent(e);
+    } catch (error) {
+      this.dispatchEvent(
+        e.type === 'input'
+          ? new InputEvent('input', {
+              data: this.value,
+              inputType: this.attr('type') || 'text',
+            })
+          : new Event('change'),
+      );
+    }
   }
   /**
    * Transfère un attribut du composant vers l'input interne si présent.
@@ -15356,6 +15423,11 @@ class HTMLBnumInput extends BnumElementInternal {
     }
     return el;
   }
+  static CreateTemplate(html = EMPTY_STRING) {
+    return BnumElementInternal.CreateTemplate(
+      BASE_TEMPLATE.replace('<!-- {{addoninner}} -->', html),
+    );
+  }
   /**
    * Tag HTML du composant.
    */
@@ -15364,7 +15436,7 @@ class HTMLBnumInput extends BnumElementInternal {
   }
 }
 // Utilisation des constantes dans le template
-const TEMPLATE$1 = BnumElementInternal.CreateTemplate(`
+const BASE_TEMPLATE = `
   <label id="${HTMLBnumInput.ID_HINT_TEXT}" for="${HTMLBnumInput.ID_INPUT}">
     <span id="${HTMLBnumInput.ID_HINT_TEXT_LABEL}">
       <slot></slot>
@@ -15376,6 +15448,7 @@ const TEMPLATE$1 = BnumElementInternal.CreateTemplate(`
   <div class="container">
     <div class="addons">
       <div class="addons__inner">
+        <!-- {{addoninner}} -->
         <${HTMLBnumIcon.TAG} id="${HTMLBnumInput.ID_INPUT_ICON}"></${HTMLBnumIcon.TAG}>
           <input id="${HTMLBnumInput.ID_INPUT}" type="${HTMLBnumInput.DEFAULT_INPUT_TYPE}" />
         </div>
@@ -15383,11 +15456,12 @@ const TEMPLATE$1 = BnumElementInternal.CreateTemplate(`
     </div>
     <span id="${HTMLBnumInput.ID_STATE}">
         <${HTMLBnumIcon.TAG} id="${HTMLBnumInput.ID_STATE_ICON}"></${HTMLBnumIcon.TAG}>
-        <span id="${HTMLBnumInput.ID_SUCCESS_TEXT}" class="${HTMLBnumInput.CLASS_STATE_TEXT_SUCCESS}"><slot name="${HTMLBnumInput.SLOT_SUCCESS}">Le champs est valide !</slot></span>
-        <span id="${HTMLBnumInput.ID_ERROR_TEXT}" class="${HTMLBnumInput.CLASS_STATE_TEXT_ERROR}"><slot name="${HTMLBnumInput.SLOT_ERROR}">Le champ est invalide !</slot></span>
+        <span id="${HTMLBnumInput.ID_SUCCESS_TEXT}" class="${HTMLBnumInput.CLASS_STATE_TEXT_SUCCESS}"><slot name="${HTMLBnumInput.SLOT_SUCCESS}">${HTMLBnumInput.TEXT_VALID_INPUT}</slot></span>
+        <span id="${HTMLBnumInput.ID_ERROR_TEXT}" class="${HTMLBnumInput.CLASS_STATE_TEXT_ERROR}"><slot name="${HTMLBnumInput.SLOT_ERROR}">${HTMLBnumInput.TEXT_INVALID_INPUT}</slot></span>
     </span>
   </div>
-    `);
+    `;
+const TEMPLATE$3 = HTMLBnumInput.CreateTemplate();
 //#region TryDefine
 HTMLBnumInput.TryDefine();
 //#endregion TryDefine
@@ -15585,10 +15659,10 @@ class HTMLBnumInputText extends HTMLBnumInput {
 }
 HTMLBnumInputText.TryDefine();
 
-var css_248z$1 =
+var css_248z$4 =
   ':host(:state(icon)) #input__icon{--bnum-input-icon-right:var(--bnum-input-number-icon-right,40px)}';
 
-const SHEET$1 = HTMLBnumInput.ConstructCSSStyleSheet(css_248z$1);
+const SHEET$2 = HTMLBnumInput.ConstructCSSStyleSheet(css_248z$4);
 /**
  * Input nombre.
  *
@@ -15662,7 +15736,7 @@ class HTMLBnumInputNumber extends HTMLBnumInput {
     super();
   }
   _p_getStylesheets() {
-    return [...super._p_getStylesheets(), SHEET$1];
+    return [...super._p_getStylesheets(), SHEET$2];
   }
   _p_preload() {
     this.setAttribute(
@@ -15789,7 +15863,7 @@ class HTMLBnumInputNumber extends HTMLBnumInput {
     return 'bnum-input-number';
   }
   static get AdditionnalStylesheet() {
-    return SHEET$1;
+    return SHEET$2;
   }
 }
 HTMLBnumInputNumber.TryDefine();
@@ -16198,10 +16272,10 @@ class HTMLBnumInputTime extends HTMLBnumInput {
 }
 HTMLBnumInputTime.TryDefine();
 
-var css_248z =
+var css_248z$3 =
   '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{background-color:var(--bnum-header-background-color,var(--bnum-color-surface,#f6f6f6));border-bottom:var(--bnum-header-border-bottom,var(--bnum-border-in-surface,solid 1px #ddd));box-sizing:border-box;display:var(--bnum-header-display,block);height:var(--bnum-header-height,60px)}:host .bnum-header-container{box-sizing:border-box;display:flex;height:100%;padding:0 1rem;width:100%}:host .header-left,:host .header-right{align-items:center;display:flex;flex:1}:host .header-left{gap:var(--bnum-header-left-gap,var(--bnum-space-s,10px));justify-content:flex-start}:host .header-left ::slotted(div),:host .header-left ::slotted(h1),:host .header-left ::slotted(h2),:host .header-left ::slotted(p),:host .header-left ::slotted(span),:host .header-left h1{align-items:center;display:flex;line-height:1.2;margin:0 0 -10px}:host .header-right{gap:var(--bnum-header-right-gap,var(--bnum-space-l,20px));justify-content:flex-end}:host ::slotted(bnum-img),:host ::slotted(img),:host bnum-img,:host img{display:block;height:var(--bnum-header-logo-height,45px);-o-object-fit:contain;object-fit:contain;width:auto}::slotted(bnum-secondary-button){--bnum-button-padding:var(--bnum-header-background-button-padding,5px 3px)}::slotted(.main-action-button){-padding:var(--bnum-header-background-button-padding,5px 3px)}:host(:state(with-background)){background-color:unset!important;background-image:var(--bnum-header-background-image);background-position:50%!important;background-size:cover!important;color:var(--bnum-header-with-background-color,#fff)}:host(:state(with-background)) .header-modifier{background:linear-gradient(90deg,#161616,transparent) 0 /50% 100% no-repeat,linear-gradient(270deg,#161616,transparent) 100% /50% 100% no-repeat}:host(:state(with-background)) ::slotted(.main-action-button),:host(:state(with-background)) ::slotted(bnum-secondary-button){background-color:#1616164d;border-color:var(--bnum-header-main-action-border-color,#fff);color:var(--bnum-header-main-action-color,#fff)}:host(:state(with-background)) ::slotted(.main-action-button):hover,:host(:state(with-background)) ::slotted(bnum-secondary-button):hover{background-color:#343434d2}:host(:state(with-background)) ::slotted(.main-action-button):active,:host(:state(with-background)) ::slotted(bnum-secondary-button):active{background-color:#474747ee}:host(:state(with-background)) ::slotted(.main-action-button:hover),:host(:state(with-background)) ::slotted(bnum-secondary-button:hover){background-color:#343434d2}:host(:state(with-background)) ::slotted(.main-action-button:active),:host(:state(with-background)) ::slotted(bnum-secondary-button:active){background-color:#474747ee}';
 
-const SHEET = BnumElementInternal.ConstructCSSStyleSheet(css_248z);
+const SHEET$1 = BnumElementInternal.ConstructCSSStyleSheet(css_248z$3);
 /**
  * Composant Header du Bnum
  *
@@ -16407,13 +16481,13 @@ class HTMLBnumHeader extends BnumElementInternal {
    * @inheritdoc
    */
   _p_getStylesheets() {
-    return [...super._p_getStylesheets(), SHEET];
+    return [...super._p_getStylesheets(), SHEET$1];
   }
   /**
    * @inheritdoc
    */
   _p_fromTemplate() {
-    return TEMPLATE;
+    return TEMPLATE$2;
   }
   /**
    * @inheritdoc
@@ -16550,7 +16624,7 @@ class HTMLBnumHeader extends BnumElementInternal {
     return 'bnum-header';
   }
 }
-const TEMPLATE = BnumElementInternal.CreateTemplate(`
+const TEMPLATE$2 = BnumElementInternal.CreateTemplate(`
   <div class="${HTMLBnumHeader.CLASS_HEADER_MODIFIER}">
     <div  part="${HTMLBnumHeader.PART_HEADER_CONTAINER}" class="${HTMLBnumHeader.CLASS_HEADER_CONTAINER}">
       <div part="${HTMLBnumHeader.PART_HEADER_LEFT}" class="${HTMLBnumHeader.CLASS_HEADER_LEFT}">
@@ -16572,6 +16646,389 @@ const TEMPLATE = BnumElementInternal.CreateTemplate(`
 `);
 //#region TryDefine
 HTMLBnumHeader.TryDefine();
+//#endregion TryDefine
+
+var css_248z$2 =
+  ':host #input-search-actions-container{display:flex;position:absolute;right:10px;top:8px}:host #input-search-actions-container #input-clear-button{display:none}:host(:state(value)) #input-search-actions-container #input-clear-button{display:inline-block}';
+
+const SHEET = HTMLBnumInput.ConstructCSSStyleSheet(css_248z$2);
+/**
+ * Composant d'input de recherche.
+ *
+ * Utilise le composant de base `bnum-input` avec des configurations spécifiques pour la recherche.
+ *
+ * @structure Basique
+ * <bnum-input-search>Label de recherche</bnum-input-search>
+ *
+ * @structure Avec une légende et un indice
+ * <bnum-input-search>
+ * Label du champ
+ * <span slot="hint">Indice d'utilisation</span>
+ * </bnum-input-search>
+ *
+ * @structure Désactivé
+ * <bnum-input-search disabled placeholder="Recherche désactivée">
+ *   Label du champ
+ * </bnum-input-search>
+ *
+ * @structure Avec des boutons custom
+ * <bnum-input-search placeholder="Recherche avec des boutons">
+ *   Label du champ
+ *   <bnum-icon-button slot="actions">filter_list</bnum-icon-button>
+ *
+ * </bnum-input-search>
+ *
+ * @slot button - Contenu du bouton de recherche (texte ou icône). (Inutilisé)
+ * @slot actions - Contenu des actions personnalisées à droite du champ de recherche.
+ *
+ */
+class HTMLBnumInputSearch extends HTMLBnumInput {
+  //#region Constants
+  /**
+   * @attr {string} (default: 'text') type - Type de l'input (text, password, email, etc.) Ne pas modifier, toujours 'text' pour ce composant.
+   */
+  static ATTRIBUTE_TYPE = 'type';
+  /**
+   * @attr {undefined} (default: undefined) button - Attribut pour afficher le bouton interne. Ne pas modifier, toujours présent pour ce composant.
+   */
+  static ATTRIBUTE_BUTTON = 'button';
+  /**
+   * @attr {string} (default: 'search') button-icon - Icône du bouton interne. Ne pas modifier, toujours 'search' pour ce composant.
+   */
+  static ATTRIBUTE_BUTTON_ICON = 'button-icon';
+  /**
+   * Texte affiché dans le champ de recherche.
+   */
+  static TEXT_SEARCH_FIELD =
+    BnumConfig.Get('local_keys')?.search_field || 'Rechercher';
+  /**
+   * Événement déclenché au clic sur le bouton interne.
+   * @event bnum-input:button.click
+   * @detail MouseEvent
+   */
+  static EVENT_BUTTON_CLICK = 'bnum-input:button.click';
+  /**
+   * Événement déclenché au clic par le bouton interne ou à la validation par la touche "Entrée".
+   * Envoie la valeur actuelle de l'input de recherche.
+   * @event bnum-input-search:search
+   * @detail { value: string; name: string; caller: HTMLBnumInputSearch }
+   */
+  static EVENT_SEARCH = 'bnum-input-search:search';
+  /**
+   * Événement déclenché lors du clic sur le bouton de vidage du champ de recherche.
+   * @event bnum-input-search:clear
+   * @detail { caller: HTMLBnumInputSearch }
+   */
+  static EVENT_CLEAR = 'bnum-input-search:clear';
+  /**
+   * Icône du bouton de recherche.
+   */
+  static BUTTON_ICON = 'search';
+  /**
+   * ID du conteneur des actions de recherche.
+   */
+  static ID_ACTIONS_CONTAINER = 'input-search-actions-container';
+  /**
+   * ID du bouton pour vider le champ de recherche.
+   */
+  static ID_CLEAR_BUTTON = 'input-clear-button';
+  /**
+   * Nom du slot pour les actions personnalisées.
+   */
+  static SLOT_ACTIONS = 'actions';
+  //#endregion Constants
+  //#region Private fields
+  /**
+   * Bouton interne pour vider le champ de recherche.
+   * @private
+   * @type {HTMLBnumButtonIcon | null}
+   */
+  #_emptyButton = null;
+  //#endregion Private fields
+  //#region Lifecycle
+  /**
+   * Constructeur du composant de recherche.
+   */
+  constructor() {
+    super();
+  }
+  _p_fromTemplate() {
+    return TEMPLATE$1;
+  }
+  _p_getStylesheets() {
+    return [...super._p_getStylesheets(), SHEET];
+  }
+  /**
+   * Précharge les attributs spécifiques à l'input de recherche.
+   * Définit le placeholder et l'icône du bouton si non présents.
+   */
+  _p_preload() {
+    if (this.attr(HTMLBnumInput.ATTRIBUTE_PLACEHOLDER) === null) {
+      this.attr(
+        HTMLBnumInput.ATTRIBUTE_PLACEHOLDER,
+        HTMLBnumInputSearch.TEXT_SEARCH_FIELD,
+      );
+    }
+    this.setAttribute(
+      HTMLBnumInput.ATTRIBUTE_BUTTON_ICON,
+      HTMLBnumInputSearch.BUTTON_ICON,
+    );
+  }
+  _p_buildDOM(container) {
+    super._p_buildDOM(container);
+    this.#_emptyButton = container.querySelector(
+      `#${HTMLBnumInputSearch.ID_ACTIONS_CONTAINER} ${HTMLBnumButtonIcon.TAG}`,
+    );
+    this.#_emptyButton.addEventListener('click', () => {
+      this.value = EMPTY_STRING;
+      this._p_inputValueChangedCallback(new Event('input'));
+      this.#_triggerEventSearch();
+      this.trigger(HTMLBnumInputSearch.EVENT_CLEAR, { caller: this });
+    });
+  }
+  /**
+   * Attache les événements nécessaires au composant.
+   * Supprime les attributs inutiles et gère les événements de recherche.
+   */
+  _p_attach() {
+    super._p_attach();
+    this.removeAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON);
+    this.removeAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON_ICON);
+    this.onButtonClicked.add(
+      EVENT_DEFAULT,
+      this.#_triggerEventSearch.bind(this),
+    );
+    this.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        this.#_triggerEventSearch();
+      }
+    });
+  }
+  _p_inputValueChangedCallback(e) {
+    this.removeAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON);
+    this.setAttribute(
+      HTMLBnumInput.ATTRIBUTE_BUTTON_ICON,
+      HTMLBnumInputSearch.BUTTON_ICON,
+    );
+    super._p_inputValueChangedCallback?.(e);
+    this.removeAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON);
+  }
+  /**
+   * Nettoie les attributs après le rendu du composant.
+   */
+  _p_postFlush() {
+    this.removeAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON);
+    this.setAttribute(
+      HTMLBnumInput.ATTRIBUTE_BUTTON_ICON,
+      HTMLBnumInputSearch.BUTTON_ICON,
+    );
+    super._p_postFlush();
+    this.removeAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON);
+  }
+  //#endregion Lifecycle
+  //#region Public Methods
+  /**
+   * Désactive le bouton de recherche.
+   */
+  disableSearchButton() {
+    (this._p_isShadowElement() === false ? this : this.shadowRoot)
+      .querySelector(`#${HTMLBnumInput.ID_INPUT_BUTTON}`)
+      ?.setAttribute(
+        HTMLBnumInput.ATTRIBUTE_DISABLED,
+        HTMLBnumInput.ATTRIBUTE_DISABLED,
+      );
+    return this;
+  }
+  /**
+   * Active le bouton de recherche.
+   */
+  enableSearchButton() {
+    (this._p_isShadowElement() === false ? this : this.shadowRoot)
+      .querySelector(`#${HTMLBnumInput.ID_INPUT_BUTTON}`)
+      ?.removeAttribute(HTMLBnumInput.ATTRIBUTE_DISABLED);
+    return this;
+  }
+  //#endregion Public Methods
+  //#region Private Methods
+  /**
+   * Déclenche l'événement de recherche avec la valeur actuelle de l'input.
+   * @private
+   */
+  #_triggerEventSearch() {
+    this.trigger(HTMLBnumInputSearch.EVENT_SEARCH, {
+      value: this.value,
+      name: this.name,
+      caller: this,
+    });
+  }
+  //#endregion Private Methods
+  //#region Static Methods
+  /**
+   * Retourne la liste des attributs observés, en excluant ceux spécifiques à la recherche.
+   * @inheritdoc
+   */
+  static _p_observedAttributes() {
+    return super._p_observedAttributes().filter((x) => {
+      switch (x) {
+        case HTMLBnumInputSearch.ATTRIBUTE_TYPE:
+        case HTMLBnumInput.ATTRIBUTE_BUTTON:
+        case HTMLBnumInput.ATTRIBUTE_BUTTON_ICON:
+          return false;
+        default:
+          return true;
+      }
+    });
+  }
+  /**
+   * Crée une instance du composant avec les options fournies.
+   * @param label Texte du label principal.
+   * @param options Options d'initialisation (attributs et slots).
+   * @returns {HTMLBnumInput} Instance du composant.
+   */
+  static Create(
+    label,
+    {
+      'data-value': dataValue,
+      placeholder,
+      name,
+      disabled,
+      state,
+      required,
+      readonly,
+      pattern,
+      minlength,
+      maxlength,
+      autocomplete,
+      inputmode,
+      spellcheck,
+      hint,
+      success,
+      error,
+      btnText,
+    } = {},
+  ) {
+    const el = document.createElement(HTMLBnumInputSearch.TAG);
+    // Appliquer chaque attribut si défini
+    if (dataValue !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_DATA_VALUE, dataValue);
+    if (placeholder !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_PLACEHOLDER, placeholder);
+    if (disabled !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_DISABLED, disabled);
+    if (state !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_STATE, state);
+    if (required !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_REQUIRED, required);
+    if (readonly !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_READONLY, readonly);
+    if (pattern !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_PATTERN, pattern);
+    if (minlength !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_MINLENGTH, minlength);
+    if (maxlength !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_MAXLENGTH, maxlength);
+    if (autocomplete !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_AUTOCOMPLETE, autocomplete);
+    if (inputmode !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_INPUTMODE, inputmode);
+    if (spellcheck !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_SPELLCHECK, spellcheck);
+    if (name !== undefined) el.setAttribute(HTMLBnumInput.ATTRIBUTE_NAME, name);
+    // Slot par défaut (label)
+    el.textContent = label;
+    // Slots nommés
+    if (hint) {
+      const hintSlot = document.createElement('span');
+      hintSlot.slot = HTMLBnumInput.SLOT_HINT;
+      hintSlot.textContent = hint;
+      el.appendChild(hintSlot);
+    }
+    if (success) {
+      const successSlot = document.createElement('span');
+      successSlot.slot = HTMLBnumInput.SLOT_SUCCESS;
+      successSlot.textContent = success;
+      el.appendChild(successSlot);
+    }
+    if (error) {
+      const errorSlot = document.createElement('span');
+      errorSlot.slot = HTMLBnumInput.SLOT_ERROR;
+      errorSlot.textContent = error;
+      el.appendChild(errorSlot);
+    }
+    if (btnText) {
+      const buttonSlot = document.createElement('span');
+      buttonSlot.slot = HTMLBnumInput.SLOT_BUTTON;
+      buttonSlot.textContent = btnText;
+      el.appendChild(buttonSlot);
+    }
+    return el;
+  }
+  /**
+   * Crée un composant de recherche à partir d'un input existant.
+   * @param input Instance de HTMLBnumInput à convertir.
+   * @returns {HTMLBnumInputSearch} Nouvelle instance de recherche.
+   */
+  static FromInput(input) {
+    let init = {};
+    // Copier les attributs pertinents de l'input d'origine dans l'objet init
+    for (const attr of input.attributes) {
+      switch (attr.name) {
+        case HTMLBnumInput.ATTRIBUTE_PLACEHOLDER:
+        case HTMLBnumInput.ATTRIBUTE_NAME:
+        case HTMLBnumInput.ATTRIBUTE_DISABLED:
+        case HTMLBnumInput.ATTRIBUTE_REQUIRED:
+        case HTMLBnumInput.ATTRIBUTE_READONLY:
+        case HTMLBnumInput.ATTRIBUTE_PATTERN:
+        case HTMLBnumInput.ATTRIBUTE_MINLENGTH:
+        case HTMLBnumInput.ATTRIBUTE_MAXLENGTH:
+        case HTMLBnumInput.ATTRIBUTE_AUTOCOMPLETE:
+        case HTMLBnumInput.ATTRIBUTE_INPUTMODE:
+        case HTMLBnumInput.ATTRIBUTE_SPELLCHECK:
+        case HTMLBnumInput.ATTRIBUTE_DATA_VALUE:
+          init = { ...init, [attr.name]: attr.value };
+          break;
+      }
+    }
+    // On recherche les slots dans l'input d'origine et on l'ajoute dans l'init.
+    const label =
+      input.querySelector(':not([slot])')?.textContent || EMPTY_STRING;
+    const hint = input.querySelector(
+      `[slot="${HTMLBnumInput.SLOT_HINT}"]`,
+    )?.textContent;
+    const success = input.querySelector(
+      `[slot="${HTMLBnumInput.SLOT_SUCCESS}"]`,
+    )?.textContent;
+    const error = input.querySelector(
+      `[slot="${HTMLBnumInput.SLOT_ERROR}"]`,
+    )?.textContent;
+    const btnText = input.querySelector(
+      `[slot="${HTMLBnumInput.SLOT_BUTTON}"]`,
+    )?.textContent;
+    if (hint) init = { ...init, hint };
+    if (success) init = { ...init, success };
+    if (error) init = { ...init, error };
+    if (btnText) init = { ...init, btnText };
+    return HTMLBnumInputSearch.Create(label, init);
+  }
+  /**
+   * Retourne le tag HTML du composant.
+   */
+  static get TAG() {
+    return 'bnum-input-search';
+  }
+}
+/**
+ * Modèle HTML du composant, incluant le bouton de suppression et le slot d'actions.
+ * @private
+ * @constant
+ */
+const TEMPLATE$1 =
+  HTMLBnumInput.CreateTemplate(`<div id="${HTMLBnumInputSearch.ID_ACTIONS_CONTAINER}">
+      ${HTMLBnumButtonIcon.Write('close', { id: HTMLBnumInputSearch.ID_CLEAR_BUTTON })}
+      <slot name="${HTMLBnumInputSearch.SLOT_ACTIONS}"></slot>
+    </div>`);
+//#region TryDefine
+HTMLBnumInputSearch.TryDefine();
 //#endregion TryDefine
 
 /**
@@ -16763,6 +17220,789 @@ class HTMLBnumHide extends BnumElementInternal {
 // Enregistrement
 HTMLBnumHide.TryDefine();
 
+var css_248z$1 =
+  '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{border-radius:var(--bnum-badge-border-radius,100px);display:var(--bnum-badge-display,inline-block);padding:var(--bnum-badge-padding,var(--bnum-space-xs,5px))}:host(:state(is-circle)){aspect-ratio:1;border-radius:var(--bnum-badge-circle-border-radius,100%)}:host(:state(is-circle)) span{align-items:center;display:flex;height:100%;justify-content:center}:host(:state(variation-primary)){background-color:var(--bnum-badge-primary-color,var(--bnum-color-primary,#000091));color:var(--bnum-badge-primary-text-color,var(--bnum-text-on-primary,#f5f5fe))}:host(:state(variation-secondary)){background-color:var(--bnum-badge-secondary-color,var(--bnum-color-secondary,#3a3a3a));color:var(--bnum-badge-secondary-text-color,var(--bnum-text-on-secondary,#fff))}:host(:state(variation-secondary)){border:var(--bnum-badge-type,solid) var(--bnum-badge-size,thin) var(--bnum-badge-secondary-text-color,var(--bnum-text-on-secondary,#fff))}:host(:state(variation-danger)){background-color:var(--bnum-badge-danger-color,var(--bnum-color-danger,#ce0500));color:var(--bnum-badge-danger-text-color,var(--bnum-text-on-danger,#f5f5fe))}';
+
+const STYLE$1 = BnumElementInternal.ConstructCSSStyleSheet(css_248z$1);
+/**
+ * Badge d'information.
+ *
+ * @structure Badge classique
+ * <bnum-badge data-value="Je suis un badge !"></bnum-badge>
+ *
+ * @structure Badge avec un nombre
+ * <bnum-badge data-value="9999"></bnum-badge>
+ *
+ * @structure Arrondi forcé
+ * <bnum-badge data-value="9999" circle></bnum-badge>
+ *
+ * @structure Secondary
+ * <bnum-badge data-value="42" data-variation="secondary" circle></bnum-badge>
+ *
+ * @structure Danger
+ * <bnum-badge data-value="42" data-variation="danger" circle></bnum-badge>
+ *
+ * @state has-value - Le badge a une valeur.
+ * @state no-value - Le badge n'a pas de valeur.
+ * @state is-circle - Le badge est en mode cercle.
+ * @state variation-primary - Le badge utilise la variation primaire.
+ * @state variation-secondary - Le badge utilise la variation secondaire.
+ * @state variation-danger - Le badge utilise la variation danger.
+ *
+ * @cssvar {inline-block} --bnum-badge-display - Permet de surcharger la propriété CSS display du badge.
+ * @cssvar {100px} --bnum-badge-border-radius - Permet de surcharger le rayon de bordure du badge.
+ * @cssvar {10px} --bnum-badge-padding - Permet de surcharger le padding du badge.
+ * @cssvar {100%} --bnum-badge-circle-border-radius - Permet de surcharger le rayon de bordure du badge en mode "cercle".
+ * @cssvar {#000091} --bnum-badge-primary-color - Définit la couleur de fond du badge en variation "primary".
+ * @cssvar {#f5f5fe} --bnum-badge-primary-text-color - Définit la couleur du texte du badge en variation "primary".
+ * @cssvar {#ffffff} --bnum-badge-secondary-color - Définit la couleur de fond du badge en variation "secondary".
+ * @cssvar {#000091} --bnum-badge-secondary-text-color - Définit la couleur du texte du badge en variation "secondary".
+ * @cssvar {solid} --bnum-badge-type - Permet de surcharger le type de bordure (ex: solid, dashed) pour la variation "secondary".
+ * @cssvar {thin} --bnum-badge-size - Permet de surcharger l’épaisseur de la bordure pour la variation "secondary".
+ * @cssvar {#ce0500} --bnum-badge-danger-color - Définit la couleur de fond du badge en variation "danger".
+ * @cssvar {#f5f5fe} --bnum-badge-danger-text-color - Définit la couleur du texte du badge en variation "danger".
+ *
+ */
+class HTMLBnumBadge extends BnumElementInternal {
+  //#region Constants
+  /**
+   * Nom de l'attribut pour la valeur du badge.
+   */
+  static DATA_VALUE = 'value';
+  /**
+   * Nom de l'attribut pour la variation du badge.
+   */
+  static DATA_VARIATION = 'variation';
+  /**
+   * Nom de l'attribut pour la valeur du badge.
+   * @attr {string} data-value - Valeur affichée dans le badge.
+   */
+  static ATTR_VALUE = 'data-value';
+  /**
+   * Nom de l'attribut pour la variation du badge.
+   * @attr {'primary' | 'secondary' | 'danger'} (optional) (default:'primary') data-variation - Variation du badge.
+   */
+  static ATTR_VARIATION = 'data-variation';
+  /**
+   * Nom de l'attribut pour le mode cercle.
+   * @attr {any} (optional) circle - Indique si le badge doit être affiché en cercle.
+   */
+  static ATTR_CIRCLE = 'circle';
+  /**
+   * Valeur de variation primaire.
+   */
+  static VARIATION_PRIMARY = 'primary';
+  /**
+   * Valeur de variation secondaire.
+   */
+  static VARIATION_SECONDARY = 'secondary';
+  /**
+   * Valeur de variation danger.
+   */
+  static VARIATION_DANGER = 'danger';
+  /**
+   * Nom de la classe d'état "a une valeur".
+   */
+  static STATE_HAS_VALUE = 'has-value';
+  /**
+   * Nom de la classe d'état "pas de valeur".
+   */
+  static STATE_NO_VALUE = 'no-value';
+  /**
+   * Nom de la classe d'état "cercle".
+   */
+  static STATE_IS_CIRCLE = 'is-circle';
+  /**
+   * Préfixe de la classe d'état pour la variation.
+   */
+  static STATE_VARIATION_PREFIX = 'variation-';
+  //#endregion Constants
+  //#region Private Fields
+  /**
+   * Valeur affichée dans le badge.
+   */
+  #_value = EMPTY_STRING;
+  /**
+   * Planificateur de mise à jour asynchrone.
+   */
+  #_updateSchduler = null;
+  /**
+   * Élément span contenant la valeur du badge.
+   */
+  #_spanElement = null;
+  //#endregion Private Fields
+  //#region Getters/Setters
+  /**
+   * Récupère la valeur depuis l'attribut data-value.
+   */
+  get #_dataValue() {
+    return this.data(HTMLBnumBadge.DATA_VALUE) || EMPTY_STRING;
+  }
+  /**
+   * Récupère la variation depuis l'attribut data-variation.
+   */
+  get #_dataVariation() {
+    return (
+      this.data(HTMLBnumBadge.DATA_VARIATION) || HTMLBnumBadge.VARIATION_PRIMARY
+    );
+  }
+  /**
+   * Valeur affichée dans le badge.
+   */
+  get value() {
+    if (!this.alreadyLoaded) this.#_value = this.#_dataValue;
+    return this.#_value;
+  }
+  set value(value) {
+    if (!this.alreadyLoaded) this.removeAttribute(HTMLBnumBadge.ATTR_VALUE);
+    this.#_value = value;
+    this.#_requestUpdate();
+  }
+  /**
+   * Variation de style du badge.
+   */
+  get variation() {
+    return this.#_dataVariation;
+  }
+  set variation(value) {
+    this.data(HTMLBnumBadge.DATA_VARIATION, value);
+    this.#_requestUpdate();
+  }
+  //#endregion Getters/Setters
+  //#region Lifecycle
+  constructor() {
+    super();
+  }
+  /**
+   * Retourne les styles à appliquer au composant.
+   */
+  _p_getStylesheets() {
+    return [...super._p_getStylesheets(), STYLE$1];
+  }
+  /**
+   * Construit le DOM interne du composant.
+   */
+  _p_buildDOM(container) {
+    super._p_buildDOM(container);
+    this.#_spanElement = this._p_createSpan();
+    container.appendChild(this.#_spanElement);
+    const force = true;
+    this.#_update(force);
+  }
+  /**
+   * Indique si toutes les modifications d'attributs doivent déclencher une mise à jour.
+   */
+  _p_isUpdateForAllAttributes() {
+    return true;
+  }
+  /**
+   * Met à jour le composant lors d'un changement d'attribut.
+   */
+  _p_update(name, oldVal, newVal) {
+    return this.#_update();
+  }
+  //#endregion Lifecycle
+  //#region Private Methods
+  /**
+   * Demande une mise à jour asynchrone du composant.
+   */
+  #_requestUpdate() {
+    (this.#_updateSchduler ??= new Scheduler(() => {
+      this.#_update();
+    })).schedule(0);
+    return this;
+  }
+  /**
+   * Met à jour l'affichage du badge selon ses propriétés et attributs.
+   */
+  #_update(force = false) {
+    if (!this.alreadyLoaded && !force) return;
+    this._p_clearStates();
+    const value = this.value;
+    this.#_spanElement.textContent = value;
+    if (value !== EMPTY_STRING) this._p_addState(HTMLBnumBadge.STATE_HAS_VALUE);
+    else this._p_addState(HTMLBnumBadge.STATE_NO_VALUE);
+    if (this.hasAttribute(HTMLBnumBadge.ATTR_CIRCLE))
+      this._p_addState(HTMLBnumBadge.STATE_IS_CIRCLE);
+    this._p_addState(
+      `${HTMLBnumBadge.STATE_VARIATION_PREFIX}${this.variation}`,
+    );
+  }
+  //#endregion Private Methods
+  //#region Static Methods
+  /**
+   * Attributs observés pour ce composant.
+   */
+  static _p_observedAttributes() {
+    return [HTMLBnumBadge.ATTR_CIRCLE];
+  }
+  /**
+   * Crée un badge via JavaScript.
+   * @param value Valeur à afficher
+   * @param options Options de création (cercle, variation)
+   */
+  static Create(value, { circle = false, variation = undefined } = {}) {
+    const badge = document.createElement(HTMLBnumBadge.TAG);
+    return badge
+      .attr(HTMLBnumBadge.ATTR_VALUE, value)
+      .condAttr(circle, HTMLBnumBadge.ATTR_CIRCLE, true)
+      .condAttr(
+        variation !== undefined,
+        HTMLBnumBadge.ATTR_VARIATION,
+        variation,
+      );
+  }
+  /**
+   * Génère le HTML d'un badge.
+   * @param value Valeur à afficher
+   * @param attrs Attributs additionnels
+   */
+  static Write(value, attrs = {}) {
+    const attributes = this._p_WriteAttributes(attrs);
+    return `<${HTMLBnumBadge.TAG} ${HTMLBnumBadge.ATTR_VALUE}="${value}" ${attributes}></${HTMLBnumBadge.TAG}>`;
+  }
+  /**
+   * Tag HTML du composant.
+   */
+  static get TAG() {
+    return 'bnum-badge';
+  }
+}
+HTMLBnumBadge.TryDefine();
+
+class HTMLBnumFolderList extends BnumElement {
+  constructor() {
+    super();
+  }
+  _p_preload() {
+    this.attr('role', 'group');
+  }
+  _p_isShadowElement() {
+    return false;
+  }
+  static Write(content = EMPTY_STRING, attrs = {}) {
+    const attributes = this._p_WriteAttributes(attrs);
+    return `<${HTMLBnumFolderList.TAG} ${attributes}>${content}</${HTMLBnumFolderList.TAG}>`;
+  }
+  static get TAG() {
+    return 'bnum-folder-list';
+  }
+}
+HTMLBnumFolderList.TryDefine();
+
+var css_248z =
+  ':host{display:block;padding-left:calc(.5em*var(--internal-bnum-folder-level, 0));width:100%}:host .bal-container{display:flex;justify-content:space-between;padding:5px 15px}:host .bal-container .bal-container__left,:host .bal-container .bal-container__title{align-content:center;align-items:center;display:flex;gap:10px}:host .bal-container__title__name{text-wrap:nowrap;max-width:125px;overflow:hidden;pointer-events:none;text-overflow:ellipsis}:host .bal-container__title__icon{color:var(--bnum-folder-icon-color,inherit)}:host bnum-badge{height:calc(16px - var(--bnum-badge-padding, var(--bnum-space-xs, 5px))*2);transition:all .2s ease;width:calc(16px - var(--bnum-badge-padding, var(--bnum-space-xs, 5px))*2)}:host bnum-badge.is-cumulative{background-color:var(--bnum-color-primary-active)}:host bnum-badge:state(no-value){display:none}:host([level="0"]) .bal-container{padding:10px 15px}:host(:state(no-subfolders)) .bal-container__toggle{display:none}:host([is-collapsed=true]) .bal-sub-folders{display:none}:host([is-virtual=false]){cursor:pointer}:host([is-virtual=false]) .bal-container__title__name{pointer-events:all}:host([is-virtual=false]:hover) .bal-container{background-color:#f0f8ff}:host([is-selected=true]) .bal-container{background-color:#add8e6;cursor:default}:host([is-selected=true]:hover) .bal-container{background-color:#add8e6}:host(:state(double-digit-unread)) bnum-badge{font-size:9px}:host(:state(triple-digit-unread)) bnum-badge{font-size:9px;height:calc(18px - var(--bnum-badge-padding, var(--bnum-space-xs, 5px))*2);width:calc(18px - var(--bnum-badge-padding, var(--bnum-space-xs, 5px))*2)}';
+
+const STYLE = BnumElementInternal.ConstructCSSStyleSheet(css_248z);
+/**
+ * Composant représentant un dossier dans une structure arborescente.
+ *
+ * @structure Base
+ * <bnum-folder
+ * folder-id="identifiant-unique-du-dossier"
+ * id="rcmliINBOX"
+ * label="Dossier Racine"
+ * unread="5"
+ * icon="folder"
+ * level="0"
+ * is-virtual="false"
+ * is-collapsed="true"
+ * is-selected="false"
+ * >
+ * </bnum-folder>
+ *
+ * @structure Avec de sous-dossiers
+ * <bnum-tree id="rcmliTREE">
+ * <bnum-folder
+ * folder-id="identifiant-unique-du-dossier"
+ * id="rcmliINBOX"
+ * label="Dossier Racine"
+ * unread="17"
+ * icon="folder"
+ * level="0"
+ * is-virtual="true"
+ * is-collapsed="true"
+ * is-selected="false"
+ * >
+ *  <bnum-folder
+ *  slot="folders"
+ *  folder-id="identifiant-unique-du-dossier-sub"
+ *  id="rcmliSUBFOLDER"
+ *  label="Dossier enfant"
+ *  unread="17"
+ *  icon="folder"
+ *  level="1"
+ *  is-virtual="false"
+ *  is-collapsed="true"
+ *  is-selected="false"
+ *  >
+ *  </bnum-folder>
+ *  <bnum-folder
+ *  slot="folders"
+ *  folder-id="identifiant-unique-du-dossier-sub2"
+ *  id="rcmliSUBFOLDER"
+ *  label="Dossier enfant 2"
+ *  unread="0"
+ *  icon="folder"
+ *  level="1"
+ *  is-virtual="false"
+ *  is-collapsed="true"
+ *  is-selected="false"
+ *  >
+ *   <bnum-folder
+ *   slot="folders"
+ *   folder-id="identifiant-unique-du-dossier--sub-sub2"
+ *   id="rcmliSUBFOLDERSUB"
+ *   label="Dossier enfant enfant"
+ *   unread="0"
+ *   icon="folder"
+ *   level="2"
+ *   is-virtual="false"
+ *   is-collapsed="true"
+ *   is-selected="false"
+ *   >
+ *   </bnum-folder>
+ *  </bnum-folder>
+ * </bnum-folder>
+ * </bnum-tree>
+ *
+ */
+class HTMLBnumFolder extends BnumElementInternal {
+  #_nameElement = null;
+  #_iconElement = null;
+  #_toggleButton = null;
+  #_badgeElement = null;
+  #_selfUnread = 0;
+  get collapsed() {
+    return this.getAttribute('is-collapsed') === 'true';
+  }
+  get classes() {
+    return JsEnumerable.from(this.classList.values()).toArray();
+  }
+  constructor() {
+    super();
+  }
+  _p_getStylesheets() {
+    return [...super._p_getStylesheets(), STYLE];
+  }
+  _p_fromTemplate() {
+    return TEMPLATE;
+  }
+  _p_buildDOM(container) {
+    super._p_buildDOM(container);
+    this.#_nameElement = container.querySelector('#bal-name');
+    this.#_iconElement = container.querySelector('.bal-container__title__icon');
+    this.#_toggleButton = container.querySelector('.bal-container__toggle');
+    this.#_badgeElement = container.querySelector(
+      '.bal-container__left__badge',
+    );
+    container.querySelector('.bal-container').addEventListener('click', (e) => {
+      this.trigger('bnum-folder:select', {
+        innerEvent: e,
+        caller: this,
+      });
+    });
+  }
+  _p_attach() {
+    super._p_attach();
+    if (this.childElementCount === 0) {
+      this._p_addState('no-subfolders');
+    } else {
+      this.addEventListener('bnum-folder:unread-changed', (e) => {
+        // On évite de boucler sur son propre événement
+        if (e.detail.caller === this) return;
+        // On stoppe la propagation ici pour gérer la remontée manuellement
+        // et éviter des calculs redondants si on veut, mais le plus simple
+        // est de laisser couler et de recalculer.
+        this.#_refreshDisplay();
+      });
+    }
+    if (this.hasAttribute('is-collapsed') === false) {
+      this.setAttribute('is-collapsed', 'true');
+    }
+    this.addEventListener('bnum-folder:select', (e) => {
+      if (
+        this.hasAttribute('is-virtual') &&
+        this.getAttribute('is-virtual') === 'true'
+      ) {
+        e.stopPropagation();
+        return;
+      }
+    });
+    this.#_toggleButton?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isCollapsed = this.getAttribute('is-collapsed') === 'true';
+      this.setAttribute('is-collapsed', isCollapsed ? 'false' : 'true');
+      this.trigger('bnum-folder:toggle', {
+        collapsed: !isCollapsed,
+        innerEvent: e,
+        caller: this,
+      });
+    });
+    this.attr('role', 'treeitem')
+      .#_updateIcon(this.attr('icon') ?? EMPTY_STRING)
+      .#_updateLabel(this.attr('label') ?? EMPTY_STRING)
+      .#_updateLevel(this.attr('level') ? +this.attr('level') : 0)
+      .#_updateSelected(this.attr('is-selected') === 'true')
+      .#_updateIsCollapsed(this.attr('is-collapsed') === 'true')
+      .#_updateUnread(this.attr('unread') ? +this.attr('unread') : 0);
+  }
+  _p_update(name, oldVal, newVal) {
+    if (
+      this.alreadyLoaded &&
+      name === 'unread' &&
+      newVal !== this.#_badgeElement?.value
+    ) {
+      if (
+        (this.#_badgeElement?.value ?? oldVal) == '99+' &&
+        newVal &&
+        +newVal > 99
+      ) {
+        return;
+      }
+      oldVal = this.#_badgeElement?.value ?? oldVal;
+    }
+    if (oldVal === newVal) return;
+    switch (name) {
+      case 'label':
+        this.#_updateLabel(newVal ?? EMPTY_STRING);
+        break;
+      case 'unread':
+        this.#_updateUnread(newVal ? +newVal : 0);
+        break;
+      case 'icon':
+        this.#_updateIcon(newVal ?? EMPTY_STRING);
+        break;
+      case 'is-collapsed':
+        this.#_updateIsCollapsed(newVal === 'true');
+        this.#_refreshDisplay();
+        break;
+      case 'level':
+        this.#_updateLevel(newVal ? +newVal : 0);
+        break;
+      case 'is-selected':
+        this.#_updateSelected(newVal === 'true');
+        break;
+    }
+  }
+  /**
+   * Calcule le total (Soi-même + tous les descendants)
+   * On le fait via querySelectorAll seulement quand c'est nécessaire.
+   */
+  #_getTotalUnread() {
+    let total = this.#_selfUnread;
+    // On cherche tous les bnum-folder dans le slot "folders"
+    const descendants = this.querySelectorAll('bnum-folder');
+    descendants.forEach((folder) => {
+      const val = folder.getAttribute('unread');
+      if (val) total += +val;
+    });
+    return total;
+  }
+  /**
+   * Met à jour uniquement l'élément visuel (Badge)
+   */
+  #_refreshDisplay() {
+    if (!this.#_badgeElement) return;
+    const isCollapsed = this.getAttribute('is-collapsed') === 'true';
+    // SI replié : Total (Soi + Enfants) | SI déplié : Soi-même uniquement
+    const displayValue =
+      isCollapsed && this.childElementCount > 0
+        ? this.#_getTotalUnread()
+        : this.#_selfUnread;
+    this.#_badgeElement.value =
+      displayValue <= 0
+        ? EMPTY_STRING
+        : displayValue > 99
+          ? '99+'
+          : displayValue.toString();
+    this._p_addState(
+      displayValue > 99
+        ? 'triple-digit-unread'
+        : displayValue > 9
+          ? 'double-digit-unread'
+          : displayValue > 0
+            ? 'single-digit-unread'
+            : 'no-unread',
+    );
+    // On peut aussi ajouter une classe CSS pour styliser différemment le badge cumulé
+    this.#_badgeElement.classList.toggle('is-cumulative');
+    if (displayValue === this.#_selfUnread || !isCollapsed) {
+      this.#_badgeElement.removeClass('is-cumulative');
+    } else {
+      this.#_badgeElement.addClass('is-cumulative');
+    }
+  }
+  #_updateLabel(label) {
+    if (this.#_nameElement) {
+      this.#_nameElement.textContent = label;
+      this.#_nameElement.setAttribute('title', label);
+    }
+    return this;
+  }
+  #_updateUnread(unread) {
+    this.#_selfUnread = unread;
+    this.#_refreshDisplay();
+    if (this.alreadyLoaded) {
+      this.trigger(
+        'bnum-folder:unread-changed',
+        {
+          unread: unread,
+          caller: this,
+        },
+        { bubbles: true, composed: true },
+      );
+    }
+    return this;
+  }
+  #_updateIsCollapsed(isCollapsed) {
+    if (this.#_toggleButton) {
+      this.#_toggleButton.icon = isCollapsed
+        ? 'keyboard_arrow_down'
+        : 'keyboard_arrow_up';
+    }
+    this.attr('aria-expanded', (!isCollapsed).toString());
+    return this;
+  }
+  #_updateIcon(icon) {
+    if (this.#_iconElement) {
+      this.#_iconElement.icon = icon;
+    }
+    return this;
+  }
+  #_updateLevel(level) {
+    const levelClamped = Math.max(0, Math.min(level, 10));
+    this.style.setProperty(
+      '--internal-bnum-folder-level',
+      levelClamped.toString(),
+    );
+    return this;
+  }
+  #_updateSelected(isSelected) {
+    return this.attr('aria-selected', isSelected.toString());
+  }
+  static _p_observedAttributes() {
+    return ['label', 'unread', 'icon', 'is-collapsed', 'level', 'is-selected'];
+  }
+  static get TAG() {
+    return 'bnum-folder';
+  }
+}
+const TEMPLATE = BnumElementInternal.CreateTemplate(`
+    <div class="bal-container">
+      <div class="bal-container__title">
+        ${HTMLBnumIcon.Write('square', { class: 'bal-container__title__icon' })}
+        <a tabindex="-1" id="bal-name" class="bal-container__title__name"></a>
+      </div>
+      <div class="bal-container__left">
+        ${HTMLBnumBadge.Write('0', { circle: 'true', class: 'bal-container__left__badge' })}
+        ${HTMLBnumButtonIcon.Write('keyboard_arrow_down', { tabindex: '-1', class: 'bal-container__toggle' })}
+      </div>
+    </div>
+    ${HTMLBnumFolderList.Write('<slot name="folders"></slot>', { class: 'bal-sub-folders' })}
+  `);
+HTMLBnumFolder.TryDefine();
+
+const ATTR_SELECTED = 'is-selected';
+const ATTR_COLLAPSED = 'is-collapsed';
+const ROLE_ITEM = '[role="treeitem"]';
+class HTMLBnumTree extends BnumElementInternal {
+  #_selectedItem = null;
+  #_focusedItem = null;
+  constructor() {
+    super();
+  }
+  _p_isShadowElement() {
+    return false;
+  }
+  _p_attach() {
+    super._p_attach();
+    this.attr('role', 'tree');
+    if (!this.attr('aria-label') && !this.attr('aria-labellerby')) {
+      Log.warn(
+        'HTMLBnumTree',
+        "Un arbre doit avoir un attribut aria-label ou aria-labelledby pour des raisons d'accessibilité.",
+        'Un texte par défaut a été ajouté.',
+      );
+      this.attr('aria-label', 'Arbre perdu dans la forêt');
+    }
+    // Délégation d'événements : un seul écouteur pour tout l'arbre
+    this.addEventListener('click', (e) => this.#_handleSelection(e));
+    this.addEventListener('keydown', (e) => this.#_handleKeyDown(e));
+    this.#_initializeRovingTabindex();
+  }
+  /**
+   * Initialise le focus : seul le premier élément est tabulable.
+   */
+  #_initializeRovingTabindex() {
+    const items = this.#_getAllItems();
+    if (items.length === 0) return;
+    const selected = items.find(
+      (i) => i.getAttribute(ATTR_SELECTED) === 'true',
+    );
+    items.forEach((i) => i.setAttribute('tabindex', '-1'));
+    const initial = selected || items[0];
+    initial.setAttribute('tabindex', '0');
+    this.#_focusedItem = initial;
+  }
+  /**
+   * Gestionnaire de sélection générique
+   * @param e Événement de clic
+   */
+  #_handleSelection(e) {
+    // On cherche l'élément treeitem le plus proche de la cible du clic
+    const target = e.target.closest(ROLE_ITEM);
+    if (!target || target.getAttribute('is-virtual') === 'true') return;
+    this.SelectItem(target);
+  }
+  /**
+   * Méthode publique pour sélectionner un item programmatiquement
+   * @param item L'élément à sélectionner
+   */
+  SelectItem(item) {
+    // 1. Désélection de l'ancien (O(1))
+    if (this.#_selectedItem && this.#_selectedItem !== item) {
+      this.#_selectedItem.setAttribute(ATTR_SELECTED, 'false');
+    } else if (!this.#_selectedItem) {
+      // Si aucun élément n'était sélectionné auparavant
+      this.querySelectorAll(`[${ATTR_SELECTED}="true"]`).forEach((el) => {
+        el.setAttribute(ATTR_SELECTED, 'false');
+      });
+    }
+    // 2. Sélection du nouveau
+    item.setAttribute(ATTR_SELECTED, 'true');
+    this.#_selectedItem = item;
+    // 3. Mise à jour du focus clavier (Roving Tabindex)
+    this.#_updateFocus(item);
+    // 4. Notification pour le reste de l'application
+    this.trigger('bnum-tree:change', { item });
+  }
+  #_handleKeyDown(e) {
+    const current = this.#_focusedItem;
+    if (!current) return;
+    const visibleItems = this.#_getVisibleItems();
+    const index = visibleItems.indexOf(current);
+    let next = null;
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        next = visibleItems[index + 1] || null;
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        next = visibleItems[index - 1] || null;
+        break;
+      case 'ArrowRight':
+        e.preventDefault();
+        // Si l'élément est repliable
+        if (current.hasAttribute(ATTR_COLLAPSED)) {
+          if (current.getAttribute(ATTR_COLLAPSED) === 'true') {
+            current.setAttribute(ATTR_COLLAPSED, 'false');
+          } else {
+            next = visibleItems[index + 1] || null;
+          }
+        }
+        break;
+      case 'ArrowLeft':
+        e.preventDefault();
+        if (current.getAttribute(ATTR_COLLAPSED) === 'false') {
+          current.setAttribute(ATTR_COLLAPSED, 'true');
+        } else {
+          const parent = current.parentElement?.closest(ROLE_ITEM);
+          if (parent) next = parent;
+        }
+        break;
+      case 'Home':
+        e.preventDefault();
+        next = visibleItems[0];
+        break;
+      case 'End':
+        e.preventDefault();
+        next = visibleItems[visibleItems.length - 1];
+        break;
+      case 'Enter':
+      case ' ':
+        e.preventDefault();
+        current.click();
+        break;
+    }
+    if (next) this.#_updateFocus(next);
+  }
+  #_updateFocus(target) {
+    if (this.#_focusedItem) {
+      this.#_focusedItem.setAttribute('tabindex', '-1');
+    }
+    target.setAttribute('tabindex', '0');
+    target.focus();
+    this.#_focusedItem = target;
+  }
+  #_getAllItems() {
+    return Array.from(
+      this.querySelectorAll(
+        `${ROLE_ITEM}, bnum-tree-item, ${HTMLBnumFolder.TAG}`,
+      ),
+    );
+  }
+  #_getVisibleItems() {
+    return this.#_getAllItems().filter((item) => {
+      let parent = item.parentElement?.closest(ROLE_ITEM);
+      while (parent) {
+        if (parent.getAttribute(ATTR_COLLAPSED) === 'true') return false;
+        parent = parent.parentElement?.closest(ROLE_ITEM);
+      }
+      return true;
+    });
+  }
+  /**
+   * Ajoute des nodes à l'arbre.
+   *
+   * Les nodes de type texte sont enveloppés dans un span avec le rôle treeitem.
+   *
+   * Les éléments HTML qui n'ont pas le rôle treeitem se voient attribuer ce rôle.
+   * @param nodes Nodes à ajouter.
+   * @returns L'instance courante.
+   */
+  append(...nodes) {
+    const arrayOfNodes = [];
+    for (const node of nodes) {
+      if (typeof node === 'string') {
+        Log.warn(
+          'HTMLBnumTree',
+          "L'ajout direct de texte dans un arbre n'est pas autorisé. L'élément est envellopper dans un span !.",
+        );
+        arrayOfNodes.push(
+          this._p_createSpan({ child: node, attributes: { role: 'treeitem' } }),
+        );
+      } else if (
+        node instanceof HTMLElement &&
+        node.getAttribute('role') === 'group'
+      ) {
+        arrayOfNodes.push(node);
+      } else if (
+        node instanceof HTMLElement &&
+        node.getAttribute('role') !== 'treeitem'
+      ) {
+        node.setAttribute('role', 'treeitem');
+        arrayOfNodes.push(node);
+      }
+    }
+    super.append(...arrayOfNodes);
+    return this;
+  }
+  /**
+   * Ajoute une node brute à l'arbre.
+   * @param node Node à ajouter.
+   * @returns Node ajoutée.
+   */
+  appendChild(node) {
+    return super.appendChild(node);
+  }
+  static get TAG() {
+    return 'bnum-tree';
+  }
+}
+HTMLBnumTree.TryDefine();
+
 // Auto-init au chargement
 if (typeof window !== 'undefined' && window.DsBnumConfig) {
   BnumConfig.Initialize(window.DsBnumConfig);
@@ -16774,6 +18014,7 @@ export {
   EButtonType,
   EHideOn,
   EIconPosition,
+  HTMLBnumBadge,
   HTMLBnumButton,
   HTMLBnumButtonIcon,
   HTMLBnumCardAgenda,
@@ -16787,6 +18028,8 @@ export {
   HTMLBnumColumn,
   HTMLBnumDangerButton,
   HTMLBnumDate,
+  HTMLBnumFolder,
+  HTMLBnumFolderList,
   HTMLBnumHeader,
   HTMLBnumHelper,
   HTMLBnumHide,
@@ -16794,10 +18037,11 @@ export {
   HTMLBnumInput,
   HTMLBnumInputDate,
   HTMLBnumInputNumber,
+  HTMLBnumInputSearch,
   HTMLBnumInputText,
   HTMLBnumInputTime,
   HTMLBnumPicture,
   HTMLBnumPrimaryButton,
   HTMLBnumSecondaryButton,
+  HTMLBnumTree,
 };
-//# sourceMappingURL=ds-module-bnum.js.map

@@ -1,9 +1,10 @@
-<h3>Mot de passe oublié</h3>
+<h2 class="mb-5">Mot de passe oublié</h2>
 <div>
-    <div class="message">
-        <p>Quel type de compte utilisez-vous ?</p>
+    <div class="message" style="border-left:4px solid #d0d0d0;">
+        <h3 class="ml-4">Quel type de compte utilisez-vous ?</h3>
+        <h5 class="ml-4"><em>Choisissez la situation qui correspond à votre usage</em></h5>
     </div>
-    <ul class="actions">
+    <ul class="actions ml-4">
         <li role="button" aria-pressed="false">
             <span>Le Bnum vous sert à consulter vos mails, votre agenda, vos contacts et vos espaces de travail.</span>
             <div class="content">
@@ -36,7 +37,7 @@
             </div>
         </li>
         <li role="button" aria-pressed="false">
-            <span>Vous n'utilisez pas le Bnum, mais vous avez un compte Mél sans BALI, et vous souhaitez changer le mot de passe de ce compte.</span>
+            <span>Vous n'utilisez pas le Bnum, mais vous avez un compte Mél sans messagerie, et vous souhaitez changer le mot de passe de ce compte.</span>
             <div class="content">
                 <a href="../../changepassword" title="Changement de mot de passe pour les comptes Mél sans BALI">Ouvrir la page de changement de mot de passe pour les comptes Mél sans BALI</a>
             </div>

@@ -112,9 +112,180 @@ class mel_elastic extends bnum_plugin
                 </div>'
             );
             $this->rc->output->set_env('animation_enabled', $this->rc->config->get('mel_metapage_animation_state', null));     
+
+            if ($this->rc->task == 'mail' && $this->is_index_action()) {
+                $this->add_handler('mailboxlist', [$this, 'my_folder_list_handler']);
+            }
         }
 
 
+    }
+
+    public function my_folder_list_handler($attrib) 
+    {
+        $rcmail = rcmail::get_instance();
+        $storage = $rcmail->get_storage();
+        
+        // 1. INITIALISATION DES DONNÉES (Indispensable car absent de ton code)
+        $mbox_name = $storage->get_folder();
+        $delimiter = $storage->get_hierarchy_delimiter();
+        $a_mailboxes = [];
+        
+        // Récupération de la liste des dossiers abonnés
+        $folder_filter = $attrib['folder_filter'] ?? null;
+        $a_folders = $storage->list_folders_subscribed('', '*', $folder_filter);
+
+        foreach ($a_folders as $folder) {
+            // On utilise la méthode de Roundcube pour structurer l'arbre en tableau
+            mel_helper::build_folder_tree($a_mailboxes, $folder, $delimiter);//self::build_folder_tree($a_mailboxes, $folder, $delimiter);
+        }
+
+        $hook = $rcmail->plugins->exec_hook('render_mailboxlist', [
+                'list'      => $a_mailboxes,
+                'delimiter' => $delimiter,
+                'type'      => null,
+                'attribs'   => $attrib,
+        ]);
+
+        $a_mailboxes = $hook['list'];
+        $attrib      = $hook['attribs'];
+
+        // 2. GESTION DU RENDERER VIA HOOK
+        // On permet à d'autres plugins de fournir leur propre logique de rendu
+        $hook_data = $rcmail->plugins->exec_hook('folder_list_render', [
+            'plugin'   => $this, 
+            'renderer' => null
+        ]);
+
+        $renderer = $hook_data['renderer'] ?? function($d, $mode) {
+        if ($mode === 'close') return '</bnum-folder>';
+
+            return sprintf(
+                '<bnum-folder id="%s" folder-id="%s" label="%s" unread="%d" icon="%s" level="%d" %s %s %s %s %s rel="%s">',
+                rcube::Q($d['html_id']),
+                rcube::Q($d['id']),
+                rcube::Q($d['label']),
+                $d['unread'],
+                rcube::Q($d['icon']),
+                $d['level'],
+                $d['is_selected'] ? 'is-selected="true"' : 'is-selected="false"',
+                $d['is_virtual'] ? 'is-virtual="true"' : 'is-virtual="false"',
+                $d['is_collapsed'] ? 'is-collapsed="true"' : 'is-collapsed="false"',
+                $d['slot'] ? 'slot="'.$d['slot'].'"' : '',
+                'class="'.implode(' ', $d['class']).'"',
+                rcube::Q($d['id']),
+            );
+        };
+
+        // 3. GÉNÉRATION DE L'ARBRE
+        $js_mailboxlist = [];
+        $html_tree = self::generic_tree_processor(
+            $a_mailboxes, 
+            $mbox_name, 
+            $js_mailboxlist, 
+            0, 
+            $renderer
+        );
+
+        // 4. FINALISATION ROUNDCUBE
+        // On informe le JS de Roundcube de l'existence de ces dossiers
+        $rcmail->output->set_env('mailboxes', $js_mailboxlist);
+        $rcmail->output->set_env('mailboxes_list', array_keys($js_mailboxlist));
+        
+        // On enregistre l'objet GUI pour que treelist.js puisse le trouver
+        $rcmail->output->add_gui_object('mailboxlist', $attrib['id']);
+
+        // 5. SORTIE : LE COMPOSANT RACINE <bnum-tree>
+        // On fusionne les attributs passés (id, class, etc.)
+        $tree_attribs = $attrib + ['id' => $attrib['id']];
+        unset($tree_attribs['folder_filter']); // Nettoyage
+
+        $rcmail->output->include_script('treelist.js');
+        $rcmail->output->set_env('unreadwrap', $attrib['unreadwrap'] ?? false);
+        $rcmail->output->set_env('collapsed_folders', (string) $rcmail->config->get('collapsed_folders'));
+
+        return html::tag('bnum-tree', $tree_attribs, $html_tree);
+    }
+
+    private static function map_type_to_icon($type) {
+        $map = [
+            'inbox' => 'inbox',
+            'sent'  => 'send',
+            'drafts'=> 'drafts',
+            'trash' => 'delete',
+            'junk'  => 'report',
+            'normal'=> 'folder'
+        ];
+        return $map[$type] ?? 'folder';
+    }
+
+    /**
+     * Moteur de rendu générique pour l'arborescence Roundcube
+     */
+    protected static function generic_tree_processor(&$arrFolders, $mbox_name, &$jslist, $nestLevel, $renderer)
+    {
+        $rcmail  = rcmail::get_instance();
+        $storage = $rcmail->get_storage();
+        $msgcounts = $storage->get_cache('messagecount');
+        $collapsed = (string) $rcmail->config->get('collapsed_folders');
+        $realnames = (bool) $rcmail->config->get('show_real_foldernames');
+        $output = '';
+
+        foreach ($arrFolders as $folder) {
+            // --- 1. PRÉPARATION DES DONNÉES (Logique métier identique partout) ---
+            $id = $folder['id'];
+            $folder_class = rcmail_action::folder_classname($id, $folder['class'] ?? null);
+
+            $classes = ['mailbox', $folder_class];
+
+            if ($id == $mbox_name) {
+                $classes[] = 'selected';
+            }
+            if ($folder['virtual']) {
+                $classes[] = 'virtual';
+            }
+
+            $data = [
+                'id'           => $id,
+                'html_id'      => 'rcmli' . rcube_utils::html_identifier($id, true),
+                'name'         => $folder['name'],
+                'unread'       => ($msgcounts && !empty($msgcounts[$id]['UNSEEN'])) ? (int)$msgcounts[$id]['UNSEEN'] : 0,
+                'type'         => $folder_class ?: 'normal',
+                'level'        => $nestLevel,
+                'url'          => $rcmail->url(['_mbox' => $id]),
+                'is_selected'  => ($id == $mbox_name),
+                'is_collapsed' => (strpos($collapsed, '&'.rawurlencode($id).'&') !== false),
+                'is_virtual'   => (bool)$folder['virtual'],
+                'has_children' => !empty($folder['folders']),
+                'icon' => self::map_type_to_icon($folder_class ?: 'normal'),
+                'slot' => $nestLevel > 0 ? 'folders' : '',
+                'class' => $classes,
+            ];
+
+            $data['label'] = $data['name'];
+
+            // Remplissage obligatoire pour le JS de Roundcube
+            $jslist[$id] = ['id' => $id, 'name' => $data['name'], 'virtual' => $data['is_virtual'], 'class' => $folder_class];
+
+            // --- 2. DÉLÉGATION AU RENDERER (L'aspect visuel) ---
+            // On appelle la fonction passée en paramètre
+            $item_html = $renderer($data, 'open');
+
+            // --- 3. RÉCURSION ---
+            if ($data['has_children']) {
+                $children_html = self::generic_tree_processor($folder['folders'], $mbox_name, $jslist, $nestLevel + 1, $renderer);
+                // On injecte les enfants dans l'item produit par le renderer
+                // (votre renderer doit prévoir un marqueur ou on peut les concaténer)
+                $item_html .= $children_html; 
+            }
+
+            // Fermeture du tag
+            $item_html .= $renderer($data, 'close');
+
+            $output .= $item_html;
+        }
+
+        return $output;
     }
 
     /**

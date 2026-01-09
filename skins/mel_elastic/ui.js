@@ -4460,3 +4460,82 @@ $(document).ready(() => {
     console.error('### [BNUM]MEL_ELASTIC_UI : ', error);
   }
 });
+
+(function ($) {
+  if (!window.rcmail) return;
+
+  rcmail.addEventListener('init', function () {
+    if (rcmail.env.context_menu && rcmail.env.context_menu.mailboxlist) {
+      // On écrase le sélecteur par défaut ('#mailboxlist li')
+      // par ton nouveau composant
+      rcmail.env.context_menu.mailboxlist.selector = 'bnum-folder.mailbox';
+    }
+  });
+
+  rcmail.addEventListener('init', function () {
+    if (rcmail.env.mailbox && document.querySelector('bnum-folder')) {
+      // On écoute le clic droit sur ton bnum-tree
+      $('#mailboxlist').on('contextmenu', 'bnum-folder', function (e) {
+        // Si le plugin ne réagit pas nativement
+        if (!$('.context-menu-list').is(':visible')) {
+          // On peut forcer le plugin à s'ouvrir en simulant un clic droit
+          // sur l'élément host (qui est dans le DOM principal)
+          const pluginMenu = rcmail.env.context_menu.mailboxlist;
+          if (pluginMenu) {
+            // Cette partie dépend de la version, mais modifier le selector
+            // à l'étape 1 suffit généralement.
+          }
+        }
+      });
+
+      for (const folder of document.querySelectorAll('bnum-folder')) {
+        folder.addEventListener('bnum-folder:select', (e) => {
+          const { caller } = e.detail;
+          const folderId = caller.getAttribute('folder-id');
+
+          if (rcmail.treelist.triggerEvent('beforeselect', folderId) === false)
+            return;
+          rcmail.command('list', folderId, caller, e);
+          rcmail.treelist.triggerEvent('select', folderId);
+        });
+
+        folder.addEventListener('bnum-folder:toggle', (e) => {
+          const { caller, collapsed } = e.detail;
+
+          rcmail.treelist.triggerEvent(
+            collapsed ? 'collapse' : 'expand',
+            caller,
+          );
+        });
+      }
+
+      const old_rcmail_set_unread_count_display =
+        rcmail.set_unread_count_display;
+      rcmail.set_unread_count_display = function (folder, set_title) {
+        try {
+          old_rcmail_set_unread_count_display.call(this, folder, set_title);
+        } catch (error) {}
+
+        const mycount = this.env.unread_counts[folder]
+          ? this.env.unread_counts[folder]
+          : 0;
+
+        document
+          .querySelector(`[folder-id="${folder}"]`)
+          ?.setAttribute?.('unread', mycount);
+      };
+
+      const old_rcmail_treelist_get_node = rcmail.treelist.get_node;
+      rcmail.treelist.get_node = function (folder) {
+        return (
+          old_rcmail_treelist_get_node.call(this, folder) ??
+          document.querySelector(`bnum-folder[folder-id="${folder}"]`)
+        );
+      };
+
+      if (rcmail.env.mailboxes['']?.class?.includes?.('junk')) {
+        rcmail.env.mailboxes[''].id = 'Ind&AOk-sirables';
+      }
+    } // end if
+  });
+})($);

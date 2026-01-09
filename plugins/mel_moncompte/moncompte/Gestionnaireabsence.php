@@ -387,9 +387,7 @@ class Gestionnaireabsence extends Moncompteobject
 
       // Message Interne activé = contenu message interne obligatoire
       if ($interne_enabled && empty($message_interne)) {
-        rcmail::get_instance()->output->show_message(
-          "Veuillez renseigner le champ message interne.", 'error'
-        );
+        rcmail::get_instance()->output->show_message('mel_moncompte.absence_msg_interne_required', 'error');
         return false;
       }
 
@@ -398,18 +396,14 @@ class Gestionnaireabsence extends Moncompteobject
         // si le message d'absence pour les externes et identique au message d'absence pour les internes
         if (isset($radio_externe) && $radio_externe == 'abs_texte_nodiff') {
           if (empty($message_interne)) {
-            rcmail::get_instance()->output->show_message(
-              "Veuillez renseigner les champs message interne et message externe.", 'error'
-            );
+            rcmail::get_instance()->output->show_message('mel_moncompte.absence_msg_interne_externe_required', 'error');
             return false;
           }
         }
         // si le message d'absence pour les externes est spécifique
         else {
           if (empty($message_externe)) {
-            rcmail::get_instance()->output->show_message(
-              "Veuillez renseigner le champ message externe.", 'error'
-            );
+            rcmail::get_instance()->output->show_message('mel_moncompte.absence_msg_externe_required', 'error');
             return false;
           }
         }
@@ -458,6 +452,24 @@ class Gestionnaireabsence extends Moncompteobject
       // Gestion des absences hebdo
       $i = 0;
       while (isset($_POST["message$i"])) {
+
+        $days_selected = 
+          isset($_POST["day_monday$i"]) ||
+          isset($_POST["day_tuesday$i"]) ||
+          isset($_POST["day_wednesday$i"]) ||
+          isset($_POST["day_thursday$i"]) ||
+          isset($_POST["day_friday$i"]) ||
+          isset($_POST["day_saturday$i"]) ||
+          isset($_POST["day_sunday$i"]);
+
+        if ($days_selected) {
+          $hebdo_message = trim(rcube_utils::get_input_value("message$i", rcube_utils::INPUT_POST));
+          if (empty($hebdo_message)) {
+            rcmail::get_instance()->output->show_message('mel_moncompte.absence_msg_hebdomadaire_required', 'error');
+            return false;
+          }
+        }
+
         if (!empty($_POST["hour_start$i"]) || !empty("all_day$i")) {
           $outofoffice = driver_mel::gi()->users_outofoffice();
           $days = [];

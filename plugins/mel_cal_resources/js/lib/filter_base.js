@@ -460,6 +460,7 @@ class FilterBase extends MelObject {
 
         default:
           return (
+            this._filterId === 'locality' ||
             (resource.data[this._filterId] ?? EMPTY_STRING)
               // eslint-disable-next-line quotes
               .replaceAll('’', "'")

@@ -285,6 +285,10 @@ $labels['deleteabsence'] = "Supprimer cette absence";
 
 $labels['absence_ok'] = "Votre message d'absence a bien été enregistré";
 $labels['absence_nok'] = "Une erreur s'est produite lors de l'enregistrement de votre message d'absence, veuillez contacter votre service informatique.";
+$labels['absence_msg_interne_required'] = "Veuillez renseigner le champ message interne.";
+$labels['absence_msg_interne_externe_required'] = "Veuillez renseigner les champs message interne et message externe.";
+$labels['absence_msg_externe_required'] = "Veuillez renseigner le champ message externe.";
+$labels['absence_msg_hebdomadaire_required'] = "Veuillez renseigner un message pour chaque absence hebdomadaire.";
 
 // Gestion des listes
 $labels['gestionnairelistes'] = "Gestionnaire de listes";

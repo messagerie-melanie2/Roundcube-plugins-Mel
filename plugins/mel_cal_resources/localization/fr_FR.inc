@@ -10,6 +10,7 @@ $labels['batiment'] = 'Batiment';
 $labels['etage'] = 'Etage';
 $labels['roomnumber'] = 'Salle';
 $labels['caracteristiques'] = 'Filtres';
+$labels['capacite'] = 'Capacité';
 $labels['today'] = 'Aujourd\'hui';
 $labels['resarcs'] = 'Réserver une ressource';
 $labels['no-resources'] = 'Aucune ressources';

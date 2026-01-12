@@ -1055,7 +1055,7 @@ class mel_driver extends calendar_driver {
           }
         }
         // Actualiser le ctag du calendrier
-        $this->calendars[$_event->calendar]->getCTag(false);
+        $this->calendars[$event['calendar']]->getCTag(false);
         return $result;
       }
     }
@@ -1454,6 +1454,28 @@ class mel_driver extends calendar_driver {
       $_event->owner = $this->user->uid;
       $_event->creator_email = $this->user->email;
       $_event->creator_name = $this->user->name;
+
+      // Gestion des imports P2R
+      if (isset($event['x-custom']) && is_array($event['x-custom'])) {
+        foreach ($event['x-custom'] as $value) {
+          if (is_array($value) && $value[0] == 'X-ORGANISATEUR') {
+            // Initialisation du user pour la migration depuis p2r
+            $p2r_user = driver_mel::gi()->getUser($value[1]);
+
+            // Initialisation du calendar pour la migration depuis p2r
+            $p2r_calendar = driver_mel::gi()->calendar([$p2r_user]);
+            $p2r_calendar->id = $value[1];
+
+            // Mise a jour de l'event avec le user et le calendar
+            $_event->setUserMelanie($p2r_user);
+            $_event->setCalendarMelanie($p2r_calendar);
+            
+            $_event->owner = $value[1];
+            $_event->creator_email = $p2r_user->email;
+            $_event->creator_name = $p2r_user->fullname;
+          }
+        }
+      }
     }
     if (!$move) {
       if (isset($event['title'])) {
@@ -2102,8 +2124,10 @@ class mel_driver extends calendar_driver {
 
       if ($freebusy) {
         foreach ($calendars as $key => $value) {
-          $this->calendars[$value] = driver_mel::gi()->calendar([$this->user]);
-          $this->calendars[$value]->id = $value;
+          if (!isset($this->calendars[$value])) {
+            $this->calendars[$value] = driver_mel::gi()->calendar([$this->user]);
+            $this->calendars[$value]->id = $value;
+          }
         }
       }
       if (isset($query)) {

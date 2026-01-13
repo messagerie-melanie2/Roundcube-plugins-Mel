@@ -22,6 +22,9 @@ export class MetapageMailModule extends MetapageModule {
 
     MailActionsModifiers.Start();
     MetapageMailDelayedModule.Start();
+
+    if (!document.querySelector('#folderlist-content')) return;
+
     let favorites = MailFavoriteFolder.Start();
 
     Mel_Promise.wait(() => favorites.load_finished === true, 60).always(() => {

@@ -1070,7 +1070,7 @@ class mel_metapage extends bnum_plugin
             ), "toolbar");
 
             $this->add_button(array(
-                'command'       => 'set-favorite-folder',
+                'command'       => 'toggle-favorite-folder',
                 'class'            => 'favorite folder-to disabled',
                 'classact'      => 'favorite folder-to active',
                 'classsel'      => 'favorite folder-to active',

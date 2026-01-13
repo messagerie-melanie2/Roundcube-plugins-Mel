@@ -4520,9 +4520,9 @@ $(document).ready(() => {
           ? this.env.unread_counts[folder]
           : 0;
 
-        document
-          .querySelector(`[folder-id="${folder}"]`)
-          ?.setAttribute?.('unread', mycount);
+        document.querySelectorAll(`[folder-id="${folder}"]`).forEach((el) => {
+          el?.setAttribute?.('unread', mycount);
+        });
       };
 
       const old_rcmail_treelist_get_node = rcmail.treelist.get_node;
@@ -4554,28 +4554,32 @@ $(document).ready(() => {
       );
 
       // 2. Interception du clic droit sur tes Web Components
-      $(document).on('contextmenu', 'bnum-folder.mailbox', function (e) {
-        const folderId = $(this).attr('folder-id') || $(this).attr('rel');
+      $(document).on(
+        'contextmenu',
+        'mailboxlist bnum-folder.mailbox',
+        function (e) {
+          const folderId = $(this).attr('folder-id') || $(this).attr('rel');
 
-        if (folderId) {
-          // On empêche le comportement par défaut
-          rcube_event.cancel(e);
+          if (folderId) {
+            // On empêche le comportement par défaut
+            rcube_event.cancel(e);
 
-          // On sélectionne le dossier dans Roundcube
-          rcmail.env.context_menu_source_id = folderId;
+            // On sélectionne le dossier dans Roundcube
+            rcmail.env.context_menu_source_id = folderId;
 
-          // On force l'affichage du menu
-          // On passe 'this' (le bnum-folder) comme objet de référence
-          menu.show_menu(this, e);
+            // On force l'affichage du menu
+            // On passe 'this' (le bnum-folder) comme objet de référence
+            menu.show_menu(this, e);
 
-          // HACK : Si le menu est vide à cause du test de visibilité des boutons toolbar
-          // on force l'affichage des <li> du menu
-          $('#rcm_folderlist li').show();
-          $('#rcm_folderlist a').addClass('active').removeClass('disabled');
+            // HACK : Si le menu est vide à cause du test de visibilité des boutons toolbar
+            // on force l'affichage des <li> du menu
+            $('#rcm_folderlist li').show();
+            $('#rcm_folderlist a').addClass('active').removeClass('disabled');
 
-          return false;
-        }
-      });
+            return false;
+          }
+        },
+      );
 
       let created = false;
       const old_rcmail_contextmenu_init_folder = rcmail.contextmenu.init_folder;
@@ -4678,7 +4682,7 @@ $(document).ready(() => {
               const command = element.replace('cmd_', '');
 
               if (rcmail.commands[command]) {
-                e.setAttribute('class', 'active');
+                e.classList.add('active');
               }
               return;
             }

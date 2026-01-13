@@ -10,12 +10,14 @@
   },
   "exclude": [
     "node_modules",
-    "**/node_modules/*",
-    "skins/mel_elastic/design-system/*.min.js",
-    "**/skins/mel_elastic/design-system/*.min.js"
+    "**/node_modules/*"
+    // "skins/mel_elastic/design-system/*.min.js",
+    // "**/skins/mel_elastic/design-system/*.min.js"
   ],
   "include": [
     "../Roundcube-plugins-Mel/plugins/**/*.js",
-    "../Roundcube-Mel/Program/js/**/*.js"
+    "../Roundcube-Mel/Program/js/**/*.js",
+    "plugins/mel_metapage/js/lib/metapages_actions/mails/_favorite_folder.js",
+    "skins/mel_elastic/design-system/ds-module-bnum.js"
   ]
 }

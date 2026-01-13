@@ -17,13 +17,12 @@ export class FolderIcon extends AFolderModifier {
         //Constantes
         const $link = $('.popover .icon-folder');
         const folder = $link.attr('relativeto');
-        const selector = `li a[rel="${folder}"]`;
+        const selector = `[rel="${folder}"]`;
 
-        this._remove_visuals($(selector).parent());
+        // this._remove_visuals($(selector).parent());
+        $(selector).removeAttr('icon');
 
-        const default_classes = MelEnumerable.from(
-          $(selector).parent()[0].classList,
-        )
+        const default_classes = MelEnumerable.from($(selector)[0].classList)
           .toArray()
           .join(' ');
         const base_icon = this.get_env('folders_icons')?.[folder];
@@ -242,25 +241,25 @@ export class FolderIcon extends AFolderModifier {
   }
 
   _remove_visuals($item = null) {
-    ($item ?? $('#folderlist-content li, #mailboxlist [folder-id]')).each(
-      (i, e) => {
-        i = MelEnumerable.from(e.classList).where((x) =>
-          x.includes('bnum-updated-'),
-        );
+    (
+      $item ?? $('#folderlist-content [folder-id], #mailboxlist [folder-id]')
+    ).each((i, e) => {
+      i = MelEnumerable.from(e.classList).where((x) =>
+        x.includes('bnum-updated-'),
+      );
 
-        if (i.any()) {
-          $(e).removeClass(i.first());
+      if (i.any()) {
+        $(e).removeClass(i.first());
 
-          e = $(e);
-          if (e && (e.attr('bi') || false)) {
-            e.attr('icon', e.attr('bi'));
-            e.removeAttr('bi');
-          }
+        e = $(e);
+        if (e && (e.attr('bi') || false)) {
+          e.attr('icon', e.attr('bi'));
+          e.removeAttr('bi');
         }
+      }
 
-        i = null;
-      },
-    );
+      i = null;
+    });
   }
 
   update_visuel() {
@@ -280,9 +279,9 @@ export class FolderIcon extends AFolderModifier {
         //   `bnum-updated-${icon}`,
         // );
 
-        const folder = $(
-          `#mailboxlist [folder-id="${this._get_true_key(key)}"]`,
-        ).addClass(`bnum-updated-${icon}`);
+        const folder = $(`[folder-id="${this._get_true_key(key)}"]`).addClass(
+          `bnum-updated-${icon}`,
+        );
 
         if (folder && !(folder.attr('bi') || false)) {
           folder.attr('bi', folder.attr('icon'));

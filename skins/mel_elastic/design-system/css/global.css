@@ -209,3 +209,44 @@ body {
 bnum-hide {
   display: contents;
 }
+.ghost-container {
+  width: 180px;
+  background: var(--bnum-color-surface);
+  border: var(--bnum-border-surface);
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  font-family: var(--bnum-font-family-primary);
+}
+.ghost-sender {
+  font-size: 11px;
+  color: var(--bnum-text-primary);
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ghost-subject {
+  font-size: 13px;
+  color: var(--bnum-text-primary);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  /* Limite à 2 lignes */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.ghost-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--bnum-color-primary);
+  color: var(--bnum-text-on-primary);
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 10px;
+  border: var(--bnum-border-in-surface);
+}

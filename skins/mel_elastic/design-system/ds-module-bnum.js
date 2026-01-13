@@ -17597,10 +17597,7 @@ class HTMLBnumFolder extends BnumElementInternal {
       '.bal-container__left__badge',
     );
     container.querySelector('.bal-container').addEventListener('click', (e) => {
-      this.trigger('bnum-folder:select', {
-        innerEvent: e,
-        caller: this,
-      });
+      this.select(e);
     });
   }
   _p_attach() {
@@ -17630,14 +17627,7 @@ class HTMLBnumFolder extends BnumElementInternal {
       }
     });
     this.#_toggleButton?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const isCollapsed = this.getAttribute('is-collapsed') === 'true';
-      this.setAttribute('is-collapsed', isCollapsed ? 'false' : 'true');
-      this.trigger('bnum-folder:toggle', {
-        collapsed: !isCollapsed,
-        innerEvent: e,
-        caller: this,
-      });
+      this.toggle(e);
     });
     this.attr('role', 'treeitem')
       .#_updateIcon(this.attr('icon') ?? EMPTY_STRING)
@@ -17780,6 +17770,24 @@ class HTMLBnumFolder extends BnumElementInternal {
   }
   #_updateSelected(isSelected) {
     return this.attr('aria-selected', isSelected.toString());
+  }
+  toggle(innerEvent) {
+    innerEvent?.stopPropagation?.();
+    const isCollapsed = this.getAttribute('is-collapsed') === 'true';
+    this.setAttribute('is-collapsed', isCollapsed ? 'false' : 'true');
+    this.trigger('bnum-folder:toggle', {
+      innerEvent,
+      caller: this,
+      collapsed: !isCollapsed,
+    });
+    return this;
+  }
+  select(innerEvent) {
+    this.trigger('bnum-folder:select', {
+      innerEvent,
+      caller: this,
+    });
+    return this;
   }
   static _p_observedAttributes() {
     return ['label', 'unread', 'icon', 'is-collapsed', 'level', 'is-selected'];

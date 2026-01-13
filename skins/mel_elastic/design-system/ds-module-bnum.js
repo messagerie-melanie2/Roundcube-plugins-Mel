@@ -18011,6 +18011,218 @@ class HTMLBnumTree extends BnumElementInternal {
 }
 HTMLBnumTree.TryDefine();
 
+/**
+ * Classe d'initialisation des comportements liés aux éléments du Bnum
+ */
+class Initialiser {
+  static #_instance = null;
+  static get Instance() {
+    return (this.#_instance ??= new Initialiser());
+  }
+  #_mailInitialized = false;
+  /**
+   * Initialise les comportements liés au mail
+   * @param $: JQueryStatic (généralement passé par Roundcube)
+   */
+  initializeMail($) {
+    if (!window.rcmail || this.#_mailInitialized) return this;
+    // 1. Initialisation des menus contextuels
+    rcmail.addEventListener('init', () => {
+      if (rcmail.env.context_menu?.mailboxlist) {
+        rcmail.env.context_menu.mailboxlist.selector = 'bnum-folder.mailbox';
+      }
+    });
+    // 2. Logique principale
+    rcmail.addEventListener('init', () => {
+      if (!(rcmail.env.mailbox && document.querySelector('bnum-folder')))
+        return;
+      // Gestion du menu contextuel via jQuery
+      $('#mailboxlist').on('contextmenu', 'bnum-folder', function (e) {
+        if (!$('.context-menu-list').is(':visible')) {
+          rcmail.env.context_menu?.mailboxlist;
+        }
+      });
+      // Écouteurs sur les Web Components bnum-folder
+      const folders = document.querySelectorAll('bnum-folder');
+      folders.forEach((folder) => {
+        // Event: Select
+        folder.addEventListener('bnum-folder:select', (e) => {
+          const { caller } = e.detail;
+          const folderId = caller.getAttribute('folder-id');
+          if (
+            !folderId ||
+            rcmail.treelist.triggerEvent('beforeselect', folderId) === false
+          ) {
+            return;
+          }
+          rcmail.command('list', folderId, caller, e);
+          rcmail.treelist.triggerEvent('select', folderId);
+        });
+        // Event: Toggle (Expand/Collapse)
+        folder.addEventListener('bnum-folder:toggle', (e) => {
+          const { caller, collapsed } = e.detail;
+          rcmail.treelist.triggerEvent(
+            collapsed ? 'collapse' : 'expand',
+            caller,
+          );
+        });
+      });
+      // 3. Monkey-patching des fonctions Roundcube
+      // Unread count display
+      const old_rcmail_set_unread_count_display =
+        rcmail.set_unread_count_display;
+      rcmail.set_unread_count_display = function (folder, set_title) {
+        try {
+          old_rcmail_set_unread_count_display.call(this, folder, set_title);
+        } catch (error) {
+          console.error(
+            "Erreur lors de l'appel original set_unread_count_display",
+            error,
+          );
+        }
+        const mycount = this.env.unread_counts[folder] || 0;
+        document.querySelectorAll(`[folder-id="${folder}"]`).forEach((el) => {
+          el.setAttribute('unread', mycount.toString());
+        });
+      };
+      // TreeList Node Getter
+      const old_rcmail_treelist_get_node = rcmail.treelist.get_node;
+      rcmail.treelist.get_node = function (folder) {
+        return (
+          old_rcmail_treelist_get_node.call(this, folder) ??
+          document.querySelector(`bnum-folder[folder-id="${folder}"]`)
+        );
+      };
+      // Fix Junk folder ID
+      if (rcmail.env.mailboxes['']?.class?.includes?.('junk')) {
+        rcmail.env.mailboxes[''].id = 'Ind&AOk-sirables';
+      }
+      // 4. Configuration du Menu Contextuel
+      const menu = rcmail.contextmenu.init(
+        {
+          menu_name: 'folderlist',
+          menu_source: '#mailboxoptionsmenu',
+          list_object: null,
+        },
+        {
+          activate: (p) => {
+            p.enabled = true;
+            return p;
+          },
+        },
+      );
+      // Interception clic droit sur Web Components
+      $(document).on(
+        'contextmenu',
+        'mailboxlist bnum-folder.mailbox',
+        function (e) {
+          const folderId = $(this).attr('folder-id') || $(this).attr('rel');
+          if (folderId) {
+            rcube_event.cancel(e);
+            rcmail.env.context_menu_source_id = folderId;
+            menu.show_menu(this, e);
+            // Hack visuel
+            $('#rcm_folderlist li').show();
+            $('#rcm_folderlist a').addClass('active').removeClass('disabled');
+            return false;
+          }
+        },
+      );
+      // Redéfinition de l'initialisation des dossiers
+      rcmail.contextmenu.init_folder = function (el, props, events) {
+        const finalEvents = events || {};
+        $('#rcm_folderlist').remove();
+        rcmail.env.contextmenus['folderlist'] = undefined;
+        const folderMenu = rcmail.contextmenu.init(
+          { menu_name: 'folderlist', list_object: null, ...props },
+          $.extend(
+            {
+              beforeactivate: () => {
+                rcmail.env.contextmenu_messagecount_request?.abort();
+                rcmail.env.contextmenu_messagecount_request = null;
+              },
+              activate: (p) => rcmail.contextmenu.activate_folder_commands(p),
+              beforecommand: (p) => {
+                const sourceId = rcmail.env.context_menu_source_id;
+                if (sourceId !== rcmail.env.mailbox) {
+                  if (['expunge', 'purge'].includes(p.command)) {
+                    rcmail[p.command + '_mailbox'](sourceId);
+                    return { abort: true, result: true };
+                  } else if (p.command === 'mark-all-read') {
+                    rcmail.mark_all_read(sourceId);
+                    return { abort: true, result: true };
+                  }
+                }
+              },
+            },
+            finalEvents,
+          ),
+        );
+        $(el)
+          .on('click', (e) => rcmail.contextmenu.hide_all(e))
+          .on('contextmenu', function (e) {
+            const source = $(this);
+            source.blur();
+            rcmail.contextmenu.hide_all(e);
+            rcmail.contextmenu.show_one(
+              e,
+              this,
+              source.attr('rel'),
+              folderMenu,
+            );
+          });
+      };
+      // Gestion de l'ouverture du menu (positionnement et activation des commandes)
+      rcmail.addEventListener('menu-open', (p) => {
+        if (p.name !== 'rcm_folderlist') return;
+        // Positionnement personnalisé si absent
+        rcmail.contextmenu.position ??= (e, menuElement) => {
+          menuElement.css({ left: '-1000px', top: '-1000px' }).show();
+          const win = $(window);
+          const winH = win.height() || 0;
+          const winW = win.width() || 0;
+          const menuH = menuElement.height() || 0;
+          const menuW = menuElement.width() || 0;
+          let top = e.pageY;
+          let left = e.pageX;
+          if (top + menuH > winH) {
+            top -= menuH;
+            if (top < 0) top = Math.max(0, (winH - menuH) / 2);
+          }
+          if (left + menuW > winW) {
+            left -= left + menuW - winW + 10;
+          }
+          menuElement
+            .hide()
+            .css({ left: Math.max(0, left) + 'px', top: top + 'px' });
+        };
+        rcmail.contextmenu.position(p.originalEvent, $(`#${p.name}`));
+        // Activation visuelle des liens
+        $(`#${p.name} ul li a`).each((_, element) => {
+          const link = element;
+          if (link.classList.contains('active')) return;
+          for (const className of Array.from(link.classList)) {
+            if (className.startsWith('cmd_')) {
+              const command = className.replace('cmd_', '');
+              if (rcmail.commands[command]) {
+                link.classList.add('active');
+              }
+              break;
+            }
+          }
+        });
+        $(`#${p.name}`).show();
+      });
+      // Initialisation finale
+      rcmail.contextmenu.init_folder('#mailboxlist bnum-folder', {
+        menu_source: ['#rcmfoldermenu > ul', '#mailboxoptions-menu > ul > li'],
+      });
+    });
+    this.#_mailInitialized = true;
+    return this;
+  }
+}
+
 // Auto-init au chargement
 if (typeof window !== 'undefined' && window.DsBnumConfig) {
   BnumConfig.Initialize(window.DsBnumConfig);
@@ -18052,4 +18264,5 @@ export {
   HTMLBnumPrimaryButton,
   HTMLBnumSecondaryButton,
   HTMLBnumTree,
+  Initialiser,
 };

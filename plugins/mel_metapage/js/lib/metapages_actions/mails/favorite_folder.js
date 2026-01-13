@@ -241,7 +241,7 @@ export class MailFavoriteFolder extends AFolderModifier {
 
     document.getElementById('favorite-folders-list')?.remove?.();
     const generatedDom = html.generate_dom ? html.generate_dom() : html;
-    document.getElementById('folderlist-content').prepend(generatedDom);
+    document.getElementById('folderlist-content')?.prepend?.(generatedDom);
   }
 
   /**

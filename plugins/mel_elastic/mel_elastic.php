@@ -113,7 +113,7 @@ class mel_elastic extends bnum_plugin
             );
             $this->rc->output->set_env('animation_enabled', $this->rc->config->get('mel_metapage_animation_state', null));     
 
-            if ($this->rc->task == 'mail' && $this->is_index_action()) {
+            if ($this->rc->task == 'mail' && $this->is_index_action() ) {
                 $this->add_handler('mailboxlist', [$this, 'my_folder_list_handler']);
             }
         }
@@ -190,7 +190,8 @@ class mel_elastic extends bnum_plugin
         // 4. FINALISATION ROUNDCUBE
         // On informe le JS de Roundcube de l'existence de ces dossiers
         $rcmail->output->set_env('mailboxes', $js_mailboxlist);
-        $rcmail->output->set_env('mailboxes_list', array_keys($js_mailboxlist));
+        $keys = array_keys($js_mailboxlist);
+        $rcmail->output->set_env('mailboxes_list', $keys);
         
         // On enregistre l'objet GUI pour que treelist.js puisse le trouver
         $rcmail->output->add_gui_object('mailboxlist', $attrib['id']);

@@ -21,7 +21,7 @@ export class AFolderModifier extends MailModule {
 
   async generate_context_menu() {
     (await this.await_folder_list_content())
-      .find('#mailboxlist a')
+      .find('#mailboxlist bnum-folder')
       .on('contextmenu', (...args) => {
         const [event] = args;
         const folder = $(event.currentTarget).attr('rel');
@@ -29,7 +29,9 @@ export class AFolderModifier extends MailModule {
       });
 
     $('#folderlist-content a.sidebar-menu').on('click', (...args) => {
-      const folder = $('#folderlist-content li.selected a').first().attr('rel');
+      const folder = $('#folderlist-content bnum-folder.selected')
+        .first()
+        .attr('rel');
       this.update_context_menu(folder);
     });
   }

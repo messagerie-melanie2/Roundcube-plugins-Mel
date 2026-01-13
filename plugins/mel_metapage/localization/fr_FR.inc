@@ -526,3 +526,4 @@ $labels['duplicateevent'] = 'Dupliquer l\'original';
 $labels['copyeventseries'] = 'Copier l\'original';
 
 $labels['event-not-ok-rec-date'] = 'La date de fin de la récurrence est inférieur ou égale à la date actuelle';
+$labels['favorites'] = 'Mes favoris';

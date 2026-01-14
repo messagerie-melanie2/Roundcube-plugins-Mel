@@ -24,3 +24,4 @@ $labels['resource_located_at'] = 'Ressource située à :';
 $labels['city'] = 'Ville :';
 $labels['existing_vroom'] = 'Vroom déjà réservé';
 $labels['no_existing_vroom'] = 'Réserver une Vroom';
+$labels['seats'] = 'place(s)';

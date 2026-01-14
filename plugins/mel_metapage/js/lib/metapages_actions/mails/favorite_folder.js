@@ -189,6 +189,20 @@ export class MailFavoriteFolder extends AFolderModifier {
         };
       }
 
+      attribs['onbnum-folder:toggle'] = (e) => {
+        const { caller, collapsed } = e.detail;
+        const rel = caller.getAttribute('rel');
+
+        BnumConnector.connect(
+          BnumConnector.connectors.mail_toggle_display_folder,
+          {
+            params: {
+              _value: this._update_favorite_collapsed_folder(rel, collapsed),
+            },
+          },
+        );
+      };
+
       attribs.oncontextmenu = (e) => {
         e.preventDefault();
 
@@ -315,6 +329,32 @@ export class MailFavoriteFolder extends AFolderModifier {
   //#endregion Plublic methods
 
   //#region Private methods
+
+  /**
+   * Retourne la mise à jour de la liste des dossiers favoris réduits (collapsed) dans les préférences.
+   * @param {string} item L'identifiant du dossier.
+   * @param {boolean} state L'état réduit (collapsed) du dossier.
+   * @returns {string} La chaîne mise à jour des dossiers réduits.
+   */
+  _update_favorite_collapsed_folder(item, state) {
+    let collapsed_folders =
+      this.get_env('favorite_folders_collapsed') || EMPTY_STRING;
+
+    if (collapsed_folders.includes('&&'))
+      collapsed_folders = collapsed_folders.split('&&');
+    else if (collapsed_folders !== EMPTY_STRING)
+      collapsed_folders = [collapsed_folders];
+    else collapsed_folders = [];
+
+    if (state) collapsed_folders.push(item);
+    else collapsed_folders = collapsed_folders.filter((x) => x !== item);
+
+    collapsed_folders = collapsed_folders.join('&&');
+
+    this.rcmail().env.favorite_folders_collapsed = collapsed_folders;
+
+    return collapsed_folders;
+  }
 
   /**
    * Enregistre les commandes Roundcube liées aux dossiers favoris.

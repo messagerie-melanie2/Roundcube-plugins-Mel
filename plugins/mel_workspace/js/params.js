@@ -1257,9 +1257,10 @@
                 if (data) {
                   this.update_toolbar();
                   this.update_app_table();
+                  rcmail.env.current_workspace_services_actives["tchap-channel"].id = value;
                   $popup.dialog('close');
                 } else {
-                  alert("l'uid entré ne correspond pas à un salon tchap");
+                  alert("l'identifiant entré ne correspond pas à un salon tchap");
                 }
               },
             );
@@ -1268,8 +1269,8 @@
       ];
 
       let $popup = rcmail.show_popup_dialog(
-        ' <span> Attention! La présence de Bot-Gmcd [Developpement-Durable] dans le salon est nécessaire pour fonctionner.</span> <br/> <input id = "selecttchapchannel" type = "text" title = "Entrer l\'uid du salon tchap" /> ',
-        "Entrer l'uid du salon tchap",
+        ' <span> Attention! La présence de Bot-Gmcd [Developpement-Durable] dans le salon est nécessaire pour fonctionner.</span> <br/> <input id = "selecttchapchannel" type = "text" title = "Entrer l\'identifiant interne du salon tchap" /> ',
+        "Entrer l'identifiant interne du salon tchap",
         buttons,
       );
     }

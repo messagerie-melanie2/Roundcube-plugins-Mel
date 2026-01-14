@@ -2198,11 +2198,19 @@ class mel_driver extends calendar_driver {
         }
         $_e->calendar_owner_email = $this->calendars[$_e->calendar]->owner_email;
         if ($_e->recurrence->type === LibMelanie\Api\Defaut\Recurrence::RECURTYPE_NORECUR && ! $_e->deleted) {
-          $_events[] = $this->_read_postprocess($_e, $freebusy);
+          $_event = $this->_read_postprocess($_e, $freebusy, false, null, isset($query));
+          if (!isset($_event)) {
+            continue;
+          }
+
+          $_events[] = $_event;
         }
         else {
           require_once ($this->cal->home . '/lib/calendar_recurrence.php');
-          $_event = $this->_read_postprocess($_e, $freebusy);
+          $_event = $this->_read_postprocess($_e, $freebusy, false, null, isset($query));
+          if (!isset($_event)) {
+            continue;
+          }
 
           if ($virtual) {
             $recurrence = new calendar_recurrence($this->cal, $_event, new DateTime(date('Y-m-d H:i:s', $start - 60 * 60 * 60 * 24)));
@@ -2317,10 +2325,11 @@ class mel_driver extends calendar_driver {
    * @param boolean $freebusy
    * @param boolean $isexception
    * @param LibMelanie\Api\Defaut\Event $eventParent
+   * @param boolean $issearch
    * 
    * @return array Event
    */
-  private function _read_postprocess($event, $freebusy = false, $isexception = false, $eventParent = null) {
+  private function _read_postprocess($event, $freebusy = false, $isexception = false, $eventParent = null, $issearch = false) {
     if (mel_logs::is(mel_logs::TRACE))
       mel_logs::get_instance()->log(mel_logs::TRACE, "[calendar] mel_driver::_read_postprocess()");
     $_event = array();
@@ -2426,10 +2435,6 @@ class mel_driver extends calendar_driver {
 
       $is_freebusy = ! $this->calendars[$event->calendar]->asRight(LibMelanie\Config\ConfigMelanie::READ) && $this->calendars[$event->calendar]->asRight(LibMelanie\Config\ConfigMelanie::FREEBUSY);
 
-      $owner = $this->calendars[$event->calendar]->owner;
-      $user = $this->user->uid;
-      $as_right = $this->calendars[$event->calendar]->asRight(LibMelanie\Config\ConfigMelanie::PRIV);
-
       // Status
       if (isset($event->status)) {
         $_event['free_busy'] = mel_mapping::m2_to_rc_free_busy($event->status);
@@ -2440,6 +2445,10 @@ class mel_driver extends calendar_driver {
         $_event['sensitivity'] = mel_mapping::m2_to_rc_class($event->class);
       }
 
+      // MANTIS 0009347: La recherche dans l'agenda sur un mot clé remonte les événements privés
+      if ($is_private && $issearch) {
+        return null;
+      }
       // Evenement privé
       if ($is_private) {
         $_event['title'] = $this->rc->gettext('event private', 'calendar');

@@ -104,6 +104,7 @@
   --bnum-font-size-title-m: 4rem;
   --bnum-font-size-title-s: 3.5rem;
   --bnum-font-size-title-xs: 3rem;
+  --bnum-body-font-size: var(--bnum-font-size-m, 1rem);
   /* Line heights */
   --bnum-font-height-h1: 48px;
   --bnum-font-height-h1-mobile: 40px;
@@ -208,8 +209,47 @@ html.touch {
   --size-margin-left-state: 0;
 }
 body {
-  font-size: var(--bnum-font-size-s, 0.875rem);
+  font-size: var(--bnum-font-size-m, 1rem);
   font-family: var(--bnum-font-family-primary);
+  color: var(--bnum-text-primary);
+}
+h1 {
+  font-size: var(--bnum-font-size-h1, 2.5rem);
+  line-height: var(--bnum-font-height-h1, 48px);
+  margin-bottom: var(--bnum-space-xl);
+}
+h2 {
+  font-size: var(--bnum-font-size-h2, 2rem);
+  line-height: var(--bnum-font-height-h2, 40px);
+  margin-bottom: var(--bnum-space-xl);
+}
+h3 {
+  font-size: var(--bnum-font-size-h3, 1.75rem);
+  line-height: var(--bnum-font-height-h3, 36px);
+  margin-bottom: var(--bnum-space-xl);
+}
+h4 {
+  font-size: var(--bnum-font-size-h4, 1.5rem);
+  line-height: var(--bnum-font-height-h4, 32px);
+  margin-bottom: var(--bnum-space-xl);
+}
+h5 {
+  font-size: var(--bnum-font-size-h5, 1.375rem);
+  line-height: var(--bnum-font-height-h5, 28px);
+  margin-bottom: var(--bnum-space-xl);
+}
+h6 {
+  font-size: var(--bnum-font-size-h6, 1.25rem);
+  line-height: var(--bnum-font-height-h6, 28px);
+  margin-bottom: var(--bnum-space-xl);
+}
+h1.no-margin,
+h2.no-margin,
+h3.no-margin,
+h4.no-margin,
+h5.no-margin,
+h6.no-margin {
+  margin-bottom: 0;
 }
 .ds-block {
   display: block;

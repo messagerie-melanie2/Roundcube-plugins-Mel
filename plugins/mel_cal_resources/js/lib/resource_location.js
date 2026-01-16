@@ -532,10 +532,16 @@ IntegratedVisio.prototype._p_afterGenerated = function ($element) {
       .where((x) => x.value.option_value() === OPTION_KEY)
       .any()
   ) {
-    buttonText = MelObject.Empty().gettext('existing_vroom');
+    buttonText = MelObject.Empty().gettext(
+      'existing_vroom',
+      'mel_cal_resources',
+    );
     alreadyExists = true;
   } else {
-    buttonText = MelObject.Empty().gettext('no_existing_vroom');
+    buttonText = MelObject.Empty().gettext(
+      'no_existing_vroom',
+      'mel_cal_resources',
+    );
   }
 
   let button = HTMLBnumButton.StartCreate.setContent(buttonText)

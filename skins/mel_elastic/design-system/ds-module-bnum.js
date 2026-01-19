@@ -168,7 +168,8 @@ class Log {
   }
 }
 
-var css_248z$k = ':host([block]){display:block;flex:1;width:100%}';
+var css_248z$k =
+  ':host([block]){display:block;flex:1;width:100%}:host(.flex){display:flex}:host(.center){align-items:center;justify-content:center;text-align:center}';
 
 function getDefaultExportFromCjs(x) {
   return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default')
@@ -1772,6 +1773,17 @@ class BnumElement extends HTMLElement {
     return this;
   }
   /**
+   * Définit plusieurs attributs HTML à la fois.
+   * @param attribs Objet contenant les paires nom-valeur des attributs à définir.
+   * @returns L'instance courante pour le chaînage.
+   */
+  attrs(attribs) {
+    for (const keys of Object.keys(attribs)) {
+      this.attr(keys, attribs[keys]);
+    }
+    return this;
+  }
+  /**
    * Essaye de définir un attribut html
    * @param doSomething true pour le définir
    * @param name Nom de l'attribut
@@ -3234,7 +3246,7 @@ const REG_LIGHT_PICTURE_NAME = /(-light)\.(([\w\d]+)|\1?.+)$/;
 const REG_XSS_SAFE = /^[-.\w\s%()]+$/;
 
 var css_248z$h =
-  '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{border-radius:var(--bnum-button-border-radius,0);cursor:var(--bnum-button-cursor,pointer);display:var(--bnum-button-display,inline-block);height:-moz-fit-content;height:fit-content;padding:var(--bnum-button-padding,6px 10px);transition:background-color .2s ease,color .2s ease;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}:host(:state(rounded)){border-radius:var(--bnum-button-rounded-border-radius,5px)}:host(:state(without-icon)){padding-bottom:var(--bnum-button-without-icon-padding-bottom,7.5px);padding-top:var(--bnum-button-without-icon-padding-top,7.5px)}:host(:disabled),:host(:state(disabled)){cursor:not-allowed;opacity:var(--bnum-button-disabled-opacity,.6);pointer-events:var(--bnum-button-disabled-pointer-events,none)}:host(:state(loading)){cursor:progress}:host(:state(icon)){--bnum-button-icon-gap:var(--custom-bnum-button-icon-margin,var(--bnum-space-s,10px))}:host(:state(icon))>.wrapper{align-items:center;display:flex;flex-direction:row;gap:var(--bnum-button-icon-gap);justify-content:center}:host(:state(icon-pos-left)) .wrapper{flex-direction:row-reverse}:host(:focus-visible){outline:2px solid #0969da;outline-offset:2px}:host>.wrapper{align-items:var(--bnum-button-wrapper-align-items,center);display:var(--bnum-button-wrapper-display,flex)}:host bnum-icon.icon{display:var(--bnum-button-icon-display,flex)}:host bnum-icon.icon.hidden{display:none}:host bnum-icon.loader{display:var(--bnum-button-loader-display,flex)}:host(:is(:state(loading):state(without-icon-loading))) slot{display:none}@keyframes spin{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host .loader,:host .spin,:host(:state(loading)) .icon{animation:spin var(--bnum-button-spin-duration,.75s) var(--bnum-button-spin-timing,linear) var(--bnum-button-spin-iteration,infinite)}:host(:state(hide-text-on-small)) .slot,:host(:state(hide-text-on-touch)) .slot{display:var(--size-display-state,inline-block)}:host(:state(hide-text-on-small)) .icon,:host(:state(hide-text-on-touch)) .icon{margin-left:var(--size-margin-left-state,var(--custom-button-icon-margin-left))!important;margin-right:var(--size-margin-right-state,var(--custom-button-icon-margin-right))!important}:host .hidden,:host [hidden]{display:none!important}:host(:state(primary)){background-color:var(--bnum-button-primary-background-color,var(--bnum-color-primary));border:var(--bnum-button-primary-border,solid thin var(--bnum-button-primary-border-color,var(--bnum-color-primary)));color:var(--bnum-button-primary-text-color,var(--bnum-text-on-primary))}:host(:state(primary):hover){background-color:var(--bnum-button-primary-hover-background-color,var(--bnum-color-primary-hover));border:var(--bnum-button-primary-hover-border,solid thin var(--bnum-button-primary-hover-border-color,var(--bnum-color-primary-hover)));color:var(--bnum-button-primary-hover-text-color,var(--bnum-text-on-primary-hover))}:host(:state(primary):active){background-color:var(--bnum-button-primary-active-background-color,var(--bnum-color-primary-active));border:var(--bnum-button-primary-active-border,solid thin var(--bnum-button-primary-active-border-color,var(--bnum-color-primary-active)));color:var(--bnum-button-primary-active-text-color,var(--bnum-text-on-primary-active))}:host(:state(secondary)){background-color:var(--bnum-button-secondary-background-color,var(--bnum-color-secondary));border:var(--bnum-button-secondary-border,solid thin var(--bnum-button-secondary-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-text-color,var(--bnum-text-on-secondary))}:host(:state(secondary):hover){background-color:var(--bnum-button-secondary-hover-background-color,var(--bnum-color-secondary-hover));border:var(--bnum-button-secondary-hover-border,solid thin var(--bnum-button-secondary-hover-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-hover-text-color,var(--bnum-text-on-secondary-hover))}:host(:state(secondary):active){background-color:var(--bnum-button-secondary-active-background-color,var(--bnum-color-secondary-active));border:var(--bnum-button-secondary-active-border,solid thin var(--bnum-button-secondary-active-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-active-text-color,var(--bnum-text-on-secondary-active))}:host(:state(danger)){background-color:var(--bnum-button-danger-background-color,var(--bnum-color-danger));border:var(--bnum-button-danger-border,solid thin var(--bnum-button-danger-border-color,var(--bnum-color-danger)));color:var(--bnum-button-danger-text-color,var(--bnum-text-on-danger))}:host(:state(danger):hover){background-color:var(--bnum-button-danger-hover-background-color,var(--bnum-color-danger-hover));border:var(--bnum-button-danger-hover-border,solid thin var(--bnum-button-danger-hover-border-color,var(--bnum-color-danger-hover)));color:var(--bnum-button-danger-hover-text-color,var(--bnum-text-on-danger-hover))}:host(:state(danger):active){background-color:var(--bnum-button-danger-active-background-color,var(--bnum-color-danger-active));border:var(--bnum-button-danger-active-border,solid thin var(--bnum-button-danger-active-border-color,var(--bnum-color-danger-active)));color:var(--bnum-button-danger-active-text-color,var(--bnum-text-on-danger-active))}';
+  '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{--bnum-icon-font-size:var(--bnum-body-font-size);border-radius:var(--bnum-button-border-radius,0);cursor:var(--bnum-button-cursor,pointer);display:var(--bnum-button-display,inline-block);font-weight:600;height:-moz-fit-content;height:fit-content;line-height:1.5rem;padding:var(--bnum-button-padding,6px 10px);transition:background-color .2s ease,color .2s ease;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}:host(:state(rounded)){border-radius:var(--bnum-button-rounded-border-radius,5px)}:host(:state(without-icon)){padding-bottom:var(--bnum-button-without-icon-padding-bottom,7.5px);padding-top:var(--bnum-button-without-icon-padding-top,7.5px)}:host(:disabled),:host(:state(disabled)){cursor:not-allowed;opacity:var(--bnum-button-disabled-opacity,.6);pointer-events:var(--bnum-button-disabled-pointer-events,none)}:host(:state(loading)){cursor:progress}:host(:state(icon)){--bnum-button-icon-gap:var(--custom-bnum-button-icon-margin,var(--bnum-space-s,10px))}:host(:state(icon))>.wrapper{align-items:center;display:flex;flex-direction:row;gap:var(--bnum-button-icon-gap);justify-content:center}:host(:state(icon-pos-left)) .wrapper{flex-direction:row-reverse}:host(:focus-visible){outline:2px solid #0969da;outline-offset:2px}:host>.wrapper{align-items:var(--bnum-button-wrapper-align-items,center);display:var(--bnum-button-wrapper-display,flex)}:host bnum-icon.icon{display:var(--bnum-button-icon-display,flex)}:host bnum-icon.icon.hidden{display:none}:host bnum-icon.loader{display:var(--bnum-button-loader-display,flex)}:host(:is(:state(loading):state(without-icon-loading))) slot{display:none}@keyframes spin{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host .loader,:host .spin,:host(:state(loading)) .icon{animation:spin var(--bnum-button-spin-duration,.75s) var(--bnum-button-spin-timing,linear) var(--bnum-button-spin-iteration,infinite)}:host(:state(hide-text-on-small)) .slot,:host(:state(hide-text-on-touch)) .slot{display:var(--size-display-state,inline-block)}:host(:state(hide-text-on-small)) .icon,:host(:state(hide-text-on-touch)) .icon{margin-left:var(--size-margin-left-state,var(--custom-button-icon-margin-left))!important;margin-right:var(--size-margin-right-state,var(--custom-button-icon-margin-right))!important}:host .hidden,:host [hidden]{display:none!important}:host(:state(primary)){background-color:var(--bnum-button-primary-background-color,var(--bnum-color-primary));border:var(--bnum-button-primary-border,solid thin var(--bnum-button-primary-border-color,var(--bnum-color-primary)));color:var(--bnum-button-primary-text-color,var(--bnum-text-on-primary))}:host(:state(primary):hover){background-color:var(--bnum-button-primary-hover-background-color,var(--bnum-color-primary-hover));border:var(--bnum-button-primary-hover-border,solid thin var(--bnum-button-primary-hover-border-color,var(--bnum-color-primary-hover)));color:var(--bnum-button-primary-hover-text-color,var(--bnum-text-on-primary-hover))}:host(:state(primary):active){background-color:var(--bnum-button-primary-active-background-color,var(--bnum-color-primary-active));border:var(--bnum-button-primary-active-border,solid thin var(--bnum-button-primary-active-border-color,var(--bnum-color-primary-active)));color:var(--bnum-button-primary-active-text-color,var(--bnum-text-on-primary-active))}:host(:state(secondary)){background-color:var(--bnum-button-secondary-background-color,var(--bnum-color-secondary));border:var(--bnum-button-secondary-border,solid thin var(--bnum-button-secondary-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-text-color,var(--bnum-text-on-secondary))}:host(:state(secondary):hover){background-color:var(--bnum-button-secondary-hover-background-color,var(--bnum-color-secondary-hover));border:var(--bnum-button-secondary-hover-border,solid thin var(--bnum-button-secondary-hover-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-hover-text-color,var(--bnum-text-on-secondary-hover))}:host(:state(secondary):active){background-color:var(--bnum-button-secondary-active-background-color,var(--bnum-color-secondary-active));border:var(--bnum-button-secondary-active-border,solid thin var(--bnum-button-secondary-active-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-active-text-color,var(--bnum-text-on-secondary-active))}:host(:state(danger)){background-color:var(--bnum-button-danger-background-color,var(--bnum-color-danger));border:var(--bnum-button-danger-border,solid thin var(--bnum-button-danger-border-color,var(--bnum-color-danger)));color:var(--bnum-button-danger-text-color,var(--bnum-text-on-danger))}:host(:state(danger):hover){background-color:var(--bnum-button-danger-hover-background-color,var(--bnum-color-danger-hover));border:var(--bnum-button-danger-hover-border,solid thin var(--bnum-button-danger-hover-border-color,var(--bnum-color-danger-hover)));color:var(--bnum-button-danger-hover-text-color,var(--bnum-text-on-danger-hover))}:host(:state(danger):active){background-color:var(--bnum-button-danger-active-background-color,var(--bnum-color-danger-active));border:var(--bnum-button-danger-active-border,solid thin var(--bnum-button-danger-active-border-color,var(--bnum-color-danger-active)));color:var(--bnum-button-danger-active-text-color,var(--bnum-text-on-danger-active))}';
 
 //#region External Constants
 /**
@@ -17491,7 +17503,7 @@ class HTMLBnumFolderList extends BnumElement {
 HTMLBnumFolderList.TryDefine();
 
 var css_248z =
-  ':host{display:block;padding-left:calc(.5em*var(--internal-bnum-folder-level, 0));width:100%}:host .bal-container{display:flex;justify-content:space-between;padding:5px 15px}:host .bal-container .bal-container__left,:host .bal-container .bal-container__title{align-content:center;align-items:center;display:flex;gap:10px}:host .bal-container__title__name{text-wrap:nowrap;max-width:125px;overflow:hidden;pointer-events:none;text-overflow:ellipsis}:host .bal-container__title__icon{color:var(--bnum-folder-icon-color,inherit)}:host bnum-badge{height:calc(16px - var(--bnum-badge-padding, var(--bnum-space-xs, 5px))*2);transition:all .2s ease;width:calc(16px - var(--bnum-badge-padding, var(--bnum-space-xs, 5px))*2)}:host bnum-badge.is-cumulative{background-color:var(--bnum-color-primary-active)}:host bnum-badge:state(no-value){display:none}:host([level="0"]){border-bottom:var(--bnum-border-in-column)}:host([level="0"]) .bal-container{padding:10px 15px}:host(:state(no-subfolders)) .bal-container__toggle{display:none}:host([is-collapsed=true]) .bal-sub-folders{display:none}:host([is-virtual=false]){cursor:pointer}:host([is-virtual=false]) .bal-container__title__name{pointer-events:all}:host([is-virtual=false]:hover) .bal-container{background-color:var(--bnum-color-list-hover)}:host([is-selected=true]) .bal-container{background-color:var(--bnum-color-list);cursor:default}:host([is-selected=true]:hover) .bal-container{background-color:var(--bnum-color-list)}:host(:state(double-digit-unread)) bnum-badge{font-size:9px}:host(:state(triple-digit-unread)) bnum-badge{font-size:9px;height:calc(18px - var(--bnum-badge-padding, var(--bnum-space-xs, 5px))*2);width:calc(18px - var(--bnum-badge-padding, var(--bnum-space-xs, 5px))*2)}:host(.dragover) .bal-container{background-color:var(--bnum-color-list-drag)}';
+  ':host{display:block;padding-left:calc(.5em*var(--internal-bnum-folder-level, 0));width:100%}:host .bal-container{display:flex;justify-content:space-between;padding:10px 15px}:host .bal-container .bal-container__left,:host .bal-container .bal-container__title{align-content:center;align-items:center;display:flex;gap:10px}:host .bal-container__title__name{text-wrap:nowrap;max-width:125px;overflow:hidden;pointer-events:none;text-overflow:ellipsis}:host .bal-container__title__icon{color:var(--bnum-folder-icon-color,inherit)}:host bnum-badge{height:calc(16px - var(--bnum-badge-padding, var(--bnum-space-xs, 5px))*2);transition:all .2s ease;width:calc(16px - var(--bnum-badge-padding, var(--bnum-space-xs, 5px))*2)}:host bnum-badge.is-cumulative{background-color:var(--bnum-color-primary-active)}:host bnum-badge:state(no-value){display:none}:host([level="0"]){border-bottom:var(--bnum-border-in-column)}:host([level="0"]) .bal-container{padding:15px}:host(:state(no-subfolders)) .bal-container__toggle{display:none}:host([is-collapsed=true]) .bal-sub-folders{display:none}:host([is-virtual=false]){cursor:pointer}:host([is-virtual=false]) .bal-container__title__name{pointer-events:all}:host([is-virtual=false]:hover) .bal-container{background-color:var(--bnum-color-list-hover)}:host([is-selected=true]) .bal-container{background-color:var(--bnum-color-list);cursor:default}:host([is-selected=true]:hover) .bal-container{background-color:var(--bnum-color-list)}:host(:state(double-digit-unread)) bnum-badge{font-size:9px}:host(:state(triple-digit-unread)) bnum-badge{font-size:9px;height:calc(18px - var(--bnum-badge-padding, var(--bnum-space-xs, 5px))*2);width:calc(18px - var(--bnum-badge-padding, var(--bnum-space-xs, 5px))*2)}:host(.dragover) .bal-container{background-color:var(--bnum-color-list-drag)}';
 
 const STYLE = BnumElementInternal.ConstructCSSStyleSheet(css_248z);
 /**
@@ -17804,7 +17816,7 @@ const TEMPLATE = BnumElementInternal.CreateTemplate(`
       </div>
       <div class="bal-container__left">
         ${HTMLBnumBadge.Write('0', { circle: 'true', class: 'bal-container__left__badge' })}
-        ${HTMLBnumButtonIcon.Write('keyboard_arrow_down', { tabindex: '-1', class: 'bal-container__toggle' })}
+        ${HTMLBnumButtonIcon.Write('keyboard_arrow_down', { tabindex: '-1', class: 'bal-container__toggle flex' })}
       </div>
     </div>
     ${HTMLBnumFolderList.Write('<slot name="folders"></slot>', { class: 'bal-sub-folders' })}
@@ -17825,7 +17837,10 @@ class HTMLBnumTree extends BnumElementInternal {
   }
   _p_attach() {
     super._p_attach();
-    this.attr('role', 'tree').attr('tabindex', '0');
+    this.attrs({
+      role: 'tree',
+      tabindex: '0',
+    });
     if (!this.attr('aria-label') && !this.attr('aria-labellerby')) {
       Log.warn(
         'HTMLBnumTree',
@@ -18012,214 +18027,512 @@ class HTMLBnumTree extends BnumElementInternal {
 HTMLBnumTree.TryDefine();
 
 /**
- * Classe d'initialisation des comportements liés aux éléments du Bnum
+ * Gère un ensemble de feuilles de style CSS dynamiques pour l'application.
+ * Permet d'ajouter, supprimer et mettre à jour des règles CSS à la volée.
  */
-class Initialiser {
-  static #_instance = null;
-  static get Instance() {
-    return (this.#_instance ??= new Initialiser());
-  }
-  #_mailInitialized = false;
+class BnumStyleSheets {
   /**
-   * Initialise les comportements liés au mail
-   * @param $: JQueryStatic (généralement passé par Roundcube)
+   * Identifiant de la mise à jour planifiée (requestAnimationFrame).
+   * Null si aucune mise à jour n'est en attente.
    */
-  initializeMail($) {
-    if (!window.rcmail || this.#_mailInitialized) return this;
-    // 1. Initialisation des menus contextuels
-    rcmail.addEventListener('init', () => {
-      if (rcmail.env.context_menu?.mailboxlist) {
-        rcmail.env.context_menu.mailboxlist.selector = 'bnum-folder.mailbox';
-      }
+  #_pendingUpdate = null;
+  /**
+   * Indique si la feuille de style native a été montée dans le document.
+   */
+  #_mounted = false;
+  /**
+   * Registre des règles CSS, indexées par identifiant.
+   */
+  #_registry = new Map();
+  /**
+   * Map des fonctions de nettoyage des listeners pour chaque règle.
+   */
+  #_listenersDisposers = new Map();
+  /**
+   * Feuille de style native utilisée pour injecter les règles dans le DOM.
+   */
+  #_nativeSheet = new CSSStyleSheet();
+  /**
+   * Ajoute une règle CSS avec un identifiant spécifique.
+   * @param id Identifiant unique de la règle.
+   * @param rule Règle CSS à ajouter.
+   */
+  add(id, rule) {
+    if (this.#_registry.has(id)) {
+      Log.warn('BnumStyleSheets/add', `Rule with id '${id}' already exists.`);
+      return this;
+    }
+    rule.onUpdate.add(id, () => this.#_scheduleRender());
+    this.#_listenersDisposers.set(id, () => {
+      rule.onUpdate.remove(id);
     });
-    // 2. Logique principale
-    rcmail.addEventListener('init', () => {
-      if (!(rcmail.env.mailbox && document.querySelector('bnum-folder')))
-        return;
-      // Gestion du menu contextuel via jQuery
-      $('#mailboxlist').on('contextmenu', 'bnum-folder', function (e) {
-        if (!$('.context-menu-list').is(':visible')) {
-          rcmail.env.context_menu?.mailboxlist;
-        }
-      });
-      // Écouteurs sur les Web Components bnum-folder
-      const folders = document.querySelectorAll('bnum-folder');
-      folders.forEach((folder) => {
-        // Event: Select
-        folder.addEventListener('bnum-folder:select', (e) => {
-          const { caller } = e.detail;
-          const folderId = caller.getAttribute('folder-id');
-          if (
-            !folderId ||
-            rcmail.treelist.triggerEvent('beforeselect', folderId) === false
-          ) {
-            return;
-          }
-          rcmail.command('list', folderId, caller, e);
-          rcmail.treelist.triggerEvent('select', folderId);
-        });
-        // Event: Toggle (Expand/Collapse)
-        folder.addEventListener('bnum-folder:toggle', (e) => {
-          const { caller, collapsed } = e.detail;
-          rcmail.treelist.triggerEvent(
-            collapsed ? 'collapse' : 'expand',
-            caller,
-          );
-        });
-      });
-      // 3. Monkey-patching des fonctions Roundcube
-      // Unread count display
-      const old_rcmail_set_unread_count_display =
-        rcmail.set_unread_count_display;
-      rcmail.set_unread_count_display = function (folder, set_title) {
-        try {
-          old_rcmail_set_unread_count_display.call(this, folder, set_title);
-        } catch (error) {
-          console.error(
-            "Erreur lors de l'appel original set_unread_count_display",
-            error,
-          );
-        }
-        const mycount = this.env.unread_counts[folder] || 0;
-        document.querySelectorAll(`[folder-id="${folder}"]`).forEach((el) => {
-          el.setAttribute('unread', mycount.toString());
-        });
-      };
-      // TreeList Node Getter
-      const old_rcmail_treelist_get_node = rcmail.treelist.get_node;
-      rcmail.treelist.get_node = function (folder) {
-        return (
-          old_rcmail_treelist_get_node.call(this, folder) ??
-          document.querySelector(`bnum-folder[folder-id="${folder}"]`)
-        );
-      };
-      // Fix Junk folder ID
-      if (rcmail.env.mailboxes['']?.class?.includes?.('junk')) {
-        rcmail.env.mailboxes[''].id = 'Ind&AOk-sirables';
-      }
-      // 4. Configuration du Menu Contextuel
-      const menu = rcmail.contextmenu.init(
-        {
-          menu_name: 'folderlist',
-          menu_source: '#mailboxoptionsmenu',
-          list_object: null,
-        },
-        {
-          activate: (p) => {
-            p.enabled = true;
-            return p;
-          },
-        },
-      );
-      // Interception clic droit sur Web Components
-      $(document).on(
-        'contextmenu',
-        'mailboxlist bnum-folder.mailbox',
-        function (e) {
-          const folderId = $(this).attr('folder-id') || $(this).attr('rel');
-          if (folderId) {
-            rcube_event.cancel(e);
-            rcmail.env.context_menu_source_id = folderId;
-            menu.show_menu(this, e);
-            // Hack visuel
-            $('#rcm_folderlist li').show();
-            $('#rcm_folderlist a').addClass('active').removeClass('disabled');
-            return false;
-          }
-        },
-      );
-      // Redéfinition de l'initialisation des dossiers
-      rcmail.contextmenu.init_folder = function (el, props, events) {
-        const finalEvents = events || {};
-        $('#rcm_folderlist').remove();
-        rcmail.env.contextmenus['folderlist'] = undefined;
-        const folderMenu = rcmail.contextmenu.init(
-          { menu_name: 'folderlist', list_object: null, ...props },
-          $.extend(
-            {
-              beforeactivate: () => {
-                rcmail.env.contextmenu_messagecount_request?.abort();
-                rcmail.env.contextmenu_messagecount_request = null;
-              },
-              activate: (p) => rcmail.contextmenu.activate_folder_commands(p),
-              beforecommand: (p) => {
-                const sourceId = rcmail.env.context_menu_source_id;
-                if (sourceId !== rcmail.env.mailbox) {
-                  if (['expunge', 'purge'].includes(p.command)) {
-                    rcmail[p.command + '_mailbox'](sourceId);
-                    return { abort: true, result: true };
-                  } else if (p.command === 'mark-all-read') {
-                    rcmail.mark_all_read(sourceId);
-                    return { abort: true, result: true };
-                  }
-                }
-              },
-            },
-            finalEvents,
-          ),
-        );
-        $(el)
-          .on('click', (e) => rcmail.contextmenu.hide_all(e))
-          .on('contextmenu', function (e) {
-            const source = $(this);
-            source.blur();
-            rcmail.contextmenu.hide_all(e);
-            rcmail.contextmenu.show_one(
-              e,
-              this,
-              source.attr('rel'),
-              folderMenu,
-            );
-          });
-      };
-      // Gestion de l'ouverture du menu (positionnement et activation des commandes)
-      rcmail.addEventListener('menu-open', (p) => {
-        if (p.name !== 'rcm_folderlist') return;
-        // Positionnement personnalisé si absent
-        rcmail.contextmenu.position ??= (e, menuElement) => {
-          menuElement.css({ left: '-1000px', top: '-1000px' }).show();
-          const win = $(window);
-          const winH = win.height() || 0;
-          const winW = win.width() || 0;
-          const menuH = menuElement.height() || 0;
-          const menuW = menuElement.width() || 0;
-          let top = e.pageY;
-          let left = e.pageX;
-          if (top + menuH > winH) {
-            top -= menuH;
-            if (top < 0) top = Math.max(0, (winH - menuH) / 2);
-          }
-          if (left + menuW > winW) {
-            left -= left + menuW - winW + 10;
-          }
-          menuElement
-            .hide()
-            .css({ left: Math.max(0, left) + 'px', top: top + 'px' });
-        };
-        rcmail.contextmenu.position(p.originalEvent, $(`#${p.name}`));
-        // Activation visuelle des liens
-        $(`#${p.name} ul li a`).each((_, element) => {
-          const link = element;
-          if (link.classList.contains('active')) return;
-          for (const className of Array.from(link.classList)) {
-            if (className.startsWith('cmd_')) {
-              const command = className.replace('cmd_', '');
-              if (rcmail.commands[command]) {
-                link.classList.add('active');
-              }
-              break;
-            }
-          }
-        });
-        $(`#${p.name}`).show();
-      });
-      // Initialisation finale
-      rcmail.contextmenu.init_folder('#mailboxlist bnum-folder', {
-        menu_source: ['#rcmfoldermenu > ul', '#mailboxoptions-menu > ul > li'],
-      });
-    });
-    this.#_mailInitialized = true;
+    this.#_registry.set(id, rule);
+    return this.#_scheduleRender();
+  }
+  /**
+   * Ajoute une règle CSS et génère automatiquement un identifiant.
+   * @param rule Règle CSS à ajouter.
+   * @returns L'identifiant généré.
+   */
+  push(rule) {
+    const id = this.#_generateId();
+    void this.add(id, rule);
+    return id;
+  }
+  /**
+   * Ajoute plusieurs règles CSS à la feuille de style.
+   * @param rules Liste des règles à ajouter.
+   */
+  addMultiples(...rules) {
+    for (const rule of rules) {
+      this.push(rule);
+    }
     return this;
+  }
+  /**
+   * Supprime une règle CSS par son identifiant.
+   * @param id Identifiant de la règle à supprimer.
+   */
+  remove(id) {
+    if (this.#_registry.has(id)) {
+      const disposer = this.#_listenersDisposers.get(id);
+      if (disposer) disposer();
+      this.#_listenersDisposers.delete(id);
+      this.#_registry.delete(id);
+      return this.#_scheduleRender();
+    }
+    return this;
+  }
+  /**
+   * Supprime toutes les règles CSS de la feuille de style.
+   */
+  clear() {
+    for (const disposer of this.#_listenersDisposers.values()) {
+      disposer();
+    }
+    this.#_registry.clear();
+    this.#_listenersDisposers.clear();
+    return this.#_scheduleRender();
+  }
+  /**
+   * Monte la feuille de style native dans le document si ce n'est pas déjà fait.
+   * @private
+   */
+  #_mount() {
+    if (
+      !this.#_mounted &&
+      !document.adoptedStyleSheets.includes(this.#_nativeSheet)
+    ) {
+      document.adoptedStyleSheets = [
+        ...document.adoptedStyleSheets,
+        this.#_nativeSheet,
+      ];
+      this.#_mounted = true;
+    }
+    return this;
+  }
+  /**
+   * Planifie un rendu asynchrone de la feuille de style.
+   * @private
+   */
+  #_scheduleRender() {
+    if (this.#_pendingUpdate) return this;
+    this.#_pendingUpdate = requestAnimationFrame(() => {
+      this.#_render();
+      this.#_pendingUpdate = null;
+    });
+    return this;
+  }
+  /**
+   * Génère le CSS et le remplace dans la feuille de style native.
+   * @private
+   */
+  #_render() {
+    if (this.#_registry.size === 0) {
+      this.#_nativeSheet.replaceSync(EMPTY_STRING);
+      return this;
+    }
+    const cssContent = Array.from(this.#_registry.values())
+      .map((rule) => rule.toString())
+      .join('\n');
+    this.#_nativeSheet.replaceSync(cssContent);
+    return this.#_mount();
+  }
+  /**
+   * Génère un identifiant unique pour une nouvelle règle CSS.
+   * @private
+   */
+  #_generateId() {
+    do {
+      var id = `bnum-stylesheet-${Math.random().toString(36).substring(2, 15)}`;
+    } while (this.#_registry.has(id));
+    return id;
+  }
+}
+/**
+ * Représente une propriété CSS (nom, valeur, important).
+ * Permet de notifier les changements de valeur.
+ */
+class BnumCssProperty {
+  /**
+   * Nom de la propriété CSS.
+   * @private
+   */
+  #_name;
+  /**
+   * Valeur de la propriété CSS.
+   * @private
+   */
+  #_value;
+  /**
+   * Indique si la propriété est !important.
+   * @private
+   */
+  #_important;
+  /**
+   * Gestionnaire d'événements pour les changements de la propriété.
+   * @private
+   */
+  #_listeners = null;
+  /**
+   * Événement déclenché lors d'une modification de la propriété.
+   */
+  get event() {
+    return (this.#_listeners ??= new JsEvent());
+  }
+  /**
+   * @param name Nom de la propriété CSS.
+   * @param value Valeur de la propriété CSS.
+   * @param important Indique si la propriété est !important.
+   */
+  constructor(name, value, important = false) {
+    this.#_name = name;
+    this.#_value = value;
+    this.#_important = important;
+  }
+  /**
+   * Modifie la valeur de la propriété CSS.
+   */
+  set value(value) {
+    if (this.#_value !== value) {
+      this.#_value = value;
+      this.#_notify();
+    }
+  }
+  /**
+   * Modifie l'état important de la propriété CSS.
+   */
+  set important(important) {
+    if (this.#_important !== important) {
+      this.#_important = important;
+      this.#_notify();
+    }
+  }
+  /**
+   * Modifie le nom de la propriété CSS.
+   */
+  set name(name) {
+    if (this.#_name !== name) {
+      this.#_name = name;
+      this.#_notify();
+    }
+  }
+  /**
+   * Retourne la valeur de la propriété CSS.
+   */
+  get value() {
+    return this.#_value;
+  }
+  /**
+   * Retourne le nom de la propriété CSS.
+   */
+  get name() {
+    return this.#_name;
+  }
+  /**
+   * Retourne si la propriété est !important.
+   */
+  get important() {
+    return this.#_important;
+  }
+  /**
+   * Retourne la propriété CSS sous forme de chaîne.
+   */
+  toString() {
+    return `${this.#_name}: ${this.#_value}${this.#_important ? ' !important' : EMPTY_STRING};`;
+  }
+  /**
+   * Notifie les listeners qu'une modification a eu lieu.
+   * @private
+   */
+  #_notify() {
+    if (this.#_listeners) this.#_listeners.call();
+  }
+}
+/**
+ * Représente une règle CSS composée d'un sélecteur et de propriétés.
+ * Permet d'ajouter ou de retirer dynamiquement des propriétés.
+ */
+class BnumCssRule {
+  /**
+   * Sélecteur CSS de la règle.
+   * @private
+   */
+  #_selectorText;
+  /**
+   * Liste des propriétés CSS associées à la règle.
+   * @private
+   */
+  #_properties;
+  /**
+   * Gestionnaire d'événements pour les changements de la règle.
+   * @private
+   */
+  #_onUpdate = null;
+  /**
+   * Événement déclenché lors d'une modification de la règle.
+   */
+  get onUpdate() {
+    return (this.#_onUpdate ??= new JsEvent());
+  }
+  /**
+   * @param selectorText Sélecteur CSS de la règle.
+   * @param args Propriétés CSS de la règle.
+   */
+  constructor(selectorText, ...args) {
+    this.#_selectorText = selectorText;
+    this.#_properties = args;
+    for (const prop of this.#_properties) {
+      prop.event.push(() => this.#_notifyParent());
+    }
+  }
+  /**
+   * Retourne le sélecteur CSS de la règle.
+   */
+  get selectorText() {
+    return this.#_selectorText;
+  }
+  /**
+   * Ajoute une propriété à la règle CSS.
+   * @param prop Propriété à ajouter.
+   */
+  addProperty(prop) {
+    this.#_properties.push(prop);
+    prop.event.push(() => this.#_notifyParent());
+    this.#_notifyParent();
+    return this;
+  }
+  /**
+   * Retourne une propriété de la règle CSS par son index.
+   * @param index Index de la propriété à récupérer.
+   */
+  get(index) {
+    return this.#_properties[index];
+  }
+  /**
+   * Supprime une propriété de la règle CSS par son nom.
+   * @param propName Nom de la propriété à supprimer.
+   * @param options all: supprime toutes les occurrences si true.
+   */
+  removeProperty(propName, { all = false } = {}) {
+    let stop = false;
+    this.#_properties = this.#_properties.filter((prop) => {
+      if (stop) return true;
+      if (prop.name === propName) {
+        if (!all) stop = true;
+        return false;
+      }
+      return true;
+    });
+    this.#_notifyParent();
+    return this;
+  }
+  /**
+   * Retourne la règle CSS sous forme de chaîne.
+   */
+  toString() {
+    const props = this.#_properties
+      .map((prop) => `  ${prop.toString()}`)
+      .join('\n');
+    return `${this.#_selectorText} {\n${props}\n}`;
+  }
+  /**
+   * Notifie les listeners parents qu'une modification a eu lieu.
+   * @private
+   */
+  #_notifyParent() {
+    if (this.#_onUpdate && this.#_onUpdate.count() > 0) this.#_onUpdate.call();
+  }
+}
+class BnumMeta {
+  /**
+   * Change le titre du document
+   */
+  set title(value) {
+    document.title = value;
+  }
+  /**
+   * Retourne le titre actuel du document
+   */
+  get title() {
+    return document.title;
+  }
+  /**
+   * Définit une balise meta standard (name="description")
+   * @param content Contenu de la balise meta description
+   */
+  setDescription(content) {
+    return this.#updateMeta('name', 'description', content);
+  }
+  /**
+   * Définit une balise OpenGraph (property="og:image")
+   * @param property Nom de la propriété OpenGraph (ex: "image")
+   * @param content Valeur de la propriété
+   */
+  setOgTag(property, content) {
+    return this.#updateMeta('property', `og:${property}`, content);
+  }
+  /**
+   * Méthode générique interne pour créer ou mettre à jour une balise meta
+   * @param attrKey "name" ou "property"
+   * @param attrValue Valeur de l'attribut
+   * @param content Contenu de la balise meta
+   * @private
+   */
+  #updateMeta(attrKey, attrValue, content) {
+    let tag = document.querySelector(`meta[${attrKey}="${attrValue}"]`);
+    if (!tag) {
+      tag = document.createElement('meta');
+      tag.setAttribute(attrKey, attrValue);
+      document.head.appendChild(tag);
+    }
+    tag.setAttribute('content', content);
+    return this;
+  }
+}
+class BnumScripts {
+  /**
+   * Cache pour ne pas charger 2 fois le même script
+   * @private
+   */
+  #_loaded = new Set();
+  /**
+   * Charge un script externe et attend qu'il soit prêt
+   * @param url URL du script à charger
+   * @param options async et defer (par défaut true)
+   * @returns Promise résolue quand le script est chargé
+   */
+  load(url, { async = true, defer = true } = {}) {
+    if (this.#_loaded.has(url)) return Promise.resolve();
+    // Si le script est déjà dans le DOM (ajouté manuellement)
+    if (document.querySelector(`script[src="${url}"]`)) {
+      this.#_loaded.add(url);
+      return Promise.resolve();
+    }
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = url;
+      script.async = async;
+      script.defer = defer;
+      script.onload = () => {
+        this.#_loaded.add(url);
+        resolve();
+      };
+      script.onerror = () => {
+        reject(new Error(`BnumScripts: Failed to load script ${url}`));
+      };
+      document.head.appendChild(script);
+    });
+  }
+}
+class BnumCookies {
+  /**
+   * Récupère la valeur d'un cookie par son nom
+   * @param name Nom du cookie
+   * @returns Valeur du cookie ou null si absent
+   */
+  get(name) {
+    const match = document.cookie.match(
+      new RegExp('(^| )' + name + '=([^;]+)'),
+    );
+    return match ? decodeURIComponent(match[2]) : null;
+  }
+  /**
+   * Définit un cookie
+   * @param name Nom du cookie
+   * @param value Valeur du cookie
+   * @param options Options : nombre de jours de validité et chemin
+   */
+  set(name, value, options = {}) {
+    let expires = '';
+    if (options.days) {
+      const date = new Date();
+      date.setTime(date.getTime() + options.days * 24 * 60 * 60 * 1000);
+      expires = `; expires=${date.toUTCString()}`;
+    }
+    const path = options.path ? `; path=${options.path}` : '; path=/';
+    document.cookie = `${name}=${encodeURIComponent(value)}${expires}${path}`;
+  }
+  /**
+   * Supprime un cookie
+   * @param name Nom du cookie à supprimer
+   */
+  delete(name) {
+    this.set(name, '', { days: -1 });
+  }
+}
+/**
+ * Singleton pour accéder aux feuilles de style dynamiques de l'application.
+ */
+class BnumDocument {
+  /**
+   * Instance unique de BnumDocument.
+   * @private
+   */
+  static #_instance = null;
+  /**
+   * Retourne l'instance unique de BnumDocument.
+   */
+  static get instance() {
+    return (this.#_instance ??= new BnumDocument());
+  }
+  /**
+   * Instance des feuilles de style dynamiques.
+   * @private
+   */
+  #_styleSheets = null;
+  /**
+   * Retourne l'ensemble des feuilles de style dynamiques.
+   */
+  get styleSheets() {
+    return (this.#_styleSheets ??= new BnumStyleSheets());
+  }
+  #_meta = null;
+  /**
+   * Retourne l'objet de gestion des métadonnées du document.
+   */
+  get meta() {
+    return (this.#_meta ??= new BnumMeta());
+  }
+  #_scripts = null;
+  /**
+   * Retourne l'objet de gestion des scripts du document.
+   */
+  get scripts() {
+    return (this.#_scripts ??= new BnumScripts());
+  }
+  #_cookies = null;
+  /**
+   * Retourne l'objet de gestion des cookies du document.
+   */
+  get cookies() {
+    return (this.#_cookies ??= new BnumCookies());
+  }
+  /**
+   * Retourne l'objet Document du navigateur.
+   */
+  get document() {
+    return document;
   }
 }
 
@@ -18231,6 +18544,9 @@ if (typeof window !== 'undefined' && window.DsBnumConfig) {
 export {
   BnumElement,
   BnumConfig as Config,
+  BnumCssProperty as DsCssProperty,
+  BnumCssRule as DsCssRule,
+  BnumDocument as DsDocument,
   EButtonType,
   EHideOn,
   EIconPosition,
@@ -18264,5 +18580,4 @@ export {
   HTMLBnumPrimaryButton,
   HTMLBnumSecondaryButton,
   HTMLBnumTree,
-  Initialiser,
 };

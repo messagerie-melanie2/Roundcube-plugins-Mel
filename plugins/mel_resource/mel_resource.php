@@ -598,6 +598,8 @@ class mel_resource extends bnum_plugin
     $resource->fullname     = LibMelanie\Api\Defaut\Resource::TYPE_VROOM . " $resource->name";
     $resource->displayname  = LibMelanie\Api\Defaut\Resource::TYPE_VROOM . " $resource->name";
 
+    $resource->is_zoom_room = true;
+
     $vroom_building = trim(rcube_utils::get_input_value('vroom_building', rcube_utils::INPUT_GPC));
 
     if (strpos($vroom_building, '/') !== false) {

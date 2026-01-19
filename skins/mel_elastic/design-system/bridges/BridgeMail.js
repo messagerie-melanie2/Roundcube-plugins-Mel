@@ -1,5 +1,10 @@
 import { EMPTY_STRING } from '../../../../plugins/mel_metapage/js/lib/constants/constants.js';
-import { HTMLBnumFolder } from '../ds-module-bnum';
+import {
+  DsCssProperty,
+  DsCssRule,
+  DsDocument,
+  HTMLBnumFolder,
+} from '../ds-module-bnum';
 import ABridge from './ABridge.js';
 import BridgeEvents from './BridgeEvents.js';
 import BridgeRc from './BridgeRc.js';
@@ -9,12 +14,19 @@ import BridgeRc from './BridgeRc.js';
  * Initialise les listeners, patchs et menus contextuels pour l'intégration Bnum.
  */
 export default class BridgeMail extends ABridge {
+  #_melFolderSpaceRule = null;
+
+  get folderSpaceRule() {
+    return (this.#_melFolderSpaceRule ??= new DsCssRule(HTMLBnumFolder.TAG));
+  }
+
   constructor() {
     super();
   }
 
   _p_onInit() {
     if (this.rcmail()) {
+      if (!window.bridgeMail) this.export('bridgeMail', this);
       return this.#_onInit();
     }
     return this;
@@ -46,7 +58,9 @@ export default class BridgeMail extends ABridge {
    */
   #_onInitMail() {
     if (this.get_env('task') === 'mail')
-      return this.#_updateMailboxSelector().#_updateFolder();
+      return this.#_updateMailboxSelector()
+        .#_updateFolder()
+        .#_updateStyleFromParameters();
 
     return this;
   }
@@ -203,6 +217,52 @@ export default class BridgeMail extends ABridge {
       e.addEventListener(
         'dragend',
         BridgeEvents.Instance.onMailDragEnd.bind(BridgeEvents.Instance),
+      );
+    }
+
+    return this;
+  }
+
+  #_updateStyleFromParameters() {
+    const mailConfig = this.get_env('mel_metapage_mail_configs');
+
+    if (mailConfig) {
+      const mel_folder_space = 'mel-folder-space';
+
+      let generalPadding = new DsCssProperty(
+        '--bnum-folder-title-padding',
+        EMPTY_STRING,
+      );
+      let balPadding = new DsCssProperty(
+        '--bnum-folder-bal-title-padding',
+        EMPTY_STRING,
+      );
+
+      switch (mailConfig[mel_folder_space]) {
+        case this.getLocalization('larger', { plugin: 'mel_metapage' }):
+          generalPadding.value =
+            'var(--bnum-folder-title-padding-larger, 15px 15px)';
+          balPadding.value =
+            'var(--bnum-folder-bal-title-padding-larger, 20px 15px)';
+          break;
+
+        case this.getLocalization('smaller', { plugin: 'mel_metapage' }):
+          generalPadding.value =
+            'var(--bnum-folder-title-padding-smaller, 5px 15px)';
+          balPadding.value =
+            'var(--bnum-folder-bal-title-padding-smaller, 10px 15px)';
+          break;
+        default:
+          generalPadding.value = 'var(--bnum-folder-title-padding)';
+          balPadding.value = 'var(--bnum-folder-bal-title-padding)';
+          break;
+      }
+
+      DsDocument.instance.styleSheets.add(
+        mel_folder_space,
+        this.folderSpaceRule
+          .addProperty(generalPadding)
+          .addProperty(balPadding),
       );
     }
 

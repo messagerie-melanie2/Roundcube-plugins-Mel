@@ -846,7 +846,7 @@ if (rcmail) {
      * @param {Object} args - Les arguments contenant la clé et la valeur du style.
      */
     rcmail.register_command(
-      'update_mail_css',
+      'update_mail_css_old',
       (args) => {
         const { key, value } = args;
 

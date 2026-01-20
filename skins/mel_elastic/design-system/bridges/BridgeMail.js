@@ -6,47 +6,111 @@ import {
   HTMLBnumFolder,
 } from '../ds-module-bnum';
 import ABridge from './ABridge.js';
+import BridgeCommands from './BridgeCommands.js';
 import BridgeEvents from './BridgeEvents.js';
 import BridgeRc from './BridgeRc.js';
+import { CONFIG_FOLDER_SPACE as CFS } from './constants.js';
+
+const LOCALIZATION_PLUGIN = 'mel_metapage';
+const CONFIG_FOLDER_SPACE = CFS;
 
 /**
- * Pont principal entre le design system et Roundcube.
- * Initialise les listeners, patchs et menus contextuels pour l'intégration Bnum.
+ * Pont principal entre le Design System Bnum et Roundcube.
+ *
+ * Cette classe gère l'intégration des dossiers personnalisés, la gestion des styles,
+ * l'initialisation des listeners (drag & drop, clics, menus contextuels) et les patchs
+ * nécessaires pour l'affichage et l'interactivité des dossiers dans l'interface mail.
+ *
+ * Elle applique également les configurations de style selon les paramètres utilisateurs
+ * et assure la compatibilité avec certains comportements historiques (ex : dossier Junk).
+ *
+ * @class BridgeMail
+ * @extends ABridge
  */
 export default class BridgeMail extends ABridge {
+  static #_CSS_VARS = {
+    GEN_TITLE: '--bnum-folder-title-padding',
+    BAL_TITLE: '--bnum-folder-bal-title-padding',
+  };
+
+  static #_DEFAULTS = {
+    general: 'var(--bnum-folder-title-padding, 10px 15px)',
+    bal: 'var(--bnum-folder-bal-title-padding, 15px 15px)',
+  };
+
+  static #_SELECTORS = {
+    MESSAGES_ROWS: '#messagelist tbody tr',
+    MESSAGES_CONTAINER: '#messagelist tbody',
+    MAILBOX_OPTIONS: '#mailboxoptionsmenu',
+    BNUM_FOLDER: HTMLBnumFolder.TAG,
+    BNUM_FOLDER_MAILBOX: `${HTMLBnumFolder.TAG}.mailbox`,
+    MAILBOXES_FOLDERS: `#mailboxlist ${HTMLBnumFolder.TAG}`,
+    MAILBOXES_FOLDERS_MAILBOX: `#mailboxlist ${HTMLBnumFolder.TAG}.mailbox`,
+    MENU_SOURCES: ['#rcmfoldermenu > ul', '#mailboxoptions-menu > ul > li'],
+  };
+
+  static #_ENVS = {
+    TASK: 'task',
+    CONTEXT_MENU: 'context_menu',
+    MAILBOX: 'mailbox',
+    MAILBOXES: 'mailboxes',
+    MMP_CONFIGS: 'mel_metapage_mail_configs',
+  };
+
+  // Hack spécifique pour corriger l'ID du dossier Junk (Dette technique documentée)
+  static #_LEGACY_JUNK_ID = 'Ind&AOk-sirables';
+
   #_melFolderSpaceRule = null;
 
+  /**
+   * Récupère la règle CSS utilisée pour le style des dossiers personnalisés.
+   * @returns {DsCssRule}
+   */
   get folderSpaceRule() {
     return (this.#_melFolderSpaceRule ??= new DsCssRule(HTMLBnumFolder.TAG));
   }
 
+  /**
+   * Constructeur de la classe BridgeMail.
+   */
   constructor() {
     super();
   }
 
+  /**
+   * Méthode appelée lors de l'initialisation du pont.
+   * @returns {BridgeMail}
+   */
   _p_onInit() {
-    if (this.rcmail()) {
-      if (!window.bridgeMail) this.export('bridgeMail', this);
-      return this.#_onInit();
-    }
-    return this;
+    if (!this.rcmail()) return this;
+
+    if (!window.bridgeMail) this.export('bridgeMail', this);
+
+    return this.#_onInit();
   }
 
+  /**
+   * Méthode appelée lorsque le DOM est prêt.
+   * @returns {BridgeMail}
+   */
   _p_onReady() {
     return this.#_onReady();
   }
 
   /**
    * Appelé lorsque le DOM est prêt.
+   * Initialise les listeners globaux.
    * @private
+   * @returns {BridgeMail}
    */
   #_onReady() {
-    return this.#_onInitListeners();
+    return this.#_onInitListeners().#_onRegisterCommands();
   }
 
   /**
    * Appelé lors de l'initialisation de l'application.
    * @private
+   * @returns {BridgeMail}
    */
   #_onInit() {
     return this.#_onInitMail();
@@ -55,9 +119,10 @@ export default class BridgeMail extends ABridge {
   /**
    * Initialise les comportements spécifiques à la messagerie.
    * @private
+   * @returns {BridgeMail}
    */
   #_onInitMail() {
-    if (this.get_env('task') === 'mail')
+    if (this.get_env(BridgeMail.#_ENVS.TASK) === 'mail')
       return this.#_updateMailboxSelector()
         .#_updateFolder()
         .#_updateStyleFromParameters();
@@ -68,36 +133,48 @@ export default class BridgeMail extends ABridge {
   /**
    * Met à jour le sélecteur de boîte aux lettres pour le menu contextuel.
    * @private
+   * @returns {BridgeMail}
    */
   #_updateMailboxSelector() {
-    const mailboxlist = this.get_env('context_menu')?.mailboxlist;
+    const mailboxlist = this.get_env(
+      BridgeMail.#_ENVS.CONTEXT_MENU,
+    )?.mailboxlist;
 
-    if (mailboxlist) mailboxlist.selector = 'bnum-folder.mailbox';
+    if (mailboxlist)
+      mailboxlist.selector = BridgeMail.#_SELECTORS.BNUM_FOLDER_MAILBOX;
     return this;
   }
 
   /**
    * Met à jour les dossiers personnalisés et applique les patchs nécessaires.
    * @private
+   * @returns {BridgeMail}
    */
   #_updateFolder() {
-    const BNUM_FOLDER_TAG = HTMLBnumFolder.TAG;
-    if (!(this.get_env('mailbox') && document.querySelector(BNUM_FOLDER_TAG)))
+    const { BNUM_FOLDER } = BridgeMail.#_SELECTORS;
+
+    if (
+      !(
+        this.get_env(BridgeMail.#_ENVS.MAILBOX) &&
+        document.querySelector(BNUM_FOLDER)
+      )
+    )
       return this;
 
-    // On ajoute les bon selecteurs aux dossiers
-    const folders = document.querySelectorAll(BNUM_FOLDER_TAG);
-    for (const folder of folders) {
-      folder.addEventListener(
+    const bridge = BridgeEvents.Instance;
+    bridge
+      .delegate(
+        document,
         'bnum-folder:select',
-        (e) => void BridgeEvents.Instance.onFolderSelect(e),
-      );
-
-      folder.addEventListener(
+        BNUM_FOLDER,
+        bridge.onFolderSelect.bind(bridge),
+      )
+      .delegate(
+        document,
         'bnum-folder:toggle',
-        (e) => void BridgeEvents.Instance.onFolderToggle(e),
+        BNUM_FOLDER,
+        bridge.onFolderToggle.bind(bridge),
       );
-    }
 
     BridgeRc.Instance
       // Mettre à jours les non-lu sur les bnum-folder
@@ -107,20 +184,31 @@ export default class BridgeMail extends ABridge {
         target: BridgeRc.Instance.treelist,
       });
 
-    // Fix Junk folder ID
-    const emptyMailbox = this.get_env('mailboxes')?.[EMPTY_STRING];
-    if (emptyMailbox?.class?.includes?.('junk')) {
-      emptyMailbox.id = 'Ind&AOk-sirables';
-    }
+    this.#_fixLegacyJunkFolder();
 
     return this.#_updateContextMenuFolder();
   }
 
   /**
-   * Met à jour le menu contextuel des dossiers personnalisés.
+   * Corrige l'ID du dossier indésirable si nécessaire (legacy).
    * @private
    */
+  #_fixLegacyJunkFolder() {
+    const emptyMailbox = this.get_env(BridgeMail.#_ENVS.MAILBOXES)?.[
+      EMPTY_STRING
+    ];
+    if (emptyMailbox?.class?.includes('junk')) {
+      emptyMailbox.id = BridgeMail.#_LEGACY_JUNK_ID;
+    }
+  }
+
+  /**
+   * Met à jour le menu contextuel des dossiers personnalisés.
+   * @private
+   * @returns {BridgeMail}
+   */
   #_updateContextMenuFolder() {
+    // On réinitialise le contextmenu pour prendre en compte les nouveaux dossiers
     const menu = this.rcmail().contextmenu.init(
       {
         menu_name: 'folderlist',
@@ -135,17 +223,17 @@ export default class BridgeMail extends ABridge {
       },
     );
 
-    void BridgeEvents.Instance.delegate(
+    BridgeEvents.Instance.delegate(
       document,
       'contextmenu',
-      '#mailboxlist bnum-folder.mailbox',
+      BridgeMail.#_ENVS.MAILBOXES_FOLDERS_MAILBOX,
       BridgeEvents.Instance.onFolderContextMenu.bind(
         BridgeEvents.Instance,
         menu,
       ),
     );
 
-    void BridgeRc.Instance.replace(BridgeRc.Instance.patch_init_folder, {
+    BridgeRc.Instance.replace(BridgeRc.Instance.patch_init_folder, {
       target: this.rcmail().contextmenu,
     });
 
@@ -154,8 +242,8 @@ export default class BridgeMail extends ABridge {
       (...args) => void BridgeEvents.Instance.onMenuOpen(...args),
     );
 
-    this.rcmail().contextmenu.init_folder('#mailboxlist bnum-folder', {
-      menu_source: ['#rcmfoldermenu > ul', '#mailboxoptions-menu > ul > li'],
+    this.rcmail().contextmenu.init_folder(BridgeMail.#_ENVS.MAILBOXES_FOLDERS, {
+      menu_source: BridgeMail.#_ENVS.MENU_SOURCES,
     });
 
     return this;
@@ -164,6 +252,7 @@ export default class BridgeMail extends ABridge {
   /**
    * Initialise les listeners globaux (drag/drop, clics, etc.).
    * @private
+   * @returns {BridgeMail}
    */
   #_onInitListeners() {
     BridgeEvents.Instance.delegate(
@@ -182,7 +271,7 @@ export default class BridgeMail extends ABridge {
       'responseafterlist',
       BridgeEvents.Instance.onResponseAfterList.bind(
         BridgeEvents.Instance,
-        this.#_addListenersOnRowMail.bind(this),
+        this.#_setupMessageListHooks.bind(this),
       ),
     );
 
@@ -190,82 +279,172 @@ export default class BridgeMail extends ABridge {
   }
 
   /**
-   * Ajoute les listeners sur chaque ligne de mail (clic, drag, etc.).
-   * @private
+   * Enregistre les commandes personnalisées utilisées par BridgeMail.
+   * @returns {this} Chaînage
    */
-  #_addListenersOnRowMail() {
-    const rcmail = this.rcmail();
+  #_onRegisterCommands() {
+    const key = 'update_mail_css';
 
-    if (rcmail.message_list.draggable) rcmail.message_list.draggable = false;
-
-    for (const e of document.querySelectorAll('#messagelist tbody tr')) {
-      if (typeof $ !== 'undefined') $(e).off('mouseup').off('mousedown');
-
-      e.setAttribute('draggable', true);
-      e.addEventListener(
-        'click',
-        BridgeEvents.Instance.onMailClick.bind(BridgeEvents.Instance),
-      );
-      e.addEventListener(
-        'dblclick',
-        BridgeEvents.Instance.onMailDblClick.bind(BridgeEvents.Instance),
-      );
-      e.addEventListener(
-        'dragstart',
-        BridgeEvents.Instance.onMailDragStart.bind(BridgeEvents.Instance),
-      );
-      e.addEventListener(
-        'dragend',
-        BridgeEvents.Instance.onMailDragEnd.bind(BridgeEvents.Instance),
-      );
-    }
+    BridgeCommands.Instance.command_register(
+      key,
+      BridgeCommands.Instance.command_update_mail_css,
+    );
 
     return this;
   }
 
+  /**
+   * Configure l'interactivité de la liste des messages (drag & drop, clics, etc.).
+   * @private
+   * @returns {BridgeMail}
+   */
+  #_setupMessageListHooks() {
+    const rcmail = this.rcmail();
+    if (!rcmail?.message_list) return this;
+
+    if (rcmail.message_list.draggable) {
+      rcmail.message_list.draggable = false;
+    }
+
+    const tbody = document.querySelector(
+      BridgeMail.#_SELECTORS.MESSAGES_CONTAINER,
+    );
+    if (!tbody) return this;
+
+    if (typeof $ !== 'undefined') {
+      $(BridgeMail.#_SELECTORS.MESSAGES_ROWS).off('mouseup mousedown');
+    }
+
+    const rows = tbody.querySelectorAll('tr');
+    for (let i = 0, len = rows.length; i < len; i++) {
+      rows[i].setAttribute('draggable', 'true');
+    }
+
+    if (tbody.dataset.hasBridgeListeners) return this;
+
+    tbody.addEventListener('click', (e) => {
+      const row = e.target.closest('tr');
+      if (row) BridgeEvents.Instance.onMailClick(e);
+    });
+
+    tbody.addEventListener('dblclick', (e) => {
+      const row = e.target.closest('tr');
+      if (row) BridgeEvents.Instance.onMailDblClick(e);
+    });
+
+    tbody.addEventListener('dragstart', (e) => {
+      const row = e.target.closest('tr');
+      if (row) BridgeEvents.Instance.onMailDragStart(e);
+    });
+
+    tbody.addEventListener('dragend', (e) => {
+      const row = e.target.closest('tr');
+      if (row) BridgeEvents.Instance.onMailDragEnd(e);
+    });
+
+    tbody.dataset.hasBridgeListeners = 'true';
+
+    return this;
+  }
+
+  /**
+   * Met à jour dynamiquement le style des dossiers selon la configuration utilisateur.
+   * @private
+   * @returns {BridgeMail}
+   */
   #_updateStyleFromParameters() {
-    const mailConfig = this.get_env('mel_metapage_mail_configs');
+    try {
+      const { generalPadding, balPadding } = this.#_updateFolderStyle();
+      const mel_folder_space = CONFIG_FOLDER_SPACE;
 
-    if (mailConfig) {
-      const mel_folder_space = 'mel-folder-space';
-
-      let generalPadding = new DsCssProperty(
-        '--bnum-folder-title-padding',
-        EMPTY_STRING,
-      );
-      let balPadding = new DsCssProperty(
-        '--bnum-folder-bal-title-padding',
-        EMPTY_STRING,
-      );
-
-      switch (mailConfig[mel_folder_space]) {
-        case this.getLocalization('larger', { plugin: 'mel_metapage' }):
-          generalPadding.value =
-            'var(--bnum-folder-title-padding-larger, 15px 15px)';
-          balPadding.value =
-            'var(--bnum-folder-bal-title-padding-larger, 20px 15px)';
-          break;
-
-        case this.getLocalization('smaller', { plugin: 'mel_metapage' }):
-          generalPadding.value =
-            'var(--bnum-folder-title-padding-smaller, 5px 15px)';
-          balPadding.value =
-            'var(--bnum-folder-bal-title-padding-smaller, 10px 15px)';
-          break;
-        default:
-          generalPadding.value = 'var(--bnum-folder-title-padding)';
-          balPadding.value = 'var(--bnum-folder-bal-title-padding)';
-          break;
-      }
-
-      DsDocument.instance.styleSheets.add(
+      DsDocument.Instance.styleSheets.add(
         mel_folder_space,
         this.folderSpaceRule
           .addProperty(generalPadding)
           .addProperty(balPadding),
       );
+    } catch (error) {
+      console.error('###BridgeMail: Style update failed', error);
     }
 
     return this;
+  }
+
+  /**
+   * Permet de mettre à jour le style des dossiers à la volée.
+   */
+  updateFolderStyle() {
+    try {
+      // Guard clauses for external dependencies
+      if (!this.folderSpaceRule) {
+        console.warn('/!\\FolderStyler: folderSpaceRule is not initialized.');
+        return;
+      }
+
+      const generalPadding = this.folderSpaceRule.get(0);
+      const balPadding = this.folderSpaceRule.get(1);
+
+      this.#_updateFolderStyle({ generalPadding, balPadding });
+    } catch (error) {
+      // Graceful degradation or logging strategy
+      console.error('###FolderStyler: Failed to update folder style', error);
+    }
+  }
+  /**
+   * Applique les styles des dossiers selon la configuration.
+   *
+   * Note : Utilise une map pour séparer les données de la logique,
+   * respectant ainsi le principe de responsabilité unique (SRP)
+   * et facilitant la maintenance future.
+   *
+   * @param {Object} [param0={}]
+   * @param {?DsCssProperty} [param0.generalPadding=null] - Propriété CSS pour le padding général.
+   * @param {?DsCssProperty} [param0.balPadding=null] - Propriété CSS pour le padding des boîtes aux lettres.
+   * @returns {{generalPadding: DsCssProperty, balPadding: DsCssProperty}}
+   */
+  #_updateFolderStyle({ generalPadding = null, balPadding = null } = {}) {
+    // Récupération de la configuration
+    const mailConfig = this.get_env(BridgeMail.#_ENVS.MMP_CONFIGS) ?? {};
+    const configKey = mailConfig[CONFIG_FOLDER_SPACE];
+
+    // Récupération ou création des props css
+    const safeGeneral =
+      generalPadding ??
+      new DsCssProperty(BridgeMail.#_CSS_VARS.GEN_TITLE, EMPTY_STRING);
+    const safeBal =
+      balPadding ??
+      new DsCssProperty(BridgeMail.#_CSS_VARS.BAL_TITLE, EMPTY_STRING);
+
+    // Récupération de la startégie de style
+    const styleStrategy = this.#_getStyleStrategyMap();
+
+    // Application du style
+    const appliedStyle = styleStrategy[configKey] ?? BridgeMail.#_DEFAULTS;
+
+    // Maj des valeurs
+    safeGeneral.value = appliedStyle.general;
+    safeBal.value = appliedStyle.bal;
+
+    return { generalPadding: safeGeneral, balPadding: safeBal };
+  }
+
+  /**
+   * Génère la carte de configuration reliant les clés localisées aux valeurs CSS.
+   * Séparer les données de la logique respecte le principe de responsabilité unique (SRP).
+   * @returns {Object.<string, {general: string, bal: string}>}
+   */
+  #_getStyleStrategyMap() {
+    const localizationContext = { plugin: LOCALIZATION_PLUGIN };
+
+    return {
+      [this.getLocalization('larger', localizationContext)]: {
+        general: 'var(--bnum-folder-title-padding-larger, 15px 15px)',
+        bal: 'var(--bnum-folder-bal-title-padding-larger, 20px 15px)',
+      },
+      [this.getLocalization('smaller', localizationContext)]: {
+        general: 'var(--bnum-folder-title-padding-smaller, 5px 15px)',
+        bal: 'var(--bnum-folder-bal-title-padding-smaller, 10px 15px)',
+      },
+    };
   }
 }

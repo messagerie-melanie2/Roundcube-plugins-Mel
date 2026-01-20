@@ -1,13 +1,3 @@
-const EMPTY_STRING = '';
-
-function Capitalize(word) {
-  return word.charAt(0).toUpperCase() + word.slice(1);
-}
-
-function CapitalizeLine(line) {
-  return line.split(' ').map(Capitalize).join(' ');
-}
-
 var LogEnum;
 (function (LogEnum) {
   LogEnum[(LogEnum['TRACE'] = 0)] = 'TRACE';
@@ -116,6 +106,16 @@ class BnumConfig {
   }
 }
 
+const EMPTY_STRING = '';
+
+function Capitalize(word) {
+  return word.charAt(0).toUpperCase() + word.slice(1);
+}
+
+function CapitalizeLine(line) {
+  return line.split(' ').map(Capitalize).join(' ');
+}
+
 class Log {
   static trace(context, ...args) {
     if (
@@ -168,7 +168,7 @@ class Log {
   }
 }
 
-var css_248z$k =
+var css_248z$j =
   ':host([block]){display:block;flex:1;width:100%}:host(.flex){display:flex}:host(.center){align-items:center;justify-content:center;text-align:center}';
 
 function getDefaultExportFromCjs(x) {
@@ -2326,7 +2326,338 @@ class BnumElement extends HTMLElement {
 /**
  * Style commun à tous les BnumElement.
  */
-const BASE_STYLE = BnumElement.ConstructCSSStyleSheet(css_248z$k);
+const BASE_STYLE = BnumElement.ConstructCSSStyleSheet(css_248z$j);
+
+class RotomecaCookies {
+  /**
+   * Récupère la valeur d'un cookie par son nom
+   * @param name Nom du cookie
+   * @returns Valeur du cookie ou null si absent
+   */
+  get(name) {
+    const match = document.cookie.match(
+      new RegExp('(^| )' + name + '=([^;]+)'),
+    );
+    return match ? decodeURIComponent(match[2]) : null;
+  }
+  /**
+   * Définit un cookie
+   * @param name Nom du cookie
+   * @param value Valeur du cookie
+   * @param options Options : nombre de jours de validité et chemin
+   */
+  set(name, value, options = {}) {
+    const { days, path = '/', secure = true, sameSite = 'Lax' } = options;
+    let expires = EMPTY_STRING;
+    if (days) {
+      const date = new Date();
+      date.setTime(date.getTime() + days * 86_400_000);
+      expires = `; expires=${date.toUTCString()}`;
+    }
+    // Protection contre l'injection via encodeURIComponent et attributs de sécurité
+    const cookieString = `${encodeURIComponent(name)}=${encodeURIComponent(value)}${expires}; path=${path}; SameSite=${sameSite}${secure ? '; Secure' : EMPTY_STRING}`;
+    document.cookie = cookieString;
+  }
+  /**
+   * Supprime un cookie
+   * @param name Nom du cookie à supprimer
+   */
+  delete(name) {
+    this.set(name, '', { days: -1 });
+  }
+}
+
+/**
+ *  Classe pour gérer les métadonnées du document HTML (titre, balises meta).
+ */
+class RotomecaMeta {
+  /**
+   * Change le titre du document
+   */
+  set title(value) {
+    document.title = value;
+  }
+  /**
+   * Retourne le titre actuel du document
+   */
+  get title() {
+    return document.title;
+  }
+  /**
+   * Définit une balise meta standard (name="description")
+   * @param content Contenu de la balise meta description
+   */
+  setDescription(content) {
+    return this.#updateMeta('name', 'description', content);
+  }
+  /**
+   * Définit une balise OpenGraph (property="og:image")
+   * @param property Nom de la propriété OpenGraph (ex: "image")
+   * @param content Valeur de la propriété
+   */
+  setOgTag(property, content) {
+    return this.#updateMeta('property', `og:${property}`, content);
+  }
+  /**
+   * Méthode générique interne pour créer ou mettre à jour une balise meta
+   * @param attrKey "name" ou "property"
+   * @param attrValue Valeur de l'attribut
+   * @param content Contenu de la balise meta
+   * @private
+   */
+  #updateMeta(attrKey, attrValue, content) {
+    let tag = document.querySelector(`meta[${attrKey}="${attrValue}"]`);
+    if (!tag) {
+      tag = document.createElement('meta');
+      tag.setAttribute(attrKey, attrValue);
+      document.head.appendChild(tag);
+    }
+    tag.setAttribute('content', content);
+    return this;
+  }
+}
+
+class RotomecaScripts {
+  /**
+   * Cache pour ne pas charger 2 fois le même script
+   * @private
+   */
+  #_loaded = new Set();
+  /**
+   * Charge un script externe et attend qu'il soit prêt
+   * @param url URL du script à charger
+   * @param options async et defer (par défaut true)
+   * @returns Promise résolue quand le script est chargé
+   */
+  load(url, { async = true, defer = true } = {}) {
+    if (this.#_loaded.has(url)) return Promise.resolve();
+    // Si le script est déjà dans le DOM (ajouté manuellement)
+    if (document.querySelector(`script[src="${url}"]`)) {
+      this.#_loaded.add(url);
+      return Promise.resolve();
+    }
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = url;
+      script.async = async;
+      script.defer = defer;
+      script.onload = () => {
+        this.#_loaded.add(url);
+        resolve();
+      };
+      script.onerror = () => {
+        reject(new Error(`RotomecaScripts: Failed to load script ${url}`));
+      };
+      document.head.appendChild(script);
+    });
+  }
+}
+
+/**
+ * Gère un ensemble de feuilles de style CSS dynamiques pour l'application.
+ * Permet d'ajouter, supprimer et mettre à jour des règles CSS à la volée.
+ */
+class RotomecaStyleSheets {
+  /**
+   * Identifiant de la mise à jour planifiée (requestAnimationFrame).
+   * Null si aucune mise à jour n'est en attente.
+   */
+  #_pendingUpdate = null;
+  /**
+   * Indique si la feuille de style native a été montée dans le document.
+   */
+  #_mounted = false;
+  /**
+   * Registre des règles CSS, indexées par identifiant.
+   */
+  #_registry = new Map();
+  /**
+   * Map des fonctions de nettoyage des listeners pour chaque règle.
+   */
+  #_listenersDisposers = new Map();
+  /**
+   * Feuille de style native utilisée pour injecter les règles dans le DOM.
+   */
+  #_nativeSheet = new CSSStyleSheet();
+  /**
+   * Ajoute une règle CSS avec un identifiant spécifique.
+   * @param id Identifiant unique de la règle.
+   * @param rule Règle CSS à ajouter.
+   */
+  add(id, rule) {
+    if (this.#_registry.has(id)) {
+      console.warn(
+        '/!\\[RotomecaStyleSheets/add]',
+        `Rule with id '${id}' already exists.`,
+      );
+      return this;
+    }
+    rule.onUpdate.add(id, () => this.#_scheduleRender());
+    this.#_listenersDisposers.set(id, () => {
+      rule.onUpdate.remove(id);
+    });
+    this.#_registry.set(id, rule);
+    return this.#_scheduleRender();
+  }
+  /**
+   * Ajoute une règle CSS et génère automatiquement un identifiant.
+   * @param rule Règle CSS à ajouter.
+   * @returns L'identifiant généré.
+   */
+  push(rule) {
+    const id = this.#_generateId();
+    void this.add(id, rule);
+    return id;
+  }
+  /**
+   * Ajoute plusieurs règles CSS à la feuille de style.
+   * @param rules Liste des règles à ajouter.
+   */
+  addMultiples(...rules) {
+    for (const rule of rules) {
+      this.push(rule);
+    }
+    return this;
+  }
+  /**
+   * Supprime une règle CSS par son identifiant.
+   * @param id Identifiant de la règle à supprimer.
+   */
+  remove(id) {
+    if (this.#_registry.has(id)) {
+      const disposer = this.#_listenersDisposers.get(id);
+      if (disposer) disposer();
+      this.#_listenersDisposers.delete(id);
+      this.#_registry.delete(id);
+      return this.#_scheduleRender();
+    }
+    return this;
+  }
+  /**
+   * Supprime toutes les règles CSS de la feuille de style.
+   */
+  clear() {
+    for (const disposer of this.#_listenersDisposers.values()) {
+      disposer();
+    }
+    this.#_registry.clear();
+    this.#_listenersDisposers.clear();
+    return this.#_scheduleRender();
+  }
+  /**
+   * Monte la feuille de style native dans le document si ce n'est pas déjà fait.
+   * @private
+   */
+  #_mount() {
+    if (
+      !this.#_mounted &&
+      !document.adoptedStyleSheets.includes(this.#_nativeSheet)
+    ) {
+      document.adoptedStyleSheets = [
+        ...document.adoptedStyleSheets,
+        this.#_nativeSheet,
+      ];
+      this.#_mounted = true;
+    }
+    return this;
+  }
+  /**
+   * Planifie un rendu asynchrone de la feuille de style.
+   * @private
+   */
+  #_scheduleRender() {
+    if (this.#_pendingUpdate) return this;
+    this.#_pendingUpdate = requestAnimationFrame(() => {
+      this.#_render();
+      this.#_pendingUpdate = null;
+    });
+    return this;
+  }
+  /**
+   * Génère le CSS et le remplace dans la feuille de style native.
+   * @private
+   */
+  #_render() {
+    if (this.#_registry.size === 0) {
+      this.#_nativeSheet.replaceSync(EMPTY_STRING);
+      return this;
+    }
+    const cssContent = Array.from(this.#_registry.values())
+      .map((rule) => rule.toString())
+      .join('\n');
+    this.#_nativeSheet.replaceSync(cssContent);
+    return this.#_mount();
+  }
+  /**
+   * Génère un identifiant unique pour une nouvelle règle CSS.
+   * @private
+   */
+  #_generateId() {
+    do {
+      var id = `bnum-stylesheet-${crypto.randomUUID().substring(0, 8)}`;
+    } while (this.#_registry.has(id));
+    return id;
+  }
+}
+
+/**
+ * Singleton pour accéder aux feuilles de style dynamiques de l'application.
+ */
+class RotomecaDocument {
+  /**
+   * Instance unique de RotomecaDocument.
+   * @private
+   */
+  static #_instance = null;
+  /**
+   * Retourne l'instance unique de RotomecaDocument.
+   * @deprecated Utilisez RotomecaDocument.Instance à la place.
+   */
+  static get instance() {
+    return this.Instance;
+  }
+  static get Instance() {
+    return (this.#_instance ??= new RotomecaDocument());
+  }
+  /**
+   * Instance des feuilles de style dynamiques.
+   * @private
+   */
+  #_styleSheets = null;
+  /**
+   * Retourne l'ensemble des feuilles de style dynamiques.
+   */
+  get styleSheets() {
+    return (this.#_styleSheets ??= new RotomecaStyleSheets());
+  }
+  #_meta = null;
+  /**
+   * Retourne l'objet de gestion des métadonnées du document.
+   */
+  get meta() {
+    return (this.#_meta ??= new RotomecaMeta());
+  }
+  #_scripts = null;
+  /**
+   * Retourne l'objet de gestion des scripts du document.
+   */
+  get scripts() {
+    return (this.#_scripts ??= new RotomecaScripts());
+  }
+  #_cookies = null;
+  /**
+   * Retourne l'objet de gestion des cookies du document.
+   */
+  get cookies() {
+    return (this.#_cookies ??= new RotomecaCookies());
+  }
+  /**
+   * Retourne l'objet Document du navigateur.
+   */
+  get document() {
+    return document;
+  }
+}
 
 var event = { exports: {} };
 
@@ -2625,62 +2956,291 @@ var eventExports = requireEvent();
 var JsEvent = /*@__PURE__*/ getDefaultExportFromCjs(eventExports);
 
 /**
- * Événement personnalisé signalant le changement d'un élément.
- *
- * @template T Type du nouvel élément.
- * @template Y Type de l'ancien élément.
- * @template TCaller Type de l'élément ayant déclenché l'événement (doit hériter de HTMLElement).
+ * Représente une règle CSS composée d'un sélecteur et de propriétés.
+ * Permet d'ajouter ou de retirer dynamiquement des propriétés.
  */
-class ElementChangedEvent extends CustomEvent {
-  #_new;
-  #_old;
-  #_caller;
+class RotomecaCssRule {
   /**
-   * Crée une nouvelle instance d'ElementChangedEvent.
-   *
-   * @param type Le type de changement.
-   * @param newElement Le nouvel élément.
-   * @param oldElement L'ancien élément.
-   * @param caller L'élément ayant déclenché l'événement.
-   * @param initDict Options d'initialisation de l'événement.
+   * Sélecteur CSS de la règle.
+   * @private
    */
-  constructor(type, newElement, oldElement, caller, initDict = {}) {
-    super(`custom:element-changed.${type}`, initDict);
-    this.#_new = newElement;
-    this.#_old = oldElement;
-    this.#_caller = caller;
+  #_selectorText;
+  /**
+   * Liste des propriétés CSS associées à la règle.
+   * @private
+   */
+  #_properties;
+  /**
+   * Gestionnaire d'événements pour les changements de la règle.
+   * @private
+   */
+  #_onUpdate = null;
+  /**
+   * Événement déclenché lors d'une modification de la règle.
+   */
+  get onUpdate() {
+    return (this.#_onUpdate ??= new JsEvent());
   }
-  /** Retourne le nouvel élément. */
-  get newElement() {
-    return this.#_new;
+  /**
+   * @param selectorText Sélecteur CSS de la règle.
+   * @param args Propriétés CSS de la règle.
+   */
+  constructor(selectorText, ...args) {
+    this.#_selectorText = selectorText;
+    this.#_properties = args;
+    for (const prop of this.#_properties) {
+      prop.event.push(() => this.#_notifyParent());
+    }
   }
-  /** Retourne l'ancien élément. */
-  get oldElement() {
-    return this.#_old;
+  /**
+   * Retourne le sélecteur CSS de la règle.
+   */
+  get selectorText() {
+    return this.#_selectorText;
   }
-  /** Retourne l'élément qui a déclenché l'événement. */
-  get caller() {
-    return this.#_caller;
+  /**
+   * Ajoute une propriété à la règle CSS.
+   * @param prop Propriété à ajouter.
+   */
+  addProperty(prop) {
+    this.#_properties.push(prop);
+    prop.event.push(() => this.#_notifyParent());
+    this.#_notifyParent();
+    return this;
+  }
+  /**
+   * Retourne une propriété de la règle CSS par son index.
+   * @param index Index de la propriété à récupérer.
+   */
+  get(index) {
+    return this.#_properties[index];
+  }
+  /**
+   * Supprime une propriété de la règle CSS par son nom.
+   * @param propName Nom de la propriété à supprimer.
+   * @param options all: supprime toutes les occurrences si true.
+   */
+  removeProperty(propName, { all = false } = {}) {
+    let stop = false;
+    this.#_properties = this.#_properties.filter((prop) => {
+      if (stop) return true;
+      if (prop.name === propName) {
+        if (!all) stop = true;
+        return false;
+      }
+      return true;
+    });
+    this.#_notifyParent();
+    return this;
+  }
+  /**
+   * Retourne la règle CSS sous forme de chaîne.
+   */
+  toString() {
+    const props = this.#_properties
+      .map((prop) => `  ${prop.toString()}`)
+      .join('\n');
+    return `${this.#_selectorText} {\n${props}\n}`;
+  }
+  /**
+   * Notifie les listeners parents qu'une modification a eu lieu.
+   * @private
+   */
+  #_notifyParent() {
+    if (this.#_onUpdate && this.#_onUpdate.count() > 0) this.#_onUpdate.call();
   }
 }
 
-const TAG_ICON = `${BnumConfig.Get('tag_prefix')}-icon`;
-const TAG_BUTTON = `${BnumConfig.Get('tag_prefix')}-button`;
-const TAG_PRIMARY = `${BnumConfig.Get('tag_prefix')}-primary-button`;
-const TAG_SECONDARY = `${BnumConfig.Get('tag_prefix')}-secondary-button`;
-const TAG_DANGER = `${BnumConfig.Get('tag_prefix')}-danger-button`;
-const TAG_HELPER = `${BnumConfig.Get('tag_prefix')}-helper`;
-const TAG_PICTURE = `${BnumConfig.Get('tag_prefix')}-img`;
-const TAG_CARD_TITLE = `${BnumConfig.Get('tag_prefix')}-card-title`;
-const TAG_CARD = `${BnumConfig.Get('tag_prefix')}-card`;
-const TAG_CARD_EMAIL = `${BnumConfig.Get('tag_prefix')}-card-email`;
-const TAG_CARD_AGENDA = `${BnumConfig.Get('tag_prefix')}-card-agenda`;
-const TAG_CARD_ITEM = `${BnumConfig.Get('tag_prefix')}-card-item`;
-const TAG_CARD_ITEM_MAIL = `${BnumConfig.Get('tag_prefix')}-card-item-mail`;
-const TAG_CARD_ITEM_AGENDA = `${BnumConfig.Get('tag_prefix')}-card-item-agenda`;
-const TAG_CARD_LIST = `${BnumConfig.Get('tag_prefix')}-card-list`;
-const TAG_DATE = `${BnumConfig.Get('tag_prefix')}-date`;
-const TAG_ICON_BUTTON = `${BnumConfig.Get('tag_prefix')}-icon-button`;
+/**
+ * Représente une propriété CSS (nom, valeur, important).
+ * Permet de notifier les changements de valeur.
+ */
+class RotomecaCssProperty {
+  /**
+   * Nom de la propriété CSS.
+   * @private
+   */
+  #_name;
+  /**
+   * Valeur de la propriété CSS.
+   * @private
+   */
+  #_value;
+  /**
+   * Indique si la propriété est !important.
+   * @private
+   */
+  #_important;
+  /**
+   * Gestionnaire d'événements pour les changements de la propriété.
+   * @private
+   */
+  #_listeners = null;
+  /**
+   * Événement déclenché lors d'une modification de la propriété.
+   */
+  get event() {
+    return (this.#_listeners ??= new JsEvent());
+  }
+  /**
+   * @param name Nom de la propriété CSS.
+   * @param value Valeur de la propriété CSS.
+   * @param important Indique si la propriété est !important.
+   */
+  constructor(name, value, important = false) {
+    this.#_name = name;
+    this.#_value = value;
+    this.#_important = important;
+  }
+  /**
+   * Modifie la valeur de la propriété CSS.
+   */
+  set value(value) {
+    if (this.#_value !== value) {
+      this.#_value = value;
+      this.#_notify();
+    }
+  }
+  /**
+   * Modifie l'état important de la propriété CSS.
+   */
+  set important(important) {
+    if (this.#_important !== important) {
+      this.#_important = important;
+      this.#_notify();
+    }
+  }
+  /**
+   * Modifie le nom de la propriété CSS.
+   */
+  set name(name) {
+    if (this.#_name !== name) {
+      this.#_name = name;
+      this.#_notify();
+    }
+  }
+  /**
+   * Retourne la valeur de la propriété CSS.
+   */
+  get value() {
+    return this.#_value;
+  }
+  /**
+   * Retourne le nom de la propriété CSS.
+   */
+  get name() {
+    return this.#_name;
+  }
+  /**
+   * Retourne si la propriété est !important.
+   */
+  get important() {
+    return this.#_important;
+  }
+  /**
+   * Retourne la propriété CSS sous forme de chaîne.
+   */
+  toString() {
+    return `${this.#_name}: ${this.#_value}${this.#_important ? ' !important' : EMPTY_STRING};`;
+  }
+  /**
+   * Notifie les listeners qu'une modification a eu lieu.
+   * @private
+   */
+  #_notify() {
+    if (this.#_listeners) this.#_listeners.call();
+  }
+}
+
+/**
+ * Classe interne étendant BnumElement pour gérer les états personnalisés via ElementInternals.
+ */
+class BnumElementInternal extends BnumElement {
+  /**
+   * Internals de l'élément, utilisé pour accéder aux états personnalisés.
+   * @private
+   */
+  #_internal = this.attachInternals();
+  constructor() {
+    super();
+  }
+  /**
+   * Retourne l'objet ElementInternals associé à l'élément.
+   * @protected
+   */
+  get _p_internal() {
+    return this.#_internal;
+  }
+  /**
+   * Retourne l'ensemble des états personnalisés de l'élément.
+   * @protected
+   */
+  get _p_states() {
+    return this._p_internal.states;
+  }
+  /**
+   * Efface tous les états personnalisés de l'élément.
+   * @returns {this}
+   * @protected
+   */
+  _p_clearStates() {
+    this._p_states.clear();
+    return this;
+  }
+  /**
+   * Ajoute un état personnalisé à l'élément.
+   * @param {string} state - Nom de l'état à ajouter.
+   * @returns {this}
+   * @protected
+   */
+  _p_addState(state) {
+    this._p_states.add(state);
+    return this;
+  }
+  /**
+   * Ajoute plusieurs états personnalisés à l'élément.
+   * @param {string[]} states - Liste des états à ajouter.
+   * @returns {this}
+   * @protected
+   */
+  _p_addStates(...states) {
+    for (let index = 0, len = states.length; index < len; ++index) {
+      this._p_states.add(states[index]);
+    }
+    return this;
+  }
+  /**
+   * Supprime un état personnalisé de l'élément.
+   * @param {string} state - Nom de l'état à supprimer.
+   * @returns {this}
+   * @protected
+   */
+  _p_removeState(state) {
+    this._p_states.delete(state);
+    return this;
+  }
+  /**
+   * Supprime plusieurs états personnalisés de l'élément.
+   * @param {string[]} states - Liste des états à supprimer.
+   * @returns {this}
+   * @protected
+   */
+  _p_removeStates(states) {
+    for (let index = 0, len = states.length; index < len; ++index) {
+      this._p_states.delete(states[index]);
+    }
+    return this;
+  }
+  /**
+   * Vérifie si l'élément possède un état personnalisé donné.
+   * @param {string} state - Nom de l'état à vérifier.
+   * @returns {boolean}
+   * @protected
+   */
+  _p_hasState(state) {
+    return this._p_states.has(state);
+  }
+}
 
 /**
  * Classe de gestion de planification d'exécution de callback.
@@ -2852,101 +3412,326 @@ class SchedulerArray {
   }
 }
 
-var css_248z$j =
-  '@font-face{font-family:Material Symbols Outlined;font-style:normal;font-weight:200;src:url(fonts/material-symbol-v2.woff2) format("woff2")}.material-symbols-outlined{word-wrap:normal;-moz-font-feature-settings:"liga";-moz-osx-font-smoothing:grayscale;direction:ltr;display:inline-block;font-family:Material Symbols Outlined;font-size:24px;font-style:normal;font-weight:400;letter-spacing:normal;line-height:1;text-transform:none;white-space:nowrap}';
-
 var css_248z$i =
-  '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{font-size:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem));font-variation-settings:"FILL" var(--bnum-icon-fill,0),"wght" var(--bnum-icon-weight,400),"GRAD" var(--bnum-icon-grad,0),"opsz" var(--bnum-icon-opsz,24);font-weight:var(--bnum-icon-font-weight,var(--bnum-font-weight-normal,normal));height:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem));width:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem))}:host(:state(loading)){opacity:0}';
+  '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{border-radius:var(--bnum-badge-border-radius,100px);display:var(--bnum-badge-display,inline-block);padding:var(--bnum-badge-padding,var(--bnum-space-xs,5px))}:host(:state(is-circle)){aspect-ratio:1;border-radius:var(--bnum-badge-circle-border-radius,100%)}:host(:state(is-circle)) span{align-items:center;display:flex;height:100%;justify-content:center}:host(:state(variation-primary)){background-color:var(--bnum-badge-primary-color,var(--bnum-color-primary,#000091));color:var(--bnum-badge-primary-text-color,var(--bnum-text-on-primary,#f5f5fe))}:host(:state(variation-secondary)){background-color:var(--bnum-badge-secondary-color,var(--bnum-color-secondary,#3a3a3a));color:var(--bnum-badge-secondary-text-color,var(--bnum-text-on-secondary,#fff))}:host(:state(variation-secondary)){border:var(--bnum-badge-type,solid) var(--bnum-badge-size,thin) var(--bnum-badge-secondary-text-color,var(--bnum-text-on-secondary,#fff))}:host(:state(variation-danger)){background-color:var(--bnum-badge-danger-color,var(--bnum-color-danger,#ce0500));color:var(--bnum-badge-danger-text-color,var(--bnum-text-on-danger,#f5f5fe))}';
 
+const STYLE$3 = BnumElementInternal.ConstructCSSStyleSheet(css_248z$i);
 /**
- * Classe interne étendant BnumElement pour gérer les états personnalisés via ElementInternals.
+ * Badge d'information.
+ *
+ * @structure Badge classique
+ * <bnum-badge data-value="Je suis un badge !"></bnum-badge>
+ *
+ * @structure Badge avec un nombre
+ * <bnum-badge data-value="9999"></bnum-badge>
+ *
+ * @structure Arrondi forcé
+ * <bnum-badge data-value="9999" circle></bnum-badge>
+ *
+ * @structure Secondary
+ * <bnum-badge data-value="42" data-variation="secondary" circle></bnum-badge>
+ *
+ * @structure Danger
+ * <bnum-badge data-value="42" data-variation="danger" circle></bnum-badge>
+ *
+ * @state has-value - Le badge a une valeur.
+ * @state no-value - Le badge n'a pas de valeur.
+ * @state is-circle - Le badge est en mode cercle.
+ * @state variation-primary - Le badge utilise la variation primaire.
+ * @state variation-secondary - Le badge utilise la variation secondaire.
+ * @state variation-danger - Le badge utilise la variation danger.
+ *
+ * @cssvar {inline-block} --bnum-badge-display - Permet de surcharger la propriété CSS display du badge.
+ * @cssvar {100px} --bnum-badge-border-radius - Permet de surcharger le rayon de bordure du badge.
+ * @cssvar {10px} --bnum-badge-padding - Permet de surcharger le padding du badge.
+ * @cssvar {100%} --bnum-badge-circle-border-radius - Permet de surcharger le rayon de bordure du badge en mode "cercle".
+ * @cssvar {#000091} --bnum-badge-primary-color - Définit la couleur de fond du badge en variation "primary".
+ * @cssvar {#f5f5fe} --bnum-badge-primary-text-color - Définit la couleur du texte du badge en variation "primary".
+ * @cssvar {#ffffff} --bnum-badge-secondary-color - Définit la couleur de fond du badge en variation "secondary".
+ * @cssvar {#000091} --bnum-badge-secondary-text-color - Définit la couleur du texte du badge en variation "secondary".
+ * @cssvar {solid} --bnum-badge-type - Permet de surcharger le type de bordure (ex: solid, dashed) pour la variation "secondary".
+ * @cssvar {thin} --bnum-badge-size - Permet de surcharger l’épaisseur de la bordure pour la variation "secondary".
+ * @cssvar {#ce0500} --bnum-badge-danger-color - Définit la couleur de fond du badge en variation "danger".
+ * @cssvar {#f5f5fe} --bnum-badge-danger-text-color - Définit la couleur du texte du badge en variation "danger".
+ *
  */
-class BnumElementInternal extends BnumElement {
+class HTMLBnumBadge extends BnumElementInternal {
+  //#region Constants
   /**
-   * Internals de l'élément, utilisé pour accéder aux états personnalisés.
-   * @private
+   * Nom de l'attribut pour la valeur du badge.
    */
-  #_internal = this.attachInternals();
+  static DATA_VALUE = 'value';
+  /**
+   * Nom de l'attribut pour la variation du badge.
+   */
+  static DATA_VARIATION = 'variation';
+  /**
+   * Nom de l'attribut pour la valeur du badge.
+   * @attr {string} data-value - Valeur affichée dans le badge.
+   */
+  static ATTR_VALUE = 'data-value';
+  /**
+   * Nom de l'attribut pour la variation du badge.
+   * @attr {'primary' | 'secondary' | 'danger'} (optional) (default:'primary') data-variation - Variation du badge.
+   */
+  static ATTR_VARIATION = 'data-variation';
+  /**
+   * Nom de l'attribut pour le mode cercle.
+   * @attr {any} (optional) circle - Indique si le badge doit être affiché en cercle.
+   */
+  static ATTR_CIRCLE = 'circle';
+  /**
+   * Valeur de variation primaire.
+   */
+  static VARIATION_PRIMARY = 'primary';
+  /**
+   * Valeur de variation secondaire.
+   */
+  static VARIATION_SECONDARY = 'secondary';
+  /**
+   * Valeur de variation danger.
+   */
+  static VARIATION_DANGER = 'danger';
+  /**
+   * Nom de la classe d'état "a une valeur".
+   */
+  static STATE_HAS_VALUE = 'has-value';
+  /**
+   * Nom de la classe d'état "pas de valeur".
+   */
+  static STATE_NO_VALUE = 'no-value';
+  /**
+   * Nom de la classe d'état "cercle".
+   */
+  static STATE_IS_CIRCLE = 'is-circle';
+  /**
+   * Préfixe de la classe d'état pour la variation.
+   */
+  static STATE_VARIATION_PREFIX = 'variation-';
+  //#endregion Constants
+  //#region Private Fields
+  /**
+   * Valeur affichée dans le badge.
+   */
+  #_value = EMPTY_STRING;
+  /**
+   * Planificateur de mise à jour asynchrone.
+   */
+  #_updateSchduler = null;
+  /**
+   * Élément span contenant la valeur du badge.
+   */
+  #_spanElement = null;
+  //#endregion Private Fields
+  //#region Getters/Setters
+  /**
+   * Récupère la valeur depuis l'attribut data-value.
+   */
+  get #_dataValue() {
+    return this.data(HTMLBnumBadge.DATA_VALUE) || EMPTY_STRING;
+  }
+  /**
+   * Récupère la variation depuis l'attribut data-variation.
+   */
+  get #_dataVariation() {
+    return (
+      this.data(HTMLBnumBadge.DATA_VARIATION) || HTMLBnumBadge.VARIATION_PRIMARY
+    );
+  }
+  /**
+   * Valeur affichée dans le badge.
+   */
+  get value() {
+    if (!this.alreadyLoaded) this.#_value = this.#_dataValue;
+    return this.#_value;
+  }
+  set value(value) {
+    if (!this.alreadyLoaded) this.removeAttribute(HTMLBnumBadge.ATTR_VALUE);
+    this.#_value = value;
+    this.#_requestUpdate();
+  }
+  /**
+   * Variation de style du badge.
+   */
+  get variation() {
+    return this.#_dataVariation;
+  }
+  set variation(value) {
+    this.data(HTMLBnumBadge.DATA_VARIATION, value);
+    this.#_requestUpdate();
+  }
+  //#endregion Getters/Setters
+  //#region Lifecycle
   constructor() {
     super();
   }
   /**
-   * Retourne l'objet ElementInternals associé à l'élément.
-   * @protected
+   * Retourne les styles à appliquer au composant.
    */
-  get _p_internal() {
-    return this.#_internal;
+  _p_getStylesheets() {
+    return [...super._p_getStylesheets(), STYLE$3];
   }
   /**
-   * Retourne l'ensemble des états personnalisés de l'élément.
-   * @protected
+   * Construit le DOM interne du composant.
    */
-  get _p_states() {
-    return this._p_internal.states;
+  _p_buildDOM(container) {
+    super._p_buildDOM(container);
+    this.#_spanElement = this._p_createSpan();
+    container.appendChild(this.#_spanElement);
+    const force = true;
+    this.#_update(force);
   }
   /**
-   * Efface tous les états personnalisés de l'élément.
-   * @returns {this}
-   * @protected
+   * Indique si toutes les modifications d'attributs doivent déclencher une mise à jour.
    */
-  _p_clearStates() {
-    this._p_states.clear();
+  _p_isUpdateForAllAttributes() {
+    return true;
+  }
+  /**
+   * Met à jour le composant lors d'un changement d'attribut.
+   */
+  _p_update(name, oldVal, newVal) {
+    return this.#_update();
+  }
+  //#endregion Lifecycle
+  //#region Private Methods
+  /**
+   * Demande une mise à jour asynchrone du composant.
+   */
+  #_requestUpdate() {
+    (this.#_updateSchduler ??= new Scheduler(() => {
+      this.#_update();
+    })).schedule(0);
     return this;
   }
   /**
-   * Ajoute un état personnalisé à l'élément.
-   * @param {string} state - Nom de l'état à ajouter.
-   * @returns {this}
-   * @protected
+   * Met à jour l'affichage du badge selon ses propriétés et attributs.
    */
-  _p_addState(state) {
-    this._p_states.add(state);
-    return this;
+  #_update(force = false) {
+    if (!this.alreadyLoaded && !force) return;
+    this._p_clearStates();
+    const value = this.value;
+    this.#_spanElement.textContent = value;
+    if (value !== EMPTY_STRING) this._p_addState(HTMLBnumBadge.STATE_HAS_VALUE);
+    else this._p_addState(HTMLBnumBadge.STATE_NO_VALUE);
+    if (this.hasAttribute(HTMLBnumBadge.ATTR_CIRCLE))
+      this._p_addState(HTMLBnumBadge.STATE_IS_CIRCLE);
+    this._p_addState(
+      `${HTMLBnumBadge.STATE_VARIATION_PREFIX}${this.variation}`,
+    );
+  }
+  //#endregion Private Methods
+  //#region Static Methods
+  /**
+   * Attributs observés pour ce composant.
+   */
+  static _p_observedAttributes() {
+    return [HTMLBnumBadge.ATTR_CIRCLE];
   }
   /**
-   * Ajoute plusieurs états personnalisés à l'élément.
-   * @param {string[]} states - Liste des états à ajouter.
-   * @returns {this}
-   * @protected
+   * Crée un badge via JavaScript.
+   * @param value Valeur à afficher
+   * @param options Options de création (cercle, variation)
    */
-  _p_addStates(...states) {
-    for (let index = 0, len = states.length; index < len; ++index) {
-      this._p_states.add(states[index]);
-    }
-    return this;
+  static Create(value, { circle = false, variation = undefined } = {}) {
+    const badge = document.createElement(HTMLBnumBadge.TAG);
+    return badge
+      .attr(HTMLBnumBadge.ATTR_VALUE, value)
+      .condAttr(circle, HTMLBnumBadge.ATTR_CIRCLE, true)
+      .condAttr(
+        variation !== undefined,
+        HTMLBnumBadge.ATTR_VARIATION,
+        variation,
+      );
   }
   /**
-   * Supprime un état personnalisé de l'élément.
-   * @param {string} state - Nom de l'état à supprimer.
-   * @returns {this}
-   * @protected
+   * Génère le HTML d'un badge.
+   * @param value Valeur à afficher
+   * @param attrs Attributs additionnels
    */
-  _p_removeState(state) {
-    this._p_states.delete(state);
-    return this;
+  static Write(value, attrs = {}) {
+    const attributes = this._p_WriteAttributes(attrs);
+    return `<${HTMLBnumBadge.TAG} ${HTMLBnumBadge.ATTR_VALUE}="${value}" ${attributes}></${HTMLBnumBadge.TAG}>`;
   }
   /**
-   * Supprime plusieurs états personnalisés de l'élément.
-   * @param {string[]} states - Liste des états à supprimer.
-   * @returns {this}
-   * @protected
+   * Tag HTML du composant.
    */
-  _p_removeStates(states) {
-    for (let index = 0, len = states.length; index < len; ++index) {
-      this._p_states.delete(states[index]);
-    }
-    return this;
-  }
-  /**
-   * Vérifie si l'élément possède un état personnalisé donné.
-   * @param {string} state - Nom de l'état à vérifier.
-   * @returns {boolean}
-   * @protected
-   */
-  _p_hasState(state) {
-    return this._p_states.has(state);
+  static get TAG() {
+    return 'bnum-badge';
   }
 }
+HTMLBnumBadge.TryDefine();
+
+const TAG_ICON = `${BnumConfig.Get('tag_prefix')}-icon`;
+const TAG_BUTTON = `${BnumConfig.Get('tag_prefix')}-button`;
+const TAG_PRIMARY = `${BnumConfig.Get('tag_prefix')}-primary-button`;
+const TAG_SECONDARY = `${BnumConfig.Get('tag_prefix')}-secondary-button`;
+const TAG_DANGER = `${BnumConfig.Get('tag_prefix')}-danger-button`;
+const TAG_HELPER = `${BnumConfig.Get('tag_prefix')}-helper`;
+`${BnumConfig.Get('tag_prefix')}-img`;
+const TAG_CARD_TITLE = `${BnumConfig.Get('tag_prefix')}-card-title`;
+const TAG_CARD = `${BnumConfig.Get('tag_prefix')}-card`;
+const TAG_CARD_EMAIL = `${BnumConfig.Get('tag_prefix')}-card-email`;
+const TAG_CARD_AGENDA = `${BnumConfig.Get('tag_prefix')}-card-agenda`;
+const TAG_CARD_ITEM = `${BnumConfig.Get('tag_prefix')}-card-item`;
+const TAG_CARD_ITEM_MAIL = `${BnumConfig.Get('tag_prefix')}-card-item-mail`;
+const TAG_CARD_ITEM_AGENDA = `${BnumConfig.Get('tag_prefix')}-card-item-agenda`;
+const TAG_CARD_LIST = `${BnumConfig.Get('tag_prefix')}-card-list`;
+const TAG_DATE = `${BnumConfig.Get('tag_prefix')}-date`;
+const TAG_ICON_BUTTON = `${BnumConfig.Get('tag_prefix')}-icon-button`;
+
+/**
+ * RegEx qui permet de vérifier si un texte possède uniquement des charactères alphanumériques.
+ * @constant
+ * @default /^[0-9a-zA-Z]+$/
+ */
+const REG_XSS_SAFE = /^[-.\w\s%()]+$/;
+
+/**
+ * Événement personnalisé signalant le changement d'un élément.
+ *
+ * @template T Type du nouvel élément.
+ * @template Y Type de l'ancien élément.
+ * @template TCaller Type de l'élément ayant déclenché l'événement (doit hériter de HTMLElement).
+ */
+class ElementChangedEvent extends CustomEvent {
+  #_new;
+  #_old;
+  #_caller;
+  /**
+   * Crée une nouvelle instance d'ElementChangedEvent.
+   *
+   * @param type Le type de changement.
+   * @param newElement Le nouvel élément.
+   * @param oldElement L'ancien élément.
+   * @param caller L'élément ayant déclenché l'événement.
+   * @param initDict Options d'initialisation de l'événement.
+   */
+  constructor(type, newElement, oldElement, caller, initDict = {}) {
+    super(`custom:element-changed.${type}`, initDict);
+    this.#_new = newElement;
+    this.#_old = oldElement;
+    this.#_caller = caller;
+  }
+  /** Retourne le nouvel élément. */
+  get newElement() {
+    return this.#_new;
+  }
+  /** Retourne l'ancien élément. */
+  get oldElement() {
+    return this.#_old;
+  }
+  /** Retourne l'élément qui a déclenché l'événement. */
+  get caller() {
+    return this.#_caller;
+  }
+}
+
+var css_248z$h =
+  '@font-face{font-family:Material Symbols Outlined;font-style:normal;font-weight:200;src:url(fonts/material-symbol-v2.woff2) format("woff2")}.material-symbols-outlined{word-wrap:normal;-moz-font-feature-settings:"liga";-moz-osx-font-smoothing:grayscale;direction:ltr;display:inline-block;font-family:Material Symbols Outlined;font-size:24px;font-style:normal;font-weight:400;letter-spacing:normal;line-height:1;text-transform:none;white-space:nowrap}';
+
+var css_248z$g =
+  '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{font-size:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem));font-variation-settings:"FILL" var(--bnum-icon-fill,0),"wght" var(--bnum-icon-weight,400),"GRAD" var(--bnum-icon-grad,0),"opsz" var(--bnum-icon-opsz,24);font-weight:var(--bnum-icon-font-weight,var(--bnum-font-weight-normal,normal));height:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem));width:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem))}:host(:state(loading)){opacity:0}';
 
 /**
  * Classe CSS utilisée pour les icônes Material Symbols.
@@ -2956,9 +3741,9 @@ const ICON_CLASS = 'material-symbols-outlined';
  * Feuille de style CSS pour les icônes Material Symbols.
  */
 const SYMBOLS = BnumElement.ConstructCSSStyleSheet(
-  css_248z$j.replaceAll(`.${ICON_CLASS}`, ':host'),
+  css_248z$h.replaceAll(`.${ICON_CLASS}`, ':host'),
 );
-const STYLE$3 = BnumElement.ConstructCSSStyleSheet(css_248z$i);
+const STYLE$2 = BnumElement.ConstructCSSStyleSheet(css_248z$g);
 /**
  * Composant personnalisé "bnum-icon" pour afficher une icône Material Symbol.
  *
@@ -3065,7 +3850,7 @@ class HTMLBnumIcon extends BnumElementInternal {
    * @returns {CSSStyleSheet[]} Les feuilles de style.
    */
   _p_getStylesheets() {
-    return [...super._p_getStylesheets(), SYMBOLS, STYLE$3];
+    return [...super._p_getStylesheets(), SYMBOLS, STYLE$2];
   }
   /**
    * Construit le DOM interne du composant.
@@ -3237,22 +4022,14 @@ class HTMLBnumIcon extends BnumElementInternal {
 HTMLBnumIcon.TryDefine();
 //#endregion TryDefine
 
-/**
- * RegEx qui permet de vérifier si un texte possède uniquement des charactères alphanumériques.
- * @constant
- * @default /^[0-9a-zA-Z]+$/
- */
-const REG_LIGHT_PICTURE_NAME = /(-light)\.(([\w\d]+)|\1?.+)$/;
-const REG_XSS_SAFE = /^[-.\w\s%()]+$/;
-
-var css_248z$h =
+var css_248z$f =
   '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{--bnum-icon-font-size:var(--bnum-body-font-size);border-radius:var(--bnum-button-border-radius,0);cursor:var(--bnum-button-cursor,pointer);display:var(--bnum-button-display,inline-block);font-weight:600;height:-moz-fit-content;height:fit-content;line-height:1.5rem;padding:var(--bnum-button-padding,6px 10px);transition:background-color .2s ease,color .2s ease;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}:host(:state(rounded)){border-radius:var(--bnum-button-rounded-border-radius,5px)}:host(:state(without-icon)){padding-bottom:var(--bnum-button-without-icon-padding-bottom,7.5px);padding-top:var(--bnum-button-without-icon-padding-top,7.5px)}:host(:disabled),:host(:state(disabled)){cursor:not-allowed;opacity:var(--bnum-button-disabled-opacity,.6);pointer-events:var(--bnum-button-disabled-pointer-events,none)}:host(:state(loading)){cursor:progress}:host(:state(icon)){--bnum-button-icon-gap:var(--custom-bnum-button-icon-margin,var(--bnum-space-s,10px))}:host(:state(icon))>.wrapper{align-items:center;display:flex;flex-direction:row;gap:var(--bnum-button-icon-gap);justify-content:center}:host(:state(icon-pos-left)) .wrapper{flex-direction:row-reverse}:host(:focus-visible){outline:2px solid #0969da;outline-offset:2px}:host>.wrapper{align-items:var(--bnum-button-wrapper-align-items,center);display:var(--bnum-button-wrapper-display,flex)}:host bnum-icon.icon{display:var(--bnum-button-icon-display,flex)}:host bnum-icon.icon.hidden{display:none}:host bnum-icon.loader{display:var(--bnum-button-loader-display,flex)}:host(:is(:state(loading):state(without-icon-loading))) slot{display:none}@keyframes spin{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host .loader,:host .spin,:host(:state(loading)) .icon{animation:spin var(--bnum-button-spin-duration,.75s) var(--bnum-button-spin-timing,linear) var(--bnum-button-spin-iteration,infinite)}:host(:state(hide-text-on-small)) .slot,:host(:state(hide-text-on-touch)) .slot{display:var(--size-display-state,inline-block)}:host(:state(hide-text-on-small)) .icon,:host(:state(hide-text-on-touch)) .icon{margin-left:var(--size-margin-left-state,var(--custom-button-icon-margin-left))!important;margin-right:var(--size-margin-right-state,var(--custom-button-icon-margin-right))!important}:host .hidden,:host [hidden]{display:none!important}:host(:state(primary)){background-color:var(--bnum-button-primary-background-color,var(--bnum-color-primary));border:var(--bnum-button-primary-border,solid thin var(--bnum-button-primary-border-color,var(--bnum-color-primary)));color:var(--bnum-button-primary-text-color,var(--bnum-text-on-primary))}:host(:state(primary):hover){background-color:var(--bnum-button-primary-hover-background-color,var(--bnum-color-primary-hover));border:var(--bnum-button-primary-hover-border,solid thin var(--bnum-button-primary-hover-border-color,var(--bnum-color-primary-hover)));color:var(--bnum-button-primary-hover-text-color,var(--bnum-text-on-primary-hover))}:host(:state(primary):active){background-color:var(--bnum-button-primary-active-background-color,var(--bnum-color-primary-active));border:var(--bnum-button-primary-active-border,solid thin var(--bnum-button-primary-active-border-color,var(--bnum-color-primary-active)));color:var(--bnum-button-primary-active-text-color,var(--bnum-text-on-primary-active))}:host(:state(secondary)){background-color:var(--bnum-button-secondary-background-color,var(--bnum-color-secondary));border:var(--bnum-button-secondary-border,solid thin var(--bnum-button-secondary-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-text-color,var(--bnum-text-on-secondary))}:host(:state(secondary):hover){background-color:var(--bnum-button-secondary-hover-background-color,var(--bnum-color-secondary-hover));border:var(--bnum-button-secondary-hover-border,solid thin var(--bnum-button-secondary-hover-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-hover-text-color,var(--bnum-text-on-secondary-hover))}:host(:state(secondary):active){background-color:var(--bnum-button-secondary-active-background-color,var(--bnum-color-secondary-active));border:var(--bnum-button-secondary-active-border,solid thin var(--bnum-button-secondary-active-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-active-text-color,var(--bnum-text-on-secondary-active))}:host(:state(danger)){background-color:var(--bnum-button-danger-background-color,var(--bnum-color-danger));border:var(--bnum-button-danger-border,solid thin var(--bnum-button-danger-border-color,var(--bnum-color-danger)));color:var(--bnum-button-danger-text-color,var(--bnum-text-on-danger))}:host(:state(danger):hover){background-color:var(--bnum-button-danger-hover-background-color,var(--bnum-color-danger-hover));border:var(--bnum-button-danger-hover-border,solid thin var(--bnum-button-danger-hover-border-color,var(--bnum-color-danger-hover)));color:var(--bnum-button-danger-hover-text-color,var(--bnum-text-on-danger-hover))}:host(:state(danger):active){background-color:var(--bnum-button-danger-active-background-color,var(--bnum-color-danger-active));border:var(--bnum-button-danger-active-border,solid thin var(--bnum-button-danger-active-border-color,var(--bnum-color-danger-active)));color:var(--bnum-button-danger-active-text-color,var(--bnum-text-on-danger-active))}';
 
 //#region External Constants
 /**
  * Style CSS du composant bouton.
  */
-const SHEET$e = BnumElement.ConstructCSSStyleSheet(css_248z$h);
+const SHEET$d = BnumElement.ConstructCSSStyleSheet(css_248z$f);
 // Constantes pour les tags des différents types de boutons
 /**
  * Tag du bouton Bnum.
@@ -3687,7 +4464,7 @@ class HTMLBnumButton extends BnumElement {
    * @inheritdoc
    */
   _p_getStylesheets() {
-    return [...super._p_getStylesheets(), SHEET$e];
+    return [...super._p_getStylesheets(), SHEET$d];
   }
   //#endregion Lifecycle
   //#region Private methods
@@ -3959,80 +4736,6 @@ HTMLBnumButton.TryDefine();
 //#endregion TryDefine
 
 /**
- * Bouton Bnum de type "Primary".
- *
- * @structure Cas standard
- * <bnum-primary-button>Texte du bouton</bnum-primary-button>
- *
- * @structure Bouton avec icône
- * <bnum-primary-button data-icon="home">Texte du bouton</bnum-primary-button>
- *
- * @structure Bouton avec une icône à gauche
- * <bnum-primary-button data-icon="home" data-icon-pos="left">Texte du bouton</bnum-primary-button>
- *
- * @structure Bouton en état de chargement
- * <bnum-primary-button loading>Texte du bouton</bnum-primary-button>
- *
- * @structure Bouton arrondi
- * <bnum-primary-button rounded>Texte du bouton</bnum-primary-button>
- *
- * @structure Bouton cachant le texte sur les petits layouts
- * <bnum-primary-button data-hide="small" data-icon="menu">Menu</bnum-primary-button>
- */
-class HTMLBnumPrimaryButton extends HTMLBnumButton {
-  constructor() {
-    super();
-    const fromAttribute = false;
-    this.data(
-      HTMLBnumButton.ATTR_VARIATION,
-      EButtonType.PRIMARY,
-      fromAttribute,
-    );
-  }
-  static get TAG() {
-    return TAG_PRIMARY;
-  }
-}
-HTMLBnumPrimaryButton.TryDefine();
-
-/**
- * Bouton Bnum de type "Secondary".
- *
- * @structure Cas standard
- * <bnum-secondary-button>Texte du bouton</bnum-secondary-button>
- *
- * @structure Bouton avec icône
- * <bnum-secondary-button data-icon="home">Texte du bouton</bnum-secondary-button>
- *
- * @structure Bouton avec une icône à gauche
- * <bnum-secondary-button data-icon="home" data-icon-pos="left">Texte du bouton</bnum-secondary-button>
- *
- * @structure Bouton en état de chargement
- * <bnum-secondary-button loading>Texte du bouton</bnum-secondary-button>
- *
- * @structure Bouton arrondi
- * <bnum-secondary-button rounded>Texte du bouton</bnum-secondary-button>
- *
- * @structure Bouton cachant le texte sur les petits layouts
- * <bnum-secondary-button data-hide="small" data-icon="menu">Menu</bnum-secondary-button>
- */
-class HTMLBnumSecondaryButton extends HTMLBnumButton {
-  constructor() {
-    super();
-    const fromAttribute = false;
-    this.data(
-      HTMLBnumButton.ATTR_VARIATION,
-      EButtonType.SECONDARY,
-      fromAttribute,
-    );
-  }
-  static get TAG() {
-    return TAG_SECONDARY;
-  }
-}
-HTMLBnumSecondaryButton.TryDefine();
-
-/**
  * Bouton Bnum de type "Danger".
  *
  * @structure Cas standard
@@ -4064,1393 +4767,6 @@ class HTMLBnumDangerButton extends HTMLBnumButton {
   }
 }
 HTMLBnumDangerButton.TryDefine();
-
-var css_248z$g = ':host{border-bottom:thin dotted;cursor:help}';
-
-// bnum-helper.ts
-const SHEET$d = BnumElement.ConstructCSSStyleSheet(css_248z$g);
-/**
- * Constante représentant l'icône utilisée par défaut.
- */
-const ICON = 'help';
-/**
- * Élément web personnalisé représentant une aide contextuelle avec une icône.
- *
- * @structure Cas standard
- * <bnum-helper>Ceci est une aide contextuelle.</bnum-helper>
- */
-class HTMLBnumHelper extends BnumElement {
-  /**
-   * Constructeur de l'élément HTMLBnumHelper.
-   * Initialise l'élément.
-   */
-  constructor() {
-    super();
-  }
-  /**
-   * Précharge les données de l'élément.
-   * Si l'élément possède des enfants, le texte est déplacé dans l'attribut title et le contenu est vidé.
-   */
-  _p_preload() {
-    super._p_preload();
-    setTimeout(() => {
-      if (this.hasChildNodes()) {
-        this.setAttribute('title', this.textContent ?? EMPTY_STRING);
-        this.textContent = EMPTY_STRING;
-      }
-    }, 0);
-  }
-  /**
-   * Construit le DOM interne de l'élément.
-   * Ajoute l'icône d'aide dans le conteneur.
-   * @param container Racine du shadow DOM ou élément HTML.
-   */
-  _p_buildDOM(container) {
-    super._p_buildDOM(container);
-    container.appendChild(HTMLBnumIcon.Create(ICON));
-  }
-  /**
-   * @inheritdoc
-   */
-  _p_getStylesheets() {
-    return [...super._p_getStylesheets(), SHEET$d];
-  }
-  /**
-   * Crée une nouvelle instance de HTMLBnumHelper avec le texte d'aide spécifié.
-   * @param title Texte d'aide à afficher dans l'attribut title.
-   * @returns {HTMLBnumHelper} Instance du composant.
-   */
-  static Create(title) {
-    const element = document.createElement(HTMLBnumHelper.TAG);
-    element.setAttribute('title', title);
-    return element;
-  }
-  /**
-   * Tag HTML du composant.
-   * @readonly
-   * @returns {string} Tag HTML utilisé pour ce composant.
-   */
-  static get TAG() {
-    return TAG_HELPER;
-  }
-}
-HTMLBnumHelper.TryDefine();
-
-var css_248z$f =
-  ':host{--_image-url:var(--_image-light);display:inline-block}img{content:var(--_image-url);height:100%;width:100%}';
-
-/**
- * Feuille de style CSS pour le composant BnumHTMLPicture.
- */
-const SHEET$c = BnumElement.ConstructCSSStyleSheet(css_248z$f);
-/**
- * Élément web personnalisé permettant d'afficher une image qui s'adapte automatiquement au mode sombre ou clair de l'interface.
- *
- * Le composant utilise des variables CSS pour gérer les différentes versions de l'image en fonction du thème.
- *
- * ## Attributs
- * - `src` : L'URL de l'image à afficher.
- * - `alt` : Texte alternatif pour l'image.
- *
- * ## Evènements
- * - `load` : Déclenché lorsque l'image est chargée avec succès.
- * - `error` : Déclenché si une erreur survient lors du chargement de l'image.
- *
- * @structure Image avec -light dans le nom de fichier
- * <bnum-img src="assets/icon-light.png" alt="Description"></bnum-img>
- *
- * @structure Image sans -light dans le nom de fichier
- * <bnum-img src="assets/logo.png" alt="Description"></bnum-img>
- *
- * @cssvar {var(--_image-light)} --_image-url - Url de l'image de la balise `img`. Ne pas modifier, sauf lors de la surcharge dans votre système de mode sombre.
- * @cssvar {} --_image-dark - Variable à assigner à `--_image-url` en mode sombre. Ne pas modifier.
- * @cssvar {} --_image-light - Ne pas modifier.
- *
- *
- * @class
- * @extends BnumElement
- * @example
- * <bnum-img src="image-light.png" alt="Description"></bnum-img>
- */
-class HTMLBnumPicture extends BnumElement {
-  //#region Constants
-  /**
-   * Nom de l'attribut 'src'.
-   * @attr {string} src - Utilisé pour définir l'URL de l'image.
-   */
-  static ATTRIBUTE_SRC = 'src';
-  /**
-   * Nom de l'attribut 'alt'.
-   * @attr {string} (optional) alt - Utilisé pour définir le texte alternatif de l'image. Optionnel, mais recommandé pour l'accessibilité.
-   */
-  static ATTRIBUTE_ALT = 'alt';
-  /**
-   * Chaîne de caractères représentant le suffixe pour les images en mode clair.
-   */
-  static STRING_SRC_LIGHT = '-light';
-  /**
-   * Chaîne de caractères représentant le suffixe pour les images en mode sombre.
-   */
-  static STRING_SRC_DARK = '-dark';
-  /**
-   * Nom de l'événement déclenché lorsque l'image est chargée avec succès.
-   * @event load
-   * @detail Event
-   */
-  static EVENT_LOAD = 'load';
-  /**
-   * Nom de l'événement déclenché lorsqu'une erreur survient lors du chargement de l'image.
-   * @event error
-   * @detail Event
-   */
-  static EVENT_ERROR = 'error';
-  /**
-   * Nom de la variable CSS pour l'URL de l'image en mode clair.
-   */
-  static CSS_VARIABLE_IMAGE_LIGHT = '--_image-light';
-  /**
-   * Nom de la variable CSS pour l'URL de l'image en mode sombre.
-   */
-  static CSS_VARIABLE_IMAGE_DARK = '--_image-dark';
-  //#endregion Constants
-  //#region Private fields
-  #_img = null;
-  //#endregion Private fields
-  //#region Setters/Getters
-  /**
-   * Retourne l'URL de l'image.
-   * Permet d'obtenir la valeur de l'attribut 'src'.
-   * @type {string}
-   * @readonly
-   */
-  get src() {
-    return this.getAttribute(HTMLBnumPicture.ATTRIBUTE_SRC);
-  }
-  /**
-   * Retourne l'URL de l'image en mode sombre.
-   * Génère dynamiquement l'URL pour le mode sombre à partir de l'attribut 'src'.
-   * @type {string}
-   * @readonly
-   */
-  get darkUrl() {
-    if (this.hasAttribute(HTMLBnumPicture.ATTRIBUTE_SRC)) {
-      //On récupère l'attribut src de l'élément
-      const attr = this.getAttribute(HTMLBnumPicture.ATTRIBUTE_SRC);
-      //On vérifie si l'attibut src contient le mot clé "light".
-      if (attr.match(REG_LIGHT_PICTURE_NAME)?.length)
-        //Si c'est le cas, on remplace "light" par "dark" dans l'URL de l'image.
-        return attr.replace(
-          REG_LIGHT_PICTURE_NAME,
-          `${HTMLBnumPicture.STRING_SRC_DARK}.$2`,
-        );
-      else
-        // Si l'attribut src ne contient pas le mot clé "light", on remplace la dernière partie de l'URL par "-dark".
-        return (
-          attr.split('.').slice(0, -1).join('.') +
-          `${HTMLBnumPicture.STRING_SRC_DARK}.` +
-          attr.split('.').slice(-1)
-        );
-    }
-    return null;
-  }
-  /**
-   * Retourne l'élément image HTML associé.
-   * Permet d'accéder directement à l'élément <img> du composant.
-   * @type {HTMLImageElement}
-   * @readonly
-   */
-  get picture() {
-    return this.shadowRoot.querySelector('img');
-  }
-  //#endregion Setters/Getters
-  //#region Lifecycle
-  /**
-   * Constructeur de l'élément BnumHTMLPicture.
-   * Initialise l'observateur de mutations et les gestionnaires d'attributs.
-   */
-  constructor() {
-    super();
-  }
-  /**
-   * @inheritdoc
-   */
-  _p_getStylesheets() {
-    return [...super._p_getStylesheets(), SHEET$c];
-  }
-  /**
-   * Construit le DOM du composant.
-   * Crée l'élément <img> et initialise ses attributs.
-   * @param {ShadowRoot | HTMLElement} container - Le conteneur dans lequel insérer l'image.
-   * @protected
-   */
-  _p_buildDOM(container) {
-    this.#_img = document.createElement('img');
-    // On met à jour les attributs (logique de _p_update)
-    this.#_updatePicture(
-      this.src,
-      this.getAttribute(HTMLBnumPicture.ATTRIBUTE_ALT),
-    );
-    container.appendChild(this.#_img);
-    this.setAttribute('role', 'img');
-  }
-  /**
-   * Met à jour le composant lors d'un changement d'attribut.
-   * Actualise l'image et ses propriétés selon les nouveaux attributs.
-   * @param {string} name - Nom de l'attribut modifié.
-   * @param {string | null} oldVal - Ancienne valeur de l'attribut.
-   * @param {string | null} newVal - Nouvelle valeur de l'attribut.
-   * @protected
-   */
-  _p_update(name, oldVal, newVal) {
-    if (
-      name === HTMLBnumPicture.ATTRIBUTE_SRC ||
-      name === HTMLBnumPicture.ATTRIBUTE_ALT
-    ) {
-      this.#_updatePicture(
-        this.src,
-        this.getAttribute(HTMLBnumPicture.ATTRIBUTE_ALT),
-      );
-    }
-  }
-  /**
-   * Attache les gestionnaires d'événements à l'image.
-   * Permet de réagir aux événements 'load' et 'error' de l'image.
-   * @protected
-   */
-  _p_attach() {
-    super._p_attach();
-    if (this.#_img) {
-      this.#_img.addEventListener(
-        HTMLBnumPicture.EVENT_LOAD,
-        this.trigger.bind(this, HTMLBnumPicture.EVENT_LOAD),
-      );
-      this.#_img.addEventListener(
-        HTMLBnumPicture.EVENT_ERROR,
-        this.trigger.bind(this, HTMLBnumPicture.EVENT_ERROR),
-      );
-    }
-  }
-  /**
-   * @inheritdoc
-   */
-  _p_isUpdateForAllAttributes() {
-    return true;
-  }
-  //#endregion Lifecycle
-  //#region Private methods
-  /**
-   * Met à jour l'image affichée et ses propriétés.
-   * Centralise la logique de mise à jour de l'élément <img>.
-   * @param {string | null} src - URL de l'image.
-   * @param {string | null} alt - Texte alternatif.
-   * @private
-   */
-  #_updatePicture(src, alt) {
-    if (!this.#_img) return;
-    const darkSrc = this.darkUrl;
-    // 1. On passe les URLs au CSS via des variables sur :host
-    this.style.setProperty(
-      HTMLBnumPicture.CSS_VARIABLE_IMAGE_LIGHT,
-      `url(${src ?? EMPTY_STRING})`,
-    );
-    this.style.setProperty(
-      HTMLBnumPicture.CSS_VARIABLE_IMAGE_DARK,
-      `url(${darkSrc ?? EMPTY_STRING})`,
-    );
-    this.#_img.alt = alt ?? EMPTY_STRING;
-    if (alt) this.setAttribute('aria-label', alt ?? EMPTY_STRING);
-  }
-  //#endregion Private methods
-  //#region Static methods
-  /**
-   * Retourne la liste des attributs observés par le composant.
-   * Permet au composant de réagir aux changements de ces attributs.
-   * @returns {string[]}
-   * @protected
-   */
-  static _p_observedAttributes() {
-    const array = super._p_observedAttributes();
-    array.push(HTMLBnumPicture.ATTRIBUTE_SRC, HTMLBnumPicture.ATTRIBUTE_ALT);
-    return array;
-  }
-  /**
-   * Crée un nouvel élément BnumHTMLPicture avec la source spécifiée.
-   * Permet d'instancier facilement le composant avec une image donnée.
-   * @param {string} src - L'URL de l'image à afficher.
-   * @returns {HTMLBnumPicture}
-   * @static
-   */
-  static Create(src) {
-    const element = document.createElement(this.TAG);
-    element.setAttribute(HTMLBnumPicture.ATTRIBUTE_SRC, src);
-    return element;
-  }
-  /**
-   * Retourne le nom de la balise personnalisée associée à ce composant.
-   * Utilisé pour définir et référencer le composant dans le DOM.
-   * @type {string}
-   * @static
-   * @readonly
-   */
-  static get TAG() {
-    return TAG_PICTURE;
-  }
-}
-//#region TryDefine
-HTMLBnumPicture.TryDefine();
-//#endregion
-
-var css_248z$e =
-  '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host a{align-items:var(--bnum-card-title-align-items,center);display:var(--bnum-card-title-display,flex);gap:var(--bnum-card-title-gap,var(--bnum-space-s,10px))}:host(:state(url)) a{color:var(--a-color,var(--bnum-text-primary,#000));-webkit-text-decoration:var(--a-text-decoration,none);text-decoration:var(--a-text-decoration,none)}:host(:state(url)) a:hover{color:var(--a-hover-color,var(--bnum-text-primary,#000));-webkit-text-decoration:var(--a-hover-text-decoration,underline);text-decoration:var(--a-hover-text-decoration,underline)}h2{font-size:var(--bnum-card-title-font-size,var(--bnum-font-size-h6,1.25rem));margin:var(--bnum-card-title-margin,0)}';
-
-const SHEET$b = BnumElement.ConstructCSSStyleSheet(css_248z$e);
-/**
- * Composant représentant le titre d'une carte, pouvant inclure une icône et un lien.
- * Permet d'afficher un titre enrichi avec une icône et éventuellement un lien cliquable.
- *
- * @structure Cas url et icône
- * <bnum-card-title data-icon="labs" url="https://example.com">Titre de la carte</bnum-card-title>
- *
- * @structure Cas icône uniquement
- * <bnum-card-title data-icon="labs">Titre de la carte</bnum-card-title>
- *
- * @structure Cas lien uniquement
- * <bnum-card-title url="https://example.com">Titre de la carte</bnum-card-title>
- *
- * @structure Cas texte seul
- * <bnum-card-title>Titre de la carte</bnum-card-title>
- *
- * @structure Cas icône via slot
- * <bnum-card-title>
- *  <bnum-icon slot="icon">drive_folder_upload</bnum-icon>
- *  Titre de la carte
- * </bnum-card-title>
- *
- * @state url - Actif lorsque le titre contient un lien.
- * @state without-url - Actif lorsque le titre ne contient pas de lien.
- *
- * @slot (default) - Titre de la carte (texte ou HTML)
- * @slot icon - Icône personnalisée à afficher avant le titre. Note: si une icône est définie via l'attribut `data-icon` ou via la propriété `icon`, ce slot sera ignoré.
- *
- * @cssvar {flex} --bnum-card-title-display - Définit le mode d'affichage du titre de la carte.
- * @cssvar {center} --bnum-card-title-align-items - Définit l'alignement vertical des éléments dans le titre de la carte.
- * @cssvar {var(--bnum-space-s, 10px)} --bnum-card-title-gap - Définit l'espacement entre l'icône et le texte du titre.
- */
-class HTMLBnumCardTitle extends BnumElement {
-  //#region Constants
-  /**
-   * Nom de l'attribut pour définir l'URL du lien du titre de la carte.
-   * @attr {string | null} (optional) url - URL du lien du titre de la carte
-   */
-  static ATTRIBUTE_URL = 'url';
-  /**
-   * Nom de la data pour définir l'icône du titre de la carte.
-   * @attr {string | null} (optional) data-icon - Nom de l'icône (Material Symbols) à afficher avant le titre
-   */
-  static ATTRIBUTE_DATA_ICON = 'icon';
-  /**
-   * Nom du slot pour l'icône du titre de la carte.
-   */
-  static SLOT_NAME_ICON = 'icon';
-  /**
-   * Nom de la classe au titre de la carte lorsqu'un url est défini
-   */
-  static CLASS_LINK = 'card-title-link';
-  /**
-   * Nom de l'état lorsque le titre contient un lien.
-   */
-  static STATE_URL = 'url';
-  /**
-   * Nom de l'état lorsque le titre ne contient pas de lien.
-   */
-  static STATE_WITHOUT_URL = 'without-url';
-  /**
-   * Nom de la classe pour l'icône du titre de la carte.
-   */
-  static CLASS_ICON_TITLE = 'card-icon-title';
-  /**
-   * ID du slot pour l'icône du titre de la carte.
-   */
-  static ID_SLOT_ICON = 'sloticon';
-  /**
-   * ID du slot pour le texte du titre de la carte.
-   */
-  static ID_SLOT_TEXT = 'mainslot';
-  /**
-   * ID de l'élément personnalisé pour le corps du titre de la carte.
-   */
-  static ID_CUSTOM_BODY = 'custombody';
-  //#endregion Constants
-  //#region Private fields
-  /**
-   * Élément représentant l'icône du titre de la carte.
-   * Peut être un composant icône ou un slot HTML.
-   * @private
-   */
-  #_iconElement = null;
-  #_iconSlotElement = null;
-  /**
-   * Slot pour le texte du titre de la carte.
-   * @private
-   */
-  #_textSlotElement = null;
-  #_customBodyElement = null;
-  /**
-   * Élément lien (<a>) englobant le titre si une URL est définie.
-   * @private
-   */
-  #_linkElement = null;
-  #_internals = this.attachInternals();
-  #_domScheduler = null;
-  #_bodyScheduler = null;
-  #_initBody = null;
-  //#endregion Private fields
-  //#region Getter/Setters
-  /**
-   * Obtient le nom de l'icône associée au titre de la carte.
-   * @returns {string | null} Nom de l'icône ou null si aucune icône n'est définie
-   */
-  get icon() {
-    return this.data(HTMLBnumCardTitle.ATTRIBUTE_DATA_ICON);
-  }
-  /**
-   * Définit le nom de l'icône associée au titre de la carte.
-   * Met à jour le DOM pour refléter le changement.
-   * @param {string | null} v Nom de l'icône ou null
-   */
-  set icon(v) {
-    if (this.alreadyLoaded) {
-      this._p_setData(HTMLBnumCardTitle.ATTRIBUTE_DATA_ICON, v);
-      this.#_requestUpdateDom();
-    } else {
-      const fromAttribute = true;
-      this.data(HTMLBnumCardTitle.ATTRIBUTE_DATA_ICON, v, fromAttribute);
-    }
-  }
-  /**
-   * Obtient l'URL du lien du titre de la carte.
-   * @returns {string | null} URL ou null si aucun lien n'est défini
-   */
-  get url() {
-    return this.getAttribute(HTMLBnumCardTitle.ATTRIBUTE_URL);
-  }
-  /**
-   * Définit l'URL du lien du titre de la carte.
-   * Ajoute ou retire l'attribut selon la valeur.
-   * @param {string | null} v URL ou null
-   */
-  set url(v) {
-    if (v) this.setAttribute(HTMLBnumCardTitle.ATTRIBUTE_URL, v);
-    else this.removeAttribute(HTMLBnumCardTitle.ATTRIBUTE_URL);
-  }
-  //#endregion Getter/Setters
-  //#region Lifecycle
-  /**
-   * Constructeur du composant HTMLBnumCardTitle.
-   * Initialise le composant sans ajouter d'éléments DOM.
-   */
-  constructor() {
-    super();
-  }
-  _p_getStylesheets() {
-    return [...super._p_getStylesheets(), SHEET$b];
-  }
-  _p_fromTemplate() {
-    return TEMPLATE$a;
-  }
-  /**
-   * Construit le DOM du composant dans le conteneur donné.
-   * Ajoute l'icône, le texte et le lien selon les propriétés définies.
-   * @param {ShadowRoot | HTMLElement} container Conteneur dans lequel construire le DOM
-   */
-  _p_buildDOM(container) {
-    this.#_iconSlotElement = container.querySelector(
-      `#${HTMLBnumCardTitle.ID_SLOT_ICON}`,
-    );
-    this.#_textSlotElement = container.querySelector(
-      `#${HTMLBnumCardTitle.ID_SLOT_TEXT}`,
-    );
-    this.#_customBodyElement = container.querySelector(
-      `#${HTMLBnumCardTitle.ID_CUSTOM_BODY}`,
-    );
-    this.#_linkElement = container.querySelector(
-      `.${HTMLBnumCardTitle.CLASS_LINK}`,
-    );
-    this.#_iconElement = container.querySelector(
-      `.${HTMLBnumCardTitle.CLASS_ICON_TITLE}`,
-    );
-    this.#_updateDOM();
-    if (this.#_initBody) {
-      this.#_updateBody(this.#_initBody);
-      this.#_initBody = null;
-    }
-  }
-  _p_isUpdateForAllAttributes() {
-    return true;
-  }
-  /**
-   * Méthode appelée lors de la mise à jour d'un attribut observé.
-   * Met à jour le DOM du composant.
-   * @param {string} name Nom de l'attribut modifié
-   * @param {string | null} oldVal Ancienne valeur
-   * @param {string | null} newVal Nouvelle valeur
-   */
-  _p_update(name, oldVal, newVal) {
-    if (this.alreadyLoaded) this.#_updateDOM();
-  }
-  //#endregion Lifecycle
-  //#region Private methods
-  /**
-   * Demande une mise à jour du DOM du composant.
-   * Utilise un ordonnanceur pour éviter les mises à jour redondantes.
-   * @private
-   */
-  #_requestUpdateDom() {
-    this.#_domScheduler ??= new Scheduler(() => {
-      this.#_updateDOM();
-    });
-    this.#_domScheduler.schedule();
-  }
-  /**
-   * Met à jour le DOM du composant selon les propriétés actuelles.
-   * Affiche ou masque l'icône et met à jour le lien si nécessaire.
-   * @private
-   */
-  #_updateDOM() {
-    const url = this.url;
-    const icon = this.icon;
-    this.#_internals.states.clear();
-    if (icon) {
-      this.#_iconElement.icon = icon;
-      this.#_iconElement.hidden = false;
-      this.#_iconSlotElement.hidden = true;
-    } else this.#_iconElement.hidden = true;
-    if (url) {
-      this.#_linkElement.href = url;
-      this.#_internals.states.add(HTMLBnumCardTitle.STATE_URL);
-      this.#_linkElement.removeAttribute('role');
-      this.#_linkElement.removeAttribute('aria-disabled');
-    } else {
-      this.#_linkElement.removeAttribute('href');
-      this.#_internals.states.add(HTMLBnumCardTitle.STATE_WITHOUT_URL);
-    }
-  }
-  /**
-   * Met à jour le corps du titre de la carte.
-   * @param element Elément HTML, texte ou nœud Text à insérer dans le titre
-   * @private
-   */
-  #_updateBody(element) {
-    this.#_customBodyElement.hidden = false;
-    this.#_textSlotElement.hidden = true;
-    if (typeof element === 'string')
-      this.#_customBodyElement.textContent = element;
-    else this.#_customBodyElement.appendChild(element);
-  }
-  //#endregion Private methods
-  //#region Public methods
-  /**
-   * Met à jour le contenu du titre de la carte.
-   * Remplace le texte ou ajoute un élément HTML comme corps du titre.
-   * @param {HTMLElement | string | Text} element Le contenu à insérer (texte, élément ou nœud Text)
-   * @returns {HTMLBnumCardTitle} Retourne l'instance pour chaînage
-   */
-  updateBody(element, { force = false } = {}) {
-    this.#_bodyScheduler ??= new Scheduler((el) => {
-      this.#_updateBody(el);
-    });
-    if (!this.alreadyLoaded) this.#_initBody = element;
-    else if (force) this.#_bodyScheduler.call(element);
-    else this.#_bodyScheduler.schedule(element);
-    return this;
-  }
-  //#endregion Public methods
-  //#region Static methods
-  /**
-   * Retourne la liste des attributs observés par le composant.
-   * Permet de réagir aux changements de ces attributs.
-   * @returns {string[]} Liste des attributs observés
-   */
-  static _p_observedAttributes() {
-    return [HTMLBnumCardTitle.ATTRIBUTE_URL];
-  }
-  /**
-   * Crée dynamiquement une instance du composant HTMLBnumCardTitle.
-   * Permet d'initialiser le titre avec un texte, une icône et/ou un lien.
-   * @param {HTMLElement | string | Text} text Le contenu du titre (élément, texte ou chaîne)
-   * @param {{ icon?: string | null; link?: string | null }} options Options pour l'icône et le lien
-   * @returns {HTMLBnumCardTitle} Instance du composant configurée
-   */
-  static Create(text, { icon = null, link = null }) {
-    let node = document.createElement(HTMLBnumCardTitle.TAG);
-    if (icon) node.icon = icon;
-    if (link) node.url = link;
-    return node.updateBody(text, { force: true });
-  }
-  /**
-   * Génère le HTML d'un titre de carte avec icône et lien optionnels.
-   * Utile pour créer dynamiquement le composant dans une chaîne HTML.
-   * @param {string | null} icon Icône à afficher
-   * @param {string} text Texte du titre
-   * @param {string | null} link URL du lien
-   * @returns {string} HTML généré
-   */
-  static Generate(icon, text, link) {
-    let data = [];
-    if (icon) data.push(`data-icon="${icon}"`);
-    if (link) data.push(`url="${link}"`);
-    return `<${HTMLBnumCardTitle.TAG} ${data.join(' ')}>${text}</${HTMLBnumCardTitle.TAG}>`;
-  }
-  /**
-   * Retourne le tag HTML du composant.
-   * Permet d'obtenir le nom du composant pour l'utiliser dans le DOM.
-   * @readonly
-   * @returns {string} Tag HTML
-   */
-  static get TAG() {
-    return TAG_CARD_TITLE;
-  }
-}
-const TEMPLATE$a = BnumElement.CreateTemplate(`
-      <h2><a class="${HTMLBnumCardTitle.CLASS_LINK}">
-        <span class="container">
-          <slot id="${HTMLBnumCardTitle.ID_SLOT_ICON}" name="${HTMLBnumCardTitle.SLOT_NAME_ICON}"></slot>
-          <${HTMLBnumIcon.TAG} class="${HTMLBnumCardTitle.CLASS_ICON_TITLE}" hidden></${HTMLBnumIcon.TAG}>
-        </span>
-        <span class="container">
-          <slot id="${HTMLBnumCardTitle.ID_SLOT_TEXT}"></slot>
-          <span id="${HTMLBnumCardTitle.ID_CUSTOM_BODY}" hidden></span>
-        </span>
-      </a></h2>
-    `);
-//#region TryDefine
-HTMLBnumCardTitle.TryDefine();
-//#endregion TryDefine
-
-/**
- * Définit le rôle du bouton sur l'élément donné.
- * @param element Élément Bnum à modifier.
- * @returns L'élément Bnum modifié en bouton.
- */
-function setButtonRole(element) {
-  return HTMLBnumButton.ToButton(element);
-}
-/**
- * Supprime le rôle du bouton et les attributs associés de l'élément donné.
- * @param element Élément Bnum à modifier.
- * @returns L'élément Bnum modifié sans rôle de bouton.
- */
-function removeButtonRole(element) {
-  if (element.getAttribute('data-set-event') === 'onkeydown') {
-    element.removeAttribute('data-set-event');
-    element.onkeydown = null;
-  }
-  element.removeAttribute('role');
-  element.removeAttribute('tabindex');
-  return element;
-}
-
-var css_248z$d =
-  '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{background-color:var(--bnum-card-background-color,var(--bnum-color-surface,#f6f6f6));border-bottom:var(--bnum-border-on-surface-bottom,solid 4px #000091);border-left:var(--bnum-border-on-surface-left,none);border-right:var(--bnum-border-on-surface-right,none);border-top:var(--bnum-border-on-surface-top,none);display:var(--bnum-card-display,block);height:var(--bnum-card-height,auto);padding:var(--bnum-card-padding,var(--bnum-space-m,15px));position:relative;width:var(--bnum-card-width,auto)}:host .card-loading{display:none}:host(:state(clickable)){cursor:var(--bnum-card-clickable-cursor,pointer)}:host(:hover:state(clickable)){background-color:var(--bnum-card-background-color-hover,var(--bnum-color-surface-hover,#dfdfdf))}:host(:active:state(clickable)){background-color:var(--bnum-card-background-color-active,var(--bnum-color-surface-active,#cfcfcf))}:host(:state(loading)){--bnum-card-background-color-hover:var(--bnum-card-background-color,var(--bnum-color-surface,#f6f6f6));--bnum-card-background-color-active:var(--bnum-card-background-color,var(--bnum-color-surface,#f6f6f6));opacity:.8;pointer-events:none}:host(:state(loading)) .card-loading{align-items:center;display:flex;inset:0;justify-content:center;position:absolute;z-index:10}:host(:state(loading)) .card-loading .loader{animation:var(--bnum-card-loader-animation-rotate360,var(--bnum-animation-rotate360,rotate360 1s linear infinite))}:host(:state(loading)) .card-body slot{visibility:hidden}';
-
-const SHEET$a = BnumElementInternal.ConstructCSSStyleSheet(css_248z$d);
-/**
- * Élément à ajouter dans un slot avec un nom de slot optionnel.
- */
-class ScheduleElementAppend {
-  #_element;
-  #_slot;
-  /**
-   * Constructeur de la classe ScheduleElementAppend.
-   * @param element Element à ajouter
-   * @param slot Dans quel slot (null pour le slot principal)
-   */
-  constructor(element, slot = null) {
-    this.#_element = element;
-    this.#_slot = slot;
-  }
-  /**
-   * Retourne l'élément à ajouter.
-   */
-  get element() {
-    return this.#_element;
-  }
-  /**
-   * Retourne le nom du slot où ajouter l'élément.
-   */
-  get slot() {
-    return this.#_slot;
-  }
-}
-/**
- * Élément HTML représentant une carte personnalisée Bnum.
- *
- * Liste des slots :
- * - title : Contenu du titre de la carte. Si aucun contenu n'est fourni, un titre par défaut sera généré à partir des attributs de données.
- * - (slot par défaut) : Contenu du corps de la carte.
- *
- * Liste des data :
- * - title-icon : Icône du titre de la carte.
- * - title-text : Texte du titre de la carte.
- * - title-link : Lien du titre de la carte.
- *
- * /!\ Les data servent à définir un titre par défaut, si le slot "title" est vide ou pas défini.
- *
- * Liste des attributs :
- * - clickable : Rend la carte cliquable.
- * - loading : Indique si la carte est en état de chargement.
- *
- * Évènements personnalisés :
- * - bnum-card:loading : Déclenché lorsque l'état de chargement de la carte change.
- * - bnum-card:click : Déclenché lorsqu'un clic est effectué sur une carte cliquable.
- *
- * @structure Cas standard
- * <bnum-card>
- * <span slot="title">Titre de la carte</span>
- * <p>Contenu principal.</p>
- * </bnum-card>
- *
- * @structure Carte cliquable
- * <bnum-card clickable>
- * <span slot="title">Carte cliquable</span>
- * <p>Cliquez n'importe où.</p>
- * </bnum-card>
- *
- * @structure Carte avec titre par défaut (via data-attrs)
- * <bnum-card
- * data-title-text="Titre généré"
- * data-title-icon="info"
- * >
- * <p>Le slot "title" est vide.</p>
- * </bnum-card>
- *
- * @structure Carte avec un chargement
- * <bnum-card loading>
- * <bnum-card-title slot="title" data-icon="info">Titre en cours de chargement...</bnum-card-title>
- * <p>Chargement</p>
- * </bnum-card>
- *
- * @state clickable - Est actif lorsque la carte est cliquable.
- * @state loading - Est actif lorsque la carte est en état de chargement.
- *
- * @slot title - Contenu du titre de la carte. Si aucun contenu n'est fourni, un titre par défaut sera généré.
- * @slot (default) - Contenu du corps de la carte. Masqué si l'état `loading` est actif.
- *
- * @cssvar {block} --bnum-card-display - Définit le type d'affichage du composant.
- * @cssvar {var(--bnum-space-m, 15px)} --bnum-card-padding - Définit le padding interne de la carte.
- * @cssvar {auto} --bnum-card-width - Définit la largeur de la carte.
- * @cssvar {auto} --bnum-card-height - Définit la hauteur de la carte.
- * @cssvar {var(--bnum-color-surface, #f6f6f7)} --bnum-card-background-color - Couleur de fond de la carte.
- * @cssvar {var(--bnum-color-surface-hover, #eaeaea)} --bnum-card-background-color-hover - Couleur de fond au survol.
- * @cssvar {var(--bnum-color-surface-active, #dfdfdf)} --bnum-card-background-color-active - Couleur de fond à l'état actif.
- * @cssvar {pointer} --bnum-card-clickable-cursor - Curseur utilisé lorsque la carte est cliquable.
- * @cssvar {var(--bnum-card-loader-animation-rotate360, var(--bnum-animation-rotate360, rotate360 1s linear infinite))} --bnum-card-loader-animation-rotate360 - Animation appliquée au loader (spinner).
- *
- */
-class HTMLBnumCardElement extends BnumElementInternal {
-  //#region Constants
-  /**
-   * Indique si la carte est cliquable.
-   * @prop {boolean | undefined} clickable - Si vrai, rend la carte interactive et accessible (rôle bouton).
-   * @attr {boolean | string | undefined} (optional) clickable
-   * @type {string}
-   */
-  static STATE_CLICKABLE = 'clickable';
-  /**
-   * Indique si la carte est en cours de chargement.
-   * @prop {boolean | undefined} loading - Si vrai, affiche un spinner et masque le corps.
-   * @attr {boolean | string | undefined} (optional) loading
-   * @type {string}
-   */
-  static STATE_LOADING = 'loading';
-  /**
-   * Classe CSS pour le titre de la carte.
-   * @type {string}
-   */
-  static CSS_CLASS_TITLE = 'card-title';
-  /**
-   * Classe CSS pour le corps de la carte.
-   * @type {string}
-   */
-  static CSS_CLASS_BODY = 'card-body';
-  /**
-   * Classe CSS pour l'affichage du loading.
-   * @type {string}
-   */
-  static CSS_CLASS_LOADING = 'card-loading';
-  /**
-   * Nom de la data pour l'icône du titre.
-   * @attr {string | undefined} (optional) data-title-icon - Nom de l'icône (Material Symbols) pour le titre par défaut.
-   * @type {string}
-   */
-  static DATA_TITLE_ICON = 'title-icon';
-  /**
-   * Nom de la data pour le texte du titre.
-   * @attr {string | undefined} (optional) data-title-text - Texte à afficher dans le titre par défaut.
-   * @type {string}
-   */
-  static DATA_TITLE_TEXT = 'title-text';
-  /**
-   * Nom de la data pour le lien du titre.
-   * @attr {string | undefined} (optional) data-title-link - URL à utiliser si le titre par défaut doit être un lien.
-   * @type {string}
-   */
-  static DATA_TITLE_LINK = 'title-link';
-  /**
-   * Nom de l'évènement déclenché lors du loading.
-   * @event bnum-card:loading
-   * @detail { oldValue: string|null, newValue: string|null, caller: HTMLBnumCardElement }
-   * @type {string}
-   */
-  static EVENT_LOADING = 'bnum-card:loading';
-  /**
-   * Nom de l'évènement déclenché lors d'un clic sur la carte.
-   * @event bnum-card:click
-   * @detail { originalEvent: MouseEvent }
-   * @type {string}
-   */
-  static EVENT_CLICK = 'bnum-card:click';
-  /**
-   * Nom du slot pour le titre.
-   * @type {string}
-   */
-  static SLOT_TITLE = 'title';
-  /**
-   * Nom de l'icône utilisée pour le spinner de chargement.
-   * @type {string}
-   */
-  static ICON_SPINNER = 'progress_activity';
-  /**
-   * Symbole utilisé pour réinitialiser le contenu du slot.
-   */
-  static SYMBOL_RESET = Symbol('reset');
-  //#endregion
-  //#region Private fields
-  /**
-   * Élément HTML utilisé pour afficher le loading.
-   * @type {HTMLElement | null}
-   */
-  #_loadingElement = null;
-  /**
-   * Élément HTML du corps de la carte.
-   * @type {HTMLElement | null}
-   */
-  #_bodyElement = null;
-  #_scheduleBody = null;
-  #_scheduleTitle = null;
-  #_scheduleAppend = null;
-  //#endregion Private fields
-  //#region Getters/Setters
-  /**
-   * Retourne l'icône du titre depuis les données du composant.
-   * @returns {string} Icône du titre.
-   */
-  get _titleIcon() {
-    return this.data(HTMLBnumCardElement.DATA_TITLE_ICON);
-  }
-  /**
-   * Retourne le texte du titre depuis les données du composant.
-   * @returns {string} Texte du titre.
-   */
-  get _titleText() {
-    return this.data(HTMLBnumCardElement.DATA_TITLE_TEXT);
-  }
-  /**
-   * Retourne le lien du titre depuis les données du composant.
-   * @returns {string} Lien du titre.
-   */
-  get _titleLink() {
-    return this.data(HTMLBnumCardElement.DATA_TITLE_LINK);
-  }
-  /**
-   * Retourne les données du titre sous forme d'objet TitleData.
-   * @returns {TitleData} Objet contenant les données du titre.
-   */
-  get _titleData() {
-    return {
-      icon: this._titleIcon,
-      text: this._titleText,
-      link: this._titleLink,
-      has: () => {
-        return this._titleText !== null && this._titleText !== undefined;
-      },
-    };
-  }
-  /**
-   * Si vrai, affiche la carte en état de chargement. Elle montre un spinner et masque le corps, de plus, tout les `pointer-events` sont désactivés.
-   * @returns {boolean}
-   */
-  get loading() {
-    return this.hasAttribute(HTMLBnumCardElement.STATE_LOADING);
-  }
-  /**
-   * Définit l'état de chargement de la carte.
-   * @param {boolean} value
-   * @returns {void}
-   */
-  set loading(value) {
-    if (value) {
-      this.setAttribute(
-        HTMLBnumCardElement.STATE_LOADING,
-        HTMLBnumCardElement.STATE_LOADING,
-      );
-    } else {
-      this.removeAttribute(HTMLBnumCardElement.STATE_LOADING);
-    }
-  }
-  /**
-   * Si vrai, la carte est cliquable et interactive.
-   * @returns {boolean}
-   */
-  get clickable() {
-    return this.hasAttribute(HTMLBnumCardElement.STATE_CLICKABLE);
-  }
-  /**
-   * Définit si la carte est cliquable ou non.
-   * @param {boolean} value
-   * @returns {void}
-   */
-  set clickable(value) {
-    // Ajoute le rôle et la tabulation pour l'accessibilité
-    if (value) {
-      this.setAttribute(
-        HTMLBnumCardElement.STATE_CLICKABLE,
-        HTMLBnumCardElement.STATE_CLICKABLE,
-      );
-      setButtonRole(this);
-    } else {
-      this.removeAttribute(HTMLBnumCardElement.STATE_CLICKABLE);
-      removeButtonRole(this);
-    }
-  }
-  //#endregion Getters/Setters
-  /**
-   * Retourne la liste des attributs observés par le composant.
-   * @returns {string[]} Liste des attributs observés.
-   */
-  static _p_observedAttributes() {
-    return [
-      HTMLBnumCardElement.STATE_CLICKABLE,
-      HTMLBnumCardElement.STATE_LOADING,
-    ];
-  }
-  //#region Lifecycle
-  /**
-   * Constructeur de la classe HTMLBnumCardElement.
-   * Initialise les écouteurs d'évènements.
-   * @constructor
-   */
-  constructor() {
-    super();
-    this.addEventListener('click', this.#_handleClick.bind(this));
-  }
-  _p_fromTemplate() {
-    return TEMPLATE$9;
-  }
-  /**
-   * Construit le DOM interne du composant.
-   * @param {ShadowRoot | HTMLElement} container ShadowRoot ou HTMLElement cible.
-   * @returns {void}
-   */
-  _p_buildDOM(container) {
-    this.#_bodyElement = container.querySelector('#mainslot');
-    const titleData = this._titleData;
-    if (titleData.has()) {
-      HTMLBnumCardTitle.Create(titleData.text || EMPTY_STRING, {
-        icon: titleData.icon || null,
-        link: titleData.link || null,
-      }).appendTo(
-        container.querySelector(
-          `slot[name="${HTMLBnumCardElement.SLOT_TITLE}"]`,
-        ),
-      );
-    }
-    this.#_updateDOM();
-  }
-  /**
-   * Met à jour le composant lors d'un changement d'attribut.
-   * @param {string} name Nom de l'attribut modifié.
-   * @param {string | null} oldVal Ancienne valeur.
-   * @param {string | null} newVal Nouvelle valeur.
-   * @returns {void}
-   */
-  _p_update(name, oldVal, newVal) {
-    if (name === HTMLBnumCardElement.STATE_LOADING) {
-      this.trigger(HTMLBnumCardElement.EVENT_LOADING, {
-        oldValue: oldVal,
-        newValue: newVal,
-        caller: this,
-      });
-    }
-    this.#_updateDOM();
-  }
-  _p_getStylesheets() {
-    return [...super._p_getStylesheets(), SHEET$a];
-  }
-  //#endregion Lifecycle
-  //#region Private methods
-  /**
-   * Met à jour l'affichage du DOM selon l'état du composant.
-   * @returns {void}
-   */
-  #_updateDOM() {
-    this._p_clearStates();
-    if (this.clickable) this._p_addState(HTMLBnumCardElement.STATE_CLICKABLE);
-    if (this.loading) {
-      this._p_addState(HTMLBnumCardElement.STATE_LOADING);
-      // Initialise le loading si nécessaire
-      if (!this.#_loadingElement) {
-        const div = this.shadowRoot?.querySelector(
-          `.${HTMLBnumCardElement.CSS_CLASS_BODY}`,
-        );
-        div.appendChild(this.#_getLoading());
-      }
-    }
-  }
-  /**
-   * Retourne l'élément HTML du loading (spinner).
-   * @returns {HTMLElement} Élément HTML du loading.
-   */
-  #_getLoading() {
-    if (!this.#_loadingElement) {
-      const loadingDiv = document.createElement('div');
-      loadingDiv.classList.add(HTMLBnumCardElement.CSS_CLASS_LOADING);
-      const spinner = HTMLBnumIcon.Create(
-        HTMLBnumCardElement.ICON_SPINNER,
-      ).addClass('loader');
-      loadingDiv.appendChild(spinner);
-      this.#_loadingElement = loadingDiv;
-    }
-    return this.#_loadingElement;
-  }
-  /**
-   * Gère le clic sur la carte.
-   * @param {MouseEvent} event Événement de clic sur la carte.
-   * @returns {void}
-   */
-  #_handleClick(event) {
-    if (this.clickable) {
-      // Déclenche un événement "click" natif
-      // ou un événement personnalisé si vous préférez
-      this.trigger(HTMLBnumCardElement.EVENT_CLICK, { originalEvent: event });
-    }
-  }
-  #_requestUpdateTitle(element) {
-    this.#_scheduleTitle ??= new Scheduler((el) =>
-      this.#_updateOrResetTitle(el),
-    );
-    this.#_scheduleTitle.schedule(element);
-  }
-  #_updateOrResetTitle(element) {
-    if (element === HTMLBnumCardElement.SYMBOL_RESET) this.#_resetTitle();
-    else this.#_updateTitle(element);
-  }
-  #_updateTitle(element) {
-    element.setAttribute('slot', HTMLBnumCardElement.SLOT_TITLE);
-    const oldTitles = this.querySelectorAll(
-      `[slot="${HTMLBnumCardElement.SLOT_TITLE}"]`,
-    );
-    oldTitles.forEach((node) => node.remove());
-    this.appendChild(element);
-  }
-  #_resetTitle() {
-    // On trouve tous les éléments du Light DOM assignés au slot "title"
-    const nodes = this.querySelectorAll(
-      `[slot="${HTMLBnumCardElement.SLOT_TITLE}"]`,
-    );
-    nodes.forEach((node) => node.remove());
-  }
-  #_requestUpdateBody(element) {
-    this.#_scheduleBody ??= new Scheduler((el) => this.#_updateOrResetBody(el));
-    this.#_scheduleBody.schedule(element);
-  }
-  #_updateOrResetBody(element) {
-    if (element === HTMLBnumCardElement.SYMBOL_RESET) this.#_resetBody();
-    else this.#_updateBody(element);
-  }
-  #_updateBody(element) {
-    element.removeAttribute('slot');
-    const oldBodyNodes = Array.from(this.childNodes).filter(
-      (node) =>
-        (node.nodeType === Node.ELEMENT_NODE &&
-          node.getAttribute('slot') !== HTMLBnumCardElement.SLOT_TITLE) ||
-        (node.nodeType === Node.TEXT_NODE &&
-          node.textContent?.trim() !== EMPTY_STRING),
-    );
-    oldBodyNodes.forEach((node) => node.remove());
-    this.appendChild(element);
-  }
-  #_resetBody() {
-    // On trouve tous les éléments qui n'ont PAS de slot="title"
-    const nodes = Array.from(this.childNodes).filter(
-      (node) =>
-        (node.nodeType === Node.ELEMENT_NODE &&
-          node.getAttribute('slot') !== HTMLBnumCardElement.SLOT_TITLE) ||
-        (node.nodeType === Node.TEXT_NODE &&
-          node.textContent?.trim() !== EMPTY_STRING),
-    );
-    nodes.forEach((node) => node.remove());
-  }
-  #_requestAppendElement(appended) {
-    this.#_scheduleAppend ??= new Scheduler((el) => this.#_appendElement(el));
-    this.#_scheduleAppend.schedule(appended);
-  }
-  #_appendElement(appended) {
-    if (appended.slot) appended.element.setAttribute('slot', appended.slot);
-    else appended.element.removeAttribute('slot');
-    this.appendChild(appended.element);
-  }
-  //#endregion Private methods
-  //#region Public methods
-  /**
-   * Remplace tout le contenu du slot "title" par un nouvel élément.
-   * @param {Element} element Élément à insérer dans le slot "title".
-   * @returns {HTMLBnumCardElement} L'instance courante de HTMLCardElement.
-   */
-  updateTitle(element) {
-    this.#_requestUpdateTitle(element);
-    return this;
-  }
-  /**
-   * Remplace tout le contenu du slot par défaut (body) par un nouvel élément.
-   * @param {Element} element Élément à insérer dans le corps de la carte.
-   * @returns {HTMLBnumCardElement} L'instance courante de HTMLCardElement.
-   */
-  updateBody(element) {
-    this.#_requestUpdateBody(element);
-    return this;
-  }
-  /**
-   * Supprime tous les éléments du slot "title".
-   * @returns {HTMLBnumCardElement} L'instance courante de HTMLCardElement.
-   */
-  clearTitle() {
-    this.#_requestUpdateTitle(HTMLBnumCardElement.SYMBOL_RESET);
-    return this;
-  }
-  /**
-   * Supprime tous les éléments du corps de la carte (hors slot "title").
-   * @returns {HTMLBnumCardElement} L'instance courante de HTMLCardElement.
-   */
-  clearBody() {
-    this.#_requestUpdateBody(HTMLBnumCardElement.SYMBOL_RESET);
-    return this;
-  }
-  /**
-   * Ajoute un élément au slot "title" sans supprimer les éléments existants.
-   * @param {Element} element Élément à ajouter au slot "title".
-   * @returns {HTMLBnumCardElement} L'instance courante de HTMLCardElement.
-   */
-  appendToTitle(element) {
-    this.#_requestAppendElement(
-      new ScheduleElementAppend(element, HTMLBnumCardElement.SLOT_TITLE),
-    );
-    return this;
-  }
-  /**
-   * Ajoute un élément au corps de la carte (slot par défaut) sans supprimer les éléments existants.
-   * @param {Element} element Élément à ajouter au corps de la carte.
-   * @returns {HTMLBnumCardElement} L'instance courante de HTMLCardElement.
-   */
-  appendToBody(element) {
-    this.#_requestAppendElement(new ScheduleElementAppend(element));
-    return this;
-  }
-  //#endregion Public methods
-  //#region Static properties
-  /**
-   * Crée une nouvelle instance de HTMLBnumCardElement avec les options spécifiées.
-   * @param param0 Options de création de la carte
-   * @param param0.title Titre de la carte (optionnel)
-   * @param param0.body Corps de la carte (optionnel)
-   * @param param0.clickable Si vrai, rend la carte cliquable (optionnel, défaut false)
-   * @param param0.loading Si vrai, affiche la carte en état de chargement (optionnel, défaut false)
-   * @returns Element HTMLBnumCardElement créé
-   */
-  static Create({
-    title = null,
-    body = null,
-    clickable = false,
-    loading = false,
-  } = {}) {
-    const card = document.createElement(HTMLBnumCardElement.TAG);
-    if (title) card.updateTitle(title);
-    if (body) card.updateBody(body);
-    if (clickable)
-      card.setAttribute(
-        HTMLBnumCardElement.STATE_CLICKABLE,
-        HTMLBnumCardElement.STATE_CLICKABLE,
-      );
-    if (loading)
-      card.setAttribute(
-        HTMLBnumCardElement.STATE_LOADING,
-        HTMLBnumCardElement.STATE_LOADING,
-      );
-    return card;
-  }
-  /**
-   * Retourne le nom de la balise personnalisée pour cet élément.
-   * @returns Nom de la balise personnalisée.
-   */
-  static get TAG() {
-    return TAG_CARD;
-  }
-}
-const TEMPLATE$9 = BnumElementInternal.CreateTemplate(`
-      <div class="${HTMLBnumCardElement.CSS_CLASS_TITLE}">
-        <slot name="${HTMLBnumCardElement.SLOT_TITLE}"></slot>
-      </div>
-      <div class="${HTMLBnumCardElement.CSS_CLASS_BODY}">
-        <slot id="mainslot"></slot>
-      </div>
-    `);
-HTMLBnumCardElement.TryDefine();
-
-var css_248z$c =
-  ':host{background-color:var(--bnum-card-item-background-color,var(--bnum-color-surface,#f6f6f7));cursor:var(--bnum-card-item-cursor,pointer);display:var(--bnum-card-item-display,block);padding:var(--bnum-card-item-padding,15px);user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;width:calc(var(--bnum-card-item-width-percent, 100%) - var(--bnum-card-item-width-modifier, 30px))}:host(:hover){background-color:var(--bnum-card-item-background-color-hover,var(--bnum-color-surface-hover,#eaeaea))}:host(:active){background-color:var(--bnum-card-item-background-color-active,var(--bnum-color-surface-active,#dfdfdf))}:host(:disabled),:host(:state(disabled)),:host([disabled]){cursor:not-allowed;opacity:.6;pointer-events:none}';
-
-const SHEET$9 = BnumElementInternal.ConstructCSSStyleSheet(css_248z$c);
-/**
- * Représente un item d'une carte `<bnum-card>` qui peut être mis dans un `bnum-card-list`.
- *
- * L'élément est considéré comme un `li` d'une liste pour des raisons d'accessibilité.
- *
- * @structure Item de carte
- * <bnum-card-item><p>Contenu de l'item</p></bnum-card-item>
- *
- * @structure Désactivé
- * <bnum-card-item disabled><p>Contenu de l'item</p></bnum-card-item>
- *
- * @state disabled - Actif quand l'item est désactivé
- *
- * @slot (default) - Contenu de l'item
- *
- * @cssvar {100%} --bnum-card-item-width-percent - Largeur en pourcentage du composant
- * @cssvar {30px} --bnum-card-item-width-modifier - Valeur soustraite à la largeur
- * @cssvar {var(--bnum-color-surface, #f6f6f7)} --bnum-card-item-background-color - Couleur de fond normale
- * @cssvar {var(--bnum-color-surface-hover, #eaeaea)} --bnum-card-item-background-color-hover - Couleur de fond au survol
- * @cssvar {var(--bnum-color-surface-active, #dfdfdf)} --bnum-card-item-background-color-active - Couleur de fond à l'état actif
- * @cssvar {pointer} --bnum-card-item-cursor - Type de curseur
- * @cssvar {15px} --bnum-card-item-padding - Espacement interne
- * @cssvar {block} --bnum-card-item-display - Type d'affichage
- */
-class HTMLBnumCardItem extends BnumElementInternal {
-  /**
-   * Attribut désactivé
-   * @attr {boolean | 'disabled' | undefined} (optional) disabled - Indique si l'item est désactivé
-   */
-  static ATTRIBUTE_DISABLED = 'disabled';
-  /**
-   * État désactivé
-   */
-  static STATE_DISABLED = 'disabled';
-  /**
-   * Rôle du composant
-   */
-  static ROLE = 'listitem';
-  /**
-   * Événement click
-   * @event click
-   * @detail MouseEvent
-   */
-  static CLICK = 'click';
-  /**
-   * Événement déclenché lors du clic sur l'item.
-   * Permet d'attacher des gestionnaires personnalisés au clic.
-   */
-  #_onitemclicked = null;
-  _p_slot = null;
-  /**
-   * Retourne la liste des attributs observés par le composant.
-   * Utile pour détecter les changements d'attributs et mettre à jour l'état du composant.
-   * @returns {string[]} Liste des attributs observés.
-   */
-  static _p_observedAttributes() {
-    return [HTMLBnumCardItem.ATTRIBUTE_DISABLED];
-  }
-  /**
-   * Événement déclenché lors du clic sur l'item.
-   * Permet d'attacher des gestionnaires personnalisés au clic.
-   */
-  get onitemclicked() {
-    this.#_onitemclicked ??= new JsEvent();
-    return this.#_onitemclicked;
-  }
-  /**
-   * Constructeur du composant.
-   * Initialise l'événement personnalisé et attache le gestionnaire de clic.
-   */
-  constructor() {
-    super();
-    this.addEventListener(HTMLBnumCardItem.CLICK, (e) => {
-      if (this.onitemclicked.haveEvents()) this.onitemclicked.call(e);
-    });
-  }
-  _p_fromTemplate() {
-    return BASE_TEMPLATE$1;
-  }
-  /**
-   * Construit le DOM interne du composant.
-   * Ajoute le slot pour le contenu et configure les attributs nécessaires.
-   * @param container ShadowRoot ou HTMLElement qui contient le DOM du composant.
-   */
-  _p_buildDOM(container) {
-    this._p_slot =
-      container instanceof ShadowRoot
-        ? container.getElementById('defaultslot')
-        : container.querySelector('#defaultslot');
-  }
-  _p_attach() {
-    super._p_attach();
-    HTMLBnumButton.ToButton(this)
-      .attr('role', HTMLBnumCardItem.ROLE)
-      ._p_update(
-        HTMLBnumCardItem.ATTRIBUTE_DISABLED,
-        null,
-        this.attr(HTMLBnumCardItem.ATTRIBUTE_DISABLED),
-      );
-  }
-  /**
-   * Met à jour l'état du composant en fonction des changements d'attributs.
-   * Gère l'état désactivé et l'attribut aria-disabled.
-   * @param name Nom de l'attribut modifié.
-   * @param oldVal Ancienne valeur de l'attribut.
-   * @param newVal Nouvelle valeur de l'attribut.
-   */
-  _p_update(name, oldVal, newVal) {
-    this._p_render();
-  }
-  _p_render() {
-    this._p_clearStates();
-    if (this.hasAttribute('disabled')) {
-      this.setAttribute('aria-disabled', 'true');
-      this._p_addState(HTMLBnumCardItem.STATE_DISABLED);
-    } else this.removeAttribute('aria-disabled');
-  }
-  _p_isUpdateForAllAttributes() {
-    return true;
-  }
-  _p_getStylesheets() {
-    return [...super._p_getStylesheets(), SHEET$9];
-  }
-  static CreateChildTemplate(
-    childTemplate,
-    { defaultSlot = true, slotName = EMPTY_STRING } = {},
-  ) {
-    const template = document.createElement('template');
-    template.innerHTML = `${defaultSlot ? `<slot id="defaultslot" ${slotName ? `name="${slotName}"` : ''}></slot>` : EMPTY_STRING}${childTemplate}`;
-    return template;
-  }
-  /**
-   * Retourne le tag du composant.
-   * @returns {string} Tag du composant.
-   */
-  static get TAG() {
-    return TAG_CARD_ITEM;
-  }
-}
-const BASE_TEMPLATE$1 = HTMLBnumCardItem.CreateChildTemplate(EMPTY_STRING);
-HTMLBnumCardItem.TryDefine();
 
 /**
  * @module constants
@@ -12052,614 +11368,2694 @@ class HTMLBnumDate extends BnumElementInternal {
 // Auto-définition du composant
 HTMLBnumDate.TryDefine();
 
-var css_248z$b =
-  '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{align-items:center;display:flex;justify-content:space-between}:host .sender{font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-size-m);font-weight:var(--bnum-card-item-mail-font-weight-bold,var(--bnum-font-weight-bold,bold));margin-bottom:var(--bnum-card-item-mail-margin-bottom,var(--bnum-space-s,10px));max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}:host .subject{font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-size-s);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}:host(:state(read)) .sender{font-weight:var(--bnum-card-item-mail-sender-read-font-weight,initial)}:host(:state(read)) .subject{font-style:var(--bnum-card-item-mail-subject-read-font-style,italic)}';
+var css_248z$e = ':host{border-bottom:thin dotted;cursor:help}';
 
-const EVENT_DEFAULT = 'default';
-
-// --- Importe tes dépendances (date-fns, BnumCardItem, etc.) ---
-const SHEET$8 = HTMLBnumCardItem.ConstructCSSStyleSheet(css_248z$b);
+// bnum-helper.ts
+const SHEET$c = BnumElement.ConstructCSSStyleSheet(css_248z$e);
 /**
- * Composant HTML personnalisé représentant un élément de carte mail.
- *
- * Permet d'afficher un sujet, un expéditeur et une date, avec possibilité d'override du contenu par défaut.
- *
- * Utilise des slots pour l'intégration dans le Shadow DOM et propose des méthodes pour forcer ou réinitialiser le contenu.
- *
- * Note: En passant par `data-date` ou `.updateDate()`, le format d'affichage de la date est ajusté selon la logique métier :
- * - Si la date est aujourd'hui, seule l'heure est affichée (HH:mm).
- * - Si la date est comprise entre hier et il y a 7 jours, le jour de la semaine et l'heure sont affichés (E - HH:mm).
- * - Sinon, le format par défaut de HTMLBnumDate est utilisé.
- *
- * @structure Item de carte mail
- * <bnum-card-item-mail data-date="now">
- * <span slot="subject">Sujet par défaut</span>
- * <span slot="sender">Expéditeur par défaut</span>
- * </bnum-card-item-mail>
- *
- * @structure Item de carte data
- * <bnum-card-item-mail data-date="2025-10-31 11:11" data-subject="Sujet ici" data-sender="Expéditeur ici">
- * </bnum-card-item-mail>
- *
- * @structure Item de carte lue
- * <bnum-card-item-mail read data-date="2025-10-31 11:11" data-subject="Sujet ici" data-sender="Expéditeur ici">
- * </bnum-card-item-mail>
- *
- * @state read - Actif quand le mail est marqué comme lu.
- *
- * @slot (default) - N'existe pas, si vous mettez du contenu en dehors des slots, ils ne seront pas affichés.
- * @slot sender - Contenu de l'expéditeur (texte ou HTML).
- * @slot subject - Contenu du sujet (texte ou HTML).
- * @slot date - Contenu de la date. /!\ Si vous passez par ce slot, la mécanique de formatage automatique de la date ne s'appliquera pas.
+ * Constante représentant l'icône utilisée par défaut.
  */
-class HTMLBnumCardItemMail extends HTMLBnumCardItem {
-  //#region Constants
+const ICON = 'help';
+/**
+ * Élément web personnalisé représentant une aide contextuelle avec une icône.
+ *
+ * @structure Cas standard
+ * <bnum-helper>Ceci est une aide contextuelle.</bnum-helper>
+ */
+class HTMLBnumHelper extends BnumElement {
   /**
-   * Attribut data pour le sujet du mail.
-   * @attr {string} (optional) data-subject - Sujet du mail.
-   */
-  static DATA_SUBJECT = 'subject';
-  static ATTRIBUTE_DATA_SUBJECT = `data-${HTMLBnumCardItemMail.DATA_SUBJECT}`;
-  /**
-   * Attribut data pour la date du mail.
-   * @attr {string} (optional) data-sender - Expéditeur du mail.
-   */
-  static DATA_SENDER = 'sender';
-  static ATTRIBUTE_DATA_SENDER = `data-${HTMLBnumCardItemMail.DATA_SENDER}`;
-  /**
-   * Attribut data pour la date du mail.
-   * @attr {string} (optional) data-date - Date du mail, optionnel, mais conseillé si vous voulez la logique de formatage automatique.
-   */
-  static DATA_DATE = 'date';
-  static ATTRIBUTE_DATA_DATE = `data-${HTMLBnumCardItemMail.DATA_DATE}`;
-  /**
-   * Attribut pour marquer le mail comme lu.
-   * @attr {boolean} (optional) read - Indique si le mail est lu.
-   */
-  static ATTRIBUTE_READ = 'read';
-  /**
-   * Événement déclenché lors du changement de l'expéditeur du mail.
-   * @event bnum-card-item-mail:sender-changed
-   * @detail { caller: HTMLBnumCardItemMail }
-   */
-  static EVENT_SENDER_CHANGED = 'bnum-card-item-mail:sender-changed';
-  /**
-   * Événement déclenché lors du changement du sujet du mail.
-   * @event bnum-card-item-mail:subject-changed
-   * @detail { caller: HTMLBnumCardItemMail }
-   */
-  static EVENT_SUBJECT_CHANGED = 'bnum-card-item-mail:subject-changed';
-  /**
-   * Événement déclenché lors du changement de la date du mail.
-   * @event bnum-card-item-mail:date-changed
-   * @detail { caller: HTMLBnumCardItemMail }
-   */
-  static EVENT_DATE_CHANGED = 'bnum-card-item-mail:date-changed';
-  /**
-   * Nom du slot pour l'expéditeur.
-   */
-  static SLOT_SENDER_NAME = 'sender';
-  /**
-   * Nom du slot pour le sujet.
-   */
-  static SLOT_SUBJECT_NAME = 'subject';
-  /**
-   * Nom du slot pour la date.
-   */
-  static SLOT_DATE_NAME = 'date';
-  /**
-   * Nom de la part pour override de l'expéditeur.
-   */
-  static PART_SENDER_OVERRIDE = 'sender-override';
-  /**
-   * Nom de la part pour override du sujet.
-   */
-  static PART_SUBJECT_OVERRIDE = 'subject-override';
-  /**
-   * Nom de la part pour override de la date.
-   */
-  static PART_DATE_OVERRIDE = 'date-override';
-  /**
-   * Classe CSS pour l'expéditeur.
-   */
-  static CLASS_SENDER = 'sender';
-  /**
-   * Classe CSS pour le sujet.
-   */
-  static CLASS_SUBJECT = 'subject';
-  /**
-   * Classe CSS pour la date.
-   */
-  static CLASS_DATE = 'date';
-  /**
-   * Classe CSS pour le contenu principal.
-   */
-  static CLASS_MAIN_CONTENT = 'main-content';
-  static ID_DATE_ELEMENT_OVERRIDE = 'date-element-override';
-  static ID_SENDER_SLOT = 'senderslot';
-  static ID_SUBJECT_SLOT = 'subjectslot';
-  static ID_DATE_SLOT = 'dateslot';
-  /**
-   * Nom de l'état "lu".
-   */
-  static STATE_READ = 'read';
-  /**
-   * Format d'affichage de la date pour aujourd'hui.
-   */
-  static TODAY_FORMAT = 'HH:mm';
-  /**
-   * Format d'affichage de la date pour les autres jours.
-   */
-  static OTHER_DAY_FORMAT = 'dd/MM/yyyy';
-  /**
-   * Format d'affichage de la date pour la semaine.
-   */
-  static WEEK_FORMAT = 'E - HH:mm';
-  static SYMBOL_RESET = Symbol('reset');
-  //#endregion
-  //#region Private fields
-  // --- Slots du Shadow DOM ---
-  /**
-   * Slot pour la date dans le Shadow DOM.
-   */
-  #_slot_date = null;
-  /**
-   * Slot pour l'expéditeur dans le Shadow DOM.
-   */
-  #_slot_sender = null;
-  // --- Conteneurs d'OVERRIDE (cachés par défaut) ---
-  /**
-   * Élément pour override de l'expéditeur.
-   */
-  #_override_sender = null;
-  /**
-   * Élément pour override du sujet.
-   */
-  #_override_subject = null;
-  /**
-   * Élément pour override de la date.
-   */
-  #_override_date = null;
-  /**
-   * Élément HTMLBnumDate utilisé pour override la date.
-   */
-  #_dateOverrideElement = null;
-  /**
-   * Scheduler pour la mise à jour du sujet.
-   */
-  #_subjectScheduler = null;
-  /**
-   * Scheduler pour la mise à jour de la date.
-   */
-  #_dateScheduler = null;
-  #_defaultDate = null;
-  /**
-   * Scheduler pour la mise à jour de l'expéditeur.
-   */
-  #_senderScheduler = null;
-  //#endregion Private fields
-  //#region Public fields
-  /**
-   * Événement déclenché lors du changement du sujet du mail.
-   * Permet d'attacher des gestionnaires personnalisés au changement de sujet.
-   */
-  onsubjectchanged = new JsEvent();
-  /**
-   * Événement déclenché lors du changement de l'expéditeur du mail.
-   * Permet d'attacher des gestionnaires personnalisés au changement d'expéditeur.
-   */
-  onsenderchanged = new JsEvent();
-  /**
-   * Événement déclenché lors du changement de la date du mail.
-   * Permet d'attacher des gestionnaires personnalisés au changement de date.
-   */
-  ondatechanged = new JsEvent();
-  //#endregion Public fields
-  //#region Getters
-  /**
-   * Retourne l'élément HTMLBnumDate pour l'override de la date.
-   *
-   * Initialise la variable si elle n'a pas encore été initialisée.
-   */
-  get #_lazyDateOverrideElement() {
-    return (this.#_dateOverrideElement ??= (() => {
-      const tmp = this.#_queryById(
-        this.#_override_date,
-        HTMLBnumCardItemMail.ID_DATE_ELEMENT_OVERRIDE,
-      );
-      this.#_configureDateElement(tmp);
-      return tmp;
-    })());
-  }
-  // --- Getters pour lire les data-attributs ---
-  /**
-   * Retourne la date du mail, en tenant compte de l'override si présent.
-   */
-  get date() {
-    return this.#_override_date?.hidden === false
-      ? this.#_lazyDateOverrideElement.getDate()
-      : (this.#_defaultDate?.getDate?.() ?? new Date());
-  }
-  /**
-   * Retourne le sujet du mail depuis l'attribut data.
-   */
-  get #_mailSubject() {
-    return this.data(HTMLBnumCardItemMail.DATA_SUBJECT) || EMPTY_STRING;
-  }
-  /**
-   * Retourne la date du mail depuis l'attribut data.
-   */
-  get #_mailDate() {
-    return this.data(HTMLBnumCardItemMail.DATA_DATE) || EMPTY_STRING;
-  }
-  /**
-   * Retourne l'expéditeur du mail depuis l'attribut data.
-   */
-  get #_mailSender() {
-    return this.data(HTMLBnumCardItemMail.DATA_SENDER) || EMPTY_STRING;
-  }
-  //#endregion Getters
-  //#region Lifecycle
-  /**
-   * Constructeur du composant.
+   * Constructeur de l'élément HTMLBnumHelper.
+   * Initialise l'élément.
    */
   constructor() {
     super();
-    this.onsenderchanged.add(EVENT_DEFAULT, (sender) => {
-      this.trigger(HTMLBnumCardItemMail.EVENT_SENDER_CHANGED, {
-        caller: sender,
-      });
-    });
-    this.onsubjectchanged.add(EVENT_DEFAULT, (sender) => {
-      this.trigger(HTMLBnumCardItemMail.EVENT_SUBJECT_CHANGED, {
-        caller: sender,
-      });
-    });
-    this.ondatechanged.add(EVENT_DEFAULT, (sender) => {
-      this.trigger(HTMLBnumCardItemMail.EVENT_DATE_CHANGED, { caller: sender });
-    });
   }
   /**
-   * Crée le layout du Shadow DOM (avec slots ET overrides).
-   * @param container Le conteneur du Shadow DOM ou un élément HTML.
+   * Précharge les données de l'élément.
+   * Si l'élément possède des enfants, le texte est déplacé dans l'attribut title et le contenu est vidé.
+   */
+  _p_preload() {
+    super._p_preload();
+    setTimeout(() => {
+      if (this.hasChildNodes()) {
+        this.setAttribute('title', this.textContent ?? EMPTY_STRING);
+        this.textContent = EMPTY_STRING;
+      }
+    }, 0);
+  }
+  /**
+   * Construit le DOM interne de l'élément.
+   * Ajoute l'icône d'aide dans le conteneur.
+   * @param container Racine du shadow DOM ou élément HTML.
    */
   _p_buildDOM(container) {
     super._p_buildDOM(container);
-    // Hydratation
-    this.#_slot_sender = this.#_queryById(
-      container,
-      HTMLBnumCardItemMail.ID_SENDER_SLOT,
-    );
-    this.#_override_sender = this.#_queryByClass(
-      container,
-      HTMLBnumCardItemMail.PART_SENDER_OVERRIDE,
-    );
-    // On écrase _p_slot car dans notre template, il n'y a pas de slot par défaut
-    this._p_slot = this.#_queryById(
-      container,
-      HTMLBnumCardItemMail.ID_SUBJECT_SLOT,
-    );
-    this.#_override_subject = this.#_queryByClass(
-      container,
-      HTMLBnumCardItemMail.PART_SUBJECT_OVERRIDE,
-    );
-    this.#_slot_date = this.#_queryById(
-      container,
-      HTMLBnumCardItemMail.ID_DATE_SLOT,
-    );
-    this.#_override_date = this.#_queryByClass(
-      container,
-      HTMLBnumCardItemMail.PART_DATE_OVERRIDE,
-    );
+    container.appendChild(HTMLBnumIcon.Create(ICON));
   }
   /**
-   * Crée le contenu par défaut et l'attache aux slots.
-   * Initialise les nœuds pour le sujedate-element-overridet, l'expéditeur et la date.
-   */
-  _p_attach() {
-    super._p_attach();
-    if (this.#_mailSubject !== EMPTY_STRING)
-      this._p_slot.appendChild(this._p_createTextNode(this.#_mailSubject));
-    // Crée le nœud texte pour l'EXPÉDITEUR par défaut
-    if (this.#_mailSender !== EMPTY_STRING)
-      this.#_slot_sender.appendChild(this._p_createTextNode(this.#_mailSender));
-    if (this.#_mailDate !== EMPTY_STRING) {
-      // Crée l'élément DATE par défaut
-      const defaultDate = HTMLBnumDate.Create(this.#_mailDate);
-      this.#_configureDateElement(defaultDate); // Applique la logique
-      this.#_slot_date.appendChild(defaultDate);
-      this.#_defaultDate = defaultDate;
-    }
-  }
-  /**
-   * Retourne les stylesheets à appliquer au composant.
-   * @returns Liste des CSSStyleSheet à appliquer.
+   * @inheritdoc
    */
   _p_getStylesheets() {
-    return [...super._p_getStylesheets(), SHEET$8];
+    return [...super._p_getStylesheets(), SHEET$c];
   }
   /**
-   * Méthode appelée lors de la mise à jour d'un attribut observé.
-   * @param name Nom de l'attribut.
-   * @param oldVal Ancienne valeur.
-   * @param newVal Nouvelle valeur.
+   * Crée une nouvelle instance de HTMLBnumHelper avec le texte d'aide spécifié.
+   * @param title Texte d'aide à afficher dans l'attribut title.
+   * @returns {HTMLBnumHelper} Instance du composant.
    */
-  _p_update(name, oldVal, newVal) {
-    super._p_update(name, oldVal, newVal);
-    if (this.hasAttribute(HTMLBnumCardItemMail.ATTRIBUTE_READ))
-      this._p_addState(HTMLBnumCardItemMail.STATE_READ);
+  static Create(title) {
+    const element = document.createElement(HTMLBnumHelper.TAG);
+    element.setAttribute('title', title);
+    return element;
   }
   /**
-   * Retourne le template HTML utilisé pour le composant.
-   * @returns Le template HTML.
+   * Tag HTML du composant.
+   * @readonly
+   * @returns {string} Tag HTML utilisé pour ce composant.
+   */
+  static get TAG() {
+    return TAG_HELPER;
+  }
+}
+HTMLBnumHelper.TryDefine();
+
+var css_248z$d =
+  ':host{cursor:pointer;font-variation-settings:"wght" 400;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}:host(:hover){--bnum-icon-fill:1}:host(:active){--bnum-icon-fill:1;--bnum-icon-weight:700;--bnum-icon-grad:200;--bnum-icon-opsz:20}:host(:disabled),:host([disabled]){cursor:not-allowed;opacity:var(--bnum-button-disabled-opacity,.6);pointer-events:var(--bnum-button-disabled-pointer-events,none)}';
+
+const SHEET$b = BnumElement.ConstructCSSStyleSheet(css_248z$d);
+/**
+ * Button contenant une icône.
+ *
+ * @structure Button Icon
+ * <bnum-icon-button>home</bnum-icon-button>
+ *
+ * @structure Button Disabled
+ * <bnum-icon-button disabled>home</bnum-icon-button>
+ *
+ * @cssvar {0.6} --bnum-button-disabled-opacity - Opacité du bouton désactivé
+ * @cssvar {none} --bnum-button-disabled-pointer-events - Gestion des événements souris pour le bouton désactivé
+ *
+ * @slot (default) - Contenu de l'icône (nom de l'icône à afficher)
+ */
+class HTMLBnumButtonIcon extends BnumElement {
+  //#region Constantes
+  /**
+   * Id de l'icône à l'intérieur du bouton
+   */
+  static ID_ICON = 'icon';
+  /**
+   * Attribut pour définir le gestionnaire de clic
+   * @event click
+   */
+  static ATTRIBUTE_ON_CLICK = 'onclick';
+  //#endregion Constantes
+  //#region Private fields
+  /**
+   * Référence vers l'élément icône à l'intérieur du bouton
+   */
+  #_icon = null;
+  #_onClick = null;
+  #_lastClick = null;
+  //#endregion Private fields
+  //#region Getters/Setters
+  get #_linkedClickEvent() {
+    if (this.#_onClick === null) {
+      this.#_onClick = new JsEvent();
+      this.addEventListener('click', () => {
+        this.#_onClick?.call?.();
+      });
+    }
+    return this.#_onClick;
+  }
+  /**
+   * Référence vers l'élément icône à l'intérieur du bouton.
+   *
+   * Si l'icône n'a pas été mise en mémoire, elle sera cherché puis mise en mémoire.
+   */
+  get #_iconElement() {
+    if (!this.#_icon) {
+      const icon =
+        this.querySelector(HTMLBnumIcon.TAG) ??
+        this.shadowRoot?.getElementById(HTMLBnumButtonIcon.ID_ICON);
+      if (!icon) this.#_throw('Icon element not found inside icon button');
+      this.#_icon = icon;
+    }
+    return this.#_icon;
+  }
+  /**
+   * Icône affichée dans le bouton
+   */
+  get icon() {
+    return (
+      (this.#_iconElement.icon || this.#_throw('Icon is not defined')) ??
+      EMPTY_STRING
+    );
+  }
+  set icon(value) {
+    this.#_iconElement.icon = value;
+  }
+  //#endregion Getters/Setters
+  //#region Lifecycle
+  constructor() {
+    super();
+  }
+  /**
+   * @inheritdoc
+   */
+  _p_getStylesheets() {
+    return [...super._p_getStylesheets(), SHEET$b];
+  }
+  /**
+   * @inheritdoc
    */
   _p_fromTemplate() {
-    return TEMPLATE$8;
+    return TEMPLATE$a;
+  }
+  /**
+   * @inheritdoc
+   */
+  _p_buildDOM(_) {
+    HTMLBnumButton.ToButton(this);
+    if (this.title === EMPTY_STRING)
+      console.warn(
+        'Icon button should have a title for accessibility purposes',
+      );
+    if (this.hasAttribute('click')) {
+      const click = this.getAttribute('click');
+      this.#_updateAttributeClick(click ?? EMPTY_STRING);
+    }
+  }
+  _p_update(name, oldVal, newVal) {
+    if (oldVal === newVal) return;
+    if (name === 'click') {
+      this.#_updateAttributeClick(newVal ?? EMPTY_STRING);
+    }
   }
   //#endregion Lifecycle
-  //#region Public methods
-  /**
-   * Force le contenu de l'expéditeur, en ignorant le slot.
-   * @param content Contenu texte ou HTML à afficher comme expéditeur.
-   * @returns L'instance courante pour chaînage.
-   */
-  updateSender(content) {
-    return this.#_requestUpdateSender(content);
-  }
-  /**
-   * Réaffiche le contenu du slot "sender" (annule l'override).
-   * @returns L'instance courante pour chaînage.
-   */
-  resetSender() {
-    return this.#_requestUpdateSender(HTMLBnumCardItemMail.SYMBOL_RESET);
-  }
-  /**
-   * Force le contenu du sujet, en ignorant le slot.
-   * @param content Contenu texte ou HTML à afficher comme sujet.
-   * @returns L'instance courante pour chaînage.
-   */
-  updateSubject(content) {
-    return this.#_requestUpdateSubject(content);
-  }
-  /**
-   * Réaffiche le contenu du slot "subject" (annule l'override).
-   * @returns L'instance courante pour chaînage.
-   */
-  resetSubject() {
-    return this.#_requestUpdateSubject(HTMLBnumCardItemMail.SYMBOL_RESET);
-  }
-  /**
-   * Force le contenu de la date, en ignorant le slot.
-   * @param content Chaîne, Date ou élément HTML à afficher comme date.
-   * @returns L'instance courante pour chaînage.
-   */
-  updateDate(content) {
-    return this.#_requestUpdateDate(content);
-  }
-  /**
-   * Réaffiche le contenu du slot "date" (annule l'override).
-   * @returns L'instance courante pour chaînage.
-   */
-  resetDate() {
-    return this.#_requestUpdateDate(HTMLBnumCardItemMail.SYMBOL_RESET);
-  }
-  //#endregion Public methods
   //#region Private methods
-  /**
-   * Met à jour l'affichage de l'expéditeur (slot ou override).
-   * @param content Contenu à afficher ou symbole de reset.
-   */
-  #_updateSender(content) {
-    if (!this.#_override_sender || !this.#_slot_sender) return;
-    if (content === HTMLBnumCardItemMail.SYMBOL_RESET) {
-      this.#_slot_sender.hidden = false;
-      this.#_override_sender.hidden = true;
-    } else {
-      if (typeof content === 'string')
-        this.#_override_sender.innerHTML = content;
-      else this.#_override_sender.replaceChildren(content);
-      // On cache le slot, on montre l'override
-      this.#_slot_sender.hidden = true;
-      this.#_override_sender.hidden = false;
+  #_updateAttributeClick(val) {
+    if (val !== this.#_lastClick) {
+      this.#_lastClick = val;
+      if (this.#_linkedClickEvent.has('click'))
+        this.#_linkedClickEvent.remove('click');
+      if (val && REG_XSS_SAFE.test(val)) {
+        this.#_linkedClickEvent.add(
+          'click',
+          (click) => {
+            // Si c'est un id unique
+            var elementToClick = document.getElementById(click);
+            if (elementToClick) elementToClick.click();
+            else {
+              // Sinon on part du principe que c'est un sélecteur CSS
+              const elements = document.querySelector(click);
+              if (elements) elements.click();
+              else
+                throw new Error(
+                  `[${HTMLBnumButtonIcon.TAG}] L'attribut 'click' ne référence aucun élément.`,
+                );
+            }
+          },
+          val,
+        );
+      }
     }
-    this.onsenderchanged.call(this);
   }
   /**
-   * Planifie la mise à jour de l'expéditeur.
-   * @param content Contenu à afficher ou symbole de reset.
-   * @returns L'instance courante pour chaînage.
+   * Permet de lancer une erreur avec un message spécifique dans une expression inline.
+   * @param msg Message à envoyer dans l'erreur.
    */
-  #_requestUpdateSender(content) {
-    (this.#_senderScheduler ??= new Scheduler((value) =>
-      this.#_updateSender(value),
-    )).schedule(content);
-    return this;
-  }
-  /**
-   * Met à jour l'affichage du sujet (slot ou override).
-   * @param content Contenu à afficher ou symbole de reset.
-   */
-  #_updateSubject(content) {
-    if (!this.#_override_subject || !this._p_slot) return;
-    if (content === HTMLBnumCardItemMail.SYMBOL_RESET) {
-      this._p_slot.hidden = false;
-      this.#_override_subject.hidden = true;
-    } else if (typeof content === 'string')
-      this.#_override_subject.innerHTML = content;
-    else this.#_override_subject.replaceChildren(content);
-    // On cache le slot, on montre l'override
-    this._p_slot.hidden = true;
-    this.#_override_subject.hidden = false;
-    this.onsubjectchanged.call(this);
-  }
-  /**
-   * Planifie la mise à jour du sujet.
-   * @param content Contenu à afficher ou symbole de reset.
-   * @returns L'instance courante pour chaînage.
-   */
-  #_requestUpdateSubject(content) {
-    (this.#_subjectScheduler ??= new Scheduler((value) =>
-      this.#_updateSubject(value),
-    )).schedule(content);
-    return this;
-  }
-  /**
-   * Met à jour l'affichage de la date (slot ou override).
-   * @param content Contenu à afficher ou symbole de reset.
-   */
-  #_updateDate(content) {
-    if (!this.#_override_date || !this.#_slot_date) return;
-    if (content === HTMLBnumCardItemMail.SYMBOL_RESET) {
-      this.#_slot_date.hidden = false;
-      this.#_override_date.hidden = true;
-    } else {
-      if (typeof content === 'string' || content instanceof Date)
-        this.#_lazyDateOverrideElement.setDate(content);
-      else this.#_lazyDateOverrideElement.setDate(content.getDate());
-      this.#_slot_date.hidden = true;
-      this.#_override_date.hidden = false;
-    }
-    this.ondatechanged.call(this);
-  }
-  /**
-   * Planifie la mise à jour de la date.
-   * @param content Contenu à afficher ou symbole de reset.
-   * @returns L'instance courante pour chaînage.
-   */
-  #_requestUpdateDate(content) {
-    (this.#_dateScheduler ??= new Scheduler((value) =>
-      this.#_updateDate(value),
-    )).schedule(content);
-    return this;
-  }
-  /**
-   * Recherche un élément par son id dans le container donné.
-   * @param container Container dans lequel chercher.
-   * @param id Id de l'élément.
-   * @returns L'élément trouvé.
-   */
-  #_queryById(container, id) {
-    return container instanceof ShadowRoot
-      ? container.getElementById(id)
-      : container.querySelector(`#${id}`);
-  }
-  /**
-   * Recherche un élément par sa classe dans le container donné.
-   * @param container Container dans lequel chercher.
-   * @param className Classe de l'élément.
-   * @returns L'élément trouvé.
-   */
-  #_queryByClass(container, className) {
-    return container instanceof ShadowRoot
-      ? container.querySelector(`.${className}`)
-      : container.getElementsByClassName(className)?.[0];
-  }
-  /**
-   * Configure le format d'affichage de la date selon la logique métier :
-   * - Affiche l'heure si la date est aujourd'hui.
-   * - Affiche le jour et l'heure si la date est comprise entre hier et il y a 7 jours.
-   * - Sinon, conserve le format par défaut.
-   * @param element Instance de HTMLBnumDate à configurer.
-   */
-  #_configureDateElement(element) {
-    HTMLBnumCardItemMail.SetDateLogique(element);
+  #_throw(msg) {
+    throw new Error(msg);
   }
   //#endregion Private methods
   //#region Static methods
   /**
-   * Applique la logique de formatage de date à un élément HTMLBnumDate.
-   * @param element Élément HTMLBnumDate à configurer.
+   * Retourne la liste des attributs observés par le composant.
    */
-  static SetDateLogique(element) {
-    element.formatEvent.add(EVENT_DEFAULT, (param) => {
-      const originalDate = element.getDate();
-      if (!originalDate) return param;
-      if (isToday(originalDate)) {
-        return {
-          date: format(originalDate, HTMLBnumCardItemMail.TODAY_FORMAT),
-        };
-      }
-      const now = new Date();
-      const startOfInterval = startOfDay(subDays(now, 7));
-      const endOfInterval = endOfDay(subDays(now, 1));
-      if (
-        isWithinInterval(originalDate, {
-          start: startOfInterval,
-          end: endOfInterval,
-        })
-      ) {
-        return {
-          date: format(originalDate, HTMLBnumCardItemMail.WEEK_FORMAT, {
-            locale: element.localeElement,
-          }),
-        };
-      }
-      return {
-        date: format(originalDate, HTMLBnumCardItemMail.OTHER_DAY_FORMAT, {
-          locale: element.localeElement,
-        }), // Format par défaut si aucune condition n'est remplie
-      };
-    });
+  static _p_observedAttributes() {
+    return ['click'];
   }
+  /**
+   * Génère un bouton icône avec l'icône spécifiée.
+   * @param icon Icône à afficher dans le bouton.
+   * @returns Node créée.
+   */
+  static Create(icon) {
+    const node = document.createElement(this.TAG);
+    node.icon = icon;
+    return node;
+  }
+  /**
+   * Génère le code HTML d'un bouton icône avec l'icône spécifiée.
+   * @param icon Icône à afficher dans le bouton.
+   * @returns Code HTML créée.
+   */
+  static Write(icon, attrs = {}) {
+    return `<${this.TAG} ${JsEnumerable.from(attrs)
+      .select((x) => {
+        const tmp = x;
+        return `${tmp.key}="${tmp.value}"`;
+      })
+      .toArray()
+      .join(' ')}>${icon}</${this.TAG}>`;
+  }
+  /**
+   * Tag de l'élément.
+   */
+  static get TAG() {
+    return TAG_ICON_BUTTON;
+  }
+}
+const TEMPLATE$a = HTMLBnumButtonIcon.CreateTemplate(`
+    <${HTMLBnumIcon.TAG} id="${HTMLBnumButtonIcon.ID_ICON}"><slot></slot></${HTMLBnumIcon.TAG}>
+    `);
+//#region TryDefine
+HTMLBnumButtonIcon.TryDefine();
+//#endregion TryDefine
+
+const EVENT_DEFAULT = 'default';
+
+var css_248z$c =
+  '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host #hint-text{--internal-gap:0.5rem;display:flex;flex-direction:column;gap:var(--internal-gap,.5rem);margin-bottom:var(--internal-gap,.5rem)}:host #hint-text__label{font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-label-size,var(--bnum-font-size-m));line-height:var(--bnum-font-label-line-height,var(--bnum-font-height-text-m))}:host #hint-text__hint{color:var(--bnum-input-hint-text-color,var(--bnum-text-hint,#666));font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-hint-size,var(--bnum-font-size-xs));line-height:var(--bnum-font-hint-line-height,var(--bnum-font-height-text-xs))}:host .addons__inner{position:relative;width:100%}:host input{background-color:var(--bnum-input-background-color,var(--bnum-color-input,#eee));border:none;border-radius:.25rem .25rem 0 0;box-shadow:var(--bnum-input-box-shadow,inset 0 -2px 0 0 var(--bnum-input-line-color,var(--bnum-color-input-border,#3a3a3a)));color:var(--bnum-input-color,var(--bnum-text-on-input,#666));display:block;font-size:1rem;line-height:1.5rem;padding:.5rem 1rem;width:100%}:host #input__button,:host #input__icon,:host #state{display:none}:host(:disabled),:host(:state(disabled)){cursor:not-allowed;opacity:.6;pointer-events:none}:host(:state(button)) .addons{display:flex;gap:0}:host(:state(button)) input{border-top-right-radius:0}:host(:state(button)) #input__button,:host(:state(button)) input{--bnum-input-line-color:#000091}:host(:state(button)) #input__button{border-bottom-left-radius:0;border-bottom-right-radius:0;border-top-left-radius:0;display:block;height:auto}:host(:state(button):state(obi)) #input__button{--bnum-button-icon-gap:0}:host(:state(icon)) #input__icon{display:block;position:absolute;right:var(--bnum-input-icon-right,10px);top:var(--bnum-input-icon-top,10px)}:host(:state(state)){border-left:2px solid var(--internal-border-color);display:block;padding-left:10px}:host(:state(state)) #state{align-items:center;color:var(--internal-color);display:flex;font-size:.75rem;margin-top:1rem}:host(:state(state)) #state bnum-icon{--bnum-icon-font-size:1rem;margin-right:5px}:host(:state(state)) #hint-text__label{color:var(--internal-color)}:host(:state(state)) .error,:host(:state(state)) .success{display:none;margin-bottom:-4px}:host(:state(state):state(success)){--internal-border-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(state):state(success)) #hint-text__label,:host(:state(state):state(success)) #state{--internal-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(state):state(success)) #input__button,:host(:state(state):state(success)) input{--bnum-input-line-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(state):state(success)) .success{display:block}:host(:state(state):state(error)){--internal-border-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}:host(:state(state):state(error)) #hint-text__label,:host(:state(state):state(error)) #state{--internal-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}:host(:state(state):state(error)) #input__button,:host(:state(state):state(error)) input{--bnum-input-line-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}:host(:state(state):state(error)) .error{display:block}';
+
+const STYLE$1 = BnumElementInternal.ConstructCSSStyleSheet(css_248z$c);
+/**
+ * Composant Input du design system Bnum.
+ * Permet de gérer un champ de saisie enrichi avec gestion d'états, d'icônes, de bouton et d'accessibilité.
+ *
+ * @structure Sans rien
+ * <bnum-input></bnum-input>
+ *
+ * @structure Avec une légende
+ * <bnum-input>Label du champ</bnum-input>
+ *
+ * @structure Avec une légende et un indice
+ * <bnum-input>
+ * Label du champ
+ * <span slot="hint">Indice d'utilisation</span>
+ * </bnum-input>
+ *
+ * @structure Avec un bouton
+ * <bnum-input button="true" button-icon="add">Label du champ
+ *   <span slot="button">Ajouter</span>
+ * </bnum-input>
+ *
+ * @structure En erreur
+ * <bnum-input pattern="^[a-zA-Z0-9]+$" data-value="@@@@@">Label du champ
+ * </bnum-input>
+ *
+ * @structure Avec un état de succès
+ * <bnum-input state="success">Label du champ
+ *   <span slot="success">Le champ est valide !</span>
+ * </bnum-input>
+ *
+ * @structure Avec une icône
+ * <bnum-input icon="search">Label du champ</bnum-input>
+ *
+ * @structure Avec un bouton avec icône seulement
+ * <bnum-input placeholder="LA LA !" button-icon="add">Label du champ
+ * </bnum-input>
+ *
+ * @structure Nombre
+ * <bnum-input type="number" data-value="42">Label du champ</bnum-input>
+ *
+ * @structure Désactivé
+ * <bnum-input disabled>
+ *   Label du champ
+ * </bnum-input>
+ *
+ * @structure Complet
+ * <bnum-input
+ *   data-value="Valeur initiale"
+ *   placeholder="Texte indicatif"
+ *   type="text"
+ *   state="error"
+ *   icon="search"
+ *   button="primary"
+ *   button-icon="send"
+ * >
+ *   Label du champ
+ *   <span slot="hint">Indice d'utilisation</span>
+ *   <span slot="success">Le champ est valide !</span>
+ *   <span slot="error">Le champ est invalide !</span>
+ *   <span slot="button">Envoyer</span>
+ * </bnum-input>
+ *
+ * @slot (defaut) - Contenu du label principal du champ.
+ * @slot hint - Contenu de l'indice d'utilisation (hint) du champ.
+ * @slot success - Contenu du message de succès du champ.
+ * @slot error - Contenu du message d'erreur du champ.
+ * @slot button - Contenu du bouton interne (si présent).
+ *
+ * @state success - État de succès.
+ * @state error - État d'erreur.
+ * @state disabled - État désactivé.
+ * @state icon - Présence d'une icône.
+ * @state button - Présence d'un bouton.
+ * @state obi - Bouton avec icône seulement (sans texte).
+ * @state state - Présence d'un état (success / error).
+ *
+ * @cssvar {#666} --bnum-input-hint-text-color - Couleur du texte du hint.
+ * @cssvar {#eee} --bnum-input-background-color - Couleur de fond de l'input.
+ * @cssvar {#666} --bnum-input-color - Couleur du texte de l'input.
+ * @cssvar {#3a3a3a} --bnum-input-line-color - Couleur de la ligne/bordure de l'input.
+ * @cssvar {#36b37e} --bnum-input-state-success-color - Couleur de l'état de succès.
+ * @cssvar {#de350b} --bnum-input-state-error-color - Couleur de l'état d'erreur.
+ * @cssvar {inset 0 -2px 0 0 #3a3a3a} --bnum-input-box-shadow - Ombre portée de l'input.
+ *
+ */
+class HTMLBnumInput extends BnumElementInternal {
+  //#region Constants
+  /**
+   * Événement déclenché au clic sur le bouton interne.
+   *
+   * Attention ! Vous devez écouter l'événement via la propriété `onButtonClicked` pour que le gestionnaire soit bien attaché.
+   * @event bnum-input:button.click
+   * @detail MouseEvent
+   */
+  static EVENT_BUTTON_CLICK = 'bnum-input:button.click';
+  /**
+   * Événement déclenché à la saisie dans le champ.
+   * @event input
+   * @detail InputEvent
+   */
+  static EVENT_INPUT = 'input';
+  /**
+   * Événement déclenché au changement de valeur du champ.
+   * @event change
+   * @detail Event
+   */
+  static EVENT_CHANGE = 'change';
+  /**
+   * Attribut data-value du composant.
+   * @attr {string} (optional) (default: undefined) data-value - Valeur initiale du champ.
+   */
+  static ATTRIBUTE_DATA_VALUE = 'data-value';
+  /**
+   * @attr {string} (optional) (default: undefined) placeholder - Texte indicatif du champ.
+   */
+  static ATTRIBUTE_PLACEHOLDER = 'placeholder';
+  /**
+   * @attr {string} (optional) (default: 'text') type - Type de l'input (text, password, email, etc.)
+   */
+  static ATTRIBUTE_TYPE = 'type';
+  /**
+   * @attr {string} (optional) (default: undefined) disabled - Désactive le champ.
+   */
+  static ATTRIBUTE_DISABLED = 'disabled';
+  /**
+   * @attr {string} (optional) (default: undefined) state - État du champ (success, error, etc.).
+   */
+  static ATTRIBUTE_STATE = 'state';
+  /**
+   * @attr {string} (optional) (default: undefined) button - Présence d'un bouton interne (primary, secondary, danger, ...).
+   */
+  static ATTRIBUTE_BUTTON = 'button';
+  /**
+   * @attr {string} (optional) (default: undefined) button-icon - Icône du bouton interne.
+   */
+  static ATTRIBUTE_BUTTON_ICON = 'button-icon';
+  /**
+   * @attr {string} (optional) (default: undefined) icon - Icône à afficher dans le champ.
+   */
+  static ATTRIBUTE_ICON = 'icon';
+  /**
+   * @attr {string} (optional) (default: undefined) required - Champ requis.
+   */
+  static ATTRIBUTE_REQUIRED = 'required';
+  /**
+   * @attr {string} (optional) (default: undefined) readonly - Champ en lecture seule.
+   */
+  static ATTRIBUTE_READONLY = 'readonly';
+  /**
+   * @attr {string} (optional) (default: undefined) pattern - Expression régulière de validation.
+   */
+  static ATTRIBUTE_PATTERN = 'pattern';
+  /**
+   * @attr {string} (optional) (default: undefined) minlength - Longueur minimale du champ.
+   */
+  static ATTRIBUTE_MINLENGTH = 'minlength';
+  /**
+   * @attr {string} (optional) (default: undefined) maxlength - Longueur maximale du champ.
+   */
+  static ATTRIBUTE_MAXLENGTH = 'maxlength';
+  /**
+   * @attr {string} (optional) (default: undefined) autocomplete - Attribut autocomplete HTML.
+   */
+  static ATTRIBUTE_AUTOCOMPLETE = 'autocomplete';
+  /**
+   * @attr {string} (optional) (default: undefined) inputmode - Mode de saisie (mobile).
+   */
+  static ATTRIBUTE_INPUTMODE = 'inputmode';
+  /**
+   * @attr {string} (optional) (default: undefined) spellcheck - Correction orthographique.
+   */
+  static ATTRIBUTE_SPELLCHECK = 'spellcheck';
+  /**
+   * @attr {string} (optional) (default: undefined) ignorevalue - Attribut interne pour ignorer la synchronisation de valeur. Ne pas utiliser.
+   */
+  static ATTRIBUTE_IGNOREVALUE = 'ignorevalue';
+  /**
+   * @attr {string} (optional) (default: undefined) name - Nom du champ (attribut HTML name).
+   */
+  static ATTRIBUTE_NAME = 'name';
+  /** ID du label principal */
+  static ID_HINT_TEXT = 'hint-text';
+  /** ID du label du champ */
+  static ID_HINT_TEXT_LABEL = 'hint-text__label';
+  /** ID du hint */
+  static ID_HINT_TEXT_HINT = 'hint-text__hint';
+  /** ID de l'input */
+  static ID_INPUT = 'bnum-input';
+  /** ID du bouton */
+  static ID_INPUT_BUTTON = 'input__button';
+  /** ID de l'icône d'état */
+  static ID_STATE_ICON = 'state__icon';
+  /** ID de l'icône d'input */
+  static ID_INPUT_ICON = 'input__icon';
+  /** ID du texte de succès */
+  static ID_SUCCESS_TEXT = 'success-text';
+  /** ID du texte d'erreur */
+  static ID_ERROR_TEXT = 'error-text';
+  /** ID du conteneur d'état */
+  static ID_STATE = 'state';
+  /** Classe CSS pour le texte de succès */
+  static CLASS_STATE_TEXT_SUCCESS = 'state__text success';
+  /** Classe CSS pour le texte d'erreur */
+  static CLASS_STATE_TEXT_ERROR = 'state__text error';
+  /**
+   * État de succès.
+   */
+  static STATE_SUCCESS = 'success';
+  /**
+   * État d'erreur.
+   */
+  static STATE_ERROR = 'error';
+  /**
+   * État désactivé.
+   */
+  static STATE_DISABLED = 'disabled';
+  /**
+   * État avec icône.
+   */
+  static STATE_ICON = 'icon';
+  /**
+   * État avec bouton.
+   */
+  static STATE_BUTTON = 'button';
+  /**
+   * État bouton avec icône seulement (sans texte).
+   *
+   * (obi = Only Button Icon)
+   */
+  static STATE_OBI = 'obi';
+  /**
+   * État avec état (success / error).
+   */
+  static STATE_STATE = 'state';
+  /**
+   * Icône affichée en cas de succès de validation.
+   */
+  static ICON_SUCCESS = 'check_circle';
+  /**
+   * Icône affichée en cas d'erreur de validation.
+   */
+  static ICON_ERROR = 'cancel';
+  /**
+   * Nom du slot pour le bouton interne.
+   */
+  static SLOT_BUTTON = 'button';
+  /**
+   * Nom du slot pour l'indice d'utilisation (hint).
+   */
+  static SLOT_HINT = 'hint';
+  /**
+   * Nom du slot pour le message de succès.
+   */
+  static SLOT_SUCCESS = 'success';
+  /**
+   * Nom du slot pour le message d'erreur.
+   */
+  static SLOT_ERROR = 'error';
+  /**
+   * Type d'input par défaut.
+   */
+  static DEFAULT_INPUT_TYPE = 'text';
+  /**
+   * Variation du bouton par défaut.
+   */
+  static DEFAULT_BUTTON_VARIATION = EButtonType.PRIMARY;
+  /**
+   * Texte affiché en cas de succès de validation.
+   */
+  static TEXT_VALID_INPUT =
+    BnumConfig.Get('local_keys')?.valid_input || 'Le champs est valide !';
+  /**
+   * Texte affiché en cas d'erreur de validation.
+   */
+  static TEXT_INVALID_INPUT =
+    BnumConfig.Get('local_keys')?.invalid_input || 'Le champs est invalide !';
+  /**
+   * Texte affiché en cas d'erreur de champ.
+   */
+  static TEXT_ERROR_FIELD =
+    BnumConfig.Get('local_keys')?.error_field ||
+    'Ce champ contient une erreur.';
+  //#endregion Constants
+  //#region Private fields
+  /**
+   * Icône d'état (success / error)
+   */
+  #_stateIcon = null;
+  /**
+   * Input HTML interne
+   */
+  #_input = null;
+  /**
+   * Bouton HTML interne
+   */
+  #_button = null;
+  /**
+   * Icône interne
+   */
+  #_icon = null;
+  /**
+   * Événement déclenché au clic sur le bouton (si présent)
+   */
+  #_onButtonClicked = null;
+  /**
+   * Valeur initiale (pour la réinitialisation du formulaire)
+   */
+  #_initValue = EMPTY_STRING;
+  //#endregion Private fields
+  //#region Getters/Setters
+  /**
+   * Permet d'écouter le clic sur le bouton interne.
+   * @returns {JsEvent} Instance d'événement personnalisée.
+   */
+  get onButtonClicked() {
+    if (this.#_onButtonClicked === null) {
+      this.#_onButtonClicked = new JsEvent();
+      this.#_onButtonClicked.add(EVENT_DEFAULT, (clickEvent) => {
+        this.trigger(HTMLBnumInput.EVENT_BUTTON_CLICK, {
+          innerEvent: clickEvent,
+        });
+      });
+      this.#_initialiseButton();
+    }
+    return this.#_onButtonClicked;
+  }
+  // -- Formulaire --
+  /**
+   * Valeur courante du champ de saisie.
+   */
+  get value() {
+    return (
+      this.#_input?.value ||
+      this.getAttribute(HTMLBnumInput.ATTRIBUTE_DATA_VALUE) ||
+      EMPTY_STRING
+    );
+  }
+  set value(val) {
+    if (this.#_input === null)
+      this.setAttribute(HTMLBnumInput.ATTRIBUTE_DATA_VALUE, val);
+    else {
+      this.#_input.value = val;
+      try {
+        this._p_internal.setFormValue(val);
+      } catch (error) {}
+    }
+  }
+  /**
+   * Nom du champ (attribut HTML name).
+   */
+  get name() {
+    return this.getAttribute(HTMLBnumInput.ATTRIBUTE_NAME) || EMPTY_STRING;
+  }
+  set name(val) {
+    this.setAttribute(HTMLBnumInput.ATTRIBUTE_NAME, val);
+  }
+  //#endregion Getters/Setters
+  //#region Lifecycle
+  /**
+   * Constructeur du composant.
+   * Initialise la valeur initiale à partir de l'attribut data-value.
+   */
+  constructor() {
+    super();
+    this.#_initValue =
+      this.getAttribute(HTMLBnumInput.ATTRIBUTE_DATA_VALUE) ?? EMPTY_STRING;
+  }
+  /**
+   * Attache un Shadow DOM personnalisé.
+   */
+  _p_attachCustomShadow() {
+    return this.attachShadow({ mode: 'open', delegatesFocus: true });
+  }
+  /**
+   * Récupère des stylesheet déjà construites pour le composant.
+   * @returns Liste de stylesheet
+   */
+  _p_getStylesheets() {
+    return [...super._p_getStylesheets(), STYLE$1];
+  }
+  /**
+   * Retourne le template HTML utilisé pour le composant.
+   */
+  _p_fromTemplate() {
+    return TEMPLATE$9;
+  }
+  /**
+   * Construit le DOM interne et attache les écouteurs d'événements.
+   */
+  _p_buildDOM(container) {
+    this.#_input = container.querySelector(`#${HTMLBnumInput.ID_INPUT}`);
+    this.#_button = container.querySelector(
+      `#${HTMLBnumInput.ID_INPUT_BUTTON}`,
+    );
+    this.#_stateIcon = container.querySelector(
+      `#${HTMLBnumInput.ID_STATE_ICON}`,
+    );
+    this.#_icon = container.querySelector(`#${HTMLBnumInput.ID_INPUT_ICON}`);
+    this.#_input.addEventListener(HTMLBnumInput.EVENT_INPUT, (e) => {
+      this.#_inputValueChangedCallback(e);
+    });
+    this.#_input.addEventListener(HTMLBnumInput.EVENT_CHANGE, (e) => {
+      this.#_inputValueChangedCallback(e);
+    });
+    this.#_initialiseButton().#_update();
+    this.attr(HTMLBnumInput.ATTRIBUTE_IGNOREVALUE, 'true').removeAttribute(
+      HTMLBnumInput.ATTRIBUTE_DATA_VALUE,
+    );
+  }
+  /**
+   * Met à jour le composant lors d'un changement d'attribut.
+   */
+  _p_update(name, oldVal, newVal) {
+    if (this.alreadyLoaded === false) return 'break';
+    if (newVal == oldVal) return;
+    switch (name) {
+      case HTMLBnumInput.ATTRIBUTE_DATA_VALUE:
+        if (this.attr(HTMLBnumInput.ATTRIBUTE_IGNOREVALUE) !== null) {
+          this.removeAttribute(HTMLBnumInput.ATTRIBUTE_IGNOREVALUE);
+          break;
+        }
+        if (newVal !== null) {
+          this._p_internal.setFormValue(newVal);
+          if (this.#_input) this.#_input.value = newVal;
+          this.setAttribute(HTMLBnumInput.ATTRIBUTE_IGNOREVALUE, 'true');
+          this.removeAttribute(HTMLBnumInput.ATTRIBUTE_DATA_VALUE);
+        }
+        break;
+    }
+  }
+  /**
+   * Appelé après le flush du DOM pour synchroniser l'état.
+   */
+  _p_postFlush() {
+    this.#_update();
+  }
+  //#endregion Lifecycle
+  //#region Public methods
+  // --- Formulaire --
+  /**
+   * Réinitialise la valeur du champ lors d'une remise à zéro du formulaire parent.
+   */
+  formResetCallback() {
+    this.value = this.#_initValue;
+  }
+  /**
+   * Active ou désactive le champ selon l'état du fieldset parent.
+   */
+  formDisabledCallback(disabled) {
+    if (disabled)
+      this.setAttribute(HTMLBnumInput.ATTRIBUTE_DISABLED, 'disabled');
+    this.#_sync();
+  }
+  // -- Helper --
+  /**
+   * Active le bouton interne avec texte, icône et variation éventuels.
+   * @param options Objet contenant le texte, l'icône et la variation du bouton.
+   * @returns {this} L'instance courante pour chaînage.
+   */
+  enableButton({
+    text = undefined,
+    icon = undefined,
+    variation = EButtonType.PRIMARY,
+  } = {}) {
+    this.setAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON, variation);
+    if (text !== undefined) {
+      this.querySelector(
+        `slot[name="${HTMLBnumInput.SLOT_BUTTON}"]`,
+      )?.remove?.();
+      const span = this._p_createSpan({
+        child: text,
+        attributes: { slot: 'button' },
+      });
+      this.appendChild(span);
+    }
+    if (icon !== undefined) {
+      this.setAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON_ICON, icon);
+    }
+    return this;
+  }
+  /**
+   * Active uniquement l'icône du bouton interne (sans texte).
+   * @param icon Nom de l'icône à afficher sur le bouton.
+   * @returns {this} L'instance courante pour chaînage.
+   */
+  enableButtonIconOnly(icon) {
+    this.querySelector(`slot[name="${HTMLBnumInput.SLOT_BUTTON}"]`)?.remove?.();
+    this.removeAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON);
+    this.setAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON_ICON, icon);
+    return this;
+  }
+  /**
+   * Masque le bouton interne.
+   * @returns {this} L'instance courante pour chaînage.
+   */
+  hideButton() {
+    this.removeAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON);
+    this.removeAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON_ICON);
+    return this;
+  }
+  /**
+   * Définit l'état de succès avec un message optionnel.
+   * @param message Message de succès à afficher.
+   * @returns {this} L'instance courante pour chaînage.
+   */
+  setSuccessState(message) {
+    return this.#_setState(HTMLBnumInput.SLOT_SUCCESS, message);
+  }
+  /**
+   * Définit l'état d'erreur avec un message optionnel.
+   * @param message Message d'erreur à afficher.
+   * @returns {this} L'instance courante pour chaînage.
+   */
+  setErrorState(message) {
+    return this.#_setState(HTMLBnumInput.SLOT_ERROR, message);
+  }
+  /**
+   * Définit une icône à afficher dans le champ.
+   * @param icon Nom de l'icône à afficher.
+   * @returns {this} L'instance courante pour chaînage.
+   */
+  setIcon(icon) {
+    this.setAttribute(HTMLBnumInput.ATTRIBUTE_ICON, icon);
+    return this;
+  }
+  /**
+   * Supprime l'icône affichée dans le champ.
+   * @returns {this} L'instance courante pour chaînage.
+   */
+  removeIcon() {
+    this.removeAttribute(HTMLBnumInput.ATTRIBUTE_ICON);
+    return this;
+  }
+  /**
+   * Définit un indice d'utilisation (hint) pour le champ.
+   * @param hint Texte de l'indice à afficher.
+   * @returns {this} L'instance courante pour chaînage.
+   */
+  setHint(hint) {
+    this.removeHint();
+    const span = this._p_createSpan({
+      child: hint,
+      attributes: { slot: HTMLBnumInput.SLOT_HINT },
+    });
+    this.appendChild(span);
+    return this;
+  }
+  /**
+   * Supprime l'indice d'utilisation (hint) du champ.
+   * @returns {this} L'instance courante pour chaînage.
+   */
+  removeHint() {
+    this.querySelector(`slot[name="${HTMLBnumInput.SLOT_HINT}"]`)?.remove?.();
+    return this;
+  }
+  /**
+   * Définit le label principal du champ.
+   * @param label Texte ou élément HTML à utiliser comme label.
+   * @returns {this} L'instance courante pour chaînage.
+   */
+  setLabel(label) {
+    // On supprime tout ce qui n'a pas l'attribut slot
+    const nodes = this.childNodes.values();
+    for (const node of nodes) {
+      if (node instanceof HTMLElement) {
+        const element = node;
+        if (!element.hasAttribute('slot')) this.removeChild(element);
+      }
+    }
+    if (typeof label === 'string')
+      this.appendChild(this._p_createTextNode(label));
+    else this.appendChild(label);
+    return this;
+  }
+  //#endregion Public methods
+  //#region Private methods
+  /**
+   * Met à jour l'état visuel et fonctionnel du composant selon ses attributs.
+   * @private
+   * @returns {this} L'instance courante pour chaînage.
+   */
+  #_update() {
+    this._p_clearStates();
+    if (this.#_input?.value || false) this._p_addState('value');
+    const btnValue = this.attr(HTMLBnumInput.ATTRIBUTE_BUTTON);
+    if (btnValue !== null) {
+      this._p_addState(HTMLBnumInput.STATE_BUTTON);
+      switch (btnValue) {
+        case EButtonType.PRIMARY:
+          this.#_button.variation = EButtonType.PRIMARY;
+          break;
+        case EButtonType.SECONDARY:
+          this.#_button.variation = EButtonType.SECONDARY;
+          break;
+        case EButtonType.DANGER:
+          this.#_button.variation = EButtonType.DANGER;
+          break;
+      }
+    }
+    const button_icon = this.attr(HTMLBnumInput.ATTRIBUTE_BUTTON_ICON);
+    if (button_icon !== null) {
+      this.#_button.icon = button_icon;
+      if (!this._p_hasState(HTMLBnumInput.STATE_BUTTON))
+        this._p_addStates(HTMLBnumInput.STATE_BUTTON, HTMLBnumInput.STATE_OBI);
+      else if (btnValue === EMPTY_STRING)
+        this._p_addState(HTMLBnumInput.STATE_OBI);
+    }
+    const icon = this.attr(HTMLBnumInput.ATTRIBUTE_ICON);
+    if (icon !== null) {
+      this._p_addState(HTMLBnumInput.STATE_ICON);
+      this.#_icon.icon = icon;
+    }
+    if (this.attr(HTMLBnumInput.ATTRIBUTE_DISABLED) !== null)
+      this._p_addState(HTMLBnumInput.STATE_DISABLED);
+    return this.#_updateState(
+      this.attr(HTMLBnumInput.ATTRIBUTE_STATE),
+    ).#_sync();
+  }
+  /**
+   * Synchronise les propriétés et attributs de l'input interne.
+   * Met à jour les propriétés HTML de l'input selon les attributs du composant.
+   * @private
+   * @returns {this} L'instance courante pour chaînage.
+   */
+  #_sync() {
+    if (!this.#_input) return this;
+    const input = this.#_input;
+    // 1. Propriétés de base
+    input.value = this.value;
+    input.type =
+      this.getAttribute(HTMLBnumInput.ATTRIBUTE_TYPE) ||
+      HTMLBnumInput.DEFAULT_INPUT_TYPE;
+    input.placeholder =
+      this.getAttribute(HTMLBnumInput.ATTRIBUTE_PLACEHOLDER) || EMPTY_STRING;
+    // 2. États Booléens (On utilise .disabled / .readOnly pour la réactivité JS)
+    input.disabled =
+      this.hasAttribute(HTMLBnumInput.ATTRIBUTE_DISABLED) ||
+      this._p_hasState(HTMLBnumInput.STATE_DISABLED);
+    input.readOnly = this.hasAttribute(HTMLBnumInput.ATTRIBUTE_READONLY);
+    input.required = this.hasAttribute(HTMLBnumInput.ATTRIBUTE_REQUIRED);
+    // 3. Validation & UX (On utilise setAttribute pour les attributs HTML5)
+    this.#_setFieldAttr(HTMLBnumInput.ATTRIBUTE_PATTERN);
+    this.#_setFieldAttr(HTMLBnumInput.ATTRIBUTE_MINLENGTH);
+    this.#_setFieldAttr(HTMLBnumInput.ATTRIBUTE_MAXLENGTH);
+    this.#_setFieldAttr(HTMLBnumInput.ATTRIBUTE_AUTOCOMPLETE);
+    this.#_setFieldAttr(HTMLBnumInput.ATTRIBUTE_INPUTMODE);
+    this.#_setFieldAttr(HTMLBnumInput.ATTRIBUTE_SPELLCHECK);
+    this.#_setFieldAttr('min');
+    this.#_setFieldAttr('max');
+    this.#_setFieldAttr('step');
+    return this.#_updateA11y();
+  }
+  /**
+   * Met à jour l'accessibilité (a11y) de l'input selon l'état.
+   * Met à jour les attributs ARIA et la validité de l'input.
+   * @private
+   * @returns {this} L'instance courante pour chaînage.
+   */
+  #_updateA11y() {
+    if (!this.#_input) return this;
+    return this.#_setValidity();
+  }
+  /**
+   * Met à jour l'état visuel selon l'état passé en paramètre.
+   * @private
+   * @param state L'état à appliquer (success, error, etc.)
+   * @returns {this} L'instance courante pour chaînage.
+   */
+  #_updateState(state) {
+    if (state !== null) {
+      switch (state) {
+        case HTMLBnumInput.STATE_SUCCESS:
+          this._p_addStates(
+            HTMLBnumInput.STATE_STATE,
+            HTMLBnumInput.STATE_SUCCESS,
+          );
+          this.#_stateIcon.icon = HTMLBnumInput.ICON_SUCCESS;
+          break;
+        case HTMLBnumInput.STATE_ERROR:
+          this._p_addStates(
+            HTMLBnumInput.STATE_STATE,
+            HTMLBnumInput.STATE_ERROR,
+          );
+          this.#_stateIcon.icon = HTMLBnumInput.ICON_ERROR;
+          break;
+      }
+    }
+    return this;
+  }
+  /**
+   * Définit l'état (succès ou erreur) et le message associé.
+   * @private
+   * @param state Type d'état (success ou error).
+   * @param message Message à afficher.
+   * @returns {this} L'instance courante pour chaînage.
+   */
+  #_setState(state, message) {
+    this.setAttribute(HTMLBnumInput.ATTRIBUTE_STATE, state);
+    if (message) {
+      this.querySelector(`slot[name="${state}"]`)?.remove?.();
+      const span = this._p_createSpan({
+        child: message,
+        attributes: { slot: state },
+      });
+      this.appendChild(span);
+    }
+    return this;
+  }
+  /**
+   * Met à jour la validité de l'input et les messages d'erreur/succès.
+   * Gère également les attributs ARIA liés à la validation.
+   * @private
+   * @returns {this} L'instance courante pour chaînage.
+   */
+  #_setValidity() {
+    if (!this.#_input) return this;
+    const state = this.attr(HTMLBnumInput.ATTRIBUTE_STATE);
+    let isError = state === HTMLBnumInput.STATE_ERROR;
+    let isSuccess = state === HTMLBnumInput.STATE_SUCCESS;
+    try {
+      var validity =
+        this.#_input.checkValidity() ||
+        this.#_input.validationMessage !== EMPTY_STRING;
+    } catch (error) {
+      var validity = this.#_input.validationMessage !== EMPTY_STRING;
+    }
+    if (isError) {
+      try {
+        this._p_internal.setValidity(
+          { customError: true },
+          HTMLBnumInput.TEXT_ERROR_FIELD,
+          this.#_input,
+        );
+      } catch (error) {}
+    } else if (validity) {
+      try {
+        this._p_internal.setValidity(
+          this.#_input.validity,
+          this.#_input.validationMessage,
+          this.#_input,
+        );
+      } catch (error) {}
+      if (this.#_input.validationMessage !== EMPTY_STRING) {
+        this._p_addStates(
+          HTMLBnumInput.STATE_STATE,
+          this.#_input.validity.valid
+            ? HTMLBnumInput.STATE_SUCCESS
+            : HTMLBnumInput.STATE_ERROR,
+        );
+        if (this.#_input.validity.valid) {
+          this.shadowRoot.querySelector(
+            `#${HTMLBnumInput.ID_SUCCESS_TEXT} slot`,
+          ).innerText = this.#_input.validationMessage;
+          isSuccess = true;
+        } else {
+          this.shadowRoot.querySelector(
+            `#${HTMLBnumInput.ID_ERROR_TEXT} slot`,
+          ).innerText = this.#_input.validationMessage;
+          isError = true;
+        }
+      }
+    } else {
+      try {
+        this._p_internal.setValidity({});
+      } catch (error) {}
+    }
+    // Indiquer l'erreur sémantiquement
+    this.#_input.setAttribute('aria-invalid', isError ? 'true' : 'false');
+    // Lier les descriptions (hint + erreur/success)
+    // On pointe vers les IDs définis dans le template
+    const descriptions = [];
+    if (isError) descriptions.push(HTMLBnumInput.ID_ERROR_TEXT);
+    if (isSuccess) descriptions.push(HTMLBnumInput.ID_SUCCESS_TEXT);
+    if (descriptions.length > 0)
+      this.#_input.setAttribute('aria-describedby', descriptions.join(' '));
+    return this.#_updateState(
+      state ||
+        (validity
+          ? isError
+            ? HTMLBnumInput.STATE_ERROR
+            : isSuccess
+              ? HTMLBnumInput.STATE_SUCCESS
+              : null
+          : null),
+    );
+  }
+  /**
+   * Initialise le bouton interne et son écouteur de clic.
+   * Ajoute un écouteur d'événement sur le bouton si nécessaire.
+   * @private
+   * @returns {this} L'instance courante pour chaînage.
+   */
+  #_initialiseButton() {
+    if (this.#_onButtonClicked !== null && this.#_button !== null) {
+      this.#_button.addEventListener('click', (e) => {
+        this.onButtonClicked.call(e);
+      });
+    }
+    return this;
+  }
+  /**
+   * Callback appelé lors d'un changement de valeur de l'input.
+   * @private
+   * @param e Evénement de changement de valeur.
+   */
+  #_inputValueChangedCallback(e) {
+    this._p_inputValueChangedCallback(e);
+  }
+  _p_inputValueChangedCallback(e) {
+    try {
+      this._p_internal.setFormValue(this.#_input.value);
+    } catch (error) {}
+    this.#_update();
+    try {
+      this.dispatchEvent(e);
+    } catch (error) {
+      this.dispatchEvent(
+        e.type === 'input'
+          ? new InputEvent('input', {
+              data: this.value,
+              inputType: this.attr('type') || 'text',
+            })
+          : new Event('change'),
+      );
+    }
+  }
+  /**
+   * Transfère un attribut du composant vers l'input interne si présent.
+   * @private
+   * @param attrName Nom de l'attribut à synchroniser.
+   */
+  #_setFieldAttr(attrName) {
+    const val = this.getAttribute(attrName);
+    if (val !== null) {
+      this.#_input.setAttribute(attrName, val);
+    } else {
+      this.#_input.removeAttribute(attrName);
+    }
+  }
+  //#endregion Private methods
+  //#region Static methods
+  /**
+   * @inheritdoc
+   */
   static _p_observedAttributes() {
     return [
-      ...super._p_observedAttributes(),
-      HTMLBnumCardItemMail.ATTRIBUTE_READ,
+      HTMLBnumInput.ATTRIBUTE_DATA_VALUE,
+      HTMLBnumInput.ATTRIBUTE_PLACEHOLDER,
+      HTMLBnumInput.ATTRIBUTE_TYPE,
+      HTMLBnumInput.ATTRIBUTE_DISABLED,
+      HTMLBnumInput.ATTRIBUTE_STATE,
+      HTMLBnumInput.ATTRIBUTE_BUTTON,
+      HTMLBnumInput.ATTRIBUTE_BUTTON_ICON,
+      HTMLBnumInput.ATTRIBUTE_ICON,
+      HTMLBnumInput.ATTRIBUTE_REQUIRED,
+      HTMLBnumInput.ATTRIBUTE_READONLY,
+      HTMLBnumInput.ATTRIBUTE_PATTERN,
+      HTMLBnumInput.ATTRIBUTE_MINLENGTH,
+      HTMLBnumInput.ATTRIBUTE_MAXLENGTH,
+      HTMLBnumInput.ATTRIBUTE_AUTOCOMPLETE,
+      HTMLBnumInput.ATTRIBUTE_INPUTMODE,
+      HTMLBnumInput.ATTRIBUTE_SPELLCHECK,
+      'min',
+      'max',
+      'step',
     ];
   }
   /**
-   * Crée une nouvelle instance du composant avec les valeurs fournies.
-   * @param subject Sujet du mail.
-   * @param sender Expéditeur du mail.
-   * @param date Date du mail
-   * @returns Instance HTMLBnumCardItemMail.
+   * Crée une instance du composant avec les options fournies.
+   * @param label Texte du label principal.
+   * @param options Options d'initialisation (attributs et slots).
+   * @returns {HTMLBnumInput} Instance du composant.
    */
-  static Create(subject, sender, date) {
-    let node = document.createElement(HTMLBnumCardItemMail.TAG);
-    node.attr(HTMLBnumCardItemMail.ATTRIBUTE_DATA_SUBJECT, subject);
-    node.attr(HTMLBnumCardItemMail.ATTRIBUTE_DATA_SENDER, sender);
-    if (typeof date === 'string')
-      node.attr(HTMLBnumCardItemMail.ATTRIBUTE_DATA_DATE, date);
-    else
-      node.attr(HTMLBnumCardItemMail.ATTRIBUTE_DATA_DATE, date.toISOString());
-    return node;
+  static Create(
+    label,
+    {
+      'data-value': dataValue,
+      placeholder,
+      name,
+      type,
+      disabled,
+      state,
+      button,
+      'button-icon': buttonIcon,
+      icon,
+      required,
+      readonly,
+      pattern,
+      minlength,
+      maxlength,
+      autocomplete,
+      inputmode,
+      spellcheck,
+      hint,
+      success,
+      error,
+      btnText,
+    } = {},
+  ) {
+    const el = document.createElement(HTMLBnumInput.TAG);
+    // Appliquer chaque attribut si défini
+    if (dataValue !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_DATA_VALUE, dataValue);
+    if (placeholder !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_PLACEHOLDER, placeholder);
+    if (type !== undefined) el.setAttribute(HTMLBnumInput.ATTRIBUTE_TYPE, type);
+    if (disabled !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_DISABLED, disabled);
+    if (state !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_STATE, state);
+    if (button !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON, button);
+    if (buttonIcon !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON_ICON, buttonIcon);
+    if (icon !== undefined) el.setAttribute(HTMLBnumInput.ATTRIBUTE_ICON, icon);
+    if (required !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_REQUIRED, required);
+    if (readonly !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_READONLY, readonly);
+    if (pattern !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_PATTERN, pattern);
+    if (minlength !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_MINLENGTH, minlength);
+    if (maxlength !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_MAXLENGTH, maxlength);
+    if (autocomplete !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_AUTOCOMPLETE, autocomplete);
+    if (inputmode !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_INPUTMODE, inputmode);
+    if (spellcheck !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_SPELLCHECK, spellcheck);
+    if (name !== undefined) el.setAttribute(HTMLBnumInput.ATTRIBUTE_NAME, name);
+    // Slot par défaut (label)
+    el.textContent = label;
+    // Slots nommés
+    if (hint) {
+      const hintSlot = document.createElement('span');
+      hintSlot.slot = HTMLBnumInput.SLOT_HINT;
+      hintSlot.textContent = hint;
+      el.appendChild(hintSlot);
+    }
+    if (success) {
+      const successSlot = document.createElement('span');
+      successSlot.slot = HTMLBnumInput.SLOT_SUCCESS;
+      successSlot.textContent = success;
+      el.appendChild(successSlot);
+    }
+    if (error) {
+      const errorSlot = document.createElement('span');
+      errorSlot.slot = HTMLBnumInput.SLOT_ERROR;
+      errorSlot.textContent = error;
+      el.appendChild(errorSlot);
+    }
+    if (btnText) {
+      const buttonSlot = document.createElement('span');
+      buttonSlot.slot = HTMLBnumInput.SLOT_BUTTON;
+      buttonSlot.textContent = btnText;
+      el.appendChild(buttonSlot);
+    }
+    return el;
+  }
+  static CreateTemplate(html = EMPTY_STRING) {
+    return BnumElementInternal.CreateTemplate(
+      BASE_TEMPLATE$1.replace('<!-- {{addoninner}} -->', html),
+    );
+  }
+  /**
+   * Tag HTML du composant.
+   */
+  static get TAG() {
+    return 'bnum-input';
+  }
+}
+// Utilisation des constantes dans le template
+const BASE_TEMPLATE$1 = `
+  <label id="${HTMLBnumInput.ID_HINT_TEXT}" for="${HTMLBnumInput.ID_INPUT}">
+    <span id="${HTMLBnumInput.ID_HINT_TEXT_LABEL}">
+      <slot></slot>
+    </span>
+    <span id="${HTMLBnumInput.ID_HINT_TEXT_HINT}">
+      <slot name="${HTMLBnumInput.SLOT_HINT}"></slot>
+    </span>
+  </label>
+  <div class="container">
+    <div class="addons">
+      <div class="addons__inner">
+        <!-- {{addoninner}} -->
+        <${HTMLBnumIcon.TAG} id="${HTMLBnumInput.ID_INPUT_ICON}"></${HTMLBnumIcon.TAG}>
+          <input id="${HTMLBnumInput.ID_INPUT}" type="${HTMLBnumInput.DEFAULT_INPUT_TYPE}" />
+        </div>
+        <${HTMLBnumButton.TAG} id="${HTMLBnumInput.ID_INPUT_BUTTON}" rounded data-variation="${HTMLBnumInput.DEFAULT_BUTTON_VARIATION}"><slot name="${HTMLBnumInput.SLOT_BUTTON}"></slot></${HTMLBnumButton.TAG}>
+    </div>
+    <span id="${HTMLBnumInput.ID_STATE}">
+        <${HTMLBnumIcon.TAG} id="${HTMLBnumInput.ID_STATE_ICON}"></${HTMLBnumIcon.TAG}>
+        <span id="${HTMLBnumInput.ID_SUCCESS_TEXT}" class="${HTMLBnumInput.CLASS_STATE_TEXT_SUCCESS}"><slot name="${HTMLBnumInput.SLOT_SUCCESS}">${HTMLBnumInput.TEXT_VALID_INPUT}</slot></span>
+        <span id="${HTMLBnumInput.ID_ERROR_TEXT}" class="${HTMLBnumInput.CLASS_STATE_TEXT_ERROR}"><slot name="${HTMLBnumInput.SLOT_ERROR}">${HTMLBnumInput.TEXT_INVALID_INPUT}</slot></span>
+    </span>
+  </div>
+    `;
+const TEMPLATE$9 = HTMLBnumInput.CreateTemplate();
+//#region TryDefine
+HTMLBnumInput.TryDefine();
+//#endregion TryDefine
+
+var css_248z$b =
+  ':host(:state(icon)) #input__icon{--bnum-input-icon-right:var(--bnum-input-number-icon-right,40px)}';
+
+const SHEET$a = HTMLBnumInput.ConstructCSSStyleSheet(css_248z$b);
+/**
+ * Input nombre.
+ *
+ * @structure Sans rien
+ * <bnum-input-number></bnum-input-number>
+ *
+ * @structure Avec une légende
+ * <bnum-input-number>Label du champ</bnum-input-number>
+ *
+ * @structure Avec une légende et un indice
+ * <bnum-input-number>
+ * Label du champ
+ * <span slot="hint">Indice d'utilisation</span>
+ * </bnum-input-number>
+ *
+ * @structure Avec un bouton
+ * <bnum-input-number button="true" button-icon="add">Label du champ
+ *   <span slot="button">Ajouter</span>
+ * </bnum-input-number>
+ *
+ * @structure En erreur
+ * <bnum-input-number min="200" data-value="5">Label du champ
+ * </bnum-input-number>
+ *
+ * @structure Avec un état de succès
+ * <bnum-input-number state="success">Label du champ
+ *   <span slot="success">Le champ est valide !</span>
+ * </bnum-input-number>
+ *
+ * @structure Avec une icône
+ * <bnum-input-number icon="search">Label du champ</bnum-input-number>
+ *
+ * @structure Avec un bouton avec icône seulement
+ * <bnum-input-number placeholder="LA LA !" button-icon="add">Label du champ
+ * </bnum-input-number>
+ *
+ * @structure Désactivé
+ * <bnum-input-number disabled>
+ *   Label du champ
+ * </bnum-input-number>
+ *
+ * @structure Complet
+ * <bnum-input-number
+ *   data-value="5"
+ *   placeholder="Texte indicatif"
+ *   type="text"
+ *   state="error"
+ *   icon="search"
+ *   button="primary"
+ *   button-icon="send"
+ *   step="10"
+ * >
+ *   Label du champ
+ *   <span slot="hint">Indice d'utilisation</span>
+ *   <span slot="success">Le champ est valide !</span>
+ *   <span slot="error">Le champ est invalide !</span>
+ *   <span slot="button">Envoyer</span>
+ * </bnum-input-number>
+ *
+ */
+class HTMLBnumInputNumber extends HTMLBnumInput {
+  /**
+   * @attr {string} (optional) (default: 'number') type - Type de l'input (text, password, email, etc.) Ne pas modifier, toujours 'number' pour ce composant.
+   */
+  static ATTRIBUTE_TYPE = 'type';
+  /**
+   * Valeur pour l'attribut type.
+   */
+  static TYPE = 'number';
+  constructor() {
+    super();
+  }
+  _p_getStylesheets() {
+    return [...super._p_getStylesheets(), SHEET$a];
+  }
+  _p_preload() {
+    this.setAttribute(
+      HTMLBnumInputNumber.ATTRIBUTE_TYPE,
+      HTMLBnumInputNumber.TYPE,
+    );
+  }
+  /**
+   *@inheritdoc
+   */
+  _p_buildDOM(container) {
+    super._p_buildDOM(container);
+  }
+  /**
+   *@inheritdoc
+   */
+  static _p_observedAttributes() {
+    return super
+      ._p_observedAttributes()
+      .filter((x) => x !== HTMLBnumInputNumber.ATTRIBUTE_TYPE);
+  }
+  /**
+   * Crée une instance du composant avec les options fournies.
+   * @param label Texte du label principal.
+   * @param options Options d'initialisation (attributs et slots).
+   * @returns {HTMLBnumInputNumber} Instance du composant.
+   */
+  static Create(
+    label,
+    {
+      'data-value': dataValue,
+      placeholder,
+      name,
+      disabled,
+      state,
+      button,
+      'button-icon': buttonIcon,
+      icon,
+      required,
+      readonly,
+      pattern,
+      minlength,
+      maxlength,
+      autocomplete,
+      inputmode,
+      spellcheck,
+      min,
+      max,
+      hint,
+      success,
+      error,
+      btnText,
+      step,
+    } = {},
+  ) {
+    const el = document.createElement(this.TAG);
+    // Appliquer chaque attribut si défini
+    if (dataValue !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_DATA_VALUE, dataValue);
+    if (placeholder !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_PLACEHOLDER, placeholder);
+    if (disabled !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_DISABLED, disabled);
+    if (state !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_STATE, state);
+    if (button !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON, button);
+    if (buttonIcon !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON_ICON, buttonIcon);
+    if (icon !== undefined) el.setAttribute(HTMLBnumInput.ATTRIBUTE_ICON, icon);
+    if (required !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_REQUIRED, required);
+    if (readonly !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_READONLY, readonly);
+    if (pattern !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_PATTERN, pattern);
+    if (minlength !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_MINLENGTH, minlength);
+    if (maxlength !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_MAXLENGTH, maxlength);
+    if (autocomplete !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_AUTOCOMPLETE, autocomplete);
+    if (inputmode !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_INPUTMODE, inputmode);
+    if (spellcheck !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_SPELLCHECK, spellcheck);
+    if (name !== undefined) el.setAttribute(HTMLBnumInput.ATTRIBUTE_NAME, name);
+    if (min !== undefined) el.setAttribute('min', min.toString());
+    if (max !== undefined) el.setAttribute('max', max.toString());
+    if (step !== undefined) el.setAttribute('step', step.toString());
+    // Slot par défaut (label)
+    el.textContent = label;
+    // Slots nommés
+    if (hint) {
+      const hintSlot = document.createElement('span');
+      hintSlot.slot = HTMLBnumInput.SLOT_HINT;
+      hintSlot.textContent = hint;
+      el.appendChild(hintSlot);
+    }
+    if (success) {
+      const successSlot = document.createElement('span');
+      successSlot.slot = HTMLBnumInput.SLOT_SUCCESS;
+      successSlot.textContent = success;
+      el.appendChild(successSlot);
+    }
+    if (error) {
+      const errorSlot = document.createElement('span');
+      errorSlot.slot = HTMLBnumInput.SLOT_ERROR;
+      errorSlot.textContent = error;
+      el.appendChild(errorSlot);
+    }
+    if (btnText) {
+      const buttonSlot = document.createElement('span');
+      buttonSlot.slot = HTMLBnumInput.SLOT_BUTTON;
+      buttonSlot.textContent = btnText;
+      el.appendChild(buttonSlot);
+    }
+    return el;
+  }
+  /**
+   *@inheritdoc
+   */
+  static get TAG() {
+    return 'bnum-input-number';
+  }
+  static get AdditionnalStylesheet() {
+    return SHEET$a;
+  }
+}
+HTMLBnumInputNumber.TryDefine();
+
+/**
+ * Input de date.
+ *
+ * @structure Sans rien
+ * <bnum-input-date></bnum-input-date>
+ *
+ * @structure Avec une légende
+ * <bnum-input-date>Label du champ</bnum-input-date>
+ *
+ * @structure Avec une légende et un indice
+ * <bnum-input-date>
+ * Label du champ
+ * <span slot="hint">Indice d'utilisation</span>
+ * </bnum-input-date>
+ *
+ * @structure Avec un bouton
+ * <bnum-input-date button="true" button-icon="add">Label du champ
+ *   <span slot="button">Ajouter</span>
+ * </bnum-input-date>
+ *
+ * @structure En erreur
+ * <bnum-input-date min="2025-01-01" data-value="2024-01-01">Label du champ
+ * </bnum-input-date>
+ *
+ * @structure Avec un état de succès
+ * <bnum-input-date state="success">Label du champ
+ *   <span slot="success">Le champ est valide !</span>
+ * </bnum-input-date>
+ *
+ * @structure Avec une icône
+ * <bnum-input-date icon="search">Label du champ</bnum-input-date>
+ *
+ * @structure Avec un bouton avec icône seulement
+ * <bnum-input-date placeholder="LA LA !" button-icon="add">Label du champ
+ * </bnum-input-date>
+ *
+ * @structure Désactivé
+ * <bnum-input-date disabled>
+ *   Label du champ
+ * </bnum-input-date>
+ *
+ * @structure Complet
+ * <bnum-input-date
+ *   data-value="5"
+ *   placeholder="Texte indicatif"
+ *   type="text"
+ *   state="error"
+ *   icon="search"
+ *   button="primary"
+ *   button-icon="send"
+ *   step="10"
+ * >
+ *   Label du champ
+ *   <span slot="hint">Indice d'utilisation</span>
+ *   <span slot="success">Le champ est valide !</span>
+ *   <span slot="error">Le champ est invalide !</span>
+ *   <span slot="button">Envoyer</span>
+ * </bnum-input-date>
+ *
+ */
+class HTMLBnumInputDate extends HTMLBnumInput {
+  /**
+   * @attr {string} (optional) (default: 'number') type - Type de l'input (text, password, email, etc.) Ne pas modifier, toujours 'number' pour ce composant.
+   */
+  static ATTRIBUTE_TYPE = 'type';
+  /**
+   * Valeur pour l'attribut type.
+   */
+  static TYPE = 'date';
+  constructor() {
+    super();
+  }
+  _p_getStylesheets() {
+    return [
+      ...super._p_getStylesheets(),
+      HTMLBnumInputNumber.AdditionnalStylesheet,
+    ];
+  }
+  _p_preload() {
+    this.setAttribute(HTMLBnumInputDate.ATTRIBUTE_TYPE, HTMLBnumInputDate.TYPE);
+  }
+  /**
+   *@inheritdoc
+   */
+  _p_buildDOM(container) {
+    super._p_buildDOM(container);
+  }
+  /**
+   *@inheritdoc
+   */
+  static _p_observedAttributes() {
+    return super
+      ._p_observedAttributes()
+      .filter((x) => x !== HTMLBnumInputDate.ATTRIBUTE_TYPE);
+  }
+  /**
+   * Crée une instance du composant avec les options fournies.
+   * @param label Texte du label principal.
+   * @param options Options d'initialisation (attributs et slots).
+   * @returns {HTMLBnumInputDate} Instance du composant.
+   */
+  static Create(
+    label,
+    {
+      'data-value': dataValue,
+      placeholder,
+      name,
+      disabled,
+      state,
+      button,
+      'button-icon': buttonIcon,
+      icon,
+      required,
+      readonly,
+      pattern,
+      minlength,
+      maxlength,
+      autocomplete,
+      inputmode,
+      spellcheck,
+      min,
+      max,
+      hint,
+      success,
+      error,
+      btnText,
+      step,
+    } = {},
+  ) {
+    const el = document.createElement(this.TAG);
+    // Appliquer chaque attribut si défini
+    if (dataValue !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_DATA_VALUE, dataValue);
+    if (placeholder !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_PLACEHOLDER, placeholder);
+    if (disabled !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_DISABLED, disabled);
+    if (state !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_STATE, state);
+    if (button !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON, button);
+    if (buttonIcon !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON_ICON, buttonIcon);
+    if (icon !== undefined) el.setAttribute(HTMLBnumInput.ATTRIBUTE_ICON, icon);
+    if (required !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_REQUIRED, required);
+    if (readonly !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_READONLY, readonly);
+    if (pattern !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_PATTERN, pattern);
+    if (minlength !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_MINLENGTH, minlength);
+    if (maxlength !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_MAXLENGTH, maxlength);
+    if (autocomplete !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_AUTOCOMPLETE, autocomplete);
+    if (inputmode !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_INPUTMODE, inputmode);
+    if (spellcheck !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_SPELLCHECK, spellcheck);
+    if (name !== undefined) el.setAttribute(HTMLBnumInput.ATTRIBUTE_NAME, name);
+    if (min !== undefined) el.setAttribute('min', min.toString());
+    if (max !== undefined) el.setAttribute('max', max.toString());
+    if (step !== undefined) el.setAttribute('step', step.toString());
+    // Slot par défaut (label)
+    el.textContent = label;
+    // Slots nommés
+    if (hint) {
+      const hintSlot = document.createElement('span');
+      hintSlot.slot = HTMLBnumInput.SLOT_HINT;
+      hintSlot.textContent = hint;
+      el.appendChild(hintSlot);
+    }
+    if (success) {
+      const successSlot = document.createElement('span');
+      successSlot.slot = HTMLBnumInput.SLOT_SUCCESS;
+      successSlot.textContent = success;
+      el.appendChild(successSlot);
+    }
+    if (error) {
+      const errorSlot = document.createElement('span');
+      errorSlot.slot = HTMLBnumInput.SLOT_ERROR;
+      errorSlot.textContent = error;
+      el.appendChild(errorSlot);
+    }
+    if (btnText) {
+      const buttonSlot = document.createElement('span');
+      buttonSlot.slot = HTMLBnumInput.SLOT_BUTTON;
+      buttonSlot.textContent = btnText;
+      el.appendChild(buttonSlot);
+    }
+    return el;
+  }
+  /**
+   *@inheritdoc
+   */
+  static get TAG() {
+    return 'bnum-input-date';
+  }
+}
+HTMLBnumInputDate.TryDefine();
+
+var css_248z$a =
+  ':host #input-search-actions-container{display:flex;position:absolute;right:10px;top:8px}:host #input-search-actions-container #input-clear-button{display:none}:host(:state(value)) #input-search-actions-container #input-clear-button{display:inline-block}';
+
+const SHEET$9 = HTMLBnumInput.ConstructCSSStyleSheet(css_248z$a);
+/**
+ * Composant d'input de recherche.
+ *
+ * Utilise le composant de base `bnum-input` avec des configurations spécifiques pour la recherche.
+ *
+ * @structure Basique
+ * <bnum-input-search>Label de recherche</bnum-input-search>
+ *
+ * @structure Avec une légende et un indice
+ * <bnum-input-search>
+ * Label du champ
+ * <span slot="hint">Indice d'utilisation</span>
+ * </bnum-input-search>
+ *
+ * @structure Désactivé
+ * <bnum-input-search disabled placeholder="Recherche désactivée">
+ *   Label du champ
+ * </bnum-input-search>
+ *
+ * @structure Avec des boutons custom
+ * <bnum-input-search placeholder="Recherche avec des boutons">
+ *   Label du champ
+ *   <bnum-icon-button slot="actions">filter_list</bnum-icon-button>
+ *
+ * </bnum-input-search>
+ *
+ * @slot button - Contenu du bouton de recherche (texte ou icône). (Inutilisé)
+ * @slot actions - Contenu des actions personnalisées à droite du champ de recherche.
+ *
+ */
+class HTMLBnumInputSearch extends HTMLBnumInput {
+  //#region Constants
+  /**
+   * @attr {string} (default: 'text') type - Type de l'input (text, password, email, etc.) Ne pas modifier, toujours 'text' pour ce composant.
+   */
+  static ATTRIBUTE_TYPE = 'type';
+  /**
+   * @attr {undefined} (default: undefined) button - Attribut pour afficher le bouton interne. Ne pas modifier, toujours présent pour ce composant.
+   */
+  static ATTRIBUTE_BUTTON = 'button';
+  /**
+   * @attr {string} (default: 'search') button-icon - Icône du bouton interne. Ne pas modifier, toujours 'search' pour ce composant.
+   */
+  static ATTRIBUTE_BUTTON_ICON = 'button-icon';
+  /**
+   * Texte affiché dans le champ de recherche.
+   */
+  static TEXT_SEARCH_FIELD =
+    BnumConfig.Get('local_keys')?.search_field || 'Rechercher';
+  /**
+   * Événement déclenché au clic sur le bouton interne.
+   * @event bnum-input:button.click
+   * @detail MouseEvent
+   */
+  static EVENT_BUTTON_CLICK = 'bnum-input:button.click';
+  /**
+   * Événement déclenché au clic par le bouton interne ou à la validation par la touche "Entrée".
+   * Envoie la valeur actuelle de l'input de recherche.
+   * @event bnum-input-search:search
+   * @detail { value: string; name: string; caller: HTMLBnumInputSearch }
+   */
+  static EVENT_SEARCH = 'bnum-input-search:search';
+  /**
+   * Événement déclenché lors du clic sur le bouton de vidage du champ de recherche.
+   * @event bnum-input-search:clear
+   * @detail { caller: HTMLBnumInputSearch }
+   */
+  static EVENT_CLEAR = 'bnum-input-search:clear';
+  /**
+   * Icône du bouton de recherche.
+   */
+  static BUTTON_ICON = 'search';
+  /**
+   * ID du conteneur des actions de recherche.
+   */
+  static ID_ACTIONS_CONTAINER = 'input-search-actions-container';
+  /**
+   * ID du bouton pour vider le champ de recherche.
+   */
+  static ID_CLEAR_BUTTON = 'input-clear-button';
+  /**
+   * Nom du slot pour les actions personnalisées.
+   */
+  static SLOT_ACTIONS = 'actions';
+  //#endregion Constants
+  //#region Private fields
+  /**
+   * Bouton interne pour vider le champ de recherche.
+   * @private
+   * @type {HTMLBnumButtonIcon | null}
+   */
+  #_emptyButton = null;
+  //#endregion Private fields
+  //#region Lifecycle
+  /**
+   * Constructeur du composant de recherche.
+   */
+  constructor() {
+    super();
+  }
+  _p_fromTemplate() {
+    return TEMPLATE$8;
+  }
+  _p_getStylesheets() {
+    return [...super._p_getStylesheets(), SHEET$9];
+  }
+  /**
+   * Précharge les attributs spécifiques à l'input de recherche.
+   * Définit le placeholder et l'icône du bouton si non présents.
+   */
+  _p_preload() {
+    if (this.attr(HTMLBnumInput.ATTRIBUTE_PLACEHOLDER) === null) {
+      this.attr(
+        HTMLBnumInput.ATTRIBUTE_PLACEHOLDER,
+        HTMLBnumInputSearch.TEXT_SEARCH_FIELD,
+      );
+    }
+    this.setAttribute(
+      HTMLBnumInput.ATTRIBUTE_BUTTON_ICON,
+      HTMLBnumInputSearch.BUTTON_ICON,
+    );
+  }
+  _p_buildDOM(container) {
+    super._p_buildDOM(container);
+    this.#_emptyButton = container.querySelector(
+      `#${HTMLBnumInputSearch.ID_ACTIONS_CONTAINER} ${HTMLBnumButtonIcon.TAG}`,
+    );
+    this.#_emptyButton.addEventListener('click', () => {
+      this.value = EMPTY_STRING;
+      this._p_inputValueChangedCallback(new Event('input'));
+      this.#_triggerEventSearch();
+      this.trigger(HTMLBnumInputSearch.EVENT_CLEAR, { caller: this });
+    });
+  }
+  /**
+   * Attache les événements nécessaires au composant.
+   * Supprime les attributs inutiles et gère les événements de recherche.
+   */
+  _p_attach() {
+    super._p_attach();
+    this.removeAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON);
+    this.removeAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON_ICON);
+    this.onButtonClicked.add(
+      EVENT_DEFAULT,
+      this.#_triggerEventSearch.bind(this),
+    );
+    this.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        this.#_triggerEventSearch();
+      }
+    });
+  }
+  _p_inputValueChangedCallback(e) {
+    this.removeAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON);
+    this.setAttribute(
+      HTMLBnumInput.ATTRIBUTE_BUTTON_ICON,
+      HTMLBnumInputSearch.BUTTON_ICON,
+    );
+    super._p_inputValueChangedCallback?.(e);
+    this.removeAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON);
+  }
+  /**
+   * Nettoie les attributs après le rendu du composant.
+   */
+  _p_postFlush() {
+    this.removeAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON);
+    this.setAttribute(
+      HTMLBnumInput.ATTRIBUTE_BUTTON_ICON,
+      HTMLBnumInputSearch.BUTTON_ICON,
+    );
+    super._p_postFlush();
+    this.removeAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON);
+  }
+  //#endregion Lifecycle
+  //#region Public Methods
+  /**
+   * Désactive le bouton de recherche.
+   */
+  disableSearchButton() {
+    (this._p_isShadowElement() === false ? this : this.shadowRoot)
+      .querySelector(`#${HTMLBnumInput.ID_INPUT_BUTTON}`)
+      ?.setAttribute(
+        HTMLBnumInput.ATTRIBUTE_DISABLED,
+        HTMLBnumInput.ATTRIBUTE_DISABLED,
+      );
+    return this;
+  }
+  /**
+   * Active le bouton de recherche.
+   */
+  enableSearchButton() {
+    (this._p_isShadowElement() === false ? this : this.shadowRoot)
+      .querySelector(`#${HTMLBnumInput.ID_INPUT_BUTTON}`)
+      ?.removeAttribute(HTMLBnumInput.ATTRIBUTE_DISABLED);
+    return this;
+  }
+  //#endregion Public Methods
+  //#region Private Methods
+  /**
+   * Déclenche l'événement de recherche avec la valeur actuelle de l'input.
+   * @private
+   */
+  #_triggerEventSearch() {
+    this.trigger(HTMLBnumInputSearch.EVENT_SEARCH, {
+      value: this.value,
+      name: this.name,
+      caller: this,
+    });
+  }
+  //#endregion Private Methods
+  //#region Static Methods
+  /**
+   * Retourne la liste des attributs observés, en excluant ceux spécifiques à la recherche.
+   * @inheritdoc
+   */
+  static _p_observedAttributes() {
+    return super._p_observedAttributes().filter((x) => {
+      switch (x) {
+        case HTMLBnumInputSearch.ATTRIBUTE_TYPE:
+        case HTMLBnumInput.ATTRIBUTE_BUTTON:
+        case HTMLBnumInput.ATTRIBUTE_BUTTON_ICON:
+          return false;
+        default:
+          return true;
+      }
+    });
+  }
+  /**
+   * Crée une instance du composant avec les options fournies.
+   * @param label Texte du label principal.
+   * @param options Options d'initialisation (attributs et slots).
+   * @returns {HTMLBnumInput} Instance du composant.
+   */
+  static Create(
+    label,
+    {
+      'data-value': dataValue,
+      placeholder,
+      name,
+      disabled,
+      state,
+      required,
+      readonly,
+      pattern,
+      minlength,
+      maxlength,
+      autocomplete,
+      inputmode,
+      spellcheck,
+      hint,
+      success,
+      error,
+      btnText,
+    } = {},
+  ) {
+    const el = document.createElement(HTMLBnumInputSearch.TAG);
+    // Appliquer chaque attribut si défini
+    if (dataValue !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_DATA_VALUE, dataValue);
+    if (placeholder !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_PLACEHOLDER, placeholder);
+    if (disabled !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_DISABLED, disabled);
+    if (state !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_STATE, state);
+    if (required !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_REQUIRED, required);
+    if (readonly !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_READONLY, readonly);
+    if (pattern !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_PATTERN, pattern);
+    if (minlength !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_MINLENGTH, minlength);
+    if (maxlength !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_MAXLENGTH, maxlength);
+    if (autocomplete !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_AUTOCOMPLETE, autocomplete);
+    if (inputmode !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_INPUTMODE, inputmode);
+    if (spellcheck !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_SPELLCHECK, spellcheck);
+    if (name !== undefined) el.setAttribute(HTMLBnumInput.ATTRIBUTE_NAME, name);
+    // Slot par défaut (label)
+    el.textContent = label;
+    // Slots nommés
+    if (hint) {
+      const hintSlot = document.createElement('span');
+      hintSlot.slot = HTMLBnumInput.SLOT_HINT;
+      hintSlot.textContent = hint;
+      el.appendChild(hintSlot);
+    }
+    if (success) {
+      const successSlot = document.createElement('span');
+      successSlot.slot = HTMLBnumInput.SLOT_SUCCESS;
+      successSlot.textContent = success;
+      el.appendChild(successSlot);
+    }
+    if (error) {
+      const errorSlot = document.createElement('span');
+      errorSlot.slot = HTMLBnumInput.SLOT_ERROR;
+      errorSlot.textContent = error;
+      el.appendChild(errorSlot);
+    }
+    if (btnText) {
+      const buttonSlot = document.createElement('span');
+      buttonSlot.slot = HTMLBnumInput.SLOT_BUTTON;
+      buttonSlot.textContent = btnText;
+      el.appendChild(buttonSlot);
+    }
+    return el;
+  }
+  /**
+   * Crée un composant de recherche à partir d'un input existant.
+   * @param input Instance de HTMLBnumInput à convertir.
+   * @returns {HTMLBnumInputSearch} Nouvelle instance de recherche.
+   */
+  static FromInput(input) {
+    let init = {};
+    // Copier les attributs pertinents de l'input d'origine dans l'objet init
+    for (const attr of input.attributes) {
+      switch (attr.name) {
+        case HTMLBnumInput.ATTRIBUTE_PLACEHOLDER:
+        case HTMLBnumInput.ATTRIBUTE_NAME:
+        case HTMLBnumInput.ATTRIBUTE_DISABLED:
+        case HTMLBnumInput.ATTRIBUTE_REQUIRED:
+        case HTMLBnumInput.ATTRIBUTE_READONLY:
+        case HTMLBnumInput.ATTRIBUTE_PATTERN:
+        case HTMLBnumInput.ATTRIBUTE_MINLENGTH:
+        case HTMLBnumInput.ATTRIBUTE_MAXLENGTH:
+        case HTMLBnumInput.ATTRIBUTE_AUTOCOMPLETE:
+        case HTMLBnumInput.ATTRIBUTE_INPUTMODE:
+        case HTMLBnumInput.ATTRIBUTE_SPELLCHECK:
+        case HTMLBnumInput.ATTRIBUTE_DATA_VALUE:
+          init = { ...init, [attr.name]: attr.value };
+          break;
+      }
+    }
+    // On recherche les slots dans l'input d'origine et on l'ajoute dans l'init.
+    const label =
+      input.querySelector(':not([slot])')?.textContent || EMPTY_STRING;
+    const hint = input.querySelector(
+      `[slot="${HTMLBnumInput.SLOT_HINT}"]`,
+    )?.textContent;
+    const success = input.querySelector(
+      `[slot="${HTMLBnumInput.SLOT_SUCCESS}"]`,
+    )?.textContent;
+    const error = input.querySelector(
+      `[slot="${HTMLBnumInput.SLOT_ERROR}"]`,
+    )?.textContent;
+    const btnText = input.querySelector(
+      `[slot="${HTMLBnumInput.SLOT_BUTTON}"]`,
+    )?.textContent;
+    if (hint) init = { ...init, hint };
+    if (success) init = { ...init, success };
+    if (error) init = { ...init, error };
+    if (btnText) init = { ...init, btnText };
+    return HTMLBnumInputSearch.Create(label, init);
   }
   /**
    * Retourne le tag HTML du composant.
    */
   static get TAG() {
-    return TAG_CARD_ITEM_MAIL;
+    return 'bnum-input-search';
   }
 }
-const TEMPLATE$8 = HTMLBnumCardItem.CreateChildTemplate(
-  `
-  <div class="${HTMLBnumCardItemMail.CLASS_MAIN_CONTENT}">
-    <div class="${HTMLBnumCardItemMail.CLASS_SENDER}">
-      <slot id="${HTMLBnumCardItemMail.ID_SENDER_SLOT}" name="${HTMLBnumCardItemMail.SLOT_SENDER_NAME}"></slot>
-      <span class="${HTMLBnumCardItemMail.PART_SENDER_OVERRIDE}" part="${HTMLBnumCardItemMail.PART_SENDER_OVERRIDE}" hidden></span>
-    </div>
-    <div class="${HTMLBnumCardItemMail.CLASS_SUBJECT}">
-      <slot id="${HTMLBnumCardItemMail.ID_SUBJECT_SLOT}" name="${HTMLBnumCardItemMail.SLOT_SUBJECT_NAME}"></slot>
-      <span class="${HTMLBnumCardItemMail.PART_SUBJECT_OVERRIDE}" part="${HTMLBnumCardItemMail.PART_SUBJECT_OVERRIDE}" hidden></span>
-    </div>
-  </div>
-  <div class="${HTMLBnumCardItemMail.CLASS_DATE}">
-    <slot id="${HTMLBnumCardItemMail.ID_DATE_SLOT}" name="${HTMLBnumCardItemMail.SLOT_DATE_NAME}"></slot>
-    <span class="${HTMLBnumCardItemMail.PART_DATE_OVERRIDE}" part="${HTMLBnumCardItemMail.PART_DATE_OVERRIDE}" hidden>
-      <${HTMLBnumDate.TAG} id="${HTMLBnumCardItemMail.ID_DATE_ELEMENT_OVERRIDE}"></${HTMLBnumDate.TAG}>
-    </span>
-  </div>
-  `,
-  { defaultSlot: false },
-);
+/**
+ * Modèle HTML du composant, incluant le bouton de suppression et le slot d'actions.
+ * @private
+ * @constant
+ */
+const TEMPLATE$8 =
+  HTMLBnumInput.CreateTemplate(`<div id="${HTMLBnumInputSearch.ID_ACTIONS_CONTAINER}">
+      ${HTMLBnumButtonIcon.Write('close', { id: HTMLBnumInputSearch.ID_CLEAR_BUTTON })}
+      <slot name="${HTMLBnumInputSearch.SLOT_ACTIONS}"></slot>
+    </div>`);
 //#region TryDefine
-HTMLBnumCardItemMail.TryDefine();
-//#endregion
+HTMLBnumInputSearch.TryDefine();
+//#endregion TryDefine
 
-var css_248z$a =
+/**
+ * Input texte.
+ *
+ * @structure Sans rien
+ * <bnum-input-text></bnum-input-text>
+ *
+ * @structure Avec une légende
+ * <bnum-input-text>Label du champ</bnum-input-text>
+ *
+ * @structure Avec une légende et un indice
+ * <bnum-input-text>
+ * Label du champ
+ * <span slot="hint">Indice d'utilisation</span>
+ * </bnum-input-text>
+ *
+ * @structure Avec un bouton
+ * <bnum-input-text button="true" button-icon="add">Label du champ
+ *   <span slot="button">Ajouter</span>
+ * </bnum-input-text>
+ *
+ * @structure En erreur
+ * <bnum-input-text pattern="^[a-zA-Z0-9]+$" data-value="@@@@@">Label du champ
+ * </bnum-input-text>
+ *
+ * @structure Avec un état de succès
+ * <bnum-input-text state="success">Label du champ
+ *   <span slot="success">Le champ est valide !</span>
+ * </bnum-input-text>
+ *
+ * @structure Avec une icône
+ * <bnum-input-text icon="search">Label du champ</bnum-input-text>
+ *
+ * @structure Avec un bouton avec icône seulement
+ * <bnum-input-text placeholder="LA LA !" button-icon="add">Label du champ
+ * </bnum-input-text>
+ *
+ * @structure Désactivé
+ * <bnum-input-text disabled>
+ *   Label du champ
+ * </bnum-input-text>
+ *
+ * @structure Complet
+ * <bnum-input-text
+ *   data-value="Valeur initiale"
+ *   placeholder="Texte indicatif"
+ *   type="text"
+ *   state="error"
+ *   icon="search"
+ *   button="primary"
+ *   button-icon="send"
+ * >
+ *   Label du champ
+ *   <span slot="hint">Indice d'utilisation</span>
+ *   <span slot="success">Le champ est valide !</span>
+ *   <span slot="error">Le champ est invalide !</span>
+ *   <span slot="button">Envoyer</span>
+ * </bnum-input-text>
+ *
+ */
+class HTMLBnumInputText extends HTMLBnumInput {
+  /**
+   * @attr {string} (optional) (default: 'text') type - Type de l'input (text, password, email, etc.) Ne pas modifier, toujours 'text' pour ce composant.
+   */
+  static ATTRIBUTE_TYPE = 'type';
+  /**
+   * Valeur 'text' pour l'attribut type.
+   */
+  static TYPE_TEXT = 'text';
+  constructor() {
+    super();
+  }
+  _p_preload() {
+    super._p_preload();
+    this.setAttribute(
+      HTMLBnumInputText.ATTRIBUTE_TYPE,
+      HTMLBnumInputText.TYPE_TEXT,
+    );
+  }
+  /**
+   *@inheritdoc
+   */
+  _p_buildDOM(container) {
+    super._p_buildDOM(container);
+  }
+  /**
+   *@inheritdoc
+   */
+  static _p_observedAttributes() {
+    return super
+      ._p_observedAttributes()
+      .filter((x) => x !== HTMLBnumInputText.ATTRIBUTE_TYPE);
+  }
+  /**
+   * Crée une instance du composant avec les options fournies.
+   * @param label Texte du label principal.
+   * @param options Options d'initialisation (attributs et slots).
+   * @returns {HTMLBnumInputText} Instance du composant.
+   */
+  static Create(
+    label,
+    {
+      'data-value': dataValue,
+      placeholder,
+      name,
+      disabled,
+      state,
+      button,
+      'button-icon': buttonIcon,
+      icon,
+      required,
+      readonly,
+      pattern,
+      minlength,
+      maxlength,
+      autocomplete,
+      inputmode,
+      spellcheck,
+      hint,
+      success,
+      error,
+      btnText,
+    } = {},
+  ) {
+    const el = document.createElement(this.TAG);
+    // Appliquer chaque attribut si défini
+    if (dataValue !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_DATA_VALUE, dataValue);
+    if (placeholder !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_PLACEHOLDER, placeholder);
+    if (disabled !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_DISABLED, disabled);
+    if (state !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_STATE, state);
+    if (button !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON, button);
+    if (buttonIcon !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON_ICON, buttonIcon);
+    if (icon !== undefined) el.setAttribute(HTMLBnumInput.ATTRIBUTE_ICON, icon);
+    if (required !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_REQUIRED, required);
+    if (readonly !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_READONLY, readonly);
+    if (pattern !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_PATTERN, pattern);
+    if (minlength !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_MINLENGTH, minlength);
+    if (maxlength !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_MAXLENGTH, maxlength);
+    if (autocomplete !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_AUTOCOMPLETE, autocomplete);
+    if (inputmode !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_INPUTMODE, inputmode);
+    if (spellcheck !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_SPELLCHECK, spellcheck);
+    if (name !== undefined) el.setAttribute(HTMLBnumInput.ATTRIBUTE_NAME, name);
+    // Slot par défaut (label)
+    el.textContent = label;
+    // Slots nommés
+    if (hint) {
+      const hintSlot = document.createElement('span');
+      hintSlot.slot = HTMLBnumInput.SLOT_HINT;
+      hintSlot.textContent = hint;
+      el.appendChild(hintSlot);
+    }
+    if (success) {
+      const successSlot = document.createElement('span');
+      successSlot.slot = HTMLBnumInput.SLOT_SUCCESS;
+      successSlot.textContent = success;
+      el.appendChild(successSlot);
+    }
+    if (error) {
+      const errorSlot = document.createElement('span');
+      errorSlot.slot = HTMLBnumInput.SLOT_ERROR;
+      errorSlot.textContent = error;
+      el.appendChild(errorSlot);
+    }
+    if (btnText) {
+      const buttonSlot = document.createElement('span');
+      buttonSlot.slot = HTMLBnumInput.SLOT_BUTTON;
+      buttonSlot.textContent = btnText;
+      el.appendChild(buttonSlot);
+    }
+    return el;
+  }
+  /**
+   *@inheritdoc
+   */
+  static get TAG() {
+    return 'bnum-input-text';
+  }
+}
+HTMLBnumInputText.TryDefine();
+
+/**
+ * Input de temps.
+ *
+ * @structure Sans rien
+ * <bnum-input-time></bnum-input-time>
+ *
+ * @structure Avec une légende
+ * <bnum-input-time>Label du champ</bnum-input-time>
+ *
+ * @structure Avec une légende et un indice
+ * <bnum-input-time>
+ * Label du champ
+ * <span slot="hint">Indice d'utilisation</span>
+ * </bnum-input-time>
+ *
+ * @structure Avec un bouton
+ * <bnum-input-time button="true" button-icon="add">Label du champ
+ *   <span slot="button">Ajouter</span>
+ * </bnum-input-time>
+ *
+ * @structure En erreur
+ * <bnum-input-time min="05:00" data-value="04:00">Label du champ
+ * </bnum-input-time>
+ *
+ * @structure Avec un état de succès
+ * <bnum-input-time state="success">Label du champ
+ *   <span slot="success">Le champ est valide !</span>
+ * </bnum-input-time>
+ *
+ * @structure Avec une icône
+ * <bnum-input-time icon="search">Label du champ</bnum-input-time>
+ *
+ * @structure Avec un bouton avec icône seulement
+ * <bnum-input-time placeholder="LA LA !" button-icon="add">Label du champ
+ * </bnum-input-time>
+ *
+ * @structure Désactivé
+ * <bnum-input-time disabled>
+ *   Label du champ
+ * </bnum-input-time>
+ *
+ * @structure Complet
+ * <bnum-input-time
+ *   data-value="5"
+ *   placeholder="Texte indicatif"
+ *   type="text"
+ *   state="error"
+ *   icon="search"
+ *   button="primary"
+ *   button-icon="send"
+ *   step="10"
+ * >
+ *   Label du champ
+ *   <span slot="hint">Indice d'utilisation</span>
+ *   <span slot="success">Le champ est valide !</span>
+ *   <span slot="error">Le champ est invalide !</span>
+ *   <span slot="button">Envoyer</span>
+ * </bnum-input-time>
+ *
+ */
+class HTMLBnumInputTime extends HTMLBnumInput {
+  /**
+   * @attr {string} (optional) (default: 'number') type - Type de l'input (text, password, email, etc.) Ne pas modifier, toujours 'number' pour ce composant.
+   */
+  static ATTRIBUTE_TYPE = 'type';
+  /**
+   * Valeur pour l'attribut type.
+   */
+  static TYPE = 'time';
+  constructor() {
+    super();
+  }
+  _p_getStylesheets() {
+    return [
+      ...super._p_getStylesheets(),
+      HTMLBnumInputNumber.AdditionnalStylesheet,
+    ];
+  }
+  _p_preload() {
+    this.setAttribute(HTMLBnumInputTime.ATTRIBUTE_TYPE, HTMLBnumInputTime.TYPE);
+  }
+  /**
+   *@inheritdoc
+   */
+  _p_buildDOM(container) {
+    super._p_buildDOM(container);
+  }
+  /**
+   *@inheritdoc
+   */
+  static _p_observedAttributes() {
+    return super
+      ._p_observedAttributes()
+      .filter((x) => x !== HTMLBnumInputTime.ATTRIBUTE_TYPE);
+  }
+  /**
+   * Crée une instance du composant avec les options fournies.
+   * @param label Texte du label principal.
+   * @param options Options d'initialisation (attributs et slots).
+   * @returns {HTMLBnumInputTime} Instance du composant.
+   */
+  static Create(
+    label,
+    {
+      'data-value': dataValue,
+      placeholder,
+      name,
+      disabled,
+      state,
+      button,
+      'button-icon': buttonIcon,
+      icon,
+      required,
+      readonly,
+      pattern,
+      minlength,
+      maxlength,
+      autocomplete,
+      inputmode,
+      spellcheck,
+      min,
+      max,
+      hint,
+      success,
+      error,
+      btnText,
+      step,
+    } = {},
+  ) {
+    const el = document.createElement(this.TAG);
+    // Appliquer chaque attribut si défini
+    if (dataValue !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_DATA_VALUE, dataValue);
+    if (placeholder !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_PLACEHOLDER, placeholder);
+    if (disabled !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_DISABLED, disabled);
+    if (state !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_STATE, state);
+    if (button !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON, button);
+    if (buttonIcon !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON_ICON, buttonIcon);
+    if (icon !== undefined) el.setAttribute(HTMLBnumInput.ATTRIBUTE_ICON, icon);
+    if (required !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_REQUIRED, required);
+    if (readonly !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_READONLY, readonly);
+    if (pattern !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_PATTERN, pattern);
+    if (minlength !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_MINLENGTH, minlength);
+    if (maxlength !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_MAXLENGTH, maxlength);
+    if (autocomplete !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_AUTOCOMPLETE, autocomplete);
+    if (inputmode !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_INPUTMODE, inputmode);
+    if (spellcheck !== undefined)
+      el.setAttribute(HTMLBnumInput.ATTRIBUTE_SPELLCHECK, spellcheck);
+    if (name !== undefined) el.setAttribute(HTMLBnumInput.ATTRIBUTE_NAME, name);
+    if (min !== undefined) el.setAttribute('min', min.toString());
+    if (max !== undefined) el.setAttribute('max', max.toString());
+    if (step !== undefined) el.setAttribute('step', step.toString());
+    // Slot par défaut (label)
+    el.textContent = label;
+    // Slots nommés
+    if (hint) {
+      const hintSlot = document.createElement('span');
+      hintSlot.slot = HTMLBnumInput.SLOT_HINT;
+      hintSlot.textContent = hint;
+      el.appendChild(hintSlot);
+    }
+    if (success) {
+      const successSlot = document.createElement('span');
+      successSlot.slot = HTMLBnumInput.SLOT_SUCCESS;
+      successSlot.textContent = success;
+      el.appendChild(successSlot);
+    }
+    if (error) {
+      const errorSlot = document.createElement('span');
+      errorSlot.slot = HTMLBnumInput.SLOT_ERROR;
+      errorSlot.textContent = error;
+      el.appendChild(errorSlot);
+    }
+    if (btnText) {
+      const buttonSlot = document.createElement('span');
+      buttonSlot.slot = HTMLBnumInput.SLOT_BUTTON;
+      buttonSlot.textContent = btnText;
+      el.appendChild(buttonSlot);
+    }
+    return el;
+  }
+  /**
+   *@inheritdoc
+   */
+  static get TAG() {
+    return 'bnum-input-time';
+  }
+}
+HTMLBnumInputTime.TryDefine();
+
+/**
+ * Bouton Bnum de type "Primary".
+ *
+ * @structure Cas standard
+ * <bnum-primary-button>Texte du bouton</bnum-primary-button>
+ *
+ * @structure Bouton avec icône
+ * <bnum-primary-button data-icon="home">Texte du bouton</bnum-primary-button>
+ *
+ * @structure Bouton avec une icône à gauche
+ * <bnum-primary-button data-icon="home" data-icon-pos="left">Texte du bouton</bnum-primary-button>
+ *
+ * @structure Bouton en état de chargement
+ * <bnum-primary-button loading>Texte du bouton</bnum-primary-button>
+ *
+ * @structure Bouton arrondi
+ * <bnum-primary-button rounded>Texte du bouton</bnum-primary-button>
+ *
+ * @structure Bouton cachant le texte sur les petits layouts
+ * <bnum-primary-button data-hide="small" data-icon="menu">Menu</bnum-primary-button>
+ */
+class HTMLBnumPrimaryButton extends HTMLBnumButton {
+  constructor() {
+    super();
+    const fromAttribute = false;
+    this.data(
+      HTMLBnumButton.ATTR_VARIATION,
+      EButtonType.PRIMARY,
+      fromAttribute,
+    );
+  }
+  static get TAG() {
+    return TAG_PRIMARY;
+  }
+}
+HTMLBnumPrimaryButton.TryDefine();
+
+/**
+ * Bouton Bnum de type "Secondary".
+ *
+ * @structure Cas standard
+ * <bnum-secondary-button>Texte du bouton</bnum-secondary-button>
+ *
+ * @structure Bouton avec icône
+ * <bnum-secondary-button data-icon="home">Texte du bouton</bnum-secondary-button>
+ *
+ * @structure Bouton avec une icône à gauche
+ * <bnum-secondary-button data-icon="home" data-icon-pos="left">Texte du bouton</bnum-secondary-button>
+ *
+ * @structure Bouton en état de chargement
+ * <bnum-secondary-button loading>Texte du bouton</bnum-secondary-button>
+ *
+ * @structure Bouton arrondi
+ * <bnum-secondary-button rounded>Texte du bouton</bnum-secondary-button>
+ *
+ * @structure Bouton cachant le texte sur les petits layouts
+ * <bnum-secondary-button data-hide="small" data-icon="menu">Menu</bnum-secondary-button>
+ */
+class HTMLBnumSecondaryButton extends HTMLBnumButton {
+  constructor() {
+    super();
+    const fromAttribute = false;
+    this.data(
+      HTMLBnumButton.ATTR_VARIATION,
+      EButtonType.SECONDARY,
+      fromAttribute,
+    );
+  }
+  static get TAG() {
+    return TAG_SECONDARY;
+  }
+}
+HTMLBnumSecondaryButton.TryDefine();
+
+var css_248z$9 =
+  ':host{background-color:var(--bnum-card-item-background-color,var(--bnum-color-surface,#f6f6f7));cursor:var(--bnum-card-item-cursor,pointer);display:var(--bnum-card-item-display,block);padding:var(--bnum-card-item-padding,15px);user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;width:calc(var(--bnum-card-item-width-percent, 100%) - var(--bnum-card-item-width-modifier, 30px))}:host(:hover){background-color:var(--bnum-card-item-background-color-hover,var(--bnum-color-surface-hover,#eaeaea))}:host(:active){background-color:var(--bnum-card-item-background-color-active,var(--bnum-color-surface-active,#dfdfdf))}:host(:disabled),:host(:state(disabled)),:host([disabled]){cursor:not-allowed;opacity:.6;pointer-events:none}';
+
+const SHEET$8 = BnumElementInternal.ConstructCSSStyleSheet(css_248z$9);
+/**
+ * Représente un item d'une carte `<bnum-card>` qui peut être mis dans un `bnum-card-list`.
+ *
+ * L'élément est considéré comme un `li` d'une liste pour des raisons d'accessibilité.
+ *
+ * @structure Item de carte
+ * <bnum-card-item><p>Contenu de l'item</p></bnum-card-item>
+ *
+ * @structure Désactivé
+ * <bnum-card-item disabled><p>Contenu de l'item</p></bnum-card-item>
+ *
+ * @state disabled - Actif quand l'item est désactivé
+ *
+ * @slot (default) - Contenu de l'item
+ *
+ * @cssvar {100%} --bnum-card-item-width-percent - Largeur en pourcentage du composant
+ * @cssvar {30px} --bnum-card-item-width-modifier - Valeur soustraite à la largeur
+ * @cssvar {var(--bnum-color-surface, #f6f6f7)} --bnum-card-item-background-color - Couleur de fond normale
+ * @cssvar {var(--bnum-color-surface-hover, #eaeaea)} --bnum-card-item-background-color-hover - Couleur de fond au survol
+ * @cssvar {var(--bnum-color-surface-active, #dfdfdf)} --bnum-card-item-background-color-active - Couleur de fond à l'état actif
+ * @cssvar {pointer} --bnum-card-item-cursor - Type de curseur
+ * @cssvar {15px} --bnum-card-item-padding - Espacement interne
+ * @cssvar {block} --bnum-card-item-display - Type d'affichage
+ */
+class HTMLBnumCardItem extends BnumElementInternal {
+  /**
+   * Attribut désactivé
+   * @attr {boolean | 'disabled' | undefined} (optional) disabled - Indique si l'item est désactivé
+   */
+  static ATTRIBUTE_DISABLED = 'disabled';
+  /**
+   * État désactivé
+   */
+  static STATE_DISABLED = 'disabled';
+  /**
+   * Rôle du composant
+   */
+  static ROLE = 'listitem';
+  /**
+   * Événement click
+   * @event click
+   * @detail MouseEvent
+   */
+  static CLICK = 'click';
+  /**
+   * Événement déclenché lors du clic sur l'item.
+   * Permet d'attacher des gestionnaires personnalisés au clic.
+   */
+  #_onitemclicked = null;
+  _p_slot = null;
+  /**
+   * Retourne la liste des attributs observés par le composant.
+   * Utile pour détecter les changements d'attributs et mettre à jour l'état du composant.
+   * @returns {string[]} Liste des attributs observés.
+   */
+  static _p_observedAttributes() {
+    return [HTMLBnumCardItem.ATTRIBUTE_DISABLED];
+  }
+  /**
+   * Événement déclenché lors du clic sur l'item.
+   * Permet d'attacher des gestionnaires personnalisés au clic.
+   */
+  get onitemclicked() {
+    this.#_onitemclicked ??= new JsEvent();
+    return this.#_onitemclicked;
+  }
+  /**
+   * Constructeur du composant.
+   * Initialise l'événement personnalisé et attache le gestionnaire de clic.
+   */
+  constructor() {
+    super();
+    this.addEventListener(HTMLBnumCardItem.CLICK, (e) => {
+      if (this.onitemclicked.haveEvents()) this.onitemclicked.call(e);
+    });
+  }
+  _p_fromTemplate() {
+    return BASE_TEMPLATE;
+  }
+  /**
+   * Construit le DOM interne du composant.
+   * Ajoute le slot pour le contenu et configure les attributs nécessaires.
+   * @param container ShadowRoot ou HTMLElement qui contient le DOM du composant.
+   */
+  _p_buildDOM(container) {
+    this._p_slot =
+      container instanceof ShadowRoot
+        ? container.getElementById('defaultslot')
+        : container.querySelector('#defaultslot');
+  }
+  _p_attach() {
+    super._p_attach();
+    HTMLBnumButton.ToButton(this)
+      .attr('role', HTMLBnumCardItem.ROLE)
+      ._p_update(
+        HTMLBnumCardItem.ATTRIBUTE_DISABLED,
+        null,
+        this.attr(HTMLBnumCardItem.ATTRIBUTE_DISABLED),
+      );
+  }
+  /**
+   * Met à jour l'état du composant en fonction des changements d'attributs.
+   * Gère l'état désactivé et l'attribut aria-disabled.
+   * @param name Nom de l'attribut modifié.
+   * @param oldVal Ancienne valeur de l'attribut.
+   * @param newVal Nouvelle valeur de l'attribut.
+   */
+  _p_update(name, oldVal, newVal) {
+    this._p_render();
+  }
+  _p_render() {
+    this._p_clearStates();
+    if (this.hasAttribute('disabled')) {
+      this.setAttribute('aria-disabled', 'true');
+      this._p_addState(HTMLBnumCardItem.STATE_DISABLED);
+    } else this.removeAttribute('aria-disabled');
+  }
+  _p_isUpdateForAllAttributes() {
+    return true;
+  }
+  _p_getStylesheets() {
+    return [...super._p_getStylesheets(), SHEET$8];
+  }
+  static CreateChildTemplate(
+    childTemplate,
+    { defaultSlot = true, slotName = EMPTY_STRING } = {},
+  ) {
+    const template = document.createElement('template');
+    template.innerHTML = `${defaultSlot ? `<slot id="defaultslot" ${slotName ? `name="${slotName}"` : ''}></slot>` : EMPTY_STRING}${childTemplate}`;
+    return template;
+  }
+  /**
+   * Retourne le tag du composant.
+   * @returns {string} Tag du composant.
+   */
+  static get TAG() {
+    return TAG_CARD_ITEM;
+  }
+}
+const BASE_TEMPLATE = HTMLBnumCardItem.CreateChildTemplate(EMPTY_STRING);
+HTMLBnumCardItem.TryDefine();
+
+var css_248z$8 =
   '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}.bold{font-weight:var(--bnum-card-item-agenda-date-bold,var(--bnum-font-weight-bold,bold))}.bold-500{font-weight:var(--bnum-card-item-agenda-date-bold-medium,var(--bnum-font-weight-medium,500))}:host{display:flex;flex-direction:column;gap:var(--bnum-card-item-agenda-gap,var(--bnum-space-s,10px));position:relative}:host .bnum-card-item-agenda-horizontal{display:flex;flex-direction:row;gap:var(--bnum-card-item-agenda-gap,var(--bnum-space-s,10px));justify-content:space-between}:host .bnum-card-item-agenda-vertical{display:flex;flex:1;flex-direction:column;gap:var(--bnum-card-item-agenda-gap,var(--bnum-space-s,10px));min-width:0}:host .bnum-card-item-agenda-block{display:flex;flex:1;flex-direction:row;gap:var(--bnum-card-item-agenda-gap,var(--bnum-space-s,10px));min-width:0}:host .bnum-card-item-agenda-hour{border-bottom:var(--bnum-card-item-agenda-date-border-bottom,none);border-left:var(--bnum-card-item-agenda-date-border-left,none);border-right:var(--bnum-card-item-agenda-date-border-right,var(--bnum-border-surface,solid 4px #000091));border-top:var(--bnum-card-item-agenda-date-border-top,none);display:flex;flex-direction:column;flex-shrink:0;gap:var(--bnum-card-item-agenda-gap,var(--bnum-space-s,10px));padding:var(--bnum-card-item-agenda-padding-top-hour,0) var(--bnum-card-item-agenda-padding-right-hour,var(--bnum-space-s,10px)) var(--bnum-card-item-agenda-padding-bottom-hour,0) var(--bnum-card-item-agenda-padding-left-hour,0)}:host .bnum-card-item-agenda-location{font-size:var(--bnum-card-item-agenda-location-font-size,var(--bnum-font-size-xs,.75rem))}:host .bnum-card-item-agenda-location{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}:host .bnum-card-item-agenda-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}:host [hidden]{display:none}:host(:state(private)) .bnum-card-item-agenda-private-icon{position:absolute;right:var(--bnum-card-item-agenda-private-icon-right,10px);top:var(--bnum-card-item-agenda-private-icon-top,10px)}:host(:state(all-day)) .bnum-card-item-agenda-hour .bnum-card-item-agenda-all-day{margin-bottom:auto;margin-top:auto}:host(:state(mode-telework)){font-style:var(--bnum-card-item-agenda-telework-font-style,italic)}:host(:state(mode-telework)):before{bottom:var(--bnum-card-item-agenda-telework-icon-bottom,10px);content:var(--bnum-card-item-agenda-telework-icon-content,"\\e88a");font-family:var(--bnum-card-item-agenda-telework-icon-font-family,var(--bnum-icon-font-family,"Material Symbols Outlined"));font-size:var(--bnum-card-item-agenda-telework-icon-font-size,var(--bnum-font-size-xxl,1.5rem));font-style:normal;position:absolute;right:var(--bnum-card-item-agenda-telework-icon-right,10px)}:host(:state(mode-telework):state(action)) .bnum-card-item-agenda-action{margin-right:var(--bnum-card-item-agenda-telework-action-margin-right,20px)}';
 
-const SHEET$7 = HTMLBnumCardItem.ConstructCSSStyleSheet(css_248z$a);
+const SHEET$7 = HTMLBnumCardItem.ConstructCSSStyleSheet(css_248z$8);
 /**
  * Item de carte agenda
  *
@@ -13539,13 +14935,615 @@ const TEMPLATE$7 = HTMLBnumCardItem.CreateChildTemplate(AGENDA, {
 });
 HTMLBnumCardItemAgenda.TryDefine();
 
-var css_248z$9 =
+var css_248z$7 =
+  '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{align-items:center;display:flex;justify-content:space-between}:host .sender{font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-size-m);font-weight:var(--bnum-card-item-mail-font-weight-bold,var(--bnum-font-weight-bold,bold));margin-bottom:var(--bnum-card-item-mail-margin-bottom,var(--bnum-space-s,10px));max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}:host .subject{font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-size-s);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}:host(:state(read)) .sender{font-weight:var(--bnum-card-item-mail-sender-read-font-weight,initial)}:host(:state(read)) .subject{font-style:var(--bnum-card-item-mail-subject-read-font-style,italic)}';
+
+// --- Importe tes dépendances (date-fns, BnumCardItem, etc.) ---
+const SHEET$6 = HTMLBnumCardItem.ConstructCSSStyleSheet(css_248z$7);
+/**
+ * Composant HTML personnalisé représentant un élément de carte mail.
+ *
+ * Permet d'afficher un sujet, un expéditeur et une date, avec possibilité d'override du contenu par défaut.
+ *
+ * Utilise des slots pour l'intégration dans le Shadow DOM et propose des méthodes pour forcer ou réinitialiser le contenu.
+ *
+ * Note: En passant par `data-date` ou `.updateDate()`, le format d'affichage de la date est ajusté selon la logique métier :
+ * - Si la date est aujourd'hui, seule l'heure est affichée (HH:mm).
+ * - Si la date est comprise entre hier et il y a 7 jours, le jour de la semaine et l'heure sont affichés (E - HH:mm).
+ * - Sinon, le format par défaut de HTMLBnumDate est utilisé.
+ *
+ * @structure Item de carte mail
+ * <bnum-card-item-mail data-date="now">
+ * <span slot="subject">Sujet par défaut</span>
+ * <span slot="sender">Expéditeur par défaut</span>
+ * </bnum-card-item-mail>
+ *
+ * @structure Item de carte data
+ * <bnum-card-item-mail data-date="2025-10-31 11:11" data-subject="Sujet ici" data-sender="Expéditeur ici">
+ * </bnum-card-item-mail>
+ *
+ * @structure Item de carte lue
+ * <bnum-card-item-mail read data-date="2025-10-31 11:11" data-subject="Sujet ici" data-sender="Expéditeur ici">
+ * </bnum-card-item-mail>
+ *
+ * @state read - Actif quand le mail est marqué comme lu.
+ *
+ * @slot (default) - N'existe pas, si vous mettez du contenu en dehors des slots, ils ne seront pas affichés.
+ * @slot sender - Contenu de l'expéditeur (texte ou HTML).
+ * @slot subject - Contenu du sujet (texte ou HTML).
+ * @slot date - Contenu de la date. /!\ Si vous passez par ce slot, la mécanique de formatage automatique de la date ne s'appliquera pas.
+ */
+class HTMLBnumCardItemMail extends HTMLBnumCardItem {
+  //#region Constants
+  /**
+   * Attribut data pour le sujet du mail.
+   * @attr {string} (optional) data-subject - Sujet du mail.
+   */
+  static DATA_SUBJECT = 'subject';
+  static ATTRIBUTE_DATA_SUBJECT = `data-${HTMLBnumCardItemMail.DATA_SUBJECT}`;
+  /**
+   * Attribut data pour la date du mail.
+   * @attr {string} (optional) data-sender - Expéditeur du mail.
+   */
+  static DATA_SENDER = 'sender';
+  static ATTRIBUTE_DATA_SENDER = `data-${HTMLBnumCardItemMail.DATA_SENDER}`;
+  /**
+   * Attribut data pour la date du mail.
+   * @attr {string} (optional) data-date - Date du mail, optionnel, mais conseillé si vous voulez la logique de formatage automatique.
+   */
+  static DATA_DATE = 'date';
+  static ATTRIBUTE_DATA_DATE = `data-${HTMLBnumCardItemMail.DATA_DATE}`;
+  /**
+   * Attribut pour marquer le mail comme lu.
+   * @attr {boolean} (optional) read - Indique si le mail est lu.
+   */
+  static ATTRIBUTE_READ = 'read';
+  /**
+   * Événement déclenché lors du changement de l'expéditeur du mail.
+   * @event bnum-card-item-mail:sender-changed
+   * @detail { caller: HTMLBnumCardItemMail }
+   */
+  static EVENT_SENDER_CHANGED = 'bnum-card-item-mail:sender-changed';
+  /**
+   * Événement déclenché lors du changement du sujet du mail.
+   * @event bnum-card-item-mail:subject-changed
+   * @detail { caller: HTMLBnumCardItemMail }
+   */
+  static EVENT_SUBJECT_CHANGED = 'bnum-card-item-mail:subject-changed';
+  /**
+   * Événement déclenché lors du changement de la date du mail.
+   * @event bnum-card-item-mail:date-changed
+   * @detail { caller: HTMLBnumCardItemMail }
+   */
+  static EVENT_DATE_CHANGED = 'bnum-card-item-mail:date-changed';
+  /**
+   * Nom du slot pour l'expéditeur.
+   */
+  static SLOT_SENDER_NAME = 'sender';
+  /**
+   * Nom du slot pour le sujet.
+   */
+  static SLOT_SUBJECT_NAME = 'subject';
+  /**
+   * Nom du slot pour la date.
+   */
+  static SLOT_DATE_NAME = 'date';
+  /**
+   * Nom de la part pour override de l'expéditeur.
+   */
+  static PART_SENDER_OVERRIDE = 'sender-override';
+  /**
+   * Nom de la part pour override du sujet.
+   */
+  static PART_SUBJECT_OVERRIDE = 'subject-override';
+  /**
+   * Nom de la part pour override de la date.
+   */
+  static PART_DATE_OVERRIDE = 'date-override';
+  /**
+   * Classe CSS pour l'expéditeur.
+   */
+  static CLASS_SENDER = 'sender';
+  /**
+   * Classe CSS pour le sujet.
+   */
+  static CLASS_SUBJECT = 'subject';
+  /**
+   * Classe CSS pour la date.
+   */
+  static CLASS_DATE = 'date';
+  /**
+   * Classe CSS pour le contenu principal.
+   */
+  static CLASS_MAIN_CONTENT = 'main-content';
+  static ID_DATE_ELEMENT_OVERRIDE = 'date-element-override';
+  static ID_SENDER_SLOT = 'senderslot';
+  static ID_SUBJECT_SLOT = 'subjectslot';
+  static ID_DATE_SLOT = 'dateslot';
+  /**
+   * Nom de l'état "lu".
+   */
+  static STATE_READ = 'read';
+  /**
+   * Format d'affichage de la date pour aujourd'hui.
+   */
+  static TODAY_FORMAT = 'HH:mm';
+  /**
+   * Format d'affichage de la date pour les autres jours.
+   */
+  static OTHER_DAY_FORMAT = 'dd/MM/yyyy';
+  /**
+   * Format d'affichage de la date pour la semaine.
+   */
+  static WEEK_FORMAT = 'E - HH:mm';
+  static SYMBOL_RESET = Symbol('reset');
+  //#endregion
+  //#region Private fields
+  // --- Slots du Shadow DOM ---
+  /**
+   * Slot pour la date dans le Shadow DOM.
+   */
+  #_slot_date = null;
+  /**
+   * Slot pour l'expéditeur dans le Shadow DOM.
+   */
+  #_slot_sender = null;
+  // --- Conteneurs d'OVERRIDE (cachés par défaut) ---
+  /**
+   * Élément pour override de l'expéditeur.
+   */
+  #_override_sender = null;
+  /**
+   * Élément pour override du sujet.
+   */
+  #_override_subject = null;
+  /**
+   * Élément pour override de la date.
+   */
+  #_override_date = null;
+  /**
+   * Élément HTMLBnumDate utilisé pour override la date.
+   */
+  #_dateOverrideElement = null;
+  /**
+   * Scheduler pour la mise à jour du sujet.
+   */
+  #_subjectScheduler = null;
+  /**
+   * Scheduler pour la mise à jour de la date.
+   */
+  #_dateScheduler = null;
+  #_defaultDate = null;
+  /**
+   * Scheduler pour la mise à jour de l'expéditeur.
+   */
+  #_senderScheduler = null;
+  //#endregion Private fields
+  //#region Public fields
+  /**
+   * Événement déclenché lors du changement du sujet du mail.
+   * Permet d'attacher des gestionnaires personnalisés au changement de sujet.
+   */
+  onsubjectchanged = new JsEvent();
+  /**
+   * Événement déclenché lors du changement de l'expéditeur du mail.
+   * Permet d'attacher des gestionnaires personnalisés au changement d'expéditeur.
+   */
+  onsenderchanged = new JsEvent();
+  /**
+   * Événement déclenché lors du changement de la date du mail.
+   * Permet d'attacher des gestionnaires personnalisés au changement de date.
+   */
+  ondatechanged = new JsEvent();
+  //#endregion Public fields
+  //#region Getters
+  /**
+   * Retourne l'élément HTMLBnumDate pour l'override de la date.
+   *
+   * Initialise la variable si elle n'a pas encore été initialisée.
+   */
+  get #_lazyDateOverrideElement() {
+    return (this.#_dateOverrideElement ??= (() => {
+      const tmp = this.#_queryById(
+        this.#_override_date,
+        HTMLBnumCardItemMail.ID_DATE_ELEMENT_OVERRIDE,
+      );
+      this.#_configureDateElement(tmp);
+      return tmp;
+    })());
+  }
+  // --- Getters pour lire les data-attributs ---
+  /**
+   * Retourne la date du mail, en tenant compte de l'override si présent.
+   */
+  get date() {
+    return this.#_override_date?.hidden === false
+      ? this.#_lazyDateOverrideElement.getDate()
+      : (this.#_defaultDate?.getDate?.() ?? new Date());
+  }
+  /**
+   * Retourne le sujet du mail depuis l'attribut data.
+   */
+  get #_mailSubject() {
+    return this.data(HTMLBnumCardItemMail.DATA_SUBJECT) || EMPTY_STRING;
+  }
+  /**
+   * Retourne la date du mail depuis l'attribut data.
+   */
+  get #_mailDate() {
+    return this.data(HTMLBnumCardItemMail.DATA_DATE) || EMPTY_STRING;
+  }
+  /**
+   * Retourne l'expéditeur du mail depuis l'attribut data.
+   */
+  get #_mailSender() {
+    return this.data(HTMLBnumCardItemMail.DATA_SENDER) || EMPTY_STRING;
+  }
+  //#endregion Getters
+  //#region Lifecycle
+  /**
+   * Constructeur du composant.
+   */
+  constructor() {
+    super();
+    this.onsenderchanged.add(EVENT_DEFAULT, (sender) => {
+      this.trigger(HTMLBnumCardItemMail.EVENT_SENDER_CHANGED, {
+        caller: sender,
+      });
+    });
+    this.onsubjectchanged.add(EVENT_DEFAULT, (sender) => {
+      this.trigger(HTMLBnumCardItemMail.EVENT_SUBJECT_CHANGED, {
+        caller: sender,
+      });
+    });
+    this.ondatechanged.add(EVENT_DEFAULT, (sender) => {
+      this.trigger(HTMLBnumCardItemMail.EVENT_DATE_CHANGED, { caller: sender });
+    });
+  }
+  /**
+   * Crée le layout du Shadow DOM (avec slots ET overrides).
+   * @param container Le conteneur du Shadow DOM ou un élément HTML.
+   */
+  _p_buildDOM(container) {
+    super._p_buildDOM(container);
+    // Hydratation
+    this.#_slot_sender = this.#_queryById(
+      container,
+      HTMLBnumCardItemMail.ID_SENDER_SLOT,
+    );
+    this.#_override_sender = this.#_queryByClass(
+      container,
+      HTMLBnumCardItemMail.PART_SENDER_OVERRIDE,
+    );
+    // On écrase _p_slot car dans notre template, il n'y a pas de slot par défaut
+    this._p_slot = this.#_queryById(
+      container,
+      HTMLBnumCardItemMail.ID_SUBJECT_SLOT,
+    );
+    this.#_override_subject = this.#_queryByClass(
+      container,
+      HTMLBnumCardItemMail.PART_SUBJECT_OVERRIDE,
+    );
+    this.#_slot_date = this.#_queryById(
+      container,
+      HTMLBnumCardItemMail.ID_DATE_SLOT,
+    );
+    this.#_override_date = this.#_queryByClass(
+      container,
+      HTMLBnumCardItemMail.PART_DATE_OVERRIDE,
+    );
+  }
+  /**
+   * Crée le contenu par défaut et l'attache aux slots.
+   * Initialise les nœuds pour le sujedate-element-overridet, l'expéditeur et la date.
+   */
+  _p_attach() {
+    super._p_attach();
+    if (this.#_mailSubject !== EMPTY_STRING)
+      this._p_slot.appendChild(this._p_createTextNode(this.#_mailSubject));
+    // Crée le nœud texte pour l'EXPÉDITEUR par défaut
+    if (this.#_mailSender !== EMPTY_STRING)
+      this.#_slot_sender.appendChild(this._p_createTextNode(this.#_mailSender));
+    if (this.#_mailDate !== EMPTY_STRING) {
+      // Crée l'élément DATE par défaut
+      const defaultDate = HTMLBnumDate.Create(this.#_mailDate);
+      this.#_configureDateElement(defaultDate); // Applique la logique
+      this.#_slot_date.appendChild(defaultDate);
+      this.#_defaultDate = defaultDate;
+    }
+  }
+  /**
+   * Retourne les stylesheets à appliquer au composant.
+   * @returns Liste des CSSStyleSheet à appliquer.
+   */
+  _p_getStylesheets() {
+    return [...super._p_getStylesheets(), SHEET$6];
+  }
+  /**
+   * Méthode appelée lors de la mise à jour d'un attribut observé.
+   * @param name Nom de l'attribut.
+   * @param oldVal Ancienne valeur.
+   * @param newVal Nouvelle valeur.
+   */
+  _p_update(name, oldVal, newVal) {
+    super._p_update(name, oldVal, newVal);
+    if (this.hasAttribute(HTMLBnumCardItemMail.ATTRIBUTE_READ))
+      this._p_addState(HTMLBnumCardItemMail.STATE_READ);
+  }
+  /**
+   * Retourne le template HTML utilisé pour le composant.
+   * @returns Le template HTML.
+   */
+  _p_fromTemplate() {
+    return TEMPLATE$6;
+  }
+  //#endregion Lifecycle
+  //#region Public methods
+  /**
+   * Force le contenu de l'expéditeur, en ignorant le slot.
+   * @param content Contenu texte ou HTML à afficher comme expéditeur.
+   * @returns L'instance courante pour chaînage.
+   */
+  updateSender(content) {
+    return this.#_requestUpdateSender(content);
+  }
+  /**
+   * Réaffiche le contenu du slot "sender" (annule l'override).
+   * @returns L'instance courante pour chaînage.
+   */
+  resetSender() {
+    return this.#_requestUpdateSender(HTMLBnumCardItemMail.SYMBOL_RESET);
+  }
+  /**
+   * Force le contenu du sujet, en ignorant le slot.
+   * @param content Contenu texte ou HTML à afficher comme sujet.
+   * @returns L'instance courante pour chaînage.
+   */
+  updateSubject(content) {
+    return this.#_requestUpdateSubject(content);
+  }
+  /**
+   * Réaffiche le contenu du slot "subject" (annule l'override).
+   * @returns L'instance courante pour chaînage.
+   */
+  resetSubject() {
+    return this.#_requestUpdateSubject(HTMLBnumCardItemMail.SYMBOL_RESET);
+  }
+  /**
+   * Force le contenu de la date, en ignorant le slot.
+   * @param content Chaîne, Date ou élément HTML à afficher comme date.
+   * @returns L'instance courante pour chaînage.
+   */
+  updateDate(content) {
+    return this.#_requestUpdateDate(content);
+  }
+  /**
+   * Réaffiche le contenu du slot "date" (annule l'override).
+   * @returns L'instance courante pour chaînage.
+   */
+  resetDate() {
+    return this.#_requestUpdateDate(HTMLBnumCardItemMail.SYMBOL_RESET);
+  }
+  //#endregion Public methods
+  //#region Private methods
+  /**
+   * Met à jour l'affichage de l'expéditeur (slot ou override).
+   * @param content Contenu à afficher ou symbole de reset.
+   */
+  #_updateSender(content) {
+    if (!this.#_override_sender || !this.#_slot_sender) return;
+    if (content === HTMLBnumCardItemMail.SYMBOL_RESET) {
+      this.#_slot_sender.hidden = false;
+      this.#_override_sender.hidden = true;
+    } else {
+      if (typeof content === 'string')
+        this.#_override_sender.innerHTML = content;
+      else this.#_override_sender.replaceChildren(content);
+      // On cache le slot, on montre l'override
+      this.#_slot_sender.hidden = true;
+      this.#_override_sender.hidden = false;
+    }
+    this.onsenderchanged.call(this);
+  }
+  /**
+   * Planifie la mise à jour de l'expéditeur.
+   * @param content Contenu à afficher ou symbole de reset.
+   * @returns L'instance courante pour chaînage.
+   */
+  #_requestUpdateSender(content) {
+    (this.#_senderScheduler ??= new Scheduler((value) =>
+      this.#_updateSender(value),
+    )).schedule(content);
+    return this;
+  }
+  /**
+   * Met à jour l'affichage du sujet (slot ou override).
+   * @param content Contenu à afficher ou symbole de reset.
+   */
+  #_updateSubject(content) {
+    if (!this.#_override_subject || !this._p_slot) return;
+    if (content === HTMLBnumCardItemMail.SYMBOL_RESET) {
+      this._p_slot.hidden = false;
+      this.#_override_subject.hidden = true;
+    } else if (typeof content === 'string')
+      this.#_override_subject.innerHTML = content;
+    else this.#_override_subject.replaceChildren(content);
+    // On cache le slot, on montre l'override
+    this._p_slot.hidden = true;
+    this.#_override_subject.hidden = false;
+    this.onsubjectchanged.call(this);
+  }
+  /**
+   * Planifie la mise à jour du sujet.
+   * @param content Contenu à afficher ou symbole de reset.
+   * @returns L'instance courante pour chaînage.
+   */
+  #_requestUpdateSubject(content) {
+    (this.#_subjectScheduler ??= new Scheduler((value) =>
+      this.#_updateSubject(value),
+    )).schedule(content);
+    return this;
+  }
+  /**
+   * Met à jour l'affichage de la date (slot ou override).
+   * @param content Contenu à afficher ou symbole de reset.
+   */
+  #_updateDate(content) {
+    if (!this.#_override_date || !this.#_slot_date) return;
+    if (content === HTMLBnumCardItemMail.SYMBOL_RESET) {
+      this.#_slot_date.hidden = false;
+      this.#_override_date.hidden = true;
+    } else {
+      if (typeof content === 'string' || content instanceof Date)
+        this.#_lazyDateOverrideElement.setDate(content);
+      else this.#_lazyDateOverrideElement.setDate(content.getDate());
+      this.#_slot_date.hidden = true;
+      this.#_override_date.hidden = false;
+    }
+    this.ondatechanged.call(this);
+  }
+  /**
+   * Planifie la mise à jour de la date.
+   * @param content Contenu à afficher ou symbole de reset.
+   * @returns L'instance courante pour chaînage.
+   */
+  #_requestUpdateDate(content) {
+    (this.#_dateScheduler ??= new Scheduler((value) =>
+      this.#_updateDate(value),
+    )).schedule(content);
+    return this;
+  }
+  /**
+   * Recherche un élément par son id dans le container donné.
+   * @param container Container dans lequel chercher.
+   * @param id Id de l'élément.
+   * @returns L'élément trouvé.
+   */
+  #_queryById(container, id) {
+    return container instanceof ShadowRoot
+      ? container.getElementById(id)
+      : container.querySelector(`#${id}`);
+  }
+  /**
+   * Recherche un élément par sa classe dans le container donné.
+   * @param container Container dans lequel chercher.
+   * @param className Classe de l'élément.
+   * @returns L'élément trouvé.
+   */
+  #_queryByClass(container, className) {
+    return container instanceof ShadowRoot
+      ? container.querySelector(`.${className}`)
+      : container.getElementsByClassName(className)?.[0];
+  }
+  /**
+   * Configure le format d'affichage de la date selon la logique métier :
+   * - Affiche l'heure si la date est aujourd'hui.
+   * - Affiche le jour et l'heure si la date est comprise entre hier et il y a 7 jours.
+   * - Sinon, conserve le format par défaut.
+   * @param element Instance de HTMLBnumDate à configurer.
+   */
+  #_configureDateElement(element) {
+    HTMLBnumCardItemMail.SetDateLogique(element);
+  }
+  //#endregion Private methods
+  //#region Static methods
+  /**
+   * Applique la logique de formatage de date à un élément HTMLBnumDate.
+   * @param element Élément HTMLBnumDate à configurer.
+   */
+  static SetDateLogique(element) {
+    element.formatEvent.add(EVENT_DEFAULT, (param) => {
+      const originalDate = element.getDate();
+      if (!originalDate) return param;
+      if (isToday(originalDate)) {
+        return {
+          date: format(originalDate, HTMLBnumCardItemMail.TODAY_FORMAT),
+        };
+      }
+      const now = new Date();
+      const startOfInterval = startOfDay(subDays(now, 7));
+      const endOfInterval = endOfDay(subDays(now, 1));
+      if (
+        isWithinInterval(originalDate, {
+          start: startOfInterval,
+          end: endOfInterval,
+        })
+      ) {
+        return {
+          date: format(originalDate, HTMLBnumCardItemMail.WEEK_FORMAT, {
+            locale: element.localeElement,
+          }),
+        };
+      }
+      return {
+        date: format(originalDate, HTMLBnumCardItemMail.OTHER_DAY_FORMAT, {
+          locale: element.localeElement,
+        }), // Format par défaut si aucune condition n'est remplie
+      };
+    });
+  }
+  static _p_observedAttributes() {
+    return [
+      ...super._p_observedAttributes(),
+      HTMLBnumCardItemMail.ATTRIBUTE_READ,
+    ];
+  }
+  /**
+   * Crée une nouvelle instance du composant avec les valeurs fournies.
+   * @param subject Sujet du mail.
+   * @param sender Expéditeur du mail.
+   * @param date Date du mail
+   * @returns Instance HTMLBnumCardItemMail.
+   */
+  static Create(subject, sender, date) {
+    let node = document.createElement(HTMLBnumCardItemMail.TAG);
+    node.attr(HTMLBnumCardItemMail.ATTRIBUTE_DATA_SUBJECT, subject);
+    node.attr(HTMLBnumCardItemMail.ATTRIBUTE_DATA_SENDER, sender);
+    if (typeof date === 'string')
+      node.attr(HTMLBnumCardItemMail.ATTRIBUTE_DATA_DATE, date);
+    else
+      node.attr(HTMLBnumCardItemMail.ATTRIBUTE_DATA_DATE, date.toISOString());
+    return node;
+  }
+  /**
+   * Retourne le tag HTML du composant.
+   */
+  static get TAG() {
+    return TAG_CARD_ITEM_MAIL;
+  }
+}
+const TEMPLATE$6 = HTMLBnumCardItem.CreateChildTemplate(
+  `
+  <div class="${HTMLBnumCardItemMail.CLASS_MAIN_CONTENT}">
+    <div class="${HTMLBnumCardItemMail.CLASS_SENDER}">
+      <slot id="${HTMLBnumCardItemMail.ID_SENDER_SLOT}" name="${HTMLBnumCardItemMail.SLOT_SENDER_NAME}"></slot>
+      <span class="${HTMLBnumCardItemMail.PART_SENDER_OVERRIDE}" part="${HTMLBnumCardItemMail.PART_SENDER_OVERRIDE}" hidden></span>
+    </div>
+    <div class="${HTMLBnumCardItemMail.CLASS_SUBJECT}">
+      <slot id="${HTMLBnumCardItemMail.ID_SUBJECT_SLOT}" name="${HTMLBnumCardItemMail.SLOT_SUBJECT_NAME}"></slot>
+      <span class="${HTMLBnumCardItemMail.PART_SUBJECT_OVERRIDE}" part="${HTMLBnumCardItemMail.PART_SUBJECT_OVERRIDE}" hidden></span>
+    </div>
+  </div>
+  <div class="${HTMLBnumCardItemMail.CLASS_DATE}">
+    <slot id="${HTMLBnumCardItemMail.ID_DATE_SLOT}" name="${HTMLBnumCardItemMail.SLOT_DATE_NAME}"></slot>
+    <span class="${HTMLBnumCardItemMail.PART_DATE_OVERRIDE}" part="${HTMLBnumCardItemMail.PART_DATE_OVERRIDE}" hidden>
+      <${HTMLBnumDate.TAG} id="${HTMLBnumCardItemMail.ID_DATE_ELEMENT_OVERRIDE}"></${HTMLBnumDate.TAG}>
+    </span>
+  </div>
+  `,
+  { defaultSlot: false },
+);
+//#region TryDefine
+HTMLBnumCardItemMail.TryDefine();
+//#endregion
+
+var css_248z$6 =
   '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{padding:var(--bnum-space-s,10px)}:host ::slotted([role=listitem]){border-bottom:var(--bnum-border-in-surface,solid 1px #ddd)}:host ::slotted([role=listitem]:last-child){border-bottom:none}:host ::slotted([hidden]),:host [hidden]{display:none}';
 
 /**
  * Feuille de style CSS pour le composant liste de cartes.
  */
-const SHEET$6 = BnumElement.ConstructCSSStyleSheet(css_248z$9);
+const SHEET$5 = BnumElement.ConstructCSSStyleSheet(css_248z$6);
 /**
  * Composant liste de cartes Bnum.
  * Permet d'afficher une liste d'éléments de type carte.
@@ -13619,7 +15617,7 @@ class HTMLBnumCardList extends BnumElement {
    * @returns {CSSStyleSheet[]} Feuilles de style CSS
    */
   _p_getStylesheets() {
-    return [...super._p_getStylesheets(), SHEET$6];
+    return [...super._p_getStylesheets(), SHEET$5];
   }
   /**
    * Construit le DOM interne du composant.
@@ -13683,3805 +15681,6 @@ class HTMLBnumCardList extends BnumElement {
 }
 HTMLBnumCardList.TryDefine();
 
-var css_248z$8 =
-  ':host{display:var(--bnum-card-email-display,block)}[hidden]{display:none}';
-
-const SHEET$5 = BnumElement.ConstructCSSStyleSheet(css_248z$8);
-/**
- * Organisme qui permet d'afficher simplement une liste de mails dans une carte.
- *
- * @structure Avec des éléments
- * <bnum-card-email>
- * <bnum-card-item-mail data-date="2025-10-31 11:11" data-subject="Sujet ici" data-sender="Expéditeur ici">
- * </bnum-card-item-mail>
- * <bnum-card-item-mail read data-date="2025-10-31 11:11" data-subject="Sujet ici" data-sender="Expéditeur ici">
- * </bnum-card-item-mail>
- * <bnum-card-item-mail data-date="now">
- * <span slot="subject">Sujet par défaut</span>
- * <span slot="sender">Expéditeur par défaut</span>
- * </bnum-card-item-mail>
- * </bnum-card-email>
- *
- * @structure Sans éléments
- * <bnum-card-email>
- * </bnum-card-email>
- *
- * @structure Avec une url
- * <bnum-card-email data-url="#">
- * </bnum-card-email>
- *
- * @slot (default) - Contenu des éléments de type HTMLBnumCardItemMail.
- *
- * @cssvar {block} --bnum-card-email-display - Définit le display du composant. Par défaut à "block".
- */
-class HTMLBnumCardEmail extends BnumElement {
-  //#region Constants
-  /**
-   * Nom du event déclenché lorsque les éléments changent (ajout/suppression).
-   * @event bnum-card-email:change
-   * @detail HTMLBnumCardItemMail[]
-   */
-  static CHANGE_EVENT = 'bnum-card-email:change';
-  /**
-   * Data pour l'URL du titre.
-   */
-  static DATA_URL = 'url';
-  /**
-   * Attribut data pour l'URL du titre.
-   * @attr {string | undefined} (optional) data-url - Ajoute une url au titre. Ne rien mettre pour que l'option "url" du titre ne s'active pas.
-   */
-  static ATTRIBUTE_DATA_URL = `data-${HTMLBnumCardEmail.DATA_URL}`;
-  /**
-   * ID du titre.
-   */
-  static ID_CARD_TITLE = 'bnum-card-title';
-  /**
-   * ID de l'élément "Aucun élément".
-   */
-  static ID_CARD_ITEM_NO_ELEMENTS = 'no-elements';
-  /**
-   * Attribut pour le mode loading.
-   * @attr {string | undefined} (optional) loading - Si présent, affiche le mode loading.
-   */
-  static ATTRIBUTE_LOADING = 'loading';
-  //#endregion Constants
-  //#region Private fields
-  #_isSorting = false;
-  #_cardTitle;
-  #_slot;
-  #_noElements;
-  #_card = null;
-  /**
-   * Déclenché lorsque les éléments changent (ajout/suppression).
-   */
-  #_onchange = null;
-  //#endregion Private fields
-  //#region Getters/Setters
-  /**
-   * Déclenché lorsque les éléments changent (ajout/suppression).
-   */
-  get onElementChanged() {
-    if (this.#_onchange === null) {
-      this.#_onchange = new JsEvent();
-      this.#_onchange.add(EVENT_DEFAULT, (data) => {
-        this.trigger(HTMLBnumCardEmail.CHANGE_EVENT, { detail: data });
-      });
-    }
-    return this.#_onchange;
-  }
-  /**
-   * Mode loading.
-   */
-  get loading() {
-    return this.hasAttribute(HTMLBnumCardEmail.ATTRIBUTE_LOADING);
-  }
-  set loading(value) {
-    if (value) {
-      this.setAttribute(
-        HTMLBnumCardEmail.ATTRIBUTE_LOADING,
-        HTMLBnumCardEmail.ATTRIBUTE_LOADING,
-      );
-    } else {
-      this.removeAttribute(HTMLBnumCardEmail.ATTRIBUTE_LOADING);
-    }
-  }
-  get #_cardPart() {
-    if (this.#_card === null) {
-      this.#_card =
-        this.querySelector?.(HTMLBnumCardElement.TAG) ??
-        this.shadowRoot?.querySelector?.(HTMLBnumCardElement.TAG) ??
-        null;
-    }
-    return this.#_card;
-  }
-  /**
-   * Récupère l'URL du titre.
-   */
-  get #_url() {
-    return this.data(HTMLBnumCardEmail.DATA_URL) || EMPTY_STRING;
-  }
-  //#endregion Getters/Setters
-  //#region Lifecycle
-  constructor() {
-    super();
-  }
-  get _p_styleSheets() {
-    return [SHEET$5];
-  }
-  _p_fromTemplate() {
-    return TEMPLATE$6;
-  }
-  _p_buildDOM(container) {
-    this.#_cardTitle = container.querySelector(
-      `#${HTMLBnumCardEmail.ID_CARD_TITLE}`,
-    );
-    this.#_slot = container.querySelector('slot');
-    this.#_noElements = container.querySelector(
-      `#${HTMLBnumCardEmail.ID_CARD_ITEM_NO_ELEMENTS}`,
-    );
-  }
-  _p_attach() {
-    if (this.#_url !== EMPTY_STRING) this.#_cardTitle.url = this.#_url;
-    // On écoute les changements dans le slot (Items statiques ou ajoutés via JS)
-    this.#_slot.addEventListener(
-      'slotchange',
-      this.#_handleSlotChange.bind(this),
-    );
-    this.#_handleSlotChange();
-  }
-  _p_update(name, oldVal, newVal) {
-    switch (name) {
-      case HTMLBnumCardEmail.ATTRIBUTE_LOADING:
-        if (newVal === null || newVal === EMPTY_STRING)
-          this.#_cardPart.removeAttribute(HTMLBnumCardEmail.ATTRIBUTE_LOADING);
-        else
-          this.#_cardPart.setAttribute(
-            HTMLBnumCardEmail.ATTRIBUTE_LOADING,
-            newVal || EMPTY_STRING,
-          );
-        break;
-    }
-  }
-  //#endregion Lifecycle
-  //#region Public methods
-  /**
-   * Ajoute des éléments.
-   *
-   * Note: On ajoute simplement au Light DOM. Le slotchange détectera l'ajout et déclenchera le tri.
-   * @param content Elements à ajouter
-   */
-  add(...content) {
-    this.append(...content);
-    return this;
-  }
-  /**
-   * Vide le composant.
-   */
-  clear() {
-    this.innerHTML = EMPTY_STRING; // Vide le Light DOM
-    return this;
-  }
-  //#endregion Public methods
-  //#region Private methods
-  /**
-   * Gère le tri des éléments.
-   * Utilise requestAnimationFrame pour ne pas bloquer le thread si beaucoup d'items.
-   */
-  #_handleSlotChange() {
-    if (this.#_isSorting) return;
-    // On planifie le tri au prochain frame pour regrouper les appels multiples
-    requestAnimationFrame(() => {
-      this.#_sortChildren();
-    });
-  }
-  /**
-   * Tri les éléments enfants de la liste par date décroissante.
-   */
-  #_sortChildren() {
-    // 1. Récupérer les éléments assignés au slot (Uniquement les Nodes Elements, pas le texte)
-    const elements = this.#_slot.assignedElements();
-    // Filtrer pour être sûr de ne trier que des mails (sécurité)
-    const mailItems = elements.filter((el) =>
-      el.tagName.toLowerCase().includes(HTMLBnumCardItemMail.TAG),
-    );
-    if (mailItems.length === 0) {
-      this.#_noElements.hidden = false;
-      this.#_slot.hidden = true;
-      return;
-    } else {
-      this.#_noElements.hidden = true;
-      this.#_slot.hidden = false;
-    }
-    if (mailItems.length < 2) return; // Pas besoin de trier
-    // 2. Vérifier si un tri est nécessaire (optimisation)
-    let isSorted = true;
-    for (let i = 0; i < mailItems.length - 1; i++) {
-      if (this.#_getDate(mailItems[i]) < this.#_getDate(mailItems[i + 1])) {
-        isSorted = false;
-        break;
-      }
-    }
-    if (isSorted) return;
-    // 3. Trier en mémoire
-    this.#_isSorting = true; // Verrouiller pour éviter que le déplacement ne relance slotchange
-    mailItems.sort((a, b) => {
-      // Tri décroissant (le plus récent en haut)
-      return this.#_getDate(b) - this.#_getDate(a);
-    });
-    // 4. Réinsérer dans l'ordre via un Fragment (1 seul Reflow)
-    const fragment = document.createDocumentFragment();
-    mailItems.forEach((item) => fragment.appendChild(item));
-    this.appendChild(fragment); // Déplace les éléments existants, ne les recrée pas.
-    // Notifier le changement
-    this.onElementChanged.call(mailItems);
-    // Déverrouiller après que le microtask de mutation soit passé
-    setTimeout(() => {
-      this.#_isSorting = false;
-    }, 0);
-  }
-  /**
-   * Helper pour parser la date de manière robuste
-   */
-  #_getDate(item) {
-    const dateStr = item.getAttribute(HTMLBnumCardItemMail.ATTRIBUTE_DATA_DATE);
-    if (!dateStr) return item.date.getTime();
-    if (dateStr === 'now') return Date.now();
-    return new Date(dateStr).getTime();
-  }
-  //#endregion Private methods
-  //#region Static methods
-  static _p_observedAttributes() {
-    return [HTMLBnumCardEmail.ATTRIBUTE_LOADING];
-  }
-  /**
-   * Méthode statique pour créer une instance du composant.
-   * @param param0 Options de création
-   * @param param0.contents Contenus initiaux à ajouter
-   * @param param0.url URL du titre
-   * @returns Nouvelle node HTMLBnumCardEmail
-   */
-  static Create({ contents = [], url = EMPTY_STRING } = {}) {
-    const node = document.createElement(this.TAG);
-    if (url !== EMPTY_STRING)
-      node.setAttribute(HTMLBnumCardEmail.ATTRIBUTE_DATA_URL, url);
-    if (contents.length > 0) node.add(...contents);
-    return node;
-  }
-  /**
-   * Tag du composant.
-   */
-  static get TAG() {
-    return TAG_CARD_EMAIL;
-  }
-}
-const TEMPLATE$6 = BnumElement.CreateTemplate(`
-    <${HTMLBnumCardElement.TAG}>
-      <${HTMLBnumCardTitle.TAG} id="${HTMLBnumCardEmail.ID_CARD_TITLE}" slot="title" data-icon="mail">${BnumConfig.Get('local_keys').last_mails}</${HTMLBnumCardTitle.TAG}>
-        <${HTMLBnumCardList.TAG}>
-          <slot></slot>
-          <${HTMLBnumCardItem.TAG} id="${HTMLBnumCardEmail.ID_CARD_ITEM_NO_ELEMENTS}" disabled hidden>${BnumConfig.Get('local_keys').no_mails}</${HTMLBnumCardItem.TAG}>
-        </${HTMLBnumCardList.TAG}>
-    </${HTMLBnumCardElement.TAG}>
-    `);
-//#region TryDefine
-HTMLBnumCardEmail.TryDefine();
-//#endregion TryDefine
-
-var css_248z$7 =
-  ':host{display:var(--bnum-card-agenda-display,block)}[hidden]{display:none}';
-
-const SHEET$4 = BnumElement.ConstructCSSStyleSheet(css_248z$7);
-/**
- * Organisme qui permet d'afficher simplement une liste d'évènements dans une carte.
- *
- * @structure Avec des éléments
- * <bnum-card-agenda>
- * <bnum-card-item-agenda
- *    data-date="2024-01-01"
- *    data-start-date="2024-01-01 08:00:00"
- *    data-end-date="2024-01-01 10:00:00"
- *    data-title="Réunion de projet"
- *    data-location="Salle de conférence">
- * </bnum-card-item-agenda>
- * <bnum-card-item-agenda
- *    data-date="2025-11-20"
- *    data-start-date="2025-10-20 09:40:00"
- *    data-end-date="2025-12-20 10:10:00"
- *    data-title="Réunion de projet"
- *    data-location="Salle de conférence">
- * </bnum-card-item-agenda>
- * <bnum-card-item-agenda all-day
- *    data-date="2025-11-21"
- *    data-title="Télétravail"
- *    data-location="A la maison">
- * </bnum-card-item-agenda>
- * </bnum-card-agenda>
- *
- * @structure Sans éléments
- * <bnum-card-agenda>
- * </bnum-card-agenda>
- *
- * @structure Avec une url
- * <bnum-card-agenda data-url="#">
- * </bnum-card-agenda>
- *
- * @slot (default) - Contenu des éléments de type HTMLBnumCardItemAgenda.
- *
- * @cssvar {block} --bnum-card-agenda - Définit le display du composant. Par défaut à "block".
- */
-class HTMLBnumCardAgenda extends BnumElement {
-  //#region Constants
-  /**
-   * Nom du event déclenché lorsque les éléments changent (ajout/suppression).
-   * @event bnum-card-agenda:change
-   * @detail HTMLBnumCardItemAgenda[]
-   */
-  static CHANGE_EVENT = 'bnum-card-agenda:change';
-  /**
-   * Data pour l'URL du titre.
-   */
-  static DATA_URL = 'url';
-  /**
-   * Attribut data pour l'URL du titre.
-   * @attr {string | undefined} (optional) data-url - Ajoute une url au titre. Ne rien mettre pour que l'option "url" du titre ne s'active pas.
-   */
-  static ATTRIBUTE_DATA_URL = `data-${HTMLBnumCardAgenda.DATA_URL}`;
-  /**
-   * Attribut pour le mode loading.
-   * @attr {string | undefined} (optional) loading - Si présent, affiche le mode loading.
-   */
-  static ATTRIBUTE_LOADING = 'loading';
-  /**
-   * ID du titre.
-   */
-  static ID_CARD_TITLE = 'bnum-card-title';
-  /**
-   * ID de l'élément "Aucun élément".
-   */
-  static ID_CARD_ITEM_NO_ELEMENTS = 'no-elements';
-  //#endregion Constants
-  //#region Private fields
-  #_isSorting = false;
-  #_cardTitle;
-  #_slot;
-  #_noElements;
-  #_card = null;
-  /**
-   * Déclenché lorsque les éléments changent (ajout/suppression).
-   */
-  #_onchange = null;
-  //#endregion Private fields
-  //#region Getters/Setters
-  /**
-   * Déclenché lorsque les éléments changent (ajout/suppression).
-   */
-  get onElementChanged() {
-    if (this.#_onchange === null) {
-      this.#_onchange = new JsEvent();
-      this.#_onchange.add(EVENT_DEFAULT, (data) => {
-        this.trigger(HTMLBnumCardAgenda.CHANGE_EVENT, { detail: data });
-      });
-    }
-    return this.#_onchange;
-  }
-  /**
-   * Mode loading.
-   */
-  get loading() {
-    return this.hasAttribute(HTMLBnumCardAgenda.ATTRIBUTE_LOADING);
-  }
-  set loading(value) {
-    if (value) {
-      this.setAttribute(
-        HTMLBnumCardAgenda.ATTRIBUTE_LOADING,
-        HTMLBnumCardAgenda.ATTRIBUTE_LOADING,
-      );
-    } else {
-      this.removeAttribute(HTMLBnumCardAgenda.ATTRIBUTE_LOADING);
-    }
-  }
-  get #_cardPart() {
-    if (this.#_card === null) {
-      this.#_card =
-        this.querySelector?.(HTMLBnumCardElement.TAG) ??
-        this.shadowRoot?.querySelector?.(HTMLBnumCardElement.TAG) ??
-        null;
-    }
-    return this.#_card;
-  }
-  /**
-   * Récupère l'URL du titre.
-   */
-  get #_url() {
-    return this.data(HTMLBnumCardAgenda.DATA_URL) || EMPTY_STRING;
-  }
-  //#endregion Getters/Setters
-  //#region Lifecycle
-  constructor() {
-    super();
-  }
-  get _p_styleSheets() {
-    return [SHEET$4];
-  }
-  _p_fromTemplate() {
-    return TEMPLATE$5;
-  }
-  _p_buildDOM(container) {
-    this.#_cardTitle = container.querySelector(
-      `#${HTMLBnumCardAgenda.ID_CARD_TITLE}`,
-    );
-    this.#_slot = container.querySelector('slot');
-    this.#_noElements = container.querySelector(
-      `#${HTMLBnumCardAgenda.ID_CARD_ITEM_NO_ELEMENTS}`,
-    );
-  }
-  _p_attach() {
-    if (this.#_url !== EMPTY_STRING) this.#_cardTitle.url = this.#_url;
-    // On écoute les changements dans le slot (Items statiques ou ajoutés via JS)
-    this.#_slot.addEventListener(
-      'slotchange',
-      this.#_handleSlotChange.bind(this),
-    );
-    this.#_handleSlotChange();
-  }
-  _p_update(name, oldVal, newVal) {
-    switch (name) {
-      case HTMLBnumCardAgenda.ATTRIBUTE_LOADING:
-        if (newVal === null || newVal === EMPTY_STRING)
-          this.#_cardPart.removeAttribute(HTMLBnumCardAgenda.ATTRIBUTE_LOADING);
-        else
-          this.#_cardPart.setAttribute(
-            HTMLBnumCardAgenda.ATTRIBUTE_LOADING,
-            newVal || EMPTY_STRING,
-          );
-        break;
-    }
-  }
-  //#endregion Lifecycle
-  //#region Public methods
-  /**
-   * Ajoute des éléments.
-   *
-   * Note: On ajoute simplement au Light DOM. Le slotchange détectera l'ajout et déclenchera le tri.
-   * @param content Elements à ajouter
-   */
-  add(...content) {
-    this.append(...content);
-    return this;
-  }
-  /**
-   * Vide le composant.
-   */
-  clear() {
-    this.innerHTML = EMPTY_STRING; // Vide le Light DOM
-    return this;
-  }
-  //#endregion Public methods
-  //#region Private methods
-  /**
-   * Gère le tri des éléments.
-   * Utilise requestAnimationFrame pour ne pas bloquer le thread si beaucoup d'items.
-   */
-  #_handleSlotChange() {
-    if (this.#_isSorting) return;
-    // On planifie le tri au prochain frame pour regrouper les appels multiples
-    requestAnimationFrame(() => {
-      this.#_sortChildren();
-    });
-  }
-  /**
-   * Tri les éléments enfants de la liste par date décroissante.
-   */
-  #_sortChildren() {
-    // 1. Récupérer les éléments assignés au slot (Uniquement les Nodes Elements, pas le texte)
-    const elements = this.#_slot.assignedElements();
-    // Filtrer pour être sûr de ne trier que des événements (sécurité)
-    const agendaItems = elements.filter((el) =>
-      el.tagName.toLowerCase().includes(HTMLBnumCardItemAgenda.TAG),
-    );
-    if (agendaItems.length === 0) {
-      this.#_noElements.hidden = false;
-      this.#_slot.hidden = true;
-      return;
-    } else {
-      this.#_noElements.hidden = true;
-      this.#_slot.hidden = false;
-    }
-    if (agendaItems.length < 2) return; // Pas besoin de trier
-    // 2. Vérifier si un tri est nécessaire (optimisation)
-    let isSorted = true;
-    for (let i = 0; i < agendaItems.length - 1; i++) {
-      if (this.#_getDate(agendaItems[i]) < this.#_getDate(agendaItems[i + 1])) {
-        isSorted = false;
-        break;
-      } else if (
-        this.#_getDate(agendaItems[i]) === this.#_getDate(agendaItems[i + 1])
-      ) {
-        // Même date de base, on regardmailItemse la date de début
-        if (
-          this.#_getStartDate(agendaItems[i]) <
-          this.#_getStartDate(agendaItems[i + 1])
-        ) {
-          isSorted = false;
-          break;
-        }
-      }
-    }
-    if (isSorted) return;
-    // 3. Trier en mémoire
-    this.#_isSorting = true; // Verrouiller pour éviter que le déplacement ne relance slotchange
-    // 4. Réinsérer dans l'ordre via un Fragment (1 seul Reflow)
-    const fragment = document.createDocumentFragment();
-    fragment.append(
-      ...JsEnumerable.from(agendaItems)
-        .orderByDescending((x) => this.#_getDate(x))
-        .thenDescending((x) => this.#_getStartDate(x)),
-    );
-    this.appendChild(fragment); // Déplace les éléments existants, ne les recrée pas.
-    // Notifier le changement
-    this.onElementChanged.call(agendaItems);
-    // Déverrouiller après que le microtask de mutation soit passé
-    setTimeout(() => {
-      this.#_isSorting = false;
-    }, 0);
-  }
-  /**
-   * Helper pour parser la date de manière robuste
-   */
-  #_getDate(item) {
-    return item.baseDate.getTime();
-  }
-  /**
-   * Helper pour parser la date de manière robuste
-   */
-  #_getStartDate(item) {
-    return item.isAllDay ? this.#_getDate(item) : item.startDate.getTime();
-  }
-  //#endregion Private methods
-  //#region Static methods
-  static _p_observedAttributes() {
-    return [HTMLBnumCardAgenda.ATTRIBUTE_LOADING];
-  }
-  /**
-   * Méthode statique pour créer une instance du composant.
-   * @param param0 Options de création
-   * @param param0.contents Contenus initiaux à ajouter
-   * @param param0.url URL du titre
-   * @returns Nouvelle node HTMLBnumCardAgenda
-   */
-  static Create({ contents = [], url = EMPTY_STRING } = {}) {
-    const node = document.createElement(this.TAG);
-    if (url !== EMPTY_STRING)
-      node.setAttribute(HTMLBnumCardAgenda.ATTRIBUTE_DATA_URL, url);
-    if (contents.length > 0) node.add(...contents);
-    return node;
-  }
-  /**
-   * Tag du composant.
-   */
-  static get TAG() {
-    return TAG_CARD_AGENDA;
-  }
-}
-const TEMPLATE$5 = BnumElement.CreateTemplate(`
-    <${HTMLBnumCardElement.TAG}>
-      <${HTMLBnumCardTitle.TAG} id="${HTMLBnumCardAgenda.ID_CARD_TITLE}" slot="title" data-icon="today">${BnumConfig.Get('local_keys').last_events}</${HTMLBnumCardTitle.TAG}>
-        <${HTMLBnumCardList.TAG}>
-          <slot></slot>
-          <${HTMLBnumCardItem.TAG} id="${HTMLBnumCardAgenda.ID_CARD_ITEM_NO_ELEMENTS}" disabled hidden>${BnumConfig.Get('local_keys').no_events}</${HTMLBnumCardItem.TAG}>
-        </${HTMLBnumCardList.TAG}>
-    </${HTMLBnumCardElement.TAG}>
-    `);
-//#region TryDefine
-HTMLBnumCardAgenda.TryDefine();
-//#endregion TryDefine
-
-var css_248z$6 =
-  ':host{cursor:pointer;font-variation-settings:"wght" 400;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}:host(:hover){--bnum-icon-fill:1}:host(:active){--bnum-icon-fill:1;--bnum-icon-weight:700;--bnum-icon-grad:200;--bnum-icon-opsz:20}:host(:disabled),:host([disabled]){cursor:not-allowed;opacity:var(--bnum-button-disabled-opacity,.6);pointer-events:var(--bnum-button-disabled-pointer-events,none)}';
-
-const SHEET$3 = BnumElement.ConstructCSSStyleSheet(css_248z$6);
-/**
- * Button contenant une icône.
- *
- * @structure Button Icon
- * <bnum-icon-button>home</bnum-icon-button>
- *
- * @structure Button Disabled
- * <bnum-icon-button disabled>home</bnum-icon-button>
- *
- * @cssvar {0.6} --bnum-button-disabled-opacity - Opacité du bouton désactivé
- * @cssvar {none} --bnum-button-disabled-pointer-events - Gestion des événements souris pour le bouton désactivé
- *
- * @slot (default) - Contenu de l'icône (nom de l'icône à afficher)
- */
-class HTMLBnumButtonIcon extends BnumElement {
-  //#region Constantes
-  /**
-   * Id de l'icône à l'intérieur du bouton
-   */
-  static ID_ICON = 'icon';
-  /**
-   * Attribut pour définir le gestionnaire de clic
-   * @event click
-   */
-  static ATTRIBUTE_ON_CLICK = 'onclick';
-  //#endregion Constantes
-  //#region Private fields
-  /**
-   * Référence vers l'élément icône à l'intérieur du bouton
-   */
-  #_icon = null;
-  #_onClick = null;
-  #_lastClick = null;
-  //#endregion Private fields
-  //#region Getters/Setters
-  get #_linkedClickEvent() {
-    if (this.#_onClick === null) {
-      this.#_onClick = new JsEvent();
-      this.addEventListener('click', () => {
-        this.#_onClick?.call?.();
-      });
-    }
-    return this.#_onClick;
-  }
-  /**
-   * Référence vers l'élément icône à l'intérieur du bouton.
-   *
-   * Si l'icône n'a pas été mise en mémoire, elle sera cherché puis mise en mémoire.
-   */
-  get #_iconElement() {
-    if (!this.#_icon) {
-      const icon =
-        this.querySelector(HTMLBnumIcon.TAG) ??
-        this.shadowRoot?.getElementById(HTMLBnumButtonIcon.ID_ICON);
-      if (!icon) this.#_throw('Icon element not found inside icon button');
-      this.#_icon = icon;
-    }
-    return this.#_icon;
-  }
-  /**
-   * Icône affichée dans le bouton
-   */
-  get icon() {
-    return (
-      (this.#_iconElement.icon || this.#_throw('Icon is not defined')) ??
-      EMPTY_STRING
-    );
-  }
-  set icon(value) {
-    this.#_iconElement.icon = value;
-  }
-  //#endregion Getters/Setters
-  //#region Lifecycle
-  constructor() {
-    super();
-  }
-  /**
-   * @inheritdoc
-   */
-  _p_getStylesheets() {
-    return [...super._p_getStylesheets(), SHEET$3];
-  }
-  /**
-   * @inheritdoc
-   */
-  _p_fromTemplate() {
-    return TEMPLATE$4;
-  }
-  /**
-   * @inheritdoc
-   */
-  _p_buildDOM(_) {
-    HTMLBnumButton.ToButton(this);
-    if (this.title === EMPTY_STRING)
-      console.warn(
-        'Icon button should have a title for accessibility purposes',
-      );
-    if (this.hasAttribute('click')) {
-      const click = this.getAttribute('click');
-      this.#_updateAttributeClick(click ?? EMPTY_STRING);
-    }
-  }
-  _p_update(name, oldVal, newVal) {
-    if (oldVal === newVal) return;
-    if (name === 'click') {
-      this.#_updateAttributeClick(newVal ?? EMPTY_STRING);
-    }
-  }
-  //#endregion Lifecycle
-  //#region Private methods
-  #_updateAttributeClick(val) {
-    if (val !== this.#_lastClick) {
-      this.#_lastClick = val;
-      if (this.#_linkedClickEvent.has('click'))
-        this.#_linkedClickEvent.remove('click');
-      if (val && REG_XSS_SAFE.test(val)) {
-        this.#_linkedClickEvent.add(
-          'click',
-          (click) => {
-            // Si c'est un id unique
-            var elementToClick = document.getElementById(click);
-            if (elementToClick) elementToClick.click();
-            else {
-              // Sinon on part du principe que c'est un sélecteur CSS
-              const elements = document.querySelector(click);
-              if (elements) elements.click();
-              else
-                throw new Error(
-                  `[${HTMLBnumButtonIcon.TAG}] L'attribut 'click' ne référence aucun élément.`,
-                );
-            }
-          },
-          val,
-        );
-      }
-    }
-  }
-  /**
-   * Permet de lancer une erreur avec un message spécifique dans une expression inline.
-   * @param msg Message à envoyer dans l'erreur.
-   */
-  #_throw(msg) {
-    throw new Error(msg);
-  }
-  //#endregion Private methods
-  //#region Static methods
-  /**
-   * Retourne la liste des attributs observés par le composant.
-   */
-  static _p_observedAttributes() {
-    return ['click'];
-  }
-  /**
-   * Génère un bouton icône avec l'icône spécifiée.
-   * @param icon Icône à afficher dans le bouton.
-   * @returns Node créée.
-   */
-  static Create(icon) {
-    const node = document.createElement(this.TAG);
-    node.icon = icon;
-    return node;
-  }
-  /**
-   * Génère le code HTML d'un bouton icône avec l'icône spécifiée.
-   * @param icon Icône à afficher dans le bouton.
-   * @returns Code HTML créée.
-   */
-  static Write(icon, attrs = {}) {
-    return `<${this.TAG} ${JsEnumerable.from(attrs)
-      .select((x) => {
-        const tmp = x;
-        return `${tmp.key}="${tmp.value}"`;
-      })
-      .toArray()
-      .join(' ')}>${icon}</${this.TAG}>`;
-  }
-  /**
-   * Tag de l'élément.
-   */
-  static get TAG() {
-    return TAG_ICON_BUTTON;
-  }
-}
-const TEMPLATE$4 = HTMLBnumButtonIcon.CreateTemplate(`
-    <${HTMLBnumIcon.TAG} id="${HTMLBnumButtonIcon.ID_ICON}"><slot></slot></${HTMLBnumIcon.TAG}>
-    `);
-//#region TryDefine
-HTMLBnumButtonIcon.TryDefine();
-//#endregion TryDefine
-
-var css_248z$5 =
-  '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host #hint-text{--internal-gap:0.5rem;display:flex;flex-direction:column;gap:var(--internal-gap,.5rem);margin-bottom:var(--internal-gap,.5rem)}:host #hint-text__label{font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-label-size,var(--bnum-font-size-m));line-height:var(--bnum-font-label-line-height,var(--bnum-font-height-text-m))}:host #hint-text__hint{color:var(--bnum-input-hint-text-color,var(--bnum-text-hint,#666));font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-hint-size,var(--bnum-font-size-xs));line-height:var(--bnum-font-hint-line-height,var(--bnum-font-height-text-xs))}:host .addons__inner{position:relative;width:100%}:host input{background-color:var(--bnum-input-background-color,var(--bnum-color-input,#eee));border:none;border-radius:.25rem .25rem 0 0;box-shadow:var(--bnum-input-box-shadow,inset 0 -2px 0 0 var(--bnum-input-line-color,var(--bnum-color-input-border,#3a3a3a)));color:var(--bnum-input-color,var(--bnum-text-on-input,#666));display:block;font-size:1rem;line-height:1.5rem;padding:.5rem 1rem;width:100%}:host #input__button,:host #input__icon,:host #state{display:none}:host(:disabled),:host(:state(disabled)){cursor:not-allowed;opacity:.6;pointer-events:none}:host(:state(button)) .addons{display:flex;gap:0}:host(:state(button)) input{border-top-right-radius:0}:host(:state(button)) #input__button,:host(:state(button)) input{--bnum-input-line-color:#000091}:host(:state(button)) #input__button{border-bottom-left-radius:0;border-bottom-right-radius:0;border-top-left-radius:0;display:block;height:auto}:host(:state(button):state(obi)) #input__button{--bnum-button-icon-gap:0}:host(:state(icon)) #input__icon{display:block;position:absolute;right:var(--bnum-input-icon-right,10px);top:var(--bnum-input-icon-top,10px)}:host(:state(state)){border-left:2px solid var(--internal-border-color);display:block;padding-left:10px}:host(:state(state)) #state{align-items:center;color:var(--internal-color);display:flex;font-size:.75rem;margin-top:1rem}:host(:state(state)) #state bnum-icon{--bnum-icon-font-size:1rem;margin-right:5px}:host(:state(state)) #hint-text__label{color:var(--internal-color)}:host(:state(state)) .error,:host(:state(state)) .success{display:none;margin-bottom:-4px}:host(:state(state):state(success)){--internal-border-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(state):state(success)) #hint-text__label,:host(:state(state):state(success)) #state{--internal-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(state):state(success)) #input__button,:host(:state(state):state(success)) input{--bnum-input-line-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(state):state(success)) .success{display:block}:host(:state(state):state(error)){--internal-border-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}:host(:state(state):state(error)) #hint-text__label,:host(:state(state):state(error)) #state{--internal-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}:host(:state(state):state(error)) #input__button,:host(:state(state):state(error)) input{--bnum-input-line-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}:host(:state(state):state(error)) .error{display:block}';
-
-const STYLE$2 = BnumElementInternal.ConstructCSSStyleSheet(css_248z$5);
-/**
- * Composant Input du design system Bnum.
- * Permet de gérer un champ de saisie enrichi avec gestion d'états, d'icônes, de bouton et d'accessibilité.
- *
- * @structure Sans rien
- * <bnum-input></bnum-input>
- *
- * @structure Avec une légende
- * <bnum-input>Label du champ</bnum-input>
- *
- * @structure Avec une légende et un indice
- * <bnum-input>
- * Label du champ
- * <span slot="hint">Indice d'utilisation</span>
- * </bnum-input>
- *
- * @structure Avec un bouton
- * <bnum-input button="true" button-icon="add">Label du champ
- *   <span slot="button">Ajouter</span>
- * </bnum-input>
- *
- * @structure En erreur
- * <bnum-input pattern="^[a-zA-Z0-9]+$" data-value="@@@@@">Label du champ
- * </bnum-input>
- *
- * @structure Avec un état de succès
- * <bnum-input state="success">Label du champ
- *   <span slot="success">Le champ est valide !</span>
- * </bnum-input>
- *
- * @structure Avec une icône
- * <bnum-input icon="search">Label du champ</bnum-input>
- *
- * @structure Avec un bouton avec icône seulement
- * <bnum-input placeholder="LA LA !" button-icon="add">Label du champ
- * </bnum-input>
- *
- * @structure Nombre
- * <bnum-input type="number" data-value="42">Label du champ</bnum-input>
- *
- * @structure Désactivé
- * <bnum-input disabled>
- *   Label du champ
- * </bnum-input>
- *
- * @structure Complet
- * <bnum-input
- *   data-value="Valeur initiale"
- *   placeholder="Texte indicatif"
- *   type="text"
- *   state="error"
- *   icon="search"
- *   button="primary"
- *   button-icon="send"
- * >
- *   Label du champ
- *   <span slot="hint">Indice d'utilisation</span>
- *   <span slot="success">Le champ est valide !</span>
- *   <span slot="error">Le champ est invalide !</span>
- *   <span slot="button">Envoyer</span>
- * </bnum-input>
- *
- * @slot (defaut) - Contenu du label principal du champ.
- * @slot hint - Contenu de l'indice d'utilisation (hint) du champ.
- * @slot success - Contenu du message de succès du champ.
- * @slot error - Contenu du message d'erreur du champ.
- * @slot button - Contenu du bouton interne (si présent).
- *
- * @state success - État de succès.
- * @state error - État d'erreur.
- * @state disabled - État désactivé.
- * @state icon - Présence d'une icône.
- * @state button - Présence d'un bouton.
- * @state obi - Bouton avec icône seulement (sans texte).
- * @state state - Présence d'un état (success / error).
- *
- * @cssvar {#666} --bnum-input-hint-text-color - Couleur du texte du hint.
- * @cssvar {#eee} --bnum-input-background-color - Couleur de fond de l'input.
- * @cssvar {#666} --bnum-input-color - Couleur du texte de l'input.
- * @cssvar {#3a3a3a} --bnum-input-line-color - Couleur de la ligne/bordure de l'input.
- * @cssvar {#36b37e} --bnum-input-state-success-color - Couleur de l'état de succès.
- * @cssvar {#de350b} --bnum-input-state-error-color - Couleur de l'état d'erreur.
- * @cssvar {inset 0 -2px 0 0 #3a3a3a} --bnum-input-box-shadow - Ombre portée de l'input.
- *
- */
-class HTMLBnumInput extends BnumElementInternal {
-  //#region Constants
-  /**
-   * Événement déclenché au clic sur le bouton interne.
-   *
-   * Attention ! Vous devez écouter l'événement via la propriété `onButtonClicked` pour que le gestionnaire soit bien attaché.
-   * @event bnum-input:button.click
-   * @detail MouseEvent
-   */
-  static EVENT_BUTTON_CLICK = 'bnum-input:button.click';
-  /**
-   * Événement déclenché à la saisie dans le champ.
-   * @event input
-   * @detail InputEvent
-   */
-  static EVENT_INPUT = 'input';
-  /**
-   * Événement déclenché au changement de valeur du champ.
-   * @event change
-   * @detail Event
-   */
-  static EVENT_CHANGE = 'change';
-  /**
-   * Attribut data-value du composant.
-   * @attr {string} (optional) (default: undefined) data-value - Valeur initiale du champ.
-   */
-  static ATTRIBUTE_DATA_VALUE = 'data-value';
-  /**
-   * @attr {string} (optional) (default: undefined) placeholder - Texte indicatif du champ.
-   */
-  static ATTRIBUTE_PLACEHOLDER = 'placeholder';
-  /**
-   * @attr {string} (optional) (default: 'text') type - Type de l'input (text, password, email, etc.)
-   */
-  static ATTRIBUTE_TYPE = 'type';
-  /**
-   * @attr {string} (optional) (default: undefined) disabled - Désactive le champ.
-   */
-  static ATTRIBUTE_DISABLED = 'disabled';
-  /**
-   * @attr {string} (optional) (default: undefined) state - État du champ (success, error, etc.).
-   */
-  static ATTRIBUTE_STATE = 'state';
-  /**
-   * @attr {string} (optional) (default: undefined) button - Présence d'un bouton interne (primary, secondary, danger, ...).
-   */
-  static ATTRIBUTE_BUTTON = 'button';
-  /**
-   * @attr {string} (optional) (default: undefined) button-icon - Icône du bouton interne.
-   */
-  static ATTRIBUTE_BUTTON_ICON = 'button-icon';
-  /**
-   * @attr {string} (optional) (default: undefined) icon - Icône à afficher dans le champ.
-   */
-  static ATTRIBUTE_ICON = 'icon';
-  /**
-   * @attr {string} (optional) (default: undefined) required - Champ requis.
-   */
-  static ATTRIBUTE_REQUIRED = 'required';
-  /**
-   * @attr {string} (optional) (default: undefined) readonly - Champ en lecture seule.
-   */
-  static ATTRIBUTE_READONLY = 'readonly';
-  /**
-   * @attr {string} (optional) (default: undefined) pattern - Expression régulière de validation.
-   */
-  static ATTRIBUTE_PATTERN = 'pattern';
-  /**
-   * @attr {string} (optional) (default: undefined) minlength - Longueur minimale du champ.
-   */
-  static ATTRIBUTE_MINLENGTH = 'minlength';
-  /**
-   * @attr {string} (optional) (default: undefined) maxlength - Longueur maximale du champ.
-   */
-  static ATTRIBUTE_MAXLENGTH = 'maxlength';
-  /**
-   * @attr {string} (optional) (default: undefined) autocomplete - Attribut autocomplete HTML.
-   */
-  static ATTRIBUTE_AUTOCOMPLETE = 'autocomplete';
-  /**
-   * @attr {string} (optional) (default: undefined) inputmode - Mode de saisie (mobile).
-   */
-  static ATTRIBUTE_INPUTMODE = 'inputmode';
-  /**
-   * @attr {string} (optional) (default: undefined) spellcheck - Correction orthographique.
-   */
-  static ATTRIBUTE_SPELLCHECK = 'spellcheck';
-  /**
-   * @attr {string} (optional) (default: undefined) ignorevalue - Attribut interne pour ignorer la synchronisation de valeur. Ne pas utiliser.
-   */
-  static ATTRIBUTE_IGNOREVALUE = 'ignorevalue';
-  /**
-   * @attr {string} (optional) (default: undefined) name - Nom du champ (attribut HTML name).
-   */
-  static ATTRIBUTE_NAME = 'name';
-  /** ID du label principal */
-  static ID_HINT_TEXT = 'hint-text';
-  /** ID du label du champ */
-  static ID_HINT_TEXT_LABEL = 'hint-text__label';
-  /** ID du hint */
-  static ID_HINT_TEXT_HINT = 'hint-text__hint';
-  /** ID de l'input */
-  static ID_INPUT = 'bnum-input';
-  /** ID du bouton */
-  static ID_INPUT_BUTTON = 'input__button';
-  /** ID de l'icône d'état */
-  static ID_STATE_ICON = 'state__icon';
-  /** ID de l'icône d'input */
-  static ID_INPUT_ICON = 'input__icon';
-  /** ID du texte de succès */
-  static ID_SUCCESS_TEXT = 'success-text';
-  /** ID du texte d'erreur */
-  static ID_ERROR_TEXT = 'error-text';
-  /** ID du conteneur d'état */
-  static ID_STATE = 'state';
-  /** Classe CSS pour le texte de succès */
-  static CLASS_STATE_TEXT_SUCCESS = 'state__text success';
-  /** Classe CSS pour le texte d'erreur */
-  static CLASS_STATE_TEXT_ERROR = 'state__text error';
-  /**
-   * État de succès.
-   */
-  static STATE_SUCCESS = 'success';
-  /**
-   * État d'erreur.
-   */
-  static STATE_ERROR = 'error';
-  /**
-   * État désactivé.
-   */
-  static STATE_DISABLED = 'disabled';
-  /**
-   * État avec icône.
-   */
-  static STATE_ICON = 'icon';
-  /**
-   * État avec bouton.
-   */
-  static STATE_BUTTON = 'button';
-  /**
-   * État bouton avec icône seulement (sans texte).
-   *
-   * (obi = Only Button Icon)
-   */
-  static STATE_OBI = 'obi';
-  /**
-   * État avec état (success / error).
-   */
-  static STATE_STATE = 'state';
-  /**
-   * Icône affichée en cas de succès de validation.
-   */
-  static ICON_SUCCESS = 'check_circle';
-  /**
-   * Icône affichée en cas d'erreur de validation.
-   */
-  static ICON_ERROR = 'cancel';
-  /**
-   * Nom du slot pour le bouton interne.
-   */
-  static SLOT_BUTTON = 'button';
-  /**
-   * Nom du slot pour l'indice d'utilisation (hint).
-   */
-  static SLOT_HINT = 'hint';
-  /**
-   * Nom du slot pour le message de succès.
-   */
-  static SLOT_SUCCESS = 'success';
-  /**
-   * Nom du slot pour le message d'erreur.
-   */
-  static SLOT_ERROR = 'error';
-  /**
-   * Type d'input par défaut.
-   */
-  static DEFAULT_INPUT_TYPE = 'text';
-  /**
-   * Variation du bouton par défaut.
-   */
-  static DEFAULT_BUTTON_VARIATION = EButtonType.PRIMARY;
-  /**
-   * Texte affiché en cas de succès de validation.
-   */
-  static TEXT_VALID_INPUT =
-    BnumConfig.Get('local_keys')?.valid_input || 'Le champs est valide !';
-  /**
-   * Texte affiché en cas d'erreur de validation.
-   */
-  static TEXT_INVALID_INPUT =
-    BnumConfig.Get('local_keys')?.invalid_input || 'Le champs est invalide !';
-  /**
-   * Texte affiché en cas d'erreur de champ.
-   */
-  static TEXT_ERROR_FIELD =
-    BnumConfig.Get('local_keys')?.error_field ||
-    'Ce champ contient une erreur.';
-  //#endregion Constants
-  //#region Private fields
-  /**
-   * Icône d'état (success / error)
-   */
-  #_stateIcon = null;
-  /**
-   * Input HTML interne
-   */
-  #_input = null;
-  /**
-   * Bouton HTML interne
-   */
-  #_button = null;
-  /**
-   * Icône interne
-   */
-  #_icon = null;
-  /**
-   * Événement déclenché au clic sur le bouton (si présent)
-   */
-  #_onButtonClicked = null;
-  /**
-   * Valeur initiale (pour la réinitialisation du formulaire)
-   */
-  #_initValue = EMPTY_STRING;
-  //#endregion Private fields
-  //#region Getters/Setters
-  /**
-   * Permet d'écouter le clic sur le bouton interne.
-   * @returns {JsEvent} Instance d'événement personnalisée.
-   */
-  get onButtonClicked() {
-    if (this.#_onButtonClicked === null) {
-      this.#_onButtonClicked = new JsEvent();
-      this.#_onButtonClicked.add(EVENT_DEFAULT, (clickEvent) => {
-        this.trigger(HTMLBnumInput.EVENT_BUTTON_CLICK, {
-          innerEvent: clickEvent,
-        });
-      });
-      this.#_initialiseButton();
-    }
-    return this.#_onButtonClicked;
-  }
-  // -- Formulaire --
-  /**
-   * Valeur courante du champ de saisie.
-   */
-  get value() {
-    return (
-      this.#_input?.value ||
-      this.getAttribute(HTMLBnumInput.ATTRIBUTE_DATA_VALUE) ||
-      EMPTY_STRING
-    );
-  }
-  set value(val) {
-    if (this.#_input === null)
-      this.setAttribute(HTMLBnumInput.ATTRIBUTE_DATA_VALUE, val);
-    else {
-      this.#_input.value = val;
-      try {
-        this._p_internal.setFormValue(val);
-      } catch (error) {}
-    }
-  }
-  /**
-   * Nom du champ (attribut HTML name).
-   */
-  get name() {
-    return this.getAttribute(HTMLBnumInput.ATTRIBUTE_NAME) || EMPTY_STRING;
-  }
-  set name(val) {
-    this.setAttribute(HTMLBnumInput.ATTRIBUTE_NAME, val);
-  }
-  //#endregion Getters/Setters
-  //#region Lifecycle
-  /**
-   * Constructeur du composant.
-   * Initialise la valeur initiale à partir de l'attribut data-value.
-   */
-  constructor() {
-    super();
-    this.#_initValue =
-      this.getAttribute(HTMLBnumInput.ATTRIBUTE_DATA_VALUE) ?? EMPTY_STRING;
-  }
-  /**
-   * Attache un Shadow DOM personnalisé.
-   */
-  _p_attachCustomShadow() {
-    return this.attachShadow({ mode: 'open', delegatesFocus: true });
-  }
-  /**
-   * Récupère des stylesheet déjà construites pour le composant.
-   * @returns Liste de stylesheet
-   */
-  _p_getStylesheets() {
-    return [...super._p_getStylesheets(), STYLE$2];
-  }
-  /**
-   * Retourne le template HTML utilisé pour le composant.
-   */
-  _p_fromTemplate() {
-    return TEMPLATE$3;
-  }
-  /**
-   * Construit le DOM interne et attache les écouteurs d'événements.
-   */
-  _p_buildDOM(container) {
-    this.#_input = container.querySelector(`#${HTMLBnumInput.ID_INPUT}`);
-    this.#_button = container.querySelector(
-      `#${HTMLBnumInput.ID_INPUT_BUTTON}`,
-    );
-    this.#_stateIcon = container.querySelector(
-      `#${HTMLBnumInput.ID_STATE_ICON}`,
-    );
-    this.#_icon = container.querySelector(`#${HTMLBnumInput.ID_INPUT_ICON}`);
-    this.#_input.addEventListener(HTMLBnumInput.EVENT_INPUT, (e) => {
-      this.#_inputValueChangedCallback(e);
-    });
-    this.#_input.addEventListener(HTMLBnumInput.EVENT_CHANGE, (e) => {
-      this.#_inputValueChangedCallback(e);
-    });
-    this.#_initialiseButton().#_update();
-    this.attr(HTMLBnumInput.ATTRIBUTE_IGNOREVALUE, 'true').removeAttribute(
-      HTMLBnumInput.ATTRIBUTE_DATA_VALUE,
-    );
-  }
-  /**
-   * Met à jour le composant lors d'un changement d'attribut.
-   */
-  _p_update(name, oldVal, newVal) {
-    if (this.alreadyLoaded === false) return 'break';
-    if (newVal == oldVal) return;
-    switch (name) {
-      case HTMLBnumInput.ATTRIBUTE_DATA_VALUE:
-        if (this.attr(HTMLBnumInput.ATTRIBUTE_IGNOREVALUE) !== null) {
-          this.removeAttribute(HTMLBnumInput.ATTRIBUTE_IGNOREVALUE);
-          break;
-        }
-        if (newVal !== null) {
-          this._p_internal.setFormValue(newVal);
-          if (this.#_input) this.#_input.value = newVal;
-          this.setAttribute(HTMLBnumInput.ATTRIBUTE_IGNOREVALUE, 'true');
-          this.removeAttribute(HTMLBnumInput.ATTRIBUTE_DATA_VALUE);
-        }
-        break;
-    }
-  }
-  /**
-   * Appelé après le flush du DOM pour synchroniser l'état.
-   */
-  _p_postFlush() {
-    this.#_update();
-  }
-  //#endregion Lifecycle
-  //#region Public methods
-  // --- Formulaire --
-  /**
-   * Réinitialise la valeur du champ lors d'une remise à zéro du formulaire parent.
-   */
-  formResetCallback() {
-    this.value = this.#_initValue;
-  }
-  /**
-   * Active ou désactive le champ selon l'état du fieldset parent.
-   */
-  formDisabledCallback(disabled) {
-    if (disabled)
-      this.setAttribute(HTMLBnumInput.ATTRIBUTE_DISABLED, 'disabled');
-    this.#_sync();
-  }
-  // -- Helper --
-  /**
-   * Active le bouton interne avec texte, icône et variation éventuels.
-   * @param options Objet contenant le texte, l'icône et la variation du bouton.
-   * @returns {this} L'instance courante pour chaînage.
-   */
-  enableButton({
-    text = undefined,
-    icon = undefined,
-    variation = EButtonType.PRIMARY,
-  } = {}) {
-    this.setAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON, variation);
-    if (text !== undefined) {
-      this.querySelector(
-        `slot[name="${HTMLBnumInput.SLOT_BUTTON}"]`,
-      )?.remove?.();
-      const span = this._p_createSpan({
-        child: text,
-        attributes: { slot: 'button' },
-      });
-      this.appendChild(span);
-    }
-    if (icon !== undefined) {
-      this.setAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON_ICON, icon);
-    }
-    return this;
-  }
-  /**
-   * Active uniquement l'icône du bouton interne (sans texte).
-   * @param icon Nom de l'icône à afficher sur le bouton.
-   * @returns {this} L'instance courante pour chaînage.
-   */
-  enableButtonIconOnly(icon) {
-    this.querySelector(`slot[name="${HTMLBnumInput.SLOT_BUTTON}"]`)?.remove?.();
-    this.removeAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON);
-    this.setAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON_ICON, icon);
-    return this;
-  }
-  /**
-   * Masque le bouton interne.
-   * @returns {this} L'instance courante pour chaînage.
-   */
-  hideButton() {
-    this.removeAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON);
-    this.removeAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON_ICON);
-    return this;
-  }
-  /**
-   * Définit l'état de succès avec un message optionnel.
-   * @param message Message de succès à afficher.
-   * @returns {this} L'instance courante pour chaînage.
-   */
-  setSuccessState(message) {
-    return this.#_setState(HTMLBnumInput.SLOT_SUCCESS, message);
-  }
-  /**
-   * Définit l'état d'erreur avec un message optionnel.
-   * @param message Message d'erreur à afficher.
-   * @returns {this} L'instance courante pour chaînage.
-   */
-  setErrorState(message) {
-    return this.#_setState(HTMLBnumInput.SLOT_ERROR, message);
-  }
-  /**
-   * Définit une icône à afficher dans le champ.
-   * @param icon Nom de l'icône à afficher.
-   * @returns {this} L'instance courante pour chaînage.
-   */
-  setIcon(icon) {
-    this.setAttribute(HTMLBnumInput.ATTRIBUTE_ICON, icon);
-    return this;
-  }
-  /**
-   * Supprime l'icône affichée dans le champ.
-   * @returns {this} L'instance courante pour chaînage.
-   */
-  removeIcon() {
-    this.removeAttribute(HTMLBnumInput.ATTRIBUTE_ICON);
-    return this;
-  }
-  /**
-   * Définit un indice d'utilisation (hint) pour le champ.
-   * @param hint Texte de l'indice à afficher.
-   * @returns {this} L'instance courante pour chaînage.
-   */
-  setHint(hint) {
-    this.removeHint();
-    const span = this._p_createSpan({
-      child: hint,
-      attributes: { slot: HTMLBnumInput.SLOT_HINT },
-    });
-    this.appendChild(span);
-    return this;
-  }
-  /**
-   * Supprime l'indice d'utilisation (hint) du champ.
-   * @returns {this} L'instance courante pour chaînage.
-   */
-  removeHint() {
-    this.querySelector(`slot[name="${HTMLBnumInput.SLOT_HINT}"]`)?.remove?.();
-    return this;
-  }
-  /**
-   * Définit le label principal du champ.
-   * @param label Texte ou élément HTML à utiliser comme label.
-   * @returns {this} L'instance courante pour chaînage.
-   */
-  setLabel(label) {
-    // On supprime tout ce qui n'a pas l'attribut slot
-    const nodes = this.childNodes.values();
-    for (const node of nodes) {
-      if (node instanceof HTMLElement) {
-        const element = node;
-        if (!element.hasAttribute('slot')) this.removeChild(element);
-      }
-    }
-    if (typeof label === 'string')
-      this.appendChild(this._p_createTextNode(label));
-    else this.appendChild(label);
-    return this;
-  }
-  //#endregion Public methods
-  //#region Private methods
-  /**
-   * Met à jour l'état visuel et fonctionnel du composant selon ses attributs.
-   * @private
-   * @returns {this} L'instance courante pour chaînage.
-   */
-  #_update() {
-    this._p_clearStates();
-    if (this.#_input?.value || false) this._p_addState('value');
-    const btnValue = this.attr(HTMLBnumInput.ATTRIBUTE_BUTTON);
-    if (btnValue !== null) {
-      this._p_addState(HTMLBnumInput.STATE_BUTTON);
-      switch (btnValue) {
-        case EButtonType.PRIMARY:
-          this.#_button.variation = EButtonType.PRIMARY;
-          break;
-        case EButtonType.SECONDARY:
-          this.#_button.variation = EButtonType.SECONDARY;
-          break;
-        case EButtonType.DANGER:
-          this.#_button.variation = EButtonType.DANGER;
-          break;
-      }
-    }
-    const button_icon = this.attr(HTMLBnumInput.ATTRIBUTE_BUTTON_ICON);
-    if (button_icon !== null) {
-      this.#_button.icon = button_icon;
-      if (!this._p_hasState(HTMLBnumInput.STATE_BUTTON))
-        this._p_addStates(HTMLBnumInput.STATE_BUTTON, HTMLBnumInput.STATE_OBI);
-      else if (btnValue === EMPTY_STRING)
-        this._p_addState(HTMLBnumInput.STATE_OBI);
-    }
-    const icon = this.attr(HTMLBnumInput.ATTRIBUTE_ICON);
-    if (icon !== null) {
-      this._p_addState(HTMLBnumInput.STATE_ICON);
-      this.#_icon.icon = icon;
-    }
-    if (this.attr(HTMLBnumInput.ATTRIBUTE_DISABLED) !== null)
-      this._p_addState(HTMLBnumInput.STATE_DISABLED);
-    return this.#_updateState(
-      this.attr(HTMLBnumInput.ATTRIBUTE_STATE),
-    ).#_sync();
-  }
-  /**
-   * Synchronise les propriétés et attributs de l'input interne.
-   * Met à jour les propriétés HTML de l'input selon les attributs du composant.
-   * @private
-   * @returns {this} L'instance courante pour chaînage.
-   */
-  #_sync() {
-    if (!this.#_input) return this;
-    const input = this.#_input;
-    // 1. Propriétés de base
-    input.value = this.value;
-    input.type =
-      this.getAttribute(HTMLBnumInput.ATTRIBUTE_TYPE) ||
-      HTMLBnumInput.DEFAULT_INPUT_TYPE;
-    input.placeholder =
-      this.getAttribute(HTMLBnumInput.ATTRIBUTE_PLACEHOLDER) || EMPTY_STRING;
-    // 2. États Booléens (On utilise .disabled / .readOnly pour la réactivité JS)
-    input.disabled =
-      this.hasAttribute(HTMLBnumInput.ATTRIBUTE_DISABLED) ||
-      this._p_hasState(HTMLBnumInput.STATE_DISABLED);
-    input.readOnly = this.hasAttribute(HTMLBnumInput.ATTRIBUTE_READONLY);
-    input.required = this.hasAttribute(HTMLBnumInput.ATTRIBUTE_REQUIRED);
-    // 3. Validation & UX (On utilise setAttribute pour les attributs HTML5)
-    this.#_setFieldAttr(HTMLBnumInput.ATTRIBUTE_PATTERN);
-    this.#_setFieldAttr(HTMLBnumInput.ATTRIBUTE_MINLENGTH);
-    this.#_setFieldAttr(HTMLBnumInput.ATTRIBUTE_MAXLENGTH);
-    this.#_setFieldAttr(HTMLBnumInput.ATTRIBUTE_AUTOCOMPLETE);
-    this.#_setFieldAttr(HTMLBnumInput.ATTRIBUTE_INPUTMODE);
-    this.#_setFieldAttr(HTMLBnumInput.ATTRIBUTE_SPELLCHECK);
-    this.#_setFieldAttr('min');
-    this.#_setFieldAttr('max');
-    this.#_setFieldAttr('step');
-    return this.#_updateA11y();
-  }
-  /**
-   * Met à jour l'accessibilité (a11y) de l'input selon l'état.
-   * Met à jour les attributs ARIA et la validité de l'input.
-   * @private
-   * @returns {this} L'instance courante pour chaînage.
-   */
-  #_updateA11y() {
-    if (!this.#_input) return this;
-    return this.#_setValidity();
-  }
-  /**
-   * Met à jour l'état visuel selon l'état passé en paramètre.
-   * @private
-   * @param state L'état à appliquer (success, error, etc.)
-   * @returns {this} L'instance courante pour chaînage.
-   */
-  #_updateState(state) {
-    if (state !== null) {
-      switch (state) {
-        case HTMLBnumInput.STATE_SUCCESS:
-          this._p_addStates(
-            HTMLBnumInput.STATE_STATE,
-            HTMLBnumInput.STATE_SUCCESS,
-          );
-          this.#_stateIcon.icon = HTMLBnumInput.ICON_SUCCESS;
-          break;
-        case HTMLBnumInput.STATE_ERROR:
-          this._p_addStates(
-            HTMLBnumInput.STATE_STATE,
-            HTMLBnumInput.STATE_ERROR,
-          );
-          this.#_stateIcon.icon = HTMLBnumInput.ICON_ERROR;
-          break;
-      }
-    }
-    return this;
-  }
-  /**
-   * Définit l'état (succès ou erreur) et le message associé.
-   * @private
-   * @param state Type d'état (success ou error).
-   * @param message Message à afficher.
-   * @returns {this} L'instance courante pour chaînage.
-   */
-  #_setState(state, message) {
-    this.setAttribute(HTMLBnumInput.ATTRIBUTE_STATE, state);
-    if (message) {
-      this.querySelector(`slot[name="${state}"]`)?.remove?.();
-      const span = this._p_createSpan({
-        child: message,
-        attributes: { slot: state },
-      });
-      this.appendChild(span);
-    }
-    return this;
-  }
-  /**
-   * Met à jour la validité de l'input et les messages d'erreur/succès.
-   * Gère également les attributs ARIA liés à la validation.
-   * @private
-   * @returns {this} L'instance courante pour chaînage.
-   */
-  #_setValidity() {
-    if (!this.#_input) return this;
-    const state = this.attr(HTMLBnumInput.ATTRIBUTE_STATE);
-    let isError = state === HTMLBnumInput.STATE_ERROR;
-    let isSuccess = state === HTMLBnumInput.STATE_SUCCESS;
-    try {
-      var validity =
-        this.#_input.checkValidity() ||
-        this.#_input.validationMessage !== EMPTY_STRING;
-    } catch (error) {
-      var validity = this.#_input.validationMessage !== EMPTY_STRING;
-    }
-    if (isError) {
-      try {
-        this._p_internal.setValidity(
-          { customError: true },
-          HTMLBnumInput.TEXT_ERROR_FIELD,
-          this.#_input,
-        );
-      } catch (error) {}
-    } else if (validity) {
-      try {
-        this._p_internal.setValidity(
-          this.#_input.validity,
-          this.#_input.validationMessage,
-          this.#_input,
-        );
-      } catch (error) {}
-      if (this.#_input.validationMessage !== EMPTY_STRING) {
-        this._p_addStates(
-          HTMLBnumInput.STATE_STATE,
-          this.#_input.validity.valid
-            ? HTMLBnumInput.STATE_SUCCESS
-            : HTMLBnumInput.STATE_ERROR,
-        );
-        if (this.#_input.validity.valid) {
-          this.shadowRoot.querySelector(
-            `#${HTMLBnumInput.ID_SUCCESS_TEXT} slot`,
-          ).innerText = this.#_input.validationMessage;
-          isSuccess = true;
-        } else {
-          this.shadowRoot.querySelector(
-            `#${HTMLBnumInput.ID_ERROR_TEXT} slot`,
-          ).innerText = this.#_input.validationMessage;
-          isError = true;
-        }
-      }
-    } else {
-      try {
-        this._p_internal.setValidity({});
-      } catch (error) {}
-    }
-    // Indiquer l'erreur sémantiquement
-    this.#_input.setAttribute('aria-invalid', isError ? 'true' : 'false');
-    // Lier les descriptions (hint + erreur/success)
-    // On pointe vers les IDs définis dans le template
-    const descriptions = [];
-    if (isError) descriptions.push(HTMLBnumInput.ID_ERROR_TEXT);
-    if (isSuccess) descriptions.push(HTMLBnumInput.ID_SUCCESS_TEXT);
-    if (descriptions.length > 0)
-      this.#_input.setAttribute('aria-describedby', descriptions.join(' '));
-    return this.#_updateState(
-      state ||
-        (validity
-          ? isError
-            ? HTMLBnumInput.STATE_ERROR
-            : isSuccess
-              ? HTMLBnumInput.STATE_SUCCESS
-              : null
-          : null),
-    );
-  }
-  /**
-   * Initialise le bouton interne et son écouteur de clic.
-   * Ajoute un écouteur d'événement sur le bouton si nécessaire.
-   * @private
-   * @returns {this} L'instance courante pour chaînage.
-   */
-  #_initialiseButton() {
-    if (this.#_onButtonClicked !== null && this.#_button !== null) {
-      this.#_button.addEventListener('click', (e) => {
-        this.onButtonClicked.call(e);
-      });
-    }
-    return this;
-  }
-  /**
-   * Callback appelé lors d'un changement de valeur de l'input.
-   * @private
-   * @param e Evénement de changement de valeur.
-   */
-  #_inputValueChangedCallback(e) {
-    this._p_inputValueChangedCallback(e);
-  }
-  _p_inputValueChangedCallback(e) {
-    try {
-      this._p_internal.setFormValue(this.#_input.value);
-    } catch (error) {}
-    this.#_update();
-    try {
-      this.dispatchEvent(e);
-    } catch (error) {
-      this.dispatchEvent(
-        e.type === 'input'
-          ? new InputEvent('input', {
-              data: this.value,
-              inputType: this.attr('type') || 'text',
-            })
-          : new Event('change'),
-      );
-    }
-  }
-  /**
-   * Transfère un attribut du composant vers l'input interne si présent.
-   * @private
-   * @param attrName Nom de l'attribut à synchroniser.
-   */
-  #_setFieldAttr(attrName) {
-    const val = this.getAttribute(attrName);
-    if (val !== null) {
-      this.#_input.setAttribute(attrName, val);
-    } else {
-      this.#_input.removeAttribute(attrName);
-    }
-  }
-  //#endregion Private methods
-  //#region Static methods
-  /**
-   * @inheritdoc
-   */
-  static _p_observedAttributes() {
-    return [
-      HTMLBnumInput.ATTRIBUTE_DATA_VALUE,
-      HTMLBnumInput.ATTRIBUTE_PLACEHOLDER,
-      HTMLBnumInput.ATTRIBUTE_TYPE,
-      HTMLBnumInput.ATTRIBUTE_DISABLED,
-      HTMLBnumInput.ATTRIBUTE_STATE,
-      HTMLBnumInput.ATTRIBUTE_BUTTON,
-      HTMLBnumInput.ATTRIBUTE_BUTTON_ICON,
-      HTMLBnumInput.ATTRIBUTE_ICON,
-      HTMLBnumInput.ATTRIBUTE_REQUIRED,
-      HTMLBnumInput.ATTRIBUTE_READONLY,
-      HTMLBnumInput.ATTRIBUTE_PATTERN,
-      HTMLBnumInput.ATTRIBUTE_MINLENGTH,
-      HTMLBnumInput.ATTRIBUTE_MAXLENGTH,
-      HTMLBnumInput.ATTRIBUTE_AUTOCOMPLETE,
-      HTMLBnumInput.ATTRIBUTE_INPUTMODE,
-      HTMLBnumInput.ATTRIBUTE_SPELLCHECK,
-      'min',
-      'max',
-      'step',
-    ];
-  }
-  /**
-   * Crée une instance du composant avec les options fournies.
-   * @param label Texte du label principal.
-   * @param options Options d'initialisation (attributs et slots).
-   * @returns {HTMLBnumInput} Instance du composant.
-   */
-  static Create(
-    label,
-    {
-      'data-value': dataValue,
-      placeholder,
-      name,
-      type,
-      disabled,
-      state,
-      button,
-      'button-icon': buttonIcon,
-      icon,
-      required,
-      readonly,
-      pattern,
-      minlength,
-      maxlength,
-      autocomplete,
-      inputmode,
-      spellcheck,
-      hint,
-      success,
-      error,
-      btnText,
-    } = {},
-  ) {
-    const el = document.createElement(HTMLBnumInput.TAG);
-    // Appliquer chaque attribut si défini
-    if (dataValue !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_DATA_VALUE, dataValue);
-    if (placeholder !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_PLACEHOLDER, placeholder);
-    if (type !== undefined) el.setAttribute(HTMLBnumInput.ATTRIBUTE_TYPE, type);
-    if (disabled !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_DISABLED, disabled);
-    if (state !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_STATE, state);
-    if (button !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON, button);
-    if (buttonIcon !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON_ICON, buttonIcon);
-    if (icon !== undefined) el.setAttribute(HTMLBnumInput.ATTRIBUTE_ICON, icon);
-    if (required !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_REQUIRED, required);
-    if (readonly !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_READONLY, readonly);
-    if (pattern !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_PATTERN, pattern);
-    if (minlength !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_MINLENGTH, minlength);
-    if (maxlength !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_MAXLENGTH, maxlength);
-    if (autocomplete !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_AUTOCOMPLETE, autocomplete);
-    if (inputmode !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_INPUTMODE, inputmode);
-    if (spellcheck !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_SPELLCHECK, spellcheck);
-    if (name !== undefined) el.setAttribute(HTMLBnumInput.ATTRIBUTE_NAME, name);
-    // Slot par défaut (label)
-    el.textContent = label;
-    // Slots nommés
-    if (hint) {
-      const hintSlot = document.createElement('span');
-      hintSlot.slot = HTMLBnumInput.SLOT_HINT;
-      hintSlot.textContent = hint;
-      el.appendChild(hintSlot);
-    }
-    if (success) {
-      const successSlot = document.createElement('span');
-      successSlot.slot = HTMLBnumInput.SLOT_SUCCESS;
-      successSlot.textContent = success;
-      el.appendChild(successSlot);
-    }
-    if (error) {
-      const errorSlot = document.createElement('span');
-      errorSlot.slot = HTMLBnumInput.SLOT_ERROR;
-      errorSlot.textContent = error;
-      el.appendChild(errorSlot);
-    }
-    if (btnText) {
-      const buttonSlot = document.createElement('span');
-      buttonSlot.slot = HTMLBnumInput.SLOT_BUTTON;
-      buttonSlot.textContent = btnText;
-      el.appendChild(buttonSlot);
-    }
-    return el;
-  }
-  static CreateTemplate(html = EMPTY_STRING) {
-    return BnumElementInternal.CreateTemplate(
-      BASE_TEMPLATE.replace('<!-- {{addoninner}} -->', html),
-    );
-  }
-  /**
-   * Tag HTML du composant.
-   */
-  static get TAG() {
-    return 'bnum-input';
-  }
-}
-// Utilisation des constantes dans le template
-const BASE_TEMPLATE = `
-  <label id="${HTMLBnumInput.ID_HINT_TEXT}" for="${HTMLBnumInput.ID_INPUT}">
-    <span id="${HTMLBnumInput.ID_HINT_TEXT_LABEL}">
-      <slot></slot>
-    </span>
-    <span id="${HTMLBnumInput.ID_HINT_TEXT_HINT}">
-      <slot name="${HTMLBnumInput.SLOT_HINT}"></slot>
-    </span>
-  </label>
-  <div class="container">
-    <div class="addons">
-      <div class="addons__inner">
-        <!-- {{addoninner}} -->
-        <${HTMLBnumIcon.TAG} id="${HTMLBnumInput.ID_INPUT_ICON}"></${HTMLBnumIcon.TAG}>
-          <input id="${HTMLBnumInput.ID_INPUT}" type="${HTMLBnumInput.DEFAULT_INPUT_TYPE}" />
-        </div>
-        <${HTMLBnumButton.TAG} id="${HTMLBnumInput.ID_INPUT_BUTTON}" rounded data-variation="${HTMLBnumInput.DEFAULT_BUTTON_VARIATION}"><slot name="${HTMLBnumInput.SLOT_BUTTON}"></slot></${HTMLBnumButton.TAG}>
-    </div>
-    <span id="${HTMLBnumInput.ID_STATE}">
-        <${HTMLBnumIcon.TAG} id="${HTMLBnumInput.ID_STATE_ICON}"></${HTMLBnumIcon.TAG}>
-        <span id="${HTMLBnumInput.ID_SUCCESS_TEXT}" class="${HTMLBnumInput.CLASS_STATE_TEXT_SUCCESS}"><slot name="${HTMLBnumInput.SLOT_SUCCESS}">${HTMLBnumInput.TEXT_VALID_INPUT}</slot></span>
-        <span id="${HTMLBnumInput.ID_ERROR_TEXT}" class="${HTMLBnumInput.CLASS_STATE_TEXT_ERROR}"><slot name="${HTMLBnumInput.SLOT_ERROR}">${HTMLBnumInput.TEXT_INVALID_INPUT}</slot></span>
-    </span>
-  </div>
-    `;
-const TEMPLATE$3 = HTMLBnumInput.CreateTemplate();
-//#region TryDefine
-HTMLBnumInput.TryDefine();
-//#endregion TryDefine
-
-/**
- * Input texte.
- *
- * @structure Sans rien
- * <bnum-input-text></bnum-input-text>
- *
- * @structure Avec une légende
- * <bnum-input-text>Label du champ</bnum-input-text>
- *
- * @structure Avec une légende et un indice
- * <bnum-input-text>
- * Label du champ
- * <span slot="hint">Indice d'utilisation</span>
- * </bnum-input-text>
- *
- * @structure Avec un bouton
- * <bnum-input-text button="true" button-icon="add">Label du champ
- *   <span slot="button">Ajouter</span>
- * </bnum-input-text>
- *
- * @structure En erreur
- * <bnum-input-text pattern="^[a-zA-Z0-9]+$" data-value="@@@@@">Label du champ
- * </bnum-input-text>
- *
- * @structure Avec un état de succès
- * <bnum-input-text state="success">Label du champ
- *   <span slot="success">Le champ est valide !</span>
- * </bnum-input-text>
- *
- * @structure Avec une icône
- * <bnum-input-text icon="search">Label du champ</bnum-input-text>
- *
- * @structure Avec un bouton avec icône seulement
- * <bnum-input-text placeholder="LA LA !" button-icon="add">Label du champ
- * </bnum-input-text>
- *
- * @structure Désactivé
- * <bnum-input-text disabled>
- *   Label du champ
- * </bnum-input-text>
- *
- * @structure Complet
- * <bnum-input-text
- *   data-value="Valeur initiale"
- *   placeholder="Texte indicatif"
- *   type="text"
- *   state="error"
- *   icon="search"
- *   button="primary"
- *   button-icon="send"
- * >
- *   Label du champ
- *   <span slot="hint">Indice d'utilisation</span>
- *   <span slot="success">Le champ est valide !</span>
- *   <span slot="error">Le champ est invalide !</span>
- *   <span slot="button">Envoyer</span>
- * </bnum-input-text>
- *
- */
-class HTMLBnumInputText extends HTMLBnumInput {
-  /**
-   * @attr {string} (optional) (default: 'text') type - Type de l'input (text, password, email, etc.) Ne pas modifier, toujours 'text' pour ce composant.
-   */
-  static ATTRIBUTE_TYPE = 'type';
-  /**
-   * Valeur 'text' pour l'attribut type.
-   */
-  static TYPE_TEXT = 'text';
-  constructor() {
-    super();
-  }
-  _p_preload() {
-    super._p_preload();
-    this.setAttribute(
-      HTMLBnumInputText.ATTRIBUTE_TYPE,
-      HTMLBnumInputText.TYPE_TEXT,
-    );
-  }
-  /**
-   *@inheritdoc
-   */
-  _p_buildDOM(container) {
-    super._p_buildDOM(container);
-  }
-  /**
-   *@inheritdoc
-   */
-  static _p_observedAttributes() {
-    return super
-      ._p_observedAttributes()
-      .filter((x) => x !== HTMLBnumInputText.ATTRIBUTE_TYPE);
-  }
-  /**
-   * Crée une instance du composant avec les options fournies.
-   * @param label Texte du label principal.
-   * @param options Options d'initialisation (attributs et slots).
-   * @returns {HTMLBnumInputText} Instance du composant.
-   */
-  static Create(
-    label,
-    {
-      'data-value': dataValue,
-      placeholder,
-      name,
-      disabled,
-      state,
-      button,
-      'button-icon': buttonIcon,
-      icon,
-      required,
-      readonly,
-      pattern,
-      minlength,
-      maxlength,
-      autocomplete,
-      inputmode,
-      spellcheck,
-      hint,
-      success,
-      error,
-      btnText,
-    } = {},
-  ) {
-    const el = document.createElement(this.TAG);
-    // Appliquer chaque attribut si défini
-    if (dataValue !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_DATA_VALUE, dataValue);
-    if (placeholder !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_PLACEHOLDER, placeholder);
-    if (disabled !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_DISABLED, disabled);
-    if (state !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_STATE, state);
-    if (button !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON, button);
-    if (buttonIcon !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON_ICON, buttonIcon);
-    if (icon !== undefined) el.setAttribute(HTMLBnumInput.ATTRIBUTE_ICON, icon);
-    if (required !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_REQUIRED, required);
-    if (readonly !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_READONLY, readonly);
-    if (pattern !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_PATTERN, pattern);
-    if (minlength !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_MINLENGTH, minlength);
-    if (maxlength !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_MAXLENGTH, maxlength);
-    if (autocomplete !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_AUTOCOMPLETE, autocomplete);
-    if (inputmode !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_INPUTMODE, inputmode);
-    if (spellcheck !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_SPELLCHECK, spellcheck);
-    if (name !== undefined) el.setAttribute(HTMLBnumInput.ATTRIBUTE_NAME, name);
-    // Slot par défaut (label)
-    el.textContent = label;
-    // Slots nommés
-    if (hint) {
-      const hintSlot = document.createElement('span');
-      hintSlot.slot = HTMLBnumInput.SLOT_HINT;
-      hintSlot.textContent = hint;
-      el.appendChild(hintSlot);
-    }
-    if (success) {
-      const successSlot = document.createElement('span');
-      successSlot.slot = HTMLBnumInput.SLOT_SUCCESS;
-      successSlot.textContent = success;
-      el.appendChild(successSlot);
-    }
-    if (error) {
-      const errorSlot = document.createElement('span');
-      errorSlot.slot = HTMLBnumInput.SLOT_ERROR;
-      errorSlot.textContent = error;
-      el.appendChild(errorSlot);
-    }
-    if (btnText) {
-      const buttonSlot = document.createElement('span');
-      buttonSlot.slot = HTMLBnumInput.SLOT_BUTTON;
-      buttonSlot.textContent = btnText;
-      el.appendChild(buttonSlot);
-    }
-    return el;
-  }
-  /**
-   *@inheritdoc
-   */
-  static get TAG() {
-    return 'bnum-input-text';
-  }
-}
-HTMLBnumInputText.TryDefine();
-
-var css_248z$4 =
-  ':host(:state(icon)) #input__icon{--bnum-input-icon-right:var(--bnum-input-number-icon-right,40px)}';
-
-const SHEET$2 = HTMLBnumInput.ConstructCSSStyleSheet(css_248z$4);
-/**
- * Input nombre.
- *
- * @structure Sans rien
- * <bnum-input-number></bnum-input-number>
- *
- * @structure Avec une légende
- * <bnum-input-number>Label du champ</bnum-input-number>
- *
- * @structure Avec une légende et un indice
- * <bnum-input-number>
- * Label du champ
- * <span slot="hint">Indice d'utilisation</span>
- * </bnum-input-number>
- *
- * @structure Avec un bouton
- * <bnum-input-number button="true" button-icon="add">Label du champ
- *   <span slot="button">Ajouter</span>
- * </bnum-input-number>
- *
- * @structure En erreur
- * <bnum-input-number min="200" data-value="5">Label du champ
- * </bnum-input-number>
- *
- * @structure Avec un état de succès
- * <bnum-input-number state="success">Label du champ
- *   <span slot="success">Le champ est valide !</span>
- * </bnum-input-number>
- *
- * @structure Avec une icône
- * <bnum-input-number icon="search">Label du champ</bnum-input-number>
- *
- * @structure Avec un bouton avec icône seulement
- * <bnum-input-number placeholder="LA LA !" button-icon="add">Label du champ
- * </bnum-input-number>
- *
- * @structure Désactivé
- * <bnum-input-number disabled>
- *   Label du champ
- * </bnum-input-number>
- *
- * @structure Complet
- * <bnum-input-number
- *   data-value="5"
- *   placeholder="Texte indicatif"
- *   type="text"
- *   state="error"
- *   icon="search"
- *   button="primary"
- *   button-icon="send"
- *   step="10"
- * >
- *   Label du champ
- *   <span slot="hint">Indice d'utilisation</span>
- *   <span slot="success">Le champ est valide !</span>
- *   <span slot="error">Le champ est invalide !</span>
- *   <span slot="button">Envoyer</span>
- * </bnum-input-number>
- *
- */
-class HTMLBnumInputNumber extends HTMLBnumInput {
-  /**
-   * @attr {string} (optional) (default: 'number') type - Type de l'input (text, password, email, etc.) Ne pas modifier, toujours 'number' pour ce composant.
-   */
-  static ATTRIBUTE_TYPE = 'type';
-  /**
-   * Valeur pour l'attribut type.
-   */
-  static TYPE = 'number';
-  constructor() {
-    super();
-  }
-  _p_getStylesheets() {
-    return [...super._p_getStylesheets(), SHEET$2];
-  }
-  _p_preload() {
-    this.setAttribute(
-      HTMLBnumInputNumber.ATTRIBUTE_TYPE,
-      HTMLBnumInputNumber.TYPE,
-    );
-  }
-  /**
-   *@inheritdoc
-   */
-  _p_buildDOM(container) {
-    super._p_buildDOM(container);
-  }
-  /**
-   *@inheritdoc
-   */
-  static _p_observedAttributes() {
-    return super
-      ._p_observedAttributes()
-      .filter((x) => x !== HTMLBnumInputNumber.ATTRIBUTE_TYPE);
-  }
-  /**
-   * Crée une instance du composant avec les options fournies.
-   * @param label Texte du label principal.
-   * @param options Options d'initialisation (attributs et slots).
-   * @returns {HTMLBnumInputNumber} Instance du composant.
-   */
-  static Create(
-    label,
-    {
-      'data-value': dataValue,
-      placeholder,
-      name,
-      disabled,
-      state,
-      button,
-      'button-icon': buttonIcon,
-      icon,
-      required,
-      readonly,
-      pattern,
-      minlength,
-      maxlength,
-      autocomplete,
-      inputmode,
-      spellcheck,
-      min,
-      max,
-      hint,
-      success,
-      error,
-      btnText,
-      step,
-    } = {},
-  ) {
-    const el = document.createElement(this.TAG);
-    // Appliquer chaque attribut si défini
-    if (dataValue !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_DATA_VALUE, dataValue);
-    if (placeholder !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_PLACEHOLDER, placeholder);
-    if (disabled !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_DISABLED, disabled);
-    if (state !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_STATE, state);
-    if (button !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON, button);
-    if (buttonIcon !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON_ICON, buttonIcon);
-    if (icon !== undefined) el.setAttribute(HTMLBnumInput.ATTRIBUTE_ICON, icon);
-    if (required !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_REQUIRED, required);
-    if (readonly !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_READONLY, readonly);
-    if (pattern !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_PATTERN, pattern);
-    if (minlength !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_MINLENGTH, minlength);
-    if (maxlength !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_MAXLENGTH, maxlength);
-    if (autocomplete !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_AUTOCOMPLETE, autocomplete);
-    if (inputmode !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_INPUTMODE, inputmode);
-    if (spellcheck !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_SPELLCHECK, spellcheck);
-    if (name !== undefined) el.setAttribute(HTMLBnumInput.ATTRIBUTE_NAME, name);
-    if (min !== undefined) el.setAttribute('min', min.toString());
-    if (max !== undefined) el.setAttribute('max', max.toString());
-    if (step !== undefined) el.setAttribute('step', step.toString());
-    // Slot par défaut (label)
-    el.textContent = label;
-    // Slots nommés
-    if (hint) {
-      const hintSlot = document.createElement('span');
-      hintSlot.slot = HTMLBnumInput.SLOT_HINT;
-      hintSlot.textContent = hint;
-      el.appendChild(hintSlot);
-    }
-    if (success) {
-      const successSlot = document.createElement('span');
-      successSlot.slot = HTMLBnumInput.SLOT_SUCCESS;
-      successSlot.textContent = success;
-      el.appendChild(successSlot);
-    }
-    if (error) {
-      const errorSlot = document.createElement('span');
-      errorSlot.slot = HTMLBnumInput.SLOT_ERROR;
-      errorSlot.textContent = error;
-      el.appendChild(errorSlot);
-    }
-    if (btnText) {
-      const buttonSlot = document.createElement('span');
-      buttonSlot.slot = HTMLBnumInput.SLOT_BUTTON;
-      buttonSlot.textContent = btnText;
-      el.appendChild(buttonSlot);
-    }
-    return el;
-  }
-  /**
-   *@inheritdoc
-   */
-  static get TAG() {
-    return 'bnum-input-number';
-  }
-  static get AdditionnalStylesheet() {
-    return SHEET$2;
-  }
-}
-HTMLBnumInputNumber.TryDefine();
-
-/**
- * Input de date.
- *
- * @structure Sans rien
- * <bnum-input-date></bnum-input-date>
- *
- * @structure Avec une légende
- * <bnum-input-date>Label du champ</bnum-input-date>
- *
- * @structure Avec une légende et un indice
- * <bnum-input-date>
- * Label du champ
- * <span slot="hint">Indice d'utilisation</span>
- * </bnum-input-date>
- *
- * @structure Avec un bouton
- * <bnum-input-date button="true" button-icon="add">Label du champ
- *   <span slot="button">Ajouter</span>
- * </bnum-input-date>
- *
- * @structure En erreur
- * <bnum-input-date min="2025-01-01" data-value="2024-01-01">Label du champ
- * </bnum-input-date>
- *
- * @structure Avec un état de succès
- * <bnum-input-date state="success">Label du champ
- *   <span slot="success">Le champ est valide !</span>
- * </bnum-input-date>
- *
- * @structure Avec une icône
- * <bnum-input-date icon="search">Label du champ</bnum-input-date>
- *
- * @structure Avec un bouton avec icône seulement
- * <bnum-input-date placeholder="LA LA !" button-icon="add">Label du champ
- * </bnum-input-date>
- *
- * @structure Désactivé
- * <bnum-input-date disabled>
- *   Label du champ
- * </bnum-input-date>
- *
- * @structure Complet
- * <bnum-input-date
- *   data-value="5"
- *   placeholder="Texte indicatif"
- *   type="text"
- *   state="error"
- *   icon="search"
- *   button="primary"
- *   button-icon="send"
- *   step="10"
- * >
- *   Label du champ
- *   <span slot="hint">Indice d'utilisation</span>
- *   <span slot="success">Le champ est valide !</span>
- *   <span slot="error">Le champ est invalide !</span>
- *   <span slot="button">Envoyer</span>
- * </bnum-input-date>
- *
- */
-class HTMLBnumInputDate extends HTMLBnumInput {
-  /**
-   * @attr {string} (optional) (default: 'number') type - Type de l'input (text, password, email, etc.) Ne pas modifier, toujours 'number' pour ce composant.
-   */
-  static ATTRIBUTE_TYPE = 'type';
-  /**
-   * Valeur pour l'attribut type.
-   */
-  static TYPE = 'date';
-  constructor() {
-    super();
-  }
-  _p_getStylesheets() {
-    return [
-      ...super._p_getStylesheets(),
-      HTMLBnumInputNumber.AdditionnalStylesheet,
-    ];
-  }
-  _p_preload() {
-    this.setAttribute(HTMLBnumInputDate.ATTRIBUTE_TYPE, HTMLBnumInputDate.TYPE);
-  }
-  /**
-   *@inheritdoc
-   */
-  _p_buildDOM(container) {
-    super._p_buildDOM(container);
-  }
-  /**
-   *@inheritdoc
-   */
-  static _p_observedAttributes() {
-    return super
-      ._p_observedAttributes()
-      .filter((x) => x !== HTMLBnumInputDate.ATTRIBUTE_TYPE);
-  }
-  /**
-   * Crée une instance du composant avec les options fournies.
-   * @param label Texte du label principal.
-   * @param options Options d'initialisation (attributs et slots).
-   * @returns {HTMLBnumInputDate} Instance du composant.
-   */
-  static Create(
-    label,
-    {
-      'data-value': dataValue,
-      placeholder,
-      name,
-      disabled,
-      state,
-      button,
-      'button-icon': buttonIcon,
-      icon,
-      required,
-      readonly,
-      pattern,
-      minlength,
-      maxlength,
-      autocomplete,
-      inputmode,
-      spellcheck,
-      min,
-      max,
-      hint,
-      success,
-      error,
-      btnText,
-      step,
-    } = {},
-  ) {
-    const el = document.createElement(this.TAG);
-    // Appliquer chaque attribut si défini
-    if (dataValue !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_DATA_VALUE, dataValue);
-    if (placeholder !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_PLACEHOLDER, placeholder);
-    if (disabled !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_DISABLED, disabled);
-    if (state !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_STATE, state);
-    if (button !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON, button);
-    if (buttonIcon !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON_ICON, buttonIcon);
-    if (icon !== undefined) el.setAttribute(HTMLBnumInput.ATTRIBUTE_ICON, icon);
-    if (required !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_REQUIRED, required);
-    if (readonly !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_READONLY, readonly);
-    if (pattern !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_PATTERN, pattern);
-    if (minlength !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_MINLENGTH, minlength);
-    if (maxlength !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_MAXLENGTH, maxlength);
-    if (autocomplete !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_AUTOCOMPLETE, autocomplete);
-    if (inputmode !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_INPUTMODE, inputmode);
-    if (spellcheck !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_SPELLCHECK, spellcheck);
-    if (name !== undefined) el.setAttribute(HTMLBnumInput.ATTRIBUTE_NAME, name);
-    if (min !== undefined) el.setAttribute('min', min.toString());
-    if (max !== undefined) el.setAttribute('max', max.toString());
-    if (step !== undefined) el.setAttribute('step', step.toString());
-    // Slot par défaut (label)
-    el.textContent = label;
-    // Slots nommés
-    if (hint) {
-      const hintSlot = document.createElement('span');
-      hintSlot.slot = HTMLBnumInput.SLOT_HINT;
-      hintSlot.textContent = hint;
-      el.appendChild(hintSlot);
-    }
-    if (success) {
-      const successSlot = document.createElement('span');
-      successSlot.slot = HTMLBnumInput.SLOT_SUCCESS;
-      successSlot.textContent = success;
-      el.appendChild(successSlot);
-    }
-    if (error) {
-      const errorSlot = document.createElement('span');
-      errorSlot.slot = HTMLBnumInput.SLOT_ERROR;
-      errorSlot.textContent = error;
-      el.appendChild(errorSlot);
-    }
-    if (btnText) {
-      const buttonSlot = document.createElement('span');
-      buttonSlot.slot = HTMLBnumInput.SLOT_BUTTON;
-      buttonSlot.textContent = btnText;
-      el.appendChild(buttonSlot);
-    }
-    return el;
-  }
-  /**
-   *@inheritdoc
-   */
-  static get TAG() {
-    return 'bnum-input-date';
-  }
-}
-HTMLBnumInputDate.TryDefine();
-
-/**
- * Input de temps.
- *
- * @structure Sans rien
- * <bnum-input-time></bnum-input-time>
- *
- * @structure Avec une légende
- * <bnum-input-time>Label du champ</bnum-input-time>
- *
- * @structure Avec une légende et un indice
- * <bnum-input-time>
- * Label du champ
- * <span slot="hint">Indice d'utilisation</span>
- * </bnum-input-time>
- *
- * @structure Avec un bouton
- * <bnum-input-time button="true" button-icon="add">Label du champ
- *   <span slot="button">Ajouter</span>
- * </bnum-input-time>
- *
- * @structure En erreur
- * <bnum-input-time min="05:00" data-value="04:00">Label du champ
- * </bnum-input-time>
- *
- * @structure Avec un état de succès
- * <bnum-input-time state="success">Label du champ
- *   <span slot="success">Le champ est valide !</span>
- * </bnum-input-time>
- *
- * @structure Avec une icône
- * <bnum-input-time icon="search">Label du champ</bnum-input-time>
- *
- * @structure Avec un bouton avec icône seulement
- * <bnum-input-time placeholder="LA LA !" button-icon="add">Label du champ
- * </bnum-input-time>
- *
- * @structure Désactivé
- * <bnum-input-time disabled>
- *   Label du champ
- * </bnum-input-time>
- *
- * @structure Complet
- * <bnum-input-time
- *   data-value="5"
- *   placeholder="Texte indicatif"
- *   type="text"
- *   state="error"
- *   icon="search"
- *   button="primary"
- *   button-icon="send"
- *   step="10"
- * >
- *   Label du champ
- *   <span slot="hint">Indice d'utilisation</span>
- *   <span slot="success">Le champ est valide !</span>
- *   <span slot="error">Le champ est invalide !</span>
- *   <span slot="button">Envoyer</span>
- * </bnum-input-time>
- *
- */
-class HTMLBnumInputTime extends HTMLBnumInput {
-  /**
-   * @attr {string} (optional) (default: 'number') type - Type de l'input (text, password, email, etc.) Ne pas modifier, toujours 'number' pour ce composant.
-   */
-  static ATTRIBUTE_TYPE = 'type';
-  /**
-   * Valeur pour l'attribut type.
-   */
-  static TYPE = 'time';
-  constructor() {
-    super();
-  }
-  _p_getStylesheets() {
-    return [
-      ...super._p_getStylesheets(),
-      HTMLBnumInputNumber.AdditionnalStylesheet,
-    ];
-  }
-  _p_preload() {
-    this.setAttribute(HTMLBnumInputTime.ATTRIBUTE_TYPE, HTMLBnumInputTime.TYPE);
-  }
-  /**
-   *@inheritdoc
-   */
-  _p_buildDOM(container) {
-    super._p_buildDOM(container);
-  }
-  /**
-   *@inheritdoc
-   */
-  static _p_observedAttributes() {
-    return super
-      ._p_observedAttributes()
-      .filter((x) => x !== HTMLBnumInputTime.ATTRIBUTE_TYPE);
-  }
-  /**
-   * Crée une instance du composant avec les options fournies.
-   * @param label Texte du label principal.
-   * @param options Options d'initialisation (attributs et slots).
-   * @returns {HTMLBnumInputTime} Instance du composant.
-   */
-  static Create(
-    label,
-    {
-      'data-value': dataValue,
-      placeholder,
-      name,
-      disabled,
-      state,
-      button,
-      'button-icon': buttonIcon,
-      icon,
-      required,
-      readonly,
-      pattern,
-      minlength,
-      maxlength,
-      autocomplete,
-      inputmode,
-      spellcheck,
-      min,
-      max,
-      hint,
-      success,
-      error,
-      btnText,
-      step,
-    } = {},
-  ) {
-    const el = document.createElement(this.TAG);
-    // Appliquer chaque attribut si défini
-    if (dataValue !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_DATA_VALUE, dataValue);
-    if (placeholder !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_PLACEHOLDER, placeholder);
-    if (disabled !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_DISABLED, disabled);
-    if (state !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_STATE, state);
-    if (button !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON, button);
-    if (buttonIcon !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON_ICON, buttonIcon);
-    if (icon !== undefined) el.setAttribute(HTMLBnumInput.ATTRIBUTE_ICON, icon);
-    if (required !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_REQUIRED, required);
-    if (readonly !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_READONLY, readonly);
-    if (pattern !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_PATTERN, pattern);
-    if (minlength !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_MINLENGTH, minlength);
-    if (maxlength !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_MAXLENGTH, maxlength);
-    if (autocomplete !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_AUTOCOMPLETE, autocomplete);
-    if (inputmode !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_INPUTMODE, inputmode);
-    if (spellcheck !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_SPELLCHECK, spellcheck);
-    if (name !== undefined) el.setAttribute(HTMLBnumInput.ATTRIBUTE_NAME, name);
-    if (min !== undefined) el.setAttribute('min', min.toString());
-    if (max !== undefined) el.setAttribute('max', max.toString());
-    if (step !== undefined) el.setAttribute('step', step.toString());
-    // Slot par défaut (label)
-    el.textContent = label;
-    // Slots nommés
-    if (hint) {
-      const hintSlot = document.createElement('span');
-      hintSlot.slot = HTMLBnumInput.SLOT_HINT;
-      hintSlot.textContent = hint;
-      el.appendChild(hintSlot);
-    }
-    if (success) {
-      const successSlot = document.createElement('span');
-      successSlot.slot = HTMLBnumInput.SLOT_SUCCESS;
-      successSlot.textContent = success;
-      el.appendChild(successSlot);
-    }
-    if (error) {
-      const errorSlot = document.createElement('span');
-      errorSlot.slot = HTMLBnumInput.SLOT_ERROR;
-      errorSlot.textContent = error;
-      el.appendChild(errorSlot);
-    }
-    if (btnText) {
-      const buttonSlot = document.createElement('span');
-      buttonSlot.slot = HTMLBnumInput.SLOT_BUTTON;
-      buttonSlot.textContent = btnText;
-      el.appendChild(buttonSlot);
-    }
-    return el;
-  }
-  /**
-   *@inheritdoc
-   */
-  static get TAG() {
-    return 'bnum-input-time';
-  }
-}
-HTMLBnumInputTime.TryDefine();
-
-var css_248z$3 =
-  '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{background-color:var(--bnum-header-background-color,var(--bnum-color-surface,#f6f6f6));border-bottom:var(--bnum-header-border-bottom,var(--bnum-border-in-surface,solid 1px #ddd));box-sizing:border-box;display:var(--bnum-header-display,block);height:var(--bnum-header-height,60px)}:host .bnum-header-container{box-sizing:border-box;display:flex;height:100%;padding:0 1rem;width:100%}:host .header-left,:host .header-right{align-items:center;display:flex;flex:1}:host .header-left{gap:var(--bnum-header-left-gap,var(--bnum-space-s,10px));justify-content:flex-start}:host .header-left ::slotted(div),:host .header-left ::slotted(h1),:host .header-left ::slotted(h2),:host .header-left ::slotted(p),:host .header-left ::slotted(span),:host .header-left h1{align-items:center;display:flex;line-height:1.2;margin:0 0 -10px}:host .header-right{gap:var(--bnum-header-right-gap,var(--bnum-space-l,20px));justify-content:flex-end}:host ::slotted(bnum-img),:host ::slotted(img),:host bnum-img,:host img{display:block;height:var(--bnum-header-logo-height,45px);-o-object-fit:contain;object-fit:contain;width:auto}::slotted(bnum-secondary-button){--bnum-button-padding:var(--bnum-header-background-button-padding,5px 3px)}::slotted(.main-action-button){-padding:var(--bnum-header-background-button-padding,5px 3px)}:host(:state(with-background)){background-color:unset!important;background-image:var(--bnum-header-background-image);background-position:50%!important;background-size:cover!important;color:var(--bnum-header-with-background-color,#fff)}:host(:state(with-background)) .header-modifier{background:linear-gradient(90deg,#161616,transparent) 0 /50% 100% no-repeat,linear-gradient(270deg,#161616,transparent) 100% /50% 100% no-repeat}:host(:state(with-background)) ::slotted(.main-action-button),:host(:state(with-background)) ::slotted(bnum-secondary-button){background-color:#1616164d;border-color:var(--bnum-header-main-action-border-color,#fff);color:var(--bnum-header-main-action-color,#fff)}:host(:state(with-background)) ::slotted(.main-action-button):hover,:host(:state(with-background)) ::slotted(bnum-secondary-button):hover{background-color:#343434d2}:host(:state(with-background)) ::slotted(.main-action-button):active,:host(:state(with-background)) ::slotted(bnum-secondary-button):active{background-color:#474747ee}:host(:state(with-background)) ::slotted(.main-action-button:hover),:host(:state(with-background)) ::slotted(bnum-secondary-button:hover){background-color:#343434d2}:host(:state(with-background)) ::slotted(.main-action-button:active),:host(:state(with-background)) ::slotted(bnum-secondary-button:active){background-color:#474747ee}';
-
-const SHEET$1 = BnumElementInternal.ConstructCSSStyleSheet(css_248z$3);
-/**
- * Composant Header du Bnum
- *
- * @structure Par défaut
- * <bnum-header>
- *  <img slot="logo" src="assets/bnumloader.svg" alt="Logo du bnum"/>
- *  <h1 slot="title">Accueil</h1>
- *
- *   <bnum-secondary-button slot="actions" data-icon="add">Créer</bnum-secondary-button>
- *   <bnum-icon-button slot="actions">article</bnum-icon-button>
- *   <bnum-icon-button slot="actions">help</bnum-icon-button>
- *   <bnum-icon-button slot="actions">settings</bnum-icon-button>
- *   <bnum-icon-button slot="actions">notifications</bnum-icon-button>
- *
- *  <img slot="avatar" style="border-radius: 100%" src="assets/avatar.png" alt="Avatar de remplacement"></img>
- * </bnum-header>
- *
- * @structure Avec image de fond
- * <bnum-header data-background="assets/headerbackground.gif">
- *  <img slot="logo" src="assets/bnumloader.svg" alt="Logo du bnum"/>
- *  <h1 slot="title">Accueil</h1>
- *
- *   <bnum-secondary-button slot="actions" data-icon="add">Créer</bnum-secondary-button>
- *   <bnum-icon-button slot="actions">article</bnum-icon-button>
- *   <bnum-icon-button slot="actions">help</bnum-icon-button>
- *   <bnum-icon-button slot="actions">settings</bnum-icon-button>
- *   <bnum-icon-button slot="actions">notifications</bnum-icon-button>
- *
- *  <img slot="avatar" style="border-radius: 100%" src="assets/avatar.png" alt="Avatar de remplacement"></img>
- * </bnum-header>
- *
- * @slot logo - Slot pour le logo
- * @slot title - Slot pour le titre
- * @slot actions - Slot pour les actions
- * @slot avatar - Slot pour l'avatar
- *
- * @state with-background - Actif si une image de fond est définie
- *
- * @cssvar {block} --bnum-header-display - Définit le type d'affichage du header
- * @cssvar {60px} --bnum-header-height - Hauteur du header
- * @cssvar {#f5f6fa} --bnum-header-background-color - Couleur de fond du header
- * @cssvar {1px solid #e5e7eb} --bnum-header-border-bottom - Bordure basse du header
- * @cssvar {8px} --bnum-header-left-gap - Espace à gauche entre les éléments du header
- * @cssvar {24px} --bnum-header-right-gap - Espace à droite entre les éléments du header
- * @cssvar {45px} --bnum-header-logo-height - Hauteur du logo dans le header
- * @cssvar {none} --bnum-header-background-image - Image de fond du header (par défaut aucune)
- * @cssvar {#ffffff} --bnum-header-with-background-color - Couleur du texte sur fond personnalisé
- * @cssvar {#ffffff} --bnum-header-main-action-border-color - Couleur de la bordure du bouton principal sur fond personnalisé
- * @cssvar {#ffffff} --bnum-header-main-action-color - Couleur du texte du bouton principal sur fond personnalisé
- * @cssvar {5px 3px} --bnum-header-background-button-padding - Padding de l'action principale
- */
-class HTMLBnumHeader extends BnumElementInternal {
-  //#region Constants
-  /**
-   * Data pour avoir un background par défaut
-   * @attr {string | undefined} (optional) data-background - Met une image de fond par défaut
-   */
-  static DATA_BACKGROUND = 'background';
-  /**
-   * Classe CSS du container principal
-   */
-  static CLASS_HEADER_CONTAINER = 'bnum-header-container';
-  /**
-   * Classe CSS de la partie gauche du header
-   */
-  static CLASS_HEADER_LEFT = 'header-left';
-  /**
-   * Classe CSS de la partie droite du header
-   */
-  static CLASS_HEADER_RIGHT = 'header-right';
-  /**
-   * Classe CSS du titre textuel
-   */
-  static CLASS_HEADER_TITLE = 'header-title';
-  /**
-   * Classe CSS du conteneur du titre custom
-   */
-  static CLASS_HEADER_CUSTOM = 'header-custom';
-  /**
-   * Classe CSS de la zone qui peut obtenir des "effets"
-   */
-  static CLASS_HEADER_MODIFIER = 'header-modifier';
-  /**
-   * Partie du container principal
-   */
-  static PART_HEADER_CONTAINER = 'header-container';
-  /**
-   * Partie du header gauche
-   */
-  static PART_HEADER_LEFT = 'header-left';
-  /**
-   * Partie du header droit
-   */
-  static PART_HEADER_RIGHT = 'header-right';
-  /**
-   * Partie du titre
-   */
-  static PART_HEADER_TITLE = 'header-title';
-  /**
-   * Partie de l'élément custom
-   */
-  static PART_HEADER_CUSTOM = 'header-custom';
-  /**
-   * ID du H1 pour le titre textuel
-   */
-  static ID_TITLE_TEXT = 'title-text';
-  /**
-   * ID du conteneur pour le titre custom
-   */
-  static ID_TITLE_CUSTOM = 'title-custom';
-  /**
-   * Nom du slot pour le logo
-   */
-  static SLOT_NAME_LOGO = 'logo';
-  /**
-   * Nom du slot pour le titre
-   */
-  static SLOT_NAME_TITLE = 'title';
-  /**
-   * Nom du slot pour les actions
-   */
-  static SLOT_NAME_ACTIONS = 'actions';
-  /**
-   * Nom du slot pour l'avatar
-   */
-  static SLOT_NAME_AVATAR = 'avatar';
-  /**
-   * Evènement du changement de d'image
-   * @event bnum-header:background.changed
-   * @detail {newBackground:Nullable<string>}
-   */
-  static EVENT_BACKGROUND_CHANGED = 'bnum-header:background.changed';
-  //#endregion Constants
-  //#region Private fields
-  // Références DOM
-  /**
-   * Slot pour le titre par défaut
-   */
-  #_slotTitle = null;
-  /**
-   * H1 pour le titre textuel
-   */
-  #_titleText = null;
-  /**
-   * Conteneur pour le titre custom
-   */
-  #_customTitleContainer = null;
-  // Scheduler pour éviter le layout thrashing
-  /**
-   * Scheduler pour la mise à jour du titre
-   */
-  #_scheduleUpdateTitle = null;
-  /**
-   * Scheduler pour la mise à jour de l'image de fond
-   */
-  #_scheduleUpdateBackground = null;
-  /**
-   * Evènement du changement d'image de fond
-   */
-  #_onBackgroundChanged = null;
-  //#endregion Private fields
-  //#region Getters/Setters
-  /**
-   * Scheduler pour la mise à jour de l'image de fond
-   */
-  get #_backgroundScheduler() {
-    return (
-      this.#_scheduleUpdateBackground ??
-      (this.#_scheduleUpdateBackground = new Scheduler((val) =>
-        this.#_updateBackground(val),
-      ))
-    );
-  }
-  /**
-   * Evènement du changement d'image de fond
-   */
-  get onBackgroundChanged() {
-    if (this.#_onBackgroundChanged === null) {
-      this.#_onBackgroundChanged = new JsEvent();
-      this.#_onBackgroundChanged.add(EVENT_DEFAULT, (newBackground) => {
-        this.trigger(HTMLBnumHeader.EVENT_BACKGROUND_CHANGED, {
-          newBackground,
-        });
-      });
-    }
-    return this.#_onBackgroundChanged;
-  }
-  /**
-   * URL de l'image de fond du header
-   */
-  get ImgBackground() {
-    return this.data(HTMLBnumHeader.DATA_BACKGROUND);
-  }
-  set ImgBackground(value) {
-    this.data(HTMLBnumHeader.DATA_BACKGROUND, value);
-  }
-  //#endregion Getters/Setters
-  //#region Lifecycle
-  constructor() {
-    super();
-  }
-  /**
-   * @inheritdoc
-   */
-  _p_getStylesheets() {
-    return [...super._p_getStylesheets(), SHEET$1];
-  }
-  /**
-   * @inheritdoc
-   */
-  _p_fromTemplate() {
-    return TEMPLATE$2;
-  }
-  /**
-   * @inheritdoc
-   */
-  _p_buildDOM(container) {
-    this.#_slotTitle = container.querySelector(
-      `slot[name="${HTMLBnumHeader.SLOT_NAME_TITLE}"]`,
-    );
-    this.#_titleText = container.querySelector(
-      `#${HTMLBnumHeader.ID_TITLE_TEXT}`,
-    );
-    this.#_customTitleContainer = container.querySelector(
-      `#${HTMLBnumHeader.ID_TITLE_CUSTOM}`,
-    );
-  }
-  /**
-   * @inheritdoc
-   */
-  _p_attach() {
-    if (this.ImgBackground !== null)
-      this.#_backgroundScheduler.call(this.ImgBackground);
-  }
-  /**
-   * Change le titre dynamiquement.
-   *
-   * @param content
-   * - String : Met à jour le H1.
-   * - HTMLElement : Affiche l'élément dans le conteneur dédié.
-   * - null : Affiche le slot par défaut.
-   */
-  setPageTitle(content) {
-    // Initialisation Lazy du scheduler
-    (this.#_scheduleUpdateTitle ??= new Scheduler((val) =>
-      this.#_applyTitleUpdate(val),
-    )).schedule(content);
-    return this;
-  }
-  /**
-   * Met à jour l'image de fond du header.
-   * @param urlOrData Interpréte la valeur comme une URL ou une Data URL.
-   * @returns L'instance courante pour le chaînage.
-   */
-  updateBackground(urlOrData) {
-    this.#_requestBackgroundUpdate(urlOrData);
-    return this;
-  }
-  /**
-   * Supprime l'image de fond du header.
-   * @returns L'instance courante pour le chaînage.
-   */
-  clearBackground() {
-    this.#_requestBackgroundUpdate(null);
-    return this;
-  }
-  //#endregion Public methods
-  //#region Private methods
-  /**
-   * Exécuté par le Scheduler (au prochain frame ou microtask)
-   * @param content Contenu à appliquer
-   */
-  #_applyTitleUpdate(content) {
-    // Cas "Reset" -> On veut voir le Slot
-    if (!content) {
-      this.#_resetVisibility(true, false, false);
-      return;
-    }
-    // Cas "String" -> On utilise le H1 natif
-    if (typeof content === 'string') {
-      // Optimisation: ne toucher au DOM que si le texte change vraiment
-      if (this.#_titleText.textContent !== content) {
-        this.#_titleText.textContent = content;
-      }
-      this.#_resetVisibility(false, true, false);
-      return;
-    }
-    // Cas "HTMLElement" -> On injecte dans le conteneur custom
-    // On vide proprement le conteneur avant d'ajouter le nouvel élément
-    this.#_customTitleContainer.replaceChildren(content);
-    this.#_resetVisibility(false, false, true);
-  }
-  /**
-   * Helper pour gérer la visibilité exclusive des 3 zones (Slot, H1, Custom)
-   * Utilise l'attribut 'hidden' standard HTML5
-   * @param showSlot Affiche le slot par défaut
-   * @param showText Affiche le H1
-   * @param showCustom Affiche le conteneur custom
-   */
-  #_resetVisibility(showSlot, showText, showCustom) {
-    if (this.#_slotTitle) this.#_slotTitle.hidden = !showSlot;
-    if (this.#_titleText) this.#_titleText.hidden = !showText;
-    if (this.#_customTitleContainer)
-      this.#_customTitleContainer.hidden = !showCustom;
-  }
-  /**
-   * Planifie la mise à jour de l'image de fond
-   * @param value Nouvelle URL de l'image de fond, ou null pour la supprimer
-   */
-  #_requestBackgroundUpdate(value) {
-    this.#_backgroundScheduler.schedule(value);
-  }
-  /**
-   * Met à jour l'image de fond du header
-   * @param value Nouvelle URL de l'image de fond, ou null pour la supprimer
-   */
-  #_updateBackground(value) {
-    if (value) {
-      this.style.setProperty('--bnum-header-background-image', `url(${value})`);
-      this._p_addState('with-background');
-    } else {
-      this.style.removeProperty('--bnum-header-background-image');
-      this._p_removeState('with-background');
-    }
-    this.onBackgroundChanged.call(value);
-  }
-  //#endregion Private methods
-  //#region Static methods
-  /**
-   * Génère un nouvel élément HTMLBnumHeader
-   * @returns Element créé
-   */
-  static Create({ background = null } = {}) {
-    return document
-      .createElement(HTMLBnumHeader.TAG)
-      .condAttr(
-        background !== null,
-        `data-${HTMLBnumHeader.DATA_BACKGROUND}`,
-        background,
-      );
-  }
-  /**
-   * Tag HTML de l'élément
-   */
-  static get TAG() {
-    return 'bnum-header';
-  }
-}
-const TEMPLATE$2 = BnumElementInternal.CreateTemplate(`
-  <div class="${HTMLBnumHeader.CLASS_HEADER_MODIFIER}">
-    <div  part="${HTMLBnumHeader.PART_HEADER_CONTAINER}" class="${HTMLBnumHeader.CLASS_HEADER_CONTAINER}">
-      <div part="${HTMLBnumHeader.PART_HEADER_LEFT}" class="${HTMLBnumHeader.CLASS_HEADER_LEFT}">
-        <slot name="${HTMLBnumHeader.SLOT_NAME_LOGO}"></slot>
-        
-        <slot name="${HTMLBnumHeader.SLOT_NAME_TITLE}"></slot>
-        
-        <h1 part="${HTMLBnumHeader.PART_HEADER_TITLE}" id="${HTMLBnumHeader.ID_TITLE_TEXT}" class="${HTMLBnumHeader.CLASS_HEADER_TITLE}" hidden></h1>
-
-        <div part="${HTMLBnumHeader.PART_HEADER_CUSTOM}" id="${HTMLBnumHeader.ID_TITLE_CUSTOM}" class="${HTMLBnumHeader.CLASS_HEADER_CUSTOM}" hidden></div>
-      </div>
-
-      <div part="${HTMLBnumHeader.PART_HEADER_RIGHT}" class="${HTMLBnumHeader.CLASS_HEADER_RIGHT}">
-        <slot name="${HTMLBnumHeader.SLOT_NAME_ACTIONS}"></slot> 
-        <slot name="${HTMLBnumHeader.SLOT_NAME_AVATAR}"></slot>  
-      </div>
-    </div>
-  </div>
-`);
-//#region TryDefine
-HTMLBnumHeader.TryDefine();
-//#endregion TryDefine
-
-var css_248z$2 =
-  ':host #input-search-actions-container{display:flex;position:absolute;right:10px;top:8px}:host #input-search-actions-container #input-clear-button{display:none}:host(:state(value)) #input-search-actions-container #input-clear-button{display:inline-block}';
-
-const SHEET = HTMLBnumInput.ConstructCSSStyleSheet(css_248z$2);
-/**
- * Composant d'input de recherche.
- *
- * Utilise le composant de base `bnum-input` avec des configurations spécifiques pour la recherche.
- *
- * @structure Basique
- * <bnum-input-search>Label de recherche</bnum-input-search>
- *
- * @structure Avec une légende et un indice
- * <bnum-input-search>
- * Label du champ
- * <span slot="hint">Indice d'utilisation</span>
- * </bnum-input-search>
- *
- * @structure Désactivé
- * <bnum-input-search disabled placeholder="Recherche désactivée">
- *   Label du champ
- * </bnum-input-search>
- *
- * @structure Avec des boutons custom
- * <bnum-input-search placeholder="Recherche avec des boutons">
- *   Label du champ
- *   <bnum-icon-button slot="actions">filter_list</bnum-icon-button>
- *
- * </bnum-input-search>
- *
- * @slot button - Contenu du bouton de recherche (texte ou icône). (Inutilisé)
- * @slot actions - Contenu des actions personnalisées à droite du champ de recherche.
- *
- */
-class HTMLBnumInputSearch extends HTMLBnumInput {
-  //#region Constants
-  /**
-   * @attr {string} (default: 'text') type - Type de l'input (text, password, email, etc.) Ne pas modifier, toujours 'text' pour ce composant.
-   */
-  static ATTRIBUTE_TYPE = 'type';
-  /**
-   * @attr {undefined} (default: undefined) button - Attribut pour afficher le bouton interne. Ne pas modifier, toujours présent pour ce composant.
-   */
-  static ATTRIBUTE_BUTTON = 'button';
-  /**
-   * @attr {string} (default: 'search') button-icon - Icône du bouton interne. Ne pas modifier, toujours 'search' pour ce composant.
-   */
-  static ATTRIBUTE_BUTTON_ICON = 'button-icon';
-  /**
-   * Texte affiché dans le champ de recherche.
-   */
-  static TEXT_SEARCH_FIELD =
-    BnumConfig.Get('local_keys')?.search_field || 'Rechercher';
-  /**
-   * Événement déclenché au clic sur le bouton interne.
-   * @event bnum-input:button.click
-   * @detail MouseEvent
-   */
-  static EVENT_BUTTON_CLICK = 'bnum-input:button.click';
-  /**
-   * Événement déclenché au clic par le bouton interne ou à la validation par la touche "Entrée".
-   * Envoie la valeur actuelle de l'input de recherche.
-   * @event bnum-input-search:search
-   * @detail { value: string; name: string; caller: HTMLBnumInputSearch }
-   */
-  static EVENT_SEARCH = 'bnum-input-search:search';
-  /**
-   * Événement déclenché lors du clic sur le bouton de vidage du champ de recherche.
-   * @event bnum-input-search:clear
-   * @detail { caller: HTMLBnumInputSearch }
-   */
-  static EVENT_CLEAR = 'bnum-input-search:clear';
-  /**
-   * Icône du bouton de recherche.
-   */
-  static BUTTON_ICON = 'search';
-  /**
-   * ID du conteneur des actions de recherche.
-   */
-  static ID_ACTIONS_CONTAINER = 'input-search-actions-container';
-  /**
-   * ID du bouton pour vider le champ de recherche.
-   */
-  static ID_CLEAR_BUTTON = 'input-clear-button';
-  /**
-   * Nom du slot pour les actions personnalisées.
-   */
-  static SLOT_ACTIONS = 'actions';
-  //#endregion Constants
-  //#region Private fields
-  /**
-   * Bouton interne pour vider le champ de recherche.
-   * @private
-   * @type {HTMLBnumButtonIcon | null}
-   */
-  #_emptyButton = null;
-  //#endregion Private fields
-  //#region Lifecycle
-  /**
-   * Constructeur du composant de recherche.
-   */
-  constructor() {
-    super();
-  }
-  _p_fromTemplate() {
-    return TEMPLATE$1;
-  }
-  _p_getStylesheets() {
-    return [...super._p_getStylesheets(), SHEET];
-  }
-  /**
-   * Précharge les attributs spécifiques à l'input de recherche.
-   * Définit le placeholder et l'icône du bouton si non présents.
-   */
-  _p_preload() {
-    if (this.attr(HTMLBnumInput.ATTRIBUTE_PLACEHOLDER) === null) {
-      this.attr(
-        HTMLBnumInput.ATTRIBUTE_PLACEHOLDER,
-        HTMLBnumInputSearch.TEXT_SEARCH_FIELD,
-      );
-    }
-    this.setAttribute(
-      HTMLBnumInput.ATTRIBUTE_BUTTON_ICON,
-      HTMLBnumInputSearch.BUTTON_ICON,
-    );
-  }
-  _p_buildDOM(container) {
-    super._p_buildDOM(container);
-    this.#_emptyButton = container.querySelector(
-      `#${HTMLBnumInputSearch.ID_ACTIONS_CONTAINER} ${HTMLBnumButtonIcon.TAG}`,
-    );
-    this.#_emptyButton.addEventListener('click', () => {
-      this.value = EMPTY_STRING;
-      this._p_inputValueChangedCallback(new Event('input'));
-      this.#_triggerEventSearch();
-      this.trigger(HTMLBnumInputSearch.EVENT_CLEAR, { caller: this });
-    });
-  }
-  /**
-   * Attache les événements nécessaires au composant.
-   * Supprime les attributs inutiles et gère les événements de recherche.
-   */
-  _p_attach() {
-    super._p_attach();
-    this.removeAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON);
-    this.removeAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON_ICON);
-    this.onButtonClicked.add(
-      EVENT_DEFAULT,
-      this.#_triggerEventSearch.bind(this),
-    );
-    this.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        this.#_triggerEventSearch();
-      }
-    });
-  }
-  _p_inputValueChangedCallback(e) {
-    this.removeAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON);
-    this.setAttribute(
-      HTMLBnumInput.ATTRIBUTE_BUTTON_ICON,
-      HTMLBnumInputSearch.BUTTON_ICON,
-    );
-    super._p_inputValueChangedCallback?.(e);
-    this.removeAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON);
-  }
-  /**
-   * Nettoie les attributs après le rendu du composant.
-   */
-  _p_postFlush() {
-    this.removeAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON);
-    this.setAttribute(
-      HTMLBnumInput.ATTRIBUTE_BUTTON_ICON,
-      HTMLBnumInputSearch.BUTTON_ICON,
-    );
-    super._p_postFlush();
-    this.removeAttribute(HTMLBnumInput.ATTRIBUTE_BUTTON);
-  }
-  //#endregion Lifecycle
-  //#region Public Methods
-  /**
-   * Désactive le bouton de recherche.
-   */
-  disableSearchButton() {
-    (this._p_isShadowElement() === false ? this : this.shadowRoot)
-      .querySelector(`#${HTMLBnumInput.ID_INPUT_BUTTON}`)
-      ?.setAttribute(
-        HTMLBnumInput.ATTRIBUTE_DISABLED,
-        HTMLBnumInput.ATTRIBUTE_DISABLED,
-      );
-    return this;
-  }
-  /**
-   * Active le bouton de recherche.
-   */
-  enableSearchButton() {
-    (this._p_isShadowElement() === false ? this : this.shadowRoot)
-      .querySelector(`#${HTMLBnumInput.ID_INPUT_BUTTON}`)
-      ?.removeAttribute(HTMLBnumInput.ATTRIBUTE_DISABLED);
-    return this;
-  }
-  //#endregion Public Methods
-  //#region Private Methods
-  /**
-   * Déclenche l'événement de recherche avec la valeur actuelle de l'input.
-   * @private
-   */
-  #_triggerEventSearch() {
-    this.trigger(HTMLBnumInputSearch.EVENT_SEARCH, {
-      value: this.value,
-      name: this.name,
-      caller: this,
-    });
-  }
-  //#endregion Private Methods
-  //#region Static Methods
-  /**
-   * Retourne la liste des attributs observés, en excluant ceux spécifiques à la recherche.
-   * @inheritdoc
-   */
-  static _p_observedAttributes() {
-    return super._p_observedAttributes().filter((x) => {
-      switch (x) {
-        case HTMLBnumInputSearch.ATTRIBUTE_TYPE:
-        case HTMLBnumInput.ATTRIBUTE_BUTTON:
-        case HTMLBnumInput.ATTRIBUTE_BUTTON_ICON:
-          return false;
-        default:
-          return true;
-      }
-    });
-  }
-  /**
-   * Crée une instance du composant avec les options fournies.
-   * @param label Texte du label principal.
-   * @param options Options d'initialisation (attributs et slots).
-   * @returns {HTMLBnumInput} Instance du composant.
-   */
-  static Create(
-    label,
-    {
-      'data-value': dataValue,
-      placeholder,
-      name,
-      disabled,
-      state,
-      required,
-      readonly,
-      pattern,
-      minlength,
-      maxlength,
-      autocomplete,
-      inputmode,
-      spellcheck,
-      hint,
-      success,
-      error,
-      btnText,
-    } = {},
-  ) {
-    const el = document.createElement(HTMLBnumInputSearch.TAG);
-    // Appliquer chaque attribut si défini
-    if (dataValue !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_DATA_VALUE, dataValue);
-    if (placeholder !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_PLACEHOLDER, placeholder);
-    if (disabled !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_DISABLED, disabled);
-    if (state !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_STATE, state);
-    if (required !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_REQUIRED, required);
-    if (readonly !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_READONLY, readonly);
-    if (pattern !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_PATTERN, pattern);
-    if (minlength !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_MINLENGTH, minlength);
-    if (maxlength !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_MAXLENGTH, maxlength);
-    if (autocomplete !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_AUTOCOMPLETE, autocomplete);
-    if (inputmode !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_INPUTMODE, inputmode);
-    if (spellcheck !== undefined)
-      el.setAttribute(HTMLBnumInput.ATTRIBUTE_SPELLCHECK, spellcheck);
-    if (name !== undefined) el.setAttribute(HTMLBnumInput.ATTRIBUTE_NAME, name);
-    // Slot par défaut (label)
-    el.textContent = label;
-    // Slots nommés
-    if (hint) {
-      const hintSlot = document.createElement('span');
-      hintSlot.slot = HTMLBnumInput.SLOT_HINT;
-      hintSlot.textContent = hint;
-      el.appendChild(hintSlot);
-    }
-    if (success) {
-      const successSlot = document.createElement('span');
-      successSlot.slot = HTMLBnumInput.SLOT_SUCCESS;
-      successSlot.textContent = success;
-      el.appendChild(successSlot);
-    }
-    if (error) {
-      const errorSlot = document.createElement('span');
-      errorSlot.slot = HTMLBnumInput.SLOT_ERROR;
-      errorSlot.textContent = error;
-      el.appendChild(errorSlot);
-    }
-    if (btnText) {
-      const buttonSlot = document.createElement('span');
-      buttonSlot.slot = HTMLBnumInput.SLOT_BUTTON;
-      buttonSlot.textContent = btnText;
-      el.appendChild(buttonSlot);
-    }
-    return el;
-  }
-  /**
-   * Crée un composant de recherche à partir d'un input existant.
-   * @param input Instance de HTMLBnumInput à convertir.
-   * @returns {HTMLBnumInputSearch} Nouvelle instance de recherche.
-   */
-  static FromInput(input) {
-    let init = {};
-    // Copier les attributs pertinents de l'input d'origine dans l'objet init
-    for (const attr of input.attributes) {
-      switch (attr.name) {
-        case HTMLBnumInput.ATTRIBUTE_PLACEHOLDER:
-        case HTMLBnumInput.ATTRIBUTE_NAME:
-        case HTMLBnumInput.ATTRIBUTE_DISABLED:
-        case HTMLBnumInput.ATTRIBUTE_REQUIRED:
-        case HTMLBnumInput.ATTRIBUTE_READONLY:
-        case HTMLBnumInput.ATTRIBUTE_PATTERN:
-        case HTMLBnumInput.ATTRIBUTE_MINLENGTH:
-        case HTMLBnumInput.ATTRIBUTE_MAXLENGTH:
-        case HTMLBnumInput.ATTRIBUTE_AUTOCOMPLETE:
-        case HTMLBnumInput.ATTRIBUTE_INPUTMODE:
-        case HTMLBnumInput.ATTRIBUTE_SPELLCHECK:
-        case HTMLBnumInput.ATTRIBUTE_DATA_VALUE:
-          init = { ...init, [attr.name]: attr.value };
-          break;
-      }
-    }
-    // On recherche les slots dans l'input d'origine et on l'ajoute dans l'init.
-    const label =
-      input.querySelector(':not([slot])')?.textContent || EMPTY_STRING;
-    const hint = input.querySelector(
-      `[slot="${HTMLBnumInput.SLOT_HINT}"]`,
-    )?.textContent;
-    const success = input.querySelector(
-      `[slot="${HTMLBnumInput.SLOT_SUCCESS}"]`,
-    )?.textContent;
-    const error = input.querySelector(
-      `[slot="${HTMLBnumInput.SLOT_ERROR}"]`,
-    )?.textContent;
-    const btnText = input.querySelector(
-      `[slot="${HTMLBnumInput.SLOT_BUTTON}"]`,
-    )?.textContent;
-    if (hint) init = { ...init, hint };
-    if (success) init = { ...init, success };
-    if (error) init = { ...init, error };
-    if (btnText) init = { ...init, btnText };
-    return HTMLBnumInputSearch.Create(label, init);
-  }
-  /**
-   * Retourne le tag HTML du composant.
-   */
-  static get TAG() {
-    return 'bnum-input-search';
-  }
-}
-/**
- * Modèle HTML du composant, incluant le bouton de suppression et le slot d'actions.
- * @private
- * @constant
- */
-const TEMPLATE$1 =
-  HTMLBnumInput.CreateTemplate(`<div id="${HTMLBnumInputSearch.ID_ACTIONS_CONTAINER}">
-      ${HTMLBnumButtonIcon.Write('close', { id: HTMLBnumInputSearch.ID_CLEAR_BUTTON })}
-      <slot name="${HTMLBnumInputSearch.SLOT_ACTIONS}"></slot>
-    </div>`);
-//#region TryDefine
-HTMLBnumInputSearch.TryDefine();
-//#endregion TryDefine
-
-/**
- *  Permet de structurer une colonne avec un en-tête, un corps et un pied de page.
- *
- * @structure Colonne
- * <bnum-column>
- *  <div slot="header">En-tête de la colonne</div>
- *   <div>Contenu principal de la colonne</div>
- *  <div slot="footer">Pied de page de la colonne</div>
- * </bnum-column>
- */
-class HTMLBnumColumn extends BnumElement {
-  // Permet de définir le type de colonne (ex: "sidebar", "main", "tools")
-  // Utile pour le CSS qui va définir la largeur
-  get type() {
-    return this.getAttribute('type') || 'default';
-  }
-  constructor() {
-    super();
-  }
-  _p_isShadowElement() {
-    return false;
-  }
-  /**
-   * Logique de rendu Light DOM
-   * On récupère les enfants existants et on les réorganise.
-   */
-  _p_buildDOM(container) {
-    // 1. Sauvegarde des enfants actuels (ce que l'utilisateur a mis dans la balise)
-    // On convertit en Array pour figer la liste car childNodes est "live"
-    const children = Array.from(this.childNodes);
-    // 2. Création de la structure interne
-    // On vide l'élément pour reconstruire proprement
-    this.innerHTML = '';
-    this.classList.add('bnum-column', `bnum-column--${this.type}`);
-    // Création des conteneurs
-    const [headerContainer, bodyContainer, footerContainer] =
-      this._p_createDivs(
-        {
-          classes: ['bnum-column__header', 'header'],
-        },
-        {
-          classes: ['bnum-column__body'],
-        },
-        {
-          classes: ['bnum-column__footer', 'footer'],
-        },
-      );
-    // 3. Distribution des enfants (Slotting manuel)
-    let hasHeader = false;
-    let hasFooter = false;
-    children.forEach((node) => {
-      // Si c'est un noeud texte vide, on ignore
-      if (node.nodeType === Node.TEXT_NODE && !node.textContent?.trim()) return;
-      const element = node;
-      const slotName = element.getAttribute
-        ? element.getAttribute('slot')
-        : null;
-      if (slotName === 'header') {
-        const nodeElment = node;
-        nodeElment.removeAttribute('slot');
-        nodeElment.classList.add('bnum-column__header__content', 'from-slot');
-        if (nodeElment.classList.contains('header')) {
-          // Évite la duplication de la classe "header"
-          nodeElment.classList.remove('header');
-          nodeElment.classList.add('old-header');
-        }
-        headerContainer.appendChild(node);
-        hasHeader = true;
-      } else if (slotName === 'footer') {
-        node.removeAttribute('slot');
-        node.classList.add('bnum-column__footer__content', 'from-slot');
-        footerContainer.appendChild(node);
-        hasFooter = true;
-      } else {
-        // Tout ce qui n'a pas de slot va dans le body
-        if (node instanceof HTMLElement)
-          node.classList.add('bnum-column__body__content', 'from-slot');
-        bodyContainer.appendChild(node);
-      }
-    });
-    // 4. Injection conditionnelle dans le DOM
-    if (hasHeader) container.appendChild(headerContainer);
-    container.append(...bodyContainer.childNodes); // Le body est obligatoire ou vide
-    if (hasFooter) container.appendChild(footerContainer);
-  }
-  static get TAG() {
-    return 'bnum-column';
-  }
-}
-// Définition automatique
-HTMLBnumColumn.TryDefine();
-
-const TAG = 'bnum-hide';
-const BREAKPOINTS = {
-  phone: 480,
-  small: 768, // Tablet portrait
-  touch: 1024, // Tablet landscape / Touch laptops
-  normal: 1200, // Desktop
-};
-class HTMLBnumHide extends BnumElementInternal {
-  // --- Propriétés Privées ---
-  #_mediaQueryList = null;
-  #_boundHandleChange;
-  constructor() {
-    super();
-    // On lie la fonction une seule fois pour pouvoir la retirer proprement
-    this.#_boundHandleChange = this.#_handleChange.bind(this);
-  }
-  static get TAG() {
-    return TAG;
-  }
-  static get observedAttributes() {
-    return ['breakpoint', 'mode'];
-  }
-  _p_isShadowElement() {
-    return false;
-  }
-  // --- Cycle de vie ---
-  connectedCallback() {
-    super.connectedCallback?.();
-    this.#_setupListener();
-  }
-  disconnectedCallback() {
-    this.#_removeListener();
-    super.disconnectedCallback?.();
-  }
-  attributeChangedCallback(name, oldVal, newVal) {
-    super.attributeChangedCallback?.(name, oldVal, newVal);
-    if (oldVal === newVal) return;
-    // Si on change les paramètres, on refait l'écouteur
-    this.#_setupListener();
-  }
-  // --- Logique Métier ---
-  /**
-   * Configure le listener matchMedia selon les attributs
-   */
-  #_setupListener() {
-    this.#_removeListener(); // Nettoyage préalable
-    const breakpointKey = this.getAttribute('breakpoint') || 'touch';
-    const mode = this.getAttribute('mode') || 'down'; // 'down' (défaut) ou 'up'
-    const width = BREAKPOINTS[breakpointKey];
-    if (!width) {
-      console.warn(
-        `[${TAG}] Breakpoint inconnu : ${breakpointKey}. Utilisez: ${Object.keys(BREAKPOINTS).join(', ')}`,
-      );
-      return;
-    }
-    // Construction de la requête média
-    // mode 'down' : cache si l'écran est PLUS PETIT que la valeur (max-width)
-    // mode 'up'   : cache si l'écran est PLUS GRAND que la valeur (min-width)
-    const query =
-      mode === 'up'
-        ? `(min-width: ${width}px)`
-        : `(max-width: ${width - 0.02}px)`; // -0.02px évite le conflit exact au pixel
-    this.#_mediaQueryList = window.matchMedia(query);
-    // Initialisation immédiate de l'état
-    this.#_handleChange(this.#_mediaQueryList);
-    // Abonnement aux changements
-    this.#_mediaQueryList.addEventListener('change', this.#_boundHandleChange);
-  }
-  #_removeListener() {
-    if (this.#_mediaQueryList) {
-      this.#_mediaQueryList.removeEventListener(
-        'change',
-        this.#_boundHandleChange,
-      );
-      this.#_mediaQueryList = null;
-    }
-  }
-  /**
-   * Réaction au changement de breakpoint
-   * Si la media query match, c'est qu'on est dans la zone "à cacher".
-   */
-  #_handleChange(mq) {
-    const shouldHide = mq.matches;
-    // Mise à jour de l'état interne (si ton BnumElementInternal gère un state 'hidden')
-    // Sinon, on manipule directement l'attribut hidden natif HTML
-    if (shouldHide) {
-      this.setAttribute('hidden', '');
-      this.style.display = 'none'; // Sécurité CSS inline
-    } else {
-      this.removeAttribute('hidden');
-      this.style.removeProperty('display');
-    }
-  }
-}
-// Enregistrement
-HTMLBnumHide.TryDefine();
-
-var css_248z$1 =
-  '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{border-radius:var(--bnum-badge-border-radius,100px);display:var(--bnum-badge-display,inline-block);padding:var(--bnum-badge-padding,var(--bnum-space-xs,5px))}:host(:state(is-circle)){aspect-ratio:1;border-radius:var(--bnum-badge-circle-border-radius,100%)}:host(:state(is-circle)) span{align-items:center;display:flex;height:100%;justify-content:center}:host(:state(variation-primary)){background-color:var(--bnum-badge-primary-color,var(--bnum-color-primary,#000091));color:var(--bnum-badge-primary-text-color,var(--bnum-text-on-primary,#f5f5fe))}:host(:state(variation-secondary)){background-color:var(--bnum-badge-secondary-color,var(--bnum-color-secondary,#3a3a3a));color:var(--bnum-badge-secondary-text-color,var(--bnum-text-on-secondary,#fff))}:host(:state(variation-secondary)){border:var(--bnum-badge-type,solid) var(--bnum-badge-size,thin) var(--bnum-badge-secondary-text-color,var(--bnum-text-on-secondary,#fff))}:host(:state(variation-danger)){background-color:var(--bnum-badge-danger-color,var(--bnum-color-danger,#ce0500));color:var(--bnum-badge-danger-text-color,var(--bnum-text-on-danger,#f5f5fe))}';
-
-const STYLE$1 = BnumElementInternal.ConstructCSSStyleSheet(css_248z$1);
-/**
- * Badge d'information.
- *
- * @structure Badge classique
- * <bnum-badge data-value="Je suis un badge !"></bnum-badge>
- *
- * @structure Badge avec un nombre
- * <bnum-badge data-value="9999"></bnum-badge>
- *
- * @structure Arrondi forcé
- * <bnum-badge data-value="9999" circle></bnum-badge>
- *
- * @structure Secondary
- * <bnum-badge data-value="42" data-variation="secondary" circle></bnum-badge>
- *
- * @structure Danger
- * <bnum-badge data-value="42" data-variation="danger" circle></bnum-badge>
- *
- * @state has-value - Le badge a une valeur.
- * @state no-value - Le badge n'a pas de valeur.
- * @state is-circle - Le badge est en mode cercle.
- * @state variation-primary - Le badge utilise la variation primaire.
- * @state variation-secondary - Le badge utilise la variation secondaire.
- * @state variation-danger - Le badge utilise la variation danger.
- *
- * @cssvar {inline-block} --bnum-badge-display - Permet de surcharger la propriété CSS display du badge.
- * @cssvar {100px} --bnum-badge-border-radius - Permet de surcharger le rayon de bordure du badge.
- * @cssvar {10px} --bnum-badge-padding - Permet de surcharger le padding du badge.
- * @cssvar {100%} --bnum-badge-circle-border-radius - Permet de surcharger le rayon de bordure du badge en mode "cercle".
- * @cssvar {#000091} --bnum-badge-primary-color - Définit la couleur de fond du badge en variation "primary".
- * @cssvar {#f5f5fe} --bnum-badge-primary-text-color - Définit la couleur du texte du badge en variation "primary".
- * @cssvar {#ffffff} --bnum-badge-secondary-color - Définit la couleur de fond du badge en variation "secondary".
- * @cssvar {#000091} --bnum-badge-secondary-text-color - Définit la couleur du texte du badge en variation "secondary".
- * @cssvar {solid} --bnum-badge-type - Permet de surcharger le type de bordure (ex: solid, dashed) pour la variation "secondary".
- * @cssvar {thin} --bnum-badge-size - Permet de surcharger l’épaisseur de la bordure pour la variation "secondary".
- * @cssvar {#ce0500} --bnum-badge-danger-color - Définit la couleur de fond du badge en variation "danger".
- * @cssvar {#f5f5fe} --bnum-badge-danger-text-color - Définit la couleur du texte du badge en variation "danger".
- *
- */
-class HTMLBnumBadge extends BnumElementInternal {
-  //#region Constants
-  /**
-   * Nom de l'attribut pour la valeur du badge.
-   */
-  static DATA_VALUE = 'value';
-  /**
-   * Nom de l'attribut pour la variation du badge.
-   */
-  static DATA_VARIATION = 'variation';
-  /**
-   * Nom de l'attribut pour la valeur du badge.
-   * @attr {string} data-value - Valeur affichée dans le badge.
-   */
-  static ATTR_VALUE = 'data-value';
-  /**
-   * Nom de l'attribut pour la variation du badge.
-   * @attr {'primary' | 'secondary' | 'danger'} (optional) (default:'primary') data-variation - Variation du badge.
-   */
-  static ATTR_VARIATION = 'data-variation';
-  /**
-   * Nom de l'attribut pour le mode cercle.
-   * @attr {any} (optional) circle - Indique si le badge doit être affiché en cercle.
-   */
-  static ATTR_CIRCLE = 'circle';
-  /**
-   * Valeur de variation primaire.
-   */
-  static VARIATION_PRIMARY = 'primary';
-  /**
-   * Valeur de variation secondaire.
-   */
-  static VARIATION_SECONDARY = 'secondary';
-  /**
-   * Valeur de variation danger.
-   */
-  static VARIATION_DANGER = 'danger';
-  /**
-   * Nom de la classe d'état "a une valeur".
-   */
-  static STATE_HAS_VALUE = 'has-value';
-  /**
-   * Nom de la classe d'état "pas de valeur".
-   */
-  static STATE_NO_VALUE = 'no-value';
-  /**
-   * Nom de la classe d'état "cercle".
-   */
-  static STATE_IS_CIRCLE = 'is-circle';
-  /**
-   * Préfixe de la classe d'état pour la variation.
-   */
-  static STATE_VARIATION_PREFIX = 'variation-';
-  //#endregion Constants
-  //#region Private Fields
-  /**
-   * Valeur affichée dans le badge.
-   */
-  #_value = EMPTY_STRING;
-  /**
-   * Planificateur de mise à jour asynchrone.
-   */
-  #_updateSchduler = null;
-  /**
-   * Élément span contenant la valeur du badge.
-   */
-  #_spanElement = null;
-  //#endregion Private Fields
-  //#region Getters/Setters
-  /**
-   * Récupère la valeur depuis l'attribut data-value.
-   */
-  get #_dataValue() {
-    return this.data(HTMLBnumBadge.DATA_VALUE) || EMPTY_STRING;
-  }
-  /**
-   * Récupère la variation depuis l'attribut data-variation.
-   */
-  get #_dataVariation() {
-    return (
-      this.data(HTMLBnumBadge.DATA_VARIATION) || HTMLBnumBadge.VARIATION_PRIMARY
-    );
-  }
-  /**
-   * Valeur affichée dans le badge.
-   */
-  get value() {
-    if (!this.alreadyLoaded) this.#_value = this.#_dataValue;
-    return this.#_value;
-  }
-  set value(value) {
-    if (!this.alreadyLoaded) this.removeAttribute(HTMLBnumBadge.ATTR_VALUE);
-    this.#_value = value;
-    this.#_requestUpdate();
-  }
-  /**
-   * Variation de style du badge.
-   */
-  get variation() {
-    return this.#_dataVariation;
-  }
-  set variation(value) {
-    this.data(HTMLBnumBadge.DATA_VARIATION, value);
-    this.#_requestUpdate();
-  }
-  //#endregion Getters/Setters
-  //#region Lifecycle
-  constructor() {
-    super();
-  }
-  /**
-   * Retourne les styles à appliquer au composant.
-   */
-  _p_getStylesheets() {
-    return [...super._p_getStylesheets(), STYLE$1];
-  }
-  /**
-   * Construit le DOM interne du composant.
-   */
-  _p_buildDOM(container) {
-    super._p_buildDOM(container);
-    this.#_spanElement = this._p_createSpan();
-    container.appendChild(this.#_spanElement);
-    const force = true;
-    this.#_update(force);
-  }
-  /**
-   * Indique si toutes les modifications d'attributs doivent déclencher une mise à jour.
-   */
-  _p_isUpdateForAllAttributes() {
-    return true;
-  }
-  /**
-   * Met à jour le composant lors d'un changement d'attribut.
-   */
-  _p_update(name, oldVal, newVal) {
-    return this.#_update();
-  }
-  //#endregion Lifecycle
-  //#region Private Methods
-  /**
-   * Demande une mise à jour asynchrone du composant.
-   */
-  #_requestUpdate() {
-    (this.#_updateSchduler ??= new Scheduler(() => {
-      this.#_update();
-    })).schedule(0);
-    return this;
-  }
-  /**
-   * Met à jour l'affichage du badge selon ses propriétés et attributs.
-   */
-  #_update(force = false) {
-    if (!this.alreadyLoaded && !force) return;
-    this._p_clearStates();
-    const value = this.value;
-    this.#_spanElement.textContent = value;
-    if (value !== EMPTY_STRING) this._p_addState(HTMLBnumBadge.STATE_HAS_VALUE);
-    else this._p_addState(HTMLBnumBadge.STATE_NO_VALUE);
-    if (this.hasAttribute(HTMLBnumBadge.ATTR_CIRCLE))
-      this._p_addState(HTMLBnumBadge.STATE_IS_CIRCLE);
-    this._p_addState(
-      `${HTMLBnumBadge.STATE_VARIATION_PREFIX}${this.variation}`,
-    );
-  }
-  //#endregion Private Methods
-  //#region Static Methods
-  /**
-   * Attributs observés pour ce composant.
-   */
-  static _p_observedAttributes() {
-    return [HTMLBnumBadge.ATTR_CIRCLE];
-  }
-  /**
-   * Crée un badge via JavaScript.
-   * @param value Valeur à afficher
-   * @param options Options de création (cercle, variation)
-   */
-  static Create(value, { circle = false, variation = undefined } = {}) {
-    const badge = document.createElement(HTMLBnumBadge.TAG);
-    return badge
-      .attr(HTMLBnumBadge.ATTR_VALUE, value)
-      .condAttr(circle, HTMLBnumBadge.ATTR_CIRCLE, true)
-      .condAttr(
-        variation !== undefined,
-        HTMLBnumBadge.ATTR_VARIATION,
-        variation,
-      );
-  }
-  /**
-   * Génère le HTML d'un badge.
-   * @param value Valeur à afficher
-   * @param attrs Attributs additionnels
-   */
-  static Write(value, attrs = {}) {
-    const attributes = this._p_WriteAttributes(attrs);
-    return `<${HTMLBnumBadge.TAG} ${HTMLBnumBadge.ATTR_VALUE}="${value}" ${attributes}></${HTMLBnumBadge.TAG}>`;
-  }
-  /**
-   * Tag HTML du composant.
-   */
-  static get TAG() {
-    return 'bnum-badge';
-  }
-}
-HTMLBnumBadge.TryDefine();
-
 class HTMLBnumFolderList extends BnumElement {
   constructor() {
     super();
@@ -17502,10 +15701,10 @@ class HTMLBnumFolderList extends BnumElement {
 }
 HTMLBnumFolderList.TryDefine();
 
-var css_248z =
-  ':host{display:block;padding-left:calc(.5em*var(--internal-bnum-folder-level, 0));width:100%}:host .bal-container{display:flex;justify-content:space-between;padding:10px 15px}:host .bal-container .bal-container__left,:host .bal-container .bal-container__title{align-content:center;align-items:center;display:flex;gap:10px}:host .bal-container__title__name{text-wrap:nowrap;max-width:125px;overflow:hidden;pointer-events:none;text-overflow:ellipsis}:host .bal-container__title__icon{color:var(--bnum-folder-icon-color,inherit)}:host bnum-badge{height:calc(16px - var(--bnum-badge-padding, var(--bnum-space-xs, 5px))*2);transition:all .2s ease;width:calc(16px - var(--bnum-badge-padding, var(--bnum-space-xs, 5px))*2)}:host bnum-badge.is-cumulative{background-color:var(--bnum-color-primary-active)}:host bnum-badge:state(no-value){display:none}:host([level="0"]){border-bottom:var(--bnum-border-in-column)}:host([level="0"]) .bal-container{padding:15px}:host(:state(no-subfolders)) .bal-container__toggle{display:none}:host([is-collapsed=true]) .bal-sub-folders{display:none}:host([is-virtual=false]){cursor:pointer}:host([is-virtual=false]) .bal-container__title__name{pointer-events:all}:host([is-virtual=false]:hover) .bal-container{background-color:var(--bnum-color-list-hover)}:host([is-selected=true]) .bal-container{background-color:var(--bnum-color-list);cursor:default}:host([is-selected=true]:hover) .bal-container{background-color:var(--bnum-color-list)}:host(:state(double-digit-unread)) bnum-badge{font-size:9px}:host(:state(triple-digit-unread)) bnum-badge{font-size:9px;height:calc(18px - var(--bnum-badge-padding, var(--bnum-space-xs, 5px))*2);width:calc(18px - var(--bnum-badge-padding, var(--bnum-space-xs, 5px))*2)}:host(.dragover) .bal-container{background-color:var(--bnum-color-list-drag)}';
+var css_248z$5 =
+  '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{display:block;padding-left:calc(.5em*var(--internal-bnum-folder-level, 0));width:100%}:host .bal-container{display:flex;justify-content:space-between;padding:var(--bnum-folder-title-padding,10px 15px)}:host .bal-container .bal-container__left,:host .bal-container .bal-container__title{align-content:center;align-items:center;display:flex;gap:10px}:host .bal-container__title__name{text-wrap:nowrap;max-width:125px;overflow:hidden;pointer-events:none;text-overflow:ellipsis}:host .bal-container__title__icon{color:var(--bnum-folder-icon-color,inherit)}:host bnum-badge{height:calc(16px - var(--bnum-badge-padding, var(--bnum-space-xs, 5px))*2);transition:all .2s ease;width:calc(16px - var(--bnum-badge-padding, var(--bnum-space-xs, 5px))*2)}:host bnum-badge.is-cumulative{background-color:var(--bnum-color-primary-active)}:host bnum-badge:state(no-value){display:none}:host([level="0"]){border-bottom:var(--bnum-border-in-column)}:host([level="0"]) .bal-container{padding:var(--bnum-folder-bal-title-padding,15px 15px)}:host(:state(no-subfolders)) .bal-container__toggle{display:none}:host([is-collapsed=true]) .bal-sub-folders{display:none}:host([is-virtual=false]){cursor:pointer}:host([is-virtual=false]) .bal-container__title__name{pointer-events:all}:host([is-virtual=false]:hover) .bal-container{background-color:var(--bnum-color-list-hover)}:host([is-selected=true]) .bal-container{background-color:var(--bnum-color-list);cursor:default}:host([is-selected=true]:hover) .bal-container{background-color:var(--bnum-color-list)}:host(:state(double-digit-unread)) bnum-badge{font-size:9px}:host(:state(triple-digit-unread)) bnum-badge{font-size:9px;height:calc(18px - var(--bnum-badge-padding, var(--bnum-space-xs, 5px))*2);width:calc(18px - var(--bnum-badge-padding, var(--bnum-space-xs, 5px))*2)}:host(.dragover) .bal-container{background-color:var(--bnum-color-list-drag)}';
 
-const STYLE = BnumElementInternal.ConstructCSSStyleSheet(css_248z);
+const STYLE = BnumElementInternal.ConstructCSSStyleSheet(css_248z$5);
 /**
  * Composant représentant un dossier dans une structure arborescente.
  *
@@ -17598,7 +15797,7 @@ class HTMLBnumFolder extends BnumElementInternal {
     return [...super._p_getStylesheets(), STYLE];
   }
   _p_fromTemplate() {
-    return TEMPLATE;
+    return TEMPLATE$5;
   }
   _p_buildDOM(container) {
     super._p_buildDOM(container);
@@ -17808,7 +16007,7 @@ class HTMLBnumFolder extends BnumElementInternal {
     return 'bnum-folder';
   }
 }
-const TEMPLATE = BnumElementInternal.CreateTemplate(`
+const TEMPLATE$5 = BnumElementInternal.CreateTemplate(`
     <div class="bal-container">
       <div class="bal-container__title">
         ${HTMLBnumIcon.Write('square', { class: 'bal-container__title__icon' })}
@@ -17822,6 +16021,1978 @@ const TEMPLATE = BnumElementInternal.CreateTemplate(`
     ${HTMLBnumFolderList.Write('<slot name="folders"></slot>', { class: 'bal-sub-folders' })}
   `);
 HTMLBnumFolder.TryDefine();
+
+const TAG = 'bnum-hide';
+const BREAKPOINTS = {
+  phone: 480,
+  small: 768, // Tablet portrait
+  touch: 1024, // Tablet landscape / Touch laptops
+  normal: 1200, // Desktop
+};
+class HTMLBnumHide extends BnumElementInternal {
+  // --- Propriétés Privées ---
+  #_mediaQueryList = null;
+  #_boundHandleChange;
+  constructor() {
+    super();
+    // On lie la fonction une seule fois pour pouvoir la retirer proprement
+    this.#_boundHandleChange = this.#_handleChange.bind(this);
+  }
+  static get TAG() {
+    return TAG;
+  }
+  static get observedAttributes() {
+    return ['breakpoint', 'mode'];
+  }
+  _p_isShadowElement() {
+    return false;
+  }
+  // --- Cycle de vie ---
+  connectedCallback() {
+    super.connectedCallback?.();
+    this.#_setupListener();
+  }
+  disconnectedCallback() {
+    this.#_removeListener();
+    super.disconnectedCallback?.();
+  }
+  attributeChangedCallback(name, oldVal, newVal) {
+    super.attributeChangedCallback?.(name, oldVal, newVal);
+    if (oldVal === newVal) return;
+    // Si on change les paramètres, on refait l'écouteur
+    this.#_setupListener();
+  }
+  // --- Logique Métier ---
+  /**
+   * Configure le listener matchMedia selon les attributs
+   */
+  #_setupListener() {
+    this.#_removeListener(); // Nettoyage préalable
+    const breakpointKey = this.getAttribute('breakpoint') || 'touch';
+    const mode = this.getAttribute('mode') || 'down'; // 'down' (défaut) ou 'up'
+    const width = BREAKPOINTS[breakpointKey];
+    if (!width) {
+      console.warn(
+        `[${TAG}] Breakpoint inconnu : ${breakpointKey}. Utilisez: ${Object.keys(BREAKPOINTS).join(', ')}`,
+      );
+      return;
+    }
+    // Construction de la requête média
+    // mode 'down' : cache si l'écran est PLUS PETIT que la valeur (max-width)
+    // mode 'up'   : cache si l'écran est PLUS GRAND que la valeur (min-width)
+    const query =
+      mode === 'up'
+        ? `(min-width: ${width}px)`
+        : `(max-width: ${width - 0.02}px)`; // -0.02px évite le conflit exact au pixel
+    this.#_mediaQueryList = window.matchMedia(query);
+    // Initialisation immédiate de l'état
+    this.#_handleChange(this.#_mediaQueryList);
+    // Abonnement aux changements
+    this.#_mediaQueryList.addEventListener('change', this.#_boundHandleChange);
+  }
+  #_removeListener() {
+    if (this.#_mediaQueryList) {
+      this.#_mediaQueryList.removeEventListener(
+        'change',
+        this.#_boundHandleChange,
+      );
+      this.#_mediaQueryList = null;
+    }
+  }
+  /**
+   * Réaction au changement de breakpoint
+   * Si la media query match, c'est qu'on est dans la zone "à cacher".
+   */
+  #_handleChange(mq) {
+    const shouldHide = mq.matches;
+    // Mise à jour de l'état interne (si ton BnumElementInternal gère un state 'hidden')
+    // Sinon, on manipule directement l'attribut hidden natif HTML
+    if (shouldHide) {
+      this.setAttribute('hidden', '');
+      this.style.display = 'none'; // Sécurité CSS inline
+    } else {
+      this.removeAttribute('hidden');
+      this.style.removeProperty('display');
+    }
+  }
+}
+// Enregistrement
+HTMLBnumHide.TryDefine();
+
+var css_248z$4 =
+  '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host a{align-items:var(--bnum-card-title-align-items,center);display:var(--bnum-card-title-display,flex);gap:var(--bnum-card-title-gap,var(--bnum-space-s,10px))}:host(:state(url)) a{color:var(--a-color,var(--bnum-text-primary,#000));-webkit-text-decoration:var(--a-text-decoration,none);text-decoration:var(--a-text-decoration,none)}:host(:state(url)) a:hover{color:var(--a-hover-color,var(--bnum-text-primary,#000));-webkit-text-decoration:var(--a-hover-text-decoration,underline);text-decoration:var(--a-hover-text-decoration,underline)}h2{font-size:var(--bnum-card-title-font-size,var(--bnum-font-size-h6,1.25rem));margin:var(--bnum-card-title-margin,0)}';
+
+const SHEET$4 = BnumElement.ConstructCSSStyleSheet(css_248z$4);
+/**
+ * Composant représentant le titre d'une carte, pouvant inclure une icône et un lien.
+ * Permet d'afficher un titre enrichi avec une icône et éventuellement un lien cliquable.
+ *
+ * @structure Cas url et icône
+ * <bnum-card-title data-icon="labs" url="https://example.com">Titre de la carte</bnum-card-title>
+ *
+ * @structure Cas icône uniquement
+ * <bnum-card-title data-icon="labs">Titre de la carte</bnum-card-title>
+ *
+ * @structure Cas lien uniquement
+ * <bnum-card-title url="https://example.com">Titre de la carte</bnum-card-title>
+ *
+ * @structure Cas texte seul
+ * <bnum-card-title>Titre de la carte</bnum-card-title>
+ *
+ * @structure Cas icône via slot
+ * <bnum-card-title>
+ *  <bnum-icon slot="icon">drive_folder_upload</bnum-icon>
+ *  Titre de la carte
+ * </bnum-card-title>
+ *
+ * @state url - Actif lorsque le titre contient un lien.
+ * @state without-url - Actif lorsque le titre ne contient pas de lien.
+ *
+ * @slot (default) - Titre de la carte (texte ou HTML)
+ * @slot icon - Icône personnalisée à afficher avant le titre. Note: si une icône est définie via l'attribut `data-icon` ou via la propriété `icon`, ce slot sera ignoré.
+ *
+ * @cssvar {flex} --bnum-card-title-display - Définit le mode d'affichage du titre de la carte.
+ * @cssvar {center} --bnum-card-title-align-items - Définit l'alignement vertical des éléments dans le titre de la carte.
+ * @cssvar {var(--bnum-space-s, 10px)} --bnum-card-title-gap - Définit l'espacement entre l'icône et le texte du titre.
+ */
+class HTMLBnumCardTitle extends BnumElement {
+  //#region Constants
+  /**
+   * Nom de l'attribut pour définir l'URL du lien du titre de la carte.
+   * @attr {string | null} (optional) url - URL du lien du titre de la carte
+   */
+  static ATTRIBUTE_URL = 'url';
+  /**
+   * Nom de la data pour définir l'icône du titre de la carte.
+   * @attr {string | null} (optional) data-icon - Nom de l'icône (Material Symbols) à afficher avant le titre
+   */
+  static ATTRIBUTE_DATA_ICON = 'icon';
+  /**
+   * Nom du slot pour l'icône du titre de la carte.
+   */
+  static SLOT_NAME_ICON = 'icon';
+  /**
+   * Nom de la classe au titre de la carte lorsqu'un url est défini
+   */
+  static CLASS_LINK = 'card-title-link';
+  /**
+   * Nom de l'état lorsque le titre contient un lien.
+   */
+  static STATE_URL = 'url';
+  /**
+   * Nom de l'état lorsque le titre ne contient pas de lien.
+   */
+  static STATE_WITHOUT_URL = 'without-url';
+  /**
+   * Nom de la classe pour l'icône du titre de la carte.
+   */
+  static CLASS_ICON_TITLE = 'card-icon-title';
+  /**
+   * ID du slot pour l'icône du titre de la carte.
+   */
+  static ID_SLOT_ICON = 'sloticon';
+  /**
+   * ID du slot pour le texte du titre de la carte.
+   */
+  static ID_SLOT_TEXT = 'mainslot';
+  /**
+   * ID de l'élément personnalisé pour le corps du titre de la carte.
+   */
+  static ID_CUSTOM_BODY = 'custombody';
+  //#endregion Constants
+  //#region Private fields
+  /**
+   * Élément représentant l'icône du titre de la carte.
+   * Peut être un composant icône ou un slot HTML.
+   * @private
+   */
+  #_iconElement = null;
+  #_iconSlotElement = null;
+  /**
+   * Slot pour le texte du titre de la carte.
+   * @private
+   */
+  #_textSlotElement = null;
+  #_customBodyElement = null;
+  /**
+   * Élément lien (<a>) englobant le titre si une URL est définie.
+   * @private
+   */
+  #_linkElement = null;
+  #_internals = this.attachInternals();
+  #_domScheduler = null;
+  #_bodyScheduler = null;
+  #_initBody = null;
+  //#endregion Private fields
+  //#region Getter/Setters
+  /**
+   * Obtient le nom de l'icône associée au titre de la carte.
+   * @returns {string | null} Nom de l'icône ou null si aucune icône n'est définie
+   */
+  get icon() {
+    return this.data(HTMLBnumCardTitle.ATTRIBUTE_DATA_ICON);
+  }
+  /**
+   * Définit le nom de l'icône associée au titre de la carte.
+   * Met à jour le DOM pour refléter le changement.
+   * @param {string | null} v Nom de l'icône ou null
+   */
+  set icon(v) {
+    if (this.alreadyLoaded) {
+      this._p_setData(HTMLBnumCardTitle.ATTRIBUTE_DATA_ICON, v);
+      this.#_requestUpdateDom();
+    } else {
+      const fromAttribute = true;
+      this.data(HTMLBnumCardTitle.ATTRIBUTE_DATA_ICON, v, fromAttribute);
+    }
+  }
+  /**
+   * Obtient l'URL du lien du titre de la carte.
+   * @returns {string | null} URL ou null si aucun lien n'est défini
+   */
+  get url() {
+    return this.getAttribute(HTMLBnumCardTitle.ATTRIBUTE_URL);
+  }
+  /**
+   * Définit l'URL du lien du titre de la carte.
+   * Ajoute ou retire l'attribut selon la valeur.
+   * @param {string | null} v URL ou null
+   */
+  set url(v) {
+    if (v) this.setAttribute(HTMLBnumCardTitle.ATTRIBUTE_URL, v);
+    else this.removeAttribute(HTMLBnumCardTitle.ATTRIBUTE_URL);
+  }
+  //#endregion Getter/Setters
+  //#region Lifecycle
+  /**
+   * Constructeur du composant HTMLBnumCardTitle.
+   * Initialise le composant sans ajouter d'éléments DOM.
+   */
+  constructor() {
+    super();
+  }
+  _p_getStylesheets() {
+    return [...super._p_getStylesheets(), SHEET$4];
+  }
+  _p_fromTemplate() {
+    return TEMPLATE$4;
+  }
+  /**
+   * Construit le DOM du composant dans le conteneur donné.
+   * Ajoute l'icône, le texte et le lien selon les propriétés définies.
+   * @param {ShadowRoot | HTMLElement} container Conteneur dans lequel construire le DOM
+   */
+  _p_buildDOM(container) {
+    this.#_iconSlotElement = container.querySelector(
+      `#${HTMLBnumCardTitle.ID_SLOT_ICON}`,
+    );
+    this.#_textSlotElement = container.querySelector(
+      `#${HTMLBnumCardTitle.ID_SLOT_TEXT}`,
+    );
+    this.#_customBodyElement = container.querySelector(
+      `#${HTMLBnumCardTitle.ID_CUSTOM_BODY}`,
+    );
+    this.#_linkElement = container.querySelector(
+      `.${HTMLBnumCardTitle.CLASS_LINK}`,
+    );
+    this.#_iconElement = container.querySelector(
+      `.${HTMLBnumCardTitle.CLASS_ICON_TITLE}`,
+    );
+    this.#_updateDOM();
+    if (this.#_initBody) {
+      this.#_updateBody(this.#_initBody);
+      this.#_initBody = null;
+    }
+  }
+  _p_isUpdateForAllAttributes() {
+    return true;
+  }
+  /**
+   * Méthode appelée lors de la mise à jour d'un attribut observé.
+   * Met à jour le DOM du composant.
+   * @param {string} name Nom de l'attribut modifié
+   * @param {string | null} oldVal Ancienne valeur
+   * @param {string | null} newVal Nouvelle valeur
+   */
+  _p_update(name, oldVal, newVal) {
+    if (this.alreadyLoaded) this.#_updateDOM();
+  }
+  //#endregion Lifecycle
+  //#region Private methods
+  /**
+   * Demande une mise à jour du DOM du composant.
+   * Utilise un ordonnanceur pour éviter les mises à jour redondantes.
+   * @private
+   */
+  #_requestUpdateDom() {
+    this.#_domScheduler ??= new Scheduler(() => {
+      this.#_updateDOM();
+    });
+    this.#_domScheduler.schedule();
+  }
+  /**
+   * Met à jour le DOM du composant selon les propriétés actuelles.
+   * Affiche ou masque l'icône et met à jour le lien si nécessaire.
+   * @private
+   */
+  #_updateDOM() {
+    const url = this.url;
+    const icon = this.icon;
+    this.#_internals.states.clear();
+    if (icon) {
+      this.#_iconElement.icon = icon;
+      this.#_iconElement.hidden = false;
+      this.#_iconSlotElement.hidden = true;
+    } else this.#_iconElement.hidden = true;
+    if (url) {
+      this.#_linkElement.href = url;
+      this.#_internals.states.add(HTMLBnumCardTitle.STATE_URL);
+      this.#_linkElement.removeAttribute('role');
+      this.#_linkElement.removeAttribute('aria-disabled');
+    } else {
+      this.#_linkElement.removeAttribute('href');
+      this.#_internals.states.add(HTMLBnumCardTitle.STATE_WITHOUT_URL);
+    }
+  }
+  /**
+   * Met à jour le corps du titre de la carte.
+   * @param element Elément HTML, texte ou nœud Text à insérer dans le titre
+   * @private
+   */
+  #_updateBody(element) {
+    this.#_customBodyElement.hidden = false;
+    this.#_textSlotElement.hidden = true;
+    if (typeof element === 'string')
+      this.#_customBodyElement.textContent = element;
+    else this.#_customBodyElement.appendChild(element);
+  }
+  //#endregion Private methods
+  //#region Public methods
+  /**
+   * Met à jour le contenu du titre de la carte.
+   * Remplace le texte ou ajoute un élément HTML comme corps du titre.
+   * @param {HTMLElement | string | Text} element Le contenu à insérer (texte, élément ou nœud Text)
+   * @returns {HTMLBnumCardTitle} Retourne l'instance pour chaînage
+   */
+  updateBody(element, { force = false } = {}) {
+    this.#_bodyScheduler ??= new Scheduler((el) => {
+      this.#_updateBody(el);
+    });
+    if (!this.alreadyLoaded) this.#_initBody = element;
+    else if (force) this.#_bodyScheduler.call(element);
+    else this.#_bodyScheduler.schedule(element);
+    return this;
+  }
+  //#endregion Public methods
+  //#region Static methods
+  /**
+   * Retourne la liste des attributs observés par le composant.
+   * Permet de réagir aux changements de ces attributs.
+   * @returns {string[]} Liste des attributs observés
+   */
+  static _p_observedAttributes() {
+    return [HTMLBnumCardTitle.ATTRIBUTE_URL];
+  }
+  /**
+   * Crée dynamiquement une instance du composant HTMLBnumCardTitle.
+   * Permet d'initialiser le titre avec un texte, une icône et/ou un lien.
+   * @param {HTMLElement | string | Text} text Le contenu du titre (élément, texte ou chaîne)
+   * @param {{ icon?: string | null; link?: string | null }} options Options pour l'icône et le lien
+   * @returns {HTMLBnumCardTitle} Instance du composant configurée
+   */
+  static Create(text, { icon = null, link = null }) {
+    let node = document.createElement(HTMLBnumCardTitle.TAG);
+    if (icon) node.icon = icon;
+    if (link) node.url = link;
+    return node.updateBody(text, { force: true });
+  }
+  /**
+   * Génère le HTML d'un titre de carte avec icône et lien optionnels.
+   * Utile pour créer dynamiquement le composant dans une chaîne HTML.
+   * @param {string | null} icon Icône à afficher
+   * @param {string} text Texte du titre
+   * @param {string | null} link URL du lien
+   * @returns {string} HTML généré
+   */
+  static Generate(icon, text, link) {
+    let data = [];
+    if (icon) data.push(`data-icon="${icon}"`);
+    if (link) data.push(`url="${link}"`);
+    return `<${HTMLBnumCardTitle.TAG} ${data.join(' ')}>${text}</${HTMLBnumCardTitle.TAG}>`;
+  }
+  /**
+   * Retourne le tag HTML du composant.
+   * Permet d'obtenir le nom du composant pour l'utiliser dans le DOM.
+   * @readonly
+   * @returns {string} Tag HTML
+   */
+  static get TAG() {
+    return TAG_CARD_TITLE;
+  }
+}
+const TEMPLATE$4 = BnumElement.CreateTemplate(`
+      <h2><a class="${HTMLBnumCardTitle.CLASS_LINK}">
+        <span class="container">
+          <slot id="${HTMLBnumCardTitle.ID_SLOT_ICON}" name="${HTMLBnumCardTitle.SLOT_NAME_ICON}"></slot>
+          <${HTMLBnumIcon.TAG} class="${HTMLBnumCardTitle.CLASS_ICON_TITLE}" hidden></${HTMLBnumIcon.TAG}>
+        </span>
+        <span class="container">
+          <slot id="${HTMLBnumCardTitle.ID_SLOT_TEXT}"></slot>
+          <span id="${HTMLBnumCardTitle.ID_CUSTOM_BODY}" hidden></span>
+        </span>
+      </a></h2>
+    `);
+//#region TryDefine
+HTMLBnumCardTitle.TryDefine();
+//#endregion TryDefine
+
+/**
+ * Définit le rôle du bouton sur l'élément donné.
+ * @param element Élément Bnum à modifier.
+ * @returns L'élément Bnum modifié en bouton.
+ */
+function setButtonRole(element) {
+  return HTMLBnumButton.ToButton(element);
+}
+/**
+ * Supprime le rôle du bouton et les attributs associés de l'élément donné.
+ * @param element Élément Bnum à modifier.
+ * @returns L'élément Bnum modifié sans rôle de bouton.
+ */
+function removeButtonRole(element) {
+  if (element.getAttribute('data-set-event') === 'onkeydown') {
+    element.removeAttribute('data-set-event');
+    element.onkeydown = null;
+  }
+  element.removeAttribute('role');
+  element.removeAttribute('tabindex');
+  return element;
+}
+
+var css_248z$3 =
+  '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{background-color:var(--bnum-card-background-color,var(--bnum-color-surface,#f6f6f6));border-bottom:var(--bnum-border-on-surface-bottom,solid 4px #000091);border-left:var(--bnum-border-on-surface-left,none);border-right:var(--bnum-border-on-surface-right,none);border-top:var(--bnum-border-on-surface-top,none);display:var(--bnum-card-display,block);height:var(--bnum-card-height,auto);padding:var(--bnum-card-padding,var(--bnum-space-m,15px));position:relative;width:var(--bnum-card-width,auto)}:host .card-loading{display:none}:host(:state(clickable)){cursor:var(--bnum-card-clickable-cursor,pointer)}:host(:hover:state(clickable)){background-color:var(--bnum-card-background-color-hover,var(--bnum-color-surface-hover,#dfdfdf))}:host(:active:state(clickable)){background-color:var(--bnum-card-background-color-active,var(--bnum-color-surface-active,#cfcfcf))}:host(:state(loading)){--bnum-card-background-color-hover:var(--bnum-card-background-color,var(--bnum-color-surface,#f6f6f6));--bnum-card-background-color-active:var(--bnum-card-background-color,var(--bnum-color-surface,#f6f6f6));opacity:.8;pointer-events:none}:host(:state(loading)) .card-loading{align-items:center;display:flex;inset:0;justify-content:center;position:absolute;z-index:10}:host(:state(loading)) .card-loading .loader{animation:var(--bnum-card-loader-animation-rotate360,var(--bnum-animation-rotate360,rotate360 1s linear infinite))}:host(:state(loading)) .card-body slot{visibility:hidden}';
+
+const SHEET$3 = BnumElementInternal.ConstructCSSStyleSheet(css_248z$3);
+/**
+ * Élément à ajouter dans un slot avec un nom de slot optionnel.
+ */
+class ScheduleElementAppend {
+  #_element;
+  #_slot;
+  /**
+   * Constructeur de la classe ScheduleElementAppend.
+   * @param element Element à ajouter
+   * @param slot Dans quel slot (null pour le slot principal)
+   */
+  constructor(element, slot = null) {
+    this.#_element = element;
+    this.#_slot = slot;
+  }
+  /**
+   * Retourne l'élément à ajouter.
+   */
+  get element() {
+    return this.#_element;
+  }
+  /**
+   * Retourne le nom du slot où ajouter l'élément.
+   */
+  get slot() {
+    return this.#_slot;
+  }
+}
+/**
+ * Élément HTML représentant une carte personnalisée Bnum.
+ *
+ * Liste des slots :
+ * - title : Contenu du titre de la carte. Si aucun contenu n'est fourni, un titre par défaut sera généré à partir des attributs de données.
+ * - (slot par défaut) : Contenu du corps de la carte.
+ *
+ * Liste des data :
+ * - title-icon : Icône du titre de la carte.
+ * - title-text : Texte du titre de la carte.
+ * - title-link : Lien du titre de la carte.
+ *
+ * /!\ Les data servent à définir un titre par défaut, si le slot "title" est vide ou pas défini.
+ *
+ * Liste des attributs :
+ * - clickable : Rend la carte cliquable.
+ * - loading : Indique si la carte est en état de chargement.
+ *
+ * Évènements personnalisés :
+ * - bnum-card:loading : Déclenché lorsque l'état de chargement de la carte change.
+ * - bnum-card:click : Déclenché lorsqu'un clic est effectué sur une carte cliquable.
+ *
+ * @structure Cas standard
+ * <bnum-card>
+ * <span slot="title">Titre de la carte</span>
+ * <p>Contenu principal.</p>
+ * </bnum-card>
+ *
+ * @structure Carte cliquable
+ * <bnum-card clickable>
+ * <span slot="title">Carte cliquable</span>
+ * <p>Cliquez n'importe où.</p>
+ * </bnum-card>
+ *
+ * @structure Carte avec titre par défaut (via data-attrs)
+ * <bnum-card
+ * data-title-text="Titre généré"
+ * data-title-icon="info"
+ * >
+ * <p>Le slot "title" est vide.</p>
+ * </bnum-card>
+ *
+ * @structure Carte avec un chargement
+ * <bnum-card loading>
+ * <bnum-card-title slot="title" data-icon="info">Titre en cours de chargement...</bnum-card-title>
+ * <p>Chargement</p>
+ * </bnum-card>
+ *
+ * @state clickable - Est actif lorsque la carte est cliquable.
+ * @state loading - Est actif lorsque la carte est en état de chargement.
+ *
+ * @slot title - Contenu du titre de la carte. Si aucun contenu n'est fourni, un titre par défaut sera généré.
+ * @slot (default) - Contenu du corps de la carte. Masqué si l'état `loading` est actif.
+ *
+ * @cssvar {block} --bnum-card-display - Définit le type d'affichage du composant.
+ * @cssvar {var(--bnum-space-m, 15px)} --bnum-card-padding - Définit le padding interne de la carte.
+ * @cssvar {auto} --bnum-card-width - Définit la largeur de la carte.
+ * @cssvar {auto} --bnum-card-height - Définit la hauteur de la carte.
+ * @cssvar {var(--bnum-color-surface, #f6f6f7)} --bnum-card-background-color - Couleur de fond de la carte.
+ * @cssvar {var(--bnum-color-surface-hover, #eaeaea)} --bnum-card-background-color-hover - Couleur de fond au survol.
+ * @cssvar {var(--bnum-color-surface-active, #dfdfdf)} --bnum-card-background-color-active - Couleur de fond à l'état actif.
+ * @cssvar {pointer} --bnum-card-clickable-cursor - Curseur utilisé lorsque la carte est cliquable.
+ * @cssvar {var(--bnum-card-loader-animation-rotate360, var(--bnum-animation-rotate360, rotate360 1s linear infinite))} --bnum-card-loader-animation-rotate360 - Animation appliquée au loader (spinner).
+ *
+ */
+class HTMLBnumCardElement extends BnumElementInternal {
+  //#region Constants
+  /**
+   * Indique si la carte est cliquable.
+   * @prop {boolean | undefined} clickable - Si vrai, rend la carte interactive et accessible (rôle bouton).
+   * @attr {boolean | string | undefined} (optional) clickable
+   * @type {string}
+   */
+  static STATE_CLICKABLE = 'clickable';
+  /**
+   * Indique si la carte est en cours de chargement.
+   * @prop {boolean | undefined} loading - Si vrai, affiche un spinner et masque le corps.
+   * @attr {boolean | string | undefined} (optional) loading
+   * @type {string}
+   */
+  static STATE_LOADING = 'loading';
+  /**
+   * Classe CSS pour le titre de la carte.
+   * @type {string}
+   */
+  static CSS_CLASS_TITLE = 'card-title';
+  /**
+   * Classe CSS pour le corps de la carte.
+   * @type {string}
+   */
+  static CSS_CLASS_BODY = 'card-body';
+  /**
+   * Classe CSS pour l'affichage du loading.
+   * @type {string}
+   */
+  static CSS_CLASS_LOADING = 'card-loading';
+  /**
+   * Nom de la data pour l'icône du titre.
+   * @attr {string | undefined} (optional) data-title-icon - Nom de l'icône (Material Symbols) pour le titre par défaut.
+   * @type {string}
+   */
+  static DATA_TITLE_ICON = 'title-icon';
+  /**
+   * Nom de la data pour le texte du titre.
+   * @attr {string | undefined} (optional) data-title-text - Texte à afficher dans le titre par défaut.
+   * @type {string}
+   */
+  static DATA_TITLE_TEXT = 'title-text';
+  /**
+   * Nom de la data pour le lien du titre.
+   * @attr {string | undefined} (optional) data-title-link - URL à utiliser si le titre par défaut doit être un lien.
+   * @type {string}
+   */
+  static DATA_TITLE_LINK = 'title-link';
+  /**
+   * Nom de l'évènement déclenché lors du loading.
+   * @event bnum-card:loading
+   * @detail { oldValue: string|null, newValue: string|null, caller: HTMLBnumCardElement }
+   * @type {string}
+   */
+  static EVENT_LOADING = 'bnum-card:loading';
+  /**
+   * Nom de l'évènement déclenché lors d'un clic sur la carte.
+   * @event bnum-card:click
+   * @detail { originalEvent: MouseEvent }
+   * @type {string}
+   */
+  static EVENT_CLICK = 'bnum-card:click';
+  /**
+   * Nom du slot pour le titre.
+   * @type {string}
+   */
+  static SLOT_TITLE = 'title';
+  /**
+   * Nom de l'icône utilisée pour le spinner de chargement.
+   * @type {string}
+   */
+  static ICON_SPINNER = 'progress_activity';
+  /**
+   * Symbole utilisé pour réinitialiser le contenu du slot.
+   */
+  static SYMBOL_RESET = Symbol('reset');
+  //#endregion
+  //#region Private fields
+  /**
+   * Élément HTML utilisé pour afficher le loading.
+   * @type {HTMLElement | null}
+   */
+  #_loadingElement = null;
+  /**
+   * Élément HTML du corps de la carte.
+   * @type {HTMLElement | null}
+   */
+  #_bodyElement = null;
+  #_scheduleBody = null;
+  #_scheduleTitle = null;
+  #_scheduleAppend = null;
+  //#endregion Private fields
+  //#region Getters/Setters
+  /**
+   * Retourne l'icône du titre depuis les données du composant.
+   * @returns {string} Icône du titre.
+   */
+  get _titleIcon() {
+    return this.data(HTMLBnumCardElement.DATA_TITLE_ICON);
+  }
+  /**
+   * Retourne le texte du titre depuis les données du composant.
+   * @returns {string} Texte du titre.
+   */
+  get _titleText() {
+    return this.data(HTMLBnumCardElement.DATA_TITLE_TEXT);
+  }
+  /**
+   * Retourne le lien du titre depuis les données du composant.
+   * @returns {string} Lien du titre.
+   */
+  get _titleLink() {
+    return this.data(HTMLBnumCardElement.DATA_TITLE_LINK);
+  }
+  /**
+   * Retourne les données du titre sous forme d'objet TitleData.
+   * @returns {TitleData} Objet contenant les données du titre.
+   */
+  get _titleData() {
+    return {
+      icon: this._titleIcon,
+      text: this._titleText,
+      link: this._titleLink,
+      has: () => {
+        return this._titleText !== null && this._titleText !== undefined;
+      },
+    };
+  }
+  /**
+   * Si vrai, affiche la carte en état de chargement. Elle montre un spinner et masque le corps, de plus, tout les `pointer-events` sont désactivés.
+   * @returns {boolean}
+   */
+  get loading() {
+    return this.hasAttribute(HTMLBnumCardElement.STATE_LOADING);
+  }
+  /**
+   * Définit l'état de chargement de la carte.
+   * @param {boolean} value
+   * @returns {void}
+   */
+  set loading(value) {
+    if (value) {
+      this.setAttribute(
+        HTMLBnumCardElement.STATE_LOADING,
+        HTMLBnumCardElement.STATE_LOADING,
+      );
+    } else {
+      this.removeAttribute(HTMLBnumCardElement.STATE_LOADING);
+    }
+  }
+  /**
+   * Si vrai, la carte est cliquable et interactive.
+   * @returns {boolean}
+   */
+  get clickable() {
+    return this.hasAttribute(HTMLBnumCardElement.STATE_CLICKABLE);
+  }
+  /**
+   * Définit si la carte est cliquable ou non.
+   * @param {boolean} value
+   * @returns {void}
+   */
+  set clickable(value) {
+    // Ajoute le rôle et la tabulation pour l'accessibilité
+    if (value) {
+      this.setAttribute(
+        HTMLBnumCardElement.STATE_CLICKABLE,
+        HTMLBnumCardElement.STATE_CLICKABLE,
+      );
+      setButtonRole(this);
+    } else {
+      this.removeAttribute(HTMLBnumCardElement.STATE_CLICKABLE);
+      removeButtonRole(this);
+    }
+  }
+  //#endregion Getters/Setters
+  /**
+   * Retourne la liste des attributs observés par le composant.
+   * @returns {string[]} Liste des attributs observés.
+   */
+  static _p_observedAttributes() {
+    return [
+      HTMLBnumCardElement.STATE_CLICKABLE,
+      HTMLBnumCardElement.STATE_LOADING,
+    ];
+  }
+  //#region Lifecycle
+  /**
+   * Constructeur de la classe HTMLBnumCardElement.
+   * Initialise les écouteurs d'évènements.
+   * @constructor
+   */
+  constructor() {
+    super();
+    this.addEventListener('click', this.#_handleClick.bind(this));
+  }
+  _p_fromTemplate() {
+    return TEMPLATE$3;
+  }
+  /**
+   * Construit le DOM interne du composant.
+   * @param {ShadowRoot | HTMLElement} container ShadowRoot ou HTMLElement cible.
+   * @returns {void}
+   */
+  _p_buildDOM(container) {
+    this.#_bodyElement = container.querySelector('#mainslot');
+    const titleData = this._titleData;
+    if (titleData.has()) {
+      HTMLBnumCardTitle.Create(titleData.text || EMPTY_STRING, {
+        icon: titleData.icon || null,
+        link: titleData.link || null,
+      }).appendTo(
+        container.querySelector(
+          `slot[name="${HTMLBnumCardElement.SLOT_TITLE}"]`,
+        ),
+      );
+    }
+    this.#_updateDOM();
+  }
+  /**
+   * Met à jour le composant lors d'un changement d'attribut.
+   * @param {string} name Nom de l'attribut modifié.
+   * @param {string | null} oldVal Ancienne valeur.
+   * @param {string | null} newVal Nouvelle valeur.
+   * @returns {void}
+   */
+  _p_update(name, oldVal, newVal) {
+    if (name === HTMLBnumCardElement.STATE_LOADING) {
+      this.trigger(HTMLBnumCardElement.EVENT_LOADING, {
+        oldValue: oldVal,
+        newValue: newVal,
+        caller: this,
+      });
+    }
+    this.#_updateDOM();
+  }
+  _p_getStylesheets() {
+    return [...super._p_getStylesheets(), SHEET$3];
+  }
+  //#endregion Lifecycle
+  //#region Private methods
+  /**
+   * Met à jour l'affichage du DOM selon l'état du composant.
+   * @returns {void}
+   */
+  #_updateDOM() {
+    this._p_clearStates();
+    if (this.clickable) this._p_addState(HTMLBnumCardElement.STATE_CLICKABLE);
+    if (this.loading) {
+      this._p_addState(HTMLBnumCardElement.STATE_LOADING);
+      // Initialise le loading si nécessaire
+      if (!this.#_loadingElement) {
+        const div = this.shadowRoot?.querySelector(
+          `.${HTMLBnumCardElement.CSS_CLASS_BODY}`,
+        );
+        div.appendChild(this.#_getLoading());
+      }
+    }
+  }
+  /**
+   * Retourne l'élément HTML du loading (spinner).
+   * @returns {HTMLElement} Élément HTML du loading.
+   */
+  #_getLoading() {
+    if (!this.#_loadingElement) {
+      const loadingDiv = document.createElement('div');
+      loadingDiv.classList.add(HTMLBnumCardElement.CSS_CLASS_LOADING);
+      const spinner = HTMLBnumIcon.Create(
+        HTMLBnumCardElement.ICON_SPINNER,
+      ).addClass('loader');
+      loadingDiv.appendChild(spinner);
+      this.#_loadingElement = loadingDiv;
+    }
+    return this.#_loadingElement;
+  }
+  /**
+   * Gère le clic sur la carte.
+   * @param {MouseEvent} event Événement de clic sur la carte.
+   * @returns {void}
+   */
+  #_handleClick(event) {
+    if (this.clickable) {
+      // Déclenche un événement "click" natif
+      // ou un événement personnalisé si vous préférez
+      this.trigger(HTMLBnumCardElement.EVENT_CLICK, { originalEvent: event });
+    }
+  }
+  #_requestUpdateTitle(element) {
+    this.#_scheduleTitle ??= new Scheduler((el) =>
+      this.#_updateOrResetTitle(el),
+    );
+    this.#_scheduleTitle.schedule(element);
+  }
+  #_updateOrResetTitle(element) {
+    if (element === HTMLBnumCardElement.SYMBOL_RESET) this.#_resetTitle();
+    else this.#_updateTitle(element);
+  }
+  #_updateTitle(element) {
+    element.setAttribute('slot', HTMLBnumCardElement.SLOT_TITLE);
+    const oldTitles = this.querySelectorAll(
+      `[slot="${HTMLBnumCardElement.SLOT_TITLE}"]`,
+    );
+    oldTitles.forEach((node) => node.remove());
+    this.appendChild(element);
+  }
+  #_resetTitle() {
+    // On trouve tous les éléments du Light DOM assignés au slot "title"
+    const nodes = this.querySelectorAll(
+      `[slot="${HTMLBnumCardElement.SLOT_TITLE}"]`,
+    );
+    nodes.forEach((node) => node.remove());
+  }
+  #_requestUpdateBody(element) {
+    this.#_scheduleBody ??= new Scheduler((el) => this.#_updateOrResetBody(el));
+    this.#_scheduleBody.schedule(element);
+  }
+  #_updateOrResetBody(element) {
+    if (element === HTMLBnumCardElement.SYMBOL_RESET) this.#_resetBody();
+    else this.#_updateBody(element);
+  }
+  #_updateBody(element) {
+    element.removeAttribute('slot');
+    const oldBodyNodes = Array.from(this.childNodes).filter(
+      (node) =>
+        (node.nodeType === Node.ELEMENT_NODE &&
+          node.getAttribute('slot') !== HTMLBnumCardElement.SLOT_TITLE) ||
+        (node.nodeType === Node.TEXT_NODE &&
+          node.textContent?.trim() !== EMPTY_STRING),
+    );
+    oldBodyNodes.forEach((node) => node.remove());
+    this.appendChild(element);
+  }
+  #_resetBody() {
+    // On trouve tous les éléments qui n'ont PAS de slot="title"
+    const nodes = Array.from(this.childNodes).filter(
+      (node) =>
+        (node.nodeType === Node.ELEMENT_NODE &&
+          node.getAttribute('slot') !== HTMLBnumCardElement.SLOT_TITLE) ||
+        (node.nodeType === Node.TEXT_NODE &&
+          node.textContent?.trim() !== EMPTY_STRING),
+    );
+    nodes.forEach((node) => node.remove());
+  }
+  #_requestAppendElement(appended) {
+    this.#_scheduleAppend ??= new Scheduler((el) => this.#_appendElement(el));
+    this.#_scheduleAppend.schedule(appended);
+  }
+  #_appendElement(appended) {
+    if (appended.slot) appended.element.setAttribute('slot', appended.slot);
+    else appended.element.removeAttribute('slot');
+    this.appendChild(appended.element);
+  }
+  //#endregion Private methods
+  //#region Public methods
+  /**
+   * Remplace tout le contenu du slot "title" par un nouvel élément.
+   * @param {Element} element Élément à insérer dans le slot "title".
+   * @returns {HTMLBnumCardElement} L'instance courante de HTMLCardElement.
+   */
+  updateTitle(element) {
+    this.#_requestUpdateTitle(element);
+    return this;
+  }
+  /**
+   * Remplace tout le contenu du slot par défaut (body) par un nouvel élément.
+   * @param {Element} element Élément à insérer dans le corps de la carte.
+   * @returns {HTMLBnumCardElement} L'instance courante de HTMLCardElement.
+   */
+  updateBody(element) {
+    this.#_requestUpdateBody(element);
+    return this;
+  }
+  /**
+   * Supprime tous les éléments du slot "title".
+   * @returns {HTMLBnumCardElement} L'instance courante de HTMLCardElement.
+   */
+  clearTitle() {
+    this.#_requestUpdateTitle(HTMLBnumCardElement.SYMBOL_RESET);
+    return this;
+  }
+  /**
+   * Supprime tous les éléments du corps de la carte (hors slot "title").
+   * @returns {HTMLBnumCardElement} L'instance courante de HTMLCardElement.
+   */
+  clearBody() {
+    this.#_requestUpdateBody(HTMLBnumCardElement.SYMBOL_RESET);
+    return this;
+  }
+  /**
+   * Ajoute un élément au slot "title" sans supprimer les éléments existants.
+   * @param {Element} element Élément à ajouter au slot "title".
+   * @returns {HTMLBnumCardElement} L'instance courante de HTMLCardElement.
+   */
+  appendToTitle(element) {
+    this.#_requestAppendElement(
+      new ScheduleElementAppend(element, HTMLBnumCardElement.SLOT_TITLE),
+    );
+    return this;
+  }
+  /**
+   * Ajoute un élément au corps de la carte (slot par défaut) sans supprimer les éléments existants.
+   * @param {Element} element Élément à ajouter au corps de la carte.
+   * @returns {HTMLBnumCardElement} L'instance courante de HTMLCardElement.
+   */
+  appendToBody(element) {
+    this.#_requestAppendElement(new ScheduleElementAppend(element));
+    return this;
+  }
+  //#endregion Public methods
+  //#region Static properties
+  /**
+   * Crée une nouvelle instance de HTMLBnumCardElement avec les options spécifiées.
+   * @param param0 Options de création de la carte
+   * @param param0.title Titre de la carte (optionnel)
+   * @param param0.body Corps de la carte (optionnel)
+   * @param param0.clickable Si vrai, rend la carte cliquable (optionnel, défaut false)
+   * @param param0.loading Si vrai, affiche la carte en état de chargement (optionnel, défaut false)
+   * @returns Element HTMLBnumCardElement créé
+   */
+  static Create({
+    title = null,
+    body = null,
+    clickable = false,
+    loading = false,
+  } = {}) {
+    const card = document.createElement(HTMLBnumCardElement.TAG);
+    if (title) card.updateTitle(title);
+    if (body) card.updateBody(body);
+    if (clickable)
+      card.setAttribute(
+        HTMLBnumCardElement.STATE_CLICKABLE,
+        HTMLBnumCardElement.STATE_CLICKABLE,
+      );
+    if (loading)
+      card.setAttribute(
+        HTMLBnumCardElement.STATE_LOADING,
+        HTMLBnumCardElement.STATE_LOADING,
+      );
+    return card;
+  }
+  /**
+   * Retourne le nom de la balise personnalisée pour cet élément.
+   * @returns Nom de la balise personnalisée.
+   */
+  static get TAG() {
+    return TAG_CARD;
+  }
+}
+const TEMPLATE$3 = BnumElementInternal.CreateTemplate(`
+      <div class="${HTMLBnumCardElement.CSS_CLASS_TITLE}">
+        <slot name="${HTMLBnumCardElement.SLOT_TITLE}"></slot>
+      </div>
+      <div class="${HTMLBnumCardElement.CSS_CLASS_BODY}">
+        <slot id="mainslot"></slot>
+      </div>
+    `);
+HTMLBnumCardElement.TryDefine();
+
+var css_248z$2 =
+  ':host{display:var(--bnum-card-agenda-display,block)}[hidden]{display:none}';
+
+const SHEET$2 = BnumElement.ConstructCSSStyleSheet(css_248z$2);
+/**
+ * Organisme qui permet d'afficher simplement une liste d'évènements dans une carte.
+ *
+ * @structure Avec des éléments
+ * <bnum-card-agenda>
+ * <bnum-card-item-agenda
+ *    data-date="2024-01-01"
+ *    data-start-date="2024-01-01 08:00:00"
+ *    data-end-date="2024-01-01 10:00:00"
+ *    data-title="Réunion de projet"
+ *    data-location="Salle de conférence">
+ * </bnum-card-item-agenda>
+ * <bnum-card-item-agenda
+ *    data-date="2025-11-20"
+ *    data-start-date="2025-10-20 09:40:00"
+ *    data-end-date="2025-12-20 10:10:00"
+ *    data-title="Réunion de projet"
+ *    data-location="Salle de conférence">
+ * </bnum-card-item-agenda>
+ * <bnum-card-item-agenda all-day
+ *    data-date="2025-11-21"
+ *    data-title="Télétravail"
+ *    data-location="A la maison">
+ * </bnum-card-item-agenda>
+ * </bnum-card-agenda>
+ *
+ * @structure Sans éléments
+ * <bnum-card-agenda>
+ * </bnum-card-agenda>
+ *
+ * @structure Avec une url
+ * <bnum-card-agenda data-url="#">
+ * </bnum-card-agenda>
+ *
+ * @slot (default) - Contenu des éléments de type HTMLBnumCardItemAgenda.
+ *
+ * @cssvar {block} --bnum-card-agenda - Définit le display du composant. Par défaut à "block".
+ */
+class HTMLBnumCardAgenda extends BnumElement {
+  //#region Constants
+  /**
+   * Nom du event déclenché lorsque les éléments changent (ajout/suppression).
+   * @event bnum-card-agenda:change
+   * @detail HTMLBnumCardItemAgenda[]
+   */
+  static CHANGE_EVENT = 'bnum-card-agenda:change';
+  /**
+   * Data pour l'URL du titre.
+   */
+  static DATA_URL = 'url';
+  /**
+   * Attribut data pour l'URL du titre.
+   * @attr {string | undefined} (optional) data-url - Ajoute une url au titre. Ne rien mettre pour que l'option "url" du titre ne s'active pas.
+   */
+  static ATTRIBUTE_DATA_URL = `data-${HTMLBnumCardAgenda.DATA_URL}`;
+  /**
+   * Attribut pour le mode loading.
+   * @attr {string | undefined} (optional) loading - Si présent, affiche le mode loading.
+   */
+  static ATTRIBUTE_LOADING = 'loading';
+  /**
+   * ID du titre.
+   */
+  static ID_CARD_TITLE = 'bnum-card-title';
+  /**
+   * ID de l'élément "Aucun élément".
+   */
+  static ID_CARD_ITEM_NO_ELEMENTS = 'no-elements';
+  //#endregion Constants
+  //#region Private fields
+  #_isSorting = false;
+  #_cardTitle;
+  #_slot;
+  #_noElements;
+  #_card = null;
+  /**
+   * Déclenché lorsque les éléments changent (ajout/suppression).
+   */
+  #_onchange = null;
+  //#endregion Private fields
+  //#region Getters/Setters
+  /**
+   * Déclenché lorsque les éléments changent (ajout/suppression).
+   */
+  get onElementChanged() {
+    if (this.#_onchange === null) {
+      this.#_onchange = new JsEvent();
+      this.#_onchange.add(EVENT_DEFAULT, (data) => {
+        this.trigger(HTMLBnumCardAgenda.CHANGE_EVENT, { detail: data });
+      });
+    }
+    return this.#_onchange;
+  }
+  /**
+   * Mode loading.
+   */
+  get loading() {
+    return this.hasAttribute(HTMLBnumCardAgenda.ATTRIBUTE_LOADING);
+  }
+  set loading(value) {
+    if (value) {
+      this.setAttribute(
+        HTMLBnumCardAgenda.ATTRIBUTE_LOADING,
+        HTMLBnumCardAgenda.ATTRIBUTE_LOADING,
+      );
+    } else {
+      this.removeAttribute(HTMLBnumCardAgenda.ATTRIBUTE_LOADING);
+    }
+  }
+  get #_cardPart() {
+    if (this.#_card === null) {
+      this.#_card =
+        this.querySelector?.(HTMLBnumCardElement.TAG) ??
+        this.shadowRoot?.querySelector?.(HTMLBnumCardElement.TAG) ??
+        null;
+    }
+    return this.#_card;
+  }
+  /**
+   * Récupère l'URL du titre.
+   */
+  get #_url() {
+    return this.data(HTMLBnumCardAgenda.DATA_URL) || EMPTY_STRING;
+  }
+  //#endregion Getters/Setters
+  //#region Lifecycle
+  constructor() {
+    super();
+  }
+  get _p_styleSheets() {
+    return [SHEET$2];
+  }
+  _p_fromTemplate() {
+    return TEMPLATE$2;
+  }
+  _p_buildDOM(container) {
+    this.#_cardTitle = container.querySelector(
+      `#${HTMLBnumCardAgenda.ID_CARD_TITLE}`,
+    );
+    this.#_slot = container.querySelector('slot');
+    this.#_noElements = container.querySelector(
+      `#${HTMLBnumCardAgenda.ID_CARD_ITEM_NO_ELEMENTS}`,
+    );
+  }
+  _p_attach() {
+    if (this.#_url !== EMPTY_STRING) this.#_cardTitle.url = this.#_url;
+    // On écoute les changements dans le slot (Items statiques ou ajoutés via JS)
+    this.#_slot.addEventListener(
+      'slotchange',
+      this.#_handleSlotChange.bind(this),
+    );
+    this.#_handleSlotChange();
+  }
+  _p_update(name, oldVal, newVal) {
+    switch (name) {
+      case HTMLBnumCardAgenda.ATTRIBUTE_LOADING:
+        if (newVal === null || newVal === EMPTY_STRING)
+          this.#_cardPart.removeAttribute(HTMLBnumCardAgenda.ATTRIBUTE_LOADING);
+        else
+          this.#_cardPart.setAttribute(
+            HTMLBnumCardAgenda.ATTRIBUTE_LOADING,
+            newVal || EMPTY_STRING,
+          );
+        break;
+    }
+  }
+  //#endregion Lifecycle
+  //#region Public methods
+  /**
+   * Ajoute des éléments.
+   *
+   * Note: On ajoute simplement au Light DOM. Le slotchange détectera l'ajout et déclenchera le tri.
+   * @param content Elements à ajouter
+   */
+  add(...content) {
+    this.append(...content);
+    return this;
+  }
+  /**
+   * Vide le composant.
+   */
+  clear() {
+    this.innerHTML = EMPTY_STRING; // Vide le Light DOM
+    return this;
+  }
+  //#endregion Public methods
+  //#region Private methods
+  /**
+   * Gère le tri des éléments.
+   * Utilise requestAnimationFrame pour ne pas bloquer le thread si beaucoup d'items.
+   */
+  #_handleSlotChange() {
+    if (this.#_isSorting) return;
+    // On planifie le tri au prochain frame pour regrouper les appels multiples
+    requestAnimationFrame(() => {
+      this.#_sortChildren();
+    });
+  }
+  /**
+   * Tri les éléments enfants de la liste par date décroissante.
+   */
+  #_sortChildren() {
+    // 1. Récupérer les éléments assignés au slot (Uniquement les Nodes Elements, pas le texte)
+    const elements = this.#_slot.assignedElements();
+    // Filtrer pour être sûr de ne trier que des événements (sécurité)
+    const agendaItems = elements.filter((el) =>
+      el.tagName.toLowerCase().includes(HTMLBnumCardItemAgenda.TAG),
+    );
+    if (agendaItems.length === 0) {
+      this.#_noElements.hidden = false;
+      this.#_slot.hidden = true;
+      return;
+    } else {
+      this.#_noElements.hidden = true;
+      this.#_slot.hidden = false;
+    }
+    if (agendaItems.length < 2) return; // Pas besoin de trier
+    // 2. Vérifier si un tri est nécessaire (optimisation)
+    let isSorted = true;
+    for (let i = 0; i < agendaItems.length - 1; i++) {
+      if (this.#_getDate(agendaItems[i]) < this.#_getDate(agendaItems[i + 1])) {
+        isSorted = false;
+        break;
+      } else if (
+        this.#_getDate(agendaItems[i]) === this.#_getDate(agendaItems[i + 1])
+      ) {
+        // Même date de base, on regardmailItemse la date de début
+        if (
+          this.#_getStartDate(agendaItems[i]) <
+          this.#_getStartDate(agendaItems[i + 1])
+        ) {
+          isSorted = false;
+          break;
+        }
+      }
+    }
+    if (isSorted) return;
+    // 3. Trier en mémoire
+    this.#_isSorting = true; // Verrouiller pour éviter que le déplacement ne relance slotchange
+    // 4. Réinsérer dans l'ordre via un Fragment (1 seul Reflow)
+    const fragment = document.createDocumentFragment();
+    fragment.append(
+      ...JsEnumerable.from(agendaItems)
+        .orderByDescending((x) => this.#_getDate(x))
+        .thenDescending((x) => this.#_getStartDate(x)),
+    );
+    this.appendChild(fragment); // Déplace les éléments existants, ne les recrée pas.
+    // Notifier le changement
+    this.onElementChanged.call(agendaItems);
+    // Déverrouiller après que le microtask de mutation soit passé
+    setTimeout(() => {
+      this.#_isSorting = false;
+    }, 0);
+  }
+  /**
+   * Helper pour parser la date de manière robuste
+   */
+  #_getDate(item) {
+    return item.baseDate.getTime();
+  }
+  /**
+   * Helper pour parser la date de manière robuste
+   */
+  #_getStartDate(item) {
+    return item.isAllDay ? this.#_getDate(item) : item.startDate.getTime();
+  }
+  //#endregion Private methods
+  //#region Static methods
+  static _p_observedAttributes() {
+    return [HTMLBnumCardAgenda.ATTRIBUTE_LOADING];
+  }
+  /**
+   * Méthode statique pour créer une instance du composant.
+   * @param param0 Options de création
+   * @param param0.contents Contenus initiaux à ajouter
+   * @param param0.url URL du titre
+   * @returns Nouvelle node HTMLBnumCardAgenda
+   */
+  static Create({ contents = [], url = EMPTY_STRING } = {}) {
+    const node = document.createElement(this.TAG);
+    if (url !== EMPTY_STRING)
+      node.setAttribute(HTMLBnumCardAgenda.ATTRIBUTE_DATA_URL, url);
+    if (contents.length > 0) node.add(...contents);
+    return node;
+  }
+  /**
+   * Tag du composant.
+   */
+  static get TAG() {
+    return TAG_CARD_AGENDA;
+  }
+}
+const TEMPLATE$2 = BnumElement.CreateTemplate(`
+    <${HTMLBnumCardElement.TAG}>
+      <${HTMLBnumCardTitle.TAG} id="${HTMLBnumCardAgenda.ID_CARD_TITLE}" slot="title" data-icon="today">${BnumConfig.Get('local_keys').last_events}</${HTMLBnumCardTitle.TAG}>
+        <${HTMLBnumCardList.TAG}>
+          <slot></slot>
+          <${HTMLBnumCardItem.TAG} id="${HTMLBnumCardAgenda.ID_CARD_ITEM_NO_ELEMENTS}" disabled hidden>${BnumConfig.Get('local_keys').no_events}</${HTMLBnumCardItem.TAG}>
+        </${HTMLBnumCardList.TAG}>
+    </${HTMLBnumCardElement.TAG}>
+    `);
+//#region TryDefine
+HTMLBnumCardAgenda.TryDefine();
+//#endregion TryDefine
+
+var css_248z$1 =
+  ':host{display:var(--bnum-card-email-display,block)}[hidden]{display:none}';
+
+const SHEET$1 = BnumElement.ConstructCSSStyleSheet(css_248z$1);
+/**
+ * Organisme qui permet d'afficher simplement une liste de mails dans une carte.
+ *
+ * @structure Avec des éléments
+ * <bnum-card-email>
+ * <bnum-card-item-mail data-date="2025-10-31 11:11" data-subject="Sujet ici" data-sender="Expéditeur ici">
+ * </bnum-card-item-mail>
+ * <bnum-card-item-mail read data-date="2025-10-31 11:11" data-subject="Sujet ici" data-sender="Expéditeur ici">
+ * </bnum-card-item-mail>
+ * <bnum-card-item-mail data-date="now">
+ * <span slot="subject">Sujet par défaut</span>
+ * <span slot="sender">Expéditeur par défaut</span>
+ * </bnum-card-item-mail>
+ * </bnum-card-email>
+ *
+ * @structure Sans éléments
+ * <bnum-card-email>
+ * </bnum-card-email>
+ *
+ * @structure Avec une url
+ * <bnum-card-email data-url="#">
+ * </bnum-card-email>
+ *
+ * @slot (default) - Contenu des éléments de type HTMLBnumCardItemMail.
+ *
+ * @cssvar {block} --bnum-card-email-display - Définit le display du composant. Par défaut à "block".
+ */
+class HTMLBnumCardEmail extends BnumElement {
+  //#region Constants
+  /**
+   * Nom du event déclenché lorsque les éléments changent (ajout/suppression).
+   * @event bnum-card-email:change
+   * @detail HTMLBnumCardItemMail[]
+   */
+  static CHANGE_EVENT = 'bnum-card-email:change';
+  /**
+   * Data pour l'URL du titre.
+   */
+  static DATA_URL = 'url';
+  /**
+   * Attribut data pour l'URL du titre.
+   * @attr {string | undefined} (optional) data-url - Ajoute une url au titre. Ne rien mettre pour que l'option "url" du titre ne s'active pas.
+   */
+  static ATTRIBUTE_DATA_URL = `data-${HTMLBnumCardEmail.DATA_URL}`;
+  /**
+   * ID du titre.
+   */
+  static ID_CARD_TITLE = 'bnum-card-title';
+  /**
+   * ID de l'élément "Aucun élément".
+   */
+  static ID_CARD_ITEM_NO_ELEMENTS = 'no-elements';
+  /**
+   * Attribut pour le mode loading.
+   * @attr {string | undefined} (optional) loading - Si présent, affiche le mode loading.
+   */
+  static ATTRIBUTE_LOADING = 'loading';
+  //#endregion Constants
+  //#region Private fields
+  #_isSorting = false;
+  #_cardTitle;
+  #_slot;
+  #_noElements;
+  #_card = null;
+  /**
+   * Déclenché lorsque les éléments changent (ajout/suppression).
+   */
+  #_onchange = null;
+  //#endregion Private fields
+  //#region Getters/Setters
+  /**
+   * Déclenché lorsque les éléments changent (ajout/suppression).
+   */
+  get onElementChanged() {
+    if (this.#_onchange === null) {
+      this.#_onchange = new JsEvent();
+      this.#_onchange.add(EVENT_DEFAULT, (data) => {
+        this.trigger(HTMLBnumCardEmail.CHANGE_EVENT, { detail: data });
+      });
+    }
+    return this.#_onchange;
+  }
+  /**
+   * Mode loading.
+   */
+  get loading() {
+    return this.hasAttribute(HTMLBnumCardEmail.ATTRIBUTE_LOADING);
+  }
+  set loading(value) {
+    if (value) {
+      this.setAttribute(
+        HTMLBnumCardEmail.ATTRIBUTE_LOADING,
+        HTMLBnumCardEmail.ATTRIBUTE_LOADING,
+      );
+    } else {
+      this.removeAttribute(HTMLBnumCardEmail.ATTRIBUTE_LOADING);
+    }
+  }
+  get #_cardPart() {
+    if (this.#_card === null) {
+      this.#_card =
+        this.querySelector?.(HTMLBnumCardElement.TAG) ??
+        this.shadowRoot?.querySelector?.(HTMLBnumCardElement.TAG) ??
+        null;
+    }
+    return this.#_card;
+  }
+  /**
+   * Récupère l'URL du titre.
+   */
+  get #_url() {
+    return this.data(HTMLBnumCardEmail.DATA_URL) || EMPTY_STRING;
+  }
+  //#endregion Getters/Setters
+  //#region Lifecycle
+  constructor() {
+    super();
+  }
+  get _p_styleSheets() {
+    return [SHEET$1];
+  }
+  _p_fromTemplate() {
+    return TEMPLATE$1;
+  }
+  _p_buildDOM(container) {
+    this.#_cardTitle = container.querySelector(
+      `#${HTMLBnumCardEmail.ID_CARD_TITLE}`,
+    );
+    this.#_slot = container.querySelector('slot');
+    this.#_noElements = container.querySelector(
+      `#${HTMLBnumCardEmail.ID_CARD_ITEM_NO_ELEMENTS}`,
+    );
+  }
+  _p_attach() {
+    if (this.#_url !== EMPTY_STRING) this.#_cardTitle.url = this.#_url;
+    // On écoute les changements dans le slot (Items statiques ou ajoutés via JS)
+    this.#_slot.addEventListener(
+      'slotchange',
+      this.#_handleSlotChange.bind(this),
+    );
+    this.#_handleSlotChange();
+  }
+  _p_update(name, oldVal, newVal) {
+    switch (name) {
+      case HTMLBnumCardEmail.ATTRIBUTE_LOADING:
+        if (newVal === null || newVal === EMPTY_STRING)
+          this.#_cardPart.removeAttribute(HTMLBnumCardEmail.ATTRIBUTE_LOADING);
+        else
+          this.#_cardPart.setAttribute(
+            HTMLBnumCardEmail.ATTRIBUTE_LOADING,
+            newVal || EMPTY_STRING,
+          );
+        break;
+    }
+  }
+  //#endregion Lifecycle
+  //#region Public methods
+  /**
+   * Ajoute des éléments.
+   *
+   * Note: On ajoute simplement au Light DOM. Le slotchange détectera l'ajout et déclenchera le tri.
+   * @param content Elements à ajouter
+   */
+  add(...content) {
+    this.append(...content);
+    return this;
+  }
+  /**
+   * Vide le composant.
+   */
+  clear() {
+    this.innerHTML = EMPTY_STRING; // Vide le Light DOM
+    return this;
+  }
+  //#endregion Public methods
+  //#region Private methods
+  /**
+   * Gère le tri des éléments.
+   * Utilise requestAnimationFrame pour ne pas bloquer le thread si beaucoup d'items.
+   */
+  #_handleSlotChange() {
+    if (this.#_isSorting) return;
+    // On planifie le tri au prochain frame pour regrouper les appels multiples
+    requestAnimationFrame(() => {
+      this.#_sortChildren();
+    });
+  }
+  /**
+   * Tri les éléments enfants de la liste par date décroissante.
+   */
+  #_sortChildren() {
+    // 1. Récupérer les éléments assignés au slot (Uniquement les Nodes Elements, pas le texte)
+    const elements = this.#_slot.assignedElements();
+    // Filtrer pour être sûr de ne trier que des mails (sécurité)
+    const mailItems = elements.filter((el) =>
+      el.tagName.toLowerCase().includes(HTMLBnumCardItemMail.TAG),
+    );
+    if (mailItems.length === 0) {
+      this.#_noElements.hidden = false;
+      this.#_slot.hidden = true;
+      return;
+    } else {
+      this.#_noElements.hidden = true;
+      this.#_slot.hidden = false;
+    }
+    if (mailItems.length < 2) return; // Pas besoin de trier
+    // 2. Vérifier si un tri est nécessaire (optimisation)
+    let isSorted = true;
+    for (let i = 0; i < mailItems.length - 1; i++) {
+      if (this.#_getDate(mailItems[i]) < this.#_getDate(mailItems[i + 1])) {
+        isSorted = false;
+        break;
+      }
+    }
+    if (isSorted) return;
+    // 3. Trier en mémoire
+    this.#_isSorting = true; // Verrouiller pour éviter que le déplacement ne relance slotchange
+    mailItems.sort((a, b) => {
+      // Tri décroissant (le plus récent en haut)
+      return this.#_getDate(b) - this.#_getDate(a);
+    });
+    // 4. Réinsérer dans l'ordre via un Fragment (1 seul Reflow)
+    const fragment = document.createDocumentFragment();
+    mailItems.forEach((item) => fragment.appendChild(item));
+    this.appendChild(fragment); // Déplace les éléments existants, ne les recrée pas.
+    // Notifier le changement
+    this.onElementChanged.call(mailItems);
+    // Déverrouiller après que le microtask de mutation soit passé
+    setTimeout(() => {
+      this.#_isSorting = false;
+    }, 0);
+  }
+  /**
+   * Helper pour parser la date de manière robuste
+   */
+  #_getDate(item) {
+    const dateStr = item.getAttribute(HTMLBnumCardItemMail.ATTRIBUTE_DATA_DATE);
+    if (!dateStr) return item.date.getTime();
+    if (dateStr === 'now') return Date.now();
+    return new Date(dateStr).getTime();
+  }
+  //#endregion Private methods
+  //#region Static methods
+  static _p_observedAttributes() {
+    return [HTMLBnumCardEmail.ATTRIBUTE_LOADING];
+  }
+  /**
+   * Méthode statique pour créer une instance du composant.
+   * @param param0 Options de création
+   * @param param0.contents Contenus initiaux à ajouter
+   * @param param0.url URL du titre
+   * @returns Nouvelle node HTMLBnumCardEmail
+   */
+  static Create({ contents = [], url = EMPTY_STRING } = {}) {
+    const node = document.createElement(this.TAG);
+    if (url !== EMPTY_STRING)
+      node.setAttribute(HTMLBnumCardEmail.ATTRIBUTE_DATA_URL, url);
+    if (contents.length > 0) node.add(...contents);
+    return node;
+  }
+  /**
+   * Tag du composant.
+   */
+  static get TAG() {
+    return TAG_CARD_EMAIL;
+  }
+}
+const TEMPLATE$1 = BnumElement.CreateTemplate(`
+    <${HTMLBnumCardElement.TAG}>
+      <${HTMLBnumCardTitle.TAG} id="${HTMLBnumCardEmail.ID_CARD_TITLE}" slot="title" data-icon="mail">${BnumConfig.Get('local_keys').last_mails}</${HTMLBnumCardTitle.TAG}>
+        <${HTMLBnumCardList.TAG}>
+          <slot></slot>
+          <${HTMLBnumCardItem.TAG} id="${HTMLBnumCardEmail.ID_CARD_ITEM_NO_ELEMENTS}" disabled hidden>${BnumConfig.Get('local_keys').no_mails}</${HTMLBnumCardItem.TAG}>
+        </${HTMLBnumCardList.TAG}>
+    </${HTMLBnumCardElement.TAG}>
+    `);
+//#region TryDefine
+HTMLBnumCardEmail.TryDefine();
+//#endregion TryDefine
+
+var css_248z =
+  '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{background-color:var(--bnum-header-background-color,var(--bnum-color-surface,#f6f6f6));border-bottom:var(--bnum-header-border-bottom,var(--bnum-border-in-surface,solid 1px #ddd));box-sizing:border-box;display:var(--bnum-header-display,block);height:var(--bnum-header-height,60px)}:host .bnum-header-container{box-sizing:border-box;display:flex;height:100%;padding:0 1rem;width:100%}:host .header-left,:host .header-right{align-items:center;display:flex;flex:1}:host .header-left{gap:var(--bnum-header-left-gap,var(--bnum-space-s,10px));justify-content:flex-start}:host .header-left ::slotted(div),:host .header-left ::slotted(h1),:host .header-left ::slotted(h2),:host .header-left ::slotted(p),:host .header-left ::slotted(span),:host .header-left h1{align-items:center;display:flex;line-height:1.2;margin:0 0 -10px}:host .header-right{gap:var(--bnum-header-right-gap,var(--bnum-space-l,20px));justify-content:flex-end}:host ::slotted(bnum-img),:host ::slotted(img),:host bnum-img,:host img{display:block;height:var(--bnum-header-logo-height,45px);-o-object-fit:contain;object-fit:contain;width:auto}::slotted(bnum-secondary-button){--bnum-button-padding:var(--bnum-header-background-button-padding,5px 3px)}::slotted(.main-action-button){-padding:var(--bnum-header-background-button-padding,5px 3px)}:host(:state(with-background)){background-color:unset!important;background-image:var(--bnum-header-background-image);background-position:50%!important;background-size:cover!important;color:var(--bnum-header-with-background-color,#fff)}:host(:state(with-background)) .header-modifier{background:linear-gradient(90deg,#161616,transparent) 0 /50% 100% no-repeat,linear-gradient(270deg,#161616,transparent) 100% /50% 100% no-repeat}:host(:state(with-background)) ::slotted(.main-action-button),:host(:state(with-background)) ::slotted(bnum-secondary-button){background-color:#1616164d;border-color:var(--bnum-header-main-action-border-color,#fff);color:var(--bnum-header-main-action-color,#fff)}:host(:state(with-background)) ::slotted(.main-action-button):hover,:host(:state(with-background)) ::slotted(bnum-secondary-button):hover{background-color:#343434d2}:host(:state(with-background)) ::slotted(.main-action-button):active,:host(:state(with-background)) ::slotted(bnum-secondary-button):active{background-color:#474747ee}:host(:state(with-background)) ::slotted(.main-action-button:hover),:host(:state(with-background)) ::slotted(bnum-secondary-button:hover){background-color:#343434d2}:host(:state(with-background)) ::slotted(.main-action-button:active),:host(:state(with-background)) ::slotted(bnum-secondary-button:active){background-color:#474747ee}';
+
+const SHEET = BnumElementInternal.ConstructCSSStyleSheet(css_248z);
+/**
+ * Composant Header du Bnum
+ *
+ * @structure Par défaut
+ * <bnum-header>
+ *  <img slot="logo" src="assets/bnumloader.svg" alt="Logo du bnum"/>
+ *  <h1 slot="title">Accueil</h1>
+ *
+ *   <bnum-secondary-button slot="actions" data-icon="add">Créer</bnum-secondary-button>
+ *   <bnum-icon-button slot="actions">article</bnum-icon-button>
+ *   <bnum-icon-button slot="actions">help</bnum-icon-button>
+ *   <bnum-icon-button slot="actions">settings</bnum-icon-button>
+ *   <bnum-icon-button slot="actions">notifications</bnum-icon-button>
+ *
+ *  <img slot="avatar" style="border-radius: 100%" src="assets/avatar.png" alt="Avatar de remplacement"></img>
+ * </bnum-header>
+ *
+ * @structure Avec image de fond
+ * <bnum-header data-background="assets/headerbackground.gif">
+ *  <img slot="logo" src="assets/bnumloader.svg" alt="Logo du bnum"/>
+ *  <h1 slot="title">Accueil</h1>
+ *
+ *   <bnum-secondary-button slot="actions" data-icon="add">Créer</bnum-secondary-button>
+ *   <bnum-icon-button slot="actions">article</bnum-icon-button>
+ *   <bnum-icon-button slot="actions">help</bnum-icon-button>
+ *   <bnum-icon-button slot="actions">settings</bnum-icon-button>
+ *   <bnum-icon-button slot="actions">notifications</bnum-icon-button>
+ *
+ *  <img slot="avatar" style="border-radius: 100%" src="assets/avatar.png" alt="Avatar de remplacement"></img>
+ * </bnum-header>
+ *
+ * @slot logo - Slot pour le logo
+ * @slot title - Slot pour le titre
+ * @slot actions - Slot pour les actions
+ * @slot avatar - Slot pour l'avatar
+ *
+ * @state with-background - Actif si une image de fond est définie
+ *
+ * @cssvar {block} --bnum-header-display - Définit le type d'affichage du header
+ * @cssvar {60px} --bnum-header-height - Hauteur du header
+ * @cssvar {#f5f6fa} --bnum-header-background-color - Couleur de fond du header
+ * @cssvar {1px solid #e5e7eb} --bnum-header-border-bottom - Bordure basse du header
+ * @cssvar {8px} --bnum-header-left-gap - Espace à gauche entre les éléments du header
+ * @cssvar {24px} --bnum-header-right-gap - Espace à droite entre les éléments du header
+ * @cssvar {45px} --bnum-header-logo-height - Hauteur du logo dans le header
+ * @cssvar {none} --bnum-header-background-image - Image de fond du header (par défaut aucune)
+ * @cssvar {#ffffff} --bnum-header-with-background-color - Couleur du texte sur fond personnalisé
+ * @cssvar {#ffffff} --bnum-header-main-action-border-color - Couleur de la bordure du bouton principal sur fond personnalisé
+ * @cssvar {#ffffff} --bnum-header-main-action-color - Couleur du texte du bouton principal sur fond personnalisé
+ * @cssvar {5px 3px} --bnum-header-background-button-padding - Padding de l'action principale
+ */
+class HTMLBnumHeader extends BnumElementInternal {
+  //#region Constants
+  /**
+   * Data pour avoir un background par défaut
+   * @attr {string | undefined} (optional) data-background - Met une image de fond par défaut
+   */
+  static DATA_BACKGROUND = 'background';
+  /**
+   * Classe CSS du container principal
+   */
+  static CLASS_HEADER_CONTAINER = 'bnum-header-container';
+  /**
+   * Classe CSS de la partie gauche du header
+   */
+  static CLASS_HEADER_LEFT = 'header-left';
+  /**
+   * Classe CSS de la partie droite du header
+   */
+  static CLASS_HEADER_RIGHT = 'header-right';
+  /**
+   * Classe CSS du titre textuel
+   */
+  static CLASS_HEADER_TITLE = 'header-title';
+  /**
+   * Classe CSS du conteneur du titre custom
+   */
+  static CLASS_HEADER_CUSTOM = 'header-custom';
+  /**
+   * Classe CSS de la zone qui peut obtenir des "effets"
+   */
+  static CLASS_HEADER_MODIFIER = 'header-modifier';
+  /**
+   * Partie du container principal
+   */
+  static PART_HEADER_CONTAINER = 'header-container';
+  /**
+   * Partie du header gauche
+   */
+  static PART_HEADER_LEFT = 'header-left';
+  /**
+   * Partie du header droit
+   */
+  static PART_HEADER_RIGHT = 'header-right';
+  /**
+   * Partie du titre
+   */
+  static PART_HEADER_TITLE = 'header-title';
+  /**
+   * Partie de l'élément custom
+   */
+  static PART_HEADER_CUSTOM = 'header-custom';
+  /**
+   * ID du H1 pour le titre textuel
+   */
+  static ID_TITLE_TEXT = 'title-text';
+  /**
+   * ID du conteneur pour le titre custom
+   */
+  static ID_TITLE_CUSTOM = 'title-custom';
+  /**
+   * Nom du slot pour le logo
+   */
+  static SLOT_NAME_LOGO = 'logo';
+  /**
+   * Nom du slot pour le titre
+   */
+  static SLOT_NAME_TITLE = 'title';
+  /**
+   * Nom du slot pour les actions
+   */
+  static SLOT_NAME_ACTIONS = 'actions';
+  /**
+   * Nom du slot pour l'avatar
+   */
+  static SLOT_NAME_AVATAR = 'avatar';
+  /**
+   * Evènement du changement de d'image
+   * @event bnum-header:background.changed
+   * @detail {newBackground:Nullable<string>}
+   */
+  static EVENT_BACKGROUND_CHANGED = 'bnum-header:background.changed';
+  //#endregion Constants
+  //#region Private fields
+  // Références DOM
+  /**
+   * Slot pour le titre par défaut
+   */
+  #_slotTitle = null;
+  /**
+   * H1 pour le titre textuel
+   */
+  #_titleText = null;
+  /**
+   * Conteneur pour le titre custom
+   */
+  #_customTitleContainer = null;
+  // Scheduler pour éviter le layout thrashing
+  /**
+   * Scheduler pour la mise à jour du titre
+   */
+  #_scheduleUpdateTitle = null;
+  /**
+   * Scheduler pour la mise à jour de l'image de fond
+   */
+  #_scheduleUpdateBackground = null;
+  /**
+   * Evènement du changement d'image de fond
+   */
+  #_onBackgroundChanged = null;
+  //#endregion Private fields
+  //#region Getters/Setters
+  /**
+   * Scheduler pour la mise à jour de l'image de fond
+   */
+  get #_backgroundScheduler() {
+    return (
+      this.#_scheduleUpdateBackground ??
+      (this.#_scheduleUpdateBackground = new Scheduler((val) =>
+        this.#_updateBackground(val),
+      ))
+    );
+  }
+  /**
+   * Evènement du changement d'image de fond
+   */
+  get onBackgroundChanged() {
+    if (this.#_onBackgroundChanged === null) {
+      this.#_onBackgroundChanged = new JsEvent();
+      this.#_onBackgroundChanged.add(EVENT_DEFAULT, (newBackground) => {
+        this.trigger(HTMLBnumHeader.EVENT_BACKGROUND_CHANGED, {
+          newBackground,
+        });
+      });
+    }
+    return this.#_onBackgroundChanged;
+  }
+  /**
+   * URL de l'image de fond du header
+   */
+  get ImgBackground() {
+    return this.data(HTMLBnumHeader.DATA_BACKGROUND);
+  }
+  set ImgBackground(value) {
+    this.data(HTMLBnumHeader.DATA_BACKGROUND, value);
+  }
+  //#endregion Getters/Setters
+  //#region Lifecycle
+  constructor() {
+    super();
+  }
+  /**
+   * @inheritdoc
+   */
+  _p_getStylesheets() {
+    return [...super._p_getStylesheets(), SHEET];
+  }
+  /**
+   * @inheritdoc
+   */
+  _p_fromTemplate() {
+    return TEMPLATE;
+  }
+  /**
+   * @inheritdoc
+   */
+  _p_buildDOM(container) {
+    this.#_slotTitle = container.querySelector(
+      `slot[name="${HTMLBnumHeader.SLOT_NAME_TITLE}"]`,
+    );
+    this.#_titleText = container.querySelector(
+      `#${HTMLBnumHeader.ID_TITLE_TEXT}`,
+    );
+    this.#_customTitleContainer = container.querySelector(
+      `#${HTMLBnumHeader.ID_TITLE_CUSTOM}`,
+    );
+  }
+  /**
+   * @inheritdoc
+   */
+  _p_attach() {
+    if (this.ImgBackground !== null)
+      this.#_backgroundScheduler.call(this.ImgBackground);
+  }
+  /**
+   * Change le titre dynamiquement.
+   *
+   * @param content
+   * - String : Met à jour le H1.
+   * - HTMLElement : Affiche l'élément dans le conteneur dédié.
+   * - null : Affiche le slot par défaut.
+   */
+  setPageTitle(content) {
+    // Initialisation Lazy du scheduler
+    (this.#_scheduleUpdateTitle ??= new Scheduler((val) =>
+      this.#_applyTitleUpdate(val),
+    )).schedule(content);
+    return this;
+  }
+  /**
+   * Met à jour l'image de fond du header.
+   * @param urlOrData Interpréte la valeur comme une URL ou une Data URL.
+   * @returns L'instance courante pour le chaînage.
+   */
+  updateBackground(urlOrData) {
+    this.#_requestBackgroundUpdate(urlOrData);
+    return this;
+  }
+  /**
+   * Supprime l'image de fond du header.
+   * @returns L'instance courante pour le chaînage.
+   */
+  clearBackground() {
+    this.#_requestBackgroundUpdate(null);
+    return this;
+  }
+  //#endregion Public methods
+  //#region Private methods
+  /**
+   * Exécuté par le Scheduler (au prochain frame ou microtask)
+   * @param content Contenu à appliquer
+   */
+  #_applyTitleUpdate(content) {
+    // Cas "Reset" -> On veut voir le Slot
+    if (!content) {
+      this.#_resetVisibility(true, false, false);
+      return;
+    }
+    // Cas "String" -> On utilise le H1 natif
+    if (typeof content === 'string') {
+      // Optimisation: ne toucher au DOM que si le texte change vraiment
+      if (this.#_titleText.textContent !== content) {
+        this.#_titleText.textContent = content;
+      }
+      this.#_resetVisibility(false, true, false);
+      return;
+    }
+    // Cas "HTMLElement" -> On injecte dans le conteneur custom
+    // On vide proprement le conteneur avant d'ajouter le nouvel élément
+    this.#_customTitleContainer.replaceChildren(content);
+    this.#_resetVisibility(false, false, true);
+  }
+  /**
+   * Helper pour gérer la visibilité exclusive des 3 zones (Slot, H1, Custom)
+   * Utilise l'attribut 'hidden' standard HTML5
+   * @param showSlot Affiche le slot par défaut
+   * @param showText Affiche le H1
+   * @param showCustom Affiche le conteneur custom
+   */
+  #_resetVisibility(showSlot, showText, showCustom) {
+    if (this.#_slotTitle) this.#_slotTitle.hidden = !showSlot;
+    if (this.#_titleText) this.#_titleText.hidden = !showText;
+    if (this.#_customTitleContainer)
+      this.#_customTitleContainer.hidden = !showCustom;
+  }
+  /**
+   * Planifie la mise à jour de l'image de fond
+   * @param value Nouvelle URL de l'image de fond, ou null pour la supprimer
+   */
+  #_requestBackgroundUpdate(value) {
+    this.#_backgroundScheduler.schedule(value);
+  }
+  /**
+   * Met à jour l'image de fond du header
+   * @param value Nouvelle URL de l'image de fond, ou null pour la supprimer
+   */
+  #_updateBackground(value) {
+    if (value) {
+      this.style.setProperty('--bnum-header-background-image', `url(${value})`);
+      this._p_addState('with-background');
+    } else {
+      this.style.removeProperty('--bnum-header-background-image');
+      this._p_removeState('with-background');
+    }
+    this.onBackgroundChanged.call(value);
+  }
+  //#endregion Private methods
+  //#region Static methods
+  /**
+   * Génère un nouvel élément HTMLBnumHeader
+   * @returns Element créé
+   */
+  static Create({ background = null } = {}) {
+    return document
+      .createElement(HTMLBnumHeader.TAG)
+      .condAttr(
+        background !== null,
+        `data-${HTMLBnumHeader.DATA_BACKGROUND}`,
+        background,
+      );
+  }
+  /**
+   * Tag HTML de l'élément
+   */
+  static get TAG() {
+    return 'bnum-header';
+  }
+}
+const TEMPLATE = BnumElementInternal.CreateTemplate(`
+  <div class="${HTMLBnumHeader.CLASS_HEADER_MODIFIER}">
+    <div  part="${HTMLBnumHeader.PART_HEADER_CONTAINER}" class="${HTMLBnumHeader.CLASS_HEADER_CONTAINER}">
+      <div part="${HTMLBnumHeader.PART_HEADER_LEFT}" class="${HTMLBnumHeader.CLASS_HEADER_LEFT}">
+        <slot name="${HTMLBnumHeader.SLOT_NAME_LOGO}"></slot>
+        
+        <slot name="${HTMLBnumHeader.SLOT_NAME_TITLE}"></slot>
+        
+        <h1 part="${HTMLBnumHeader.PART_HEADER_TITLE}" id="${HTMLBnumHeader.ID_TITLE_TEXT}" class="${HTMLBnumHeader.CLASS_HEADER_TITLE}" hidden></h1>
+
+        <div part="${HTMLBnumHeader.PART_HEADER_CUSTOM}" id="${HTMLBnumHeader.ID_TITLE_CUSTOM}" class="${HTMLBnumHeader.CLASS_HEADER_CUSTOM}" hidden></div>
+      </div>
+
+      <div part="${HTMLBnumHeader.PART_HEADER_RIGHT}" class="${HTMLBnumHeader.CLASS_HEADER_RIGHT}">
+        <slot name="${HTMLBnumHeader.SLOT_NAME_ACTIONS}"></slot> 
+        <slot name="${HTMLBnumHeader.SLOT_NAME_AVATAR}"></slot>  
+      </div>
+    </div>
+  </div>
+`);
+//#region TryDefine
+HTMLBnumHeader.TryDefine();
+//#endregion TryDefine
 
 const ATTR_SELECTED = 'is-selected';
 const ATTR_COLLAPSED = 'is-collapsed';
@@ -18027,526 +18198,115 @@ class HTMLBnumTree extends BnumElementInternal {
 HTMLBnumTree.TryDefine();
 
 /**
- * Gère un ensemble de feuilles de style CSS dynamiques pour l'application.
- * Permet d'ajouter, supprimer et mettre à jour des règles CSS à la volée.
+ *  Permet de structurer une colonne avec un en-tête, un corps et un pied de page.
+ *
+ * @structure Colonne
+ * <bnum-column>
+ *  <div slot="header">En-tête de la colonne</div>
+ *   <div>Contenu principal de la colonne</div>
+ *  <div slot="footer">Pied de page de la colonne</div>
+ * </bnum-column>
  */
-class BnumStyleSheets {
-  /**
-   * Identifiant de la mise à jour planifiée (requestAnimationFrame).
-   * Null si aucune mise à jour n'est en attente.
-   */
-  #_pendingUpdate = null;
-  /**
-   * Indique si la feuille de style native a été montée dans le document.
-   */
-  #_mounted = false;
-  /**
-   * Registre des règles CSS, indexées par identifiant.
-   */
-  #_registry = new Map();
-  /**
-   * Map des fonctions de nettoyage des listeners pour chaque règle.
-   */
-  #_listenersDisposers = new Map();
-  /**
-   * Feuille de style native utilisée pour injecter les règles dans le DOM.
-   */
-  #_nativeSheet = new CSSStyleSheet();
-  /**
-   * Ajoute une règle CSS avec un identifiant spécifique.
-   * @param id Identifiant unique de la règle.
-   * @param rule Règle CSS à ajouter.
-   */
-  add(id, rule) {
-    if (this.#_registry.has(id)) {
-      Log.warn('BnumStyleSheets/add', `Rule with id '${id}' already exists.`);
-      return this;
-    }
-    rule.onUpdate.add(id, () => this.#_scheduleRender());
-    this.#_listenersDisposers.set(id, () => {
-      rule.onUpdate.remove(id);
-    });
-    this.#_registry.set(id, rule);
-    return this.#_scheduleRender();
+class HTMLBnumColumn extends BnumElement {
+  // Permet de définir le type de colonne (ex: "sidebar", "main", "tools")
+  // Utile pour le CSS qui va définir la largeur
+  get type() {
+    return this.getAttribute('type') || 'default';
+  }
+  constructor() {
+    super();
+  }
+  _p_isShadowElement() {
+    return false;
   }
   /**
-   * Ajoute une règle CSS et génère automatiquement un identifiant.
-   * @param rule Règle CSS à ajouter.
-   * @returns L'identifiant généré.
+   * Logique de rendu Light DOM
+   * On récupère les enfants existants et on les réorganise.
    */
-  push(rule) {
-    const id = this.#_generateId();
-    void this.add(id, rule);
-    return id;
-  }
-  /**
-   * Ajoute plusieurs règles CSS à la feuille de style.
-   * @param rules Liste des règles à ajouter.
-   */
-  addMultiples(...rules) {
-    for (const rule of rules) {
-      this.push(rule);
-    }
-    return this;
-  }
-  /**
-   * Supprime une règle CSS par son identifiant.
-   * @param id Identifiant de la règle à supprimer.
-   */
-  remove(id) {
-    if (this.#_registry.has(id)) {
-      const disposer = this.#_listenersDisposers.get(id);
-      if (disposer) disposer();
-      this.#_listenersDisposers.delete(id);
-      this.#_registry.delete(id);
-      return this.#_scheduleRender();
-    }
-    return this;
-  }
-  /**
-   * Supprime toutes les règles CSS de la feuille de style.
-   */
-  clear() {
-    for (const disposer of this.#_listenersDisposers.values()) {
-      disposer();
-    }
-    this.#_registry.clear();
-    this.#_listenersDisposers.clear();
-    return this.#_scheduleRender();
-  }
-  /**
-   * Monte la feuille de style native dans le document si ce n'est pas déjà fait.
-   * @private
-   */
-  #_mount() {
-    if (
-      !this.#_mounted &&
-      !document.adoptedStyleSheets.includes(this.#_nativeSheet)
-    ) {
-      document.adoptedStyleSheets = [
-        ...document.adoptedStyleSheets,
-        this.#_nativeSheet,
-      ];
-      this.#_mounted = true;
-    }
-    return this;
-  }
-  /**
-   * Planifie un rendu asynchrone de la feuille de style.
-   * @private
-   */
-  #_scheduleRender() {
-    if (this.#_pendingUpdate) return this;
-    this.#_pendingUpdate = requestAnimationFrame(() => {
-      this.#_render();
-      this.#_pendingUpdate = null;
-    });
-    return this;
-  }
-  /**
-   * Génère le CSS et le remplace dans la feuille de style native.
-   * @private
-   */
-  #_render() {
-    if (this.#_registry.size === 0) {
-      this.#_nativeSheet.replaceSync(EMPTY_STRING);
-      return this;
-    }
-    const cssContent = Array.from(this.#_registry.values())
-      .map((rule) => rule.toString())
-      .join('\n');
-    this.#_nativeSheet.replaceSync(cssContent);
-    return this.#_mount();
-  }
-  /**
-   * Génère un identifiant unique pour une nouvelle règle CSS.
-   * @private
-   */
-  #_generateId() {
-    do {
-      var id = `bnum-stylesheet-${Math.random().toString(36).substring(2, 15)}`;
-    } while (this.#_registry.has(id));
-    return id;
-  }
-}
-/**
- * Représente une propriété CSS (nom, valeur, important).
- * Permet de notifier les changements de valeur.
- */
-class BnumCssProperty {
-  /**
-   * Nom de la propriété CSS.
-   * @private
-   */
-  #_name;
-  /**
-   * Valeur de la propriété CSS.
-   * @private
-   */
-  #_value;
-  /**
-   * Indique si la propriété est !important.
-   * @private
-   */
-  #_important;
-  /**
-   * Gestionnaire d'événements pour les changements de la propriété.
-   * @private
-   */
-  #_listeners = null;
-  /**
-   * Événement déclenché lors d'une modification de la propriété.
-   */
-  get event() {
-    return (this.#_listeners ??= new JsEvent());
-  }
-  /**
-   * @param name Nom de la propriété CSS.
-   * @param value Valeur de la propriété CSS.
-   * @param important Indique si la propriété est !important.
-   */
-  constructor(name, value, important = false) {
-    this.#_name = name;
-    this.#_value = value;
-    this.#_important = important;
-  }
-  /**
-   * Modifie la valeur de la propriété CSS.
-   */
-  set value(value) {
-    if (this.#_value !== value) {
-      this.#_value = value;
-      this.#_notify();
-    }
-  }
-  /**
-   * Modifie l'état important de la propriété CSS.
-   */
-  set important(important) {
-    if (this.#_important !== important) {
-      this.#_important = important;
-      this.#_notify();
-    }
-  }
-  /**
-   * Modifie le nom de la propriété CSS.
-   */
-  set name(name) {
-    if (this.#_name !== name) {
-      this.#_name = name;
-      this.#_notify();
-    }
-  }
-  /**
-   * Retourne la valeur de la propriété CSS.
-   */
-  get value() {
-    return this.#_value;
-  }
-  /**
-   * Retourne le nom de la propriété CSS.
-   */
-  get name() {
-    return this.#_name;
-  }
-  /**
-   * Retourne si la propriété est !important.
-   */
-  get important() {
-    return this.#_important;
-  }
-  /**
-   * Retourne la propriété CSS sous forme de chaîne.
-   */
-  toString() {
-    return `${this.#_name}: ${this.#_value}${this.#_important ? ' !important' : EMPTY_STRING};`;
-  }
-  /**
-   * Notifie les listeners qu'une modification a eu lieu.
-   * @private
-   */
-  #_notify() {
-    if (this.#_listeners) this.#_listeners.call();
-  }
-}
-/**
- * Représente une règle CSS composée d'un sélecteur et de propriétés.
- * Permet d'ajouter ou de retirer dynamiquement des propriétés.
- */
-class BnumCssRule {
-  /**
-   * Sélecteur CSS de la règle.
-   * @private
-   */
-  #_selectorText;
-  /**
-   * Liste des propriétés CSS associées à la règle.
-   * @private
-   */
-  #_properties;
-  /**
-   * Gestionnaire d'événements pour les changements de la règle.
-   * @private
-   */
-  #_onUpdate = null;
-  /**
-   * Événement déclenché lors d'une modification de la règle.
-   */
-  get onUpdate() {
-    return (this.#_onUpdate ??= new JsEvent());
-  }
-  /**
-   * @param selectorText Sélecteur CSS de la règle.
-   * @param args Propriétés CSS de la règle.
-   */
-  constructor(selectorText, ...args) {
-    this.#_selectorText = selectorText;
-    this.#_properties = args;
-    for (const prop of this.#_properties) {
-      prop.event.push(() => this.#_notifyParent());
-    }
-  }
-  /**
-   * Retourne le sélecteur CSS de la règle.
-   */
-  get selectorText() {
-    return this.#_selectorText;
-  }
-  /**
-   * Ajoute une propriété à la règle CSS.
-   * @param prop Propriété à ajouter.
-   */
-  addProperty(prop) {
-    this.#_properties.push(prop);
-    prop.event.push(() => this.#_notifyParent());
-    this.#_notifyParent();
-    return this;
-  }
-  /**
-   * Retourne une propriété de la règle CSS par son index.
-   * @param index Index de la propriété à récupérer.
-   */
-  get(index) {
-    return this.#_properties[index];
-  }
-  /**
-   * Supprime une propriété de la règle CSS par son nom.
-   * @param propName Nom de la propriété à supprimer.
-   * @param options all: supprime toutes les occurrences si true.
-   */
-  removeProperty(propName, { all = false } = {}) {
-    let stop = false;
-    this.#_properties = this.#_properties.filter((prop) => {
-      if (stop) return true;
-      if (prop.name === propName) {
-        if (!all) stop = true;
-        return false;
+  _p_buildDOM(container) {
+    // 1. Sauvegarde des enfants actuels (ce que l'utilisateur a mis dans la balise)
+    // On convertit en Array pour figer la liste car childNodes est "live"
+    const children = Array.from(this.childNodes);
+    // 2. Création de la structure interne
+    // On vide l'élément pour reconstruire proprement
+    this.innerHTML = '';
+    this.classList.add('bnum-column', `bnum-column--${this.type}`);
+    // Création des conteneurs
+    const [headerContainer, bodyContainer, footerContainer] =
+      this._p_createDivs(
+        {
+          classes: ['bnum-column__header', 'header'],
+        },
+        {
+          classes: ['bnum-column__body'],
+        },
+        {
+          classes: ['bnum-column__footer', 'footer'],
+        },
+      );
+    // 3. Distribution des enfants (Slotting manuel)
+    let hasHeader = false;
+    let hasFooter = false;
+    children.forEach((node) => {
+      // Si c'est un noeud texte vide, on ignore
+      if (node.nodeType === Node.TEXT_NODE && !node.textContent?.trim()) return;
+      const element = node;
+      const slotName = element.getAttribute
+        ? element.getAttribute('slot')
+        : null;
+      if (slotName === 'header') {
+        const nodeElment = node;
+        nodeElment.removeAttribute('slot');
+        nodeElment.classList.add('bnum-column__header__content', 'from-slot');
+        if (nodeElment.classList.contains('header')) {
+          // Évite la duplication de la classe "header"
+          nodeElment.classList.remove('header');
+          nodeElment.classList.add('old-header');
+        }
+        headerContainer.appendChild(node);
+        hasHeader = true;
+      } else if (slotName === 'footer') {
+        node.removeAttribute('slot');
+        node.classList.add('bnum-column__footer__content', 'from-slot');
+        footerContainer.appendChild(node);
+        hasFooter = true;
+      } else {
+        // Tout ce qui n'a pas de slot va dans le body
+        if (node instanceof HTMLElement)
+          node.classList.add('bnum-column__body__content', 'from-slot');
+        bodyContainer.appendChild(node);
       }
-      return true;
     });
-    this.#_notifyParent();
-    return this;
+    // 4. Injection conditionnelle dans le DOM
+    if (hasHeader) container.appendChild(headerContainer);
+    container.append(...bodyContainer.childNodes); // Le body est obligatoire ou vide
+    if (hasFooter) container.appendChild(footerContainer);
   }
-  /**
-   * Retourne la règle CSS sous forme de chaîne.
-   */
-  toString() {
-    const props = this.#_properties
-      .map((prop) => `  ${prop.toString()}`)
-      .join('\n');
-    return `${this.#_selectorText} {\n${props}\n}`;
-  }
-  /**
-   * Notifie les listeners parents qu'une modification a eu lieu.
-   * @private
-   */
-  #_notifyParent() {
-    if (this.#_onUpdate && this.#_onUpdate.count() > 0) this.#_onUpdate.call();
+  static get TAG() {
+    return 'bnum-column';
   }
 }
-class BnumMeta {
-  /**
-   * Change le titre du document
-   */
-  set title(value) {
-    document.title = value;
-  }
-  /**
-   * Retourne le titre actuel du document
-   */
-  get title() {
-    return document.title;
-  }
-  /**
-   * Définit une balise meta standard (name="description")
-   * @param content Contenu de la balise meta description
-   */
-  setDescription(content) {
-    return this.#updateMeta('name', 'description', content);
-  }
-  /**
-   * Définit une balise OpenGraph (property="og:image")
-   * @param property Nom de la propriété OpenGraph (ex: "image")
-   * @param content Valeur de la propriété
-   */
-  setOgTag(property, content) {
-    return this.#updateMeta('property', `og:${property}`, content);
-  }
-  /**
-   * Méthode générique interne pour créer ou mettre à jour une balise meta
-   * @param attrKey "name" ou "property"
-   * @param attrValue Valeur de l'attribut
-   * @param content Contenu de la balise meta
-   * @private
-   */
-  #updateMeta(attrKey, attrValue, content) {
-    let tag = document.querySelector(`meta[${attrKey}="${attrValue}"]`);
-    if (!tag) {
-      tag = document.createElement('meta');
-      tag.setAttribute(attrKey, attrValue);
-      document.head.appendChild(tag);
-    }
-    tag.setAttribute('content', content);
-    return this;
-  }
-}
-class BnumScripts {
-  /**
-   * Cache pour ne pas charger 2 fois le même script
-   * @private
-   */
-  #_loaded = new Set();
-  /**
-   * Charge un script externe et attend qu'il soit prêt
-   * @param url URL du script à charger
-   * @param options async et defer (par défaut true)
-   * @returns Promise résolue quand le script est chargé
-   */
-  load(url, { async = true, defer = true } = {}) {
-    if (this.#_loaded.has(url)) return Promise.resolve();
-    // Si le script est déjà dans le DOM (ajouté manuellement)
-    if (document.querySelector(`script[src="${url}"]`)) {
-      this.#_loaded.add(url);
-      return Promise.resolve();
-    }
-    return new Promise((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = url;
-      script.async = async;
-      script.defer = defer;
-      script.onload = () => {
-        this.#_loaded.add(url);
-        resolve();
-      };
-      script.onerror = () => {
-        reject(new Error(`BnumScripts: Failed to load script ${url}`));
-      };
-      document.head.appendChild(script);
-    });
-  }
-}
-class BnumCookies {
-  /**
-   * Récupère la valeur d'un cookie par son nom
-   * @param name Nom du cookie
-   * @returns Valeur du cookie ou null si absent
-   */
-  get(name) {
-    const match = document.cookie.match(
-      new RegExp('(^| )' + name + '=([^;]+)'),
-    );
-    return match ? decodeURIComponent(match[2]) : null;
-  }
-  /**
-   * Définit un cookie
-   * @param name Nom du cookie
-   * @param value Valeur du cookie
-   * @param options Options : nombre de jours de validité et chemin
-   */
-  set(name, value, options = {}) {
-    let expires = '';
-    if (options.days) {
-      const date = new Date();
-      date.setTime(date.getTime() + options.days * 24 * 60 * 60 * 1000);
-      expires = `; expires=${date.toUTCString()}`;
-    }
-    const path = options.path ? `; path=${options.path}` : '; path=/';
-    document.cookie = `${name}=${encodeURIComponent(value)}${expires}${path}`;
-  }
-  /**
-   * Supprime un cookie
-   * @param name Nom du cookie à supprimer
-   */
-  delete(name) {
-    this.set(name, '', { days: -1 });
-  }
-}
-/**
- * Singleton pour accéder aux feuilles de style dynamiques de l'application.
- */
-class BnumDocument {
-  /**
-   * Instance unique de BnumDocument.
-   * @private
-   */
-  static #_instance = null;
-  /**
-   * Retourne l'instance unique de BnumDocument.
-   */
-  static get instance() {
-    return (this.#_instance ??= new BnumDocument());
-  }
-  /**
-   * Instance des feuilles de style dynamiques.
-   * @private
-   */
-  #_styleSheets = null;
-  /**
-   * Retourne l'ensemble des feuilles de style dynamiques.
-   */
-  get styleSheets() {
-    return (this.#_styleSheets ??= new BnumStyleSheets());
-  }
-  #_meta = null;
-  /**
-   * Retourne l'objet de gestion des métadonnées du document.
-   */
-  get meta() {
-    return (this.#_meta ??= new BnumMeta());
-  }
-  #_scripts = null;
-  /**
-   * Retourne l'objet de gestion des scripts du document.
-   */
-  get scripts() {
-    return (this.#_scripts ??= new BnumScripts());
-  }
-  #_cookies = null;
-  /**
-   * Retourne l'objet de gestion des cookies du document.
-   */
-  get cookies() {
-    return (this.#_cookies ??= new BnumCookies());
-  }
-  /**
-   * Retourne l'objet Document du navigateur.
-   */
-  get document() {
-    return document;
-  }
-}
+// Définition automatique
+HTMLBnumColumn.TryDefine();
 
-// Auto-init au chargement
 if (typeof window !== 'undefined' && window.DsBnumConfig) {
-  BnumConfig.Initialize(window.DsBnumConfig);
+  try {
+    BnumConfig.Initialize(window.DsBnumConfig);
+  } catch (error) {
+    Log.error(
+      'design-system-bnum',
+      "Erreur lors de l'initialisation de la configuration globale :",
+      error,
+    );
+  }
 }
 
 export {
   BnumElement,
   BnumConfig as Config,
-  BnumCssProperty as DsCssProperty,
-  BnumCssRule as DsCssRule,
-  BnumDocument as DsDocument,
+  RotomecaCssProperty as DsCssProperty,
+  RotomecaCssRule as DsCssRule,
+  RotomecaDocument as DsDocument,
   EButtonType,
   EHideOn,
   EIconPosition,
@@ -18565,9 +18325,7 @@ export {
   HTMLBnumDangerButton,
   HTMLBnumDate,
   HTMLBnumFolder,
-  HTMLBnumFolderList,
   HTMLBnumHeader,
-  HTMLBnumHelper,
   HTMLBnumHide,
   HTMLBnumIcon,
   HTMLBnumInput,
@@ -18576,7 +18334,6 @@ export {
   HTMLBnumInputSearch,
   HTMLBnumInputText,
   HTMLBnumInputTime,
-  HTMLBnumPicture,
   HTMLBnumPrimaryButton,
   HTMLBnumSecondaryButton,
   HTMLBnumTree,

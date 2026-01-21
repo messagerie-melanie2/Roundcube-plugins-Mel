@@ -288,6 +288,7 @@ export default class BridgeMail extends ABridge {
     BridgeCommands.Instance.command_register(
       key,
       BridgeCommands.Instance.command_update_mail_css,
+      { args: [this.updateFolderStyle.bind(this)] },
     );
 
     return this;

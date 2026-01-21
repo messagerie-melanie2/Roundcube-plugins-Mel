@@ -28,22 +28,25 @@ export default class BridgeCommands extends MelObject {
    * Si la clé n'est pas CONFIG_FOLDER_SPACE, exécute une commande alternative.
    * Sinon, met à jour la configuration et applique le style si la tâche courante est "mail".
    * @param {Object} args - Les arguments contenant la clé et la valeur à mettre à jour.
+   * @param {Function} updateFolderStyleFunc - La fonction à appeler pour mettre à jour le style des dossiers.
    */
-  command_update_mail_css(args) {
+  command_update_mail_css(updateFolderStyleFunc, args) {
+    const command = 'update_mail_css';
+    const old_command = `${command}_old`;
     const { key, value } = args;
-    if (args.key !== CONFIG_FOLDER_SPACE)
-      return this.execCommand('update_mail_css_old', { props: args });
+    if (key !== CONFIG_FOLDER_SPACE)
+      return this.execCommand(old_command, { props: args });
 
     this.get_env(BridgeCommands.#_ENVS.MMP_CONFIGS)[CONFIG_FOLDER_SPACE] =
       value[CONFIG_FOLDER_SPACE];
 
     if (this.get_env(BridgeCommands.#_ENVS.TASK) === 'mail') {
-      this.updateFolderStyle();
+      updateFolderStyleFunc();
     } else {
       const $frame = this.select_frame('mail')?.[0];
 
       if ($frame) {
-        $frame.contentWindow?.rcmail?.command(key, args);
+        $frame.contentWindow?.rcmail?.command(command, args);
       }
     }
   }
@@ -54,9 +57,18 @@ export default class BridgeCommands extends MelObject {
    * @param {Function} callback - La fonction à exécuter lors de l'appel de la commande.
    * @param {Object} [options] - Options supplémentaires.
    * @param {Object} [options.thisArgs=this] - Le contexte d'exécution du callback.
+   * @param {Array} [options.args=[]] - Les arguments à passer au callback.
    * @param {boolean} [options.enabled=true] - Si la commande est activée ou non.
    */
-  command_register(key, callback, { thisArgs = this, enabled = true } = {}) {
-    this.rcmail().register_command(key, callback.bind(thisArgs), enabled);
+  command_register(
+    key,
+    callback,
+    { thisArgs = this, args = [], enabled = true } = {},
+  ) {
+    this.rcmail().register_command(
+      key,
+      callback.bind(thisArgs, ...args),
+      enabled,
+    );
   }
 }

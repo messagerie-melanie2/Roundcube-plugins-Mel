@@ -11440,7 +11440,7 @@ class HTMLBnumHelper extends BnumElement {
 HTMLBnumHelper.TryDefine();
 
 var css_248z$d =
-  ':host{cursor:pointer;font-variation-settings:"wght" 400;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}:host(:hover){--bnum-icon-fill:1}:host(:active){--bnum-icon-fill:1;--bnum-icon-weight:700;--bnum-icon-grad:200;--bnum-icon-opsz:20}:host(:disabled),:host([disabled]){cursor:not-allowed;opacity:var(--bnum-button-disabled-opacity,.6);pointer-events:var(--bnum-button-disabled-pointer-events,none)}';
+  '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{cursor:pointer;font-variation-settings:"wght" 400;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}:host(:hover){--bnum-icon-fill:1}:host(:active){--bnum-icon-fill:1;--bnum-icon-weight:700;--bnum-icon-grad:200;--bnum-icon-opsz:20}:host(:disabled),:host([disabled]){cursor:not-allowed;opacity:var(--bnum-button-disabled-opacity,.6);pointer-events:var(--bnum-button-disabled-pointer-events,none)}';
 
 const SHEET$b = BnumElement.ConstructCSSStyleSheet(css_248z$d);
 /**
@@ -13907,7 +13907,7 @@ class HTMLBnumSecondaryButton extends HTMLBnumButton {
 HTMLBnumSecondaryButton.TryDefine();
 
 var css_248z$9 =
-  ':host{background-color:var(--bnum-card-item-background-color,var(--bnum-color-surface,#f6f6f7));cursor:var(--bnum-card-item-cursor,pointer);display:var(--bnum-card-item-display,block);padding:var(--bnum-card-item-padding,15px);user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;width:calc(var(--bnum-card-item-width-percent, 100%) - var(--bnum-card-item-width-modifier, 30px))}:host(:hover){background-color:var(--bnum-card-item-background-color-hover,var(--bnum-color-surface-hover,#eaeaea))}:host(:active){background-color:var(--bnum-card-item-background-color-active,var(--bnum-color-surface-active,#dfdfdf))}:host(:disabled),:host(:state(disabled)),:host([disabled]){cursor:not-allowed;opacity:.6;pointer-events:none}';
+  '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{background-color:var(--bnum-card-item-background-color,var(--bnum-color-surface,#f6f6f7));cursor:var(--bnum-card-item-cursor,pointer);display:var(--bnum-card-item-display,block);padding:var(--bnum-card-item-padding,15px);user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;width:calc(var(--bnum-card-item-width-percent, 100%) - var(--bnum-card-item-width-modifier, 30px))}:host(:hover){background-color:var(--bnum-card-item-background-color-hover,var(--bnum-color-surface-hover,#eaeaea))}:host(:active){background-color:var(--bnum-card-item-background-color-active,var(--bnum-color-surface-active,#dfdfdf))}:host(:disabled),:host(:state(disabled)),:host([disabled]){cursor:not-allowed;opacity:.6;pointer-events:none}';
 
 const SHEET$8 = BnumElementInternal.ConstructCSSStyleSheet(css_248z$9);
 /**
@@ -15702,11 +15702,12 @@ class HTMLBnumFolderList extends BnumElement {
 HTMLBnumFolderList.TryDefine();
 
 var css_248z$5 =
-  '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{display:block;padding-left:calc(.5em*var(--internal-bnum-folder-level, 0));width:100%}:host .bal-container{display:flex;justify-content:space-between;padding:var(--bnum-folder-title-padding,10px 15px)}:host .bal-container .bal-container__left,:host .bal-container .bal-container__title{align-content:center;align-items:center;display:flex;gap:10px}:host .bal-container__title__name{text-wrap:nowrap;max-width:125px;overflow:hidden;pointer-events:none;text-overflow:ellipsis}:host .bal-container__title__icon{color:var(--bnum-folder-icon-color,inherit)}:host bnum-badge{height:calc(16px - var(--bnum-badge-padding, var(--bnum-space-xs, 5px))*2);transition:all .2s ease;width:calc(16px - var(--bnum-badge-padding, var(--bnum-space-xs, 5px))*2)}:host bnum-badge.is-cumulative{background-color:var(--bnum-color-primary-active)}:host bnum-badge:state(no-value){display:none}:host([level="0"]){border-bottom:var(--bnum-border-in-column)}:host([level="0"]) .bal-container{padding:var(--bnum-folder-bal-title-padding,15px 15px)}:host(:state(no-subfolders)) .bal-container__toggle{display:none}:host([is-collapsed=true]) .bal-sub-folders{display:none}:host([is-virtual=false]){cursor:pointer}:host([is-virtual=false]) .bal-container__title__name{pointer-events:all}:host([is-virtual=false]:hover) .bal-container{background-color:var(--bnum-color-list-hover)}:host([is-selected=true]) .bal-container{background-color:var(--bnum-color-list);cursor:default}:host([is-selected=true]:hover) .bal-container{background-color:var(--bnum-color-list)}:host(:state(double-digit-unread)) bnum-badge{font-size:9px}:host(:state(triple-digit-unread)) bnum-badge{font-size:9px;height:calc(18px - var(--bnum-badge-padding, var(--bnum-space-xs, 5px))*2);width:calc(18px - var(--bnum-badge-padding, var(--bnum-space-xs, 5px))*2)}:host(.dragover) .bal-container{background-color:var(--bnum-color-list-drag)}';
+  '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{--_local-indent:calc(var(--bnum-folder-indentation-base, 0.5em)*var(--internal-bnum-folder-level, 0));display:var(--bnum-folder-display,block);padding-left:var(--bnum-folder-indentation,var(--_local-indent));width:var(--bnum-folder-width,100%)}:host .bal-container{display:flex;justify-content:space-between;padding:var(--bnum-folder-title-padding,10px 15px);transition:background-color .2s ease}:host .bal-container__left,:host .bal-container__title{align-content:center;align-items:center;display:flex;gap:var(--bnum-folder-gap,var(--bnum-space-s,10px))}:host .bal-container__title__name{text-wrap:nowrap;max-width:var(--bnum-folder-text-ellipisis-max-width,125px);overflow:hidden;pointer-events:none;text-overflow:ellipsis}:host .bal-container__title__icon{color:var(--bnum-folder-icon-color,inherit);flex-shrink:0}:host bnum-badge{height:calc(16px - var(--bnum-badge-padding, var(--bnum-space-xs, 5px))*2);transition:all .2s ease;width:calc(16px - var(--bnum-badge-padding, var(--bnum-space-xs, 5px))*2)}:host bnum-badge.is-cumulative{background-color:var(--bnum-color-primary-active)}:host bnum-badge:state(no-value){display:none}:host([level="0"]){border-bottom:var(--bnum-border-in-column)}:host([level="0"]) .bal-container{padding:var(--bnum-folder-bal-title-padding,15px 15px)}:host(:state(no-subfolders)) .bal-container__toggle{display:none}:host(:state(double-digit-unread)) bnum-badge{font-size:var(--bnum-font-badge-s,.5625rem)}:host(:state(triple-digit-unread)) bnum-badge{font-size:var(--bnum-font-badge-s,.5625rem);height:calc(18px - var(--bnum-badge-padding, var(--bnum-space-xs, 5px))*2);width:calc(18px - var(--bnum-badge-padding, var(--bnum-space-xs, 5px))*2)}:host([is-collapsed=true]) .bal-sub-folders{display:none}:host([is-virtual=false]){cursor:pointer}:host([is-virtual=false]) .bal-container__title__name{pointer-events:all}:host([is-virtual=false]:hover) .bal-container{background-color:var(--bnum-color-list-hover)}:host([is-selected=true]) .bal-container{background-color:var(--bnum-color-list);cursor:default}:host([is-selected=true]:hover) .bal-container{background-color:var(--bnum-color-list)}:host(.dragover) .bal-container{background-color:var(--bnum-color-list-drag)}';
 
 const STYLE = BnumElementInternal.ConstructCSSStyleSheet(css_248z$5);
 /**
- * Composant représentant un dossier dans une structure arborescente.
+ * Composant Web Component représentant un dossier dans une structure arborescente.
+ * Gère l'affichage hiérarchique, les badges de notification (non-lus), la sélection et l'état d'expansion.
  *
  * @structure Base
  * <bnum-folder
@@ -15777,176 +15778,429 @@ const STYLE = BnumElementInternal.ConstructCSSStyleSheet(css_248z$5);
  * </bnum-folder>
  * </bnum-tree>
  *
+ *
+ * @slot folders - Slot pour insérer des sous-dossiers (`bnum-folder`).
+ *
+ * @state no-subfolders - Indique que le dossier n'a pas de sous-dossiers.
+ * @state triple-digit-unread - Indique que le compteur de non-lu est à 3 chiffres (99+).
+ * @state double-digit-unread - Indique que le compteur de non-lu est à 2 chiffres (10-99).
+ * @state single-digit-unread - Indique que le compteur de non-lu est à 1 chiffre (1-9).
+ *
+ * @extends BnumElementInternal
+ * @fires bnum-folder:unread-changed - Lorsqu'un compteur de non-lu est mis à jour.
+ * @fires bnum-folder:select - Lorsque le dossier est sélectionné.
+ * @fires bnum-folder:toggle - Lorsque le dossier est plié ou déplié.
+ *
+ * @cssvar {0.5em} --bnum-folder-indentation-base - Unité de base pour le calcul du décalage (padding-left) par niveau de profondeur.
+ * @cssvar {0} --internal-bnum-folder-level - Variable interne (pilotée par JS) indiquant le niveau de profondeur actuel.
+ * @cssvar {Calculated} --bnum-folder-indentation - Valeur finale du padding-left (base * level).
+ * @cssvar {block} --bnum-folder-display - Type d'affichage du composant host.
+ * @cssvar {100%} --bnum-folder-width - Largeur du composant host.
+ * @cssvar {10px 15px} --bnum-folder-title-padding - Espacement interne du conteneur flex (Standard : 10px vertical, 15px horizontal).
+ * @cssvar {10px} --bnum-folder-gap - Espace entre l'icône, le titre et les badges.
+ * @cssvar {125px} --bnum-folder-text-ellipisis-max-width - Largeur maximale du libellé avant troncation.
+ * @cssvar {inherit} --bnum-folder-icon-color - Couleur de l'icône du dossier.
+ * @cssvar {5px} --bnum-badge-padding - Padding interne pour réduire la taille du badge (calcul de la taille).
+ * @cssvar {#2e2eff} --bnum-color-primary-active - Couleur de fond du badge en mode cumulatif (Blue Thunder Active).
+ * @cssvar {solid 1px #ddd} --bnum-border-in-column - Bordure inférieure appliquée aux dossiers de niveau 0.
+ * @cssvar {15px 15px} --bnum-folder-bal-title-padding - Padding spécifique pour les dossiers racines (15px vertical, 15px horizontal).
+ * @cssvar {#c1c1fb} --bnum-color-list-hover - Couleur de fond au survol d'un dossier interactif (Blue List Hover).
+ * @cssvar {#e3e3fd} --bnum-color-list - Couleur de fond d'un dossier sélectionné (Blue List).
+ * @cssvar {#adadf9} --bnum-color-list-drag - Couleur de fond lors du dragover (Blue List Active).
  */
 class HTMLBnumFolder extends BnumElementInternal {
-  #_nameElement = null;
-  #_iconElement = null;
-  #_toggleButton = null;
-  #_badgeElement = null;
+  //#region Constants
+  /**  Attribut indiquant si le dossier est replié. */
+  static ATTR_IS_COLLAPSED = 'is-collapsed';
+  /**  Attribut indiquant si le dossier est virtuel (non cliquable/sélectionnable). */
+  static ATTR_IS_VIRTUAL = 'is-virtual';
+  /**  Attribut indiquant si le dossier est actuellement sélectionné. */
+  static ATTR_IS_SELECTED = 'is-selected';
+  /**  Attribut définissant le nombre d'éléments non lus. */
+  static ATTR_UNREAD = 'unread';
+  /**  Attribut définissant la profondeur du dossier dans l'arbre. */
+  static ATTR_LEVEL = 'level';
+  /**  Attribut pour le libellé du dossier. */
+  static ATTR_LABEL = 'label';
+  /**  Attribut définissant l'icône associée. */
+  static ATTR_ICON = 'icon';
+  /**  Attribut ARIA role. */
+  static ATTR_ROLE = 'role';
+  /**  Attribut title natif. */
+  static ATTR_TITLE = 'title';
+  // Events
+  /**  Événement natif de clic. */
+  static EVENT_CLICK = 'click';
+  /**  Événement custom pour le changement de non-lu. */
+  static EVENT_UNREAD_CHANGED = 'bnum-folder:unread-changed';
+  /**  Événement custom de sélection. */
+  static EVENT_SELECT = 'bnum-folder:select';
+  /**  Événement custom de bascule (plié/déplié). */
+  static EVENT_TOGGLE = 'bnum-folder:toggle';
+  // CSS Classes (Selectors & Template)
+  /**  Classe du conteneur principal (flex row). */
+  static CLASS_CONTAINER = 'bal-container';
+  /**  Conteneur gauche regroupant l'icône et le nom. */
+  static CLASS_TITLE = 'bal-container__title';
+  /**  Icône principale du dossier (ex: dossier, fichier). */
+  static CLASS_TITLE_ICON = 'bal-container__title__icon';
+  /**  Libellé (nom) du dossier. */
+  static CLASS_TITLE_NAME = 'bal-container__title__name';
+  /**  Conteneur droit (zone d'actions et métadonnées). */
+  static CLASS_LEFT = 'bal-container__left';
+  /**  Badge de notification (compteur non-lu). */
+  static CLASS_LEFT_BADGE = 'bal-container__left__badge';
+  /**  Bouton de bascule (toggle) pour plier/déplier. */
+  static CLASS_TOGGLE = 'bal-container__toggle';
+  /**  Conteneur des enfants (slot). */
+  static CLASS_SUB_FOLDERS = 'bal-sub-folders';
+  /**  Utilitaire pour l'affichage flexbox. */
+  static CLASS_FLEX = 'flex';
+  /**  Modificateur CSS du badge pour le mode cumulatif (dossier plié). */
+  static CLASS_IS_CUMULATIVE = 'is-cumulative';
+  // IDs
+  /**  ID interne pour l'ancre du nom (a11y/focus). */
+  static ID_NAME = 'bal-name';
+  // States
+  /**  État : Dossier feuille (sans enfants). */
+  static STATE_NO_SUBFOLDERS = 'no-subfolders';
+  /**  État : Compteur à 3 chiffres (ou 99+). */
+  static STATE_TRIPLE_DIGIT = 'triple-digit-unread';
+  /**  État : Compteur à 2 chiffres (10-99). */
+  static STATE_DOUBLE_DIGIT = 'double-digit-unread';
+  /**  État : Compteur à 1 chiffre (1-9). */
+  static STATE_SINGLE_DIGIT = 'single-digit-unread';
+  /**  État : Aucun non-lu. */
+  static STATE_NO_UNREAD = 'no-unread';
+  // Values & Configs
+  /** Valeur min affichage compteur (0). */
+  static VAL_MIN_UNREAD = 0;
+  /** Valeur max avant troncation (99). */
+  static VAL_MAX_UNREAD = 99;
+  /**  Chaîne 'true'. */
+  static VAL_TRUE = 'true';
+  /**  Chaîne 'false'. */
+  static VAL_FALSE = 'false';
+  /**  Texte affiché au-delà du max ("99+"). */
+  static VAL_99_PLUS = `${this.VAL_MAX_UNREAD}+`;
+  /**  Chaîne "0". */
+  static VAL_ZERO = '0';
+  /**  Rôle ARIA 'treeitem'. */
+  static VAL_ROLE_TREEITEM = 'treeitem';
+  /**  Attribut ARIA 'aria-expanded'. */
+  static ARIA_EXPANDED = 'aria-expanded';
+  /**  Attribut ARIA 'aria-selected'. */
+  static ARIA_SELECTED = 'aria-selected';
+  /**  Var CSS pour l'indentation (padding-left). */
+  static CSS_VAR_LEVEL = '--internal-bnum-folder-level';
+  // Icons
+  /**  Icône défaut (carré/dossier). */
+  static ICON_SQUARE = 'square';
+  /**  Icône déplié (flèche bas). */
+  static ICON_ARROW_DOWN = 'keyboard_arrow_down';
+  /**  Icône plié (flèche haut). */
+  static ICON_ARROW_UP = 'keyboard_arrow_up';
+  //#endregion Constants
+  //#region Private fields
+  /**
+   * Cache pour les éléments internes du Shadow DOM.
+   * Initialisé lors de `_p_buildDOM`.
+   * @private
+   * @type {Ui}
+   */
+  #_ui = {
+    name: null,
+    icon: null,
+    toggle: null,
+    badge: null,
+    container: null,
+  };
+  /**
+   * Compteur interne des éléments non lus propres à ce dossier (hors enfants).
+   * @private
+   * @type {number}
+   */
   #_selfUnread = 0;
+  //#endregion Private fields
+  //#region Getters/Setters
+  /**
+   * Indique si le dossier est visuellement replié.
+   * @returns {boolean} `true` si l'attribut `is-collapsed` est à 'true'.
+   */
   get collapsed() {
-    return this.getAttribute('is-collapsed') === 'true';
+    return (
+      this.getAttribute(HTMLBnumFolder.ATTR_IS_COLLAPSED) ===
+      HTMLBnumFolder.VAL_TRUE
+    );
   }
+  /**
+   * Récupère la liste des classes CSS appliquées à l'élément hôte.
+   * @returns {string[]} Un tableau des classes.
+   */
   get classes() {
-    return JsEnumerable.from(this.classList.values()).toArray();
+    return Array.from(this.classList);
   }
+  //#endregion Getters/Setters
+  //#region Lifecycle
+  /**
+   * Constructeur du composant.
+   */
   constructor() {
     super();
   }
+  /**
+   * Récupère les feuilles de style à appliquer au Shadow DOM.
+   * @protected
+   * @returns {CSSStyleSheet[]} Tableau des feuilles de styles.
+   */
   _p_getStylesheets() {
     return [...super._p_getStylesheets(), STYLE];
   }
+  /**
+   * Fournit le template HTML du composant.
+   * @protected
+   * @returns {HTMLTemplateElement | null} Le template.
+   */
   _p_fromTemplate() {
     return TEMPLATE$5;
   }
+  /**
+   * Construit le DOM et initialise les références UI et les écouteurs d'événements internes.
+   * @protected
+   * @param {ShadowRoot | HTMLElement} container - Le conteneur racine.
+   */
   _p_buildDOM(container) {
     super._p_buildDOM(container);
-    this.#_nameElement = container.querySelector('#bal-name');
-    this.#_iconElement = container.querySelector('.bal-container__title__icon');
-    this.#_toggleButton = container.querySelector('.bal-container__toggle');
-    this.#_badgeElement = container.querySelector(
-      '.bal-container__left__badge',
+    this.#_ui.name = container.querySelector(`#${HTMLBnumFolder.ID_NAME}`);
+    this.#_ui.icon = container.querySelector(
+      `.${HTMLBnumFolder.CLASS_TITLE_ICON}`,
     );
-    container.querySelector('.bal-container').addEventListener('click', (e) => {
+    this.#_ui.toggle = container.querySelector(
+      `.${HTMLBnumFolder.CLASS_TOGGLE}`,
+    );
+    this.#_ui.badge = container.querySelector(
+      `.${HTMLBnumFolder.CLASS_LEFT_BADGE}`,
+    );
+    this.#_ui.container = container.querySelector(
+      `.${HTMLBnumFolder.CLASS_CONTAINER}`,
+    );
+    this.#_ui.container?.addEventListener?.(HTMLBnumFolder.EVENT_CLICK, (e) => {
       this.select(e);
     });
+    this.#_ui.toggle?.addEventListener?.(HTMLBnumFolder.EVENT_CLICK, (e) => {
+      this.toggle(e);
+    });
   }
+  /**
+   * Appelé lorsque le composant est attaché au DOM.
+   * Initialise les états par défaut et les écouteurs globaux.
+   * @protected
+   */
   _p_attach() {
     super._p_attach();
     if (this.childElementCount === 0) {
-      this._p_addState('no-subfolders');
+      this._p_addState(HTMLBnumFolder.STATE_NO_SUBFOLDERS);
     } else {
-      this.addEventListener('bnum-folder:unread-changed', (e) => {
-        // On évite de boucler sur son propre événement
-        if (e.detail.caller === this) return;
-        // On stoppe la propagation ici pour gérer la remontée manuellement
-        // et éviter des calculs redondants si on veut, mais le plus simple
-        // est de laisser couler et de recalculer.
-        this.#_refreshDisplay();
-      });
+      this.addEventListener(
+        HTMLBnumFolder.EVENT_UNREAD_CHANGED,
+        this.#_onChildUnreadChanged.bind(this),
+      );
     }
-    if (this.hasAttribute('is-collapsed') === false) {
-      this.setAttribute('is-collapsed', 'true');
+    if (this.hasAttribute(HTMLBnumFolder.ATTR_IS_COLLAPSED) === false) {
+      this.setAttribute(
+        HTMLBnumFolder.ATTR_IS_COLLAPSED,
+        HTMLBnumFolder.VAL_TRUE,
+      );
     }
-    this.addEventListener('bnum-folder:select', (e) => {
-      if (
-        this.hasAttribute('is-virtual') &&
-        this.getAttribute('is-virtual') === 'true'
-      ) {
-        e.stopPropagation();
-        return;
-      }
-    });
-    this.#_toggleButton?.addEventListener('click', (e) => {
-      this.toggle(e);
-    });
-    this.attr('role', 'treeitem')
-      .#_updateIcon(this.attr('icon') ?? EMPTY_STRING)
-      .#_updateLabel(this.attr('label') ?? EMPTY_STRING)
-      .#_updateLevel(this.attr('level') ? +this.attr('level') : 0)
-      .#_updateSelected(this.attr('is-selected') === 'true')
-      .#_updateIsCollapsed(this.attr('is-collapsed') === 'true')
-      .#_updateUnread(this.attr('unread') ? +this.attr('unread') : 0);
+    this.addEventListener(
+      HTMLBnumFolder.EVENT_SELECT,
+      this.#_onFolderSelect.bind(this),
+    );
+    // Initialisation des valeurs visuelles basées sur les attributs initiaux
+    this.attr(HTMLBnumFolder.ATTR_ROLE, HTMLBnumFolder.VAL_ROLE_TREEITEM)
+      .#_updateIcon(this.attr(HTMLBnumFolder.ATTR_ICON) ?? EMPTY_STRING)
+      .#_updateLabel(this.attr(HTMLBnumFolder.ATTR_LABEL) ?? EMPTY_STRING)
+      .#_updateLevel(
+        this.attr(HTMLBnumFolder.ATTR_LEVEL)
+          ? +this.attr(HTMLBnumFolder.ATTR_LEVEL)
+          : 0,
+      )
+      .#_updateSelected(
+        this.attr(HTMLBnumFolder.ATTR_IS_SELECTED) === HTMLBnumFolder.VAL_TRUE,
+      )
+      .#_updateIsCollapsed(
+        this.attr(HTMLBnumFolder.ATTR_IS_COLLAPSED) === HTMLBnumFolder.VAL_TRUE,
+      )
+      .#_updateUnread(
+        this.attr(HTMLBnumFolder.ATTR_UNREAD)
+          ? +this.attr(HTMLBnumFolder.ATTR_UNREAD)
+          : 0,
+      );
   }
+  /**
+   * Gère la mise à jour des attributs observés.
+   * @protected
+   * @param {string} name - Nom de l'attribut modifié.
+   * @param {string | null} oldVal - Ancienne valeur.
+   * @param {string | null} newVal - Nouvelle valeur.
+   * @returns {void | Nullable<'break'>} Peut retourner 'break' pour arrêter la propagation.
+   */
   _p_update(name, oldVal, newVal) {
-    if (
-      this.alreadyLoaded &&
-      name === 'unread' &&
-      newVal !== this.#_badgeElement?.value
-    ) {
-      if (
-        (this.#_badgeElement?.value ?? oldVal) == '99+' &&
-        newVal &&
-        +newVal > 99
-      ) {
-        return;
-      }
-      oldVal = this.#_badgeElement?.value ?? oldVal;
+    if (name === HTMLBnumFolder.ATTR_UNREAD) {
+      // On gère les dissonances visuels (badge value vs attribute value)
+      oldVal = this.#_ui.badge?.value ?? oldVal;
+      // Optimisation: Evite les updates de DOM coûteux si déjà en 99+
+      if (this.#_shouldSkipUnreadUpdate(oldVal, newVal)) return;
     }
     if (oldVal === newVal) return;
     switch (name) {
-      case 'label':
+      case HTMLBnumFolder.ATTR_LABEL:
         this.#_updateLabel(newVal ?? EMPTY_STRING);
         break;
-      case 'unread':
+      case HTMLBnumFolder.ATTR_UNREAD:
         this.#_updateUnread(newVal ? +newVal : 0);
         break;
-      case 'icon':
+      case HTMLBnumFolder.ATTR_ICON:
         this.#_updateIcon(newVal ?? EMPTY_STRING);
         break;
-      case 'is-collapsed':
-        this.#_updateIsCollapsed(newVal === 'true');
+      case HTMLBnumFolder.ATTR_IS_COLLAPSED:
+        this.#_updateIsCollapsed(newVal === HTMLBnumFolder.VAL_TRUE);
         this.#_refreshDisplay();
         break;
-      case 'level':
+      case HTMLBnumFolder.ATTR_LEVEL:
         this.#_updateLevel(newVal ? +newVal : 0);
         break;
-      case 'is-selected':
-        this.#_updateSelected(newVal === 'true');
+      case HTMLBnumFolder.ATTR_IS_SELECTED:
+        this.#_updateSelected(newVal === HTMLBnumFolder.VAL_TRUE);
         break;
     }
   }
+  //#endregion Lifecycle
+  //#region Event handlers
   /**
-   * Calcule le total (Soi-même + tous les descendants)
-   * On le fait via querySelectorAll seulement quand c'est nécessaire.
+   * Gestionnaire d'événement pour le changement de statut "non-lu" des enfants.
+   * Déclenche un rafraîchissement de l'affichage cumulatif si nécessaire.
+   * @private
+   * @param {Event} e - L'événement custom `UnreadChangedEventDetail`.
+   */
+  #_onChildUnreadChanged(e) {
+    const detail = e.detail;
+    // Protection contre les boucles infinies (self-trigger)
+    if (detail?.caller === this) return;
+    this.#_refreshDisplay();
+  }
+  /**
+   * Intercepte la sélection pour empêcher l'action sur les dossiers virtuels.
+   * @private
+   * @param {Event} e - L'événement de sélection.
+   */
+  #_onFolderSelect(e) {
+    if (
+      this.getAttribute(HTMLBnumFolder.ATTR_IS_VIRTUAL) ===
+      HTMLBnumFolder.VAL_TRUE
+    ) {
+      e.stopPropagation();
+    }
+  }
+  //#endregion Event handlers
+  //#region Private methods
+  /**
+   * Détermine si la mise à jour visuelle du badge doit être sautée (ex: 99+ vers 100).
+   * @private
+   * @param {string | null} oldVal - Ancienne valeur.
+   * @param {string | null} newVal - Nouvelle valeur.
+   * @returns {boolean} True si la mise à jour doit être ignorée.
+   */
+  #_shouldSkipUnreadUpdate(oldVal, newVal) {
+    const oldNum = oldVal ? +oldVal : HTMLBnumFolder.VAL_MIN_UNREAD;
+    const newNum = newVal ? +newVal : HTMLBnumFolder.VAL_MIN_UNREAD;
+    return (
+      oldNum > HTMLBnumFolder.VAL_MAX_UNREAD &&
+      newNum > HTMLBnumFolder.VAL_MAX_UNREAD
+    );
+  }
+  /**
+   * Calcule le total des éléments non lus (Soi-même + tous les descendants).
+   * @private
+   * @returns {number} Le total calculé.
    */
   #_getTotalUnread() {
     let total = this.#_selfUnread;
-    // On cherche tous les bnum-folder dans le slot "folders"
-    const descendants = this.querySelectorAll('bnum-folder');
-    descendants.forEach((folder) => {
-      const val = folder.getAttribute('unread');
+    const descendants = this.getElementsByTagName(HTMLBnumFolder.TAG);
+    for (let i = 0, len = descendants.length; i < len; i++) {
+      const val = descendants[i].getAttribute(HTMLBnumFolder.ATTR_UNREAD);
       if (val) total += +val;
-    });
+    }
     return total;
   }
   /**
-   * Met à jour uniquement l'élément visuel (Badge)
+   * Met à jour uniquement l'élément visuel (Badge) en fonction de l'état (plié/déplié).
+   * Si plié, affiche le cumulatif. Si déplié, affiche le score propre.
+   * @private
    */
   #_refreshDisplay() {
-    if (!this.#_badgeElement) return;
-    const isCollapsed = this.getAttribute('is-collapsed') === 'true';
-    // SI replié : Total (Soi + Enfants) | SI déplié : Soi-même uniquement
+    if (!this.#_ui.badge) return;
+    const isCollapsed = this.collapsed;
+    const hasChildren = this.children.length > 0;
     const displayValue =
-      isCollapsed && this.childElementCount > 0
-        ? this.#_getTotalUnread()
-        : this.#_selfUnread;
-    this.#_badgeElement.value =
-      displayValue <= 0
-        ? EMPTY_STRING
-        : displayValue > 99
-          ? '99+'
-          : displayValue.toString();
-    this._p_addState(
-      displayValue > 99
-        ? 'triple-digit-unread'
-        : displayValue > 9
-          ? 'double-digit-unread'
-          : displayValue > 0
-            ? 'single-digit-unread'
-            : 'no-unread',
-    );
-    // On peut aussi ajouter une classe CSS pour styliser différemment le badge cumulé
-    this.#_badgeElement.classList.toggle('is-cumulative');
-    if (displayValue === this.#_selfUnread || !isCollapsed) {
-      this.#_badgeElement.removeClass('is-cumulative');
-    } else {
-      this.#_badgeElement.addClass('is-cumulative');
+      isCollapsed && hasChildren ? this.#_getTotalUnread() : this.#_selfUnread;
+    this.#_applyBadgeState(displayValue, isCollapsed);
+  }
+  /**
+   * Applique l'état visuel et la valeur au badge.
+   * @private
+   * @param {number} value - La valeur numérique à afficher.
+   * @param {boolean} isCollapsed - Si le dossier parent est replié (pour le style cumulatif).
+   */
+  #_applyBadgeState(value, isCollapsed) {
+    const badge = this.#_ui.badge;
+    let state = HTMLBnumFolder.STATE_NO_UNREAD;
+    let text = EMPTY_STRING;
+    if (value > 99) {
+      text = HTMLBnumFolder.VAL_99_PLUS;
+      state = HTMLBnumFolder.STATE_TRIPLE_DIGIT;
+    } else if (value > 0) {
+      text = value.toString();
+      state =
+        value > 9
+          ? HTMLBnumFolder.STATE_DOUBLE_DIGIT
+          : HTMLBnumFolder.STATE_SINGLE_DIGIT;
+    }
+    if (badge.value !== text) badge.value = text;
+    this._p_addState(state);
+    const isCumulative = value !== this.#_selfUnread && isCollapsed;
+    if (
+      badge.classList.contains(HTMLBnumFolder.CLASS_IS_CUMULATIVE) !==
+      isCumulative
+    ) {
+      badge.classList.toggle(HTMLBnumFolder.CLASS_IS_CUMULATIVE, isCumulative);
     }
   }
+  /**
+   * Met à jour le libellé du dossier dans le DOM.
+   * @private
+   * @param {string} label - Nouveau libellé.
+   * @returns {this}
+   */
   #_updateLabel(label) {
-    if (this.#_nameElement) {
-      this.#_nameElement.textContent = label;
-      this.#_nameElement.setAttribute('title', label);
+    if (this.#_ui.name) {
+      this.#_ui.name.textContent = label;
+      this.#_ui.name.title = label;
     }
     return this;
   }
+  /**
+   * Met à jour la valeur interne 'non-lu' et propage l'événement.
+   * @private
+   * @param {number} unread - Nouvelle valeur.
+   * @returns {this}
+   */
   #_updateUnread(unread) {
     this.#_selfUnread = unread;
     this.#_refreshDisplay();
     if (this.alreadyLoaded) {
       this.trigger(
-        'bnum-folder:unread-changed',
+        HTMLBnumFolder.EVENT_UNREAD_CHANGED,
         {
           unread: unread,
           caller: this,
@@ -15956,57 +16210,141 @@ class HTMLBnumFolder extends BnumElementInternal {
     }
     return this;
   }
+  /**
+   * Met à jour l'icône de toggle et l'attribut ARIA.
+   * @private
+   * @param {boolean} isCollapsed - État plié.
+   * @returns {this}
+   */
   #_updateIsCollapsed(isCollapsed) {
-    if (this.#_toggleButton) {
-      this.#_toggleButton.icon = isCollapsed
-        ? 'keyboard_arrow_down'
-        : 'keyboard_arrow_up';
+    if (this.#_ui.toggle) {
+      this.#_ui.toggle.icon = isCollapsed
+        ? HTMLBnumFolder.ICON_ARROW_DOWN
+        : HTMLBnumFolder.ICON_ARROW_UP;
     }
-    this.attr('aria-expanded', (!isCollapsed).toString());
+    this.setAttribute(HTMLBnumFolder.ARIA_EXPANDED, String(!isCollapsed));
     return this;
   }
+  /**
+   * Met à jour l'icône principale du dossier.
+   * @private
+   * @param {string} icon - Nom de l'icône.
+   * @returns {this}
+   */
   #_updateIcon(icon) {
-    if (this.#_iconElement) {
-      this.#_iconElement.icon = icon;
+    if (this.#_ui.icon) {
+      this.#_ui.icon.icon = icon;
     }
     return this;
   }
+  /**
+   * Met à jour le niveau d'indentation via CSS Variable.
+   * @private
+   * @param {number} level - Niveau de profondeur (clamped 0-10).
+   * @returns {this}
+   */
   #_updateLevel(level) {
     const levelClamped = Math.max(0, Math.min(level, 10));
     this.style.setProperty(
-      '--internal-bnum-folder-level',
+      HTMLBnumFolder.CSS_VAR_LEVEL,
       levelClamped.toString(),
     );
     return this;
   }
+  /**
+   * Met à jour l'attribut ARIA de sélection.
+   * @private
+   * @param {boolean} isSelected - État sélectionné.
+   * @returns {this}
+   */
   #_updateSelected(isSelected) {
-    return this.attr('aria-selected', isSelected.toString());
+    return this.attr(HTMLBnumFolder.ARIA_SELECTED, isSelected.toString());
   }
+  //#endregion Private methods
+  //#region Public methods
+  /**
+   * Bascule l'état plié/déplié du dossier.
+   * Met à jour l'attribut DOM et déclenche l'événement `EVENT_TOGGLE`.
+   * @public
+   * @param {Event} [innerEvent] - L'événement déclencheur originel (optionnel).
+   * @returns {this} L'instance courante pour chaînage.
+   */
   toggle(innerEvent) {
     innerEvent?.stopPropagation?.();
-    const isCollapsed = this.getAttribute('is-collapsed') === 'true';
-    this.setAttribute('is-collapsed', isCollapsed ? 'false' : 'true');
-    this.trigger('bnum-folder:toggle', {
+    const isCollapsed =
+      this.getAttribute(HTMLBnumFolder.ATTR_IS_COLLAPSED) ===
+      HTMLBnumFolder.VAL_TRUE;
+    this.setAttribute(
+      HTMLBnumFolder.ATTR_IS_COLLAPSED,
+      isCollapsed ? HTMLBnumFolder.VAL_FALSE : HTMLBnumFolder.VAL_TRUE,
+    );
+    this.trigger(HTMLBnumFolder.EVENT_TOGGLE, {
       innerEvent,
       caller: this,
       collapsed: !isCollapsed,
     });
     return this;
   }
+  /**
+   * Sélectionne le dossier.
+   * Déclenche l'événement `EVENT_SELECT`.
+   * @public
+   * @param {Event} [innerEvent] - L'événement déclencheur originel (optionnel).
+   * @returns {this} L'instance courante pour chaînage.
+   */
   select(innerEvent) {
-    this.trigger('bnum-folder:select', {
+    this.trigger(HTMLBnumFolder.EVENT_SELECT, {
       innerEvent,
       caller: this,
     });
     return this;
   }
+  //#endregion Public methods
+  //#region Static methods
+  /**
+   * Définit la liste des attributs à observer pour les changements.
+   * @protected
+   * @returns {string[]} Liste des noms d'attributs.
+   */
   static _p_observedAttributes() {
-    return ['label', 'unread', 'icon', 'is-collapsed', 'level', 'is-selected'];
+    return [
+      HTMLBnumFolder.ATTR_LABEL,
+      HTMLBnumFolder.ATTR_UNREAD,
+      HTMLBnumFolder.ATTR_ICON,
+      HTMLBnumFolder.ATTR_IS_COLLAPSED,
+      HTMLBnumFolder.ATTR_LEVEL,
+      HTMLBnumFolder.ATTR_IS_SELECTED,
+    ];
   }
+  /**
+   * Génère la chaîne HTML statique pour ce composant (SSR / Helper).
+   * @static
+   * @param {Object} props - Propriétés de construction.
+   * @param {Record<string, string>} [props.attributes={}] - Attributs HTML.
+   * @param {string[]} [props.children=[]] - Contenu enfant.
+   * @returns {string} Le HTML sous forme de chaîne.
+   */
+  static Write({ attributes = {}, children = [] } = {}) {
+    const attrsString = Object.entries(attributes)
+      .map(([key, value]) => `${key}="${value}"`)
+      .join(' ');
+    const childrenString = children.join('');
+    return `<${this.TAG} ${attrsString}>${childrenString}</${this.TAG}>`;
+  }
+  /**
+   * Retourne le nom de la balise HTML associée à ce composant.
+   * @static
+   * @returns {string} 'bnum-folder'
+   */
   static get TAG() {
     return 'bnum-folder';
   }
 }
+/**
+ * Template HTML utilisé par le Shadow DOM du composant.
+ * @constant
+ * @type {HTMLTemplateElement}
+ */
 const TEMPLATE$5 = BnumElementInternal.CreateTemplate(`
     <div class="bal-container">
       <div class="bal-container__title">

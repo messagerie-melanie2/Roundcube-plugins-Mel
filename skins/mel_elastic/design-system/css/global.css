@@ -7,6 +7,11 @@
 /*  - Padding interne des cartes            */
 /*  - Espace entre les cartes (organismes)  */
 /* - Espace entre sections                 */
+/* Padding par défaut des dossiers */
+/* Padding plus large pour les dossiers */
+/* Padding plus petit pour les dossiers */
+/* Padding par défaut des dossiers racines */
+/* Padding plus large pour les dossiers racines */
 /* Composites */
 @keyframes rotate360 {
   from {
@@ -104,6 +109,7 @@
   --bnum-font-size-title-m: 4rem;
   --bnum-font-size-title-s: 3.5rem;
   --bnum-font-size-title-xs: 3rem;
+  --bnum-font-badge-s: 0.5625rem;
   --bnum-body-font-size: var(--bnum-font-size-m, 1rem);
   /* Line heights */
   --bnum-font-height-h1: 48px;
@@ -154,6 +160,14 @@
   --bnum-space-title: var(--bnum-space-l);
   --bnum-space-alternate-title: var(--bnum-space-xl);
   --bnum-space-text: var(--bnum-space-l);
+  --bnum-folder-title-padding: var(--bnum-space-s) var(--bnum-space-m);
+  --bnum-folder-title-padding-larger: var(--bnum-space-m) var(--bnum-space-m);
+  --bnum-folder-title-padding-smaller: var(--bnum-space-xs) var(--bnum-space-m);
+  --bnum-folder-bal-title-padding: var(--bnum-space-m) var(--bnum-space-m);
+  --bnum-folder-bal-title-padding-larger: var(--bnum-space-l)
+    var(--bnum-space-m);
+  --bnum-folder-bal-title-padding-smaller: var(--bnum-space-s)
+    var(--bnum-space-m);
   /* =================================
      4. Bordures et Ombres
      ================================= */

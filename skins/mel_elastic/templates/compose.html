@@ -84,9 +84,8 @@
 				label="attach" title="addattachment" data-hidden="small"
 				onclick="if (!$(this).is('.disabled')) rcmail.upload_input('uploadform')"
 				aria-haspopup="true" aria-expanded="false" tabindex="0" innerclass="inner" />
-				<!-- PAMELA - 0008128 - Plusieurs signatures -->
 			<roundcube:button command="insert-sig" type="link" class="signature disabled" classAct="signature"
-				label="signature" title="insertsignature" tabindex="0" innerclass="inner" data-popup="sigmenu" />
+				label="signature" title="insertsignature" tabindex="0" innerclass="inner" />
 			<a href="#responses" class="responses" label="responses" title="<roundcube:label name='insertresponse' />" unselectable="on" tabindex="0" data-popup="responses-menu">
 				<span class="inner"><roundcube:label name="responses" /></span>
 			</a>
@@ -256,41 +255,6 @@
 		<roundcube:button command="rename-attachment" id="attachmenurename" type="link-menuitem" label="rename" class="rename disabled" classAct="rename active" />
 		<roundcube:container name="attachmentmenu" id="attachmentoptionsmenu" />
 	</ul>
-</div>
-
-<!-- PAMELA - 0008128 - Plusieurs signatures -->
-<div id="sigmenu" class="popupmenu">
-  <h3 class="voice"><roundcube:label name="choosesignature" /></h3>
-  <ul class="menu listing" role="menu">
-    <li role="menuitem" id="sigmenu-full">
-      <a href="#"
-         onclick="return rcmail.command('insert-sig-full', '', this);">
-        <span class="sig-checkmark" style="display:none">✓ </span>
-        <roundcube:label name="signature_full" />
-      </a>
-    </li>
-    <li role="menuitem" id="sigmenu-intermediaire">
-      <a href="#"
-         onclick="return rcmail.command('insert-sig-medium', '', this);">
-        <span class="sig-checkmark" style="display:none">✓ </span>
-        <roundcube:label name="signature_medium" />
-      </a>
-    </li>
-    <li role="menuitem" id="sigmenu-simple">
-      <a href="#"
-         onclick="return rcmail.command('insert-sig-simple', '', this);">
-        <span class="sig-checkmark" style="display:none">✓ </span>
-        <roundcube:label name="signature_simple" />
-      </a>
-    </li>
-		<li role="menuitem" id="sigmenu-none">
-      <a href="#"
-         onclick="return rcmail.command('insert-sig-none', '', this);">
-        <span class="sig-checkmark" style="display:none">✓ </span>
-        <roundcube:label name="signature_none" />
-      </a>
-    </li>
-  </ul>
 </div>
 
 <div id="encryption-menu" class="popupmenu">

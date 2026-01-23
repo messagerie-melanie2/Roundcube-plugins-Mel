@@ -288,35 +288,7 @@ class ResourceBaseFunctions {
       }
     }
 
-    //Met les dates aux heures de travail
-    const settings = window.cal?.settings || top.cal.settings;
-
-    if (+this.start.format('HH') < settings.work_start) {
-      $('.input-time-start')
-        .val(
-          `${settings.work_start < 9 ? `0${settings.work_start}` : settings.work_start}:00`,
-        )
-        .change();
-    }
-
-    if (+this.end.format('HH') > settings.work_end) {
-      if (+this.start.format('HH') >= settings.work_end) {
-        const time_start = settings.work_end - 1;
-        $('.input-time-start')
-          .val(`${time_start < 9 ? `0${time_start}` : time_start}:00`)
-          .change();
-      }
-
-      $('.input-time-end')
-        .val(
-          `${settings.work_end < 9 ? `0${settings.work_end}` : settings.work_end}:00`,
-        )
-        .change();
-    }
-
     this._$calendar.fullCalendar('refetchEvents');
-
-    this._set_validity();
   }
 
   /**
@@ -521,7 +493,7 @@ class ResourceBaseFunctions {
     this._$calendar.fullCalendar('gotoDate', this.start);
     this._$calendar.fullCalendar('refetchEvents');
 
-    this._set_validity();
+    // this._set_validity();
 
     this.refresh_calendar_date();
   }

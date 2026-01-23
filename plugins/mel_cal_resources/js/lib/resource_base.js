@@ -79,16 +79,6 @@ class ResourcesBase extends MelObject {
   }
 
   /**
-   * Vérifie si la date sélectionnée est valide.
-   * Retourne true si les champs de date et heure sont valides, false sinon.
-   * @type {boolean}
-   * @readonly
-   */
-  get isDateValid() {
-    return !this._has_invalid();
-  }
-
-  /**
    * Fonction principale d'initialisation et de configuration.
    * Initialise les variables et configure les filtres.
    * @override
@@ -328,16 +318,18 @@ class ResourcesBase extends MelObject {
       schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
       height: () => this._$calendar.height(),
       firstHour: settings.first_hour,
-      minTime: this.#_set_buisness_hour(settings.work_start),
-      maxTime: this.#_set_buisness_hour(settings.work_end),
+      businessHours: {
+        start: this.#_set_buisness_hour(settings.work_start),
+        end: this.#_set_buisness_hour(settings.work_end),
+      },
       scrollTime: { hours: settings.first_hour },
-      slotDuration: { minutes: 60 },
+      slotDuration: { minutes: 30 },
       locale: 'fr',
       axisFormat: DATE_HOUR_FORMAT,
       slotLabelFormat: DATE_HOUR_FORMAT,
       selectable: true,
       selectHelper: true,
-      slotWidth: 50,
+      slotWidth: self.innerWidth / (4 * (settings.work_end - settings.work_start)),
       defaultDate: this.start,
       select: this._functions.on_selected_date,
       eventSources: [
@@ -525,41 +517,6 @@ class ResourcesBase extends MelObject {
   }
 
   /**
-   * Met à jour la validité des champs de date et heure.
-   * Ajoute ou retire la classe d'invalidité selon la validité des inputs.
-   * @private
-   */
-  _set_validity() {
-    if (!$('.input-time-end')[0].checkValidity())
-      $('.input-time-end').addClass('is-invalid');
-    else $('.input-time-end').removeClass('is-invalid');
-
-    if (!$('.input-time-start')[0].checkValidity())
-      $('.input-time-start').addClass('is-invalid');
-    else $('.input-time-start').removeClass('is-invalid');
-
-    if (this._has_invalid()) {
-      $('.ui-dialog .save-btn')
-        .addClass('disabled')
-        .attr('disabled', 'disabled');
-    } else {
-      $('.ui-dialog .save-btn').removeClass('disabled').removeAttr('disabled');
-    }
-  }
-
-  /**
-   * Vérifie si les champs de temps sont valides.
-   * @returns {boolean} True si invalide, false sinon
-   */
-  _has_invalid() {
-    return (
-      !this.all_day &&
-      (!$('.input-time-end')[0].checkValidity() ||
-        !$('.input-time-start')[0].checkValidity())
-    );
-  }
-
-  /**
    * Fonction de récupération de la page de dialogue.
    * Initialise le calendrier et la validité des champs.
    * @package
@@ -574,16 +531,6 @@ class ResourcesBase extends MelObject {
     if ($fc.length) this._$calendar = this._generate_ui($fc);
 
     this.refresh_calendar_date();
-
-    this.wait_something(
-      () =>
-        $('.input-time-end').length > 0 && $('.ui-dialog .save-btn').length > 0,
-    ).then(() => {
-      this._set_validity();
-      $('#rc-allday').on('click', () => {
-        this._set_validity();
-      });
-    });
 
     return $rtn;
   }
@@ -778,14 +725,6 @@ class ResourcesBase extends MelObject {
     this._filterUpdated = filter;
     this._$calendar.fullCalendar('refetchResources');
     this._$calendar.fullCalendar('refetchEvents');
-  }
-
-  /**
-   * Met à jour la validité des inputs.
-   * @returns {void}
-   */
-  set_validity() {
-    return this._set_validity();
   }
 
   /**

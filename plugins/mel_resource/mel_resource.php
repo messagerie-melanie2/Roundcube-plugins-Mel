@@ -488,6 +488,8 @@ class mel_resource extends bnum_plugin
     }
 
     $this->set_envs_from_ressource();
+    
+    rcmail_action::html_editor();
 
     $this->send_and_exit('mel_resource.vroom_show');
   }
@@ -510,6 +512,7 @@ class mel_resource extends bnum_plugin
       'vroom_locality'    => $this->resource->locality,
       'vroom_email'       => $this->resource->email,
       'vroom_zoom_email'  => $this->resource->zoom_internal_email,
+      'vroom_description' => $this->resource->description,
       'vroom_caracteristiques'      => json_decode($this->resource->caracteristiques ?? '[]', true) ?: [],
       'vroom_calendar_shares'       => $this->get_calendar_shares($this->resource),
       'vroom_calendar_group_shares' => $this->get_calendar_shares($this->resource, true),
@@ -597,6 +600,15 @@ class mel_resource extends bnum_plugin
     $resource->zoom_internal_email     = trim(rcube_utils::get_input_value('vroom_zoom_email', rcube_utils::INPUT_GPC));
     $resource->fullname     = LibMelanie\Api\Defaut\Resource::TYPE_VROOM . " $resource->name";
     $resource->displayname  = LibMelanie\Api\Defaut\Resource::TYPE_VROOM . " $resource->name";
+
+    // Gestion de la description
+    $description  = trim(rcube_utils::get_input_value('vroom_description', rcube_utils::INPUT_GPC, true));
+
+    if (empty($description)) {
+      $resource->description = '';
+    } else {
+      $resource->description = $description;
+    }
 
     $resource->is_zoom_room = true;
 

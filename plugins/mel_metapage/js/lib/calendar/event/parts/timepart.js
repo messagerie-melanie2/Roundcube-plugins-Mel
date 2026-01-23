@@ -236,6 +236,11 @@ export class TimePartManager {
       ); ///60/1000;
 
     this.base_diff = _base_diff;
+    // debugger;
+
+    if (event && event.recurrence && event.recurrence.FREQ) {
+      $('#fake-event-rec').val(event.recurrence.FREQ);
+    }
     // Object.defineProperty(this, 'base_diff', {
     //   get() {
     //     return _base_diff;

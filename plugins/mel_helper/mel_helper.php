@@ -369,5 +369,35 @@ class mel_helper extends rcube_plugin
         include_once "lib/html_block.php";
         return new HtmlBlock($template);
     }
+
+       /**
+   * Rechercher les opérateurs Mél d'un utilisateur
+   * Voir Mantis #4387 (https://mantis.pneam.cp2i.e2.rie.gouv.fr/mantis/view.php?id=4387)
+   * @param string $uid Uid de l'utilisateur
+   */
+  public static function SearchOperatorsMelByDn($uid)
+  {
+    // Récupération du DN en fonction de l'UID
+    $user_infos = LibMelanie\Ldap\Ldap::GetUserInfos($uid);
+    $base_dn = $user_infos['dn'];
+    // Initialisation du filtre LDAP
+    $filter = "(&(objectClass=groupOfNames)(mineqRDN=ACL.Opérateurs Mélanie2))";
+    $mail = null;
+    // Récupération de l'instance depuis l'ORM
+    $ldap = LibMelanie\Ldap\Ldap::GetInstance(LibMelanie\Config\Ldap::$SEARCH_LDAP);
+    if ($ldap->bind4lookup()) {
+      do {
+        // Search LDAP
+        $result = $ldap->ldap_list($base_dn, $filter, ['mail', 'mailpr']);
+        // Form DN
+        $base_dn = substr($base_dn, strpos($base_dn, ',') + 1);
+      } while ((!isset($result) || $ldap->count_entries($result) === 0) && $base_dn != 'dc=equipement,dc=gouv,dc=fr');
+      if (isset($result) && $ldap->count_entries($result) > 0) {
+        $infos = $ldap->get_entries($result);
+        $mail = $infos[0]['mailPR'][0] ?: $infos[0]['mail'][0];
+      }
+    }
+    return $mail;
+  }
     
 }

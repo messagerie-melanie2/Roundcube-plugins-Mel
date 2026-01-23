@@ -326,19 +326,6 @@ if (rcmail) {
     );
 
     /**
-     * Commande pour copier un événement.
-     */
-    rcmail.register_command(
-      'event-self-copy',
-      () => {
-        let event = $.extend(true, {}, ui_cal.selected_event);
-        delete event.attendees;
-        ui_cal.event_copy(event);
-      },
-      true,
-    );
-
-    /**
      * Commande pour tester les notifications.
      */
     rcmail.register_command(

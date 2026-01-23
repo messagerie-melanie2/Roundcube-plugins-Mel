@@ -615,7 +615,8 @@ class calendar_ui
         $radio = new html_radiobutton(['name' => '_savemode', 'class' => 'edit-recurring-savemode']);
 
         $form = html::label(null, $radio->show('', ['value' => 'current']) . $this->cal->gettext('currentevent')) . ' '
-            . html::label(null, $radio->show('', ['value' => 'future']) . $this->cal->gettext('futurevents')) . ' '
+        //PAMELA - 0009289: Supprimer "Cette occurrence et toutes les suivantes"
+        //. html::label(null, $radio->show('', ['value' => 'future']) . $this->cal->gettext('futurevents')) . ' '
             . html::label(null, $radio->show('all', ['value' => 'all']) . $this->cal->gettext('allevents')) . ' '
             . html::label(null, $radio->show('', ['value' => 'new']) . $this->cal->gettext('saveasnew'));
 

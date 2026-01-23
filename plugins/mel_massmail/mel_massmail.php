@@ -47,6 +47,8 @@ class mel_massmail extends rcube_plugin
 
     // Charge la configuration
     $this->load_config();
+
+    $this->require_plugin('mel_helper');
   }
 
   /**
@@ -104,7 +106,7 @@ class mel_massmail extends rcube_plugin
     // Compte le nombre de destinataires
     $nb = count($to) + count($cc) + count($bcc);
     // Configuration des destinataires du mail d'alerte
-    $mail_dest = $this->rc->config->get('alert_message_dest', null);
+    $mail_dest = $this->rc->config->get('mail_warning_emails', null) ?? $this->rc->config->get('alert_message_dest', null);
     // Configuration de la valeur pour griller un mot de passe
     $pwdgrille = $this->rc->config->get('grilled_password_prefix', null);
     // Récupération de l'uid de l'utilisateur connecté
@@ -215,26 +217,6 @@ $destinataires_list
    */
   private function _search_operators_mel_by_dn($uid)
   {
-    // Récupération du DN en fonction de l'UID
-    $user_infos = LibMelanie\Ldap\Ldap::GetUserInfos($uid);
-    $base_dn = $user_infos['dn'];
-    // Initialisation du filtre LDAP
-    $filter = "(&(objectClass=groupOfNames)(mineqRDN=ACL.Opérateurs Mélanie2))";
-    $mail = null;
-    // Récupération de l'instance depuis l'ORM
-    $ldap = LibMelanie\Ldap\Ldap::GetInstance(LibMelanie\Config\Ldap::$SEARCH_LDAP);
-    if ($ldap->bind4lookup()) {
-      do {
-        // Search LDAP
-        $result = $ldap->ldap_list($base_dn, $filter, ['mail', 'mailpr']);
-        // Form DN
-        $base_dn = substr($base_dn, strpos($base_dn, ',') + 1);
-      } while ((!isset($result) || $ldap->count_entries($result) === 0) && $base_dn != 'dc=equipement,dc=gouv,dc=fr');
-      if (isset($result) && $ldap->count_entries($result) > 0) {
-        $infos = $ldap->get_entries($result);
-        $mail = $infos[0]['mailPR'][0] ?: $infos[0]['mail'][0];
-      }
-    }
-    return $mail;
+    return mel_helper::SearchOperatorsMelByDn($uid);
   }
 }

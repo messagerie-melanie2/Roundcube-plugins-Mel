@@ -481,7 +481,7 @@ $labels['custom_alarm_title'] = 'Alarme personnalisée';
 $labels['validate'] = 'Valider';
 
 $labels['invalid_guests'] = 'Impossible d\'ajouter certains participants !';
-$labels['existing_guest'] = 'Le participant %0 éxiste déjà !';
+$labels['existing_guest'] = 'Le participant %0 existe déjà !';
 
 $labels['add_guests'] = 'Ajoutez des participants';
 $labels['req_guest'] = 'Participants obligatoires';
@@ -521,3 +521,6 @@ $labels['minimise'] = 'Minimiser';
 $labels['maximise'] = 'Dévelloper';
 $labels['close_popup'] = 'Fermer la popup';
 $labels['visios-agenda-help'] = 'Pour plus d\'informations sur l\'utilisation de la Web-conférence de l\'État, consultez : $url';
+
+$labels['duplicateevent'] = 'Dupliquer l\'original';
+$labels['copyeventseries'] = 'Copier l\'original';

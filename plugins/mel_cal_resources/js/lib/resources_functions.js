@@ -301,9 +301,9 @@ class ResourceBaseFunctions {
 
     if (+this.end.format('HH') > settings.work_end) {
       if (+this.start.format('HH') >= settings.work_end) {
-        const start = settings.work_end - 1;
+        const time_start = settings.work_end - 1;
         $('.input-time-start')
-          .val(`${start < 9 ? `0${start}` : start}:00`)
+          .val(`${time_start < 9 ? `0${time_start}` : time_start}:00`)
           .change();
       }
 
@@ -355,15 +355,22 @@ class ResourceBaseFunctions {
   resource_render(resourceObj, labelTds) {
     if (resourceObj.id !== 'resources') {
       const city = resourceObj.data.locality;
+      const capacity = resourceObj.data.capacite;
       const locatedText = MelObject.Empty().gettext(
         'resource_located_at',
         'mel_cal_resources',
       );
+      const seatText = MelObject.Empty().gettext('seats', 'mel_cal_resources');
       const cityText = MelObject.Empty().gettext('city', 'mel_cal_resources');
 
       // Mise en place d'un title
       if (city) {
         labelTds.find('.fc-cell-text').attr('title', `${locatedText} ${city}`);
+      }
+
+      // Modification du texte avec la capacité
+      if (capacity) {
+        labelTds.find('label.fc-cell-text, .fc-cell-text').get(0).textContent += ` - ${capacity} ${seatText}`;
       }
 
       labelTds

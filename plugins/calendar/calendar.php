@@ -1124,27 +1124,6 @@ $("#rcmfd_new_category").keypress(function(event) {
 
         switch ($action) {
         //PAMELA
-        case "invite-self":
-            if ($action === "invite-self")
-            {
-                //Récupération des infos de l'utilisateurs
-                $user = driver_mel::gi()->getUser();
-
-                //Ajouts des infos de l'utilisateur dans l'évènement
-                if (isset($event['attendees']) && is_array($event['attendees']))
-                {
-                    $event['attendees'][] = [
-                        'email' => $user->email,
-                        'name' => $user->fullname,
-                        'role' => 'REQ-PARTICIPANT',
-                        'status' => 'ACCEPTED',
-                        'skip_notify' => 'true',
-                        'noreply' => '1'
-                    ];
-                    //Changement du calendrier
-                    $event['calendar'] = driver_mel::mceToRcId($user->uid);
-                }
-            }
         case "new":
             // create UID for new event
             if ($action === "new") $event['uid'] = $this->generate_uid();
@@ -1156,44 +1135,7 @@ $("#rcmfd_new_category").keypress(function(event) {
                 $event['_savemode'] = 'all';
 
                 $this->cleanup_event($event);
-                $this->event_save_success($event, null, $action, true);
-
-                if ($action === "invite-self")
-                {
-                    foreach ($event['attendees'] as $person) {
-                        if ('ORGANIZER' === $person['role']){
-                            $canNotify = false;
-                            $user = driver_mel::gi()->getUser();
-                            $title = $event['title'];
-                            $subject = "$user->name a rejoint votre évènement $title !";
-                            $email = $person['email'];
-                            $user_last_login = mel_helper::last_login($user->uid);
-                            
-                            if (class_exists("mel_notification") && isset($user_last_login)) {
-                                if (mel_helper::check_date_past($user_last_login, 15)) $canNotify = false;
-                            } else $canNotify = false;
-                    
-                            if ($canNotify) {
-                                mel_notification::notify('agenda', $subject, 'test', null, driver_mel::gi()->getUser(null, true, false, null, $email)->uid);
-                            }
-                            else {    
-                                $recipient = ['email' => $email, 'name' => 'Organisateur - '.$person['name']];
-                                $itip        = $this->load_itip();
-                                
-                                $itip->send_itip_message($event, 'REPLY', $recipient, $subject, 'eventupdatemailbody', null, false);
-
-                                $this->rc->plugins->exec_hook('calendar.on_attendees_notified', [
-                                    'orga' => $email,
-                                    'attendees' => [$email],
-                                    'message' => $itip->last_message,
-                                    'event' => $event
-                                ]);
-                                
-                            }
-                            break;
-                        }
-                    }
-                }
+                $this->event_save_success($event, null, $action, true);                
             }
 
             $reload = $success && !empty($event['recurrence']) ? 2 : 1;
@@ -1436,13 +1378,46 @@ $("#rcmfd_new_category").keypress(function(event) {
 
             break;
 
+        case "invite-self":
+            //Récupération des infos de l'utilisateurs
+            $user = driver_mel::gi()->getUser();
+
+            // Ajouts des infos de l'utilisateur dans l'évènement
+            if (isset($event['attendees']) && is_array($event['attendees']))
+            {
+                $attendees = [count($event['attendees'])];
+                $event['attendees'][] = [
+                    'email'         => $user->email,
+                    'name'          => $user->fullname,
+                    'role'          => 'OPT-PARTICIPANT',
+                    'status'        => 'NEEDS-ACTION',
+                    'skip_notify'   => 'true',
+                    'noreply'       => '1'
+                ];
+                //Changement du calendrier
+                $event['calendar'] = driver_mel::mceToRcId($user->uid);
+
+                $title = $event['title'];
+                $subject = "$user->name a rejoint votre évènement $title !";
+            }
+
+            if ($this->write_preprocess($event, 'new')) {
+                $this->driver->new_event($event);
+            }
+            
         case "rsvp":
             $itip_sending  = $this->rc->config->get('calendar_itip_send_option', $this->defaults['calendar_itip_send_option']);
-            $status        = rcube_utils::get_input_value('status', rcube_utils::INPUT_POST);
-            $attendees     = rcube_utils::get_input_value('attendees', rcube_utils::INPUT_POST);
+            // PAMELA
+            if ($action === "invite-self") {
+                $status = 'accepted';
+            }
+            else {
+                $status        = rcube_utils::get_input_value('status', rcube_utils::INPUT_POST);
+                $attendees     = rcube_utils::get_input_value('attendees', rcube_utils::INPUT_POST);
+            }
             $reply_comment = $event['comment'];
 
-            $this->write_preprocess($event, 'edit');
+            if($action !== 'invite-self') $this->write_preprocess($event, 'edit');
             $ev = $this->driver->get_event($event);
             $ev['attendees'] = $event['attendees'];
             $ev['free_busy'] = $event['free_busy'];
@@ -1516,7 +1491,7 @@ $("#rcmfd_new_category").keypress(function(event) {
                     $event['thisandfuture'] = $event['_savemode'] == 'future';
 
                     // PAMELA - Mode assistantes
-                    if ($organizer && $itip->send_itip_message($event, 'REPLY', $organizer, 'itipsubject' . $status, 'itipmailbody' . $status, null, null, $attendee_name)) {
+                    if ($organizer && $itip->send_itip_message($event, 'REPLY', $organizer, $action === 'invite-self' ? $subject : 'itipsubject' . $status, 'itipmailbody' . $status, null, null, $attendee_name)) {
                         $mailto = !empty($organizer['name']) ? $organizer['name'] : $organizer['email'];
                         $msg    = $this->gettext(['name' => 'sentresponseto', 'vars' => ['mailto' => $mailto]]);
 

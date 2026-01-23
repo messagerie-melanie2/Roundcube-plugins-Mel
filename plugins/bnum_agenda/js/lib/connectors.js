@@ -1,3 +1,4 @@
+import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { Connector } from '../../../mel_metapage/js/lib/helpers/bnum_connections/connector.js';
 
 const AGENDA_CONNECTORS = {
@@ -7,6 +8,16 @@ const AGENDA_CONNECTORS = {
    */
   get_categories: Connector.Create('calendar', 'get_categories', {
     type: Connector.enums.type.get,
+  }),
+  /**
+   * Connecteur pour récupérer l'évènement principale d'une réccurence.
+   * @type {Connector<{event_id:string}, Object<string, any>>}
+   */
+  get_master_event: Connector.Create('calendar', 'get_master_event', {
+    type: Connector.enums.type.get,
+    params: {
+      event_id: EMPTY_STRING,
+    },
   }),
 };
 

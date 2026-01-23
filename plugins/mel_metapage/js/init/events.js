@@ -1584,6 +1584,15 @@ if (rcmail && window.mel_metapage) {
         }),
       );
 
+      $('#eventoptionsmenu .copy').each((_, e) => {
+        e = $(e);
+        e.text(e.data('original-text') ?? e.text());
+      });
+
+      $('#eventoptionsmenu .duplicate')
+        .removeClass('hidden')
+        .removeAttr('hidden', 'hidden');
+
       if (
         rcmail.env.calendars[event.calendar].editable &&
         event.editable !== false
@@ -1607,10 +1616,27 @@ if (rcmail && window.mel_metapage) {
               rcmail.triggerEvent('edit-event', event);
             }),
           );
+
+        if (event.isexception || event.master_start) {
+          $('#eventoptionsmenu .copy').each((_, e) => {
+            e = $(e);
+            e.data('original-text', e.data('original-text') ?? e.text());
+            e.text(
+              rcmail.gettext(
+                e.hasClass('duplicate') ? 'duplicateevent' : 'copyeventseries',
+                'mel_metapage',
+              ),
+            );
+          });
+        }
+      } else {
+        $('#eventoptionsmenu .duplicate')
+          .addClass('hidden')
+          .attr('hidden', 'hidden');
       }
 
       //Options
-      if (!datas.temp && !event.temporary && event.calendar != '_resource') {
+      if (!datas.temp && !event.temporary && event.calendar !== '_resource') {
         $('<button>')
           .attr({
             href: '#',
@@ -2236,14 +2262,14 @@ if (rcmail && window.mel_metapage) {
 
       //Gère les différents cas de phishing
       rcmail.addEventListener('insertrow', function (event) {
-        if (event.row.flags.BLOQUED === true) {
+        if (event.row.flags && event.row.flags.BLOQUED === true) {
           $(event.row.obj)
             .addClass('bloqued')
             .attr(
               'title',
               "Ce message est bloqué sur le Bnum car il s'agit de phishing !",
             );
-        } else if (event.row.flags.SUSPECT === true) {
+        } else if (event.row.flags && event.row.flags.SUSPECT === true) {
           $(event.row.obj)
             .addClass('suspect')
             .attr(

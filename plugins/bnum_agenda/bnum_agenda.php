@@ -1,6 +1,10 @@
 <?php 
 /**
- * Classe du plugin bnum_agenda pour la gestion de l'agenda.
+ * Plugin Roundcube pour la gestion de l'agenda Bnum.
+ * 
+ * Ce plugin permet d'ajouter des fonctionnalités avancées à l'agenda,
+ * telles que la gestion des catégories, la personnalisation de l'affichage,
+ * et l'intégration de liens de prise de rendez-vous.
  */
 class bnum_agenda extends bnum_plugin {
   /**
@@ -25,7 +29,13 @@ class bnum_agenda extends bnum_plugin {
     switch ($this->get_current_task()) {
       case 'agenda':
       case 'calendar':
-        $this->register_action('get_categories', [$this, 'action_get_categories']);
+        $this->add_texts('localization/', true);
+        $this->register_actions([
+          'get_categories' => [$this, 'action_get_categories'],
+          'get_master_event' => [$this, 'action_get_master_event']
+        ]);
+
+        if ($this->rc()->output !== null) $this->include_module('main.js');
         break;
       
       default:
@@ -86,8 +96,56 @@ class bnum_agenda extends bnum_plugin {
    *
    * @return never
    */
-  public function action_get_categories() : never {
+  public function action_get_categories() {
     $this->sendEncodedExit(json_encode($this->get_categories()));
+  }
+
+  /**
+   * Action pour récupérer un événement maître à partir de son identifiant.
+   *
+   * @return void
+   */
+  public function action_get_master_event() {
+    $id = $this->get_input('event_id', rcube_utils::INPUT_GET);
+
+    /**
+     * @var calendar
+     */
+    $calendar = $this->rc()->plugins->get_plugin('calendar');
+    $event = $calendar->__get('driver')->get_event(['id' => $id, 'uid' => $id]);
+
+    $this->_check_and_format_fields($event, ['start', 'end', 'created', 'modified'])
+         ->sendEncodedExit(json_encode($event));
+  }
+  
+  /**
+   * Vérifie et formate les champs de type DateTime dans un événement.
+   *
+   * @param array $event  L'événement à traiter (par référence)
+   * @param array $fields Liste des champs à vérifier et formater
+   * @return self
+   */
+  private function _check_and_format_fields(&$event, $fields) {
+    foreach ($fields as $field) {
+      $this->_check_and_format($event, $field);
+    }
+
+    return $this;
+  }
+
+  /**
+   * Vérifie et formate un champ de type DateTime dans un événement.
+   *
+   * @param array  $event L'événement à traiter (par référence)
+   * @param string $field Le champ à vérifier et formater
+   * @return self
+   */
+  private function _check_and_format(&$event, $field) {
+    if ($event && $event[$field] && $event[$field] instanceof DateTime) {
+      $event[$field] = $event[$field]->format('Y-m-d H:i');
+    }
+
+    return $this;
   }
 
   /**
@@ -182,5 +240,18 @@ class bnum_agenda extends bnum_plugin {
       $this->rc()->output->set_env('event_limit', $args['prefs']['event_limit']);
     }
     return $args;
+  }
+
+  /**
+   * Crée un nouvel événement de calendrier.
+   *
+   * @param string   $title Titre de l'événement
+   * @param DateTime $start Date et heure de début de l'événement
+   * @param DateTime $end   Date et heure de fin de l'événement
+   * @return CalendarEvent  Instance de l'événement créé
+   */
+  public static function CreateEvent(string $title, DateTime $start, DateTime $end): CalendarEvent {
+    include_once __DIR__ . '/program/Event.php';
+    return new CalendarEvent($title, $start, $end);
   }
 }

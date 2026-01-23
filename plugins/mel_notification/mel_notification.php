@@ -59,7 +59,8 @@ class mel_notification extends rcube_plugin
         'notifications_material_icons'          => [],
         'notifications_set_read_on_click'       => false,
         'notifications_set_read_on_panel_close' => false,
-        'notifications_sound_on_new_mail'       => false
+        'notifications_sound_on_new_mail'       => false,
+        'notifications_limit'                   => 3
     ];
     
     /**
@@ -71,7 +72,7 @@ class mel_notification extends rcube_plugin
         
         // Charge la conf du plugin
         $this->load_config();
-        
+
         // Liste des actions pour lesquels on ne load pas le js
         $nojs_actions = [
             'mail.compose',
@@ -96,6 +97,7 @@ class mel_notification extends rcube_plugin
                 $this->rc->output->set_env('notifications_set_read_on_panel_close', $this->rc->config->get('notifications_set_read_on_panel_close', $this->defaults['notifications_set_read_on_panel_close']));
                 $this->rc->output->set_env('notifications_sound_on_new_mail',       $this->rc->config->get('notifications_sound_on_new_mail',       $this->defaults['notifications_sound_on_new_mail']));
                 $this->rc->output->set_env('notifications_settings',                $this->rc->config->get('notifications_settings',                []));
+                $this->rc->output->set_env('notifications_limit',                   $this->rc->config->get('notifications_limit',                   $this->defaults['notifications_limit']));
                 
                 // Charger le js
                 $this->include_script('notifications.js');
@@ -301,9 +303,10 @@ class mel_notification extends rcube_plugin
         $search  = $deleted . 'UNSEEN UID ' . $args['diff']['new'];
         $unseen  = $storage->search_once($mbox, $search);
         
-        if ($unseen->count()) {
+        if ($unseen->count()) {         
+            $endText = $txt = '';   
             $this->notified = true;
-            
+
             // PAMELA - Gestion de la mailbox
             if (strpos($mbox, driver_mel::gi()->getBalpLabel()) === 0) {
                 $tmp = explode($_SESSION['imap_delimiter'], $mbox, 3);
@@ -313,14 +316,30 @@ class mel_notification extends rcube_plugin
                 if (isset($tmp[2])) {
                     $content = $content . " > " . $tmp[2];
                 }
+
+                $endText = $this->gettext(['name' => 'notification_on_', 'vars' => ['mbox' => $content]]);
             }
             else {
                 $content = driver_mel::gi()->getUser()->fullname;
                 $mailbox = driver_mel::gi()->getUser()->uid;
                 
                 if ($mbox != 'INBOX') {
-                    $content = $content . " > " . rcube_charset::utf7imap_to_utf8($mbox);
+                    $content = $content . " > " . rcube_charset::convert($mbox, 'UTF7-IMAP', 'UTF-8');
+                    $endText = $this->gettext(['name' => 'notification_on_', 'vars' => ['mbox' => $content]]);
                 }
+                else $endText = $this->gettext('notification_on_ur_bal');
+            }
+                
+            if ($unseen->count() == 1) {
+                $msg = $storage->get_message($unseen->get_element(0), $mbox);
+                $txt = $this->gettext(['name' => 'notificationof', 'vars' => [
+                    'sender' => $msg->get('from', true),
+                    'subject' => $msg->get('subject', true),
+                    'end' => $endText
+                ]]);
+            }
+            else {
+                $txt = $this->gettext(['name' => 'new_notifications', 'vars' => ['count' => $unseen->count(),'end' => $endText]]);
             }
             
             $this->rc->output->set_env('newmail_notifier_timeout', $this->rc->config->get('newmail_notifier_desktop_timeout'));
@@ -333,11 +352,11 @@ class mel_notification extends rcube_plugin
 
             (new CommandNotification(
                 /*category*/ ENotificationType::Mail(), 
-                /*title*/    $this->gettext('New message'), 
+                /*title*/    $txt, 
                 /*content*/  $content, 
                 /*action*/   $action
                 )
-            )->add_extra('mailbox', $mailbox)->notify_local();
+            )->add_extra('mailbox', $mailbox)->notify();
             
          }
         return $args;

@@ -61,6 +61,7 @@ $labels['group does not exist'] = 'Le groupe spécifié n\'existe pas.';
 $labels['vroom_added'] = 'La VRoom a été créée avec succès.';
 $labels['vroom_modified'] = 'La VRoom a été modifiée avec succès.';
 $labels['vroom_deleted'] = 'La VRoom a été supprimée avec succès.';
+$labels['vroom_description'] = 'Description de la VRoom';
 $labels['confirm_delete_vroom'] = 'Êtes-vous sûr de vouloir supprimer cette VRoom ?';
 $labels['error_add_vroom'] = 'Une erreur est survenue lors de la création de la VRoom.';
 $labels['error_modify_vroom'] = 'Une erreur est survenue lors de la modification de la VRoom.';

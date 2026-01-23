@@ -326,6 +326,33 @@
     rcmail.init_address_input_events($('#calendar-group-share-input'), {
       action: 'settings/plugin.acl-autocomplete-group',
     });
+
+    // Gestion de l'editeur html
+    setTimeout(async () => {
+      if (rcmail.editor !== undefined && rcmail.editor.editor !== null) {
+        rcmail.editor.editor.remove();
+        rcmail.editor.editor = null;
+        delete rcmail.editor;
+      }
+
+      let config = rcmail.env.editor_config;
+      config.mode = 'simple';
+
+      rcmail.editor_init(config, 'vroom_description_body');
+      
+      let it = 0;
+      await wait(() => {
+        if (it++ > 5) return false;
+
+        return (
+          rcmail.editor === undefined ||
+          rcmail.editor === null ||
+          rcmail.editor.editor === null
+        );
+      });
+
+      rcmail.command('updateEditor');
+    }, 10);
   }
 
   /**

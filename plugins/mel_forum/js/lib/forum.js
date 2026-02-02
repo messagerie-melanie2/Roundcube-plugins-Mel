@@ -821,6 +821,7 @@ export class Forum extends MelObject {
             );
           }
         }
+        this.rcmail().triggerEvent('forum.new_post.updated');
       },
       on_error: (err) => {
         BnumMessage.DisplayMessage(

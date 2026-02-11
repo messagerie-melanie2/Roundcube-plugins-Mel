@@ -41,6 +41,23 @@ export class New_posts extends MelObject {
         },
       });
     });
+
+    this.rcmail().addEventListener('forum.new_post_updated', () => {
+      this.http_internal_get({
+        task: 'forum',
+        action: 'get_posts_data',
+        params: {
+          _workspace_uid: this.get_env('workspace_uid'),
+          _limit: 3,
+          _pin: false,
+        },
+        on_success: (data) => {
+          $('#new_post-area').text(EMPTY_STRING);
+          this.rcmail().env.posts_data = JSON.parse(data);
+          this.initNewPostsDisplay();
+        },
+      });
+    });
   }
 
   /**

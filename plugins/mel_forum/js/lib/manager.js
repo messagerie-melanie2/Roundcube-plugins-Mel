@@ -172,6 +172,7 @@ export class Manager extends MelObject {
 
         // Afficher le nouveau commentaire dans l'interface sans recharger la page
         await Manager.displaySingleComment(response.comment);
+        this.rcmail().triggerEvent('forum.new_post.updated');
       } else {
         rcmail.display_message(response.message, 'error');
       }
@@ -830,6 +831,7 @@ export class Manager extends MelObject {
             );
           }
         }
+        this.rcmail().triggerEvent('forum.new_post.updated');
       },
       on_error: () => {
         BnumMessage.DisplayMessage(

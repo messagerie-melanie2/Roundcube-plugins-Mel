@@ -243,6 +243,11 @@ class ResourceBaseFunctions {
       .where((x) => x.data.uid === id)
       .firstOrDefault()?.data;
 
+    // Afficher la description de la ressource
+    document.querySelector('.rc-page-information').innerHTML = this.selected_resource.description || '';
+    document.querySelector('.rc-page-information').style.display = this.selected_resource.description ? 'block' : 'none';
+    this.rerender();
+
     //On selectionne la bon ne ressource et on décoche les autres
     for (let i = 0; i < this._p_resources.length; ++i) {
       if (this._p_resources[i].data.uid === id)

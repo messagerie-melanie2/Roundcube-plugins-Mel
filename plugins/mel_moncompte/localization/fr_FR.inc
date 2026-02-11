@@ -289,6 +289,8 @@ $labels['absence_msg_interne_required'] = "Veuillez renseigner le champ message 
 $labels['absence_msg_interne_externe_required'] = "Veuillez renseigner les champs message interne et message externe.";
 $labels['absence_msg_externe_required'] = "Veuillez renseigner le champ message externe.";
 $labels['absence_msg_hebdomadaire_required'] = "Veuillez renseigner un message pour chaque absence hebdomadaire.";
+$labels['absence_dates_required'] = "Veuillez renseigner une date de début et une date de fin.";
+$labels['absence_disabled'] = "La réponse automatique d'absence a bien été désactivée.";
 
 // Gestion des listes
 $labels['gestionnairelistes'] = "Gestionnaire de listes";

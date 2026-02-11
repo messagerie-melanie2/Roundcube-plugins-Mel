@@ -55,6 +55,16 @@ class Gestionnaireabsence extends Moncompteobject
     if ($user->authentification(Moncompte::get_current_user_password(), true)) {
       // Chargement des informations supplémenaires nécessaires
       $user->load(['outofoffices']);
+       // Persistance des messages si dates manquantes
+      if (!empty($_SESSION['absence_messages_draft'])) {
+
+        $draft = $_SESSION['absence_messages_draft'];
+
+        rcmail::get_instance()->output->set_env('moncompte_absence_texte_interne', $draft['message_interne'] ?? '');
+        rcmail::get_instance()->output->set_env('moncompte_absence_texte_externe', $draft['message_externe'] ?? '');
+
+        unset($_SESSION['absence_messages_draft']);
+      }
       // Message interne
       $internal_oof = $user->outofoffices[Outofoffice::TYPE_INTERNAL];
       // Message externe
@@ -407,6 +417,21 @@ class Gestionnaireabsence extends Moncompteobject
 
     if ($interne_enabled || $externe_enabled) {
 
+    // Dates obligatoires pour absence ponctuelle
+    if (($interne_enabled || $externe_enabled)
+        && (empty($date_debut) || empty($date_fin))) {
+
+      // On conserve les messages saisis
+      $_SESSION['absence_messages_draft'] = [
+        'message_interne' => $message_interne,
+        'message_externe' => $message_externe,
+      ];
+
+      rcmail::get_instance()->output->show_message('mel_moncompte.absence_dates_required','error');
+
+      return false; // on refuse l'enregistrement
+    }
+
       // Message Interne activé = contenu message interne obligatoire
       if ($interne_enabled && empty($message_interne)) {
         rcmail::get_instance()->output->show_message('mel_moncompte.absence_msg_interne_required', 'error');
@@ -613,7 +638,11 @@ class Gestionnaireabsence extends Moncompteobject
       $ret = $user->save();
       if (!is_null($ret)) {
         // Ok
-        rcmail::get_instance()->output->show_message('mel_moncompte.absence_ok', 'confirmation');
+        if (!$interne_enabled && !$externe_enabled) {
+          rcmail::get_instance()->output->show_message('mel_moncompte.absence_disabled','confirmation');
+        } else {
+          rcmail::get_instance()->output->show_message('mel_moncompte.absence_ok','confirmation');
+        }
 
         $event_uid = self::_get_ponct_event_uid();
         if ($status_interne == '1' || $status_externe == '1')

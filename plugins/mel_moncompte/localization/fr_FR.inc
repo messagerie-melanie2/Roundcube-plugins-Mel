@@ -282,6 +282,7 @@ $labels['hourstart'] = "Heure de début";
 $labels['hourend'] = "Heure de fin";
 $labels['allday'] = "Journée entière";
 $labels['deleteabsence'] = "Supprimer cette absence";
+$labels['close_or_open_calendar'] = "Ouvrir ou fermer le calendrier";
 
 $labels['absence_ok'] = "Votre message d'absence a bien été enregistré";
 $labels['absence_nok'] = "Une erreur s'est produite lors de l'enregistrement de votre message d'absence, veuillez contacter votre service informatique.";

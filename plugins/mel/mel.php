@@ -330,6 +330,10 @@ class mel extends rcube_plugin
         $this->rc->output->set_env('plugin.show_password_change', true);
       }
     }
+
+    // Mise en place de log pour comptabiliser le nombre de connexions journalières
+    $this->logOnInit();
+
     $this->ui_initialized = true;
   }
 
@@ -1225,5 +1229,23 @@ class mel extends rcube_plugin
       $service = implode('/', array_slice($split_service, -3, 3, true));
     }
     return $service;
+  }
+
+  /**
+   * Enregistre un log lors de l'ouverture de la messagerie
+   * Permet de comptabiliser les connexions journalières.
+   */
+  private function logOnInit()
+  {
+      if ($this->rc->task == 'mail' && ($this->rc->action == '' || $this->rc->action == 'index')) {
+          $today = date('Y-m-d');
+          if (!isset($_SESSION['mel_mail_opened_today']) || $_SESSION['mel_mail_opened_today'] !== $today) {
+              if (mel_logs::is(mel_logs::INFO)) {
+                  $username = $this->rc->user->get_username();
+                  mel_logs::get_instance()->log(mel_logs::INFO, "Ouverture de la messagerie pour l'utilisateur : " . $username);
+              }
+              $_SESSION['mel_mail_opened_today'] = $today;
+          }
+      }
   }
 }

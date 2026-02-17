@@ -4480,7 +4480,11 @@ function rcube_calendar_ui(settings) {
     rcmail.set_busy(false, null, me.saving_lock);
     rcmail.gui_objects.importform.reset();
 
+    // PAMELA Déclencher un Refresh après import
+    p.refetch = true;
     if (p.refetch) this.refresh(p);
+    // PAMELA Déclencher un Refresh après import
+    rcmail.refresh();
   };
 
   // callback from server to report errors on import

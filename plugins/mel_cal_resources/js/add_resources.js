@@ -311,7 +311,7 @@ class ResourceDialog extends MelObject {
         pages.push(page);
       }
 
-      page = new DialogMultiPage('index', pages, "Choix d'une ressource.", {
+      page = new DialogMultiPage('index', pages, 'Choix d\'une ressource.', {
         pluginLocalisation: 'mel_cal_resources',
         title: 'Réserver une ressource',
       });
@@ -320,12 +320,7 @@ class ResourceDialog extends MelObject {
       //prettier-ignore
       page.start_update_content({ force_restart: true })
       .customElement(HTMLTabSelectElement, { 'data-navs':tabs, 'data-description':'Choix d\'une ressource.', 'data-ex-label':'mel_cal_resources' }).observe({ key:'tabs' })
-        .each((jshtml, page) => {
-          /**
-           * @type {DialogPage}
-           */
-          const dialogPage = page;
-
+        .each((jshtml, dialogPage) => {
           return jshtml.webcomponents()
             .tab_panel(dialogPage.name, { class:'multi-page-pan' }).observe({ key:dialogPage.name })
             .end();
@@ -368,8 +363,7 @@ class ResourceDialog extends MelObject {
         this.dialog.page_manager
           .get('index')
           .observed.tabs.on('api:tabswitched', (e) => {
-            const page = e.originalEvent.detail;
-            this.dialog.switch_page(page);
+            this.dialog.switch_page(e.originalEvent.detail);
 
             const rsc = this.get_current_page_resource()._name;
 
@@ -432,15 +426,6 @@ class ResourceDialog extends MelObject {
     if (current_resource) {
       {
         const page = this.get_current_page_resource();
-        // On vérifie si la date est valide avant de continuer
-        if (!page?.isDateValid) {
-          BnumMessage.DisplayMessage(
-            // eslint-disable-next-line quotes
-            "Les dates de l'évènement ne sont pas valides !",
-            eMessageType.Error,
-          );
-          return page.set_validity();
-        }
 
         if (
           page._functions

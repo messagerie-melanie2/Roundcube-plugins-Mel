@@ -57,6 +57,8 @@ function get_page(page, filters, resource) {
                 return jhtml.add_child(filter);
             }, ...filters)
         .end()
+        .div({ class: 'rc-page-information' })
+        .end()
         .row()
             .col_4().end()
             .col_4().css('text-align', 'center').css({ display:'flex', 'justify-content':'center', 'align-items':'center' })

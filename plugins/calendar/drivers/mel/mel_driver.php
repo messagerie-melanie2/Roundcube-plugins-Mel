@@ -830,9 +830,10 @@ class mel_driver extends calendar_driver {
    */
   public function new_event($event, $new = true) {
     // Charge les données seulement si on est dans la tâche calendrier
-    if ($this->rc->task != 'calendar') {
+    if ($this->rc->task != 'calendar' && !bnum::IsCalendarDriverForced()) {
       return false;
     }
+
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::new_event(" . $event['title'] . ", $new)");
     if (mel_logs::is(mel_logs::TRACE))
@@ -1054,7 +1055,7 @@ class mel_driver extends calendar_driver {
           }
         }
         // Actualiser le ctag du calendrier
-        $this->calendars[$_event->calendar]->getCTag(false);
+        $this->calendars[$event['calendar']]->getCTag(false);
         return $result;
       }
     }
@@ -1099,9 +1100,10 @@ class mel_driver extends calendar_driver {
    */
   public function edit_event($event) {
     // Charge les données seulement si on est dans la tâche calendrier
-    if ($this->rc->task != 'calendar') {
+    if ($this->rc->task != 'calendar' && !bnum::IsCalendarDriverForced()) {
       return false;
     }
+
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::edit_event()");
     if (mel_logs::is(mel_logs::TRACE))
@@ -1452,6 +1454,28 @@ class mel_driver extends calendar_driver {
       $_event->owner = $this->user->uid;
       $_event->creator_email = $this->user->email;
       $_event->creator_name = $this->user->name;
+
+      // Gestion des imports P2R
+      if (isset($event['x-custom']) && is_array($event['x-custom'])) {
+        foreach ($event['x-custom'] as $value) {
+          if (is_array($value) && $value[0] == 'X-ORGANISATEUR') {
+            // Initialisation du user pour la migration depuis p2r
+            $p2r_user = driver_mel::gi()->getUser($value[1]);
+
+            // Initialisation du calendar pour la migration depuis p2r
+            $p2r_calendar = driver_mel::gi()->calendar([$p2r_user]);
+            $p2r_calendar->id = $value[1];
+
+            // Mise a jour de l'event avec le user et le calendar
+            $_event->setUserMelanie($p2r_user);
+            $_event->setCalendarMelanie($p2r_calendar);
+            
+            $_event->owner = $value[1];
+            $_event->creator_email = $p2r_user->email;
+            $_event->creator_name = $p2r_user->fullname;
+          }
+        }
+      }
     }
     if (!$move) {
       if (isset($event['title'])) {
@@ -1571,49 +1595,46 @@ class mel_driver extends calendar_driver {
       }
     }
 
-    if (isset($_event->attendees) && count($_event->attendees) > 0) {    
-      $fbtypemap = [
-              calendar::FREEBUSY_UNKNOWN   => 'UNKNOWN',
-              calendar::FREEBUSY_FREE      => 'FREE',
-              calendar::FREEBUSY_BUSY      => 'BUSY',
-              calendar::FREEBUSY_TENTATIVE => 'TENTATIVE',
-              calendar::FREEBUSY_OOF       => 'OUT-OF-OFFICE',
-              // MANTIS 0006913: Ajouter un statut « travail ailleurs » sur les événements
-              calendar::FREEBUSY_TELEWORK  => 'TELEWORK',
-              // MANTIS 0008012: Ajouter un statut "Congés"
-              calendar::FREEBUSY_VACATION  => 'VACATION',
-          ];
-      foreach ($_event->attendees as $attendee) {
-        if ($attendee->is_ressource) {
-          $status = 'UNKNOWN';
-          $start = strtotime($_event->start);
-          $end = strtotime($_event->end);
-          $fblist = $this->get_freebusy_list($attendee->email, $start, $end);
+    // Vérification des conflits de ressources
+    if (isset($_event->attendees) && count($_event->attendees) > 0) {     
+      $attendees = $_event->attendees;
 
-            if (is_array($fblist)) {
-              $status = 'FREE';
+      $start = (new DateTime($_event->start, new DateTimeZone($_event->timezone)))->getTimestamp();
+      $end = (new DateTime($_event->end, new DateTimeZone($_event->timezone)))->getTimestamp();
 
-              foreach ($fblist as $slot) {
-                  list($from, $to, $type, $who) = $slot;
-                  $who = explode('/', $who)[0];
+      foreach ($attendees as $attendee) {
 
-                  if ($who === driver_mel::gi()->getUser()->uid) continue;
+        if (!$attendee->is_ressource) continue;
 
-                  if ($from < $end && $to > $start) {
-                      $status = isset($type) && !empty($fbtypemap[$type]) ? $fbtypemap[$type] : 'BUSY';
-                      break;
-                  }
-              }
-          }
+        $events = $this->load_events($start, $end, null, [$attendee->uid], 1, null, true);
 
-          if ($status === 'BUSY') {
-            $this->lastError = new Exception("La ressource $attendee->name est occupée", 5);
+        if (!empty($events) && count($events) > 0) {
+          foreach ($events as $checkEvent) {
+            // Si l'évènement est le même on l'ignore
+            if (isset($checkEvent['uid']) && $checkEvent['uid'] === $event['uid']) continue;
+        
+            $checkEventStart = $checkEvent['start'] instanceof DateTime 
+                    ? $checkEvent['start']->getTimestamp() 
+                    : strtotime($checkEvent['start']);
+
+            $checkEventEnd = $checkEvent['end'] instanceof DateTime 
+                    ? $checkEvent['end']->getTimestamp() 
+                    : strtotime($checkEvent['end']);
+
+            // Si l'évènement vérifié commence après la fin de l'évènement à créer/modifier on l'ignore
+            if ($checkEventStart >= $end) continue;
+
+            // Si l'évènement vérifié commence avant le début de l'évènement à créer/modifier on l'ignore
+            if ($checkEventEnd <= $start) continue;
+
+            // On vérifie si cet invité est une ressource et s'il fait partie des ressources à vérifier
+            $this->lastError = new Exception(rcmail::get_instance()->gettext(['name' => 'calendar.rsc-denied', 'vars' => ['name' => $attendee->name]]), 5);
             throw $this->lastError;
           }
         }
       }
     }
-
+    
     // Modified time
     $_event->modified = time();
 
@@ -1633,7 +1654,7 @@ class mel_driver extends calendar_driver {
    */
   public function remove_event($event, $force = true) {
     // Charge les données seulement si on est dans la tâche calendrier
-    if ($this->rc->task != 'calendar') {
+    if ($this->rc->task != 'calendar' && !bnum::IsCalendarDriverForced()) {
       return false;
     }
     if (mel_logs::is(mel_logs::DEBUG))
@@ -1850,7 +1871,7 @@ class mel_driver extends calendar_driver {
    */
   public function get_event($event, $scope = 0, $full = false) {
     // Charge les données seulement si on est dans la tâche calendrier
-    if ($this->rc->task != 'calendar' && $this->rc->task != 'mail') {
+    if ($this->rc->task != 'calendar' && $this->rc->task != 'mail' && !bnum::IsCalendarDriverForced()) {
       return false;
     }
 
@@ -2100,8 +2121,10 @@ class mel_driver extends calendar_driver {
 
       if ($freebusy) {
         foreach ($calendars as $key => $value) {
-          $this->calendars[$value] = driver_mel::gi()->calendar([$this->user]);
-          $this->calendars[$value]->id = $value;
+          if (!isset($this->calendars[$value])) {
+            $this->calendars[$value] = driver_mel::gi()->calendar([$this->user]);
+            $this->calendars[$value]->id = $value;
+          }
         }
       }
       if (isset($query)) {
@@ -2175,11 +2198,19 @@ class mel_driver extends calendar_driver {
         }
         $_e->calendar_owner_email = $this->calendars[$_e->calendar]->owner_email;
         if ($_e->recurrence->type === LibMelanie\Api\Defaut\Recurrence::RECURTYPE_NORECUR && ! $_e->deleted) {
-          $_events[] = $this->_read_postprocess($_e, $freebusy);
+          $_event = $this->_read_postprocess($_e, $freebusy, false, null, isset($query));
+          if (!isset($_event)) {
+            continue;
+          }
+
+          $_events[] = $_event;
         }
         else {
           require_once ($this->cal->home . '/lib/calendar_recurrence.php');
-          $_event = $this->_read_postprocess($_e, $freebusy);
+          $_event = $this->_read_postprocess($_e, $freebusy, false, null, isset($query));
+          if (!isset($_event)) {
+            continue;
+          }
 
           if ($virtual) {
             $recurrence = new calendar_recurrence($this->cal, $_event, new DateTime(date('Y-m-d H:i:s', $start - 60 * 60 * 60 * 24)));
@@ -2294,10 +2325,11 @@ class mel_driver extends calendar_driver {
    * @param boolean $freebusy
    * @param boolean $isexception
    * @param LibMelanie\Api\Defaut\Event $eventParent
+   * @param boolean $issearch
    * 
    * @return array Event
    */
-  private function _read_postprocess($event, $freebusy = false, $isexception = false, $eventParent = null) {
+  private function _read_postprocess($event, $freebusy = false, $isexception = false, $eventParent = null, $issearch = false) {
     if (mel_logs::is(mel_logs::TRACE))
       mel_logs::get_instance()->log(mel_logs::TRACE, "[calendar] mel_driver::_read_postprocess()");
     $_event = array();
@@ -2403,10 +2435,6 @@ class mel_driver extends calendar_driver {
 
       $is_freebusy = ! $this->calendars[$event->calendar]->asRight(LibMelanie\Config\ConfigMelanie::READ) && $this->calendars[$event->calendar]->asRight(LibMelanie\Config\ConfigMelanie::FREEBUSY);
 
-      $owner = $this->calendars[$event->calendar]->owner;
-      $user = $this->user->uid;
-      $as_right = $this->calendars[$event->calendar]->asRight(LibMelanie\Config\ConfigMelanie::PRIV);
-
       // Status
       if (isset($event->status)) {
         $_event['free_busy'] = mel_mapping::m2_to_rc_free_busy($event->status);
@@ -2417,6 +2445,10 @@ class mel_driver extends calendar_driver {
         $_event['sensitivity'] = mel_mapping::m2_to_rc_class($event->class);
       }
 
+      // MANTIS 0009347: La recherche dans l'agenda sur un mot clé remonte les événements privés
+      if ($is_private && $issearch) {
+        return null;
+      }
       // Evenement privé
       if ($is_private) {
         $_event['title'] = $this->rc->gettext('event private', 'calendar');

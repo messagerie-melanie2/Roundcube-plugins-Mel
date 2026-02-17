@@ -1,0 +1,3 @@
+<?php
+$config['mail_warning_emails'] = null;
+$config['mail_warning_amedee_admin'] = false;

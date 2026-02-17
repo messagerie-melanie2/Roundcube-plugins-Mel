@@ -443,9 +443,21 @@ class VisioManager extends ALocationPart {
         onchange: this._on_select_change.bind(this),
       })
       .option({ value: IntegratedVisio.OptionValue() })
+      .attr(
+        IntegratedVisio.OptionValue() === this._current.option_value()
+          ? 'selected'
+          : 'not-selected',
+        'selected',
+      )
       .text(`event-${IntegratedVisio.OptionValue()}`)
       .end()
       .option({ value: ExternalVisio.OptionValue() })
+      .attr(
+        ExternalVisio.OptionValue() === this._current.option_value()
+          ? 'selected'
+          : 'not-selected',
+        'selected',
+      )
       .text(`event-${ExternalVisio.OptionValue()}`)
       .end()
       .end()
@@ -455,7 +467,9 @@ class VisioManager extends ALocationPart {
       .generate()
       .appendTo($parent);
 
-    $tmp.find('select').val(this._current.option_value());
+    const currentValue = this._current.option_value();
+    $tmp.find('select').val(this._current.option_value())[0].value =
+      currentValue;
 
     if (!IntegratedVisio.VisioEnabled()) $tmp.find('select').hide();
 
@@ -1574,6 +1588,7 @@ export class LocationPartManager extends IDestroyable {
     //Link select link
     $generated
       .find('select')
+      .first()
       .on('change', this._on_select_changed.bind(this))
       .val(Part.OptionValue());
 

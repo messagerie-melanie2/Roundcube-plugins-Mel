@@ -378,4 +378,6 @@ $labels['changelocation'] = 'Lieu';
 $labels['changedescription'] = 'Description'; 
 $labels['changerecurrence'] = 'Ancienne répétition'; 
 $labels['notification'] = 'Notification'; 
+// PAMELA - #386 - 🚑 Les participants invité à une réunion avec une ressource ne fonctionne pas
+$labels['rsc-denied'] = 'La ressource $name est occupée';
 ?>

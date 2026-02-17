@@ -69,6 +69,28 @@ class mel_cal_resources extends bnum_plugin {
             'floor_regex' => $this->get_config('extract_floor', []),
             'lang' => $this->rc()->get_user_language(),
         ]);
+
+        if (isset($this->get_config('extract_building', [])[$user->postalcode])) {
+            $extract_building = $this->get_config('extract_building', [])[$user->postalcode];
+            $match = false;
+
+            if (isset($extract_building['regexp'])) {
+                preg_match($extract_building['regexp'], $user->{$extract_building['field']}, $matches);
+                if (isset($matches[1])) {
+                    $match = true;
+                    if (isset($extract_building['mapping']) && isset($extract_building['mapping'][$matches[1]])) {
+                        $this->set_env('user_building', $extract_building['mapping'][$matches[1]]);
+                    }
+                    else {
+                        $this->set_env('user_building', $matches[1]);
+                    }
+                }
+
+            }
+            if (isset($extract_building['default']) && !$match) {
+                $this->set_env('user_building', $extract_building['default']);
+            }
+        }
     }
 
     function load_data($waiting_script_name) {

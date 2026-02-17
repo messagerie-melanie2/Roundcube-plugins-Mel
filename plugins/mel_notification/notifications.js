@@ -99,6 +99,7 @@ if (window.rcmail) {
         // Récupération des notifications du storage
         let notifications = m_mp_NotificationsGet(),
           newNotifications = {};
+          displayedNotifications = false;
 
         // Initialisation de la current
         current_desktop_notification = 0;
@@ -106,8 +107,10 @@ if (window.rcmail) {
         for (const notification of evt.response.notifications) {
           if (!notifications[notification.uid] && !notification.isread) {
             // On ne fait poper que les nouvelles notifications
-            m_mp_ShowNotification(notification);
-
+            if (current_desktop_notification < (rcmail.env.notifications_limit - 1)) {
+                m_mp_ShowNotification(notification);
+                displayedNotifications = true;
+            }
             // Ajoute la notification à la liste des nouvelles notifications
             newNotifications[notification.uid] = notification;
           } else if (notifications[notification.uid]) {
@@ -120,6 +123,13 @@ if (window.rcmail) {
             newNotifications[notification.uid] = notification;
           }
         }
+
+        if (newNotifications && displayedNotifications) {
+          if (Object.keys(newNotifications).length >= rcmail.env.notifications_limit) {
+            m_mp_ShowNotification(displayLastNotification(newNotifications))
+          }
+        }
+
         // Merge les notifications
         m_mp_NotificationsMerge(
           m_mp_NotificationsDelete(notifications),
@@ -384,7 +394,7 @@ function m_mp_NotificationSettings(key, notification) {
 function m_mp_ShowNotification(notification) {
   // Gérer les notifications multiples
   setTimeout(() => {
-    if (m_mp_NotificationSettings('inside_notification', notification)) {
+    if (m_mp_NotificationSettings('inside_notification', notification)) { 
       let notificationstack = document.getElementById('notificationstack'),
         article = m_mp_NotificationGetElement(notification, false);
 
@@ -409,6 +419,15 @@ function m_mp_ShowNotification(notification) {
         break;
     }
   }, current_desktop_notification++ * 1000);
+}
+
+function displayLastNotification(newNotifications) {
+  let countNotifications = Object.keys(newNotifications).length - (rcmail.env.notifications_limit - 1);
+  return {    
+    'title' : rcmail.gettext('number_unread_notifications', 'mel_notification', {'nb' :countNotifications}),
+    'category' : "notifications",
+    'uid': "unread_notification_counter"
+  }
 }
 
 function PlaySound(sound = 'sound', ext = 'mp3') {

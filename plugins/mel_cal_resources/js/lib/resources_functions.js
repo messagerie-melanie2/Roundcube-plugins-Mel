@@ -243,6 +243,11 @@ class ResourceBaseFunctions {
       .where((x) => x.data.uid === id)
       .firstOrDefault()?.data;
 
+    // Afficher la description de la ressource
+    document.querySelector('.rc-page-information').innerHTML = this.selected_resource.description || '';
+    document.querySelector('.rc-page-information').style.display = this.selected_resource.description ? 'block' : 'none';
+    this.rerender();
+
     //On selectionne la bon ne ressource et on décoche les autres
     for (let i = 0; i < this._p_resources.length; ++i) {
       if (this._p_resources[i].data.uid === id)
@@ -288,35 +293,7 @@ class ResourceBaseFunctions {
       }
     }
 
-    //Met les dates aux heures de travail
-    const settings = window.cal?.settings || top.cal.settings;
-
-    if (+this.start.format('HH') < settings.work_start) {
-      $('.input-time-start')
-        .val(
-          `${settings.work_start < 9 ? `0${settings.work_start}` : settings.work_start}:00`,
-        )
-        .change();
-    }
-
-    if (+this.end.format('HH') > settings.work_end) {
-      if (+this.start.format('HH') >= settings.work_end) {
-        const start = settings.work_end - 1;
-        $('.input-time-start')
-          .val(`${start < 9 ? `0${start}` : start}:00`)
-          .change();
-      }
-
-      $('.input-time-end')
-        .val(
-          `${settings.work_end < 9 ? `0${settings.work_end}` : settings.work_end}:00`,
-        )
-        .change();
-    }
-
     this._$calendar.fullCalendar('refetchEvents');
-
-    this._set_validity();
   }
 
   /**
@@ -355,15 +332,22 @@ class ResourceBaseFunctions {
   resource_render(resourceObj, labelTds) {
     if (resourceObj.id !== 'resources') {
       const city = resourceObj.data.locality;
+      const capacity = resourceObj.data.capacite;
       const locatedText = MelObject.Empty().gettext(
         'resource_located_at',
         'mel_cal_resources',
       );
+      const seatText = MelObject.Empty().gettext('seats', 'mel_cal_resources');
       const cityText = MelObject.Empty().gettext('city', 'mel_cal_resources');
 
       // Mise en place d'un title
       if (city) {
         labelTds.find('.fc-cell-text').attr('title', `${locatedText} ${city}`);
+      }
+
+      // Modification du texte avec la capacité
+      if (capacity) {
+        labelTds.find('label.fc-cell-text, .fc-cell-text').get(0).textContent += ` - ${capacity} ${seatText}`;
       }
 
       labelTds
@@ -514,7 +498,7 @@ class ResourceBaseFunctions {
     this._$calendar.fullCalendar('gotoDate', this.start);
     this._$calendar.fullCalendar('refetchEvents');
 
-    this._set_validity();
+    // this._set_validity();
 
     this.refresh_calendar_date();
   }

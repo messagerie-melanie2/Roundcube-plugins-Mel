@@ -60,7 +60,10 @@ export { ResourcesBase, ResourceSettings };
 
 /**
  * @class
- * @classdesc Représente une ressource
+ * @classdesc Représente une ressource et gère l'affichage et la sélection dans le calendrier.
+ * Cette classe permet de filtrer, d'afficher et de manipuler les ressources (salles, équipements, etc.)
+ * dans une interface de type calendrier. Elle gère également la logique de sélection, de filtrage dynamique,
+ * et d'interaction utilisateur.
  * @extends MelObject
  */
 class ResourcesBase extends MelObject {
@@ -76,28 +79,21 @@ class ResourcesBase extends MelObject {
   }
 
   /**
-   * Vérifie si la date est valide
-   * @type {boolean}
-   * @readonly
-   */
-  get isDateValid() {
-    return !this._has_invalid();
-  }
-
-  /**
-   * Fonction principale
+   * Fonction principale d'initialisation et de configuration.
+   * Initialise les variables et configure les filtres.
    * @override
    * @private
-   * @param  {...any} args
+   * @param  {...any} args Arguments d'initialisation (nom, filtres, etc.)
    */
   main(...args) {
     this._init()._setup(...args);
   }
 
   /**
-   * Initialise les variables
+   * Initialise les variables internes de la classe.
+   * Prépare les listes de ressources, filtres, événements et autres paramètres.
    * @private
-   * @returns {ResourcesBase} Chaînage
+   * @returns {ResourcesBase} Chaînage de l'objet courant
    */
   _init() {
     /**
@@ -322,16 +318,18 @@ class ResourcesBase extends MelObject {
       schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
       height: () => this._$calendar.height(),
       firstHour: settings.first_hour,
-      minTime: this.#_set_buisness_hour(settings.work_start),
-      maxTime: this.#_set_buisness_hour(settings.work_end),
+      businessHours: {
+        start: this.#_set_buisness_hour(settings.work_start),
+        end: this.#_set_buisness_hour(settings.work_end),
+      },
       scrollTime: { hours: settings.first_hour },
-      slotDuration: { minutes: 60 },
+      slotDuration: { minutes: 30 },
       locale: 'fr',
       axisFormat: DATE_HOUR_FORMAT,
       slotLabelFormat: DATE_HOUR_FORMAT,
       selectable: true,
       selectHelper: true,
-      slotWidth: 50,
+      slotWidth: self.innerWidth / (4 * (settings.work_end - settings.work_start)),
       defaultDate: this.start,
       select: this._functions.on_selected_date,
       eventSources: [
@@ -353,9 +351,10 @@ class ResourcesBase extends MelObject {
   }
 
   /**
-   * Récupère les données pour le fullcalendar
+   * Récupère les ressources à afficher dans le calendrier.
+   * Charge les favoris et les ressources initiales, puis met à jour les filtres dynamiquement.
    * @package
-   * @param {function} callback
+   * @param {function} callback Fonction de rappel pour transmettre les ressources
    */
   _fetch_resources(callback, iterator = 0) {
     FavoriteLoader.Load(this._name).then((values) => {
@@ -388,16 +387,13 @@ class ResourcesBase extends MelObject {
   }
 
   /**
-   * Met à jour dynamiquement les options des listes déroulantes (select) des filtres,
-   * en fonction des données filtrées et du filtre récemment modifié.
-   * Cette méthode gère l'affichage, l'activation/désactivation et la réinitialisation
-   * des options des filtres dépendants, afin de garantir la cohérence des choix proposés à l'utilisateur.
-   * Elle est appelée lors d'un changement de filtre pour adapter les autres filtres en cascade.
-   *
+   * Met à jour dynamiquement les options des listes déroulantes des filtres
+   * en fonction des ressources filtrées et du filtre modifié.
+   * Permet d'assurer la cohérence des choix proposés à l'utilisateur.
    * @private
-   * @param {Array<Object>} data Les ressources filtrées à utiliser pour mettre à jour les options.
-   * @param {number} iterator Compteur d'itérations pour éviter les boucles infinies lors des mises à jour en cascade.
-   * @returns {(number|false)} Retourne le nouvel indice d'itération si une mise à jour supplémentaire est nécessaire, sinon false.
+   * @param {Array<Object>} data Ressources filtrées
+   * @param {number} iterator Compteur d'itérations pour éviter les boucles infinies
+   * @returns {(number|false)} Nouvel indice d'itération ou false si aucune mise à jour
    */
   #_update_selects_options(data, iterator) {
     if (this._filterUpdated) {
@@ -411,7 +407,7 @@ class ResourcesBase extends MelObject {
         else if (isNext) {
           const filterName = currentSelect.dataset.fname;
           const filterTrueName =
-            currentSelect.dataset.tname || filterName.toLowerCase();
+            currentSelect.dataset.filterid || filterName.toLowerCase();
           let needUpdated = false;
 
           // Réinitialisation des options
@@ -499,10 +495,11 @@ class ResourcesBase extends MelObject {
   }
 
   /**
-   * Formatte les ressources et récupère seulement celles qui sont filtrés ou non
-   * @param {ResourceObject[]} resources
-   * @param {FilterBase[]} filters
-   * @returns {ResourceObject[]}
+   * Formatte les ressources selon les filtres actifs.
+   * Retourne uniquement les ressources correspondant aux filtres.
+   * @param {ResourceObject[]} resources Liste des ressources
+   * @param {FilterBase[]} filters Liste des filtres
+   * @returns {ResourceObject[]} Liste filtrée des ressources
    * @frommoduleparam Resources/Filters filters {@linkto FilterBase}
    * @frommodulereturn Resources {@linkto ResourceObject}
    */
@@ -520,44 +517,11 @@ class ResourcesBase extends MelObject {
   }
 
   /**
-   * Met les input en rouge si la date n'est pas bonne
-   * @private
-   */
-  _set_validity() {
-    if (!$('.input-time-end')[0].checkValidity())
-      $('.input-time-end').addClass('is-invalid');
-    else $('.input-time-end').removeClass('is-invalid');
-
-    if (!$('.input-time-start')[0].checkValidity())
-      $('.input-time-start').addClass('is-invalid');
-    else $('.input-time-start').removeClass('is-invalid');
-
-    if (this._has_invalid()) {
-      $('.ui-dialog .save-btn')
-        .addClass('disabled')
-        .attr('disabled', 'disabled');
-    } else {
-      $('.ui-dialog .save-btn').removeClass('disabled').removeAttr('disabled');
-    }
-  }
-
-  /**
-   * Check si les input de temps sont valides ou non
-   * @returns {boolean}
-   */
-  _has_invalid() {
-    return (
-      !this.all_day &&
-      (!$('.input-time-end')[0].checkValidity() ||
-        !$('.input-time-start')[0].checkValidity())
-    );
-  }
-
-  /**
-   * Fonction get pour la page de dialog retournée
+   * Fonction de récupération de la page de dialogue.
+   * Initialise le calendrier et la validité des champs.
    * @package
    * @param {Function} old Ancienne fonction get bind
-   * @returns {external:jQuery}
+   * @returns {external:jQuery} Élément jQuery de la page
    */
   _get(old) {
     let $rtn = old();
@@ -568,38 +532,29 @@ class ResourcesBase extends MelObject {
 
     this.refresh_calendar_date();
 
-    this.wait_something(
-      () =>
-        $('.input-time-end').length > 0 && $('.ui-dialog .save-btn').length > 0,
-    ).then(() => {
-      this._set_validity();
-      $('#rc-allday').on('click', () => {
-        this._set_validity();
-      });
-    });
-
     return $rtn;
   }
 
   /**
-   * Action appelé lorsque les données d'un filtre on été chargés
+   * Action appelée lors du chargement des données d'un filtre.
+   * Met à jour les options des filtres et les ressources affichées.
    * @package
-   * @param {ResourceData[]} rcs
-   * @param {FilterBase} filter
+   * @param {ResourceData[]} rcs Liste des ressources chargées
+   * @param {FilterBase} filter Filtre concerné
    * @frommoduleparam Resources/Filters filter
    */
   _on_data_loaded(rcs, filter) {
     let values;
     let resources;
     for (let index = 0, len = this._p_filters.length; index < len; ++index) {
-      if (this._p_filters[index]._name !== filter._name) {
+      if (this._p_filters[index].filterId !== filter.filterId) {
         //Réinitialise le filtre
-        this._p_filters[index]._$filter
+        this._p_filters[index].$filter
           .html(
             $('<option value="/"></option>')
               .text(
                 rcmail.gettext(
-                  this._p_filters[index]._name,
+                  this._p_filters[index].filterId,
                   'mel_cal_resources',
                 ),
               )
@@ -608,7 +563,7 @@ class ResourcesBase extends MelObject {
           .append($('<option value=""></option>').text(EMPTY_STRING));
 
         if (this._p_filters[index]._input_type === eInputType.multi_select)
-          this._p_filters[index]._$filter.html(EMPTY_STRING);
+          this._p_filters[index].$filter.html(EMPTY_STRING);
 
         values = {};
         resources = rcs;
@@ -617,66 +572,64 @@ class ResourcesBase extends MelObject {
           resources = MelEnumerable.from(rcs);
           if (this._p_filters[index].has_only_number_values()) {
             resources = resources.orderBy(
-              (x) => +x[this._p_filters[index]._name],
+              (x) => +x[this._p_filters[index].filterId],
             );
           } else
             resources = resources.orderBy(
-              (x) => x[this._p_filters[index]._name],
+              (x) => x[this._p_filters[index].filterId],
             );
         }
 
         for (const iterator of resources) {
           //Si la données éxiste et qu'elle n'a pas déjà été traitée
           if (
-            !values[iterator[this._p_filters[index]._name]] &&
-            iterator[this._p_filters[index]._name]
+            !values[iterator[this._p_filters[index].filterId]] &&
+            iterator[this._p_filters[index].filterId]
           ) {
             //En multiselect, ce sont les clés des valeurs possible qui servent de filtre
-            if (
-              this._p_filters[index]._input_type === eInputType.multi_select
-            ) {
+            if (this._p_filters[index].inputType === eInputType.multi_select) {
               for (const current_filter of Object.keys(
-                JSON.parse(iterator[this._p_filters[index]._name]),
+                JSON.parse(iterator[this._p_filters[index].filterId]),
               )) {
                 if (!values[current_filter]) {
                   values[current_filter] = true;
                 }
               }
             } else {
-              values[iterator[this._p_filters[index]._name]] = true;
+              values[iterator[this._p_filters[index].filterId]] = true;
               this._p_filters[index]._$filter.append(
                 $(
-                  `<option value="${iterator[this._p_filters[index]._name]}">${iterator[this._p_filters[index]._name]}</option>`,
+                  `<option value="${iterator[this._p_filters[index].filterId]}">${iterator[this._p_filters[index].filterId]}</option>`,
                 ),
               );
             }
           }
         }
 
-        if (this._p_filters[index]._$filter.children().length > 1)
-          this._p_filters[index]._$filter
+        if (this._p_filters[index].$filter.children().length > 1)
+          this._p_filters[index].$filter
             .removeAttr('disabled')
             .removeClass('disabled');
         else
-          this._p_filters[index]._$filter
+          this._p_filters[index].$filter
             .attr('disabled', 'disabled')
             .removeClass('disabled');
       }
 
-      if (this._p_filters[index]._input_type === eInputType.multi_select) {
+      if (this._p_filters[index].inputType === eInputType.multi_select) {
         if (Object.keys(values).length) {
           for (const current_filter of MelEnumerable.from(
             Object.keys(values),
           ).orderBy((x) => x)) {
-            this._p_filters[index]._$filter.append(
+            this._p_filters[index].$filter.append(
               $(`<option value="${current_filter}">${current_filter}</option>`),
             );
           }
 
-          this._p_filters[index]._$filter.multiselect('enable');
-        } else this._p_filters[index]._$filter.multiselect('disable');
+          this._p_filters[index].$filter.multiselect('enable');
+        } else this._p_filters[index].$filter.multiselect('disable');
 
-        this._p_filters[index]._$filter.multiselect('rebuild');
+        this._p_filters[index].$filter.multiselect('rebuild');
       }
     }
 
@@ -688,7 +641,8 @@ class ResourcesBase extends MelObject {
     this._$calendar.fullCalendar('refetchResources');
     this._$calendar.fullCalendar('refetchEvents');
 
-    this.#_autoSelectFloor(this._name);
+    this.#_autoSelectBuilding(this.filterId);
+    this.#_autoSelectFloor(this.filterId);
   }
 
   /**
@@ -733,7 +687,38 @@ class ResourcesBase extends MelObject {
   }
 
   /**
-   * Action à faire lorsqe'un filtre à changer de valeur
+   * Sélectionne automatiquement l'étage dans le filtre correspondant
+   * en fonction du numéro de salle de l'utilisateur et d'une expression régulière
+   * définie dans l'environnement. Si une correspondance est trouvée, le filtre "Etage"
+   * est mis à jour et déclenche un événement de changement.
+   *
+   * @private
+   * @param {?string} resource Nom de la ressource (optionnel)
+   * @returns {ResourcesBase} Chaînage de l'objet courant
+   */
+  #_autoSelectBuilding(resource = null) {
+    /**
+     * @type {string}
+     */
+    const building = this.get_env('user_building');
+
+    if (building) {
+      let selected = document.querySelector(
+        `${resource ? `[data-resourcetype="${resource}"] ` : EMPTY_STRING}select[data-fname="Batiment"] option[value="${building}"]`,
+      );
+
+      if (selected) {
+        selected.parentElement.value = building;
+        selected.parentElement.dispatchEvent(new Event('change'));
+      }
+    }
+
+    return this;
+  }
+
+  /**
+   * Action à effectuer lors d'un changement de filtre.
+   * Met à jour les ressources et les événements du calendrier.
    * @package
    */
   _on_data_changed(_, filter) {
@@ -743,16 +728,9 @@ class ResourcesBase extends MelObject {
   }
 
   /**
-   * Met à jour la validité des inputs
-   * @returns {void}
-   */
-  set_validity() {
-    return this._set_validity();
-  }
-
-  /**
-   * Créer une page de dialog à partir de cette ressource
-   * @returns {Promise<DialogPage>}
+   * Crée une page de dialogue pour la ressource.
+   * Ajoute les boutons de sauvegarde et d'annulation, et prépare l'affichage.
+   * @returns {Promise<DialogPage>} Page de dialogue générée
    * @frommodulereturn Modal {@linkto DialogPage}
    * @async
    */
@@ -801,9 +779,10 @@ class ResourcesBase extends MelObject {
   }
 
   /**
-   * Ajoute une ressource à la liste des ressources si elle n'existe pas
+   * Ajoute une ressource à la liste si elle n'existe pas déjà.
+   * Met à jour le calendrier si nécessaire.
    * @param {ResourceData} rc Ressource à ajouter
-   * @param {boolean} [refetch=true] Si vrai, récupère les ressources et le évènements
+   * @param {boolean} [refetch=true] Si vrai, met à jour le calendrier
    * @returns {ResourcesBase} Chaînage
    */
   try_add_resource(rc, refetch = true) {
@@ -826,7 +805,7 @@ class ResourcesBase extends MelObject {
   }
 
   /**
-   * Ajoute plusieurs ressources si elles éxistent
+   * Ajoute plusieurs ressources à la liste.
    * @param {ResourceData[]} rcs Liste des ressources à ajouter
    * @returns {ResourcesBase} Chaînage
    */
@@ -839,8 +818,8 @@ class ResourcesBase extends MelObject {
   }
 
   /**
-   * Met à jours le texte de la date du planning
-   * @returns {string}
+   * Met à jour le texte de la date affichée dans le calendrier.
+   * @returns {string} Texte de la date affichée
    */
   refresh_calendar_date() {
     let $div = this._$calendar.parent();
@@ -856,6 +835,9 @@ class ResourcesBase extends MelObject {
     this._$calendar.fullCalendar('rerender');
   }
 
+  /**
+   * Force le redimensionnement et le réaffichage du calendrier.
+   */
   rerender() {
     $(window).trigger('resize');
   }
@@ -863,11 +845,13 @@ class ResourcesBase extends MelObject {
 
 /**
  * @class
- * @classdesc Représentation d'un paramètre de ressource
+ * @classdesc Représentation d'un paramètre de ressource (filtre avancé).
+ * Permet de manipuler et de vérifier la correspondance des paramètres de ressource.
  */
 class ResourceSettings {
   /**
-   * Constructeur de la classe
+   * Constructeur de la classe.
+   * Initialise le paramètre à partir d'une chaîne ou d'un objet.
    * @param {string} setting Valeur du filtre
    */
   constructor(setting) {
@@ -880,17 +864,17 @@ class ResourceSettings {
   }
 
   /**
-   * Change le paramètre en string
-   * @returns {string}
+   * Convertit le paramètre en chaîne lisible.
+   * @returns {string} Représentation textuelle du paramètre
    */
   toString() {
     return ResourceSettings.ToString(this._setting);
   }
 
   /**
-   * Check si la ressource correspond au filtre
-   * @param {ResourceObject} ressource Ressource à chacker
-   * @returns {boolean}
+   * Vérifie si la ressource correspond au filtre paramétré.
+   * @param {ResourceObject} ressource Ressource à vérifier
+   * @returns {boolean} True si correspond, false sinon
    */
   is(ressource) {
     if (!this._setting?.length) return true;
@@ -906,10 +890,10 @@ class ResourceSettings {
   }
 
   /**
-   * Change le paramètre en string
+   * Convertit le paramètre en chaîne lisible (statique).
    * @static
-   * @param {string} setting
-   * @returns {string}
+   * @param {string} setting Paramètre à convertir
+   * @returns {string} Représentation textuelle du paramètre
    */
   static ToString(setting) {
     if (typeof setting === 'string') setting = JSON.parse(setting);

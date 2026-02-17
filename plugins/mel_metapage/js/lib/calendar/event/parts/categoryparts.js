@@ -166,6 +166,8 @@ export class CategoryPart extends FakePart {
    * @override
    */
   onUpdate(val) {
+    if (!val) return;
+
     if (val.includes('ws#')) this._$wspButton.css('display', EMPTY_STRING);
     else this._$wspButton.css('display', 'none');
 

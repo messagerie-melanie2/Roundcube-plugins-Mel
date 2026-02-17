@@ -85,6 +85,8 @@ class mel_logs extends rcube_plugin
 		$this->add_hook('login_after', array($this, 'login_after'));
 		$this->add_hook('login_failed', array($this, 'login_failed'));
 		$this->add_hook('message_sent', array($this, 'message_sent'));
+
+		$this->logOnInit();
 	}
 	/**
 	 * Récupération de l'instance
@@ -257,5 +259,25 @@ class mel_logs extends rcube_plugin
 			$ip = "[$ip]/[".$_SERVER['REMOTE_ADDR']."]";
 		}
 		return $ip;
+	}
+
+	/**
+	 * Enregistre un log lors de l'ouverture de la messagerie
+	 * Permet de comptabiliser les connexions journalières.
+	 */
+	private function logOnInit()
+	{
+			$rc = rcmail::get_instance();
+
+			if ($rc->task == 'mail' && ($rc->action == '' || $rc->action == 'index')) {
+					$today = date('Y-m-d');
+
+					if (!isset($_SESSION['mel_mail_opened_today']) || $_SESSION['mel_mail_opened_today'] !== $today) {
+							
+							$this->log(self::INFO, "[activity] Ouverture de la messagerie");
+
+							$_SESSION['mel_mail_opened_today'] = $today;
+					}
+			}
 	}
 }

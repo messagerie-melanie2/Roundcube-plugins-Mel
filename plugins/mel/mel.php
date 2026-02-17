@@ -330,6 +330,7 @@ class mel extends rcube_plugin
         $this->rc->output->set_env('plugin.show_password_change', true);
       }
     }
+
     $this->ui_initialized = true;
   }
 

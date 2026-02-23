@@ -402,7 +402,7 @@ class M2tasks
         $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id), 'class' => 'task' . $class, 'foldername' => driver_mel::gi()->mceToRcId($id)));
 
         $table->add('name', $name);
-        $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_tasks[$id]) ? $id : ''), array('value' => $id)));
+        $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_tasks[$id]) ? $id : ''), array('value' => $id, 'disabled' => ($id === $this->user->uid && !isset($hidden_tasks[$id])) ? true : false,)));
       }
       // set client env
       $this->rc->output->add_gui_object('mel_resources_elements_list', $attrib['id']);

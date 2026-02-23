@@ -1908,7 +1908,7 @@ if (rcmail && window.mel_metapage) {
                 .join('.');
 
               $(e).prepend(
-                `<div class=row><div class=col-8>${name}</div><div class=col-2>${ext}</div><div class="col-2 r-gm-col-temp" ></div></div>`,
+                `<div class=row><div class="col-8 text-truncate" title="${name}">${name}</div><div class=col-2>${ext}</div><div class="col-2 r-gm-col-temp" ></div></div>`,
               );
               $(e)
                 .find('a')

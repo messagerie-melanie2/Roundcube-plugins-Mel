@@ -525,4 +525,4 @@ $labels['visios-agenda-help'] = 'Pour plus d\'informations sur l\'utilisation de
 $labels['duplicateevent'] = 'Dupliquer l\'original';
 $labels['copyeventseries'] = 'Copier l\'original';
 
-$labels['event-not-ok-rec-date'] = 'La date de fin de la réccurence est inférieur ou égale à la date de maintenant';
+$labels['event-not-ok-rec-date'] = 'La date de fin de la récurrence est inférieur ou égale à la date actuelle';

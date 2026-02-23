@@ -5123,9 +5123,12 @@ function rcube_calendar_ui(settings) {
             return false;
           }
         });
-      } else if (!source.active) {
-        source.active = true;
-        $('#rcmlical' + source.id + ' input').prop('checked', true);
+      }
+      // PAMELA - Forcer l'activation de la source
+      else if (!source.active) {
+        $('#rcmlical' + source.id + ' input')
+          ?.first?.()
+          ?.click?.();
       }
 
       // PAMELA - gestion du cache
@@ -5404,7 +5407,6 @@ function rcube_calendar_ui(settings) {
 
   this.init_calendars = function (refresh) {
     var id, cal, active;
-
     for (id in rcmail.env.calendars) {
       cal = rcmail.env.calendars[id];
       active = cal.active || false;

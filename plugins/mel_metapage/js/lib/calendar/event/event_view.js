@@ -22,6 +22,7 @@
  */
 
 import ABaseMelObject from '../../base_mel_object.js';
+import { BnumMessage, eMessageType } from '../../classes/bnum_message.js';
 import { MelEnumerable } from '../../classes/enum.js';
 import { EMPTY_STRING } from '../../constants/constants.js';
 import { MelHtml } from '../../html/JsHtml/MelHtml.js';
@@ -676,7 +677,38 @@ export class EventView {
 
     this.#_setModifier();
 
+    if (!this.#_recEndDateValid()) {
+      const localizationKey = 'event-not-ok-rec-date';
+
+      is_valid = false;
+      BnumMessage.DisplayMessage(
+        ABaseMelObject.Empty().getLocalization(localizationKey, {
+          plugin: 'mel_metapage',
+        }),
+        eMessageType.Error,
+      );
+    }
+
     return is_valid;
+  }
+
+  /**
+   * Vérifie si la date de réccurence de fin est valide.
+   * @returns {boolean} Vrai si valide, faux sinon.
+   */
+  #_recEndDateValid() {
+    const isRec =
+      !!($('#fake-event-rec').val() || false) &&
+      $('#edit-recurrence-repeat-until')[0].checked;
+    if (!isRec) return true;
+
+    const endDate = $('#edit-recurrence-enddate');
+    const val = endDate?.val?.() || null;
+    if (val) {
+      const date = moment(val, 'DD/MM/YYYY');
+      if (date > moment()) return true;
+    }
+    return false;
   }
 
   /**
@@ -758,23 +790,25 @@ export class EventView {
     if (desc_modifier !== EMPTY_STRING) {
       if ($desc.val() !== EMPTY_STRING) {
         desc_modifier +=
-          `${/**
-           * Affiche x '-'
-           *
-           * On fait une boucle et pour réduire le nombre de boucles, on augmente le nombre de '-'.
-           * @returns {string}
-           */
-          (() => {
-            const c = '----------------';
-            const nb = 10;
-            let txt = [];
+          `${
+            /**
+             * Affiche x '-'
+             *
+             * On fait une boucle et pour réduire le nombre de boucles, on augmente le nombre de '-'.
+             * @returns {string}
+             */
+            (() => {
+              const c = '----------------';
+              const nb = 10;
+              let txt = [];
 
-            for (let index = 0; index < nb; ++index) {
-              txt.push(c);
-            }
+              for (let index = 0; index < nb; ++index) {
+                txt.push(c);
+              }
 
-            return txt.join(EMPTY_STRING);
-          })()}\n` + $desc.val();
+              return txt.join(EMPTY_STRING);
+            })()
+          }\n` + $desc.val();
       }
       $desc.val(desc_modifier);
     }

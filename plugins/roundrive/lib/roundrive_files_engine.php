@@ -934,10 +934,8 @@ class roundrive_files_engine
         $COMPOSE    = null;
         $errors     = array();
 
-        if ($COMPOSE_ID && $_SESSION['compose_data_'.$COMPOSE_ID]) {
-            $COMPOSE =& $_SESSION['compose_data_'.$COMPOSE_ID];
-        }
-
+        if ($COMPOSE_ID) $COMPOSE = rcmail_action_mail_compose::get_compose_data($COMPOSE_ID);
+        
         if (!$COMPOSE) {
             die("Invalid session var!");
         }
@@ -1044,6 +1042,8 @@ class roundrive_files_engine
                 $errors[] = $this->plugin->gettext('attacherror');
             }
         }
+
+        rcmail_action_mail_compose::set_compose_data($COMPOSE_ID, $COMPOSE);
 
         if (!empty($errors)) {
             $this->rc->output->command('display_message', $this->plugin->gettext('attacherror'), 'error');

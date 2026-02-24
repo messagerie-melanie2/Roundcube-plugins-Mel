@@ -934,6 +934,7 @@ class roundrive_files_engine
         $COMPOSE    = null;
         $errors     = array();
 
+        //MAJ de la méthode du compose ID - 0009169
         if ($COMPOSE_ID) $COMPOSE = rcmail_action_mail_compose::get_compose_data($COMPOSE_ID);
         
         if (!$COMPOSE) {

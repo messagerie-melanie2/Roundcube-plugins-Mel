@@ -2,12 +2,15 @@
  * @module EventView/Parts/Categories
  */
 
+import ABaseMelObject from '../../../base_mel_object.js';
 import { MelEnumerable } from '../../../classes/enum.js';
 import { EMPTY_STRING } from '../../../constants/constants.js';
 import { MelHtml } from '../../../html/JsHtml/MelHtml.js';
 import { MelObject } from '../../../mel_object.js';
 import { TAG_WSP_CATEGORY } from './parts.constants.js';
 import { FakePart, Parts } from './parts.js';
+
+const optgroupId = 'unknow-optgroup';
 
 /**
  * Gère la partie lié aux catégories
@@ -77,10 +80,14 @@ export class CategoryPart extends FakePart {
     }
 
     if (!!event.categories && event.categories.length > 0) {
-      //Si il y a des catégories
-      this._$fakeField.val(event.categories[0]).change();
+      const category = event.categories[0];
 
-      if (event.categories[0].includes(TAG_WSP_CATEGORY))
+      this._updateCategoryInfo(category);
+
+      //Si il y a des catégories
+      this._$fakeField.val(category).change();
+
+      if (category.includes(TAG_WSP_CATEGORY))
         this._$wspButton.css('display', EMPTY_STRING);
 
       this._$hasCategory[0].checked = true;
@@ -95,9 +102,11 @@ export class CategoryPart extends FakePart {
         if (!this._$hasCategory[0].checked) {
           this._$field.val(EMPTY_STRING).change();
           this._$fakeField.parent().parent().css('display', 'none');
+          this._updateIsInHiddenCategoriy({ forceHide: true });
         } else {
           this._$field.val(this._$fakeField.val()).change();
           this._$fakeField.parent().parent().css('display', EMPTY_STRING);
+          this._updateIsInHiddenCategoriy();
         }
       };
       eventFunction();
@@ -115,6 +124,105 @@ export class CategoryPart extends FakePart {
     } else {
       this._$fakeField.removeAttr('disabled').removeClass('disabled');
       this._$hasCategory.removeAttr('disabled').removeClass('disabled');
+    }
+  }
+
+  /**
+   * Vérifie si la catégorie est une catégorie de l'utilisateur ou non
+   * @private
+   * @param {string} category Catégorie à vérifier
+   * @returns {boolean}
+   */
+  _categoryExist(category) {
+    return (
+      (this._$fakeField.find(`option[value="${category}"]`)?.length ?? 0) > 0
+    );
+  }
+
+  /**
+   * Modifie les information de la catégorie si elle existe ou non.
+   *
+   * Si elle n'existe pas, elle sera ajouter un un texte d'aide sera ajouter.
+   * @param {string} category
+   * @returns {this} Chaîne
+   */
+  _updateCategoryInfo(category) {
+    let optgroup = document.getElementById(optgroupId);
+    if (!this._categoryExist(category)) {
+      if (optgroup) {
+        optgroup.innerHTML = EMPTY_STRING;
+      } else {
+        optgroup = document.createElement('optgroup');
+        optgroup.setAttribute('id', optgroupId);
+        optgroup.setAttribute(
+          'label',
+          ABaseMelObject.Empty().getLocalization('unknown-category', {
+            plugin: 'mel_metapage',
+          }),
+        );
+        this._$fakeField.append(optgroup);
+      }
+      const option = document.createElement('option');
+      option.value = category;
+      option.innerText = category;
+      optgroup.appendChild(option);
+      this._showEventInfo();
+    } else if (optgroup) {
+      optgroup.remove();
+      this._hideEventInfo();
+    } else {
+      this._hideEventInfo();
+    }
+
+    return this;
+  }
+
+  /**
+   * Récupère l'élément d'info
+   * @returns {import('../../../../../../mel_elastic/js/lib/webcomponents/HTMLBnumHelperElement.js').default}
+   */
+  _getEventInfo() {
+    return (this._getEventInfo._ ??= document.getElementById('event-infos'));
+  }
+
+  /**
+   * Affiche l'élément d'information
+   * @returns Chaîne
+   */
+  _showEventInfo() {
+    this._getEventInfo().removeAttribute('hidden');
+    return this;
+  }
+
+  /**
+   * Cache l'élément d'information
+   * @returns Chaîne
+   */
+  _hideEventInfo() {
+    this._getEventInfo().setAttribute('hidden', 'true');
+    return this;
+  }
+
+  /**
+   * Affiche ou non l'objet d'information
+   * @param {Object} [param0={}]
+   * @param {boolean} [param0.forceHide=false] Si on force le fait de cacher l'élément
+   */
+  _updateIsInHiddenCategoriy({ forceHide = false } = {}) {
+    if (forceHide) {
+      this._hideEventInfo();
+      return;
+    }
+
+    if (!document.getElementById(optgroupId)) return;
+
+    const val = this._$fakeField.val();
+    const option = this._$fakeField.find(`option[value="${val}"]`);
+
+    if (option && option.length > 0) {
+      const parent = option.parent();
+      if (parent.attr('label') === 'Inconnue') this._showEventInfo();
+      else this._hideEventInfo();
     }
   }
 
@@ -166,13 +274,14 @@ export class CategoryPart extends FakePart {
    * @override
    */
   onUpdate(val) {
-    if (!val) return;
+    if (val === null || val === undefined) return;
 
     if (val.includes('ws#')) this._$wspButton.css('display', EMPTY_STRING);
     else this._$wspButton.css('display', 'none');
 
     this._$field.val(val).change();
     this.updateIcon();
+    this._updateIsInHiddenCategoriy();
   }
 
   /**

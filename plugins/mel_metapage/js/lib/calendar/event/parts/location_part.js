@@ -616,10 +616,14 @@ class IntegratedVisio extends AVisio {
           _key: location,
         };
 
-        if (categoryPart._$fakeField.val().includes(TAG_WSP_CATEGORY)) {
-          config['_wsp'] = categoryPart._$fakeField
-            .val()
-            .replace(TAG_WSP_CATEGORY, EMPTY_STRING);
+        const categoryField = categoryPart?._$fakeField;
+        const currentCategory = categoryField?.val?.();
+
+        if (currentCategory && currentCategory.includes(TAG_WSP_CATEGORY)) {
+          config['_wsp'] = currentCategory.replace(
+            TAG_WSP_CATEGORY,
+            EMPTY_STRING,
+          );
         }
 
         if (this._pass || false) config['_pass'] = this._pass;

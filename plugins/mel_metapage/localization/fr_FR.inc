@@ -526,3 +526,6 @@ $labels['duplicateevent'] = 'Dupliquer l\'original';
 $labels['copyeventseries'] = 'Copier l\'original';
 
 $labels['event-not-ok-rec-date'] = 'La date de fin de la récurrence est inférieur ou égale à la date actuelle';
+
+$labels['unknown-category'] = 'Inconnue';
+$labels['unknown-category-helper'] = 'Cette catégorie ne vous appartient pas ou a été supprimée';

@@ -1233,7 +1233,7 @@ class mel extends rcube_plugin
    * 
    * @return boolean
    */
-  public function is_secured()
+  public static function is_secured()
   {
     return mel::is_internal() || mel::is_auth_strong() || !class_exists('mel_doubleauth') || mel_doubleauth::is_double_auth_enable();
   }

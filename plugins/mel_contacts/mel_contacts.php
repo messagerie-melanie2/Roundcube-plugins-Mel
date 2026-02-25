@@ -277,7 +277,7 @@ class mel_contacts extends bnum_plugin
   public function config_get($args)
   {
     //limiter l'affichage de l'annuaire interministériel
-    if ($args['name'] == 'ldap_public' && !mel::is_internal()) {
+    if ($args['name'] == 'ldap_public' && !mel::is_secured()) {
       unset($args['result']['annuaire']);
       $args['result']['amande']['base_dn'] = explode(',', driver_mel::gi()->getUser()->dn, 2)[1];
     }

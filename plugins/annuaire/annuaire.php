@@ -719,7 +719,7 @@ class annuaire extends bnum_plugin
      */
     public function config_get($args) {
         //limiter l'affichage de l'annuaire ministériel au service dans lequel on se situe
-        if ($args['name'] == 'annuaire_base_dn' && !mel::is_internal()) {
+        if ($args['name'] == 'annuaire_base_dn' && !mel::is_secured()) {
             $args['result'] = explode(',', driver_mel::gi()->getUser()->dn, 2)[1];
         }
         return $args;

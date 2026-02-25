@@ -1227,4 +1227,14 @@ class mel extends rcube_plugin
     }
     return $service;
   }
+
+  /**
+   * Définit si on est dans une situation où l'auth est sécurisée
+   * 
+   * @return boolean
+   */
+  public function is_secured()
+  {
+    return mel::is_internal() || mel::is_auth_strong() || !class_exists('mel_doubleauth') || mel_doubleauth::is_double_auth_enable();
+  }
 }

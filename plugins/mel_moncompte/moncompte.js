@@ -1356,6 +1356,15 @@ function refreshListMembers(dn_list) {
   }
 }
 
+//Force la checkbox du calendrier à rester cochée si utilisé dans les invitations
+rcube_webmail.prototype.mel_force_checkbox_on = function (mbox) {
+  const $checkbox = $('input[name="_show_resource_rc[]"][value="' + mbox + '"]');
+
+  if ($checkbox.length) {
+    $checkbox.prop('checked', true);
+  }
+};
+
 $(document).ready(() => {
   rcmail.set_busy(false);
   parent.rcmail.set_busy(false);

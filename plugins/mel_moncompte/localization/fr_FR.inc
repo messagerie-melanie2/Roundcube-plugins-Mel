@@ -89,6 +89,7 @@ $labels['show_resource_confirm'] = 'Ressource affichée dans le Bnum';
 $labels['sort_resource_confirm'] = 'La ressource a bien été triée';
 $labels['invitation_confirm'] = 'Ce calendrier sera utilisé dans la gestion des invitations';
 $labels['no_invitation_confirm'] = 'Ce calendrier ne sera plus utilisé dans la gestion des invitations';
+$labels['hide_calendar_invitation_forbidden'] = 'Impossible de masquer un calendrier utilisé pour les invitations';
 
 $labels['synchro_mobile_confirm'] = 'Ressource ajoutée pour la synchronisation mobile';
 $labels['no_synchro_mobile_confirm'] = 'Ressource supprimée de la synchronisation mobile';

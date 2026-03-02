@@ -262,21 +262,19 @@ class mel_logs extends rcube_plugin
 	}
 
 	/**
-	 * Enregistre un log lors de l'ouverture de la messagerie
+	 * Enregistre un log lors de l'ouverture du bnum
 	 * Permet de comptabiliser les connexions journalières.
 	 */
 	private function logOnInit()
 	{
 			$rc = rcmail::get_instance();
 
-			if ($rc->task == 'mail' && ($rc->action == '' || $rc->action == 'index')) {
+			if ($rc->task === 'bnum' && $rc->action === '') {
 					$today = date('Y-m-d');
 
-					if (!isset($_SESSION['mel_mail_opened_today']) || $_SESSION['mel_mail_opened_today'] !== $today) {
-							
-							$this->log(self::INFO, "[activity] Ouverture de la messagerie");
-
-							$_SESSION['mel_mail_opened_today'] = $today;
+					if (!isset($_SESSION['bnum_opened_today']) || $_SESSION['bnum_opened_today'] !== $today) {
+							$this->log(self::INFO, "[activity] Ouverture du bnum");
+							$_SESSION['bnum_opened_today'] = $today;
 					}
 			}
 	}

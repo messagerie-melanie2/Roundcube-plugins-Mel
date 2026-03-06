@@ -529,3 +529,4 @@ $labels['duplicateevent'] = 'Dupliquer l\'original';
 $labels['copyeventseries'] = 'Copier l\'original';
 
 $labels['event-not-ok-rec-date'] = 'La date de fin de la récurrence est inférieur ou égale à la date actuelle';
+$labels['image_title'] = "Image de l'espace de travail";

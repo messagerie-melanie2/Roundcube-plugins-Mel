@@ -3489,26 +3489,22 @@ function external_link_modal(_url, isSuspect = false) {
     { class: 'span-mel t2' },
     rcmail.gettext('mel_metapage.leaving_bnum'),
   );
-
-  let suspectClass = isSuspect ? 'warning-suspect' : '';
-  
+  let link = new mel_html('p', { class: 'external_url' }, _url);
   let warning = new mel_html2('label', {
-    attribs: { class: `text-danger mt-3 warning-label ${suspectClass}` },
+    attribs: { class: 'text-danger mt-3 warning-label' },
     contents: [
       new mel_html(
         'span',
-        { class: `material-symbols-outlined warning-icon-large ${suspectClass} `},
+        { class: 'material-symbols-outlined warning-icon-large' },
         'warning',
       ),
       new mel_html(
         'span',
-        { class: 'ml-2 warning-text'  },
-        isSuspect ? rcmail.gettext('mel_metapage.warning_suspect') : rcmail.gettext('mel_metapage.warning_external_link'),
+        { class: 'ml-2' },
+        rcmail.gettext('mel_metapage.warning_external_link'),
       ),
     ],
   });
-  
-  let link = new mel_html('p', { class: 'external_url' }, _url);
   let disableButton = false;
   let custom_switch = null;
 
@@ -3560,27 +3556,21 @@ function external_link_modal(_url, isSuspect = false) {
           'label',
           {
             for: 'warning_suspect_url',
-            class: `custom-control-label option-switch no-click-focus pl-6 ${suspectClass}`,
+            class: 'custom-control-label option-switch no-click-focus pl-6',
           },
           '<span class="external_domain">' +
             domain +
             '</span>' +
-            isSuspect ? rcmail.gettext('mel_metapage.warning_suspect_url_avoid') : rcmail.gettext('mel_metapage.warning_suspect_url'),
+            rcmail.gettext('mel_metapage.warning_suspect_url'),
         ),
       ],
     });
   }
 
   html.addContent(title);
-  if(isSuspect) {
-    html.addContent(warning);
-  }
-  
   html.addContent(link);
   html.addContent(custom_switch);
-  if(!isSuspect) {
-    html.addContent(warning);
-  }
+  html.addContent(warning);
 
   let buttons = [
     {

@@ -3489,22 +3489,26 @@ function external_link_modal(_url, isSuspect = false) {
     { class: 'span-mel t2' },
     rcmail.gettext('mel_metapage.leaving_bnum'),
   );
-  let link = new mel_html('p', { class: 'external_url' }, _url);
+
+  let suspectClass = isSuspect ? 'warning-suspect' : '';
+  
   let warning = new mel_html2('label', {
-    attribs: { class: 'text-danger mt-3 warning-label' },
+    attribs: { class: `text-danger mt-3 warning-label ${suspectClass}` },
     contents: [
       new mel_html(
         'span',
-        { class: 'material-symbols-outlined warning-icon-large' },
+        { class: `material-symbols-outlined warning-icon-large ${suspectClass} `},
         'warning',
       ),
       new mel_html(
         'span',
-        { class: 'ml-2' },
-        rcmail.gettext('mel_metapage.warning_external_link'),
+        { class: 'ml-2 warning-text'  },
+        isSuspect ? rcmail.gettext('mel_metapage.warning_suspect') : rcmail.gettext('mel_metapage.warning_external_link'),
       ),
     ],
   });
+  
+  let link = new mel_html('p', { class: 'external_url' }, _url);
   let disableButton = false;
   let custom_switch = null;
 
@@ -3556,21 +3560,27 @@ function external_link_modal(_url, isSuspect = false) {
           'label',
           {
             for: 'warning_suspect_url',
-            class: 'custom-control-label option-switch no-click-focus pl-6',
+            class: `custom-control-label option-switch no-click-focus pl-6 ${suspectClass}`,
           },
           '<span class="external_domain">' +
             domain +
             '</span>' +
-            rcmail.gettext('mel_metapage.warning_suspect_url'),
+            isSuspect ? rcmail.gettext('mel_metapage.warning_suspect_url_avoid') : rcmail.gettext('mel_metapage.warning_suspect_url'),
         ),
       ],
     });
   }
 
   html.addContent(title);
+  if(isSuspect) {
+    html.addContent(warning);
+  }
+  
   html.addContent(link);
   html.addContent(custom_switch);
-  html.addContent(warning);
+  if(!isSuspect) {
+    html.addContent(warning);
+  }
 
   let buttons = [
     {

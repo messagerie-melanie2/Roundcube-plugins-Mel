@@ -12,11 +12,19 @@
     filteredResourcesList = [...allResourcesList];
   }
 
+  /**
+   * Retourne le type de ressource en format lisible (ex. : "Salle", "VRoom")
+   * @returns {string} Le type de ressource formaté pour l'affichage
+   */
+  function type() {
+    return rcmail.env.resource_type.toLowerCase().replace(/é/g, 'e').replace(/ /g, '_');
+  }
+
   // -- Écouteurs d'événements de réponses AJAX
 
-  // Chargement des vrooms
+  // Chargement des resources
   rcmail.addEventListener(
-    'plugin.mel_vroom_vrooms_data',
+    'plugin.mel_resources_list',
     function (response) {
       if (response.success) {
         allResourcesList = response.data;
@@ -34,23 +42,23 @@
 
   // Ajout d'un partage de calendrier
   rcmail.addEventListener(
-    'plugin.mel_vroom_add_calendar_share',
+    'plugin.mel_resource_add_calendar_share',
     function (response) {
       if (response.success) {
-        const label = response.group ? 'share_group_added' : 'share_added';
+        const label = response.group ? 'share_group_added_' . type() : 'share_added_' . type();
         rcmail.display_message(
-          rcmail.get_label(label, 'mel_resource', { name: response.data.displayname, type: rcmail.get_label('mel_resource.vroom_calendar_share_' + response.data.share) }),
+          rcmail.get_label(label, 'mel_resource', { name: response.data.displayname, type: rcmail.get_label('mel_resource.resource_calendar_share_' + response.data.share) }),
           'confirmation'
         );
 
         if (response.group) {
-          rcmail.env.vroom_calendar_group_shares.push(response.data);
-          rcmail.env.vroom_calendar_group_shares.sort((a,b) => (a.displayname > b.displayname) ? 1 : ((b.displayname > a.displayname) ? -1 : 0));
+          rcmail.env.resource_calendar_group_shares.push(response.data);
+          rcmail.env.resource_calendar_group_shares.sort((a,b) => (a.displayname > b.displayname) ? 1 : ((b.displayname > a.displayname) ? -1 : 0));
           refreshSharesGroupList();
         }
         else {
-          rcmail.env.vroom_calendar_shares.push(response.data);
-          rcmail.env.vroom_calendar_shares.sort((a,b) => (a.displayname > b.displayname) ? 1 : ((b.displayname > a.displayname) ? -1 : 0));
+          rcmail.env.resource_calendar_shares.push(response.data);
+          rcmail.env.resource_calendar_shares.sort((a,b) => (a.displayname > b.displayname) ? 1 : ((b.displayname > a.displayname) ? -1 : 0));
           refreshSharesList();
         }
         
@@ -66,7 +74,7 @@
 
   // Suppression d'un partage de calendrier
   rcmail.addEventListener(
-    'plugin.mel_vroom_delete_calendar_share',
+    'plugin.mel_resource_delete_calendar_share',
     function (response) {
       if (response.success) {
         const label = response.group ? 'share_group_deleted' : 'share_deleted';
@@ -76,13 +84,13 @@
         );
 
         if (response.group) {
-          rcmail.env.vroom_calendar_group_shares = rcmail.env.vroom_calendar_group_shares.filter((obj) => {
+          rcmail.env.resource_calendar_group_shares = rcmail.env.resource_calendar_group_shares.filter((obj) => {
             return obj.user !== response.data.user;
           });
           refreshSharesGroupList();
         }
         else {
-          rcmail.env.vroom_calendar_shares = rcmail.env.vroom_calendar_shares.filter((obj) => {
+          rcmail.env.resource_calendar_shares = rcmail.env.resource_calendar_shares.filter((obj) => {
             return obj.user !== response.data.user;
           });
           refreshSharesList();
@@ -117,10 +125,10 @@
    * Envoie une requête AJAX au backend pour récupérer les ressources.
    *
    * Cette fonction utilise l'API `rcmail.http_post` pour appeler l'action
-   * `settings/get_all_vrooms`, qui déclenche la méthode PHP `get_all_vrooms`.
+   * `settings/get_all_resources`, qui déclenche la méthode PHP `get_all_resources`.
    *
    * La réponse attendue est ensuite traitée via un gestionnaire d'événement
-   * (ex. : `plugin.mel_vroom_vrooms_data`) enregistré côté client.
+   * (ex. : `plugin.mel_resources_list`) enregistré côté client.
    *
    * @function
    * @returns {void}
@@ -129,7 +137,7 @@
 
     const busy = rcmail.set_busy(true, 'loading');
 
-    rcmail.http_post('settings/plugin.mel_resource', { _act: 'get_all_vrooms' })
+    rcmail.http_post('settings/plugin.mel_resource_' + type(), { _act: 'get_all_resources' })
       .then(() => {
         rcmail.set_busy(false, 'loading', busy);
       });
@@ -156,7 +164,9 @@
 
       if (searchTerm) {
         filteredResourcesList = allResourcesList.filter((item) =>
-          item.name.toLowerCase().includes(searchTerm) || item.building.toLowerCase().includes(searchTerm),
+          item.name.toLowerCase().includes(searchTerm) || 
+          item.building.toLowerCase().includes(searchTerm) || 
+          item.locality.toLowerCase().includes(searchTerm),
         );
       } else {
         filteredResourcesList = [...allResourcesList];
@@ -177,7 +187,7 @@
 
     addBtn?.addEventListener('click', () => {
       rcmail.location_href(
-        rcmail.url('plugin.mel_resource', '_act=create&_is_from=iframe')
+        rcmail.url('plugin.mel_resource_' + type(), '_act=create&_is_from=iframe')
         , window, true);
     });
   }
@@ -191,7 +201,7 @@
     // Retour à la liste des ressources
     document.getElementById('resource-back-btn')?.addEventListener('click', () => {
       rcmail.location_href(
-        rcmail.url('plugin.mel_resource', '_is_from=iframe'),
+        rcmail.url('plugin.mel_resource_' + type(), '_is_from=iframe'),
         window,
         true,
       );
@@ -208,7 +218,7 @@
     // Retour à la liste des ressources
     document.getElementById('resource-back-btn')?.addEventListener('click', () => {
       rcmail.location_href(
-        rcmail.url('plugin.mel_resource', '_is_from=iframe'),
+        rcmail.url('plugin.mel_resource_' + type(), '_is_from=iframe'),
         window,
         true,
       );
@@ -217,9 +227,9 @@
     // Validation du formulaire
     document.getElementById('modify-resource-form')?.addEventListener('submit', (e) => {
       // Mettre un confirm si le name ou le batiment change
-      const select = document.getElementById('rcmvroombuildingselect');
-      if ((rcmail.env.vroom_name !== document.getElementById('vroom_name').value 
-            || rcmail.env.vroom_building !== select.options[select.selectedIndex].text)
+      const select = document.getElementById('rcmresourcebuildingselect');
+      if ((rcmail.env.resource_name !== document.getElementById('resource_name').value 
+            || rcmail.env.resource_building !== select.options[select.selectedIndex].text)
             && !confirm(rcmail.gettext('modify_resource_confirm', 'mel_resource'))) {
         e.preventDefault()
         return false;
@@ -229,20 +239,20 @@
 
     // Ajouter une caractéristique
     document.getElementById('caracteristique-add-btn')?.addEventListener('click', () => {
-      const selectedValue = document.getElementById('rcmvroomcaracteristiqueselect').value;
+      const selectedValue = document.getElementById('rcmresourcecaracteristiqueselect').value;
 
-      if (selectedValue && !rcmail.env.vroom_caracteristiques[selectedValue]) {
-        rcmail.env.vroom_caracteristiques[selectedValue] = true;
+      if (selectedValue && !rcmail.env.resource_caracteristiques[selectedValue]) {
+        rcmail.env.resource_caracteristiques[selectedValue] = true;
         refreshCaracteristiquesList();
       }
     });
 
     // Supprimer la VRoom
-    document.getElementById('vroom-delete-btn')?.addEventListener('click', () => {
-      if (confirm(rcmail.gettext('delete_vroom_confirm', 'mel_resource', { name: rcmail.env.vroom_name }))) {
-        rcmail.http_post('settings/plugin.mel_resource', {
+    document.getElementById('resource-delete-btn')?.addEventListener('click', () => {
+      if (confirm(rcmail.gettext('delete_' + type() + '_confirm', 'mel_resource', { name: rcmail.env.resource_name }))) {
+        rcmail.http_post('settings/plugin.mel_resource_' + type(), {
           _act: 'delete_resource',
-          _resource_uid: rcmail.env.vroom_uid,
+          _resource_uid: rcmail.env.resource_uid,
         }, rcmail.set_busy(true, 'loading'));
       }
     });
@@ -254,12 +264,12 @@
       const type = document.getElementById('calendar-share-select').value;
 
       for (const value of values) {
-        rcmail.http_post('settings/plugin.mel_resource', {
+        rcmail.http_post('settings/plugin.mel_resource_' + type(), {
           _act: 'add_calendar_share',
           _group: false,
           _user: value,
           _acl: type,
-          _resource_uid: rcmail.env.vroom_uid,
+          _resource_uid: rcmail.env.resource_uid,
         }, rcmail.set_busy(true, 'loading'));
       }
 
@@ -274,12 +284,12 @@
       const type = document.getElementById('calendar-group-share-select').value;
 
       for (const value of values) {
-        rcmail.http_post('settings/plugin.mel_resource', {
+        rcmail.http_post('settings/plugin.mel_resource_' + type(), {
           _act: 'add_calendar_share',
           _group: true,
           _user: value,
           _acl: type,
-          _resource_uid: rcmail.env.vroom_uid,
+          _resource_uid: rcmail.env.resource_uid,
         }, rcmail.set_busy(true, 'loading'));
       }
 
@@ -305,15 +315,15 @@
       }
     });
 
-    if (Object.keys(rcmail.env.vroom_caracteristiques).length) {
+    if (Object.keys(rcmail.env.resource_caracteristiques).length) {
       refreshCaracteristiquesList();
     }
 
-    if (rcmail.env.vroom_calendar_shares.length) {
+    if (rcmail.env.resource_calendar_shares.length) {
       refreshSharesList();
     }
 
-    if (rcmail.env.vroom_calendar_group_shares.length) {
+    if (rcmail.env.resource_calendar_group_shares.length) {
       refreshSharesGroupList();
     }
 
@@ -338,7 +348,7 @@
       let config = rcmail.env.editor_config;
       config.mode = 'simple';
 
-      rcmail.editor_init(config, 'vroom_description_body');
+      rcmail.editor_init(config, 'resource_description_body');
       
       let it = 0;
       await wait(() => {
@@ -359,13 +369,13 @@
    * Met à jour la liste des caractéristiques dans l'interface utilisateur
    */
   function refreshCaracteristiquesList() {
-    const caracteristiquesList = document.querySelector('table#vroom_caracteristiques tbody');
+    const caracteristiquesList = document.querySelector('table#resource_caracteristiques tbody');
     caracteristiquesList.innerHTML = '';
-    let values = Object.keys(rcmail.env.vroom_caracteristiques);
+    let values = Object.keys(rcmail.env.resource_caracteristiques);
 
     if (values === 0) {
       const tr = document.createElement('tr'),
-            td = createTd(rcmail.gettext('no_caracteristique', 'mel_resource'), 'col-6');
+            td = createTd(rcmail.gettext('no_caracteristique_' + type(), 'mel_resource'), 'col-6');
       tr.appendChild(td);
       tr.colSpan = '2';
       tr.className = 'no_caracteristique';
@@ -381,7 +391,7 @@
   
         input.type = 'text';
         input.className = 'form-control';
-        input.name = 'vroom_caracteristiques[' + i++ + ']';
+        input.name = 'resource_caracteristiques[' + i++ + ']';
         input.value = caracteristique;
         input.readOnly = true;
   
@@ -398,7 +408,7 @@
         delBtn.removeAttribute('id');
   
         delBtn.addEventListener('click', async () => {
-          delete rcmail.env.vroom_caracteristiques[caracteristique];
+          delete rcmail.env.resource_caracteristiques[caracteristique];
           refreshCaracteristiquesList();
         });
   
@@ -416,11 +426,11 @@
    * Réinitialise le select des caractéristiques additionnelles
    */
   function resetCaracteristiqueSelect() {
-    const select = document.getElementById('rcmvroomcaracteristiqueselect');
+    const select = document.getElementById('rcmresourcecaracteristiqueselect');
     select.innerHTML = '';
 
-    rcmail.env.vroom_additionnal_caracteristiques.forEach((caracteristique) => {
-      if (!rcmail.env.vroom_caracteristiques[caracteristique]) {
+    rcmail.env.resource_additionnal_caracteristiques.forEach((caracteristique) => {
+      if (!rcmail.env.resource_caracteristiques[caracteristique]) {
         const option = document.createElement('option');
         option.value = caracteristique;
         option.textContent = caracteristique;
@@ -435,19 +445,19 @@
    * Met à jour la liste des partages d'agenda dans l'interface utilisateur
    */
   function refreshSharesList() {
-    const sharesList = document.querySelector('table#vroom_calendar_shares tbody');
+    const sharesList = document.querySelector('table#resource_calendar_shares tbody');
     sharesList.innerHTML = '';
 
-    if (rcmail.env.vroom_calendar_shares.length === 0) {
+    if (rcmail.env.resource_calendar_shares.length === 0) {
       const tr = document.createElement('tr'),
-            td = createTd(rcmail.gettext('vroom_no_calendar_share', 'mel_resource'));
+            td = createTd(rcmail.gettext(type() + '_no_calendar_share', 'mel_resource'));
       td.colSpan = 3;
       tr.appendChild(td);
       tr.className = 'no_calendar_share';
       sharesList.appendChild(tr);
     }
     else {
-      rcmail.env.vroom_calendar_shares.forEach((share) => {
+      rcmail.env.resource_calendar_shares.forEach((share) => {
         const tr = document.createElement('tr');
   
         tr.appendChild(createTd(share.displayname, 'col-5'));
@@ -464,11 +474,11 @@
   
         delBtn.addEventListener('click', async () => {
           if (confirm(rcmail.gettext('confirm_delete_share', 'mel_resource', { name: share.displayname }))) {
-            rcmail.http_post('settings/plugin.mel_resource', {
+            rcmail.http_post('settings/plugin.mel_resource_' + type(), {
               _act: 'delete_calendar_share',
               _group: false,
               _user: share.user,
-              _resource_uid: rcmail.env.vroom_uid,
+              _resource_uid: rcmail.env.resource_uid,
             }, rcmail.set_busy(true, 'loading'));
           }
         });
@@ -485,19 +495,19 @@
    * Met à jour la liste des partages d'agenda vers les groupes dans l'interface utilisateur
    */
   function refreshSharesGroupList() {
-    const sharesList = document.querySelector('table#vroom_calendar_group_shares tbody');
+    const sharesList = document.querySelector('table#resource_calendar_group_shares tbody');
     sharesList.innerHTML = '';
 
-    if (rcmail.env.vroom_calendar_group_shares.length === 0) {
+    if (rcmail.env.resource_calendar_group_shares.length === 0) {
       const tr = document.createElement('tr'),
-            td = createTd(rcmail.gettext('vroom_no_calendar_group_share', 'mel_resource'));
+            td = createTd(rcmail.gettext(type() + '_no_calendar_group_share', 'mel_resource'));
       td.colSpan = 3;
       tr.appendChild(td);
       tr.className = 'no_calendar_share';
       sharesList.appendChild(tr);
     }
     else {
-      rcmail.env.vroom_calendar_group_shares.forEach((share) => {
+      rcmail.env.resource_calendar_group_shares.forEach((share) => {
         const tr = document.createElement('tr');
   
         tr.appendChild(createTd(share.displayname, 'col-5'));
@@ -514,11 +524,11 @@
   
         delBtn.addEventListener('click', async () => {
           if (confirm(rcmail.gettext('confirm_delete_group_share', 'mel_resource', { name: share.displayname }))) {
-            rcmail.http_post('settings/plugin.mel_resource', {
+            rcmail.http_post('settings/plugin.mel_resource_' + type(), {
               _act: 'delete_calendar_share',
               _group: true,
               _user: share.user,
-              _resource_uid: rcmail.env.vroom_uid,
+              _resource_uid: rcmail.env.resource_uid,
             }, rcmail.set_busy(true, 'loading'));
           }
         });
@@ -551,10 +561,30 @@
       const tr = document.createElement('tr');
 
       // Resource infos
-      tr.appendChild(createTd(escapeHTML(item.name)));
-      tr.appendChild(createTd(escapeHTML(item.building)));
-      tr.appendChild(createTd(escapeHTML(item.room)));
-      tr.appendChild(createTd(escapeHTML(item.capacity)));
+      if (rcmail.env.resource_type == 'Flex Office') {
+        tr.appendChild(createTd(escapeHTML(item.room)));
+        tr.appendChild(createTd(escapeHTML(item.name.split(rcmail.get_label('mel_resource.resource_place') + ' ')[1] || item.name)));
+        tr.appendChild(createTd(escapeHTML(item.building)));
+        tr.appendChild(createTd(escapeHTML(item.locality)));
+        tr.appendChild(createTd(escapeHTML(item.floor)));
+      }
+      else {
+        tr.appendChild(createTd(escapeHTML(item.name)));
+        tr.appendChild(createTd(escapeHTML(item.building)));
+        tr.appendChild(createTd(escapeHTML(item.locality)));
+        tr.appendChild(createTd(escapeHTML(item.room)));
+  
+        if (rcmail.env.resource_type == 'Véhicule') {
+          tr.appendChild(createTd(escapeHTML(item.floor)));
+          tr.appendChild(createTd(escapeHTML(item.capacity)));
+        }
+        else if (rcmail.env.resource_type == 'Matériel') {
+          tr.appendChild(createTd(escapeHTML(item.floor)));
+        }
+        else {
+          tr.appendChild(createTd(escapeHTML(item.capacity)));
+        }
+      }
 
       // Colonne Supprimer
       const showTd = createTd('', 'show-resource'), 
@@ -567,7 +597,7 @@
 
       showBtn.addEventListener('click', async () => {
         rcmail.location_href(
-          rcmail.url('plugin.mel_resource', '_act=show&_is_from=iframe&_resource_uid=' + encodeURI(item.uid))
+          rcmail.url('plugin.mel_resource_' + type(), '_act=show&_is_from=iframe&_resource_uid=' + encodeURI(item.uid))
           , window, true);
       });
 
@@ -727,14 +757,14 @@
    * @returns {string} La chaîne échappée
    */
   function escapeHTML(str) {
-    return str.replace(/[&<>"']/g, function (m) {
+    return str ? str.replace(/[&<>"]/g, function (m) {
       return {
         '&': '&amp;',
         '<': '&lt;',
         '>': '&gt;',
         '"': '&quot;',
-        "'": '&#039;',
+        // "'": '&#039;',
       }[m];
-    });
+    }) : '';
   }
 })();

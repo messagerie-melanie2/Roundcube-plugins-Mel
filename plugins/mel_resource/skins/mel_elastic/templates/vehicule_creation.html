@@ -16,7 +16,7 @@
     <div class="row">
       <div class="col-12 text-center">
         <h1 class="resource-title mb-4 resource-create">
-          <roundcube:label name="mel_resource.create_vroom_title" />
+          <roundcube:label name="mel_resource.create_vehicule_title" />
         </h1>
       </div>
     </div>
@@ -25,28 +25,12 @@
       <form name="form" method="post" action="" class="cols-sm-6-6">
         <input type="hidden" name="resource_type" value="<roundcube:var name="env:resource_type" />" />
         <fieldset>
-          <legend><roundcube:label name="mel_resource.vroom_info" /></legend>
+          <legend><roundcube:label name="mel_resource.vehicule_room_info" /></legend>
           <table class="propform cols-sm-6-6">
             <tbody>
               <tr class="form-group row">
                 <td class="title col-sm-6">
-                  <label for="vroom_zoom_email" class="col-form-label"><roundcube:label name="mel_resource.resource_zoom_email" /></label>
-                </td>
-                <td class="col-sm-6">
-                  <input type="text" class="form-control" name="vroom_zoom_email" value="" autofocus required >
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="info"><roundcube:label name="mel_resource.resource_zoom_email_info" /></div>
-        </fieldset>
-        <fieldset>
-          <legend><roundcube:label name="mel_resource.vroom_room_info" /></legend>
-          <table class="propform cols-sm-6-6">
-            <tbody>
-              <tr class="form-group row">
-                <td class="title col-sm-6">
-                  <label for="resource_name" class="col-form-label"><roundcube:label name="mel_resource.vroom_name" /></label>
+                  <label for="resource_name" class="col-form-label"><roundcube:label name="mel_resource.vehicule_name" /></label>
                 </td>
                 <td class="col-sm-6">
                   <input type="text" class="form-control" name="resource_name" value="" required >
@@ -62,7 +46,7 @@
               </tr>
               <tr class="form-group row">
                 <td class="title col-sm-6">
-                  <label for="resource_floor" class="col-form-label"><roundcube:label name="mel_resource.resource_floor" /></label>
+                  <label for="resource_floor" class="col-form-label"><roundcube:label name="mel_resource.resource_level" /></label>
                 </td>
                 <td class="col-sm-6">
                   <input type="text" class="form-control" name="resource_floor" value="" required >
@@ -70,7 +54,7 @@
               </tr>
               <tr class="form-group row">
                 <td class="title col-sm-6">
-                  <label for="resource_room" class="col-form-label"><roundcube:label name="mel_resource.resource_room" /></label>
+                  <label for="resource_room" class="col-form-label"><roundcube:label name="mel_resource.resource_park" /></label>
                 </td>
                 <td class="col-sm-6">
                   <input type="text" class="form-control" name="resource_room" value="" required >
@@ -88,7 +72,7 @@
           </table>
         </fieldset>
         <div class="form-controls">
-          <input type="submit" class="mel-button no-margin-button no-button-margin" title="<roundcube:label name="mel_resource.save_title_vroom" />" value="<roundcube:label name="mel_resource.save" />" />
+          <input type="submit" class="mel-button no-margin-button no-button-margin" title="<roundcube:label name="mel_resource.save_title_vehicule" />" value="<roundcube:label name="mel_resource.save" />" />
         </div>
       </form>
     </div>

@@ -245,7 +245,7 @@ class mel_resource extends bnum_plugin
     $resource_uid = rcube_utils::get_input_value('_resource_uid', rcube_utils::INPUT_GPC);
 
     if (!empty($resource_uid)) {
-      if (isset($_POST['resource_name'])) {
+      if (isset($_POST['resource_type'])) {
         $resource = driver_mel::gi()->resource([null, 'webmail.resource']);
       }
       else {
@@ -686,7 +686,7 @@ class mel_resource extends bnum_plugin
             ]);
 
             // Gestion du POST pour enregistrer la VRoom
-            if (isset($_POST['resource_name']) || isset($_POST['resource_room'])) {
+            if (isset($_POST['resource_type'])) {
               $this->action_create_ressource();
             }
             
@@ -725,7 +725,7 @@ class mel_resource extends bnum_plugin
     ]);
 
     // Gestion du POST pour enregistrer la ressource
-    if (isset($_POST['resource_name'])) {
+    if (isset($_POST['resource_type'])) {
       $this->action_modify_ressource();
     }
 
@@ -929,7 +929,7 @@ class mel_resource extends bnum_plugin
    */
   protected function generate_uid($type)
   {
-    return strtolower($type) . bin2hex(random_bytes(12));
+    return str_replace(' ', '', strtolower($type)) . bin2hex(random_bytes(12));
   }
 
   /**

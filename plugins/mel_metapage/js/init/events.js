@@ -1207,14 +1207,11 @@ if (rcmail && window.mel_metapage) {
 
       html += `<div class=row style="margin-top:5px">${rec !== null ? `<div class=col-6>${rec}</div>` : ''}${alarm !== null ? `<div class=col-6><span class="icon-mel-notif mel-cal-icon"></span>Rappel : ${alarm}</div>` : ''}</div>`;
 
-      const hasLocation =
-        event.location !== undefined &&
-        event.location !== null &&
-        event.location !== '';
+      const hasLocation = Boolean(event.location);
       let location_phone = '';
       let location = '';
 
-      if (hasLocation) {
+      if (hasLocation) {debugger;
         const old_new_line = rcube_calendar?.old_newline_key ?? '{mel.newline}';
         const newline =
           rcube_calendar?.newline_key ?? String.fromCharCode('8232');
@@ -1223,17 +1220,18 @@ if (rcmail && window.mel_metapage) {
           .split(newline);
 
         let element;
+        let tmp_link = "";
         for (let index = 0; index < tmp_location.length; ++index) {
           element = tmp_location[index];
 
           if (
-            element.includes('(') &&
-            element.includes('|') &&
+            element.includes(':') ||
+            element.includes('|') ||
             element.includes('/public/webconf')
           ) {
-            location_phone = element.split('(');
-            element = location_phone[0];
-            location_phone = location_phone[1].replace(')', '').split('|');
+            [tmp_link,location_phone] = element.split(' : ');
+            element = tmp_link;
+            location_phone = location_phone.replace(')', '').split('|');
           }
 
           location += mel_metapage.Functions.updateRichText(element)
@@ -1243,43 +1241,89 @@ if (rcmail && window.mel_metapage) {
           if (index !== tmp_location.length - 1) location += '<br/>';
         }
       }
+      // --- Helpers HTML ---
+      const iconStyle = `display:inline-block; vertical-align:top; margin-top:5px`;
+      const rowStyle  = `margin-top:15px`;
+      const colStyle  = `overflow:hidden; display:flex; text-overflow:ellipsis`;
+
 
       //Affichage du lieu
-      if (hasLocation)
-        html += `<div id="location-mel-edited-calendar" class=row style="margin-top:15px"><div class=col-12 style="overflow: hidden;
-            /*white-space: nowrap;*/
-            display:flex;
-            text-overflow: ellipsis;"><span style="display: inline-block;
-            vertical-align: top;margin-top:5px" class="icon-mel-pin-location mel-cal-icon"></span><span style='display:inline-block'>${linkify(location)}</span></div></div>`;
+      // Affichage du lieu (lien audioconf non cliquable)
+      if (hasLocation) {
+        // On récupère le texte linkifié puis on supprime le <a> sur les liens audioconf
+        const locationHtml = linkify(location).replace(
+          /<a\s+[^>]*href=["'][^"']*audioconf[^"']*["'][^>]*>(.*?)<\/a>/gi,
+          '$1'
+        );
 
-      if (location_phone !== '')
-        html += `<div id="location-mel-edited-calendar" class=row style="margin-top:15px"><div class=col-12 style="overflow: hidden;
-            /*white-space: nowrap;*/
-            display:flex;
-            text-overflow: ellipsis;"><span style="display: inline-block;
-            vertical-align: top;margin-top:5px" class="icon-mel-phone mel-cal-icon"></span><span style='display:inline-block'><a title="Rejoindre la visio par téléphone. Le code pin est ${location_phone[1]}." href="tel:${location_phone[0]};${location_phone[1]}#">${location_phone[0]}</a> - PIN : ${location_phone[1]}</span></div></div>`;
+        html += `
+          <div id="location-mel-edited-calendar" class="row" style="${rowStyle}">
+            <div class="col-12" style="${colStyle}">
+              <span style="${iconStyle}" class="icon-mel-pin-location mel-cal-icon"></span>
+              <span style="display:inline-block">${locationHtml}</span>
+            </div>
+          </div>`;
+      }
+      // Affichage téléphone + code PIN
+      if (location_phone !== '') {
+        const phoneNumber = location_phone[0];
+        const pinCode     = location_phone[1];
+
+        html += `
+          <div id="location-mel-phone-calendar" class="row" style="${rowStyle}">
+            <div class="col-12" style="${colStyle}">
+
+              <!-- Numéro de téléphone cliquable avec icône tél -->
+              <span style="${iconStyle}" class="icon-mel-phone mel-cal-icon"></span>
+              <span style="display:inline-block">
+                <a title="Rejoindre l'audioconférence par téléphone"
+                  href="tel:${phoneNumber}#">
+                  ${phoneNumber}
+                </a>
+              </span>
+
+              <!-- Séparateur -->
+              <span style="margin: 0 6px"> – </span>
+
+              <!-- Code PIN non cliquable avec icône -->
+              <span style="${iconStyle}" class="icon-mel-key mel-cal-icon"></span>
+              <bnum-icon class="alignself-center mr-2 material-symbols-outlined" data-loaded="true">pin</bnum-icon>
+              <span style="display:inline-block">${pinCode}</span>
+
+            </div>
+          </div>`;
+      }
+
+      // Affichage catégorie / workspace
       if (event.categories !== undefined && event.categories.length > 0) {
         const isWsp = event.categories[0].includes('ws#');
+
         if (isWsp) {
-          const wsp = event.categories[0].replace('ws#', '');
-          const wsp_name =
-            mel_metapage.Storage.get(
-              mel_metapage.Storage.title_workspaces,
-              wsp,
-            )[wsp] ?? wsp;
-          html += `<div class=row style="margin-top:5px">
-                                    <div class=col-12>
-                                        <span class="icon-mel-workplace mel-cal-icon"></span>
-                                        <a class='a-event-wsp-link' href="${mel_metapage.Functions.url('workspace', 'workspace', { _uid: wsp })}" style="color:#${rcmail.env.calendar_categories[event.categories[0]]}" >${wsp_name}</a>
-                                    </div>
-                                </div>`;
+          const wsp      = event.categories[0].replace('ws#', '');
+          const wsp_name = mel_metapage.Storage.get(
+            mel_metapage.Storage.title_workspaces, wsp
+          )[wsp] ?? wsp;
+
+          html += `
+            <div class="row" style="margin-top:5px">
+              <div class="col-12">
+                <span class="icon-mel-workplace mel-cal-icon"></span>
+                <a class="a-event-wsp-link"
+                  href="${mel_metapage.Functions.url('workspace', 'workspace', { _uid: wsp })}"
+                  style="color:#${rcmail.env.calendar_categories[event.categories[0]]}">
+                  ${wsp_name}
+                </a>
+              </div>
+            </div>`;
         } else {
-          html += `<div class=row style="margin-top:5px">
-                            <div class=col-12>
-                                <span style="color:#${rcmail.env.calendar_categories[event.categories[0]]}" class="icon-mel-label-full mel-cal-icon"></span>
-                                <span>${event.categories[0]}</span>
-                            </div>
-                        </div>`;
+          html += `
+            <div class="row" style="margin-top:5px">
+              <div class="col-12">
+                <span style="color:#${rcmail.env.calendar_categories[event.categories[0]]}"
+                      class="icon-mel-label-full mel-cal-icon"></span>
+                <span>${event.categories[0]}</span>
+              </div>
+            </div>`;
         }
       }
 

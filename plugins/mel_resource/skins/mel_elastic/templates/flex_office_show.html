@@ -30,31 +30,31 @@
       <form action="" id="modify-resource-form" method="post">
         <input type="hidden" name="resource_type" value="<roundcube:var name="env:resource_type" />" />
         <h3 class="h5 mb-2">
-          <roundcube:label name="mel_resource.vroom_room_info" />
+          <roundcube:label name="mel_resource.flex_office_room_info" />
         </h3>
         <table class="resource-table table-striped table-bordered">
           <thead>
             <tr>
-              <th class="col-2"><roundcube:label name="mel_resource.vroom_name" /></th>
+              <th class="col-2"><roundcube:label name="mel_resource.flex_office_name" /></th>
+              <th class="col-2"><roundcube:label name="mel_resource.resource_room" /></th>
+              <th class="col-2"><roundcube:label name="mel_resource.resource_place" /></th>
               <th class="col-2"><roundcube:label name="mel_resource.resource_building" /></th>
               <th class="col-2"><roundcube:label name="mel_resource.resource_floor" /></th>
-              <th class="col-2"><roundcube:label name="mel_resource.resource_room" /></th>
-              <th class="col-2"><roundcube:label name="mel_resource.resource_capacity" /></th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td class="col-2"><input type="text" class="form-control" id="resource_name" name="resource_name" value="<roundcube:var name="env:resource_name"/>" disabled ></td>
+              <td class="col-2"><input type="text" class="form-control" id="resource_name" name="resource_name" value="<roundcube:var name="env:resource_name" />" disabled ></td>
+              <td class="col-2"><input type="text" class="form-control" name="resource_room" value="<roundcube:var name="env:resource_room" />" disabled ></td>
+              <td class="col-2"><input type="text" class="form-control" name="resource_place" value="<roundcube:var name="env:resource_place" />" disabled ></td>
               <td class="col-2"><roundcube:object name="resource_building" /></td>
               <td class="col-2"><input type="text" class="form-control" name="resource_floor" value="<roundcube:var name="env:resource_floor" />" ></td>
-              <td class="col-2"><input type="text" class="form-control" name="resource_room" value="<roundcube:var name="env:resource_room" />" ></td>
-              <td class="col-2"><roundcube:object name="resource_capacity" /></td>
             </tr>
           </tbody>
         </table>
         <br>
         <h3 class="h5 mb-2">
-          <roundcube:label name="mel_resource.vroom_address" />
+          <roundcube:label name="mel_resource.flex_office_address" />
         </h3>
         <table class="resource-table table-striped table-bordered">
           <thead>
@@ -74,15 +74,15 @@
         </table>
         <br>
         <h3 class="h5 mb-2">
-          <roundcube:label name="mel_resource.vroom_caracteristiques" />
+          <roundcube:label name="mel_resource.flex_office_caracteristiques" />
         </h3>
         <div class="row align-items-center">
           <div class="col-md-6 mb-2 mb-md-0">
             <roundcube:object name="resource_add_caracteristique" />
           </div>
           <div class="col-md-3">
-            <primary-button data-icon="add_circle" id="caracteristique-add-btn" aria-label="<roundcube:label name='mel_resource.button_title_add_caracteristique_vroom' />"
-              title="<roundcube:label name='mel_resource.button_title_add_caracteristique_vroom' />">
+            <primary-button data-icon="add_circle" id="caracteristique-add-btn" aria-label="<roundcube:label name='mel_resource.button_title_add_caracteristique_flex_office' />"
+              title="<roundcube:label name='mel_resource.button_title_add_caracteristique_flex_office' />">
                 <roundcube:label name="mel_resource.button_add_caracteristique" />
             </button>
           </div>
@@ -97,38 +97,36 @@
           </thead>
           <tbody>
             <tr>
-              <td class="col-6" colspan="2"><roundcube:label name="mel_resource.no_caracteristique_vroom" /></td>
+              <td class="col-6" colspan="2"><roundcube:label name="mel_resource.no_caracteristique_flex_office" /></td>
             </tr>
           </tbody>
         </table>
         <br>
         <h3 class="h5 mb-2">
-          <roundcube:label name="mel_resource.vroom_info" />
+          <roundcube:label name="mel_resource.flex_office_info" />
         </h3>
         <table class="resource-table table-striped table-bordered">
           <thead>
             <tr>
               <th class="col-2"><roundcube:label name="mel_resource.resource_email" /></th>
-              <th class="col-3"><roundcube:label name="mel_resource.resource_zoom_email" /></th>
               <th class="col-2"><roundcube:label name="mel_resource.resource_uid" /></th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td class="col-2"><roundcube:var name="env:resource_email" /></td>
-              <td class="col-3"><input type="text" class="form-control" name="vroom_zoom_email" value="<roundcube:var name="env:vroom_zoom_email" />" ></td>
               <td class="col-2"><input type="text" class="form-control" name="_resource_uid" disabled value="<roundcube:var name="env:resource_uid" />" ></td>
             </tr>
           </tbody>
         </table>
         <br>
         <h3 class="h5 mb-2">
-          <roundcube:label name="mel_resource.vroom_description" />
+          <roundcube:label name="mel_resource.flex_office_description" />
         </h3>
         <textarea data-html-editor="true" class="form-control mce_editor" name="resource_description" id="resource_description_body" rows="4"><roundcube:var name="env:resource_description" /></textarea>
         <br>
         <div class="form-controls">
-          <input type="submit" class="mel-button no-margin-button no-button-margin" title="<roundcube:label name="mel_resource.save_title_vroom" />" value="<roundcube:label name="mel_resource.save" />" />
+          <input type="submit" class="mel-button no-margin-button no-button-margin" title="<roundcube:label name="mel_resource.save_title_flex_office" />" value="<roundcube:label name="mel_resource.save" />" />
         </div>
       </form>
       
@@ -154,8 +152,8 @@
           </select>
         </div>
         <div class="col-md-3">
-          <primary-button data-icon="add_circle" id="calendar-share-add-btn" aria-label="<roundcube:label name='mel_resource.button_title_add_calendar_share_vroom' />"
-            title="<roundcube:label name='mel_resource.button_title_add_calendar_share_vroom' />">
+          <primary-button data-icon="add_circle" id="calendar-share-add-btn" aria-label="<roundcube:label name='mel_resource.button_title_add_calendar_share_flex_office' />"
+            title="<roundcube:label name='mel_resource.button_title_add_calendar_share_flex_office' />">
               <roundcube:label name="mel_resource.button_add_calendar_share" />
           </button>
         </div>
@@ -193,8 +191,8 @@
           </select>
         </div>
         <div class="col-md-3">
-          <primary-button data-icon="add_circle" id="calendar-group-share-add-btn" aria-label="<roundcube:label name='mel_resource.button_title_add_calendar_group_share_vroom' />"
-            title="<roundcube:label name='mel_resource.button_title_add_calendar_group_share_vroom' />">
+          <primary-button data-icon="add_circle" id="calendar-group-share-add-btn" aria-label="<roundcube:label name='mel_resource.button_title_add_calendar_group_share_flex_office' />"
+            title="<roundcube:label name='mel_resource.button_title_add_calendar_group_share_flex_office' />">
               <roundcube:label name="mel_resource.button_add_calendar_share" />
           </button>
         </div>
@@ -216,10 +214,10 @@
       </table>
       <!-- <div class="separator"></div>
       <h3 class="h5 mb-2">
-        <roundcube:label name="mel_resource.vroom_delete" />
+        <roundcube:label name="mel_resource.flex_office_delete" />
       </h3>
       <div>
-        <button id="resource-delete-btn" class="mel-button btn btn-secondary btn-danger danger" title="<roundcube:label name="mel_resource.delete_vroom_title" />">
+        <button id="resource-delete-btn" class="mel-button btn btn-secondary btn-danger danger" title="<roundcube:label name="mel_resource.delete_flex_office_title" />">
           <roundcube:label name="mel_resource.delete" />
           <span class="plus icon-mel-trash"></span>
         </button>

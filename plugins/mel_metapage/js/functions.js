@@ -3490,7 +3490,7 @@ function external_link_modal(_url, isSuspect = false) {
     rcmail.gettext('mel_metapage.leaving_bnum'),
   );
 
-  let suspectClass = isSuspect ? 'warning-suspect' : '';
+  const suspectClass = isSuspect ? 'warning-suspect' : '';
   
   let warning = new mel_html2('label', {
     attribs: { class: `text-danger mt-3 warning-label ${suspectClass}` },

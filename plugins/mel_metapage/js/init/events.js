@@ -1211,7 +1211,7 @@ if (rcmail && window.mel_metapage) {
       let location_phone = '';
       let location = '';
 
-      if (hasLocation) {debugger;
+      if (hasLocation) {
         const old_new_line = rcube_calendar?.old_newline_key ?? '{mel.newline}';
         const newline =
           rcube_calendar?.newline_key ?? String.fromCharCode('8232');

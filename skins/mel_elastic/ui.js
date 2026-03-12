@@ -1413,7 +1413,7 @@ $(document).ready(() => {
           const isCustom = e.data(THEME_ATTRIB_DATA_IS_CUSTOM);
 
           try {
-            this.css_rules.remove(RULE_KEY);
+            document.querySelector('bnum-header')?.clearBackground?.();
           } catch (error) {}
 
           if (data) {
@@ -1444,6 +1444,7 @@ $(document).ready(() => {
           ) {
             this.theme_selected_picture = iterator.key;
             this.css_rules.remove(RULE_KEY);
+            document.querySelector('bnum-header')?.clearBackground?.();
           } else {
             this._add_background(iterator.value.background, isCustom);
             $(CONST_HTML_HTML).addClass(CONST_CLASS_HTML_HAS_PICTURE);
@@ -1469,13 +1470,27 @@ $(document).ready(() => {
     }
 
     _add_background(path, isRule) {
-      this.css_rules.addAdvanced(
-        'barup-background',
-        '.barup',
-        `background-image:url(${isRule ? path : (window.location.origin + window.location.pathname + path.replace('./', '/')).replaceAll('://', '¤').replaceAll('//', '/').replaceAll('¤', '://')})!important`,
-        'background-size: cover !important',
-        'background-position: center !important',
-      );
+      document
+        .querySelector('bnum-header')
+        ?.updateBackground?.(
+          isRule
+            ? path
+            : (
+                window.location.origin +
+                window.location.pathname +
+                path.replace('./', '/')
+              )
+                .replaceAll('://', '¤')
+                .replaceAll('//', '/')
+                .replaceAll('¤', '://'),
+        );
+      // this.css_rules.addAdvanced(
+      //   'barup-background',
+      //   '.barup',
+      //   `background-image:url(${isRule ? path : (window.location.origin + window.location.pathname + path.replace('./', '/')).replaceAll('://', '¤').replaceAll('//', '/').replaceAll('¤', '://')})!important`,
+      //   'background-size: cover !important',
+      //   'background-position: center !important',
+      // );
       return this;
     }
 

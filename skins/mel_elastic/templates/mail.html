@@ -1,6 +1,8 @@
 <roundcube:include file="includes/layout.html" />
 <roundcube:include file="includes/menu.html" />
 
+<main>
+
 <h1 class="voice">
   <roundcube:label name="mail" />
 </h1>
@@ -34,7 +36,7 @@
     <roundcube:label name="arialabelfolderlist" />
   </h2>
   <div id="folderlist-content" class="scroller">
-    <roundcube:object name="mailboxlist" id="mailboxlist" class="treelist listing folderlist" folder_filter="mail"
+    <roundcube:object name="mailboxlist" id="mailboxlist" aria-abel="Liste des boîtes mails" class="treelist listing folderlist" folder_filter="mail"
       unreadwrap="%s" />
   </div>
   <div slot="footer" class="footer small">
@@ -483,5 +485,7 @@
   <roundcube:container name="listoptions" id="listoptionsmenu" />
   <roundcube:add_label name="listoptionstitle" />
 </div>
+
+</main>
 
 <roundcube:include file="includes/footer.html" />

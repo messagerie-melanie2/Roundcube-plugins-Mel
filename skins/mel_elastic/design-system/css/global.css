@@ -39,8 +39,9 @@
   /* Le fond de la page */
   --bnum-color-surface: #f6f6f6;
   /* Le fond des surfaces */
-  --bnum-color-in-surface-border: #ddd;
+  --bnum-color-border: #ddd;
   /* Bordure des surfaces */
+  --bnum-color-in-surface-border: var(--bnum-color-border);
   --bnum-color-in-surface-hover: #dfdfdf;
   --bnum-color-in-surface-active: #cfcfcf;
   --bnum-color-input: #eee;
@@ -86,9 +87,7 @@
   /* =================================
      2. Typographie
      ================================= */
-  --bnum-font-family-primary:
-    -apple-system, system-ui, BlinkMacSystemFont, Arial, 'Segoe UI', Roboto,
-    'Helvetica Neue', sans-serif;
+  --bnum-font-family-primary: -apple-system, system-ui, BlinkMacSystemFont, Arial, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
   --bnum-font-family-secondary: Georgia;
   --bnum-icon-font-family: 'Material Symbols Outlined';
   /* Tailles */
@@ -164,10 +163,8 @@
   --bnum-folder-title-padding-larger: var(--bnum-space-m) var(--bnum-space-m);
   --bnum-folder-title-padding-smaller: var(--bnum-space-xs) var(--bnum-space-m);
   --bnum-folder-bal-title-padding: var(--bnum-space-m) var(--bnum-space-m);
-  --bnum-folder-bal-title-padding-larger: var(--bnum-space-l)
-    var(--bnum-space-m);
-  --bnum-folder-bal-title-padding-smaller: var(--bnum-space-s)
-    var(--bnum-space-m);
+  --bnum-folder-bal-title-padding-larger: var(--bnum-space-l) var(--bnum-space-m);
+  --bnum-folder-bal-title-padding-smaller: var(--bnum-space-s) var(--bnum-space-m);
   /* =================================
      4. Bordures et Ombres
      ================================= */
@@ -184,16 +181,11 @@
   --bnum-border-style-default: solid;
   --bnum-border-style-dashed: dashed;
   /* --- D. COMPOSITES (Shorthands Intelligents) --- */
-  --bnum-border-in-surface: var(--bnum-border-style-default)
-    var(--bnum-border-width-s) var(--bnum-color-in-surface-border);
-  --bnum-border-in-surface-hover: var(--bnum-border-style-default)
-    var(--bnum-border-width-s) var(--bnum-border-in-surface-hover);
-  --bnum-border-in-surface-active: var(--bnum-border-style-default)
-    var(--bnum-border-width-s) var(--bnum-border-in-surface-active);
-  --bnum-border-surface: var(--bnum-border-style-default)
-    var(--bnum-border-width-s) var(--bnum-color-primary);
-  --bnum-border-column: var(--bnum-border-style-default)
-    var(--bnum-border-width-s) #ddd;
+  --bnum-border-in-surface: var(--bnum-border-style-default) var(--bnum-border-width-s) var(--bnum-color-in-surface-border);
+  --bnum-border-in-surface-hover: var(--bnum-border-style-default) var(--bnum-border-width-s) var(--bnum-border-in-surface-hover);
+  --bnum-border-in-surface-active: var(--bnum-border-style-default) var(--bnum-border-width-s) var(--bnum-border-in-surface-active);
+  --bnum-border-surface: var(--bnum-border-style-default) var(--bnum-border-width-s) var(--bnum-color-primary);
+  --bnum-border-column: var(--bnum-border-style-default) var(--bnum-border-width-s) #ddd;
   --bnum-border-in-column: var(--bnum-border-column);
   /* Ombres (pour élever les cartes) */
   --bnum-shadow-s: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -223,7 +215,7 @@ html.touch {
   --size-margin-left-state: 0;
 }
 body {
-  font-size: var(--bnum-font-size-m, 1rem);
+  font-size: var(--bnum-body-font-size, var(--bnum-font-size-m, 1rem));
   font-family: var(--bnum-font-family-primary);
   color: var(--bnum-text-primary);
 }

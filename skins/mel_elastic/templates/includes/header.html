@@ -25,13 +25,33 @@
 
 <bnum-header class="barup">
     <img slot="logo" src="skins/mel_elastic/images/bnumloader.svg" alt="Logo du bnum"/>
-    <h1 slot="title">PAGE</h1>
+    <h1 slot="title"><roundcube:object name="defaultpagetitle"  /></h1>
 
     <bnum-secondary-button slot="actions" data-icon="add" id="create-button" title="<roundcube:label name='mel_metapage.create_help' />"><roundcube:label name="mel_metapage.create" /></bnum-secondary-button>
-    <bnum-icon-button slot="actions">article</bnum-icon-button>
-    <bnum-icon-button slot="actions">help</bnum-icon-button>
-    <bnum-icon-button slot="actions">settings</bnum-icon-button>
-    <bnum-icon-button slot="actions">notifications</bnum-icon-button>
+    <bnum-icon-button slot="actions" id="button-notes" title="Notes">article</bnum-icon-button>
+
+    <roundcube:if condition="env:plugin_list_help===true"/>
+        <bnum-icon-button id="button-help" slot="actions">help</bnum-icon-button>
+    <roundcube:endif/>
+    <bnum-icon-button slot="actions" id="button-settings">settings</bnum-icon-button>
+
+    <!-- <roundcube:if condition="env:plugin_list_notifications===true"/>
+        <div id="notification-dropdown" class="dropdown" slot="actions" style="position: relative;">
+          <button id="button-notifications" style="width: 1; height: 1; position: absolute; top:0;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+            class="transparent-icon-button barup-icons-button" onclick=""
+            title="<roundcube:label name='mel_metapage.notifications_help' />">
+            <span id="notifications-icon" class="material-symbols-outlined">
+              notifications
+            </span>
+          </button>
+          <bnum-icon-button id="notifications-btn">notifications</bnum-icon-button>
+          <div class="dropdown-menu notification-dropdown-menu dropdown-menu-right p-2"
+            aria-labelledby="button-notifications">
+            <div id="notifications-panel"></div>
+          </div>
+        </div>
+        !-- <bnum-icon-button slot="actions">notifications</bnum-icon-button> --
+    <roundcube:endif/> -->
 
     <button id="button-user" slot="avatar" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
         class="transparent-icon-button barup-icons-button"
@@ -50,14 +70,48 @@
     </button>
 </bnum-header>
 
+<roundcube:include file="includes/quickoptions.html" />
+<roundcube:include file="includes/user.html" />
+
 <script>
     (() => {
-        const button = document.getElementById('create-button');
+        /**
+         * @param {string} functionName Nom de la fonction qui peut se trouver dans `window`.
+         * @return {unknown}
+         */
+        function tryCallFunction(functionName) {
+            /**
+             * @type {() => unknown}
+             */
+            const func = window[functionName] || (() => { throw new Error(`${functionName} n'existe pas !`)});
 
-        if (button) button.addEventListener('click', function() {
-            var m_mp_Create = m_mp_Create || window.m_mp_Create || (() => { throw new Error("m_mp_Create n'existe pas !")});
+            return func();
+        }
+        const NO_THIS_ARG = null;
+        const THIS = Symbol(this);
 
-            m_mp_Create();
-        });
+
+        const actions = {
+            'create-button': 'm_mp_Create',
+            'button-help':  'm_mp_Help',
+            'button-settings': {'name': 'm_mp_ToggleGroupOptionsUser', args:[THIS]}
+        };
+
+        for (const id of Object.keys(actions)) {
+            const action = actions[id];
+
+            const element = document.getElementById(id);
+
+            if (element) {
+                if (typeof action === 'string') element.addEventListener('click', tryCallFunction.bind(NO_THIS_ARG, action));
+                else element.addEventListener('click', (function (funcObject, caller) {
+                    const {name, args} = funcObject;
+
+                    const func = window[name] || (() => { throw new Error(`${name} n'existe pas !`)});
+
+                    func(...args.map(x => x === THIS ? caller : x ));
+                }).bind(NO_THIS_ARG, action, element));
+            }
+        }
     })();
 </script>

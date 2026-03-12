@@ -113,6 +113,9 @@ class mel_elastic extends bnum_plugin
             );
             $this->rc->output->set_env('animation_enabled', $this->rc->config->get('mel_metapage_animation_state', null));     
 
+            // if ($this->get_current_task() === 'bnum')
+            $this->add_handler('defaultpagetitle', [$this, 'handler_default_page_title']);
+
             if ($this->rc->task == 'mail' && $this->is_index_action() ) {
                 $this->add_handler('mailboxlist', [$this, 'my_folder_list_handler']);
             }
@@ -500,6 +503,10 @@ class mel_elastic extends bnum_plugin
         }
 
         return $args;
+    }
+
+    public function handler_default_page_title() {
+        return $this->rc()->gettext($this->get_input('_initial_task', rcube_utils::INPUT_GET), 'mel_metapage');
     }
 
     /**

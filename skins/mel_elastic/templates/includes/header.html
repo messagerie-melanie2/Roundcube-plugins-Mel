@@ -1,0 +1,63 @@
+<style>
+    #button-user {
+        padding: 0;
+    }
+
+    #button-user .user-child {
+        display: flex;
+        align-items: center;
+    }
+
+    #user-picture {
+        margin-top:0;
+    }
+</style>
+
+<div>
+    <p class="sr-only">Liens rapides</p>
+    <!-- <a class="sr-only sr-only-focusable mel-rapid-link" href="#" onclick="mm_st_OpenOrCreateFrame('home', true)">Accueil</a> -->
+    <a class="sr-only sr-only-focusable mel-rapid-link" href="#taskmenu"><roundcube:label name='mel_metapage.main_nav' /></a>
+    <a class="sr-only sr-only-focusable mel-rapid-link" href="#barup-buttons"><roundcube:label name='mel_metapage.secondary_nav' /></a>
+    <a class="sr-only sr-only-focusable mel-rapid-link" href="#" onclick="$('#barup-search-input').focus()"><roundcube:label name='search' /></a>
+    <a class="sr-only sr-only-focusable mel-rapid-link" href="#" onclick="m_mp_focus_current_frame(this)"><roundcube:label name='mel_metapage.main_contents' /></a>
+    <div id="upbar-rapid-links"></div>
+</div>
+
+<bnum-header class="barup">
+    <img slot="logo" src="skins/mel_elastic/images/bnumloader.svg" alt="Logo du bnum"/>
+    <h1 slot="title">PAGE</h1>
+
+    <bnum-secondary-button slot="actions" data-icon="add" id="create-button" title="<roundcube:label name='mel_metapage.create_help' />"><roundcube:label name="mel_metapage.create" /></bnum-secondary-button>
+    <bnum-icon-button slot="actions">article</bnum-icon-button>
+    <bnum-icon-button slot="actions">help</bnum-icon-button>
+    <bnum-icon-button slot="actions">settings</bnum-icon-button>
+    <bnum-icon-button slot="actions">notifications</bnum-icon-button>
+
+    <button id="button-user" slot="avatar" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+        class="transparent-icon-button barup-icons-button"
+        title="<roundcube:label name='mel_metapage.user_help' />">
+
+        <div class="user-child" comment="Parent ariane, photo + dispo">
+            <bnum-avatar data-shadow="true" id="user-picture" comment="photo utilisateur"></bnum-avatar>
+
+            <roundcube:if condition="env:plugin_list_chat===true"/>
+                <div id="user-dispo" class="chat-user-dispo logout" comment="Disponibilitée"></div>
+            <roundcube:else />
+                <div id="user-dispo" class="chat-user-dispo logout" comment="Disponibilitée" style="display: none;"></div>
+            <roundcube:endif/>
+
+        </div>
+    </button>
+</bnum-header>
+
+<script>
+    (() => {
+        const button = document.getElementById('create-button');
+
+        if (button) button.addEventListener('click', function() {
+            var m_mp_Create = m_mp_Create || window.m_mp_Create || (() => { throw new Error("m_mp_Create n'existe pas !")});
+
+            m_mp_Create();
+        });
+    })();
+</script>

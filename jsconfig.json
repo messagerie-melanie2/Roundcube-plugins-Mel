@@ -19,8 +19,6 @@
     "../Roundcube-Mel/Program/js/**/*.js",
     "plugins/mel_metapage/js/lib/metapages_actions/mails/_favorite_folder.js",
     "skins/mel_elastic/design-system/ds-module-bnum.js",
-    "skins/mel_elastic/**.js",
-    "skins/mel_elastic/**/bridges/**.js",
-    "skins/mel_elastic/bnum-design-system.min.js"
+    "skins/mel_elastic/**/*.js"
   ]
 }

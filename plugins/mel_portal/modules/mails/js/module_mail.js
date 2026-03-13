@@ -1,6 +1,11 @@
 export { ModuleMail };
+import {
+  HTMLBnumCardEmail,
+  HTMLBnumCardItemMail,
+} from '../../../../../skins/mel_elastic/design-system/ds-module-bnum.js';
 import { BaseStorage } from '../../../../mel_metapage/js/lib/classes/base_storage.js';
 import { BnumLog } from '../../../../mel_metapage/js/lib/classes/bnum_log.js';
+import { FramesManager } from '../../../../mel_metapage/js/lib/classes/frame_manager.js';
 import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
 import { html_ul } from '../../../../mel_metapage/js/lib/html/html.js';
 import { mail_html } from '../../../../mel_metapage/js/lib/html/html_mail.js';
@@ -15,7 +20,24 @@ class ModuleMail extends BaseModule {
 
   start() {
     super.start();
-    this._init().set_title_action('mail');
+    // this._init().set_title_action('mail');
+
+    /**
+     * @type {import('../../../../../skins/mel_elastic/design-system/ds-module-bnum.js').HTMLBnumCardEmail}
+     */
+    const element = document.querySelector(HTMLBnumCardEmail.TAG);
+
+    element.addEventListener(
+      HTMLBnumCardEmail.Events.TITLE_URL_CLICKED,
+      (e) => {
+        e.preventDefault();
+        e.detail?.inner?.preventDefault?.();
+        e.detail?.inner?.detail?.inner?.preventDefault?.();
+
+        this.switch_frame('mail');
+      },
+    );
+
     let loaded = false;
     let mail_loader = new MailLoader();
     Object.defineProperties(this, {
@@ -87,29 +109,91 @@ class ModuleMail extends BaseModule {
     return this;
   }
 
+  /**
+   *
+   * @param {Object} param0
+   * @param {MailBaseModel[] | null} param0.mails
+   * @returns
+   */
   async show_last_mails({ mails = null, force_refresh = false }) {
+    // debugger;
     if (force_refresh) this.mail_loader?.force_refresh?.();
 
-    if (!mails) mails = await this.mail_loader.load_mails();
+    if (!mails) mails = (await this.mail_loader.load_mails()) || [];
 
-    let $un_contents = this.select_undefined_contents().html(EMPTY_STRING);
+    /**
+     * @type {import('../../../../../skins/mel_elastic/design-system/ds-module-bnum.js').HTMLBnumCardEmail}
+     */
+    const element = document.querySelector(HTMLBnumCardEmail.TAG);
 
-    if ((mails ?? []).length > 0) {
-      for (let index = 0, len = mails.length; index < len; ++index) {
-        const mail = mails[index];
+    if (element) {
+      element.clear();
 
-        if (this.html_elements[index]) this.html_elements[index].mail = mail;
+      if (mails.length > 0) {
+        for (const mail of mails) {
+          /**
+           * @type {import('../../../../../skins/mel_elastic/design-system/ds-module-bnum.js').HTMLBnumCardItemMail}
+           */
+          const node = HTMLBnumCardItemMail.Create(
+            mail.subject,
+            mail.from,
+            mail.date,
+          );
+          node.onitemclicked.push(
+            async function (uid) {
+              let have_frame = FramesManager.Instance.has_frame('mail');
+
+              let config = {};
+
+              if (
+                !have_frame ||
+                (have_frame &&
+                  FramesManager.Instance.get_frame('mail')[0].contentWindow
+                    .rcmail.env.mailbox !== 'INBOX')
+              ) {
+                have_frame = false;
+                config['_mbox'] = 'INBOX';
+              }
+
+              if (!have_frame) config['_uid'] = uid;
+
+              await FramesManager.Instance.switch_frame('mail', {
+                args: config,
+                changepage: true,
+              });
+
+              if (have_frame) {
+                FramesManager.Instance.get_frame()[0].contentWindow.rcmail.message_list.select(
+                  uid,
+                );
+              }
+            }.bind(node, mail.uid),
+          );
+          element.add(node);
+        }
       }
 
-      $un_contents.css('display', 'none');
-    } else {
-      mel_html2
-        .div({
-          attribs: { class: 'melv2-mail' },
-          contents: "Vous n'avez pas de mails !",
-        })
-        .create($un_contents.css('display', EMPTY_STRING));
+      element.loading = false;
     }
+
+    // let $un_contents = this.select_undefined_contents().html(EMPTY_STRING);
+
+    // if ((mails ?? []).length > 0) {
+    //   for (let index = 0, len = mails.length; index < len; ++index) {
+    //     const mail = mails[index];
+
+    //     if (this.html_elements[index]) this.html_elements[index].mail = mail;
+    //   }
+
+    //   $un_contents.css('display', 'none');
+    // } else {
+    //   mel_html2
+    //     .div({
+    //       attribs: { class: 'melv2-mail' },
+    //       contents: "Vous n'avez pas de mails !",
+    //     })
+    //     .create($un_contents.css('display', EMPTY_STRING));
+    // }
 
     return this;
   }

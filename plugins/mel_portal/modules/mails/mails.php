@@ -11,8 +11,13 @@ class Mails extends Module
         $this->set_icon('mail');
     }
 
+    public function use_custom_style()
+    {
+        return true;
+    }
+
     function generate_html() {
-        return html::p([], 'Chargement des mails...');
+        return html::tag('bnum-card-email', ['loading' => 'true', 'data-url' => rcmail::get_instance()->url(['_task' => 'mail'])]);
     }
 
     private function _get_lasts_email($how_many) {

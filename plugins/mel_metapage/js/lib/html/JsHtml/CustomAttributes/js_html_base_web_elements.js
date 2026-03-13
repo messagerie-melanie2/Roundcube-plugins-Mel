@@ -764,7 +764,7 @@ class BnumHtmlShadowIcon extends BnumHtmlIcon {
  * @default 'material-symbols-outlined'
  */
 BnumHtmlIcon.HTML_CLASS = MaterialIcon.html_class;
-BnumHtmlIcon.TAG = 'bnum-icon';
+BnumHtmlIcon.TAG = 'old-bnum-icon';
 class BnumHtmlSrOnly extends HtmlCustomTag {
   constructor() {
     super();

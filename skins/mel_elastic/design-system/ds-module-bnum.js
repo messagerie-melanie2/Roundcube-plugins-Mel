@@ -10400,7 +10400,7 @@ let HTMLBnumCardItemAgenda = (() => {
     return _classThis;
 })();
 
-var css_248z$b = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{align-items:center;display:flex;justify-content:space-between}:host .sender{font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-size-m);font-weight:var(--bnum-card-item-mail-font-weight-bold,var(--bnum-font-weight-bold,bold));margin-bottom:var(--bnum-card-item-mail-margin-bottom,var(--bnum-space-s,10px));max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}:host .subject{font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-size-s);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}:host(:state(read)) .sender{font-weight:var(--bnum-card-item-mail-sender-read-font-weight,initial)}:host(:state(read)) .subject{font-style:var(--bnum-card-item-mail-subject-read-font-style,italic)}";
+var css_248z$b = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{align-items:center;display:flex;justify-content:space-between}:host .main-content{max-width:var(--main-content-max-width,100%)}:host .sender{font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-size-m);font-weight:var(--bnum-card-item-mail-font-weight-bold,var(--bnum-font-weight-bold,bold));margin-bottom:var(--bnum-card-item-mail-margin-bottom,var(--bnum-space-s,10px));max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}:host .subject{font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-size-s);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}:host(:state(read)) .sender{font-weight:var(--bnum-card-item-mail-sender-read-font-weight,initial)}:host(:state(read)) .subject{font-style:var(--bnum-card-item-mail-subject-read-font-style,italic)}";
 
 function _baseInitializer(event, instance, eventName) {
     event.add(EVENT_DEFAULT, ((sender) => {
@@ -10476,7 +10476,7 @@ const WEEK_FORMAT = 'E - HH:mm';
 const SYMBOL_RESET$2 = Symbol('reset');
 //#endregion Global Constants
 //#region Template
-const TEMPLATE$9 = (h(HTMLBnumFragment, { children: [h("div", { class: CLASS_MAIN_CONTENT, children: [h("div", { class: CLASS_SENDER, children: [h("slot", { id: ID_SENDER_SLOT, name: SLOT_SENDER_NAME }), h("span", { class: PART_SENDER_OVERRIDE, part: PART_SENDER_OVERRIDE, hidden: true })] }), h("div", { class: CLASS_SUBJECT, children: [h("slot", { id: ID_SUBJECT_SLOT, name: SLOT_SUBJECT_NAME }), h("span", { class: PART_SUBJECT_OVERRIDE, part: PART_SUBJECT_OVERRIDE, hidden: true })] })] }), h("div", { class: CLASS_DATE, children: [h("slot", { id: ID_DATE_SLOT, name: SLOT_DATE_NAME }), h("span", { class: PART_DATE_OVERRIDE, part: PART_DATE_OVERRIDE, hidden: true, children: h(HTMLBnumDate, { id: ID_DATE_ELEMENT_OVERRIDE }) })] })] }));
+const TEMPLATE$9 = (h(HTMLBnumFragment, { children: [h("div", { class: CLASS_MAIN_CONTENT, part: CLASS_MAIN_CONTENT, children: [h("div", { class: CLASS_SENDER, part: CLASS_SENDER, children: [h("slot", { id: ID_SENDER_SLOT, name: SLOT_SENDER_NAME }), h("span", { class: PART_SENDER_OVERRIDE, part: PART_SENDER_OVERRIDE, hidden: true })] }), h("div", { class: CLASS_SUBJECT, part: CLASS_SUBJECT, children: [h("slot", { id: ID_SUBJECT_SLOT, name: SLOT_SUBJECT_NAME }), h("span", { class: PART_SUBJECT_OVERRIDE, part: PART_SUBJECT_OVERRIDE, hidden: true })] })] }), h("div", { class: CLASS_DATE, children: [h("slot", { id: ID_DATE_SLOT, name: SLOT_DATE_NAME }), h("span", { class: PART_DATE_OVERRIDE, part: PART_DATE_OVERRIDE, hidden: true, children: h(HTMLBnumDate, { id: ID_DATE_ELEMENT_OVERRIDE }) })] })] }));
 //#endregion Template
 /**
  * Composant HTML personnalisé représentant un élément de carte mail.
@@ -11139,6 +11139,9 @@ let HTMLBnumCardTitle = (() => {
     let _private__ui_initializers = [];
     let _private__ui_extraInitializers = [];
     let _private__ui_descriptor;
+    let _onurlclick_decorators;
+    let _onurlclick_initializers = [];
+    let _onurlclick_extraInitializers = [];
     let _url_decorators;
     let _url_initializers = [];
     let _url_extraInitializers = [];
@@ -11155,9 +11158,11 @@ let HTMLBnumCardTitle = (() => {
                     link: `.${CLASS_LINK}`,
                     icon: `.${CLASS_ICON_TITLE}`,
                 })];
+            _onurlclick_decorators = [Listener()];
             _url_decorators = [Attr()];
             _private__updateDOM_decorators = [Schedule()];
             __esDecorate(this, _private__ui_descriptor = { get: __setFunctionName(function () { return this.#_ui_accessor_storage; }, "#_ui", "get"), set: __setFunctionName(function (value) { this.#_ui_accessor_storage = value; }, "#_ui", "set") }, _private__ui_decorators, { kind: "accessor", name: "#_ui", static: false, private: true, access: { has: obj => #_ui in obj, get: obj => obj.#_ui, set: (obj, value) => { obj.#_ui = value; } }, metadata: _metadata }, _private__ui_initializers, _private__ui_extraInitializers);
+            __esDecorate(this, null, _onurlclick_decorators, { kind: "accessor", name: "onurlclick", static: false, private: false, access: { has: obj => "onurlclick" in obj, get: obj => obj.onurlclick, set: (obj, value) => { obj.onurlclick = value; } }, metadata: _metadata }, _onurlclick_initializers, _onurlclick_extraInitializers);
             __esDecorate(this, null, _url_decorators, { kind: "accessor", name: "url", static: false, private: false, access: { has: obj => "url" in obj, get: obj => obj.url, set: (obj, value) => { obj.url = value; } }, metadata: _metadata }, _url_initializers, _url_extraInitializers);
             __esDecorate(this, _private__updateDOM_descriptor = { value: __setFunctionName(function () {
                     const url = this.url;
@@ -11175,6 +11180,15 @@ let HTMLBnumCardTitle = (() => {
                         this._p_addState(STATE_URL);
                         this.#_ui.link.removeAttribute('role');
                         this.#_ui.link.removeAttribute('aria-disabled');
+                        if (!this.#_initUrlListener) {
+                            this.#_ui.link.addEventListener('click', (e) => {
+                                this.trigger('bnum-card-title:url.click', { inner: e }, { bubbles: e.bubbles, cancelable: e.cancelable });
+                            });
+                            this.addEventListener('bnum-card-title:url.click', (e) => {
+                                this.onurlclick.call(e);
+                            });
+                            this.#_initUrlListener = true;
+                        }
                     }
                     else {
                         this.#_ui.link.removeAttribute('href');
@@ -11189,12 +11203,16 @@ let HTMLBnumCardTitle = (() => {
         //#region Private fields
         #_bodyScheduler = (__runInitializers(this, _instanceExtraInitializers), null);
         #_initBody = null;
+        #_initUrlListener = false;
         #_ui_accessor_storage = __runInitializers(this, _private__ui_initializers, void 0);
         //#endregion Private fields
         //#region Getter/Setters
         get #_ui() { return _private__ui_descriptor.get.call(this); }
         set #_ui(value) { return _private__ui_descriptor.set.call(this, value); }
-        #url_accessor_storage = (__runInitializers(this, _private__ui_extraInitializers), __runInitializers(this, _url_initializers, null));
+        #onurlclick_accessor_storage = (__runInitializers(this, _private__ui_extraInitializers), __runInitializers(this, _onurlclick_initializers, void 0));
+        get onurlclick() { return this.#onurlclick_accessor_storage; }
+        set onurlclick(value) { this.#onurlclick_accessor_storage = value; }
+        #url_accessor_storage = (__runInitializers(this, _onurlclick_extraInitializers), __runInitializers(this, _url_initializers, null));
         /**
          * URL du lien du titre de la carte.
          */
@@ -14458,7 +14476,7 @@ let HTMLBnumCardAgenda = (() => {
     return _classThis;
 })();
 
-var css_248z$2 = ":host{display:var(--bnum-card-email-display,block)}[hidden]{display:none}";
+var css_248z$2 = ":host{--main-content-max-width:80%;display:var(--bnum-card-email-display,block)}[hidden]{display:none}";
 
 /**
  * ID du titre de la carte.
@@ -14494,6 +14512,7 @@ function onElementChangedInitializer(event, instance) {
 //#region Global constants
 const TEXT_LAST_MAILS = BnumConfig.Get('local_keys').last_mails;
 const TEXT_NO_MAILS = BnumConfig.Get('local_keys').no_mails;
+const EVENT_URL_TITLE_CLICK = 'bnum-card-email:title:url.click';
 //#endregion Global constants
 //#region Template
 const TEMPLATE$1 = (h(HTMLBnumCardElement, { children: [h(HTMLBnumCardTitle, { id: ID_CARD_TITLE, slot: "title", "data-icon": "mail", children: TEXT_LAST_MAILS }), h(HTMLBnumCardList, { children: [h("slot", {}), h(HTMLBnumCardItem, { id: ID_CARD_ITEM_NO_ELEMENTS, disabled: true, hidden: true, children: TEXT_NO_MAILS })] })] }));
@@ -14505,7 +14524,7 @@ const TEMPLATE$1 = (h(HTMLBnumCardElement, { children: [h(HTMLBnumCardTitle, { i
  *
  * @structure Avec des éléments
  * <bnum-card-email>
- * <bnum-card-item-mail data-date="2025-10-31 11:11" data-subject="Sujet ici" data-sender="Expéditeur ici">
+ * <bnum-card-item-mail data-date="2025-10-31 11:11" data-subject="Sujet ici AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" data-sender="Expéditeur ici AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">
  * </bnum-card-item-mail>
  * <bnum-card-item-mail read data-date="2025-10-31 11:11" data-subject="Sujet ici" data-sender="Expéditeur ici">
  * </bnum-card-item-mail>
@@ -14656,11 +14675,17 @@ let HTMLBnumCardEmail = (() => {
             __runInitializers(this, _private__url_extraInitializers);
         }
         _p_attach() {
-            if (this.#_url !== EMPTY_STRING)
+            if (this.#_url !== EMPTY_STRING) {
                 this.#_ui.cardTitle.url = this.#_url;
+                this.#_ui.cardTitle.onurlclick.add(EVENT_DEFAULT, (e) => {
+                    this.trigger(EVENT_URL_TITLE_CLICK, { inner: e }, { bubbles: e.bubbles, cancelable: e.cancelable });
+                });
+            }
             // On écoute les changements dans le slot (Items statiques ou ajoutés via JS)
             this.#_ui.slot.addEventListener('slotchange', this.#_handleSlotChange.bind(this));
             this.#_handleSlotChange();
+            if (this.loading)
+                this.#_setLoading();
         }
         _p_update(name, _, newVal) {
             switch (name) {
@@ -14668,7 +14693,7 @@ let HTMLBnumCardEmail = (() => {
                     if (newVal === null)
                         this.#_cardPart.removeAttribute(ATTRIBUTE_LOADING);
                     else
-                        this.#_cardPart.setAttribute(ATTRIBUTE_LOADING, newVal ?? EMPTY_STRING);
+                        this.#_setLoading({ attributeValue: newVal });
                     break;
             }
         }
@@ -14693,6 +14718,13 @@ let HTMLBnumCardEmail = (() => {
         }
         //#endregion Public methods
         //#region Private methods
+        /**
+         * Met la card en mode loading
+         * @param param0
+         */
+        #_setLoading({ attributeValue = EMPTY_STRING } = {}) {
+            this.#_cardPart.setAttribute(ATTRIBUTE_LOADING, attributeValue ?? EMPTY_STRING);
+        }
         /**
          * Gère le tri des éléments.
          * Utilise requestAnimationFrame pour ne pas bloquer le thread si beaucoup d'items.
@@ -14733,6 +14765,15 @@ let HTMLBnumCardEmail = (() => {
             if (contents.length > 0)
                 node.add(...contents);
             return node;
+        }
+        /**
+         * Liste des évènements disponibles pour cet éléments
+         */
+        static get Events() {
+            return {
+                TITLE_URL_CLICKED: EVENT_URL_TITLE_CLICK,
+                CHANGE: CHANGE_EVENT
+            };
         }
     });
     return _classThis;

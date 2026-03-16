@@ -315,3 +315,7 @@ bnum-card-item-agenda,
 bnum-card-item-mail {
   height: 115px;
 }
+
+bnum-card {
+  height: 464px;
+}

@@ -41,19 +41,24 @@ class Headlines extends Module
         }
         else 
         {
-            //$this->text("headline")
-            $html = html::div([], 
-            html::tag("h2", [], $this->text("headline")).
-            $this->html_square("", null, null, 
-                html::tag("div", ["style" => "margin:15px"], $this->rc->plugins->get_plugin('mel_news')->gettext("no_news", "mel_news"))
-            )
+        //     //$this->text("headline")
+        //     $html = html::div([], 
+        //     // html::tag("h2", [], $this->text("headline")).
+        //     $this->html_square("", null, null, 
+        //         html::tag("div", ["style" => "margin:15px"], $this->rc->plugins->get_plugin('mel_news')->gettext("no_news", "mel_news"))
+        //     )
             
-        );
-            //$html = $this->text("no_news", "mel_news");
-        }
+        // );
+           $html = html::tag("div", ["style" => "margin:15px"], $this->rc->plugins->get_plugin('mel_news')->gettext("no_news", "mel_news"))
+      ;  }
 
 
-        return $html;
+        return html::tag('bnum-card', ['data-title-text' => $this->text("headline"), 'data-title-icon' => 'feed'], $html);
+    }
+
+        public function use_custom_style()
+    {
+        return true;
     }
 
     function include_js()

@@ -9682,6 +9682,8 @@ const ATTRIBUTE_PENDING = 'agenda_all';
 const MODE_DEFAULT = 'default';
 /** Symbole pour la réinitialisation interne */
 const SYMBOL_RESET$3 = Symbol('reset');
+/** Attribut pour les autres modes */
+const ATTRIBUTE_OTHER_MODES = 'other-modes';
 //#endregion Global Constants
 //#region Template
 const AGENDA = (h(HTMLBnumFragment, { children: [h("span", { class: CLASS_DAY + ' bold' }), h("div", { class: CLASS_HORIZONTAL, children: [h("div", { class: CLASS_BLOCK, children: [h("span", { class: CLASS_HOUR + ' bold' }), h("div", { class: CLASS_VERTICAL, children: [h("span", { class: CLASS_TITLE + ' bold-500', children: [h("slot", { id: SLOT_TITLE$1, name: SLOT_TITLE$1 }), h("div", { class: CLASS_TITLE_OVERRIDE, hidden: true })] }), h("span", { class: CLASS_LOCATION, children: [h("slot", { id: SLOT_LOCATION, name: SLOT_LOCATION }), h("div", { class: CLASS_LOCATION_OVERRIDE, hidden: true })] })] })] }), h("span", { class: CLASS_ACTION, children: [h("slot", { id: SLOT_ACTION, name: SLOT_ACTION }), h("div", { class: CLASS_ACTION_OVERRIDE, hidden: true })] })] }), h(HTMLBnumIcon, { class: CLASS_PRIVATE_ICON, hidden: true, children: ICON_PRIVATE })] }));
@@ -10010,6 +10012,12 @@ let HTMLBnumCardItemAgenda = (() => {
         get #_getMode() {
             return this.getAttribute(ATTRIBUTE_MODE$1) || MODE_DEFAULT;
         }
+        /**
+         * Récupère les autres modes du composant.
+         */
+        get otherModes() {
+            return this.getAttribute(ATTRIBUTE_OTHER_MODES)?.split(',') || [];
+        }
         //#endregion
         constructor() {
             super();
@@ -10086,6 +10094,11 @@ let HTMLBnumCardItemAgenda = (() => {
         #_renderDOM() {
             let createDate = true;
             this._p_addState(`${STATE_MODE_PREFIX}${this.#_getMode}`);
+            if (this.otherModes.length > 0) {
+                this.otherModes.forEach(mode => {
+                    this._p_addState(`other-${STATE_MODE_PREFIX}${mode}`);
+                });
+            }
             // Gestion des slots
             if (this.#_isSlotLocationEmpty())
                 this._p_addState(STATE_NO_LOCATION);
@@ -10242,6 +10255,24 @@ let HTMLBnumCardItemAgenda = (() => {
             });
             return element;
         }
+        /**
+         * Ajoute un ou plusieurs modes au composant.
+         * @param modes Modes à ajouter.
+         */
+        addOtherModes(...modes) {
+            const currentModes = this.otherModes;
+            const newModes = [...new Set([...currentModes, ...modes])];
+            this.setAttribute(ATTRIBUTE_OTHER_MODES, newModes.join(','));
+        }
+        /**
+         * Retire un mode du composant.
+         * @param mode Mode à retirer.
+         */
+        removeMode(mode) {
+            const currentModes = this.otherModes;
+            const newModes = currentModes.filter(m => m !== mode);
+            this.setAttribute(ATTRIBUTE_OTHER_MODES, newModes.join(','));
+        }
         //#endregion
         //#region Private Methods
         #_requestShedulerAction(element, { forceCall = false } = {}) {
@@ -10369,6 +10400,7 @@ let HTMLBnumCardItemAgenda = (() => {
                 ATTRIBUTE_ALL_DAY,
                 ATTRIBUTE_PRIVATE,
                 ATTRIBUTE_MODE$1,
+                ATTRIBUTE_OTHER_MODES,
             ];
         }
         /**
@@ -10929,7 +10961,7 @@ let HTMLBnumCardItemMail = (() => {
     return _classThis;
 })();
 
-var css_248z$a = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{padding:var(--bnum-space-s,10px)}:host ::slotted([role=listitem]){border-bottom:var(--bnum-border-in-surface,solid 1px #ddd)}:host ::slotted([role=listitem]:last-child){border-bottom:none}:host ::slotted([hidden]),:host [hidden]{display:none}";
+var css_248z$a = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{padding:var(--bnum-space-s,10px)}:host ::slotted([role=listitem]){border-bottom:var(--bnum-border-in-surface,solid 1px #ddd)}:host ::slotted(.last),:host ::slotted([role=listitem]:last-child){border-bottom:none}:host ::slotted([hidden]),:host [hidden]{display:none}";
 
 //#region Global Constants
 const SYMBOL_RESET$1 = Symbol('reset');
@@ -14216,6 +14248,7 @@ function onElementChangedInitializer$1(event, instance) {
 //#region Global constants
 const TEXT_LAST_EVENTS = BnumConfig.Get('local_keys').last_events;
 const TEXT_NO_EVENTS = BnumConfig.Get('local_keys').no_events;
+const EVENT_URL_TITLE_CLICK$1 = 'bnum-card-agenda:title:url.click';
 //#endregion Global constants
 //#region Template
 const TEMPLATE$2 = (h(HTMLBnumCardElement, { children: [h(HTMLBnumCardTitle, { id: ID_CARD_TITLE$1, slot: "title", "data-icon": "today", children: TEXT_LAST_EVENTS }), h(HTMLBnumCardList, { children: [h("slot", {}), h(HTMLBnumCardItem, { id: ID_CARD_ITEM_NO_ELEMENTS$1, disabled: true, hidden: true, children: TEXT_NO_EVENTS })] })] }));
@@ -14286,6 +14319,10 @@ let HTMLBnumCardAgenda = (() => {
     let _private__url_initializers = [];
     let _private__url_extraInitializers = [];
     let _private__url_descriptor;
+    let _private__max_decorators;
+    let _private__max_initializers = [];
+    let _private__max_extraInitializers = [];
+    let _private__max_descriptor;
     let _private__sortChildren_decorators;
     let _private__sortChildren_descriptor;
     (class extends _classSuper {
@@ -14300,16 +14337,15 @@ let HTMLBnumCardAgenda = (() => {
             _onElementChanged_decorators = [Listener(onElementChangedInitializer$1)];
             _loading_decorators = [Attr()];
             _private__url_decorators = [Data()];
+            _private__max_decorators = [Data()];
             _private__sortChildren_decorators = [RenderFrame()];
             __esDecorate(this, _private__ui_descriptor = { get: __setFunctionName(function () { return this.#_ui_accessor_storage; }, "#_ui", "get"), set: __setFunctionName(function (value) { this.#_ui_accessor_storage = value; }, "#_ui", "set") }, _private__ui_decorators, { kind: "accessor", name: "#_ui", static: false, private: true, access: { has: obj => #_ui in obj, get: obj => obj.#_ui, set: (obj, value) => { obj.#_ui = value; } }, metadata: _metadata }, _private__ui_initializers, _private__ui_extraInitializers);
             __esDecorate(this, null, _onElementChanged_decorators, { kind: "accessor", name: "onElementChanged", static: false, private: false, access: { has: obj => "onElementChanged" in obj, get: obj => obj.onElementChanged, set: (obj, value) => { obj.onElementChanged = value; } }, metadata: _metadata }, _onElementChanged_initializers, _onElementChanged_extraInitializers);
             __esDecorate(this, null, _loading_decorators, { kind: "accessor", name: "loading", static: false, private: false, access: { has: obj => "loading" in obj, get: obj => obj.loading, set: (obj, value) => { obj.loading = value; } }, metadata: _metadata }, _loading_initializers, _loading_extraInitializers);
             __esDecorate(this, _private__url_descriptor = { get: __setFunctionName(function () { return this.#_url_accessor_storage; }, "#_url", "get"), set: __setFunctionName(function (value) { this.#_url_accessor_storage = value; }, "#_url", "set") }, _private__url_decorators, { kind: "accessor", name: "#_url", static: false, private: true, access: { has: obj => #_url in obj, get: obj => obj.#_url, set: (obj, value) => { obj.#_url = value; } }, metadata: _metadata }, _private__url_initializers, _private__url_extraInitializers);
+            __esDecorate(this, _private__max_descriptor = { get: __setFunctionName(function () { return this.#_max_accessor_storage; }, "#_max", "get"), set: __setFunctionName(function (value) { this.#_max_accessor_storage = value; }, "#_max", "set") }, _private__max_decorators, { kind: "accessor", name: "#_max", static: false, private: true, access: { has: obj => #_max in obj, get: obj => obj.#_max, set: (obj, value) => { obj.#_max = value; } }, metadata: _metadata }, _private__max_initializers, _private__max_extraInitializers);
             __esDecorate(this, _private__sortChildren_descriptor = { value: __setFunctionName(function () {
-                    // Récupérer les éléments assignés au slot
-                    const elements = this.#_ui.slot.assignedElements();
-                    // Filtrer pour être sûr de ne trier que des événements (sécurité)
-                    const agendaItems = elements.filter(el => el.tagName.toLowerCase().includes(HTMLBnumCardItemAgenda.TAG));
+                    const agendaItems = this.#_getItems();
                     if (agendaItems.length === 0) {
                         this.#_ui.noElements.hidden = false;
                         this.#_ui.slot.hidden = true;
@@ -14345,6 +14381,7 @@ let HTMLBnumCardAgenda = (() => {
                     const sortedItems = ArrayUtils.sortByDatesDescending(agendaItems, x => this.#_getDate(x), x => this.#_getStartDate(x));
                     fragment.append(...sortedItems);
                     this.appendChild(fragment); // Déplace les éléments existants, ne les recrée pas.
+                    this.#_hideMax(sortedItems);
                     // Notifier le changement
                     this.onElementChanged.call(agendaItems);
                     // Déverrouiller après que le microtask de mutation soit passé
@@ -14377,6 +14414,9 @@ let HTMLBnumCardAgenda = (() => {
         #_url_accessor_storage = (__runInitializers(this, _loading_extraInitializers), __runInitializers(this, _private__url_initializers, EMPTY_STRING));
         get #_url() { return _private__url_descriptor.get.call(this); }
         set #_url(value) { return _private__url_descriptor.set.call(this, value); }
+        #_max_accessor_storage = (__runInitializers(this, _private__url_extraInitializers), __runInitializers(this, _private__max_initializers, void 0));
+        get #_max() { return _private__max_descriptor.get.call(this); }
+        set #_max(value) { return _private__max_descriptor.set.call(this, value); }
         get #_cardPart() {
             if (this.#_card === null) {
                 this.#_card =
@@ -14386,18 +14426,43 @@ let HTMLBnumCardAgenda = (() => {
             }
             return this.#_card;
         }
+        /**
+         * Nombre maximum d'éléments à afficher.
+         */
+        get max() {
+            return this.#_max ?? null;
+        }
+        /**
+         * Nombre maximum d'éléments à afficher.
+         */
+        set max(value) {
+            this.#_max = value;
+            const items = this.#_getItems();
+            if (this.alreadyLoaded) {
+                if (value === null)
+                    this.#_showAllItems(items);
+                else
+                    this.#_hideMax(items);
+            }
+        }
         //#endregion Getters/Setters
         //#region Lifecycle
         constructor() {
             super();
-            __runInitializers(this, _private__url_extraInitializers);
+            __runInitializers(this, _private__max_extraInitializers);
         }
         _p_attach() {
-            if (this.#_url !== EMPTY_STRING)
+            if (this.#_url !== EMPTY_STRING) {
                 this.#_ui.cardTitle.url = this.#_url;
+                this.#_ui.cardTitle.onurlclick.add(EVENT_DEFAULT, e => {
+                    this.trigger(EVENT_URL_TITLE_CLICK$1, { inner: e }, { bubbles: e.bubbles, cancelable: e.cancelable });
+                });
+            }
             // On écoute les changements dans le slot (Items statiques ou ajoutés via JS)
             this.#_ui.slot.addEventListener('slotchange', this.#_handleSlotChange.bind(this));
             this.#_handleSlotChange();
+            if (this.loading)
+                this.#_setLoading();
         }
         _p_update(name, _, newVal) {
             switch (name) {
@@ -14405,12 +14470,20 @@ let HTMLBnumCardAgenda = (() => {
                     if (newVal === null)
                         this.#_cardPart.removeAttribute(ATTRIBUTE_LOADING$1);
                     else
-                        this.#_cardPart.setAttribute(ATTRIBUTE_LOADING$1, newVal ?? EMPTY_STRING);
+                        this.#_setLoading({ attributeValue: newVal });
                     break;
             }
         }
         //#endregion Lifecycle
         //#region Public methods
+        /**
+         * Retire la limite du nombre d'éléments.
+         */
+        removeMax() {
+            if (this.max !== null)
+                this.max = null;
+            return this;
+        }
         /**
          * Ajoute des éléments.
          *
@@ -14431,6 +14504,13 @@ let HTMLBnumCardAgenda = (() => {
         //#endregion Public methods
         //#region Private methods
         /**
+         * Met la card en mode loading
+         * @param param0
+         */
+        #_setLoading({ attributeValue = EMPTY_STRING, } = {}) {
+            this.#_cardPart.setAttribute(ATTRIBUTE_LOADING$1, attributeValue ?? EMPTY_STRING);
+        }
+        /**
          * Gère le tri des éléments.
          * Utilise requestAnimationFrame pour ne pas bloquer le thread si beaucoup d'items.
          */
@@ -14443,6 +14523,33 @@ let HTMLBnumCardAgenda = (() => {
          * Tri les éléments enfants de la liste par date décroissante.
          */
         get #_sortChildren() { return _private__sortChildren_descriptor.value; }
+        #_hideMax(agendaItems) {
+            if (this.max === null)
+                return;
+            for (let index = 0, len = agendaItems.length; index < len; ++index) {
+                const element = agendaItems[index];
+                if (element.hasClass('last'))
+                    element.removeClass('last');
+                if (index >= this.max)
+                    element.hidden = true;
+                else {
+                    element.hidden = false;
+                    if (index === this.max - 1)
+                        element.addClass('last');
+                }
+            }
+        }
+        #_showAllItems(agendaItems) {
+            for (const item of agendaItems) {
+                item.hidden = false;
+            }
+        }
+        #_getItems() {
+            // Récupérer les éléments assignés au slot
+            const elements = this.#_ui.slot.assignedElements();
+            // Filtrer pour être sûr de ne trier que des événements (sécurité)
+            return elements.filter(el => el.tagName.toLowerCase().includes(HTMLBnumCardItemAgenda.TAG));
+        }
         /**
          * Helper pour parser la date de manière robuste
          */
@@ -14471,6 +14578,15 @@ let HTMLBnumCardAgenda = (() => {
             if (contents.length > 0)
                 node.add(...contents);
             return node;
+        }
+        /**
+         * Liste des évènements disponibles pour cet éléments
+         */
+        static get Events() {
+            return {
+                TITLE_URL_CLICKED: EVENT_URL_TITLE_CLICK$1,
+                CHANGE: CHANGE_EVENT$1,
+            };
         }
     });
     return _classThis;

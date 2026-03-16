@@ -304,3 +304,14 @@ html.layout-phone .--row {
 /* html.dark-mode-custom .bottom-right div {
   background-image: url('https://jedonnemonavis.numerique.gouv.fr/static/bouton-blanc.svg');
 } */
+
+bnum-card-email,
+bnum-card-agenda {
+  height: 430px;
+  --bnum-card-height: 430px;
+}
+
+bnum-card-item-agenda,
+bnum-card-item-mail {
+  height: 115px;
+}

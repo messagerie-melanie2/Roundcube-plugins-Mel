@@ -45,11 +45,17 @@ class My_day extends Module
         return class_exists('calendar');
     }
 
+    public function use_custom_style()
+    {
+        return true;
+    }
+
     /**
      * Génère le html de ce module.
      */
     function generate_html()
     {
+        return html::tag('bnum-card-agenda', ['loading' => 'true', 'data-max' => 3, 'data-url' => rcmail::get_instance()->url(['_task' => 'calendar'])]);
     //     $notes_is_enabled = $this->notes_is_enabled();
     //     $array = [];
         
@@ -84,7 +90,7 @@ class My_day extends Module
     //         $array[] = $notes;
     //     }
 
-        return '';//$this->html_square_tab($array, $this->text($notes_is_enabled ? "my_day_and_notes" : "my_day"), "myday");
+        // return '';//$this->html_square_tab($array, $this->text($notes_is_enabled ? "my_day_and_notes" : "my_day"), "myday");
     }
 
     /**

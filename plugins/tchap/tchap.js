@@ -19,13 +19,11 @@ import { MelObject } from '../mel_metapage/js/lib/mel_object.js';
 export { tchap_manager };
 
 const SETTING_BUTTON = 'mx_UserMenu_userAvatar_BaseAvatar';
-const PARAMS_BUTTON = 'mx_UserMenu_iconSettings';
 const DISCONNECT_BUTTON = 'mx_UserProfileSettings_profile_buttons .mx_AccessibleButton_kind_danger_outline';
 const LEFT_PANEL = 'mx_SpacePanel';
-const CONTEXTUAL_MENU = 'mx_ContextualMenu';
-const THEME_BUTTON = 'mx_UserMenu_contextMenu_themeButton';
+const APPEARANCE_BUTTON = 'mx_tabpanel_USER_APPEARANCE_TAB_label'
+const CLOSE_PARAMS_BUTTON = 'mx_Dialog_cancelButton';
 const CURRENT_THEME_BODY_CLASS = 'cpd-theme-light';
-const CONTEXTUAL_MENU_BACKGROUND = 'mx_ContextualMenu_background';
 const SLEEP_ON_TASK = 2500;
 const SLEEP_OUTSIDE = 30000;
 
@@ -74,20 +72,6 @@ class tchap_manager extends MelObject {
   }
 
   /**
-   * Ouvre le menu des paramètres et retourne le bouton des paramètres.
-   * @type {Promise<HTMLElement>}
-   * @readonly
-   */
-  get settingButton() {
-    this.settingMenuButton.click();
-    return this.#_getHtmlElementMenu(`.${CONTEXTUAL_MENU}  .${PARAMS_BUTTON}`, {
-      updateCallback: (e) => {
-        return e;
-      },
-    });
-  }
-
-  /**
    * Ouvre le menu des paramètres et retourne le bouton de déconnexion.
    * @type {Promise<HTMLElement>}
    * @readonly
@@ -96,6 +80,23 @@ class tchap_manager extends MelObject {
     this.settingMenuButton.click();
     return this.#_getHtmlElementMenu(
       `.${DISCONNECT_BUTTON}`,
+      {
+        updateCallback: (e) => {
+          return e;
+        },
+      },
+    );
+  }
+
+  /**
+   * Ouvre le menu des paramètres et retourne le bouton de l'onglet apparence
+   * @type {Promise<HTMLElement>}
+   * @readonly
+   */
+  get appearanceButton() {
+    this.settingMenuButton.click();
+    return this.#_getHtmlElementMenu(
+      `#${APPEARANCE_BUTTON}`, 
       {
         updateCallback: (e) => {
           return e;
@@ -114,22 +115,19 @@ class tchap_manager extends MelObject {
   }
 
   /**
-   * Div en arrière-plan lorsque le menu des paramètres est ouvert.
-   * @type {HTMLElement}
-   * @readonly
-   */
-  get contextualMenuBackground() {
-    return this.tchapContext.querySelector(`.${CONTEXTUAL_MENU_BACKGROUND}`);
-  }
-
-  /**
-   * Ouvre le menu des paramètres et retourne le bouton de changement de thème.
+   * Retourne le bouton de fermeture des paramètres
    * @type {Promise<HTMLElement>}
    * @readonly
    */
-  get themeButton() {
-    this.settingMenuButton.click();
-    return this.#_getHtmlElementMenu(`.${CONTEXTUAL_MENU}  .${THEME_BUTTON}`);
+  get closeParamsButton() {
+    return this.#_getHtmlElementMenu(
+      `.${CLOSE_PARAMS_BUTTON}`, 
+      {
+        updateCallback: (e) => {
+          return e;
+        },
+      },
+    ); 
   }
 
   /**
@@ -389,11 +387,11 @@ class tchap_manager extends MelObject {
 
     // Si le thème est différent, on le change
     if (color !== tchap_color) {
-      let button = await this.themeButton;
-      button?.click?.();
-
-      // Ferme le menu contextuel si nécessaire
-      if (this.contextualMenuBackground) this.contextualMenuBackground.click();
+      (await this.appearanceButton)?.click?.(); 
+      (await this.#_getHtmlElementMenu(`#mx_tabpanel_USER_APPEARANCE_TAB input[value=${color}]`))?.click?.();
+      
+      // Ferme le menu contextuel
+      (await this.closeParamsButton)?.click?.();
     }
   }
 
@@ -403,7 +401,8 @@ class tchap_manager extends MelObject {
    * @method
    */
   async tchap_options() {
-    (await this.settingButton)?.click?.();
+
+    (await this.settingMenuButton)?.click?.();
     top.m_mp_ToggleGroupOptionsUser();
   }
 

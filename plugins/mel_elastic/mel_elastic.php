@@ -119,6 +119,10 @@ class mel_elastic extends bnum_plugin
             if ($this->rc->task == 'mail' && $this->is_index_action() ) {
                 $this->add_handler('mailboxlist', [$this, 'my_folder_list_handler']);
             }
+
+            if ($this->rc->task === 'bnum') {
+                $this->include_stylesheet('/design-system/css/parts/main-page.css');
+            }
         }
 
 

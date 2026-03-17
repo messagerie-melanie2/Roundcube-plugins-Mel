@@ -406,6 +406,15 @@ class mel_workspace extends bnum_plugin
                 "service_params" => rcube_utils::get_input_value("_services_params", rcube_utils::INPUT_POST),
             ];
 
+            // nettoyage du titre de l'edt
+            $data['title'] = trim((string)($data['title'] ?? ''));
+
+            // validation du titre de l'edt
+            $validation = $this->_validate_workspace_title($data['title']);
+            if ($validation !== true) {
+                $this->sendEncodeExit(['error' => $validation]);
+            }
+
             if ($data["color"] === "" || $data["color"] === null) $data["color"] = "#FFFFFF";
             if ($data["uid"] === null || $data["uid"] === "") $data['uid'] = Workspace::GenerateUID($data["title"]);
 
@@ -702,6 +711,13 @@ class mel_workspace extends bnum_plugin
 
             switch ($type) {
                 case 'title':
+                    $val = trim((string)$val);
+                    $validation = $this->_validate_workspace_title($val);
+
+                    if ($validation !== true) {
+                        $this->sendEncodedExit(['error' => $validation], []);
+                    }
+
                     $wsp->title($val);
                     break;
                 case 'desc':
@@ -1591,6 +1607,33 @@ class mel_workspace extends bnum_plugin
             $sent = \LibMelanie\Mail\Mail::Send($email, driver_mel::gi()->getUser($userid)->email, $subject, $message);
         }
     }
+
+    /**
+     * Valide le titre d'un espace de travail
+     *
+     * Règles :
+     *  - minimum 5 caractères
+     *  - pas d'espace en premier caractère
+     *  - pas de caractère spécial en premier caractère
+     *
+     * @param string $title
+     * @return true|string  true si valide, sinon message d'erreur
+     */
+    private function _validate_workspace_title($title)
+    {
+        $title = trim((string)$title);
+
+        if (mb_strlen($title) < 5) {
+            return $this->gettext("workspace_title_min_length","mel_workspace");
+        }
+
+        if (!preg_match('/^[A-Za-z0-9]/', $title)) {
+            return $this->gettext("workspace_title_invalid_first_char","mel_workspace");
+        }
+
+        return true;
+    }
+
     #region private/register_actions
     private function _setup_index_action()
     {

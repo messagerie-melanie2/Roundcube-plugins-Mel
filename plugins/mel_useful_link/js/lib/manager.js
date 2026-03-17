@@ -9,6 +9,7 @@ import { MelLinkVisualizer, MelFolderLink, MelStoreLink } from './mel_link.js';
 import { MelIconPrevisualiser } from '../../../mel_metapage/skins/mel_elastic/js_templates/blocks/icon_previsualiser.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import HTMLBnumButton from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/button/HTMLBnumButton.js';
+import { LinkModal } from '../../skins/elastic/js_templates/linkmodal.js';
 
 export class LinkManager extends MelObject {
   constructor({
@@ -122,8 +123,7 @@ export class LinkManager extends MelObject {
         .end()
         .end('button')
         .end('row')
-        .end('div')
-        .generate();
+        .end('div');
 
       this.newLinkModal = new RcmailDialog(html, {
         title: id

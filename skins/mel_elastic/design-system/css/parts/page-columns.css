@@ -7,6 +7,11 @@
 /*  - Padding interne des cartes            */
 /*  - Espace entre les cartes (organismes)  */
 /* - Espace entre sections                 */
+/* Padding par défaut des dossiers */
+/* Padding plus large pour les dossiers */
+/* Padding plus petit pour les dossiers */
+/* Padding par défaut des dossiers racines */
+/* Padding plus large pour les dossiers racines */
 /* Composites */
 @keyframes rotate360 {
   from {

@@ -1,3 +1,4 @@
+import { HTMLBnumCardElement } from '../../../../../skins/mel_elastic/design-system/ds-module-bnum.js';
 import { BnumMessage } from '../../../../mel_metapage/js/lib/classes/bnum_message.js';
 import { FramesManager } from '../../../../mel_metapage/js/lib/classes/frame_manager.js';
 import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
@@ -166,6 +167,21 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
     let div = document.createElement('div');
     div.classList.add('workspace-block-item-main', 'mel-focus', 'important');
 
+    div.style.borderRadius = '5px';
+
+    div.appendChild(this._generate_picture());
+    div.appendChild(this._generate_bottom());
+
+    const title = document.createElement('span');
+    title.style.display = 'none';
+    /**
+     * @type {import('../../../../../skins/mel_elastic/design-system/ds-module-bnum.js').HTMLBnumCardElement}
+     */
+    const bnumCard = HTMLBnumCardElement.Create({ title, body: div });
+    bnumCard.style.width = '100%';
+    bnumCard.style.height = '100%';
+    bnumCard.style.display = 'block';
+
     if (this.isJoin) {
       this.addClass('hoverable')
         .toButton(this)
@@ -183,7 +199,7 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
         }
       };
 
-      this.addEventListener('click', (e) => {
+      const onclick = (e) => {
         let parent = e.target;
 
         while (
@@ -201,15 +217,13 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
             },
           });
         }
-      });
+      };
+
+      bnumCard.clickable = true;
+      bnumCard.addEventListener('bnum-card:click', onclick.bind(this));
     }
 
-    div.style.borderRadius = '5px';
-
-    div.appendChild(this._generate_picture());
-    div.appendChild(this._generate_bottom());
-
-    this.appendChild(div);
+    this.appendChild(bnumCard);
 
     div = null;
 
@@ -227,6 +241,7 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
       favorite.data('notFavoriteIcon', 'star');
       favorite.setAttribute('data-start-pressed', this._is_favorite);
       favorite.classList.add('workspace-block-item-favorite');
+      favorite.style.backgroundColor = 'transparent';
 
       if (this.isJoin) {
         favorite.onmouseenter = () => {

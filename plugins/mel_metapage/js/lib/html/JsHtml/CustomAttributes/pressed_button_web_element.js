@@ -207,7 +207,7 @@ export class FavoriteButton extends PressedButton {
   _p_main() {
     super._p_main();
 
-    let icon = document.createElement('bnum-icon');
+    let icon = document.createElement('old-bnum-icon');
     icon.setAttribute(
       'data-icon',
       this.isPressed() ? this._active_icon : this._inactive_icon,

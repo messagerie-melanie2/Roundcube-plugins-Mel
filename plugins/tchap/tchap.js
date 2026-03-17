@@ -18,9 +18,9 @@ import {
 import { MelObject } from '../mel_metapage/js/lib/mel_object.js';
 export { tchap_manager };
 
-const SETTING_BUTTON = 'mx_UserMenu_contextMenuButton';
+const SETTING_BUTTON = 'mx_UserMenu_userAvatar_BaseAvatar';
 const PARAMS_BUTTON = 'mx_UserMenu_iconSettings';
-const DISCONNECT_BUTTON = 'mx_UserMenu_iconSignOut';
+const DISCONNECT_BUTTON = 'mx_UserProfileSettings_profile_buttons .mx_AccessibleButton_kind_danger_outline';
 const LEFT_PANEL = 'mx_SpacePanel';
 const CONTEXTUAL_MENU = 'mx_ContextualMenu';
 const THEME_BUTTON = 'mx_UserMenu_contextMenu_themeButton';
@@ -82,7 +82,7 @@ class tchap_manager extends MelObject {
     this.settingMenuButton.click();
     return this.#_getHtmlElementMenu(`.${CONTEXTUAL_MENU}  .${PARAMS_BUTTON}`, {
       updateCallback: (e) => {
-        return e?.parentElement;
+        return e;
       },
     });
   }
@@ -95,10 +95,10 @@ class tchap_manager extends MelObject {
   get disconnectButton() {
     this.settingMenuButton.click();
     return this.#_getHtmlElementMenu(
-      `.${CONTEXTUAL_MENU}  .${DISCONNECT_BUTTON}`,
+      `.${DISCONNECT_BUTTON}`,
       {
         updateCallback: (e) => {
-          return e?.parentElement;
+          return e;
         },
       },
     );

@@ -27,9 +27,7 @@ class Headlines extends Module
         if (isset($news[0]) && isset($news[0]->id))
         {
             $this->set_name('Information '.$news[0]->service);
-            $html .= /*html::div(['class' => 'mel-header-to-hidden'],
-                html::tag('h2', ['class' => 'display-inline-block'], $this->text("headline")).html_helper::mel_button(['style' => 'float:right', 'onclick' => 'mel_metapage.Functions.change_frame(\'news\')'], 'Voir tout', 'icon-mel-arrow-right')
-            ).*/html::div(
+            $html .= html::div(
                 array("class" => "--row --row-dwp--under"),
                 html::div(
                     array("class" => "--col-dwp--under --under-col-first --col "),
@@ -41,14 +39,6 @@ class Headlines extends Module
         }
         else 
         {
-        //     //$this->text("headline")
-        //     $html = html::div([], 
-        //     // html::tag("h2", [], $this->text("headline")).
-        //     $this->html_square("", null, null, 
-        //         html::tag("div", ["style" => "margin:15px"], $this->rc->plugins->get_plugin('mel_news')->gettext("no_news", "mel_news"))
-        //     )
-            
-        // );
            $html = html::tag("div", ["style" => "margin:15px"], $this->rc->plugins->get_plugin('mel_news')->gettext("no_news", "mel_news"))
       ;  }
 

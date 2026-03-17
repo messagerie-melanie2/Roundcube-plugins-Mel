@@ -130,14 +130,15 @@ class ModuleMyDay extends BaseModule {
             mainLocation = location.audio.side_action.bind(location.audio);
             locationDesc = location.audio.desc;
           } else {
-            locationDesc = location.locations[0];
+            locationDesc = location.locations[0].location;
           }
 
           if (location.locations.length > 1) {
             locationDesc += ' ...';
           }
 
-          node.updateLocation(locationDesc);
+          const haveLocations = locationDesc && locationDesc !== EMPTY_STRING;
+          if (haveLocations) node.updateLocation(locationDesc);
 
           const modes = this._addSecondaryModes(x);
 

@@ -80,7 +80,7 @@ class Workspaces extends Module
     $title = html::div(
       ['style' => 'display: flex;justify-content: space-between;border-bottom: solid thin #e0e0e0;padding-bottom: 5px;margin-bottom: 15px;margin-left: 14px;'],
       html::tag("h2", ["style" => "float:left;margin-top:15px;margin-bottom: -5px;"], html::a(['class' => 'melv2-card-title'], $this->text("workspaces"))) .
-        html::tag("button", ["id" => "wsp-see-all", "title" => "Afficher la liste des espaces de travail", "class" => "mel-button", "style" => "float:right;"], html::tag("span", [], "Voir tout") . html::tag("span", ["class" => "icon-mel-arrow-right plus"]))
+        html::tag("bnum-secondary-button", ["id" => "wsp-see-all", "title" => "Afficher la liste des espaces de travail", 'data-icon' => "arrow_forward", "class" => "", "style" => "float:right;"], "Voir tout")
     );
 
     return $title . html::div(["class" => '--row workspace-list'], $html);

@@ -58,6 +58,9 @@
   --bnum-color-list: #e3e3fd;
   --bnum-color-list-hover: #c1c1fb;
   --bnum-color-list-drag: #adadf9;
+  --bnum-main-nav-color: #242424;
+  --bnum-main-nav-color-hover: #474747;
+  --bnum-main-nav-color-active: #5b5b5b;
   /* Texte */
   --bnum-text-primary: #3a3a3a;
   /* Texte principal */

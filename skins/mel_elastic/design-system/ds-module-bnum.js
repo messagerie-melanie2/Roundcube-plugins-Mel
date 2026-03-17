@@ -9682,6 +9682,8 @@ const ATTRIBUTE_PENDING = 'agenda_all';
 const MODE_DEFAULT = 'default';
 /** Symbole pour la réinitialisation interne */
 const SYMBOL_RESET$3 = Symbol('reset');
+/** Attribut pour les autres modes */
+const ATTRIBUTE_OTHER_MODES = 'other-modes';
 //#endregion Global Constants
 //#region Template
 const AGENDA = (h(HTMLBnumFragment, { children: [h("span", { class: CLASS_DAY + ' bold' }), h("div", { class: CLASS_HORIZONTAL, children: [h("div", { class: CLASS_BLOCK, children: [h("span", { class: CLASS_HOUR + ' bold' }), h("div", { class: CLASS_VERTICAL, children: [h("span", { class: CLASS_TITLE + ' bold-500', children: [h("slot", { id: SLOT_TITLE$1, name: SLOT_TITLE$1 }), h("div", { class: CLASS_TITLE_OVERRIDE, hidden: true })] }), h("span", { class: CLASS_LOCATION, children: [h("slot", { id: SLOT_LOCATION, name: SLOT_LOCATION }), h("div", { class: CLASS_LOCATION_OVERRIDE, hidden: true })] })] })] }), h("span", { class: CLASS_ACTION, children: [h("slot", { id: SLOT_ACTION, name: SLOT_ACTION }), h("div", { class: CLASS_ACTION_OVERRIDE, hidden: true })] })] }), h(HTMLBnumIcon, { class: CLASS_PRIVATE_ICON, hidden: true, children: ICON_PRIVATE })] }));
@@ -10010,6 +10012,12 @@ let HTMLBnumCardItemAgenda = (() => {
         get #_getMode() {
             return this.getAttribute(ATTRIBUTE_MODE$1) || MODE_DEFAULT;
         }
+        /**
+         * Récupère les autres modes du composant.
+         */
+        get otherModes() {
+            return this.getAttribute(ATTRIBUTE_OTHER_MODES)?.split(',') || [];
+        }
         //#endregion
         constructor() {
             super();
@@ -10086,6 +10094,11 @@ let HTMLBnumCardItemAgenda = (() => {
         #_renderDOM() {
             let createDate = true;
             this._p_addState(`${STATE_MODE_PREFIX}${this.#_getMode}`);
+            if (this.otherModes.length > 0) {
+                this.otherModes.forEach(mode => {
+                    this._p_addState(`other-${STATE_MODE_PREFIX}${mode}`);
+                });
+            }
             // Gestion des slots
             if (this.#_isSlotLocationEmpty())
                 this._p_addState(STATE_NO_LOCATION);
@@ -10242,6 +10255,24 @@ let HTMLBnumCardItemAgenda = (() => {
             });
             return element;
         }
+        /**
+         * Ajoute un ou plusieurs modes au composant.
+         * @param modes Modes à ajouter.
+         */
+        addOtherModes(...modes) {
+            const currentModes = this.otherModes;
+            const newModes = [...new Set([...currentModes, ...modes])];
+            this.setAttribute(ATTRIBUTE_OTHER_MODES, newModes.join(','));
+        }
+        /**
+         * Retire un mode du composant.
+         * @param mode Mode à retirer.
+         */
+        removeMode(mode) {
+            const currentModes = this.otherModes;
+            const newModes = currentModes.filter(m => m !== mode);
+            this.setAttribute(ATTRIBUTE_OTHER_MODES, newModes.join(','));
+        }
         //#endregion
         //#region Private Methods
         #_requestShedulerAction(element, { forceCall = false } = {}) {
@@ -10369,6 +10400,7 @@ let HTMLBnumCardItemAgenda = (() => {
                 ATTRIBUTE_ALL_DAY,
                 ATTRIBUTE_PRIVATE,
                 ATTRIBUTE_MODE$1,
+                ATTRIBUTE_OTHER_MODES,
             ];
         }
         /**
@@ -10400,7 +10432,7 @@ let HTMLBnumCardItemAgenda = (() => {
     return _classThis;
 })();
 
-var css_248z$b = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{align-items:center;display:flex;justify-content:space-between}:host .sender{font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-size-m);font-weight:var(--bnum-card-item-mail-font-weight-bold,var(--bnum-font-weight-bold,bold));margin-bottom:var(--bnum-card-item-mail-margin-bottom,var(--bnum-space-s,10px));max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}:host .subject{font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-size-s);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}:host(:state(read)) .sender{font-weight:var(--bnum-card-item-mail-sender-read-font-weight,initial)}:host(:state(read)) .subject{font-style:var(--bnum-card-item-mail-subject-read-font-style,italic)}";
+var css_248z$b = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{align-items:center;display:flex;justify-content:space-between}:host .main-content{max-width:var(--main-content-max-width,100%)}:host .sender{font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-size-m);font-weight:var(--bnum-card-item-mail-font-weight-bold,var(--bnum-font-weight-bold,bold));margin-bottom:var(--bnum-card-item-mail-margin-bottom,var(--bnum-space-s,10px));max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}:host .subject{font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-size-s);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}:host(:state(read)) .sender{font-weight:var(--bnum-card-item-mail-sender-read-font-weight,initial)}:host(:state(read)) .subject{font-style:var(--bnum-card-item-mail-subject-read-font-style,italic)}";
 
 function _baseInitializer(event, instance, eventName) {
     event.add(EVENT_DEFAULT, ((sender) => {
@@ -10476,7 +10508,7 @@ const WEEK_FORMAT = 'E - HH:mm';
 const SYMBOL_RESET$2 = Symbol('reset');
 //#endregion Global Constants
 //#region Template
-const TEMPLATE$9 = (h(HTMLBnumFragment, { children: [h("div", { class: CLASS_MAIN_CONTENT, children: [h("div", { class: CLASS_SENDER, children: [h("slot", { id: ID_SENDER_SLOT, name: SLOT_SENDER_NAME }), h("span", { class: PART_SENDER_OVERRIDE, part: PART_SENDER_OVERRIDE, hidden: true })] }), h("div", { class: CLASS_SUBJECT, children: [h("slot", { id: ID_SUBJECT_SLOT, name: SLOT_SUBJECT_NAME }), h("span", { class: PART_SUBJECT_OVERRIDE, part: PART_SUBJECT_OVERRIDE, hidden: true })] })] }), h("div", { class: CLASS_DATE, children: [h("slot", { id: ID_DATE_SLOT, name: SLOT_DATE_NAME }), h("span", { class: PART_DATE_OVERRIDE, part: PART_DATE_OVERRIDE, hidden: true, children: h(HTMLBnumDate, { id: ID_DATE_ELEMENT_OVERRIDE }) })] })] }));
+const TEMPLATE$9 = (h(HTMLBnumFragment, { children: [h("div", { class: CLASS_MAIN_CONTENT, part: CLASS_MAIN_CONTENT, children: [h("div", { class: CLASS_SENDER, part: CLASS_SENDER, children: [h("slot", { id: ID_SENDER_SLOT, name: SLOT_SENDER_NAME }), h("span", { class: PART_SENDER_OVERRIDE, part: PART_SENDER_OVERRIDE, hidden: true })] }), h("div", { class: CLASS_SUBJECT, part: CLASS_SUBJECT, children: [h("slot", { id: ID_SUBJECT_SLOT, name: SLOT_SUBJECT_NAME }), h("span", { class: PART_SUBJECT_OVERRIDE, part: PART_SUBJECT_OVERRIDE, hidden: true })] })] }), h("div", { class: CLASS_DATE, children: [h("slot", { id: ID_DATE_SLOT, name: SLOT_DATE_NAME }), h("span", { class: PART_DATE_OVERRIDE, part: PART_DATE_OVERRIDE, hidden: true, children: h(HTMLBnumDate, { id: ID_DATE_ELEMENT_OVERRIDE }) })] })] }));
 //#endregion Template
 /**
  * Composant HTML personnalisé représentant un élément de carte mail.
@@ -10929,7 +10961,7 @@ let HTMLBnumCardItemMail = (() => {
     return _classThis;
 })();
 
-var css_248z$a = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{padding:var(--bnum-space-s,10px)}:host ::slotted([role=listitem]){border-bottom:var(--bnum-border-in-surface,solid 1px #ddd)}:host ::slotted([role=listitem]:last-child){border-bottom:none}:host ::slotted([hidden]),:host [hidden]{display:none}";
+var css_248z$a = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{padding:var(--bnum-space-s,10px)}:host ::slotted([role=listitem]){border-bottom:var(--bnum-border-in-surface,solid 1px #ddd)}:host ::slotted(.last),:host ::slotted([role=listitem]:last-child){border-bottom:none}:host ::slotted([hidden]),:host [hidden]{display:none}";
 
 //#region Global Constants
 const SYMBOL_RESET$1 = Symbol('reset');
@@ -11139,6 +11171,9 @@ let HTMLBnumCardTitle = (() => {
     let _private__ui_initializers = [];
     let _private__ui_extraInitializers = [];
     let _private__ui_descriptor;
+    let _onurlclick_decorators;
+    let _onurlclick_initializers = [];
+    let _onurlclick_extraInitializers = [];
     let _url_decorators;
     let _url_initializers = [];
     let _url_extraInitializers = [];
@@ -11155,9 +11190,11 @@ let HTMLBnumCardTitle = (() => {
                     link: `.${CLASS_LINK}`,
                     icon: `.${CLASS_ICON_TITLE}`,
                 })];
+            _onurlclick_decorators = [Listener()];
             _url_decorators = [Attr()];
             _private__updateDOM_decorators = [Schedule()];
             __esDecorate(this, _private__ui_descriptor = { get: __setFunctionName(function () { return this.#_ui_accessor_storage; }, "#_ui", "get"), set: __setFunctionName(function (value) { this.#_ui_accessor_storage = value; }, "#_ui", "set") }, _private__ui_decorators, { kind: "accessor", name: "#_ui", static: false, private: true, access: { has: obj => #_ui in obj, get: obj => obj.#_ui, set: (obj, value) => { obj.#_ui = value; } }, metadata: _metadata }, _private__ui_initializers, _private__ui_extraInitializers);
+            __esDecorate(this, null, _onurlclick_decorators, { kind: "accessor", name: "onurlclick", static: false, private: false, access: { has: obj => "onurlclick" in obj, get: obj => obj.onurlclick, set: (obj, value) => { obj.onurlclick = value; } }, metadata: _metadata }, _onurlclick_initializers, _onurlclick_extraInitializers);
             __esDecorate(this, null, _url_decorators, { kind: "accessor", name: "url", static: false, private: false, access: { has: obj => "url" in obj, get: obj => obj.url, set: (obj, value) => { obj.url = value; } }, metadata: _metadata }, _url_initializers, _url_extraInitializers);
             __esDecorate(this, _private__updateDOM_descriptor = { value: __setFunctionName(function () {
                     const url = this.url;
@@ -11175,6 +11212,15 @@ let HTMLBnumCardTitle = (() => {
                         this._p_addState(STATE_URL);
                         this.#_ui.link.removeAttribute('role');
                         this.#_ui.link.removeAttribute('aria-disabled');
+                        if (!this.#_initUrlListener) {
+                            this.#_ui.link.addEventListener('click', (e) => {
+                                this.trigger('bnum-card-title:url.click', { inner: e }, { bubbles: e.bubbles, cancelable: e.cancelable });
+                            });
+                            this.addEventListener('bnum-card-title:url.click', (e) => {
+                                this.onurlclick.call(e);
+                            });
+                            this.#_initUrlListener = true;
+                        }
                     }
                     else {
                         this.#_ui.link.removeAttribute('href');
@@ -11189,12 +11235,16 @@ let HTMLBnumCardTitle = (() => {
         //#region Private fields
         #_bodyScheduler = (__runInitializers(this, _instanceExtraInitializers), null);
         #_initBody = null;
+        #_initUrlListener = false;
         #_ui_accessor_storage = __runInitializers(this, _private__ui_initializers, void 0);
         //#endregion Private fields
         //#region Getter/Setters
         get #_ui() { return _private__ui_descriptor.get.call(this); }
         set #_ui(value) { return _private__ui_descriptor.set.call(this, value); }
-        #url_accessor_storage = (__runInitializers(this, _private__ui_extraInitializers), __runInitializers(this, _url_initializers, null));
+        #onurlclick_accessor_storage = (__runInitializers(this, _private__ui_extraInitializers), __runInitializers(this, _onurlclick_initializers, void 0));
+        get onurlclick() { return this.#onurlclick_accessor_storage; }
+        set onurlclick(value) { this.#onurlclick_accessor_storage = value; }
+        #url_accessor_storage = (__runInitializers(this, _onurlclick_extraInitializers), __runInitializers(this, _url_initializers, null));
         /**
          * URL du lien du titre de la carte.
          */
@@ -14198,6 +14248,7 @@ function onElementChangedInitializer$1(event, instance) {
 //#region Global constants
 const TEXT_LAST_EVENTS = BnumConfig.Get('local_keys').last_events;
 const TEXT_NO_EVENTS = BnumConfig.Get('local_keys').no_events;
+const EVENT_URL_TITLE_CLICK$1 = 'bnum-card-agenda:title:url.click';
 //#endregion Global constants
 //#region Template
 const TEMPLATE$2 = (h(HTMLBnumCardElement, { children: [h(HTMLBnumCardTitle, { id: ID_CARD_TITLE$1, slot: "title", "data-icon": "today", children: TEXT_LAST_EVENTS }), h(HTMLBnumCardList, { children: [h("slot", {}), h(HTMLBnumCardItem, { id: ID_CARD_ITEM_NO_ELEMENTS$1, disabled: true, hidden: true, children: TEXT_NO_EVENTS })] })] }));
@@ -14268,6 +14319,10 @@ let HTMLBnumCardAgenda = (() => {
     let _private__url_initializers = [];
     let _private__url_extraInitializers = [];
     let _private__url_descriptor;
+    let _private__max_decorators;
+    let _private__max_initializers = [];
+    let _private__max_extraInitializers = [];
+    let _private__max_descriptor;
     let _private__sortChildren_decorators;
     let _private__sortChildren_descriptor;
     (class extends _classSuper {
@@ -14282,16 +14337,15 @@ let HTMLBnumCardAgenda = (() => {
             _onElementChanged_decorators = [Listener(onElementChangedInitializer$1)];
             _loading_decorators = [Attr()];
             _private__url_decorators = [Data()];
+            _private__max_decorators = [Data()];
             _private__sortChildren_decorators = [RenderFrame()];
             __esDecorate(this, _private__ui_descriptor = { get: __setFunctionName(function () { return this.#_ui_accessor_storage; }, "#_ui", "get"), set: __setFunctionName(function (value) { this.#_ui_accessor_storage = value; }, "#_ui", "set") }, _private__ui_decorators, { kind: "accessor", name: "#_ui", static: false, private: true, access: { has: obj => #_ui in obj, get: obj => obj.#_ui, set: (obj, value) => { obj.#_ui = value; } }, metadata: _metadata }, _private__ui_initializers, _private__ui_extraInitializers);
             __esDecorate(this, null, _onElementChanged_decorators, { kind: "accessor", name: "onElementChanged", static: false, private: false, access: { has: obj => "onElementChanged" in obj, get: obj => obj.onElementChanged, set: (obj, value) => { obj.onElementChanged = value; } }, metadata: _metadata }, _onElementChanged_initializers, _onElementChanged_extraInitializers);
             __esDecorate(this, null, _loading_decorators, { kind: "accessor", name: "loading", static: false, private: false, access: { has: obj => "loading" in obj, get: obj => obj.loading, set: (obj, value) => { obj.loading = value; } }, metadata: _metadata }, _loading_initializers, _loading_extraInitializers);
             __esDecorate(this, _private__url_descriptor = { get: __setFunctionName(function () { return this.#_url_accessor_storage; }, "#_url", "get"), set: __setFunctionName(function (value) { this.#_url_accessor_storage = value; }, "#_url", "set") }, _private__url_decorators, { kind: "accessor", name: "#_url", static: false, private: true, access: { has: obj => #_url in obj, get: obj => obj.#_url, set: (obj, value) => { obj.#_url = value; } }, metadata: _metadata }, _private__url_initializers, _private__url_extraInitializers);
+            __esDecorate(this, _private__max_descriptor = { get: __setFunctionName(function () { return this.#_max_accessor_storage; }, "#_max", "get"), set: __setFunctionName(function (value) { this.#_max_accessor_storage = value; }, "#_max", "set") }, _private__max_decorators, { kind: "accessor", name: "#_max", static: false, private: true, access: { has: obj => #_max in obj, get: obj => obj.#_max, set: (obj, value) => { obj.#_max = value; } }, metadata: _metadata }, _private__max_initializers, _private__max_extraInitializers);
             __esDecorate(this, _private__sortChildren_descriptor = { value: __setFunctionName(function () {
-                    // Récupérer les éléments assignés au slot
-                    const elements = this.#_ui.slot.assignedElements();
-                    // Filtrer pour être sûr de ne trier que des événements (sécurité)
-                    const agendaItems = elements.filter(el => el.tagName.toLowerCase().includes(HTMLBnumCardItemAgenda.TAG));
+                    const agendaItems = this.#_getItems();
                     if (agendaItems.length === 0) {
                         this.#_ui.noElements.hidden = false;
                         this.#_ui.slot.hidden = true;
@@ -14327,6 +14381,7 @@ let HTMLBnumCardAgenda = (() => {
                     const sortedItems = ArrayUtils.sortByDatesDescending(agendaItems, x => this.#_getDate(x), x => this.#_getStartDate(x));
                     fragment.append(...sortedItems);
                     this.appendChild(fragment); // Déplace les éléments existants, ne les recrée pas.
+                    this.#_hideMax(sortedItems);
                     // Notifier le changement
                     this.onElementChanged.call(agendaItems);
                     // Déverrouiller après que le microtask de mutation soit passé
@@ -14359,6 +14414,9 @@ let HTMLBnumCardAgenda = (() => {
         #_url_accessor_storage = (__runInitializers(this, _loading_extraInitializers), __runInitializers(this, _private__url_initializers, EMPTY_STRING));
         get #_url() { return _private__url_descriptor.get.call(this); }
         set #_url(value) { return _private__url_descriptor.set.call(this, value); }
+        #_max_accessor_storage = (__runInitializers(this, _private__url_extraInitializers), __runInitializers(this, _private__max_initializers, void 0));
+        get #_max() { return _private__max_descriptor.get.call(this); }
+        set #_max(value) { return _private__max_descriptor.set.call(this, value); }
         get #_cardPart() {
             if (this.#_card === null) {
                 this.#_card =
@@ -14368,18 +14426,43 @@ let HTMLBnumCardAgenda = (() => {
             }
             return this.#_card;
         }
+        /**
+         * Nombre maximum d'éléments à afficher.
+         */
+        get max() {
+            return this.#_max ?? null;
+        }
+        /**
+         * Nombre maximum d'éléments à afficher.
+         */
+        set max(value) {
+            this.#_max = value;
+            const items = this.#_getItems();
+            if (this.alreadyLoaded) {
+                if (value === null)
+                    this.#_showAllItems(items);
+                else
+                    this.#_hideMax(items);
+            }
+        }
         //#endregion Getters/Setters
         //#region Lifecycle
         constructor() {
             super();
-            __runInitializers(this, _private__url_extraInitializers);
+            __runInitializers(this, _private__max_extraInitializers);
         }
         _p_attach() {
-            if (this.#_url !== EMPTY_STRING)
+            if (this.#_url !== EMPTY_STRING) {
                 this.#_ui.cardTitle.url = this.#_url;
+                this.#_ui.cardTitle.onurlclick.add(EVENT_DEFAULT, e => {
+                    this.trigger(EVENT_URL_TITLE_CLICK$1, { inner: e }, { bubbles: e.bubbles, cancelable: e.cancelable });
+                });
+            }
             // On écoute les changements dans le slot (Items statiques ou ajoutés via JS)
             this.#_ui.slot.addEventListener('slotchange', this.#_handleSlotChange.bind(this));
             this.#_handleSlotChange();
+            if (this.loading)
+                this.#_setLoading();
         }
         _p_update(name, _, newVal) {
             switch (name) {
@@ -14387,12 +14470,20 @@ let HTMLBnumCardAgenda = (() => {
                     if (newVal === null)
                         this.#_cardPart.removeAttribute(ATTRIBUTE_LOADING$1);
                     else
-                        this.#_cardPart.setAttribute(ATTRIBUTE_LOADING$1, newVal ?? EMPTY_STRING);
+                        this.#_setLoading({ attributeValue: newVal });
                     break;
             }
         }
         //#endregion Lifecycle
         //#region Public methods
+        /**
+         * Retire la limite du nombre d'éléments.
+         */
+        removeMax() {
+            if (this.max !== null)
+                this.max = null;
+            return this;
+        }
         /**
          * Ajoute des éléments.
          *
@@ -14413,6 +14504,13 @@ let HTMLBnumCardAgenda = (() => {
         //#endregion Public methods
         //#region Private methods
         /**
+         * Met la card en mode loading
+         * @param param0
+         */
+        #_setLoading({ attributeValue = EMPTY_STRING, } = {}) {
+            this.#_cardPart.setAttribute(ATTRIBUTE_LOADING$1, attributeValue ?? EMPTY_STRING);
+        }
+        /**
          * Gère le tri des éléments.
          * Utilise requestAnimationFrame pour ne pas bloquer le thread si beaucoup d'items.
          */
@@ -14425,6 +14523,33 @@ let HTMLBnumCardAgenda = (() => {
          * Tri les éléments enfants de la liste par date décroissante.
          */
         get #_sortChildren() { return _private__sortChildren_descriptor.value; }
+        #_hideMax(agendaItems) {
+            if (this.max === null)
+                return;
+            for (let index = 0, len = agendaItems.length; index < len; ++index) {
+                const element = agendaItems[index];
+                if (element.hasClass('last'))
+                    element.removeClass('last');
+                if (index >= this.max)
+                    element.hidden = true;
+                else {
+                    element.hidden = false;
+                    if (index === this.max - 1)
+                        element.addClass('last');
+                }
+            }
+        }
+        #_showAllItems(agendaItems) {
+            for (const item of agendaItems) {
+                item.hidden = false;
+            }
+        }
+        #_getItems() {
+            // Récupérer les éléments assignés au slot
+            const elements = this.#_ui.slot.assignedElements();
+            // Filtrer pour être sûr de ne trier que des événements (sécurité)
+            return elements.filter(el => el.tagName.toLowerCase().includes(HTMLBnumCardItemAgenda.TAG));
+        }
         /**
          * Helper pour parser la date de manière robuste
          */
@@ -14454,11 +14579,20 @@ let HTMLBnumCardAgenda = (() => {
                 node.add(...contents);
             return node;
         }
+        /**
+         * Liste des évènements disponibles pour cet éléments
+         */
+        static get Events() {
+            return {
+                TITLE_URL_CLICKED: EVENT_URL_TITLE_CLICK$1,
+                CHANGE: CHANGE_EVENT$1,
+            };
+        }
     });
     return _classThis;
 })();
 
-var css_248z$2 = ":host{display:var(--bnum-card-email-display,block)}[hidden]{display:none}";
+var css_248z$2 = ":host{--main-content-max-width:80%;display:var(--bnum-card-email-display,block)}[hidden]{display:none}";
 
 /**
  * ID du titre de la carte.
@@ -14494,6 +14628,7 @@ function onElementChangedInitializer(event, instance) {
 //#region Global constants
 const TEXT_LAST_MAILS = BnumConfig.Get('local_keys').last_mails;
 const TEXT_NO_MAILS = BnumConfig.Get('local_keys').no_mails;
+const EVENT_URL_TITLE_CLICK = 'bnum-card-email:title:url.click';
 //#endregion Global constants
 //#region Template
 const TEMPLATE$1 = (h(HTMLBnumCardElement, { children: [h(HTMLBnumCardTitle, { id: ID_CARD_TITLE, slot: "title", "data-icon": "mail", children: TEXT_LAST_MAILS }), h(HTMLBnumCardList, { children: [h("slot", {}), h(HTMLBnumCardItem, { id: ID_CARD_ITEM_NO_ELEMENTS, disabled: true, hidden: true, children: TEXT_NO_MAILS })] })] }));
@@ -14505,7 +14640,7 @@ const TEMPLATE$1 = (h(HTMLBnumCardElement, { children: [h(HTMLBnumCardTitle, { i
  *
  * @structure Avec des éléments
  * <bnum-card-email>
- * <bnum-card-item-mail data-date="2025-10-31 11:11" data-subject="Sujet ici" data-sender="Expéditeur ici">
+ * <bnum-card-item-mail data-date="2025-10-31 11:11" data-subject="Sujet ici AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" data-sender="Expéditeur ici AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">
  * </bnum-card-item-mail>
  * <bnum-card-item-mail read data-date="2025-10-31 11:11" data-subject="Sujet ici" data-sender="Expéditeur ici">
  * </bnum-card-item-mail>
@@ -14656,11 +14791,17 @@ let HTMLBnumCardEmail = (() => {
             __runInitializers(this, _private__url_extraInitializers);
         }
         _p_attach() {
-            if (this.#_url !== EMPTY_STRING)
+            if (this.#_url !== EMPTY_STRING) {
                 this.#_ui.cardTitle.url = this.#_url;
+                this.#_ui.cardTitle.onurlclick.add(EVENT_DEFAULT, (e) => {
+                    this.trigger(EVENT_URL_TITLE_CLICK, { inner: e }, { bubbles: e.bubbles, cancelable: e.cancelable });
+                });
+            }
             // On écoute les changements dans le slot (Items statiques ou ajoutés via JS)
             this.#_ui.slot.addEventListener('slotchange', this.#_handleSlotChange.bind(this));
             this.#_handleSlotChange();
+            if (this.loading)
+                this.#_setLoading();
         }
         _p_update(name, _, newVal) {
             switch (name) {
@@ -14668,7 +14809,7 @@ let HTMLBnumCardEmail = (() => {
                     if (newVal === null)
                         this.#_cardPart.removeAttribute(ATTRIBUTE_LOADING);
                     else
-                        this.#_cardPart.setAttribute(ATTRIBUTE_LOADING, newVal ?? EMPTY_STRING);
+                        this.#_setLoading({ attributeValue: newVal });
                     break;
             }
         }
@@ -14693,6 +14834,13 @@ let HTMLBnumCardEmail = (() => {
         }
         //#endregion Public methods
         //#region Private methods
+        /**
+         * Met la card en mode loading
+         * @param param0
+         */
+        #_setLoading({ attributeValue = EMPTY_STRING } = {}) {
+            this.#_cardPart.setAttribute(ATTRIBUTE_LOADING, attributeValue ?? EMPTY_STRING);
+        }
         /**
          * Gère le tri des éléments.
          * Utilise requestAnimationFrame pour ne pas bloquer le thread si beaucoup d'items.
@@ -14733,6 +14881,15 @@ let HTMLBnumCardEmail = (() => {
             if (contents.length > 0)
                 node.add(...contents);
             return node;
+        }
+        /**
+         * Liste des évènements disponibles pour cet éléments
+         */
+        static get Events() {
+            return {
+                TITLE_URL_CLICKED: EVENT_URL_TITLE_CLICK,
+                CHANGE: CHANGE_EVENT
+            };
         }
     });
     return _classThis;

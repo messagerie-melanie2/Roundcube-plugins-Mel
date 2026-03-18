@@ -1,5 +1,5 @@
 <roundcube:include file="includes/layout.html" />
-
+<main>
 <h1 class="voice"><roundcube:label name="contactproperties" /></h1>
 
 <div class="formcontent">
@@ -26,7 +26,7 @@
 <div class="formbuttons">
 	<roundcube:button command="edit" class="btn btn-primary edit" label="edit" condition="!ENV:readonly" />
 </div>
-
+</main>
 <script>
 	rcmail.addEventListener('init', () => {
 		if (!rcmail.env.cid) $('#qrcode-button').addClass('disabled').attr('disabled', 'disabled');

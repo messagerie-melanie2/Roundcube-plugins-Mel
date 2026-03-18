@@ -468,7 +468,11 @@ class mel_metapage extends bnum_plugin
             $this->include_script('js/init/commands.js');
             $this->include_script('js/init/classes/addons/array.js');
             $this->add_hook("startup", array($this, "send_spied_urls"));
+            $this->set_env('bnum_frame', true);
             return;
+        }
+        else if (rcube_utils::get_input_value('_is_from', rcube_utils::INPUT_GET) === 'iframe') {
+            $this->set_env('bnum_frame', true);
         }
 
         if ($this->rc->task !== "login" && $this->rc->task !== "logout")
@@ -655,7 +659,7 @@ class mel_metapage extends bnum_plugin
                 }
             }
 
-            $this->add_hook(class_exists('mel_elastic') ? 'before_send_page' :  'send_page', array($this, "generate_html")); //$this->rc->output->add_header($this->rc->output->parse("mel_metapage.barup", false, false));
+            //$this->add_hook(class_exists('mel_elastic') ? 'before_send_page' :  'send_page', array($this, "generate_html")); //$this->rc->output->add_header($this->rc->output->parse("mel_metapage.barup", false, false));
         } else if (
             $this->rc->task == 'logout'
             || $this->rc->task == 'login'

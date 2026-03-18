@@ -2,6 +2,7 @@ import { AlarmManager } from "./alarms_manager.js";
 import { Alarm } from "./alarms.js";
 import { MelObject } from "../mel_object.js";
 import { MelEnumerable } from "../classes/enum.js";
+import { eventDefsToEventInstances } from "../../../../calendar/lib/js/fullcalendar.js";
 
 /**
  * Gère les alarmes de l'agenda
@@ -246,8 +247,9 @@ export class Calendar_Alarm extends MelObject
         const alarm_is_defined = event.alarms !== undefined && event.alarms !== null;
         const alarm_not_dismissed = event.alarm_dismissed !== true;
         const event_not_annulated = event.status !== "CANCELLED";
+        const allday_reminder_enabled = !event.allDay || this.rcmail.env.allday_reminder;
 
-        return alarm_is_defined && alarm_not_dismissed && event_not_annulated;
+        return alarm_is_defined && alarm_not_dismissed && event_not_annulated && allday_reminder_enabled;
     }
 
 }

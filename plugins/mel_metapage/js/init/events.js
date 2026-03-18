@@ -1,3 +1,5 @@
+import { eventDefsToEventInstances } from "../../../calendar/lib/js/fullcalendar";
+
 function MetapageEventKey(key) {
   return {
     key: key,
@@ -1203,7 +1205,7 @@ if (rcmail && window.mel_metapage) {
       let rec =
         event.recurrence_text === undefined ? null : event.recurrence_text;
       let alarm =
-        event.alarms !== undefined ? new Alarm(event.alarms).toString() : null;
+        event.alarms !== undefined && !(event.allDay && !rcmail.env.allday_reminder) ? new Alarm(event.alarms).toString() : null;
 
       html += `<div class=row style="margin-top:5px">${rec !== null ? `<div class=col-6>${rec}</div>` : ''}${alarm !== null ? `<div class=col-6><span class="icon-mel-notif mel-cal-icon"></span>Rappel : ${alarm}</div>` : ''}</div>`;
 

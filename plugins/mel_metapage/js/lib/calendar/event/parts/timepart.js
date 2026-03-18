@@ -457,7 +457,12 @@ export class TimePartManager {
    * @param {Event} e
    */
   _on_all_day_changed(e) {
-    if ($(e.currentTarget)[0].checked) {
+    const isAllDay = $(e.currentTarget)[0].checked;
+    const alldayReminderEnabled = rcmail.env.allday_reminder;
+    const $reminder = $('#mel-calendar-alarm');
+
+
+    if (isAllDay ) {
       this.start._$fakeField
         .css('display', 'none')
         .parent()
@@ -468,6 +473,11 @@ export class TimePartManager {
         .parent()
         .parent()
         .addClass(CLASS_ALL_DAY);
+       // mettre la valeur à "aucune" dès que l'évènement est en journée entière 
+      if (!alldayReminderEnabled){
+         $reminder.val('0').trigger('change');
+       }
+
     } else {
       this.start._$fakeField
         .css('display', EMPTY_STRING)
@@ -479,6 +489,11 @@ export class TimePartManager {
         .parent()
         .parent()
         .removeClass(CLASS_ALL_DAY);
+
+        //remetre le paramettre à defaut si l'évènement n'est pas en journée entrière 
+      const defaultAlarm = rcmail.env.calendar_settings?.alarm_minutes ?? '15';
+      $reminder.val(defaultAlarm).trigger('change');
+      
     }
   }
 

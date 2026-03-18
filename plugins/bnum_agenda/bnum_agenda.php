@@ -222,6 +222,23 @@ class bnum_agenda extends bnum_plugin {
         'title'   => html::label($field_id, rcube::Q($this->gettext('event_limit'))),
         'content' => $select->show(intval($this->rc()->config->get('event_limit', 4))),
       ];
+      // Test minimal
+      
+      //opition de rappel par defaut sur les évènements journée entière
+      
+      $field_id = 'allday_reminder';
+
+      $args['blocks']['view']['options']['allday_reminder'] = [
+        'title'   =>  html::label($field_id, rcube::Q($this->gettext('allday_reminder'))),
+        
+        'content' => html::tag('input',[
+          'type' => 'checkbox',
+          'name' => '_allday_reminder',
+          'id' => $field_id,
+          'value' => 1,
+          'checked' => (bool)$this->rc()->config->get('allday_reminder', 0)
+        ]),
+      ];
     }
     return $args;
   }
@@ -238,6 +255,9 @@ class bnum_agenda extends bnum_plugin {
     if ($args['section'] === 'calendar') {
       $args['prefs']['event_limit'] = rcube_utils::get_input_value('_event_limit', rcube_utils::INPUT_POST);
       $this->rc()->output->set_env('event_limit', $args['prefs']['event_limit']);
+
+      $args['prefs']['allday_reminder'] = (bool)rcube_utils::get_input_value('_allday_reminder', rcube_utils::INPUT_POST);
+      $this->rc()->output->set_env('allday_reminder', $args['prefs']['allday_reminder']);
     }
     return $args;
   }

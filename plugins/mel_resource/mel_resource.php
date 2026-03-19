@@ -453,8 +453,10 @@ class mel_resource extends bnum_plugin
     }
     else {
       foreach ($this->get_user_localities($type) as $locality) {
-        foreach ($buildings[$locality] as $building => $address) {
-          $html_select->add($address['name'], $locality. '/' . $building);
+        if (is_array($buildings[$locality])) {
+          foreach ($buildings[$locality] as $building => $address) {
+            $html_select->add($address['name'], $locality. '/' . $building);
+          }
         }
       }
 
@@ -681,8 +683,9 @@ class mel_resource extends bnum_plugin
         switch ($action) {
           case 'create':
             $this->add_handlers([
-              'resource_building'    => [$this, 'resource_building_select_' . $_ltype ],
-              'resource_capacity'    => [$this, 'resource_capacity_select_' . $_ltype],
+              'resource_building'               => [$this, 'resource_building_select_' . $_ltype ],
+              'resource_capacity'               => [$this, 'resource_capacity_select_' . $_ltype],
+              'resource_add_caracteristique'    => [$this, 'resource_add_caracteristique_select'],
             ]);
 
             // Gestion du POST pour enregistrer la VRoom
@@ -719,8 +722,8 @@ class mel_resource extends bnum_plugin
     $this->set_page_title($this->gettext($type) . ' - ' . $this->resource->fullname);
 
     $this->add_handlers([
-      'resource_building'    => [$this, 'resource_building_select_' . $type],
-      'resource_capacity'    => [$this, 'resource_capacity_select_' . $type],
+      'resource_building'               => [$this, 'resource_building_select_' . $type],
+      'resource_capacity'               => [$this, 'resource_capacity_select_' . $type],
       'resource_add_caracteristique'    => [$this, 'resource_add_caracteristique_select'],
     ]);
 
@@ -814,6 +817,15 @@ class mel_resource extends bnum_plugin
     
     $resource = $this->resource_from_post($resource);
 
+    // Gestion de la description
+    $description  = trim(rcube_utils::get_input_value('resource_description', rcube_utils::INPUT_GPC, true));
+
+    if (empty($description)) {
+      $resource->description = null;
+    } else {
+      $resource->description = $description;
+    }
+
     $ret = $resource->save();
 
     if (is_null($ret)) {
@@ -866,15 +878,6 @@ class mel_resource extends bnum_plugin
 
     $resource->fullname     = $resource->type . " $resource->name";
     $resource->displayname  = $resource->type . " $resource->name";
-
-    // Gestion de la description
-    $description  = trim(rcube_utils::get_input_value('resource_description', rcube_utils::INPUT_GPC, true));
-
-    if (empty($description)) {
-      $resource->description = '';
-    } else {
-      $resource->description = $description;
-    }
 
     $resource_building = trim(rcube_utils::get_input_value('resource_building', rcube_utils::INPUT_GPC));
 

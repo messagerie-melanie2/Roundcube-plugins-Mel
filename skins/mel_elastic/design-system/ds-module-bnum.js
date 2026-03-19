@@ -13668,7 +13668,7 @@ function removeButtonRole(element) {
     return element;
 }
 
-var css_248z$4 = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{background-color:var(--bnum-card-background-color,var(--bnum-color-surface,#f6f6f6));border-bottom:var(--bnum-border-on-surface-bottom,solid 4px #000091);border-left:var(--bnum-border-on-surface-left,none);border-right:var(--bnum-border-on-surface-right,none);border-top:var(--bnum-border-on-surface-top,none);display:var(--bnum-card-display,block);height:var(--bnum-card-height,auto);padding:var(--bnum-card-padding,var(--bnum-space-m,15px));position:relative;width:var(--bnum-card-width,auto)}:host .card-loading{display:none}:host(:state(clickable)){cursor:var(--bnum-card-clickable-cursor,pointer)}:host(:hover:state(clickable)){background-color:var(--bnum-card-background-color-hover,var(--bnum-color-surface-hover,#dfdfdf))}:host(:active:state(clickable)){background-color:var(--bnum-card-background-color-active,var(--bnum-color-surface-active,#cfcfcf))}:host(:state(loading)){--bnum-card-background-color-hover:var(--bnum-card-background-color,var(--bnum-color-surface,#f6f6f6));--bnum-card-background-color-active:var(--bnum-card-background-color,var(--bnum-color-surface,#f6f6f6));opacity:.8;pointer-events:none}:host(:state(loading)) .card-loading{align-items:center;display:flex;inset:0;justify-content:center;position:absolute;z-index:10}:host(:state(loading)) .card-loading .loader{animation:var(--bnum-card-loader-animation-rotate360,var(--bnum-animation-rotate360,rotate360 1s linear infinite))}:host(:state(loading)) .card-body slot{visibility:hidden}";
+var css_248z$4 = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{background-color:var(--bnum-card-background-color,var(--bnum-color-surface,#f6f6f6));border-bottom:var(--bnum-card-border-bottom,var(--bnum-border-on-surface-bottom,solid 4px #000091));border-left:var(--bnum-card-border-left,var(--bnum-border-on-surface-left,none));border-right:var(--bnum-card-border-right,var(--bnum-border-on-surface-right,none));border-top:var(--bnum-card-border-top,var(--bnum-border-on-surface-top,none));display:var(--bnum-card-display,block);height:var(--bnum-card-height,auto);padding:var(--bnum-card-padding,var(--bnum-space-m,15px));position:relative;width:var(--bnum-card-width,auto)}:host .card-loading{display:none}:host(:state(clickable)){cursor:var(--bnum-card-clickable-cursor,pointer)}:host(:hover:state(clickable)){background-color:var(--bnum-card-background-color-hover,var(--bnum-color-surface-hover,#dfdfdf))}:host(:active:state(clickable)){background-color:var(--bnum-card-background-color-active,var(--bnum-color-surface-active,#cfcfcf))}:host(:state(loading)){--bnum-card-background-color-hover:var(--bnum-card-background-color,var(--bnum-color-surface,#f6f6f6));--bnum-card-background-color-active:var(--bnum-card-background-color,var(--bnum-color-surface,#f6f6f6));opacity:.8;pointer-events:none}:host(:state(loading)) .card-loading{align-items:center;display:flex;inset:0;justify-content:center;position:absolute;z-index:10}:host(:state(loading)) .card-loading .loader{animation:var(--bnum-card-loader-animation-rotate360,var(--bnum-animation-rotate360,rotate360 1s linear infinite))}:host(:state(loading)) .card-body slot{visibility:hidden}";
 
 //type: class
 /**
@@ -15194,6 +15194,8 @@ let HTMLBnumTree = (() => {
     let __p_attach_decorators;
     let _private__listenKeyDown_decorators;
     let _private__listenKeyDown_descriptor;
+    let _private__listenClick_decorators;
+    let _private__listenClick_descriptor;
     (class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -15203,12 +15205,16 @@ let HTMLBnumTree = (() => {
                     tabindex: '0',
                 })];
             _private__listenKeyDown_decorators = [Listen('keydown')];
+            _private__listenClick_decorators = [Listen('click')];
             _static_TryIncludeStyle_decorators = [Risky()];
             __esDecorate(this, null, _static_TryIncludeStyle_decorators, { kind: "method", name: "TryIncludeStyle", static: true, private: false, access: { has: obj => "TryIncludeStyle" in obj, get: obj => obj.TryIncludeStyle }, metadata: _metadata }, null, _staticExtraInitializers);
             __esDecorate(this, null, __p_attach_decorators, { kind: "method", name: "_p_attach", static: false, private: false, access: { has: obj => "_p_attach" in obj, get: obj => obj._p_attach }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, _private__listenKeyDown_descriptor = { value: __setFunctionName(function () {
                     return this.#_handleKeyDown;
                 }, "#_listenKeyDown") }, _private__listenKeyDown_decorators, { kind: "method", name: "#_listenKeyDown", static: false, private: true, access: { has: obj => #_listenKeyDown in obj, get: obj => obj.#_listenKeyDown }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, _private__listenClick_descriptor = { value: __setFunctionName(function () {
+                    return this.#_handleSelection;
+                }, "#_listenClick") }, _private__listenClick_decorators, { kind: "method", name: "#_listenClick", static: false, private: true, access: { has: obj => #_listenClick in obj, get: obj => obj.#_listenClick }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -15325,9 +15331,7 @@ let HTMLBnumTree = (() => {
             return this;
         }
         get #_listenKeyDown() { return _private__listenKeyDown_descriptor.value; }
-        #_listenClick() {
-            return this.#_handleSelection;
-        }
+        get #_listenClick() { return _private__listenClick_descriptor.value; }
         #_handleKeyDown(e) {
             const current = this.#_focusedItem;
             if (!current)

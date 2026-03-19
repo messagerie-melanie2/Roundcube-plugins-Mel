@@ -90,6 +90,10 @@
   margin-bottom: 38px;
 }
 
+.module_parent .melv2-card-pre > h2 {
+  margin-bottom: 0;
+}
+
 #layout-content {
   overflow-y: auto;
   overflow-x: hidden;

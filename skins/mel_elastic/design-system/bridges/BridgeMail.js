@@ -160,7 +160,6 @@ export default class BridgeMail extends ABridge {
       )
     )
       return this;
-
     const bridge = BridgeEvents.Instance;
     bridge
       .delegate(

@@ -1,99 +1,58 @@
-/* Nuances de bleu */
-/* Nuances de gris */
-/* Danger */
-/* Warnings */
-/*  - Espace interne des boutons            */
-/*  - Espace entre items de liste           */
-/*  - Padding interne des cartes            */
-/*  - Espace entre les cartes (organismes)  */
-/* - Espace entre sections                 */
-/* Padding par défaut des dossiers */
-/* Padding plus large pour les dossiers */
-/* Padding plus petit pour les dossiers */
-/* Padding par défaut des dossiers racines */
-/* Padding plus large pour les dossiers racines */
-/* Composites */
 @keyframes rotate360 {
-  from {
+  0% {
     transform: rotate(0deg);
   }
   to {
-    transform: rotate(360deg);
+    transform: rotate(1turn);
   }
 }
 :root {
-  /* =================================
-     1. Couleurs (Palette)
-     ================================= */
-  /* Sémantique de l'UI */
   --bnum-color-primary: #000091;
   --bnum-color-primary-hover: #1212ff;
   --bnum-color-primary-active: #2e2eff;
-  --bnum-color-secondary: #ffffff;
+  --bnum-color-secondary: #fff;
   --bnum-color-secondary-hover: #f6f6f6;
   --bnum-color-secondary-active: #ededed;
   --bnum-color-danger: #ce0500;
   --bnum-color-danger-hover: #ff2725;
   --bnum-color-danger-active: #ff4140;
-  --bnum-color-background: #ffffff;
-  /* Le fond de la page */
+  --bnum-color-background: #fff;
   --bnum-color-surface: #f6f6f6;
-  /* Le fond des surfaces */
   --bnum-color-border: #ddd;
-  /* Bordure des surfaces */
   --bnum-color-in-surface-border: var(--bnum-color-border);
   --bnum-color-in-surface-hover: #dfdfdf;
   --bnum-color-in-surface-active: #cfcfcf;
   --bnum-color-input: #eee;
-  /* Fond des champs input */
   --bnum-color-input-hover: #d2d2d2;
   --bnum-color-input-active: #c1c1c1;
   --bnum-color-input-border: #3a3a3a;
-  /* Bordure des champs input */
   --bnum-color-left-column: #f6f6f6;
-  /* Les items d'une liste ont forcément un fond transparent, 
-     donc on se base sur le classique pour le selected,
-     sur le hover pour le hover
-     et le selected pour le drag and drop*/
   --bnum-color-list: #e3e3fd;
   --bnum-color-list-hover: #c1c1fb;
   --bnum-color-list-drag: #adadf9;
   --bnum-main-nav-color: #242424;
   --bnum-main-nav-color-hover: #474747;
   --bnum-main-nav-color-active: #5b5b5b;
-  /* Texte */
   --bnum-text-primary: #3a3a3a;
-  /* Texte principal */
   --bnum-text-title-primary: #161616;
-  /* Titres principaux */
   --bnum-text-hint: #666;
-  /* Texte d'aide / hint */
   --bnum-text-on-input: var(--bnum-text-primary);
-  /* Texte sur fond input */
   --bnum-text-on-primary: #f5f5fe;
-  /* Texte sur fond primaire */
   --bnum-text-on-primary-hover: var(--bnum-text-on-primary);
   --bnum-text-on-primary-active: var(--bnum-text-on-primary);
   --bnum-text-on-secondary: #000091;
-  /* Texte sur fond secondaire */
   --bnum-text-on-secondary-hover: var(--bnum-text-on-secondary);
   --bnum-text-on-secondary-active: var(--bnum-text-on-secondary);
   --bnum-text-on-danger: #f5f5fe;
-  /* Texte sur fond danger */
   --bnum-text-on-danger-hover: var(--bnum-text-on-danger);
   --bnum-text-on-danger-active: var(--bnum-text-on-danger);
-  /* Sémantique de Feedback (vu sur les avatars) */
   --bnum-semantic-danger: #de350b;
-  /* Rouge "DEV" */
   --bnum-semantic-success: #36b37e;
-  /* Vert "TES" */
-  /* =================================
-     2. Typographie
-     ================================= */
-  --bnum-font-family-primary: -apple-system, system-ui, BlinkMacSystemFont, Arial, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --bnum-font-family-primary:
+    -apple-system, system-ui, BlinkMacSystemFont, Arial, 'Segoe UI', Roboto,
+    'Helvetica Neue', sans-serif;
   --bnum-font-family-secondary: Georgia;
   --bnum-icon-font-family: 'Material Symbols Outlined';
-  /* Tailles */
   --bnum-font-size-xxl: 24px;
   --bnum-font-size-xl: 1.25rem;
   --bnum-font-size-l: 1.125rem;
@@ -113,7 +72,6 @@
   --bnum-font-size-title-xs: 3rem;
   --bnum-font-badge-s: 0.5625rem;
   --bnum-body-font-size: var(--bnum-font-size-m, 1rem);
-  /* Line heights */
   --bnum-font-height-h1: 48px;
   --bnum-font-height-h1-mobile: 40px;
   --bnum-font-height-h2: 40px;
@@ -141,24 +99,14 @@
   --bnum-font-height-text-m: 24px;
   --bnum-font-height-text-s: 24px;
   --bnum-font-height-text-xs: 20px;
-  /* Graisses */
   --bnum-font-weight-bold: bold;
   --bnum-font-weight-medium: 500;
   --bnum-font-weight-normal: 400;
-  /* =================================
-     3. Espacements (Grille)
-     ================================= */
-  /* Basé sur une grille de 10px */
   --bnum-space-xs: 5px;
-  /*  - Espace interne des boutons            */
   --bnum-space-s: 10px;
-  /*  - Espace entre items de liste           */
   --bnum-space-m: 15px;
-  /*  - Padding interne des cartes            */
   --bnum-space-l: 20px;
-  /*  - Espace entre les cartes (organismes)  */
   --bnum-space-xl: 25px;
-  /* - Espace entre sections                 */
   --bnum-space-title: var(--bnum-space-l);
   --bnum-space-alternate-title: var(--bnum-space-xl);
   --bnum-space-text: var(--bnum-space-l);
@@ -166,91 +114,168 @@
   --bnum-folder-title-padding-larger: var(--bnum-space-m) var(--bnum-space-m);
   --bnum-folder-title-padding-smaller: var(--bnum-space-xs) var(--bnum-space-m);
   --bnum-folder-bal-title-padding: var(--bnum-space-m) var(--bnum-space-m);
-  --bnum-folder-bal-title-padding-larger: var(--bnum-space-l) var(--bnum-space-m);
-  --bnum-folder-bal-title-padding-smaller: var(--bnum-space-s) var(--bnum-space-m);
-  /* =================================
-     4. Bordures et Ombres
-     ================================= */
-  /* --- A. RADIUS (Arrondis) --- */
+  --bnum-folder-bal-title-padding-larger: var(--bnum-space-l)
+    var(--bnum-space-m);
+  --bnum-folder-bal-title-padding-smaller: var(--bnum-space-s)
+    var(--bnum-space-m);
   --bnum-radius-s: 0;
   --bnum-radius-m: 5px;
   --bnum-radius-circle: 50%;
   --bnum-radius-pill: 9999px;
-  /* --- B. WIDTHS (Epaisseurs) --- */
   --bnum-border-width-s: 1px;
   --bnum-border-width-m: 2px;
   --bnum-border-width-l: 4px;
-  /* --- C. STYLES --- */
   --bnum-border-style-default: solid;
   --bnum-border-style-dashed: dashed;
-  /* --- D. COMPOSITES (Shorthands Intelligents) --- */
-  --bnum-border-in-surface: var(--bnum-border-style-default) var(--bnum-border-width-s) var(--bnum-color-in-surface-border);
-  --bnum-border-in-surface-hover: var(--bnum-border-style-default) var(--bnum-border-width-s) var(--bnum-border-in-surface-hover);
-  --bnum-border-in-surface-active: var(--bnum-border-style-default) var(--bnum-border-width-s) var(--bnum-border-in-surface-active);
-  --bnum-border-surface: var(--bnum-border-style-default) var(--bnum-border-width-s) var(--bnum-color-primary);
-  --bnum-border-column: var(--bnum-border-style-default) var(--bnum-border-width-s) #ddd;
+  --bnum-border-in-surface: var(--bnum-border-style-default)
+    var(--bnum-border-width-s) var(--bnum-color-in-surface-border);
+  --bnum-border-in-surface-hover: var(--bnum-border-style-default)
+    var(--bnum-border-width-s) var(--bnum-border-in-surface-hover);
+  --bnum-border-in-surface-active: var(--bnum-border-style-default)
+    var(--bnum-border-width-s) var(--bnum-border-in-surface-active);
+  --bnum-border-surface: var(--bnum-border-style-default)
+    var(--bnum-border-width-s) var(--bnum-color-primary);
+  --bnum-border-column: var(--bnum-border-style-default)
+    var(--bnum-border-width-s) #ddd;
   --bnum-border-in-column: var(--bnum-border-column);
-  /* Ombres (pour élever les cartes) */
+  --_bnum-border-on-surface-bottom: var(--bnum-border-style-default)
+    var(--bnum-border-width-l)
+    var(--bnum-border-on-surface-bottom-color, var(--bnum-color-primary));
+  --bnum-border-on-surface-bottom: var(
+    --_bnum-border-on-surface-bottom,
+    solid 4px #000091
+  );
   --bnum-shadow-s: 0 1px 2px rgba(0, 0, 0, 0.05);
   --bnum-shadow-m: 0 4px 8px rgba(0, 0, 0, 0.05);
-  /* =================================
-     5. Z-index
-     ================================= */
   --bnum-zindex-dropdown: 10;
   --bnum-zindex-modal: 100;
   --bnum-zindex-tooltip: 1000;
-  /* =================================
-     6. Animations
-     ================================= */
   --bnum-animation-rotate360: rotate360 1s linear infinite;
+}
+html.dark-mode-custom:root,
+html.dark-mode:root {
+  --bnum-color-primary: #8585f6;
+  --bnum-color-primary-hover: #b1b1f9;
+  --bnum-color-primary-active: #c6c6fb;
+  --bnum-color-secondary: #3a3a3a;
+  --bnum-color-secondary-hover: #616161;
+  --bnum-color-secondary-active: #777;
+  --bnum-color-danger: #ff5655;
+  --bnum-color-danger-hover: #ff8c8c;
+  --bnum-color-danger-active: #ffa6a6;
+  --bnum-color-background: #161616;
+  --bnum-color-surface: var(--bnum-color-background);
+  --bnum-color-surface-hover: #343434;
+  --bnum-color-surface-active: #474747;
+  --bnum-color-border: #353535;
+  --bnum-color-in-surface-border: #353535;
+  --bnum-color-in-surface-hover: #343434;
+  --bnum-color-in-surface-active: #474747;
+  --bnum-color-input: #2f2f2f;
+  --bnum-color-input-hover: #545454;
+  --bnum-color-input-active: #696969;
+  --bnum-color-input-border: #cecece;
+  --bnum-color-left-column: #161616;
+  --bnum-color-list: #474747;
+  --bnum-color-list-hover: #343434;
+  --bnum-color-list-drag: #343434;
+  --bnum-main-nav-color: #242424;
+  --bnum-main-nav-color-hover: #474747;
+  --bnum-main-nav-color-active: #5b5b5b;
+  --bnum-text-primary: #cecece;
+  --bnum-text-title-primary: #fff;
+  --bnum-text-hint: #1e1e1e;
+  --bnum-text-on-input: var(--bnum-text-primary);
+  --bnum-text-on-primary: #313178;
+  --bnum-text-on-primary-hover: var(--bnum-text-on-primary);
+  --bnum-text-on-primary-active: var(--bnum-text-on-primary);
+  --bnum-text-on-secondary: #8585f6;
+  --bnum-text-on-secondary-hover: var(--bnum-text-on-secondary);
+  --bnum-text-on-secondary-active: var(--bnum-text-on-secondary);
+  --bnum-text-on-danger: #313178;
+  --bnum-text-on-danger-hover: var(--bnum-text-on-danger);
+  --bnum-text-on-danger-active: var(--bnum-text-on-danger);
+  --bnum-semantic-danger: #de350b;
+  --bnum-semantic-success: #36b37e;
+  --_border: var(--bnum-border-style-default) var(--bnum-border-width-s)
+    var(--bnum-color-border);
+  --bnum-border-on-surface-top: var(--_border);
+  --bnum-border-on-surface-left: var(--_border);
+  --bnum-border-on-surface-right: var(--_border);
+  --bnum-button-secondary-background-color: var(--bnum-color-background);
+  --_image-url: var(--_image-dark);
 }
 .hidden {
   display: none;
 }
-html.dark bnum-img {
-  --_image-url: var(--_image-dark);
-}
-html.layout-small,
 html.layout-phone,
+html.layout-small,
 html.touch {
   --size-display-state: none;
   --size-margin-right-state: 0;
   --size-margin-left-state: 0;
 }
 body {
-  font-size: var(--bnum-body-font-size, var(--bnum-font-size-m, 1rem));
   font-family: var(--bnum-font-family-primary);
-  color: var(--bnum-text-primary);
+  font-size: var(--bnum-body-font-size, var(--bnum-font-size-m, 1rem));
+  --_color: var(--bnum-body-text-color, var(--bnum-text-primary));
+  --_background: var(
+    --bnum-body-background-color,
+    var(--bnum-color-background)
+  );
+  color: var(--_color);
+  --layout-content-text-color: var(--_color);
+  --main-text-color: var(--_color);
+  --bureau-card-text-color: var(--_color);
+  background-color: var(--_background);
+  --body-background-color: var(--_background);
+  --bureau-background-color: var(--_background);
+  --layout-sidebar-background-color: var(--_background);
 }
 h1 {
   font-size: var(--bnum-font-size-h1, 2.5rem);
   line-height: var(--bnum-font-height-h1, 48px);
+}
+h1,
+h2 {
   margin-bottom: var(--bnum-space-xl);
 }
 h2 {
   font-size: var(--bnum-font-size-h2, 2rem);
   line-height: var(--bnum-font-height-h2, 40px);
-  margin-bottom: var(--bnum-space-xl);
 }
 h3 {
   font-size: var(--bnum-font-size-h3, 1.75rem);
   line-height: var(--bnum-font-height-h3, 36px);
+}
+h3,
+h4 {
   margin-bottom: var(--bnum-space-xl);
 }
 h4 {
   font-size: var(--bnum-font-size-h4, 1.5rem);
   line-height: var(--bnum-font-height-h4, 32px);
-  margin-bottom: var(--bnum-space-xl);
 }
 h5 {
   font-size: var(--bnum-font-size-h5, 1.375rem);
   line-height: var(--bnum-font-height-h5, 28px);
+}
+h5,
+h6 {
   margin-bottom: var(--bnum-space-xl);
 }
 h6 {
   font-size: var(--bnum-font-size-h6, 1.25rem);
   line-height: var(--bnum-font-height-h6, 28px);
-  margin-bottom: var(--bnum-space-xl);
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  --_color: var(--bnum-title-text-color, var(--bnum-text-title-primary));
+  color: var(--_color);
 }
 h1.no-margin,
 h2.no-margin,
@@ -262,50 +287,50 @@ h6.no-margin {
 }
 .ds-block {
   display: block;
-  width: 100%;
   flex: 1;
+  width: 100%;
 }
 bnum-hide {
   display: contents;
 }
 .ghost-container {
-  width: 180px;
   background: var(--bnum-color-surface);
   border: var(--bnum-border-surface);
   border-radius: 12px;
-  padding: 10px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   font-family: var(--bnum-font-family-primary);
+  padding: 10px;
+  width: 180px;
 }
 .ghost-sender {
   font-size: 11px;
-  color: var(--bnum-text-primary);
   font-weight: 700;
-  text-transform: uppercase;
   margin-bottom: 4px;
-  white-space: nowrap;
-  overflow: hidden;
   text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.ghost-sender,
+.ghost-subject {
+  color: var(--bnum-text-primary);
+  overflow: hidden;
 }
 .ghost-subject {
-  font-size: 13px;
-  color: var(--bnum-text-primary);
-  line-height: 1.3;
   display: -webkit-box;
+  font-size: 13px;
   -webkit-line-clamp: 2;
-  /* Limite à 2 lignes */
+  line-height: 1.3;
   -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 .ghost-badge {
-  position: absolute;
-  top: -8px;
-  right: -8px;
   background: var(--bnum-color-primary);
+  border: var(--bnum-border-in-surface);
+  border-radius: 10px;
   color: var(--bnum-text-on-primary);
   font-size: 10px;
-  font-weight: bold;
+  font-weight: 700;
   padding: 2px 6px;
-  border-radius: 10px;
-  border: var(--bnum-border-in-surface);
+  position: absolute;
+  right: -8px;
+  top: -8px;
 }

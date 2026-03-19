@@ -36,19 +36,25 @@ export default class BridgeEvents extends MelObject {
    * @returns {this}
    */
   delegate(target, event, selector, callback) {
-    target.addEventListener(event, (e) => {
-      // On cherche l'élément correspondant au sélecteur le plus proche
-      const element = e.target.closest(selector);
+    target.addEventListener(
+      event,
+      (e) => {
+        // On cherche l'élément correspondant au sélecteur le plus proche
+        const element = e.target.closest(selector);
 
-      // On vérifie que l'élément trouvé est bien à l'intérieur de notre "target"
-      if (element && target.contains(element)) {
-        callback(
-          new CustomEvent(event, {
-            detail: { innerEvent: e, target: element },
-          }),
-        );
-      }
-    });
+        console.log('EVENT', element, target, target.contains(element));
+
+        // On vérifie que l'élément trouvé est bien à l'intérieur de notre "target"
+        if (element && target.contains(element)) {
+          callback(
+            new CustomEvent(event, {
+              detail: { innerEvent: e, target: element },
+            }),
+          );
+        }
+      },
+      { capture: true },
+    );
 
     return this;
   }
@@ -95,7 +101,9 @@ export default class BridgeEvents extends MelObject {
    * @param {CustomEvent} e
    */
   onFolderSelect(e) {
-    const { caller } = e.detail;
+    const { caller = e?.detail?.innerEvent?.detail?.caller } = e.detail;
+
+    if (!caller) throw new Error("caller don't exist");
 
     if (caller.getAttribute('is-virtual') === 'true') return;
 

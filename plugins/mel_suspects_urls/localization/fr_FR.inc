@@ -29,3 +29,6 @@ $labels['url_error'] = 'Erreur lors de la vérification de l\'URL.';
 $labels['url_add_error'] = 'L\'ajout de $url a échoué.';
 $labels['delete_error'] = 'La suppression de l\'URL a échoué.';
 $labels['update_error'] = 'La mise à jour du statut de l\'URL a échoué.';
+$labels['export_url'] = 'Exporter';
+$labels['export_list_urls'] = 'Exporter la liste des urls au format .csv';
+$labels['url_date_added'] = 'Date d\'ajout';

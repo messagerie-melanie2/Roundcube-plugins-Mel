@@ -8,11 +8,18 @@
 
 <div id="layout-content" role="main">
   <div class="content">
-    <!-- Titre principal -->
-    <h1 class="url-title mb-4">
-      <roundcube:label name="mel_suspects_urls.suspects_urls" />
-    </h1>
-
+    <!-- Titre principal et Bouton Exporter -->
+    <div class="url-title-container">
+      <h1 class="url-title mb-4">
+        <roundcube:label name="mel_suspects_urls.suspects_urls" />
+      </h1>
+      <div id="suspect-export-btn" class="export-btn" role="button" title="<roundcube:label name="mel_suspects_urls.export_list_urls" />">
+        <span class="material-symbols-outlined export-icon">file_download</span>
+        <span class="export-text">
+          <roundcube:label name="mel_suspects_urls.export_url" />
+        </span>
+      </div>
+    </div> 
     <!-- Bloc dynamique -->
     <div id="suspect-section">
       <div class="row url-header">
@@ -44,9 +51,10 @@
         <table class="url-table table-striped table-bordered">
           <thead class="url_striped">
             <tr>
-              <th class="col-8"><roundcube:label name="mel_suspects_urls.url" /></th>
-              <th class="col-1 text-center"><roundcube:label name="mel_suspects_urls.status" /></th>
-              <th class="col-1 text-center"><roundcube:label name="mel_suspects_urls.delete" /></th>
+              <th class="col-6"><roundcube:label name="mel_suspects_urls.url" /></th>
+              <th class="col-2 text-center"><roundcube:label name="mel_suspects_urls.status" /></th>
+              <th class="col-2 text-center"><roundcube:label name="mel_suspects_urls.url_date_added" /></th>
+              <th class="col-2 text-center"><roundcube:label name="mel_suspects_urls.delete" /></th>
             </tr>
           </thead>
           <tbody id="suspect-table-body">

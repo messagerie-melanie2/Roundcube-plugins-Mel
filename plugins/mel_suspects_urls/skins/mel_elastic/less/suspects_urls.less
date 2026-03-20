@@ -115,13 +115,13 @@
 
 .url-table {
   thead.url_striped {
-    th.col-1 { // En-têtes Statut et Supprimer
+    th.col-2 { // En-têtes Statut et Supprimer
       text-align: center;
     }
   }
 
   tbody {
-    td.col-1 { // Cellules Statut et Supprimer
+    td.col-2 { // Cellules Statut et Supprimer
       text-align: center;
       padding: 0.75rem;
 
@@ -215,5 +215,48 @@
         pointer-events: none;
       }
     }
+  }
+}
+
+.url-title-container {
+  position: relative;
+}
+
+.export-btn {
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-weight: 500;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  .export-icon {
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  .export-text {
+    white-space: nowrap;
+  }
+}
+
+.url-table tbody tr td:nth-child(2) {
+  text-align: center;
+
+  .statut-select {
+    display: block;
+    width: 140px;
+    margin: 0 auto;
+    padding: 6px 28px;
+    text-align: center;
+    text-align-last: center;
+    background-position: right 10px center;
   }
 }

@@ -128,6 +128,7 @@
     const input = document.getElementById('suspect-input');
     const clearBtn = document.getElementById('clear-button');
     const addBtn = document.getElementById('suspect-add-btn');
+    const exportBtn = document.getElementById('suspect-export-btn');
 
     // Charger les URLs depuis le backend
     fetchUrlsFromBackend();
@@ -188,6 +189,10 @@
         .http_post('suspect_urls/add_suspect_url', { _url: value })
         .then(() => addBtn.stopLoadingMode());
     });
+
+    exportBtn.addEventListener('click', () => {
+        window.location.href = './?_task=suspect_urls&_action=export_csv';
+      });
   }
 
   /**
@@ -263,6 +268,11 @@
 
       statutTd.appendChild(select);
 
+      // Colonne date
+      const createdAtTd = document.createElement('td');
+      createdAtTd.className = 'text-center';
+      createdAtTd.textContent = formatDate(item.created_at);
+
       // Colonne Supprimer
       const deleteTd = document.createElement('td');
       deleteTd.className = 'delete-url';
@@ -315,6 +325,7 @@
       // Ajouter les colonnes à la ligne
       tr.appendChild(urlTd);
       tr.appendChild(statutTd);
+      tr.appendChild(createdAtTd);
       tr.appendChild(deleteTd);
 
       tbody.appendChild(tr);
@@ -466,3 +477,30 @@
     });
   }
 })();
+
+/**
+ * Formate une date au format français (ex: 18 mars 2026)
+ *
+ * Cette fonction extrait la partie date (YYYY-MM-DD) d'une chaîne
+ * provenant du backend (ex: "2026-03-18 10:12:16.059613+00"),
+ * puis retourne une date lisible en français.
+ *
+ * Si la valeur est invalide ou ne correspond pas au format attendu,
+ * la fonction retourne la valeur d'origine.
+ *
+ * @param {string} value - La date brute à formater
+ * @returns {string} La date formatée en français ou la valeur d'origine
+ */
+function formatDate(value) {
+  if (!value) return '';
+
+  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})/);
+
+  if (!match) return value;
+
+  const [, year, month, day] = match;
+
+  const date = new Date(Number(year), Number(month) - 1, Number(day));
+
+  return date.toLocaleDateString('fr-FR', {day: 'numeric', month: 'long', year: 'numeric',});
+}

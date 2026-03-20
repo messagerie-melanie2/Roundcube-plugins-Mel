@@ -222,7 +222,6 @@ class bnum_agenda extends bnum_plugin {
         'title'   => html::label($field_id, rcube::Q($this->gettext('event_limit'))),
         'content' => $select->show(intval($this->rc()->config->get('event_limit', 4))),
       ];
-      // Test minimal
       
       //opition de rappel par defaut sur les évènements journée entière
       
@@ -238,6 +237,18 @@ class bnum_agenda extends bnum_plugin {
           'value' => 1,
           'checked' => (bool)$this->rc()->config->get('allday_reminder', 0)
         ]),
+      ];
+
+      $field_id = 'default_invitation_alarm';
+      $select_alarm = new html_select(['name' => '_default_invitation_alarm', 'id' => $field_id]);
+      $alarm_options = [0 => $this->rc()->gettext('Aucun'), 5 => '5 min', 10 => '10 min', 15 => '15 min', 20 => '20 min', 25 => '25 min', 30 => '30 min',];
+      foreach($alarm_options as $val => $label ){
+        $select_alarm->add($label, $val);
+      }
+      $args['blocks']['view']['options']['default_invitation_alarm'] = [
+        'title' => html::label($field_id, rcube::Q($this->gettext('default_invitation_alarm'))),
+        'content' => $select_alarm->show(intval($this->rc()->config->get('default_invitation_alarm', 15))),
+
       ];
     }
     return $args;
@@ -255,9 +266,13 @@ class bnum_agenda extends bnum_plugin {
     if ($args['section'] === 'calendar') {
       $args['prefs']['event_limit'] = rcube_utils::get_input_value('_event_limit', rcube_utils::INPUT_POST);
       $this->rc()->output->set_env('event_limit', $args['prefs']['event_limit']);
-
+                    // Aucun rappel pour journée entière
       $args['prefs']['allday_reminder'] = (bool)rcube_utils::get_input_value('_allday_reminder', rcube_utils::INPUT_POST);
       $this->rc()->output->set_env('allday_reminder', $args['prefs']['allday_reminder']);
+      //choix de rappel d'invité
+      $args['prefs']['default_invitation_alarm'] = intval(rcube_utils::get_input_value('default_invitation_alarm', rcube_utils::INPUT_POST) ?? 15);
+      $this->rc()->output->set_env('default_invitation_alarm', $args['prefs']['default_invitation_alarm']);
+   
     }
     return $args;
   }

@@ -221,8 +221,24 @@ export class Calendar_Alarm extends MelObject
 
         this.clearTimeouts();
 
+         // Rappel par défaut de l'invité (préférence utilisateur)
+        const defaultAlarmMinutes = this.rcmail().env.default_invitation_alarm
+            ?? this.rcmail().env.calendar_settings?.alarm_minutes
+            ?? 15;
+
         for (let index = 0; index < events.length; ++index) {
             const element = events[index];
+            
+            //si l'évènement n'a pas d'alarm mais que l'utilisateur a une préference, on applique le choix de l'invité
+            if (
+            (element.alarms === undefined || element.alarms === null || element.alarms === '') &&
+            defaultAlarmMinutes > 0
+            ) {
+            element.alarms = `DISPLAY:-${defaultAlarmMinutes}M`;
+            element._alarm_injected = true; // flag pour distinguer côté debug
+            }
+
+
             if (this.is_alarm_valid(element))
             {
                 if (rcmail.env.calendars[element.calendar].showalarms === 1)
@@ -247,7 +263,7 @@ export class Calendar_Alarm extends MelObject
         const alarm_is_defined = event.alarms !== undefined && event.alarms !== null;
         const alarm_not_dismissed = event.alarm_dismissed !== true;
         const event_not_annulated = event.status !== "CANCELLED";
-        const allday_reminder_enabled = !event.allDay || this.rcmail.env.allday_reminder;
+        const allday_reminder_enabled = !event.allDay || this.rcmail().env.allday_reminder;
 
         return alarm_is_defined && alarm_not_dismissed && event_not_annulated && allday_reminder_enabled;
     }

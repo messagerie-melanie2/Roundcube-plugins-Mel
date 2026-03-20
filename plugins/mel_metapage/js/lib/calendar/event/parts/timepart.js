@@ -492,8 +492,7 @@ export class TimePartManager {
 
         //remetre le paramettre à defaut si l'évènement n'est pas en journée entrière 
       const defaultAlarm = rcmail.env.calendar_settings?.alarm_minutes ?? '15';
-      $reminder.val(defaultAlarm).trigger('change');
-      
+      $reminder.val(defaultAlarm).trigger('change'); 
     }
   }
 

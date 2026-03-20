@@ -58,7 +58,7 @@ class tchap_manager extends MelObject {
    */
   get badge() {
     return this.tchapContext.querySelector(
-      '.mx_SpaceButton_home .mx_SpacePanel_badgeContainer .mx_NotificationBadge_count',
+      '.mx_NotificationBadge .mx_NotificationBadge_count',
     );
   }
 

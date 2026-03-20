@@ -335,6 +335,8 @@ $labels['gereragenda'] = 'Gérer les agendas';
 // MANTIS 3607: Permettre de remplacer tous les évènements lors d'un import
 $labels['deleteallcalendarconfirm'] = 'Voulez-vous vraiment supprimer tous les évènements de cet agenda (l\'opération ne peut pas être annulée) ?';
 $labels['event private'] = "Évènement privé";
+$labels['event busy'] = "Évènement occupé";
+$labels['event tentative'] = "Évènement provisoire";
 $labels['copied_url'] = 'Lien copié !';
 $labels['copied_url_default'] = 'Copier le lien';
 $labels['copied_url_title'] = 'Cliquez-ici pour copier le lien de l\'agenda';

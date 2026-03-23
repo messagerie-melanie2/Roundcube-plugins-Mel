@@ -191,7 +191,7 @@
     });
 
     exportBtn.addEventListener('click', () => {
-        window.location.href = './?_task=suspect_urls&_action=export_csv';
+        window.location.href = rcmail.url('suspect_urls/export_csv');
       });
   }
 

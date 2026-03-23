@@ -402,6 +402,8 @@ $labels['attention'] = 'Attention';
 $labels['leaving_bnum'] = 'Vous êtes sur le point de quitter le Bnum pour aller sur le site suivant :';
 $labels['always_authorize'] = 'Toujours autoriser les liens provenant de ';
 $labels['warning_suspect_url'] = ' est référencé comme risque potentiel de phishing. Je reconnais que je ne donnerai pas mes identifiants Bnum.';
+$labels['warning_suspect_url_avoid'] = 'Je confirme vouloir accéder à ce site potentiellement dangereux et reconnais que je ne donnerai pas mes identifiants Bnum ';
+$labels['warning_suspect'] = 'Attention, site référencé comme risque potentiel de phishing';
 $labels['warning_external_link'] = 'Attention, ne jamais donner vos identifiants ou mots de passe Bnum ou Mél sur le site que vous allez visiter';
 $labels['open_external_link'] = 'Visiter le site';
 
@@ -508,6 +510,7 @@ $labels['search_in_addressbook'] = 'Rechercher dans l\'annuaire';
 $labels['start_search'] = 'Lancer la recherche';
 $labels['erase_text'] = 'Effacer la saisie';
 $labels['add_users_not_added'] = 'Certains utilisateurs n\'ont pas encore été ajoutés à la liste des participants, les ajouter ?';
+
 
 $labels['return_to_creation_window'] = 'Retour à la fenêtre de création (email, espaces de travail, etc...)';
 $labels['return_to_creation_modal'] = 'Retour à la modale de création';

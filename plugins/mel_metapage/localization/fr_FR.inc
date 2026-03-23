@@ -529,4 +529,8 @@ $labels['duplicateevent'] = 'Dupliquer l\'original';
 $labels['copyeventseries'] = 'Copier l\'original';
 
 $labels['event-not-ok-rec-date'] = 'La date de fin de la récurrence est inférieur ou égale à la date actuelle';
-$labels['image_title'] = 'Image de profil'
+$labels['image_title'] = 'Image de l\'espace de travail';
+
+$labels['workspace_title_min_length'] = 'Le titre de l\'espace de travail doit contenir au minimum %d caractères.';
+$labels['workspace_title_invalid_first_char'] = 'Le titre de l\'espace de travail doit commencer par une lettre ou un chiffre.';
+$labels['workspace_title_title'] = 'Le titre doit contenir au minimum %d caractères et commencer par une lettre ou un chiffre.';

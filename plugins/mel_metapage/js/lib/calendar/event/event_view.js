@@ -465,8 +465,15 @@ export class EventView {
    */
   _main(event) {
     let warning_panel = WarningPanel.Get();
-    this.parts.init(event, this.inputs, this.fakes);
 
+    const hasTitle =
+      event.title !== EMPTY_STRING &&
+      event.title !== null &&
+      event.title !== undefined;
+
+    MelObject.Empty().rcmail().env['__local:part:isStartEvent'] = !hasTitle;
+
+    this.parts.init(event, this.inputs, this.fakes);
     this._generate_dialog_events();
 
     $(MAIN_FORM_SELECTOR).css('opacity', '1');

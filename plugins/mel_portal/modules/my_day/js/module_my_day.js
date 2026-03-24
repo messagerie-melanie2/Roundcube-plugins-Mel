@@ -12,6 +12,12 @@ import {
 } from '../../../../../skins/mel_elastic/design-system/ds-module-bnum.js';
 import { EventLocation } from '../../../../mel_metapage/js/lib/calendar/event_location.js';
 import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
+import {
+  handleActionClick,
+  handleActionMouseEnter,
+  handleActionMouseLeave,
+  handleEventClick,
+} from './module_my_day.internal/callbacks.js';
 
 const TOP_KEY = 'my_day_listeners';
 const LISTENER_KEY = mel_metapage.EventListeners.calendar_updated.after;
@@ -156,8 +162,21 @@ class ModuleMyDay extends BaseModule {
             });
 
             action.setAttribute('slot', 'action');
-            action.addEventListener('click', mainLocation);
+            action.addEventListeners({
+              click: handleActionClick(mainLocation),
+              mouseenter: handleActionMouseEnter(node),
+              mouseleave: handleActionMouseLeave(node),
+            });
+
             node.appendChild(action);
+            node.addEventListener(
+              'click',
+              handleEventClick(
+                x.calendar,
+                moment(x.start).startOf().toDate().getTime() / 1000.0,
+                x,
+              ),
+            );
           }
         }
 

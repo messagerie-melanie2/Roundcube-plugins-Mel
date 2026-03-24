@@ -538,3 +538,5 @@ $labels['workspace_title_title'] = 'Le titre doit contenir au minimum %d caract�
 $labels['forword_the_invitation'] = 'Transmettre l\'invitation';
 $labels['share_ics_joined'] = 'Le fichier ICS sera joint au message';
 $labels['share_ics_not_joined'] = 'Seules les informations de l\'évènement seront envoyées (titre, horaires, lieu, description)';
+
+$labels['event_title']= 'Rejoindre l\'audioconférence par téléphone';

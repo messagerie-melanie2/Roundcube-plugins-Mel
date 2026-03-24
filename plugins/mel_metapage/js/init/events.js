@@ -1268,7 +1268,8 @@ if (rcmail && window.mel_metapage) {
       if (location_phone !== '') {
         const phoneNumber = location_phone[0];
         const pinCode     = location_phone[1];
-
+        const title = rcmail.gettext( 'event_title', "mel_metapage");
+        debugger;
         html += `
           <div id="location-mel-phone-calendar" class="row" style="${rowStyle}">
             <div class="col-12" style="${colStyle}">
@@ -1276,10 +1277,10 @@ if (rcmail && window.mel_metapage) {
               <!-- Numéro de téléphone cliquable avec icône tél -->
               <span style="${iconStyle}" class="icon-mel-phone mel-cal-icon"></span>
               <span style="display:inline-block">
-                <a title="Rejoindre l'audioconférence par téléphone"
-                  href="tel:${phoneNumber}#">
-                  ${phoneNumber}
-                </a>
+                <a title= "${title}"
+                  href="tel:${phoneNumber}#${pinCode}">
+                    ${phoneNumber}
+                  </a>
               </span>
 
               <!-- Séparateur -->

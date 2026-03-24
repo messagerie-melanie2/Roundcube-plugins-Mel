@@ -1269,7 +1269,7 @@ if (rcmail && window.mel_metapage) {
         const phoneNumber = location_phone[0];
         const pinCode     = location_phone[1];
         const title = rcmail.gettext( 'event_title', "mel_metapage");
-        debugger;
+  
         html += `
           <div id="location-mel-phone-calendar" class="row" style="${rowStyle}">
             <div class="col-12" style="${colStyle}">

@@ -78,7 +78,7 @@ class Workspaces extends Module
     unset($workspaces);
 
     $title = html::div(
-      ['style' => 'display: flex;justify-content: space-between;border-bottom: solid thin #e0e0e0;padding-bottom: 5px;margin-bottom: 15px;margin-left: 14px;'],
+      ['style' => 'display: flex;align-items: center;justify-content: space-between;border-bottom: solid thin #e0e0e0;padding-bottom: 5px;margin-bottom: 15px;margin-left: 14px;'],
       html::tag("h2", ["style" => "float:left;margin-top:15px;margin-bottom: -5px;", 'class' => 'melv2-card-title-container-modified'], html::a(['class' => 'melv2-card-title'], $this->text("workspaces"))) .
         html::tag("bnum-secondary-button", ["id" => "wsp-see-all", "title" => "Afficher la liste des espaces de travail", 'data-icon' => "arrow_forward", "class" => "", "style" => "float:right;"], "Voir tout")
     );

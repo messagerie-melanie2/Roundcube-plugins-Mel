@@ -188,7 +188,15 @@ class FakePart extends Parts {
  * @enum {Symbol}
  */
 Parts.MODE = {
-  change: Symbol(),
-  click: Symbol(),
-  input: Symbol(),
+    change:Symbol(),
+    click:Symbol(),
+    input:Symbol()
 };
+
+/**
+ * Indique si on est en mode création d'évènement ou en mode édition.
+ * true = création, false = édition
+ * @static
+ * @type {boolean}
+ */
+Parts.isStartEvent = false;

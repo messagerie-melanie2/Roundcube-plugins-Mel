@@ -458,46 +458,42 @@ export class TimePartManager {
    */
   _on_all_day_changed(e) {
     const isAllDay = $(e.currentTarget)[0].checked;
-    const alldayReminderEnabled = rcmail.env.allday_reminder;
     const $reminder = $('#mel-calendar-alarm');
 
+    const toggleClass = (part, add) => part._$fakeField
+        .css('display', add ? 'none' : EMPTY_STRING)
+        .parent()
+        .parent()
+        [add ? 'addClass' : 'removeClass'](CLASS_ALL_DAY);
 
-    if (isAllDay ) {
-      this.start._$fakeField
-        .css('display', 'none')
-        .parent()
-        .parent()
-        .addClass(CLASS_ALL_DAY);
-      this.end._$fakeField
-        .css('display', 'none')
-        .parent()
-        .parent()
-        .addClass(CLASS_ALL_DAY);
-       // mettre la valeur à "aucune" dès que l'évènement est en journée entière 
-      if (!alldayReminderEnabled){
-         $reminder.val('0').trigger('change');
-       }
+    toggleClass(this.start, isAllDay);
+    toggleClass(this.end, isAllDay);
 
+    // On ne touche au rappel qu'en mode création
+    // if (Parts.isStartEvent) return;
+
+    if (isAllDay) {
+      // debugger;
+        // Journée entière en création : appliquer le rappel par défaut allday
+        const alldayReminder = rcmail.env.allday_reminder;
+
+        if (alldayReminder !== undefined && alldayReminder !== 0) {
+            $reminder.val(alldayReminder).trigger('change');
+        } else {
+            $reminder.val('0').trigger('change');
+        }
     } else {
-      this.start._$fakeField
-        .css('display', EMPTY_STRING)
-        .parent()
-        .parent()
-        .removeClass(CLASS_ALL_DAY);
-      this.end._$fakeField
-        .css('display', EMPTY_STRING)
-        .parent()
-        .parent()
-        .removeClass(CLASS_ALL_DAY);
-
-        //remetre le paramettre à defaut si l'évènement n'est pas en journée entrière 
-      const defaultAlarm = rcmail.env.calendar_settings?.alarm_minutes ?? '15';
-      $reminder.val(defaultAlarm).trigger('change');
-      
-    }
+        // Pas journée entière en création : remettre le rappel par défaut du calendrier
+        const calendarDefaultAlarm = rcmail.env.calendar_settings?.alarm_minutes ?? '15';
+        $reminder.val(String(calendarDefaultAlarm)).trigger('change');
+       
+        }
   }
-
-  /**
+    
+    /**
+     const defaultAlarm = rcmail.env.calendar_settings?.alarm_minutes ?? '15';
+     $reminder.val(defaultAlarm).trigger('change');
+     
    * Met à jour le select en ajoutant une option qui n'éxiste pas.
    * @param {string} select Id du select
    * @param {string} value Valeur à ajouter. Le format doit être 'HH:mm'

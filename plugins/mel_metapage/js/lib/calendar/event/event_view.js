@@ -48,6 +48,7 @@ import { CalendarOwner } from './parts/calendarparts.js';
 import { CategoryPart } from './parts/categoryparts.js';
 import { GuestsPart } from './parts/guestspart.js';
 import { LocationPartManager } from './parts/location_part.js';
+import { Parts } from './parts/parts.js';
 import { RecPart } from './parts/recpart.js';
 import { SensitivityPart } from './parts/sensitivitypart.js';
 import { StatePart } from './parts/statepart.js';
@@ -450,6 +451,8 @@ export class EventView {
   _setup(event, dialog) {
     this._event = event;
     this._dialog = dialog;
+    //detecter si on est en creation ou en édition (evenement en creation n'a pas de l'id)
+    Parts.isStartEvent = false;
 
     this.inputs = new EventManager(...EventView.true_selectors).generate();
     this.fakes = new EventManager(...EventView.false_selectors).generate();

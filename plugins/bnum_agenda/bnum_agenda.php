@@ -227,17 +227,25 @@ class bnum_agenda extends bnum_plugin {
       //opition de rappel par defaut sur les évènements journée entière
       
       $field_id = 'allday_reminder';
+      $select_alarm_allday = new html_select(['name'=> '_allday_reminder', 'id' => $field_id]);
+      //choix du createur 
+      $alarm_options = [
+        0 => $this->rc()->gettext('none'),
+        5    => '5 minutes',
+        15   => '15 minutes',
+        30   => '30 minutes',
+        60   => '1 heure',
+        120  => '2 heures',
+        1440 => '1 jour',
+        10080 => 'une semaine',
+      ];
+      foreach($alarm_options as $val => $label){
+        $select_alarm_allday->add($label, $val);
+      }
 
-      $args['blocks']['view']['options']['allday_reminder'] = [
-        'title'   =>  html::label($field_id, rcube::Q($this->gettext('allday_reminder'))),
-        
-        'content' => html::tag('input',[
-          'type' => 'checkbox',
-          'name' => '_allday_reminder',
-          'id' => $field_id,
-          'value' => 1,
-          'checked' => (bool)$this->rc()->config->get('allday_reminder', 0)
-        ]),
+      $args['blocks']['view']['options'][$field_id] = [
+        'title'   =>  html::label($field_id, rcube::Q($this->gettext($field_id))),
+        'content' => $select_alarm_allday->show(intval($this->rc()->config->get('allday_reminder', '0'))),
       ];
     }
     return $args;
@@ -256,7 +264,7 @@ class bnum_agenda extends bnum_plugin {
       $args['prefs']['event_limit'] = rcube_utils::get_input_value('_event_limit', rcube_utils::INPUT_POST);
       $this->rc()->output->set_env('event_limit', $args['prefs']['event_limit']);
 
-      $args['prefs']['allday_reminder'] = (bool)rcube_utils::get_input_value('_allday_reminder', rcube_utils::INPUT_POST);
+      $args['prefs']['allday_reminder'] = intval(rcube_utils::get_input_value('_allday_reminder', rcube_utils::INPUT_POST));
       $this->rc()->output->set_env('allday_reminder', $args['prefs']['allday_reminder']);
     }
     return $args;

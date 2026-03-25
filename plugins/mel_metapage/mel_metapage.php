@@ -566,7 +566,7 @@ class mel_metapage extends bnum_plugin
 
             if ($this->rc->task === "calendar") {
                 $this->rc->output->set_env("calendar_custom_dialog", true);
-                $this->rc->output->set_env("allday_reminder", $this->rc()->config->get('allday_reminder', false));
+                $this->rc->output->set_env("allday_reminder", intval($this->rc()->config->get('allday_reminder', 0)));
 
                 if ($this->rc->action === '' || $this->rc->action === 'index') {
                     $this->load_script_module('main', '/js/lib/calendar/');

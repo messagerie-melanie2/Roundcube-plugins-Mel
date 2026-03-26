@@ -636,6 +636,44 @@ class ArrayUtils {
     }
 }
 
+class Log {
+    static trace(context, ...args) {
+        if (BnumConfig.Get('console_logging') &&
+            BnumConfig.Get('console_logging_level') <= LogEnum.TRACE)
+            console.trace(`[${context}]`, ...args);
+    }
+    static debug(context, ...args) {
+        if (BnumConfig.Get('console_logging') &&
+            BnumConfig.Get('console_logging_level') <= LogEnum.DEBUG)
+            console.debug(`🔎 [${context}]`, ...args);
+    }
+    static info(context, ...args) {
+        if (BnumConfig.Get('console_logging') &&
+            BnumConfig.Get('console_logging_level') <= LogEnum.INFO)
+            console.info(`ℹ️ [${context}]`, ...args);
+    }
+    static warn(context, ...args) {
+        if (BnumConfig.Get('console_logging') &&
+            BnumConfig.Get('console_logging_level') <= LogEnum.WARN)
+            console.warn(`⚠️ [${context}]`, ...args);
+    }
+    static error(context, ...args) {
+        if (BnumConfig.Get('console_logging') &&
+            BnumConfig.Get('console_logging_level') <= LogEnum.ERROR)
+            console.error(`### [${context}]`, ...args);
+    }
+    static time(label) {
+        if (BnumConfig.Get('console_logging') &&
+            BnumConfig.Get('console_logging_level') <= LogEnum.DEBUG)
+            console.time(label);
+    }
+    static timeEnd(label) {
+        if (BnumConfig.Get('console_logging') &&
+            BnumConfig.Get('console_logging_level') <= LogEnum.DEBUG)
+            console.timeEnd(label);
+    }
+}
+
 /**
  * Classe de base pour les composants bnum personnalisés.
  *
@@ -679,7 +717,7 @@ class BnumElement extends HTMLElement {
     constructor() {
         super();
         if (this._p_isShadowElement())
-            this._p_attachCustomShadow() ?? this.attachShadow({ mode: 'open' });
+            void (this._p_attachCustomShadow() ?? this.attachShadow({ mode: 'open' }));
         // Supprime tout script enfant pour éviter l'exécution indésirable.
         const script = this.querySelector('script');
         if (script)
@@ -858,7 +896,7 @@ class BnumElement extends HTMLElement {
     }
     text(value) {
         if (value === undefined)
-            return this.textContent || '';
+            return this.textContent || EMPTY_STRING;
         this.textContent = value;
         return this;
     }
@@ -1271,7 +1309,8 @@ class BnumElement extends HTMLElement {
      */
     _p_getStylesheets() {
         const sheets = [BASE_STYLE];
-        const componentStyle = this.constructor.__CACHE_STYLE__;
+        const componentStyle = this.constructor
+            .__CACHE_STYLE__;
         if (componentStyle)
             sheets.push(...(Array.isArray(componentStyle) ? componentStyle : [componentStyle]));
         return sheets;
@@ -1290,6 +1329,7 @@ class BnumElement extends HTMLElement {
      *
      * @param container Le conteneur (ShadowRoot ou this) où construire le DOM.
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _p_buildDOM(container) { }
     _p_fromTemplate() {
         return this.constructor.__CACHE_TEMPLATE__ || null;
@@ -1303,7 +1343,13 @@ class BnumElement extends HTMLElement {
      * @param oldVal Ancienne valeur.
      * @param newVal Nouvelle valeur.
      */
-    _p_update(name, oldVal, newVal) { }
+    _p_update(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    name, 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    oldVal, 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    newVal) { }
     /**
      * Hook appelé après le rendu du composant.
      * À surcharger dans les classes dérivées.
@@ -1343,7 +1389,9 @@ class BnumElement extends HTMLElement {
      * @throws Erreur si non implémentée.
      */
     static Create(...args) {
-        throw new Error('Create method must be implemented in derived class.');
+        const text = 'Create method must be implemented in derived class.';
+        Log.error('BnumElement/Create', text, args);
+        throw new Error(text);
     }
     /**
      * Retourne le nom de la balise du composant.
@@ -1390,44 +1438,6 @@ class BnumElement extends HTMLElement {
  * Style commun à tous les BnumElement.
  */
 const BASE_STYLE = BnumElement.ConstructCSSStyleSheet(css_248z$s);
-
-class Log {
-    static trace(context, ...args) {
-        if (BnumConfig.Get('console_logging') &&
-            BnumConfig.Get('console_logging_level') <= LogEnum.TRACE)
-            console.trace(`[${context}]`, ...args);
-    }
-    static debug(context, ...args) {
-        if (BnumConfig.Get('console_logging') &&
-            BnumConfig.Get('console_logging_level') <= LogEnum.DEBUG)
-            console.debug(`🔎 [${context}]`, ...args);
-    }
-    static info(context, ...args) {
-        if (BnumConfig.Get('console_logging') &&
-            BnumConfig.Get('console_logging_level') <= LogEnum.INFO)
-            console.info(`ℹ️ [${context}]`, ...args);
-    }
-    static warn(context, ...args) {
-        if (BnumConfig.Get('console_logging') &&
-            BnumConfig.Get('console_logging_level') <= LogEnum.WARN)
-            console.warn(`⚠️ [${context}]`, ...args);
-    }
-    static error(context, ...args) {
-        if (BnumConfig.Get('console_logging') &&
-            BnumConfig.Get('console_logging_level') <= LogEnum.ERROR)
-            console.error(`### [${context}]`, ...args);
-    }
-    static time(label) {
-        if (BnumConfig.Get('console_logging') &&
-            BnumConfig.Get('console_logging_level') <= LogEnum.DEBUG)
-            console.time(label);
-    }
-    static timeEnd(label) {
-        if (BnumConfig.Get('console_logging') &&
-            BnumConfig.Get('console_logging_level') <= LogEnum.DEBUG)
-            console.timeEnd(label);
-    }
-}
 
 class RotomecaCookies {
     /**
@@ -5486,7 +5496,7 @@ function OnButtonClickedInitializer(event, instance) {
     });
 }
 
-var css_248z$k = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}.label-container{--internal-gap:0.5rem;display:flex;flex-direction:column;gap:var(--internal-gap,.5rem);margin-bottom:var(--internal-gap,.5rem)}.label-container--label{font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-label-size,var(--bnum-font-size-m));line-height:var(--bnum-font-label-line-height,var(--bnum-font-height-text-m))}.label-container--hint{color:var(--bnum-input-hint-text-color,var(--bnum-text-hint,#666));font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-hint-size,var(--bnum-font-size-xs));line-height:var(--bnum-font-hint-line-height,var(--bnum-font-height-text-xs))}.input-like{background-color:var(--bnum-input-background-color,var(--bnum-color-input,#eee));border:none;border-radius:.25rem .25rem 0 0;box-shadow:var(--bnum-input-box-shadow,inset 0 -2px 0 0 var(--bnum-input-line-color,var(--bnum-color-input-border,#3a3a3a)));color:var(--bnum-input-color,var(--bnum-text-on-input,#666));display:block;font-size:1rem;line-height:1.5rem;padding:.5rem 1rem;width:100%}";
+var css_248z$k = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}.label-container{--internal-gap:0.5rem;display:flex;flex-direction:column;gap:var(--internal-gap,.5rem);margin-bottom:var(--bnum-input-container-margin-bottom,var(--internal-gap,.5rem))}.label-container--label{font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-label-size,var(--bnum-font-size-m));line-height:var(--bnum-font-label-line-height,var(--bnum-font-height-text-m))}.label-container--hint{color:var(--bnum-input-hint-text-color,var(--bnum-text-hint,#666));font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-hint-size,var(--bnum-font-size-xs));line-height:var(--bnum-font-hint-line-height,var(--bnum-font-height-text-xs))}.input-like{background-color:var(--bnum-input-background-color,var(--bnum-color-input,#eee));border:none;border-radius:.25rem .25rem 0 0;box-shadow:var(--bnum-input-box-shadow,inset 0 -2px 0 0 var(--bnum-input-line-color,var(--bnum-color-input-border,#3a3a3a)));color:var(--bnum-input-color,var(--bnum-text-on-input,#666));display:block;font-size:1rem;line-height:1.5rem;padding:.5rem 1rem;width:100%}";
 
 var css_248z$j = ":host(:state(state)){border-left:2px solid var(--internal-border-color);display:block;padding-left:10px}:host(:state(state)) .state{align-items:center;color:var(--internal-color);display:flex;font-size:.75rem;margin-top:1rem}:host(:state(state)) .state bnum-icon{--bnum-icon-font-size:1rem;margin-right:5px}:host(:state(state)) .hint-label{color:var(--internal-color)}:host(:state(state)) .error,:host(:state(state)) .success{display:none;margin-bottom:-4px}:host(:state(state):state(success)){--internal-border-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(state):state(success)) .hint-label,:host(:state(state):state(success)) .state{--internal-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(state):state(success)) .success{display:block}:host(:state(state):state(error)){--internal-border-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}:host(:state(state):state(error)) .hint-label,:host(:state(state):state(error)) .state{--internal-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}:host(:state(state):state(error)) .error{display:block}";
 
@@ -6523,7 +6533,7 @@ let HTMLBnumInputDate = (() => {
     return _classThis;
 })();
 
-var css_248z$h = ":host #input-search-actions-container{display:flex;position:absolute;right:10px;top:8px}:host #input-search-actions-container #input-clear-button{display:none}:host(:state(value)) #input-search-actions-container #input-clear-button{display:inline-block}";
+var css_248z$h = ":host .container{position:relative}:host #input-search-actions-container{display:flex;position:absolute;right:45px;top:8px}:host #input-search-actions-container #input-clear-button{display:none}:host(:state(value)) #input-search-actions-container #input-clear-button{display:inline-block}";
 
 const ID_ACTIONS_CONTAINER = 'input-search-actions-container';
 const ID_CLEAR_BUTTON = 'input-clear-button';
@@ -9911,7 +9921,6 @@ let HTMLBnumCardItemAgenda = (() => {
         #_shedulerTitle = null;
         #_shedulerLocation = null;
         #_shedulerAction = null;
-        #_actionInitialised = false;
         #_ui_accessor_storage = __runInitializers(this, _private__ui_initializers, void 0);
         //#endregion
         //#region Public Fields

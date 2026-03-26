@@ -393,7 +393,7 @@ class M2contacts
         $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id), 'class' => 'contact' . $class, 'foldername' => driver_mel::gi()->mceToRcId($id)));
 
         $table->add('name', $name);
-        $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_contacts[$id]) ? $id : ''), array('value' => $id)));
+        $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_contacts[$id]) ? $id : ''), array('value' => $id, 'disabled' => ($id === $this->user->uid && !isset($hidden_contacts[$id])) ? true : false,)));
       }
       // set client env
       $this->rc->output->add_gui_object('mel_resources_elements_list', $attrib['id']);

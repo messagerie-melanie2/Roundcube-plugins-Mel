@@ -467,12 +467,17 @@ body {
 .abs_date_picker {
   position: relative;
 }
+
 .calendar_icon {
   position: absolute;
   top: 5%;
   right: 2%;
-  pointer-events: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
   color: #c5d1d3;
+
   &::before {
     content: '\ebcc';
     font-family: 'Material Symbols Outlined' !important;

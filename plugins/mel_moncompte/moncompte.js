@@ -700,18 +700,64 @@ if (window.rcmail) {
         );
       };
 
+      // Autoriser l'ouverture du calendrier uniquement via l'icône
+      let allowPickerOpen = false;
+
+      function allowOnlyWhenFlag() {
+        return allowPickerOpen;
+      }
+
       $('#abs_date_debut')
-        .datepicker()
-        .datepicker('option', 'onSelect', shift_enddate)
-        .change(function () {
+        .datepicker({
+          beforeShow: allowOnlyWhenFlag,
+          onSelect: shift_enddate
+        })
+        .on('change', function () {
           shift_enddate(this.value);
         });
+
       $('#abs_date_fin')
-        .datepicker()
-        .datepicker('option', 'onSelect', shift_startdate)
-        .change(function () {
+        .datepicker({
+          beforeShow: allowOnlyWhenFlag,
+          onSelect: shift_startdate
+        })
+        .on('change', function () {
           shift_startdate(this.value);
         });
+
+      // Gestion du clic sur l'icone pour fermer ou ouvrir le calendrier
+      $(document).on('click', '.abs_date_picker .calendar_icon', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const $input = $(this).closest('.abs_date_picker').find('input');
+
+        // Si le calendrier est déjà visible, on le ferme
+        if ($('#ui-datepicker-div').is(':visible')) {
+          $input.datepicker('hide');
+          allowPickerOpen = false;
+          return;
+        }
+
+        // Sinon on l'ouvre
+        allowPickerOpen = true;
+        setTimeout(function () {
+          $input.datepicker('show');
+        }, 0);
+      });
+
+      // Fermeture du calendrier ouvert si on clique dans l'input
+      $(document).on('click', '#abs_date_debut, #abs_date_fin', function (e) {
+        if ($('#ui-datepicker-div').is(':visible')) {
+          e.stopPropagation();
+          $(this).datepicker('hide');
+          allowPickerOpen = false;
+        }
+      });
+
+      $('#abs_date_debut, #abs_date_fin').datepicker('option', 'onClose', function () {
+        allowPickerOpen = false;
+      });
 
       //modifier texte au submit
       $('#gest_save').click(function () {
@@ -1309,6 +1355,15 @@ function refreshListMembers(dn_list) {
     );
   }
 }
+
+//Force la checkbox du calendrier à rester cochée si utilisé dans les invitations
+rcube_webmail.prototype.mel_force_checkbox_on = function (mbox) {
+  const $checkbox = $('input[name="_show_resource_rc[]"][value="' + mbox + '"]');
+
+  if ($checkbox.length) {
+    $checkbox.prop('checked', true);
+  }
+};
 
 $(document).ready(() => {
   rcmail.set_busy(false);

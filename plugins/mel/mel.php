@@ -330,6 +330,7 @@ class mel extends rcube_plugin
         $this->rc->output->set_env('plugin.show_password_change', true);
       }
     }
+
     $this->ui_initialized = true;
   }
 
@@ -1225,5 +1226,15 @@ class mel extends rcube_plugin
       $service = implode('/', array_slice($split_service, -3, 3, true));
     }
     return $service;
+  }
+
+  /**
+   * Définit si on est dans une situation où l'auth est sécurisée
+   * 
+   * @return boolean
+   */
+  public static function is_secured()
+  {
+    return mel::is_internal() || mel::is_auth_strong() || !class_exists('mel_doubleauth') || mel_doubleauth::is_double_auth_enable();
   }
 }

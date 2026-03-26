@@ -444,7 +444,7 @@ class M2calendar
         $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id), 'class' => 'calendar' . $class, 'foldername' => driver_mel::gi()->mceToRcId($id)));
 
         $table->add('name', $name);
-        $table->add('subscribed', $checkbox_subscribe->show((!isset($hidden_calendars[$id]) ? $id : ''), array('value' => $id)));
+        $table->add('subscribed', $checkbox_subscribe->show((!isset($hidden_calendars[$id]) ? $id : ''), array('value' => $id, 'disabled' => ($id === $this->user->uid && !isset($hidden_calendars[$id])) ? true : false,)));
       }
       // set client env
       $this->rc->output->add_gui_object('mel_resources_elements_list', $attrib['id']);

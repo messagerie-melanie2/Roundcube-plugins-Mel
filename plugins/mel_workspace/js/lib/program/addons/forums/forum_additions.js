@@ -22,6 +22,11 @@ class ForumAddition extends WorkspaceObject {
         'forum.post.delete',
         this.forumUpdated.bind(this),
       );
+
+      this.rcmail().addEventListener(
+        'forum.new_post.updated',
+        this.forumActionUpdated.bind(this),
+      );
     } else {
       this.onactionreceived.push((data) => {
         if (data.key === this.KEY) {
@@ -31,12 +36,19 @@ class ForumAddition extends WorkspaceObject {
             $frame[0].contentWindow.location.reload();
           }
         }
+        else if (data.key === 'forum:action') {
+          let $frame = $('#module-forum-last iframe')[0].contentWindow.rcmail.triggerEvent('forum.new_post_updated');
+        }
       });
     }
   }
 
   forumUpdated() {
     WorkspaceObject.SendToWorkspace(this.KEY, true);
+  }
+
+  forumActionUpdated() {
+    WorkspaceObject.SendToWorkspace('forum:action', true);
   }
 
   static Start() {

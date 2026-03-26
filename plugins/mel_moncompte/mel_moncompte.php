@@ -734,6 +734,20 @@ class mel_moncompte extends rcube_plugin {
     $type = rcube_utils::get_input_value('_type', rcube_utils::INPUT_POST);
 
     if (isset($mbox) && isset($type)) {
+       // Impossible de masquer l'agenda utilisé pour les invitations
+      if ($type === 'calendar') {
+        $no_invitation = $this->rc->user->get_prefs()['no_invitation_calendars'] ?? [];
+
+        $is_invitation_active = !isset($no_invitation[$mbox]);
+
+        if ($is_invitation_active) {
+          $this->rc->output->show_message('mel_moncompte.hide_calendar_invitation_forbidden', 'error');
+
+          $this->rc->output->command('mel_force_checkbox_on', $mbox);
+
+          return;
+        }
+      }
       $conf_name = 'hidden_' . $type . 's';
       // MANTIS 0006340: Ajouter une prop CalDAV {DAV}hidden quand un calendrier est masqué
       if ($type == 'calendar') {
@@ -745,7 +759,8 @@ class mel_moncompte extends rcube_plugin {
         $this->_set_caldav_properties($calendars_prop);
       }
       // Récupération des préférences de l'utilisateur
-      $hidden = $this->rc->config->get($conf_name, array());
+      $prefs = $this->rc->user->get_prefs();
+      $hidden = $prefs[$conf_name] ?? [];
       $hidden[$mbox] = 1;
       if ($this->rc->user->save_prefs(array($conf_name => $hidden)))
         $this->rc->output->show_message('mel_moncompte.hide_resource_confirm', 'confirmation');
@@ -797,13 +812,29 @@ class mel_moncompte extends rcube_plugin {
       // Récupération des préférences de l'utilisateur
       $no_invitation = $this->rc->config->get($conf_name, []);
       unset($no_invitation[$mbox]);
-      if ($this->rc->user->save_prefs(array($conf_name => $no_invitation)))
+
+      $hidden_conf = 'hidden_calendars';
+      $hidden = $this->rc->config->get($hidden_conf, []);
+      unset($hidden[$mbox]);
+
+      $calendars_prop = $this->_get_caldav_properties();
+      if (isset($calendars_prop[$mbox]['{DAV:}hidden'])) {
+        unset($calendars_prop[$mbox]['{DAV:}hidden']);
+        $this->_set_caldav_properties($calendars_prop);
+      }
+
+      if ($this->rc->user->save_prefs([
+        $conf_name   => $no_invitation,
+        $hidden_conf => $hidden,
+      ])) {
+
         $this->rc->output->show_message('mel_moncompte.invitation_confirm', 'confirmation');
-      else
+
+        $this->rc->output->command('mel_resources_reload_page');
+      }
+      else {
         $this->rc->output->show_message('mel_moncompte.modify_error', 'error');
-    }
-    else {
-      $this->rc->output->show_message('mel_moncompte.modify_error', 'error');
+      }
     }
   }
 

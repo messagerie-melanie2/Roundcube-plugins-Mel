@@ -89,6 +89,7 @@ $labels['show_resource_confirm'] = 'Ressource affichée dans le Bnum';
 $labels['sort_resource_confirm'] = 'La ressource a bien été triée';
 $labels['invitation_confirm'] = 'Ce calendrier sera utilisé dans la gestion des invitations';
 $labels['no_invitation_confirm'] = 'Ce calendrier ne sera plus utilisé dans la gestion des invitations';
+$labels['hide_calendar_invitation_forbidden'] = 'Impossible de masquer un calendrier utilisé pour les invitations';
 
 $labels['synchro_mobile_confirm'] = 'Ressource ajoutée pour la synchronisation mobile';
 $labels['no_synchro_mobile_confirm'] = 'Ressource supprimée de la synchronisation mobile';
@@ -282,9 +283,16 @@ $labels['hourstart'] = "Heure de début";
 $labels['hourend'] = "Heure de fin";
 $labels['allday'] = "Journée entière";
 $labels['deleteabsence'] = "Supprimer cette absence";
+$labels['close_or_open_calendar'] = "Ouvrir ou fermer le calendrier";
 
 $labels['absence_ok'] = "Votre message d'absence a bien été enregistré";
 $labels['absence_nok'] = "Une erreur s'est produite lors de l'enregistrement de votre message d'absence, veuillez contacter votre service informatique.";
+$labels['absence_msg_interne_required'] = "Veuillez renseigner le champ message interne.";
+$labels['absence_msg_interne_externe_required'] = "Veuillez renseigner les champs message interne et message externe.";
+$labels['absence_msg_externe_required'] = "Veuillez renseigner le champ message externe.";
+$labels['absence_msg_hebdomadaire_required'] = "Veuillez renseigner un message pour chaque absence hebdomadaire.";
+$labels['absence_dates_required'] = "Veuillez renseigner une date de début et une date de fin.";
+$labels['absence_disabled'] = "La réponse automatique d'absence a bien été désactivée.";
 
 // Gestion des listes
 $labels['gestionnairelistes'] = "Gestionnaire de listes";
@@ -420,7 +428,7 @@ $labels['deviceid_title'] = 'Identifiant de l\'appareil : %s';
 $labels['type_title'] = 'Type d\'appareil : %s';
 $labels['lastsync_title'] = 'Dernière synchronisation : %s';
 $labels['zpush_title'] = 'Version Z-Push : %s';
-$labels['event_abs_msg_before'] = "/!\\ Attention ! Modifier cette évènement ne modifie pas l'absence associée !\r\n---------------------------------------\r\n";
+$labels['event_abs_msg_before'] = "/!\\ Attention ! Modifier cet évènement ne modifie pas l'absence associée !\r\n---------------------------------------\r\n";
 $labels['abs_hebdo_event'] = '🤖 Absence hebdomadaire';
 $labels['abs_ponct_event'] = '🤖 Absence ponctuelle';
 $labels['create_error'] = 'Impossible de créer l\'événement lié à l\'absence';

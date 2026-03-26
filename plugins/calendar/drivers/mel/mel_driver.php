@@ -1516,6 +1516,11 @@ class mel_driver extends calendar_driver {
     }
     // Recurrence
     if (isset($event['recurrence']) && !empty($event['recurrence']) && strpos(get_class($_event), '\Exception') === false) {
+      //0008897 - L'affichage BYDAY=-1LD fait crash le calendrier de prise de rendez-vous
+      if ($event['recurrence']['FREQ'] == 'MONTHLY' && isset($event['recurrence']['BYDAY']) && strpos($event['recurrence']['BYDAY'], 'LD')) {
+        $event['recurrence']['BYMONTHDAY'] = str_replace('LD', '', $event['recurrence']['BYDAY']);
+        unset($event['recurrence']['BYDAY']);
+      }
       $_event->recurrence->rrule = $event['recurrence'];
     }
     // Status
@@ -2420,6 +2425,11 @@ class mel_driver extends calendar_driver {
         if (isset($recurrence['UNTIL']) && $recurrence['UNTIL'] instanceof \DateTime && $_event['allday']) {
           $recurrence['UNTIL']->setTime(23, 59);
         }
+        //0008897 - L'affichage BYDAY=-1LD fait crash le calendrier de prise de rendez-vous
+        if ($recurrence['FREQ'] == 'MONTHLY' && isset($recurrence['BYMONTHDAY'])) {
+          $recurrence['BYDAY'] = $recurrence['BYMONTHDAY'] . 'LD';
+          unset($recurrence['BYMONTHDAY']);
+        }
         if (is_array($recurrence) && count($recurrence) > 0) {
           // Récupération des exceptions dans la récurrence de l'évènement
           $_event['recurrence'] = $this->_read_event_exceptions($event, $recurrence);
@@ -2579,6 +2589,11 @@ class mel_driver extends calendar_driver {
         // Problème de UNTIL avec les journées entières
         if (isset($recurrence['UNTIL']) && $recurrence['UNTIL'] instanceof \DateTime && $_event['allday']) {
           $recurrence['UNTIL']->setTime(23, 59);
+        }
+        //0008897 - L'affichage BYDAY=-1LD fait crash le calendrier de prise de rendez-vous
+        if ($recurrence['FREQ'] == 'MONTHLY' && isset($recurrence['BYMONTHDAY'])) {
+          $recurrence['BYDAY'] = $recurrence['BYMONTHDAY'] . 'LD';
+          unset($recurrence['BYMONTHDAY']);
         }
         if (is_array($recurrence) && count($recurrence) > 0) {
           // Récupération des exceptions dans la récurrence de l'évènement

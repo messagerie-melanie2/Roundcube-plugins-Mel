@@ -77,11 +77,12 @@
     (() => {
         /**
          * @param {string} functionName Nom de la fonction qui peut se trouver dans `window`.
-         * @return {unknown}
+         * @return {T}
+         * @template T
          */
         function tryCallFunction(functionName) {
             /**
-             * @type {() => unknown}
+             * @type {() => T}
              */
             const func = window[functionName] || (() => { throw new Error(`${functionName} n'existe pas !`)});
 

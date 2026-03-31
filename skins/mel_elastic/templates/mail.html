@@ -93,14 +93,109 @@
         </div>
       </div>
 
-      <bnum-input-search style="position: relative;--bnum-input-container-margin-bottom:0;--internal-gap:0;">
+      <bnum-input-search id="input-search-mail">
         <span class="sr-only">Recherche dans les messages</span>
-        <bnum-icon-button slot="actions">filter_list</bnum-icon-button>
+        <bnum-icon-button slot="actions" id="input-search-filter-button">filter_list</bnum-icon-button>
       </bnum-input-search>
 
     </div>
 
   </div>
+
+ <div id="searchmenu" class="hidden searchoptions scroller propform formcontainer"
+    aria-labelledby="aria-label-search-menu" aria-controls="messagelist" style="flex:1 0 auto;">
+    <h3 id="aria-label-search-menu" class="voice">
+      <roundcube:label name="searchmod" />
+    </h3>
+    <div class="formcontent">
+      <ul class="proplist">
+        <li><label><input type="checkbox" name="s_mods[]" value="subject" />
+            <roundcube:label name="subject" />
+          </label></li>
+        <li><label><input type="checkbox" name="s_mods[]" value="from" />
+            <roundcube:label name="from" />
+          </label></li>
+        <li><label><input type="checkbox" name="s_mods[]" value="to" />
+            <roundcube:label name="to" />
+          </label></li>
+        <li><label><input type="checkbox" name="s_mods[]" value="cc" />
+            <roundcube:label name="cc" />
+          </label></li>
+        <li><label><input type="checkbox" name="s_mods[]" value="bcc" />
+            <roundcube:label name="bcc" />
+          </label></li>
+        <li><label><input type="checkbox" name="s_mods[]" value="body" />
+            <roundcube:label name="body" />
+          </label></li>
+        <li><label><input type="checkbox" name="s_mods[]" value="text" />
+            <roundcube:label name="msgtext" />
+          </label></li>
+      </ul>
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <label for="s_scope" class="input-group-text">
+            <roundcube:label name="searchscope" />
+          </label>
+        </div>
+        <select name="s_scope" id="s_scope">
+          <option value="base">
+            <roundcube:label name="currentfolder" />
+          </option>
+          <option value="sub">
+            <roundcube:label name="subfolders" />
+          </option>
+          <option value="all">
+            <roundcube:label name="allfolders" />
+          </option>
+        </select>
+      </div>
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <label for="searchfilter" class="input-group-text">
+            <roundcube:label name="type" />
+          </label>
+        </div>
+        <roundcube:object name="searchfilter" id="searchfilter" noevent="true" />
+      </div>
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <label for="s_interval" class="input-group-text">
+            <roundcube:label name="date" />
+          </label>
+        </div>
+        <roundcube:object name="searchinterval" id="s_interval" />
+      </div>
+    </div>
+    <div class="formbuttons">
+      <button type="button" class="btn btn-primary icon search" onclick="return rcmail.command('search')">
+        <roundcube:label name="search" />
+      </button>
+    </div>
+  </div>
+
+  <roundcube:add_label name="showunread" />
+
+  <!-- <separate></separate> -->
+  <div class="message-list-filter-container">
+    <ul id="message-list-filters" class="ignore-bullet">
+      <!-- MANTIS -->
+      <li class="input-group">
+        <input type="checkbox" id="select-mail-state" />
+        <button id="list-select-mail-choices" data-popup="listselect-menu" data-toggle-button="list-toggle-button" title="Sélectionner" aria-haspopup="true" aria-expanded="false" aria-owns="listselect-menu" data-original-title="Sélectionner" class="btn mel-button no-button-margin no-margin-button bckg true"><span class="material-symbols-outlined">expand_more</span></button>
+      </li>
+      <roundcube:container name="messagelistfiltersmenu" id="messagelistfiltersmenu" />
+    </ul>
+  </div>
+  <div id="message-list-filters-extra"></div>
+  <div id="messagelist-content" class="scroller" tabindex="-1">
+    <h2 id="aria-label-messagelist" class="voice">
+      <roundcube:label name="arialabelmessagelist" />
+    </h2>
+    <roundcube:object name="messages" id="messagelist" class="listing messagelist sortheader fixedheader"
+      aria-labelledby="aria-label-messagelist" data-list="message_list" data-label-msg="listempty" />
+  </div>
+  <roundcube:include file="includes/pagenav.html" />
+
 </bnum-column>
 <!-- <div id="layout-list" class="initial listbox selected">
 

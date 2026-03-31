@@ -134,3 +134,6 @@ html.layout-large .task-mail bnum-column-sidebar#layout-sidebar > .header {
 #toolbar-list-menu {
   display: flex;
 }
+.header {
+  --layout-list-header-text-color: var(--bnum-color-border);
+}

@@ -84,6 +84,10 @@ html.layout-large .task-mail bnum-column-sidebar#layout-sidebar > .header {
   --secondary-text-color: var(--_color);
   --layout-list-header-background-color: var(--_background);
 }
+#layout-list > .header > .old-header {
+  border-bottom: var(--bnum-border-column);
+  height: calc(60px - var(--bnum-border-width-s, thin));
+}
 #layout-list > .header > .old-header a {
   --_idle-background: var(--nav-button-background, transparent);
   --_idle-color: var(
@@ -126,4 +130,7 @@ html.layout-large .task-mail bnum-column-sidebar#layout-sidebar > .header {
   --layout-list-header-background-hover-color: var(--_focus-background);
   --layout-list-header-text-hover-color: var(--_focus-color);
   --secondary-bckg-color: var(--_focus-background);
+}
+#toolbar-list-menu {
+  display: flex;
 }

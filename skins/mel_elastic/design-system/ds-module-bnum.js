@@ -5483,7 +5483,7 @@ const ICON_SUCCESS = 'check_circle';
 const ICON_ERROR = 'cancel';
 
 function Render(addonInner = EMPTY_STRING) {
-    return (h(HTMLBnumFragment, { children: [h("label", { id: ID_HINT_TEXT, for: ID_INPUT$1, class: "label-container", children: [h("span", { id: ID_HINT_TEXT_LABEL, class: "label-container--label", children: h("slot", {}) }), h("span", { id: ID_HINT_TEXT_HINT, class: "label-container--hint hint-label", children: h("slot", { name: SLOT_HINT }) })] }), h("div", { class: "container", children: [h("div", { class: "addons", children: [h("div", { class: "addon__inner", children: [addonInner, h(HTMLBnumIcon, { id: ID_INPUT_ICON }), h("input", { class: "input-like", id: ID_INPUT$1, type: DEFAULT_INPUT_TYPE })] }), h(HTMLBnumButton, { id: ID_INPUT_BUTTON, rounded: true, "data-variation": DEFAULT_BUTTON_VARIATION, children: h("slot", { name: SLOT_BUTTON }) })] }), h("span", { id: ID_STATE, class: "state", children: [h(HTMLBnumIcon, { id: ID_STATE_ICON }), h("span", { id: ID_SUCCESS_TEXT, class: CLASS_STATE_TEXT_SUCCESS, children: h("slot", { name: SLOT_SUCCESS, children: ["$", TEXT_VALID_INPUT] }) }), h("span", { id: ID_ERROR_TEXT, class: CLASS_STATE_TEXT_ERROR, children: h("slot", { name: SLOT_ERROR, children: TEXT_INVALID_INPUT }) })] })] })] }));
+    return (h(HTMLBnumFragment, { children: [h("label", { id: ID_HINT_TEXT, for: ID_INPUT$1, class: "label-container", children: [h("span", { id: ID_HINT_TEXT_LABEL, class: "label-container--label", children: h("slot", {}) }), h("span", { id: ID_HINT_TEXT_HINT, class: "label-container--hint hint-label", children: h("slot", { name: SLOT_HINT }) })] }), h("div", { class: "container", children: [h("div", { class: "addons", children: [h("div", { class: "addon__inner", children: [addonInner, h(HTMLBnumIcon, { id: ID_INPUT_ICON }), h("input", { class: "input-like", id: ID_INPUT$1, type: DEFAULT_INPUT_TYPE })] }), h(HTMLBnumButton, { id: ID_INPUT_BUTTON, rounded: true, "data-variation": DEFAULT_BUTTON_VARIATION, children: h("slot", { name: SLOT_BUTTON }) })] }), h("span", { id: ID_STATE, class: "state", part: "state-container", children: [h(HTMLBnumIcon, { id: ID_STATE_ICON }), h("span", { id: ID_SUCCESS_TEXT, class: CLASS_STATE_TEXT_SUCCESS, children: h("slot", { name: SLOT_SUCCESS, children: TEXT_VALID_INPUT }) }), h("span", { id: ID_ERROR_TEXT, class: CLASS_STATE_TEXT_ERROR, children: h("slot", { name: SLOT_ERROR, children: TEXT_INVALID_INPUT }) })] })] })] }));
 }
 
 const EVENT_DEFAULT = 'default';
@@ -5496,7 +5496,7 @@ function OnButtonClickedInitializer(event, instance) {
     });
 }
 
-var css_248z$k = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}.label-container{--internal-gap:0.5rem;display:flex;flex-direction:column;gap:var(--internal-gap,.5rem);margin-bottom:var(--bnum-input-container-margin-bottom,var(--internal-gap,.5rem))}.label-container--label{font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-label-size,var(--bnum-font-size-m));line-height:var(--bnum-font-label-line-height,var(--bnum-font-height-text-m))}.label-container--hint{color:var(--bnum-input-hint-text-color,var(--bnum-text-hint,#666));font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-hint-size,var(--bnum-font-size-xs));line-height:var(--bnum-font-hint-line-height,var(--bnum-font-height-text-xs))}.input-like{background-color:var(--bnum-input-background-color,var(--bnum-color-input,#eee));border:none;border-radius:.25rem .25rem 0 0;box-shadow:var(--bnum-input-box-shadow,inset 0 -2px 0 0 var(--bnum-input-line-color,var(--bnum-color-input-border,#3a3a3a)));color:var(--bnum-input-color,var(--bnum-text-on-input,#666));display:block;font-size:1rem;line-height:1.5rem;padding:.5rem 1rem;width:100%}";
+var css_248z$k = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}.label-container{--internal-gap:var(--bnum-input-gap,0.5rem);display:flex;flex-direction:column;gap:var(--internal-gap,.5rem);margin-bottom:var(--bnum-input-container-margin-bottom,var(--internal-gap,.5rem))}.label-container--label{font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-label-size,var(--bnum-font-size-m));line-height:var(--bnum-font-label-line-height,var(--bnum-font-height-text-m))}.label-container--hint{color:var(--bnum-input-hint-text-color,var(--bnum-text-hint,#666));font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-hint-size,var(--bnum-font-size-xs));line-height:var(--bnum-font-hint-line-height,var(--bnum-font-height-text-xs))}.input-like{background-color:var(--bnum-input-background-color,var(--bnum-color-input,#eee));border:none;border-radius:.25rem .25rem 0 0;box-shadow:var(--bnum-input-box-shadow,inset 0 -2px 0 0 var(--bnum-input-line-color,var(--bnum-color-input-border,#3a3a3a)));color:var(--bnum-input-color,var(--bnum-text-on-input,#666));display:block;font-size:1rem;line-height:1.5rem;padding:.5rem 1rem;width:100%}";
 
 var css_248z$j = ":host(:state(state)){border-left:2px solid var(--internal-border-color);display:block;padding-left:10px}:host(:state(state)) .state{align-items:center;color:var(--internal-color);display:flex;font-size:.75rem;margin-top:1rem}:host(:state(state)) .state bnum-icon{--bnum-icon-font-size:1rem;margin-right:5px}:host(:state(state)) .hint-label{color:var(--internal-color)}:host(:state(state)) .error,:host(:state(state)) .success{display:none;margin-bottom:-4px}:host(:state(state):state(success)){--internal-border-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(state):state(success)) .hint-label,:host(:state(state):state(success)) .state{--internal-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(state):state(success)) .success{display:block}:host(:state(state):state(error)){--internal-border-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}:host(:state(state):state(error)) .hint-label,:host(:state(state):state(error)) .state{--internal-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}:host(:state(state):state(error)) .error{display:block}";
 
@@ -6533,7 +6533,7 @@ let HTMLBnumInputDate = (() => {
     return _classThis;
 })();
 
-var css_248z$h = ":host .container{position:relative}:host #input-search-actions-container{display:flex;position:absolute;right:45px;top:8px}:host #input-search-actions-container #input-clear-button{display:none}:host(:state(value)) #input-search-actions-container #input-clear-button{display:inline-block}";
+var css_248z$h = ":host .container{position:relative}:host #input-search-actions-container{display:flex;position:absolute;right:45px;top:5px}:host #input-search-actions-container #input-clear-button{display:none}:host(:state(value)) #input-search-actions-container #input-clear-button{display:inline-block}";
 
 const ID_ACTIONS_CONTAINER = 'input-search-actions-container';
 const ID_CLEAR_BUTTON = 'input-clear-button';
@@ -6599,7 +6599,7 @@ function Listen(eventName, { selector = null } = {}) {
 
 const SHEET$2 = HTMLBnumInput.ConstructCSSStyleSheet(css_248z$h);
 //#region Template
-const TEMPLATE$d = (h("div", { id: ID_ACTIONS_CONTAINER, children: [h(HTMLBnumButtonIcon, { id: ID_CLEAR_BUTTON, children: "close" }), h("slot", { name: SLOT_ACTIONS })] }));
+const TEMPLATE$d = (h("div", { id: ID_ACTIONS_CONTAINER, part: ID_ACTIONS_CONTAINER, children: [h(HTMLBnumButtonIcon, { id: ID_CLEAR_BUTTON, children: "close" }), h("slot", { name: SLOT_ACTIONS })] }));
 //#endregion Template
 /**
  * Composant d'input de recherche.
@@ -6640,6 +6640,7 @@ const TEMPLATE$d = (h("div", { id: ID_ACTIONS_CONTAINER, children: [h(HTMLBnumBu
  * @attr {string} (default: 'text') type - Type de l'input (text, password, email, etc.) Ne pas modifier, toujours 'text' pour ce composant.
  * @attr {undefined} (default: undefined) button - Attribut pour afficher le bouton interne. Ne pas modifier, toujours présent pour ce composant.
  */
+// eslint-disable-next-line no-restricted-syntax
 let HTMLBnumInputSearch = (() => {
     let _classDecorators = [Define({ template: Render(TEMPLATE$d), tag: TAG_INPUT_SEARCH })];
     let _classDescriptor;
@@ -6651,10 +6652,12 @@ let HTMLBnumInputSearch = (() => {
     let _private__ui_initializers = [];
     let _private__ui_extraInitializers = [];
     let _private__ui_descriptor;
+    let _onclear_decorators;
+    let _onclear_initializers = [];
+    let _onclear_extraInitializers = [];
     let __p_preload_decorators;
     let __p_inputValueChangedCallback_decorators;
-    let _private__triggerEventSearch_decorators;
-    let _private__triggerEventSearch_descriptor;
+    let __triggerEventSearch_decorators;
     let _private__onKeyDown_decorators;
     let _private__onKeyDown_descriptor;
     (class extends _classSuper {
@@ -6664,24 +6667,23 @@ let HTMLBnumInputSearch = (() => {
             _private__ui_decorators = [UI({
                     emptyButton: `#${ID_ACTIONS_CONTAINER} ${HTMLBnumButtonIcon.TAG}`,
                 })];
+            _onclear_decorators = [Listener()];
             __p_preload_decorators = [SetAttr(ATTRIBUTE_BUTTON_ICON, 'search'), InitAttr(ATTRIBUTE_PLACEHOLDER, BnumConfig.Get('local_keys')?.search_field || 'Rechercher')];
             __p_inputValueChangedCallback_decorators = [Risky()];
-            _private__triggerEventSearch_decorators = [Autobind, Fire(EVENT_SEARCH)];
+            __triggerEventSearch_decorators = [Autobind, Fire(EVENT_SEARCH)];
             _private__onKeyDown_decorators = [Listen('keydown')];
             __esDecorate(this, _private__ui_descriptor = { get: __setFunctionName(function () { return this.#_ui_accessor_storage; }, "#_ui", "get"), set: __setFunctionName(function (value) { this.#_ui_accessor_storage = value; }, "#_ui", "set") }, _private__ui_decorators, { kind: "accessor", name: "#_ui", static: false, private: true, access: { has: obj => #_ui in obj, get: obj => obj.#_ui, set: (obj, value) => { obj.#_ui = value; } }, metadata: _metadata }, _private__ui_initializers, _private__ui_extraInitializers);
+            __esDecorate(this, null, _onclear_decorators, { kind: "accessor", name: "onclear", static: false, private: false, access: { has: obj => "onclear" in obj, get: obj => obj.onclear, set: (obj, value) => { obj.onclear = value; } }, metadata: _metadata }, _onclear_initializers, _onclear_extraInitializers);
             __esDecorate(this, null, __p_preload_decorators, { kind: "method", name: "_p_preload", static: false, private: false, access: { has: obj => "_p_preload" in obj, get: obj => obj._p_preload }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, __p_inputValueChangedCallback_decorators, { kind: "method", name: "_p_inputValueChangedCallback", static: false, private: false, access: { has: obj => "_p_inputValueChangedCallback" in obj, get: obj => obj._p_inputValueChangedCallback }, metadata: _metadata }, null, _instanceExtraInitializers);
-            __esDecorate(this, _private__triggerEventSearch_descriptor = { value: __setFunctionName(function () {
-                    return {
-                        value: this.value,
-                        name: this.name,
-                        caller: this,
-                    };
-                }, "#_triggerEventSearch") }, _private__triggerEventSearch_decorators, { kind: "method", name: "#_triggerEventSearch", static: false, private: true, access: { has: obj => #_triggerEventSearch in obj, get: obj => obj.#_triggerEventSearch }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, __triggerEventSearch_decorators, { kind: "method", name: "_triggerEventSearch", static: false, private: false, access: { has: obj => "_triggerEventSearch" in obj, get: obj => obj._triggerEventSearch }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, _private__onKeyDown_descriptor = { value: __setFunctionName(function () {
                     return (e) => {
+                        if (!e.ctrlKey && !e.altKey && !e.metaKey) {
+                            e.stopPropagation();
+                        }
                         if (e.key === 'Enter') {
-                            this.#_triggerEventSearch();
+                            this._triggerEventSearch();
                         }
                     };
                 }, "#_onKeyDown") }, _private__onKeyDown_decorators, { kind: "method", name: "#_onKeyDown", static: false, private: true, access: { has: obj => #_onKeyDown in obj, get: obj => obj.#_onKeyDown }, metadata: _metadata }, null, _instanceExtraInitializers);
@@ -6694,14 +6696,20 @@ let HTMLBnumInputSearch = (() => {
         //#region Private fields
         get #_ui() { return _private__ui_descriptor.get.call(this); }
         set #_ui(value) { return _private__ui_descriptor.set.call(this, value); }
+        #onclear_accessor_storage = (__runInitializers(this, _private__ui_extraInitializers), __runInitializers(this, _onclear_initializers, void 0));
         //#endregion Private fields
+        /**
+         * Événement déclenché lors du clic sur le bouton de vidage du champ de recherche.
+         */
+        get onclear() { return this.#onclear_accessor_storage; }
+        set onclear(value) { this.#onclear_accessor_storage = value; }
         //#region Lifecycle
         /**
          * Constructeur du composant de recherche.
          */
         constructor() {
             super();
-            __runInitializers(this, _private__ui_extraInitializers);
+            __runInitializers(this, _onclear_extraInitializers);
         }
         _p_getStylesheets() {
             return [...super._p_getStylesheets(), SHEET$2];
@@ -6714,10 +6722,23 @@ let HTMLBnumInputSearch = (() => {
         _p_buildDOM() {
             super._p_buildDOM();
             this.#_ui.emptyButton.addEventListener('click', () => {
+                let after = null;
+                if (this.onclear.haveEvents()) {
+                    const params = this.onclear.call({});
+                    if (params?.ignoreOriginal) {
+                        if (params?.after)
+                            params.after?.();
+                        return;
+                    }
+                    if (params?.after)
+                        after = params.after;
+                }
                 this.value = EMPTY_STRING;
                 this._p_inputValueChangedCallback(new Event('input'));
-                this.#_triggerEventSearch();
+                this._triggerEventSearch();
                 this.trigger(EVENT_CLEAR, { caller: this });
+                if (after)
+                    after();
             });
         }
         /**
@@ -6728,7 +6749,7 @@ let HTMLBnumInputSearch = (() => {
             super._p_attach();
             this.removeAttribute(ATTRIBUTE_BUTTON);
             this.removeAttribute(ATTRIBUTE_BUTTON_ICON);
-            this.onButtonClicked.add(EVENT_DEFAULT, this.#_triggerEventSearch);
+            this.onButtonClicked.add(EVENT_DEFAULT, this._triggerEventSearch);
             this.#_onKeyDown();
         }
         _p_inputValueChangedCallback(e) {
@@ -6773,7 +6794,13 @@ let HTMLBnumInputSearch = (() => {
          * Déclenche l'événement de recherche avec la valeur actuelle de l'input.
          * @private
          */
-        get #_triggerEventSearch() { return _private__triggerEventSearch_descriptor.value; }
+        _triggerEventSearch() {
+            return {
+                value: this.value,
+                name: this.name,
+                caller: this,
+            };
+        }
         get #_onKeyDown() { return _private__onKeyDown_descriptor.value; }
         //#endregion Private Methods
         //#region Static Methods

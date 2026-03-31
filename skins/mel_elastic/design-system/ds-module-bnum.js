@@ -6669,7 +6669,7 @@ let HTMLBnumInputSearch = (() => {
                 })];
             _onclear_decorators = [Listener()];
             __p_preload_decorators = [SetAttr(ATTRIBUTE_BUTTON_ICON, 'search'), InitAttr(ATTRIBUTE_PLACEHOLDER, BnumConfig.Get('local_keys')?.search_field || 'Rechercher')];
-            __p_inputValueChangedCallback_decorators = [Risky()];
+            __p_inputValueChangedCallback_decorators = [Autobind, Risky()];
             __triggerEventSearch_decorators = [Autobind, Fire(EVENT_SEARCH)];
             _private__onKeyDown_decorators = [Listen('keydown')];
             __esDecorate(this, _private__ui_descriptor = { get: __setFunctionName(function () { return this.#_ui_accessor_storage; }, "#_ui", "get"), set: __setFunctionName(function (value) { this.#_ui_accessor_storage = value; }, "#_ui", "set") }, _private__ui_decorators, { kind: "accessor", name: "#_ui", static: false, private: true, access: { has: obj => #_ui in obj, get: obj => obj.#_ui, set: (obj, value) => { obj.#_ui = value; } }, metadata: _metadata }, _private__ui_initializers, _private__ui_extraInitializers);
@@ -6724,7 +6724,12 @@ let HTMLBnumInputSearch = (() => {
             this.#_ui.emptyButton.addEventListener('click', () => {
                 let after = null;
                 if (this.onclear.haveEvents()) {
-                    const params = this.onclear.call({});
+                    const params = this.onclear.call({
+                        caller: this,
+                        ignoreOriginal: false,
+                        after: null,
+                        inputValueChangedFunction: this._p_inputValueChangedCallback,
+                    });
                     if (params?.ignoreOriginal) {
                         if (params?.after)
                             params.after?.();

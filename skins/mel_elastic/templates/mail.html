@@ -53,14 +53,19 @@
 
 <!-- messages list -->
 <bnum-column id="layout-list" class="initial listbox selected">
-  <div id="messagelist-header" class="header" slot="header">
+  <div id="messagelist-header" class="header" slot="header"> 
+    <div class="header-container">
+    <div class="header-left">
     <a class="button icon task-menu-button" href="#menu"><span class="inner">
         <roundcube:label name="menu" />
       </span></a>
-    <a class="button icon back-sidebar-button folders mel-circle-icon-button hidden-large" href="#sidebar"><span class="inner">
+      <!-- back button -->
+     <a class="button bds-nav-button-important icon back-sidebar-button folders mel-circle-icon-button hidden-large" href="#sidebar"><span class="inner">
         <roundcube:label name="mailboxlist" />
       </span></a>
     <span style="display: none;" class="header-title"></span>
+    <!-- Refresh button -->
+    <roundcube:button command="checkmail" type="link" class="button bds-nav-button-important icon toolbar-button refresh" label="refresh" title="checkmail" innerclass="inner" />
     <div class="toolbar menu" role="toolbar">
       <roundcube:if condition="env:threads" />
       <a href="#threads" class="threads disabled" data-popup="threadselect-menu" title="<roundcube:label name="threads" />"><span class="inner">
@@ -70,10 +75,10 @@
       <roundcube:object name="listmenulink" class="options active" label="options" innerclass="inner" />
       <roundcube:container name="listcontrols" id="listcontrols" />
     </div>
-    <roundcube:button command="checkmail" type="link" class="button icon toolbar-button refresh" label="refresh" title="checkmail" innerclass="inner" />
-    <a id="mel-added-list-menu" class="button icon toolbar-menu-button" href="#list-menu"><span class="inner">
+    
+    <!-- <a id="mel-added-list-menu" class="button icon toolbar-menu-button" href="#list-menu"><span class="inner">
         <roundcube:label name="menu" />
-      </span></a>
+      </span></a> -->
 
     <div id=mailsearchlist style="margin-top: 11px;
 		margin-bottom: 5px;">
@@ -100,6 +105,7 @@
 
     </div>
 
+  </div>
   </div>
 
  <div id="searchmenu" class="hidden searchoptions scroller propform formcontainer"
@@ -172,6 +178,7 @@
       </button>
     </div>
   </div>
+</div>
 
   <roundcube:add_label name="showunread" />
 

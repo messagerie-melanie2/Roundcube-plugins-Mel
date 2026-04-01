@@ -994,16 +994,16 @@ class mel_metapage extends bnum_plugin
 
 
 
-        $this->add_button(array(
-            'command' => "mel-compose",
-            'href' => './?_task=mail&_action=compose',
-            'class'    => 'compose options',
-            'classsel' => 'compose options',
-            'innerclass' => 'inner',
-            'label'    => 'compose',
-            'title' => 'mel_metapage.compose-mail',
-            'type'       => 'link',
-        ), "listcontrols");
+        // $this->add_button(array(
+        //     'command' => "mel-compose",
+        //     'href' => './?_task=mail&_action=compose',
+        //     'class'    => 'compose options',
+        //     'classsel' => 'compose options',
+        //     'innerclass' => 'inner',
+        //     'label'    => 'compose',
+        //     'title' => 'mel_metapage.compose-mail',
+        //     'type'       => 'link',
+        // ), "listcontrols");
 
         $this->add_button(array(
             'command' => "event-compose",

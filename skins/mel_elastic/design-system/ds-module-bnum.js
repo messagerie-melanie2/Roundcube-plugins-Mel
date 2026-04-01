@@ -5428,7 +5428,7 @@ let HTMLBnumButtonIcon = (() => {
     return HTMLBnumButtonIcon = _classThis;
 })();
 
-var css_248z$l = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host .addons__inner{position:relative;width:100%}:host #input__button,:host #input__icon,:host .state{display:none}:host(:disabled),:host(:state(disabled)){cursor:not-allowed;opacity:.6;pointer-events:none}:host(:state(button)) .addons{display:flex;gap:0}:host(:state(button)) .addons .addon__inner{flex:1}:host(:state(button)) input{border-top-right-radius:0}:host(:state(button)) #input__button,:host(:state(button)) input{--bnum-input-line-color:#000091}:host(:state(button)) #input__button{border-bottom-left-radius:0;border-bottom-right-radius:0;border-top-left-radius:0;display:block;height:auto}:host(:state(button):state(obi)) #input__button{--bnum-button-icon-gap:0;display:flex}:host(:state(icon)) #input__icon{display:block;position:absolute;right:var(--bnum-input-icon-right,10px);top:var(--bnum-input-icon-top,10px)}:host(:state(state):state(success)) #input__button,:host(:state(state):state(success)) input{--bnum-input-line-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(state):state(error)) #input__button,:host(:state(state):state(error)) input{--bnum-input-line-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}";
+var css_248z$l = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host .addons__inner{position:relative;width:100%}:host #input__button,:host #input__icon,:host .state{display:none}:host(:disabled),:host(:state(disabled)){cursor:not-allowed;opacity:.6;pointer-events:none}:host(:state(button)) .addons{display:flex;gap:0}:host(:state(button)) .addons .addon__inner{flex:1}:host(:state(button)) input{border-top-right-radius:0}:host(:state(button)) #input__button,:host(:state(button)) input{--bnum-input-line-color:var(--bnum-color-primary,#000091)}:host(:state(button)) #input__button{border-bottom-left-radius:0;border-bottom-right-radius:0;border-top-left-radius:0;display:block;height:auto}:host(:state(button):state(obi)) #input__button{--bnum-button-icon-gap:0;display:flex}:host(:state(icon)) #input__icon{display:block;position:absolute;right:var(--bnum-input-icon-right,10px);top:var(--bnum-input-icon-top,10px)}:host(:state(state):state(success)) #input__button,:host(:state(state):state(success)) input{--bnum-input-line-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(state):state(error)) #input__button,:host(:state(state):state(error)) input{--bnum-input-line-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}";
 
 const ID_INPUT$1 = 'bnum-input';
 const ID_HINT_TEXT = 'hint-text';
@@ -12084,23 +12084,16 @@ let HTMLBnumHide = (() => {
     let _classThis;
     let _classSuper = BnumElementInternal;
     let _instanceExtraInitializers = [];
-    let _private__handleChange_decorators;
-    let _private__handleChange_descriptor;
+    let __handleChange_decorators;
     let _private__hide_decorators;
     let _private__hide_descriptor;
     (class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
-            _private__handleChange_decorators = [Autobind];
+            __handleChange_decorators = [Autobind];
             _private__hide_decorators = [SetAttr('hidden', EMPTY_STRING)];
-            __esDecorate(this, _private__handleChange_descriptor = { value: __setFunctionName(function (mq) {
-                    const shouldHide = mq.matches;
-                    if (shouldHide)
-                        this.#_hide();
-                    else
-                        this.#_show();
-                }, "#_handleChange") }, _private__handleChange_decorators, { kind: "method", name: "#_handleChange", static: false, private: true, access: { has: obj => #_handleChange in obj, get: obj => obj.#_handleChange }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, __handleChange_decorators, { kind: "method", name: "_handleChange", static: false, private: false, access: { has: obj => "_handleChange" in obj, get: obj => obj._handleChange }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, _private__hide_descriptor = { value: __setFunctionName(function () {
                     this.style.display = 'none';
                     this.ariaHidden = 'true';
@@ -12126,7 +12119,7 @@ let HTMLBnumHide = (() => {
          */
         constructor() {
             super();
-            this.#_boundHandleChange = this.#_handleChange;
+            this.#_boundHandleChange = this._handleChange;
         }
         /**
          * Appelé lorsque le composant est inséré dans le DOM.
@@ -12167,7 +12160,7 @@ let HTMLBnumHide = (() => {
                 ? `(min-width: ${width}px)`
                 : `(max-width: ${width - 0.02}px)`;
             this.#_mediaQueryList = window.matchMedia(query);
-            this.#_handleChange(this.#_mediaQueryList);
+            this._handleChange(this.#_mediaQueryList);
             this.#_mediaQueryList.addEventListener('change', this.#_boundHandleChange);
         }
         /**
@@ -12185,7 +12178,13 @@ let HTMLBnumHide = (() => {
          *
          * @param mq Objet MediaQueryList ou événement associé.
          */
-        get #_handleChange() { return _private__handleChange_descriptor.value; }
+        _handleChange(mq) {
+            const shouldHide = mq.matches;
+            if (shouldHide)
+                this.#_hide();
+            else
+                this.#_show();
+        }
         /**
          * Cache l'élément en ajoutant l'attribut `hidden` et en forçant le style CSS.
          */

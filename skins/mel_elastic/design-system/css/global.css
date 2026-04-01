@@ -168,6 +168,7 @@ html.dark-mode:root {
   --bnum-color-surface: var(--bnum-color-background);
   --bnum-color-surface-hover: #343434;
   --bnum-color-surface-active: #474747;
+  --bnum-header-color: #161616;
   --bnum-color-border: #353535;
   --bnum-color-in-surface-border: #353535;
   --bnum-color-in-surface-hover: #343434;
@@ -334,4 +335,36 @@ bnum-hide {
   position: absolute;
   right: -8px;
   top: -8px;
+}
+.bds-nav-button {
+  align-content: var(--bds-nav-button-align-content, center);
+  align-items: var(--bds-nav-button-align-items, center);
+  display: var(--bds-nav-button-display, flex);
+  flex-direction: var(--bds-nav-button-flex-direction, column);
+  justify-content: var(--bds-nav-button-justify-content, center);
+  padding: 0.45rem;
+}
+.bds-nav-button:before {
+  height: var(--bds-nav-button-icon-height, fit-content);
+}
+.bds-nav-button .inner {
+  display: var(--bds-nav-button-text-display, block);
+  font-size: var(--bds-nav-button-text-font-size, 90%);
+  font-weight: var(--bds-nav-button-text-font-weight, 400);
+}
+.bds-nav-button-important {
+  align-content: var(--bds-nav-button-align-content, center) !important;
+  align-items: var(--bds-nav-button-align-items, center) !important;
+  display: var(--bds-nav-button-display, flex) !important;
+  flex-direction: var(--bds-nav-button-flex-direction, column) !important;
+  justify-content: var(--bds-nav-button-justify-content, center) !important;
+  padding: 0.45rem !important;
+}
+.bds-nav-button-important:before {
+  height: var(--bds-nav-button-icon-height, fit-content) !important;
+}
+.bds-nav-button-important .inner {
+  display: var(--bds-nav-button-text-display, block) !important;
+  font-size: var(--bds-nav-button-text-font-size, 90%) !important;
+  font-weight: var(--bds-nav-button-text-font-weight, 400) !important;
 }

@@ -9,3 +9,34 @@
     display: none;
   }
 }
+
+#toolbar-list-menu {
+  &.popupmenu {
+    min-width: 0;
+  }
+}
+
+#mailsearchlist {
+  margin-right: 0 !important;
+  position: relative;
+
+  &.hoverable {
+    right: 0 !important;
+  }
+
+  html.touch & {
+    position: relative !important;
+  }
+}
+
+html,
+html.layout-phone,
+html.layout-small {
+  body.task-mail {
+    .header {
+      a.toolbar-list-button {
+        display: none !important;
+      }
+    }
+  }
+}

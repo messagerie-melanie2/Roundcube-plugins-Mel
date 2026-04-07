@@ -54,8 +54,8 @@
 <!-- messages list -->
 <bnum-column id="layout-list" class="initial listbox selected">
   <div id="messagelist-header" class="header" slot="header"> 
-    <div class="header-container">
-    <div class="header-left">
+    <div class="header-container bds-flex bds-full-width bds-flex-justify-between">
+    <div class="header-left bds-flex ">
     <a class="button icon task-menu-button" href="#menu"><span class="inner">
         <roundcube:label name="menu" />
       </span></a>
@@ -67,20 +67,33 @@
     <!-- Refresh button -->
     <roundcube:button command="checkmail" type="link" class="button bds-nav-button-important icon toolbar-button refresh" label="refresh" title="checkmail" innerclass="inner" />
     <div class="toolbar menu" role="toolbar">
-      <roundcube:if condition="env:threads" />
-      <a href="#threads" class="threads disabled" data-popup="threadselect-menu" title="<roundcube:label name="threads" />"><span class="inner">
-        <roundcube:label name="threads" />
-      </span></a>
-      <roundcube:endif />
-      <roundcube:object name="listmenulink" class="options active" label="options" innerclass="inner" />
-      <roundcube:container name="listcontrols" id="listcontrols" />
+      <bnum-hide breakpoint="small" mode="down">
+        <roundcube:if condition="env:threads" />
+        <a href="#threads" class="threads disabled" data-popup="threadselect-menu" title="<roundcube:label name="threads" />"><span class="inner">
+          <roundcube:label name="threads" />
+        </span></a>
+        <roundcube:endif />
+        <roundcube:object name="listmenulink" class="options active" label="options" innerclass="inner" />
+        <roundcube:container name="listcontrols" id="listcontrols" />
+      </bnum-hide>
+      <bnum-hide breakpoint="small" mode="up">
+        <li id="limelmailplusmenu" class="marked" role="menuitem">
+                        <!--Added-->
+<a id="melplusmails" href="#plus" data-popup="melmorethings-menu" aria-haspopup="true" aria-expanded="false"
+  aria-owns="melmorethings-menu"  class="more active" id="moremailsoptions"
+  title="Plus d'actions" tabindex="0"><span class="inner">Plus</span></a>
+                        </li>
+      </bnum-hide>
     </div>
     
     <!-- <a id="mel-added-list-menu" class="button icon toolbar-menu-button" href="#list-menu"><span class="inner">
         <roundcube:label name="menu" />
       </span></a> -->
 
-    <div id=mailsearchlist style="margin-top: 11px;
+
+
+  </div>
+      <div id=mailsearchlist style="margin-top: 11px;
 		margin-bottom: 5px;">
       <div class="form-control input-mel mel-input-container" id="mail-search-border" style="display: none;">
         <div style="margin-top:-6px;width: calc(100% - 24px);">
@@ -104,9 +117,8 @@
       </bnum-input-search>
 
     </div>
-
   </div>
-  </div>
+</div>
 
  <div id="searchmenu" class="hidden searchoptions scroller propform formcontainer"
     aria-labelledby="aria-label-search-menu" aria-controls="messagelist" style="flex:1 0 auto;">
@@ -178,7 +190,6 @@
       </button>
     </div>
   </div>
-</div>
 
   <roundcube:add_label name="showunread" />
 
@@ -489,10 +500,7 @@
   </ul>
 </div>
 
-<!--Added-->
-<a id="melplusmails" href="#plus" data-popup="melmorethings-menu" aria-haspopup="true" aria-expanded="false"
-  aria-owns="melmorethings-menu" style="display:none;" class="more active" id="moremailsoptions"
-  title="Plus d'actions" tabindex="0"><span class="inner">Plus</span></a>
+
 <div id="melmorethings-menu" class="popupmenu">
   <h3 id="aria-label-melmorethings-menu" class="voice">
     <roundcube:label name="" />

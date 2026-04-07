@@ -233,6 +233,7 @@ export default class BridgeEvents extends MelObject {
     }
 
     rcmail.show_message(uid, false, true);
+    rcmail.message_list.select(uid);
   }
 
   /**

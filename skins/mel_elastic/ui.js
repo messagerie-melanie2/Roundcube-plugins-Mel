@@ -1952,13 +1952,13 @@ $(document).ready(() => {
             .prependTo($('#toolbar-list-menu .compose').parent().parent());
 
           //Ajout de "plus"
-          $('#toolbar-list-menu').append(
-            $(`
-                        <li id="limelmailplusmenu" class="marked" style="display:none" role="menuitem">
-                        
-                        </li>
-                    `).append($('#melplusmails').css('display', '')),
-          );
+          // $('#toolbar-list-menu').append(
+          //   $(`
+          //               <li id="limelmailplusmenu" class="marked" style="display:none" role="menuitem">
+
+          //               </li>
+          //           `).append($('#melplusmails').css('display', '')),
+          // );
 
           this.update_mail_css({});
 

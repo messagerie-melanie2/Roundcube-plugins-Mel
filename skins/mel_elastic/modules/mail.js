@@ -119,15 +119,20 @@ class FilterAction {
   /**
    * Initialise l'action de filtre et attache l'écouteur de clic.
    * @param {Ui} ui L'interface DOM du module.
-   * @returns {FilterAction}
+   * @returns {?FilterAction}
    */
   static Start(ui) {
     const filterButton = ui.filterButton;
-    const action = new FilterAction(ui);
 
-    filterButton.addEventListener('click', action.toggle.bind(action));
+    if (filterButton) {
+      const action = new FilterAction(ui);
 
-    return action;
+      filterButton.addEventListener('click', action.toggle.bind(action));
+
+      return action;
+    }
+
+    return null;
   }
 }
 
@@ -171,11 +176,14 @@ export class ElasticUiMail extends ABaseModule {
    */
   #_addListeners() {
     const search = this.#_ui.search;
-    search.addEventListener('bnum-input-search:search', (e) =>
-      this.#_onInputSubmit(e),
-    );
 
-    search.onclear.push((params) => this.#_onInputClear(params));
+    if (search) {
+      search.addEventListener('bnum-input-search:search', (e) =>
+        this.#_onInputSubmit(e),
+      );
+
+      search.onclear.push((params) => this.#_onInputClear(params));
+    }
 
     return this;
   }

@@ -44,3 +44,89 @@ html.layout-small {
     }
   }
 }
+
+table {
+  &.messagelist {
+    td {
+      &.subject {
+        &:hover {
+          span {
+            &.msgicon {
+              &::before {
+                content: '\e94d';
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+table.messagelist {
+  --_idle: '\e94e';
+  --_idle-hover: '\e94d';
+  --_unread: var(--_idle-hover);
+  --_unread-hover: var(--_idle);
+  td.subject span.msgicon.status {
+    &::before {
+      height: 2.04rem;
+      content: var(--message-state-icon, var(--_idle)) !important;
+    }
+
+    &:hover {
+      &::before {
+        content: var(--message-state-icon, var(--_idle-hover)) !important;
+      }
+    }
+  }
+
+  tr {
+    &.unread {
+      td.subject span.msgicon.status {
+        &::before {
+          content: var(--message-state-icon, var(--_unread)) !important;
+        }
+
+        &:hover {
+          &::before {
+            content: var(--message-state-icon, var(--_unread-hover)) !important;
+          }
+        }
+      }
+    }
+
+    &.message:hover {
+      --_flag: '\e958';
+      --_flag-hover: '\e957';
+      --_flagged: var(--_flag-hover);
+      --_flagged-hover: var(--_flag);
+
+      td.flags span {
+        &.unflagged {
+          &::before {
+            content: var(--_flag) !important;
+          }
+
+          &:hover {
+            &::before {
+              content: var(--_flag-hover) !important;
+            }
+          }
+        }
+
+        &.flagged {
+          &::before {
+            content: var(--_flagged) !important;
+          }
+
+          &:hover {
+            &::before {
+              content: var(--_flagged-hover) !important;
+            }
+          }
+        }
+      }
+    }
+  }
+}

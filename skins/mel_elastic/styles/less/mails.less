@@ -183,15 +183,15 @@ table.messagelist {
                 color: var(--main-text-color) !important;
               }
 
-              &.status {
-                &.unread {
-                  &.selected {
-                    &::before {
-                      color: var(--secondary-text-color);
-                    }
-                  }
-                }
-              }
+              // &.status {
+              //   &.unread {
+              //     &.selected {
+              //       &::before {
+              //         color: var(--secondary-text-color);
+              //       }
+              //     }
+              //   }
+              // }
 
               &.replied {
                 &::before {
@@ -222,17 +222,17 @@ table.messagelist {
         }
       }
 
-      &.selected {
-        td {
-          &.subject {
-            span {
-              &.fromto {
-                color: var(--secondary-text-color);
-              }
-            }
-          }
-        }
-      }
+      // &.selected {
+      //   td {
+      //     &.subject {
+      //       span {
+      //         &.fromto {
+      //           color: var(--secondary-text-color);
+      //         }
+      //       }
+      //     }
+      //   }
+      // }
     }
 
     &.message {
@@ -348,26 +348,26 @@ table.messagelist {
         }
       }
 
-      &.selected {
-        &:hover {
-          box-shadow: 0px 2px 2px var(--message-hover-shadow);
-          position: relative;
+      // &.selected {
+      //   &:hover {
+      //     box-shadow: 0px 2px 2px var(--message-hover-shadow);
+      //     position: relative;
 
-          td {
-            &.subject {
-              span {
-                &.msgicon {
-                  &.status {
-                    &::before {
-                      color: var(--secondary-text-color) !important;
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+      //     td {
+      //       &.subject {
+      //         span {
+      //           &.msgicon {
+      //             &.status {
+      //               &::before {
+      //                 color: var(--secondary-text-color) !important;
+      //               }
+      //             }
+      //           }
+      //         }
+      //       }
+      //     }
+      //   }
+      // }
     }
 
     &.flagged {
@@ -405,13 +405,13 @@ table.messagelist {
       }
     }
 
-    &.selected {
-      background-color: var(--secondary-bckg-color);
+    // &.selected {
+    //   background-color: var(--secondary-bckg-color);
 
-      td {
-        background-color: var(--secondary-bckg-color);
-      }
-    }
+    //   td {
+    //     background-color: var(--secondary-bckg-color);
+    //   }
+    // }
 
     &.message {
       &.bloqued {
@@ -604,48 +604,48 @@ table.messagelist {
     }
   }
 
-  .selected {
-    .subject,
-    .priority {
-      color: var(--secondary-text-color) !important;
-    }
+  // .selected {
+  //   .subject,
+  //   .priority {
+  //     color: var(--secondary-text-color) !important;
+  //   }
 
-    td {
-      &.subject {
-        span {
-          &.msgicon {
-            &::before,
-            &::after {
-              color: var(--secondary-text-color) !important;
-            }
-          }
+  //   td {
+  //     &.subject {
+  //       span {
+  //         &.msgicon {
+  //           &::before,
+  //           &::after {
+  //             color: var(--secondary-text-color) !important;
+  //           }
+  //         }
 
-          &.date {
-            color: var(--secondary-text-color) !important;
-          }
+  //         &.date {
+  //           color: var(--secondary-text-color) !important;
+  //         }
 
-          &.fromto {
-            color: var(--secondary-text-color) !important;
-            &::before {
-              color: var(--secondary-text-color);
-            }
-          }
-        }
+  //         &.fromto {
+  //           color: var(--secondary-text-color) !important;
+  //           &::before {
+  //             color: var(--secondary-text-color);
+  //           }
+  //         }
+  //       }
 
-        a {
-          color: var(--secondary-text-color) !important;
-        }
-      }
-    }
+  //       a {
+  //         color: var(--secondary-text-color) !important;
+  //       }
+  //     }
+  //   }
 
-    span {
-      &.threads {
-        > div {
-          color: var(--secondary-text-color);
-        }
-      }
-    }
-  }
+  //   span {
+  //     &.threads {
+  //       > div {
+  //         color: var(--secondary-text-color);
+  //       }
+  //     }
+  //   }
+  // }
 
   .contextRow {
     &.context-source {
@@ -698,20 +698,20 @@ table.messagelist {
     color: var(--main-text-color);
   }
 
-  .unread {
-    &.selected {
-      td {
-        &.subject {
-          span {
-            &.fromto,
-            &.date {
-              color: var(--secondary-text-color);
-            }
-          }
-        }
-      }
-    }
-  }
+  // .unread {
+  //   &.selected {
+  //     td {
+  //       &.subject {
+  //         span {
+  //           &.fromto,
+  //           &.date {
+  //             color: var(--secondary-text-color);
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
   &:not(.withselection) {
     tr {
@@ -727,43 +727,43 @@ table.messagelist {
     }
   }
 
-  &:not(.threaded) {
-    tbody {
-      tr {
-        &:nth-child(2n) {
-          td {
-            background-color: var(--default-background-lighter);
-          }
-        }
+  // &:not(.threaded) {
+  //   tbody {
+  //     tr {
+  //       &:nth-child(2n) {
+  //         td {
+  //           background-color: var(--default-background-lighter);
+  //         }
+  //       }
 
-        &.unread {
-          &:nth-child(2n) {
-            td {
-              background-color: var(--default-background-lighter);
-            }
-          }
+  //       &.unread {
+  //         &:nth-child(2n) {
+  //           td {
+  //             background-color: var(--default-background-lighter);
+  //           }
+  //         }
 
-          td {
-            background-color: var(--default-background);
-          }
+  //         td {
+  //           background-color: var(--default-background);
+  //         }
 
-          &.selected {
-            td {
-              background-color: var(--secondary-bckg-color);
-            }
-          }
-        }
+  //         &.selected {
+  //           td {
+  //             background-color: var(--secondary-bckg-color);
+  //           }
+  //         }
+  //       }
 
-        &.selected {
-          &:nth-child(2n) {
-            td {
-              background-color: var(--secondary-bckg-color);
-            }
-          }
-        }
-      }
-    }
-  }
+  //       &.selected {
+  //         &:nth-child(2n) {
+  //           td {
+  //             background-color: var(--secondary-bckg-color);
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 }
 
 #mailsearchlist {

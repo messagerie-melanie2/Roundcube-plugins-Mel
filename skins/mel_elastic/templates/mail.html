@@ -199,7 +199,7 @@
       <!-- MANTIS -->
       <li class="input-group">
         <input type="checkbox" id="select-mail-state" />
-        <button id="list-select-mail-choices" data-popup="listselect-menu" data-toggle-button="list-toggle-button" title="Sélectionner" aria-haspopup="true" aria-expanded="false" aria-owns="listselect-menu" data-original-title="Sélectionner" class="btn nav-button"><span class="material-symbols-outlined">expand_more</span></button>
+        <button id="list-select-mail-choices" data-popup="listselect-menu" data-toggle-button="list-toggle-button" title="Sélectionner" aria-haspopup="true" aria-expanded="false" aria-owns="listselect-menu" data-original-title="Sélectionner" class="btn bds-nav-button"><span class="material-symbols-outlined">expand_more</span></button>
       </li>
       <roundcube:container name="messagelistfiltersmenu" id="messagelistfiltersmenu" />
     </ul>
@@ -209,7 +209,7 @@
     <h2 id="aria-label-messagelist" class="voice">
       <roundcube:label name="arialabelmessagelist" />
     </h2>
-    <roundcube:object name="messages" id="messagelist" class="listing messagelist sortheader fixedheader"
+    <roundcube:object name="messages" id="messagelist" class="listing messagelist sortheader fixedheader bds-list-table --no-shadow --no-rc"
       aria-labelledby="aria-label-messagelist" data-list="message_list" data-label-msg="listempty" />
   </div>
   <roundcube:include file="includes/pagenav.html" />

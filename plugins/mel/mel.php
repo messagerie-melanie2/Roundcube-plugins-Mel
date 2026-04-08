@@ -239,7 +239,7 @@ class mel extends rcube_plugin
           foreach ($filters as $value) {
             $config = array(
               'name' => "quick-filter-$value",
-              'class' => "quick-filter quick-filter-$value btn btn-secondary mel-button no-button-margin no-margin-button bckg true hoverable",
+              'class' => "quick-filter quick-filter-$value btn bds-nav-button bds-nav-button--filter bds-padding-m-left-important bds-padding-m-right-important",
               'innerclass' => 'inner',
               'id' => "quick-filter-$value",//tb_label_popup
               'title' => "title-$value", // gets translated

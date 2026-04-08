@@ -68,8 +68,7 @@ html.layout-large .task-mail bnum-column-sidebar#layout-sidebar > .header {
 .task-mail #layout-sidebar {
   border-right: var(--bnum-border-column) !important;
 }
-#layout-list > .header > .old-header .nav-button--filter,
-.nav-button .nav-button--filter,
+.bds-nav-button,
 .nav-button a {
   --_idle-background: var(--nav-button-background, transparent);
   --_idle-color: var(
@@ -92,24 +91,19 @@ html.layout-large .task-mail bnum-column-sidebar#layout-sidebar > .header {
   color: var(--_idle-color);
   --layout-list-header-text-color: var(--_idle-color);
 }
-#layout-list > .header > .old-header .nav-button--filter:not(.disabled):hover,
-.nav-button .nav-button--filter:not(.disabled):hover,
+.bds-nav-button:not(.disabled):hover,
 .nav-button a:not(.disabled):hover {
   background-color: var(--_hover-background);
   color: var(--_hover-color);
   --layout-list-header-background-hover-color: var(--_hover-background);
   --layout-list-header-text-hover-color: var(--_hover-color);
 }
-#layout-list > .header > .old-header .nav-button--filter:not(.disabled).active,
-#layout-list > .header > .old-header .nav-button--filter:not(.disabled):active,
-.nav-button .nav-button--filter:not(.disabled).active,
-.nav-button .nav-button--filter:not(.disabled):active,
+.bds-nav-button:not(.disabled):active,
 .nav-button a:not(.disabled):active {
   background-color: var(--_active-background);
   color: var(--_active-color);
 }
-#layout-list > .header > .old-header .nav-button--filter:not(.disabled):focus,
-.nav-button .nav-button--filter:not(.disabled):focus,
+.bds-nav-button:not(.disabled):focus,
 .nav-button a:not(.disabled):focus {
   background-color: var(--_focus-background);
   color: var(--_focus-color);
@@ -120,6 +114,22 @@ html.layout-large .task-mail bnum-column-sidebar#layout-sidebar > .header {
   --layout-list-header-background-hover-color: var(--_focus-background);
   --layout-list-header-text-hover-color: var(--_focus-color);
   --secondary-bckg-color: var(--_focus-background);
+}
+.bds-nav-button {
+  --default-text-color: var(--_idle-color);
+}
+.bds-nav-button.bds-nav-button--filter {
+  --input-button-text-color: var(--_idle-color);
+  --message-list-quick-filter-hover-text-color: var(--_hover-color);
+  --message-list-quick-filter-hover-background-color: var(--_hover-background);
+  --message-list-quick-filter-active-background-color: var(
+    --_active-background
+  );
+  --message-list-quick-filter-active-text-color: var(--_active-color);
+  --message-list-quick-filter-active-border-color: transparent;
+  --message-list-quick-filter-hover-border-color: transparent;
+  padding-left: var(--filter-h-space, var(--bnum-space-s, 6px));
+  padding-right: var(--filter-h-space, var(--bnum-space-s, 6px));
 }
 #layout-list,
 #layout-list > .header,

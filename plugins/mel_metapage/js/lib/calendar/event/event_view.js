@@ -451,6 +451,12 @@ export class EventView {
     this._event = event;
     this._dialog = dialog;
 
+    // const hasTitle =
+    //     event.title !== EMPTY_STRING &&
+    //     event.title !== null &&
+    //     event.title !== undefined;
+    // rcmail.env['__local:part:isStartEvent'] = !hasTitle;
+
     this.inputs = new EventManager(...EventView.true_selectors).generate();
     this.fakes = new EventManager(...EventView.false_selectors).generate();
     this.parts = new EventParts(this.inputs, this.fakes, dialog);
@@ -673,7 +679,7 @@ export class EventView {
     let is_valid = true;
 
     await this.parts.location.waitComplete();
-
+    
     if (!this.parts.location.is_valid()) {
       this.parts.location.invalid_action();
       is_valid = false;
@@ -681,12 +687,14 @@ export class EventView {
       this.parts.date.invalid_action();
       is_valid = false;
     }
-
+    
+    // this.#_resolveAlarmSentinel();
+    
     this.#_setModifier();
-
+    
     if (!this.#_recEndDateValid()) {
       const localizationKey = 'event-not-ok-rec-date';
-
+      
       is_valid = false;
       BnumMessage.DisplayMessage(
         ABaseMelObject.Empty().getLocalization(localizationKey, {
@@ -695,9 +703,23 @@ export class EventView {
         eMessageType.Error,
       );
     }
+    
+    if ( is_valid && rcmail.env['__local:part:isStartEvent'] ) {
+      debugger;
+      if (+this.parts.alarm._$fakeField.val() === -2) {
+        if (this.parts.date.is_all_day) {
+          this.parts.alarm._$fakeField.val("0");
+        } else {
+          this.parts.alarm._$fakeField.val(this.parts.alarm._getDefaultAlarmMinutes());
+        }
+        this.parts.alarm._$fakeField.change();
+      }
+    }
 
     return is_valid;
   }
+
+  
 
   /**
    * Vérifie si la date de réccurence de fin est valide.

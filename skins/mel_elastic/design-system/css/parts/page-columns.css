@@ -37,6 +37,7 @@
   align-items: center;
   border-bottom: var(--bnum-border-column);
   display: flex;
+  height: 60px;
   justify-content: space-between;
   margin: 0;
   padding: var(--layout-sidebar-header-padding, 12px 16px 12px 16px);
@@ -147,9 +148,13 @@ html.layout-large .task-mail bnum-column-sidebar#layout-sidebar > .header {
   --secondary-text-color: var(--_color);
   --layout-list-header-background-color: var(--_background);
 }
-#layout-list > .header > .old-header {
+#layout-list > .header {
   border-bottom: var(--bnum-border-column);
-  height: calc(60px - var(--bnum-border-width-s, thin));
+  box-sizing: border-box;
+  height: 60px;
+}
+#layout-list > .header > .old-header {
+  height: 100%;
 }
 #layout-list > .header > .old-header a {
   --_idle-background: var(--nav-button-background, transparent);

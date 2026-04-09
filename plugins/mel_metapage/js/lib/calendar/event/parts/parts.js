@@ -27,7 +27,6 @@ class Parts {
      * @type {external:jQuery}
      */
     this._$field = $field;
-    // this.isStartEvent = rcmail.env['__local:part:isStartEvent'] ?? true;
     this._p_initField(modes);
   }
 
@@ -144,8 +143,6 @@ class Parts {
   get isStartEvent() {
     return MelObject.Empty().get_env('__local:part:isStartEvent') ?? true;
   }
-
-  
 }
 
 /**

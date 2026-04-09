@@ -298,9 +298,7 @@ export class AlarmPart extends FakePart {
 
 		//Génère les options du select
 		let $option;
-		// let default_text = event.allDay ? " (aucun)" : " (15 min)";
 		for (const alarm of options_alarms) {
-			// debugger;
 			if (alarm.value === -2  ) {
 				if(rcmail.env['__local:part:isStartEvent'] === true){
 
@@ -328,7 +326,6 @@ export class AlarmPart extends FakePart {
 			}
 
 		}
-
 		$option = null;
 
 		// En mode création : écoute le basculement allDay pour mettre à jour
@@ -513,7 +510,6 @@ export class AlarmPart extends FakePart {
  * @property {string} label Sera affiché
  * @property {number} value Valeur en minute
  */
-// AlarmPart.DEFAULT_ALARM_VALUE = -2;
 /**
  * Liste des rappels prédéfinis
  * @type {Array<PredefinedOption>}

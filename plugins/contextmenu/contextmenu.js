@@ -467,7 +467,7 @@ rcube_webmail.prototype.contextmenu = {
             p.enabled = false;
             // From rcmail::subscription_select()
             var folder;
-            // Désactivation de "Supprimer" pour le dossier Modèles dans le menu contextuel (déclenché au clic droit)
+            // PAMELA - 0008986 Désactivation de "Supprimer" pour le dossier Modèles dans le menu contextuel (déclenché au clic droit)
             if ((folder = rcmail.env.subscriptionrows[rcmail.env.context_menu_source_id]) && !folder[2] && !rcmail.is_templates_folder(rcmail.env.context_menu_source_id)) {
                 p.enabled = true;
             }
@@ -978,19 +978,6 @@ function rcube_context_menu(p) {
     this.triggerEvent = rcube_event_engine.prototype.triggerEvent;
 }
 
-// Détection du dossier Modèles
-rcube_webmail.prototype.is_templates_folder = function(folder)
-{
-    const name = folder || '';
-    const templates_names = ['Templates', 'Modèles', 'Mod&AOg-les'];
-
-    return templates_names.some(function(t) {
-        return name === t
-            || name.endsWith('/' + t)
-            || name.endsWith('.' + t);
-    });
-};
-
 $(document).ready(function() {
     if (window.rcmail) {
         rcmail.env.contextmenus = {};
@@ -1036,24 +1023,6 @@ $(document).ready(function() {
                 catch (e) { /* catch possible "Permission denied" error in IE */ }
             })
             .contents().on('mouseup', body_mouseup);
-
-            // Protection du bouton supprimer pour le dossier Modèles
-            rcmail.subscription_list.addEventListener('select', function(p) {
-                const btnDel = document.querySelector('#toolbar-menu .delete');
-                if (!btnDel) return;
-
-                setTimeout(function() {
-                    if (rcmail.is_templates_folder(rcmail.env.mailbox)) {
-                        btnDel.className = 'delete disabled';
-                        btnDel.setAttribute('aria-disabled', 'true');
-                        btnDel.setAttribute('tabindex', '-1');
-                    } else {
-                        btnDel.className = 'delete';
-                        btnDel.setAttribute('aria-disabled', 'false');
-                        btnDel.setAttribute('tabindex', '0');
-                    }
-                }, 50);
-            });
         });
 
         rcmail.register_command('plugin.contextmenu.collapseall', function(obj) {

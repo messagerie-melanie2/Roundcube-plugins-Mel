@@ -15,6 +15,19 @@
  * for the JavaScript code in this file.
  */
 
+// Détection du dossier Modèles
+rcube_webmail.prototype.is_templates_folder = function(folder)
+{
+    const name = folder || '';
+    const templates_names = ['Templates', 'Modèles', 'Mod&AOg-les'];
+
+    return templates_names.some(function(t) {
+        return name === t
+            || name.endsWith('/' + t)
+            || name.endsWith('.' + t);
+    });
+};
+
 $(document).ready(function() {
     if (window.rcmail) {
         $.extend(true, rcmail.contextmenu.settings, {
@@ -121,6 +134,16 @@ $(document).ready(function() {
             rcmail.addEventListener('abook_search_insert', function(props) { rcmail.contextmenu.init_addressbook(rcmail.savedsearchlist.get_item('S' + props.id), {'menu_source': '#groupoptions-menu > ul > li'}); } );
         }
         else if (rcmail.env.task == 'settings') {
+
+            // Protection du bouton supprimer pour le dossier Modèles
+            rcmail.addEventListener('init', function() {
+                if (rcmail.subscription_list) {
+                    rcmail.subscription_list.addEventListener('select', () => {
+                        rcmail.enable_command('delete-folder', !rcmail.is_templates_folder(rcmail.env.mailbox));
+                    });
+                }
+            });
+
             rcmail.contextmenu.settings_menus([
                 {'obj': 'settings-menu li', 'props': {'menu_name': 'settingslist', 'menu_source': '#rcmsettings-menu > ul', 'init_func': 'init_settings'}},
                 {'obj': 'sections-table tr', 'props': {'menu_name': 'preferenceslist', 'menu_source': '#rcmsettings-menu > ul', 'list_object': 'sections_list'}},

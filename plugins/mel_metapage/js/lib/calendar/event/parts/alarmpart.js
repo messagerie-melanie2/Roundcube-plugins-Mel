@@ -349,9 +349,8 @@ export class AlarmPart extends FakePart {
 	 */
 	_getDefaultText() {
 		const isAllDay = $('#edit-allday').is(':checked');
-		if (isAllDay) return ' (aucun)';
 		const minutes = this._getDefaultAlarmMinutes();
-		if (minutes === null) return ' (aucun)';
+		if (isAllDay || minutes === null) return ` (${AlarmPart.PREDEFINED.find(x => x.value === 0).label})`;
 		return ` (${new AlarmData(minutes).toString()})`;
 	}
 
@@ -481,7 +480,6 @@ export class AlarmPart extends FakePart {
 	 * @returns {number|null}
 	 */
 	_getDefaultAlarmMinutes() {
-		// debugger;
 		const raw = rcmail.env.calendar_default_alarm_offset;
 		if (!raw) return null;
  
@@ -512,7 +510,7 @@ export class AlarmPart extends FakePart {
  * @type {Array<PredefinedOption>}
  */
 AlarmPart.PREDEFINED = [
-	{ label: 'Aucune', value: 0 },
+	{ label: 'Aucun', value: 0 },
 	{ label: '5 minutes', value: 5 },
 	{ label: '10 minutes', value: 10 },
 	{ label: '15 minutes', value: 15 },

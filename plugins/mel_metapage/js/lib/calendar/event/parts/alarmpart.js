@@ -301,8 +301,6 @@ export class AlarmPart extends FakePart {
 		for (const alarm of options_alarms) {
 			if (alarm.value === -2  ) {
 				if(rcmail.env['__local:part:isStartEvent'] === true){
-
-					// let default_text = event.allDay ? " (aucun)" : " (15 min)";
 					$option = MelHtml.start
 						.option({ value: alarm.value })
 						.text(alarm.label + this._getDefaultText())
@@ -354,7 +352,6 @@ export class AlarmPart extends FakePart {
 		if (isAllDay) return ' (aucun)';
 		const minutes = this._getDefaultAlarmMinutes();
 		if (minutes === null) return ' (aucun)';
-		debugger;
 		return ` (${new AlarmData(minutes).toString()})`;
 	}
 
@@ -492,7 +489,7 @@ export class AlarmPart extends FakePart {
 		if (!match) return null;
  
 		const num = parseInt(match[1], 10);
-		const unit = match[2];//.toUpperCase();
+		const unit = match[2].toUpperCase();
  
 		switch (unit) {
 			case 'W': return num * 60 * 24 * 7;

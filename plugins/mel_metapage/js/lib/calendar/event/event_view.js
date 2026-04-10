@@ -694,15 +694,9 @@ export class EventView {
       );
     }
     
-    if ( is_valid && rcmail.env['__local:part:isStartEvent'] ) {
-      if (+this.parts.alarm._$fakeField.val() === -2) {
-        if (this.parts.date.is_all_day) {
-          this.parts.alarm._$fakeField.val("0");
-        } else {
-          this.parts.alarm._$fakeField.val(this.parts.alarm._getDefaultAlarmMinutes());
-        }
-        this.parts.alarm._$fakeField.change();
-      }
+    if (is_valid && rcmail.env['__local:part:isStartEvent'] && +this.parts.alarm._$fakeField.val() === -2) {
+      const $alarmField = this.parts.alarm._$fakeField;
+      $alarmField.val(this.parts.date.is_all_day() ? 0 : this.parts.alarm._getDefaultAlarmMinutes()).change();
     }
 
     return is_valid;

@@ -74,6 +74,9 @@
         </span></a>
         <roundcube:endif />
         <roundcube:object name="listmenulink" class="options active" label="options" innerclass="inner" />
+        <a href="#search" id="search-menu-mini-switch" style="display: none;" class="search active"  title="Ouvrir la recherche"><span class="inner">
+          Recherche
+        </span></a>
         <roundcube:container name="listcontrols" id="listcontrols" />
       </bnum-hide>
       <bnum-hide breakpoint="small" mode="up">
@@ -94,6 +97,7 @@
 
   </div>
       <div id=mailsearchlist style="margin-top: 11px;
+      position:relative;
 		margin-bottom: 5px;">
       <div class="form-control input-mel mel-input-container" id="mail-search-border" style="display: none;">
         <div style="margin-top:-6px;width: calc(100% - 24px);">
@@ -113,6 +117,7 @@
 
       <bnum-input-search id="input-search-mail">
         <span class="sr-only">Recherche dans les messages</span>
+        <bnum-icon-button slot="actions" id="input-search-back-button" class="bds-hidden">arrow_back</bnum-icon-button>
         <bnum-icon-button slot="actions" id="input-search-filter-button">filter_list</bnum-icon-button>
       </bnum-input-search>
 

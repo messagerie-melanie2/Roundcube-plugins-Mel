@@ -1,4 +1,5 @@
 import { EMPTY_STRING } from '../../../../plugins/mel_metapage/js/lib/constants/constants.js';
+import { AvatarElement } from '../../../../plugins/mel_metapage/js/lib/html/JsHtml/CustomAttributes/avatar.js';
 import {
   DsCssProperty,
   DsCssRule,
@@ -317,7 +318,7 @@ export default class BridgeMail extends ABridge {
 
     const rows = tbody.querySelectorAll('tr');
     for (let i = 0, len = rows.length; i < len; i++) {
-      rows[i].setAttribute('draggable', 'true');
+      this.#_update_row(rows[i]).setAttribute('draggable', 'true');
     }
 
     if (tbody.dataset.hasBridgeListeners) return this;
@@ -345,6 +346,40 @@ export default class BridgeMail extends ABridge {
     tbody.dataset.hasBridgeListeners = 'true';
 
     return this;
+  }
+
+  /**
+   *
+   * @param {Readonly<HTMLElement>} row
+   */
+  #_update_row(row) {
+    {
+      /**
+       * @type {HTMLElement}
+       */
+      const msgicon = row.querySelector('.msgicon');
+
+      if (msgicon) {
+        msgicon.style.opacity = 0;
+        msgicon.style.pointerEvents = 'none';
+      }
+    }
+
+    const avatar = AvatarElement.Create({
+      email: row.querySelector('.rcmContactAddress')?.getAttribute?.('title'),
+    });
+
+    avatar.addClass('mail-avatar');
+    // avatar.style.width = '30px';
+    // avatar.style.height = '30px';
+    // avatar.style.position = 'absolute';
+    // avatar.style.top = '7px';
+    // avatar.style.left = '8px';
+
+    row.style.position = 'relative';
+    row.prepend(avatar);
+
+    return row;
   }
 
   /**

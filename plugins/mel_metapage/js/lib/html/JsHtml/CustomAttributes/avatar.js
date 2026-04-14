@@ -292,6 +292,273 @@ class AvatarNotLoadEvent extends AvatarEvent {
 }
 //#endregion
 
+//#region Request Queue & Batch Loader
+/**
+ * Singleton queue that batches avatar requests to avoid server overload.
+ * Requests are grouped in time windows and processed with concurrency control.
+ */
+class AvatarRequestQueue {
+  /** @type {AvatarRequestQueue} */
+  static #instance = null;
+
+  /** @type {Map<string, Promise<string>>} In-flight or resolved promises keyed by email */
+  #cache = new Map();
+
+  /** @type {Map<string, Array<{resolve: Function, reject: Function}>>} Pending callbacks per email */
+  #pending = new Map();
+
+  /** @type {Set<string>} Currently fetching emails */
+  #inflight = new Set();
+
+  /** @type {number|null} Debounce timer handle */
+  #flushTimer = null;
+
+  /** @type {number} Max concurrent HTTP requests */
+  #concurrency;
+
+  /** @type {number} Debounce window in ms before flushing the batch */
+  #debounceMs;
+
+  /** @type {number} Current active request count */
+  #activeCount = 0;
+
+  /** @type {Array<Function>} FIFO queue of pending request runners */
+  #runnerQueue = [];
+
+  /**
+   * @param {object} opts
+   * @param {number} opts.concurrency Max simultaneous requests (default: 4)
+   * @param {number} opts.debounceMs Batch window in ms (default: 50)
+   */
+  constructor({ concurrency = 4, debounceMs = 50 } = {}) {
+    this.#concurrency = concurrency;
+    this.#debounceMs = debounceMs;
+  }
+
+  static getInstance() {
+    if (!AvatarRequestQueue.#instance) {
+      AvatarRequestQueue.#instance = new AvatarRequestQueue({
+        concurrency: 4,
+        debounceMs: 50,
+      });
+    }
+    return AvatarRequestQueue.#instance;
+  }
+
+  /**
+   * Request the avatar URL for a given email.
+   * Returns a promise that resolves with the object URL or rejects on 404/error.
+   * Multiple calls for the same email return the same promise (deduplication).
+   * @param {string} email
+   * @returns {Promise<string>}
+   */
+  request(email) {
+    // Serve from cache if already resolved
+    if (this.#cache.has(email)) {
+      return this.#cache.get(email);
+    }
+
+    // Deduplicate: if already pending, attach to existing promise
+    if (!this.#pending.has(email)) {
+      this.#pending.set(email, []);
+    }
+
+    const promise = new Promise((resolve, reject) => {
+      this.#pending.get(email).push({ resolve, reject });
+    });
+
+    // Store in cache immediately so concurrent calls dedup correctly
+    // We store the promise (not the resolved value) as the cache entry.
+    // On error we evict it so a retry is possible after navigation.
+    if (!this.#cache.has(email)) {
+      this.#cache.set(email, promise);
+    }
+
+    this.#scheduleFlushing();
+
+    return promise;
+  }
+
+  /**
+   * Debounce: collect all synchronous .request() calls in the same JS task
+   * then flush them as a single batch.
+   * @private
+   */
+  #scheduleFlushing() {
+    if (this.#flushTimer !== null) return;
+
+    this.#flushTimer = setTimeout(() => {
+      this.#flushTimer = null;
+      this.#flush();
+    }, this.#debounceMs);
+  }
+
+  /**
+   * Enqueue a fetch runner for every pending email not already in-flight.
+   * Runners are executed respecting the concurrency cap.
+   * @private
+   */
+  #flush() {
+    for (const [email, callbacks] of this.#pending.entries()) {
+      if (this.#inflight.has(email)) continue;
+
+      this.#inflight.add(email);
+      this.#pending.delete(email);
+
+      // Capture callbacks in closure before clearing
+      const captured = [...callbacks];
+      this.#runnerQueue.push(() => this.#fetchAvatar(email, captured));
+    }
+
+    this.#drain();
+  }
+
+  /**
+   * Process the runner FIFO queue while respecting the concurrency limit.
+   * @private
+   */
+  #drain() {
+    while (
+      this.#activeCount < this.#concurrency &&
+      this.#runnerQueue.length > 0
+    ) {
+      const runner = this.#runnerQueue.shift();
+      this.#activeCount++;
+      runner().finally(() => {
+        this.#activeCount--;
+        this.#drain(); // re-enter after each completion
+      });
+    }
+  }
+
+  /**
+   * Perform the actual fetch and resolve/reject all waiting callbacks.
+   * Uses fetch() + blob URL to avoid leaking same-origin credentials via <img src>.
+   * @param {string} email
+   * @param {Array<{resolve: Function, reject: Function}>} callbacks
+   * @private
+   */
+  async #fetchAvatar(email, callbacks) {
+    const url = AVATAR_URL.replace('%0', email).replaceAll(
+      '_is_from=iframe',
+      EMPTY_STRING,
+    );
+
+    try {
+      const response = await fetch(url, {
+        credentials: 'same-origin',
+        // Leverage browser HTTP cache: server must send Cache-Control headers
+        cache: 'default',
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const blob = await response.blob();
+
+      // Validate MIME — reject non-image responses (e.g. HTML error pages)
+      if (!blob.type.startsWith('image/')) {
+        throw new Error(`Unexpected MIME type: ${blob.type}`);
+      }
+
+      const objectUrl = URL.createObjectURL(blob);
+
+      for (const { resolve } of callbacks) resolve(objectUrl);
+    } catch (err) {
+      // Evict failed promise from cache so a page reload can retry
+      this.#cache.delete(email);
+      this.#inflight.delete(email);
+
+      for (const { reject } of callbacks) reject(err);
+    } finally {
+      this.#inflight.delete(email);
+    }
+  }
+
+  /**
+   * Manually evict a resolved entry (e.g. after logout).
+   * Object URLs are revoked to free memory.
+   * @param {string} email
+   */
+  evict(email) {
+    const cached = this.#cache.get(email);
+    if (cached) {
+      // Revoke only if it resolved to a blob URL
+      cached
+        .then((url) => {
+          if (url?.startsWith('blob:')) URL.revokeObjectURL(url);
+        })
+        .catch(() => {});
+      this.#cache.delete(email);
+    }
+  }
+
+  /** Flush all blob URLs from memory (e.g. on page unload) */
+  destroy() {
+    for (const [, promise] of this.#cache) {
+      promise
+        .then((url) => {
+          if (url?.startsWith('blob:')) URL.revokeObjectURL(url);
+        })
+        .catch(() => {});
+    }
+    this.#cache.clear();
+    this.#pending.clear();
+    this.#inflight.clear();
+    this.#runnerQueue = [];
+    if (this.#flushTimer !== null) {
+      clearTimeout(this.#flushTimer);
+      this.#flushTimer = null;
+    }
+  }
+}
+//#endregion
+
+//#region IntersectionObserver-based lazy loading
+/**
+ * Global observer: avatars only load when they enter the viewport.
+ * Prevents off-screen list items from triggering requests at all.
+ */
+const AvatarIntersectionObserver = (() => {
+  /** @type {IntersectionObserver} */
+  let observer = null;
+
+  function getObserver() {
+    if (observer) return observer;
+
+    observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            /** @type {AvatarElement} */
+            const avatar = entry.target;
+            observer.unobserve(avatar);
+            avatar.update_img();
+          }
+        }
+      },
+      {
+        // Start loading slightly before the element is visible
+        rootMargin: '200px',
+        threshold: 0,
+      },
+    );
+
+    return observer;
+  }
+
+  return {
+    observe(element) {
+      getObserver().observe(element);
+    },
+    unobserve(element) {
+      getObserver().unobserve(element);
+    },
+  };
+})();
+//#endregion
+
 //#region Element Html
 /**
  * @class
@@ -450,21 +717,22 @@ class AvatarElement extends HtmlCustomTag {
 
     if (ENABLE_COOKIE && this._cookie_exist(this._email)) {
       this.removeAttribute('data-forceload');
-
       this._on_error();
+    } else if (this.dataset.forceload) {
+      setTimeout(() => {
+        this.removeAttribute('data-forceload');
+        this.update_img();
+      }, 10);
     } else {
-      if (this.dataset.forceload) {
-        setTimeout(() => {
-          // this.removeAttribute('data-needcreation');
-          this.removeAttribute('data-forceload');
-          this.update_img();
-        }, 10);
-      } else {
-        this.#timeout = setTimeout(() => {
-          this.update_img();
-        }, 5 * 1000);
-      }
+      // Lazy: defer until element enters viewport instead of a blind 5s timeout
+      AvatarIntersectionObserver.observe(this);
     }
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback?.();
+    AvatarIntersectionObserver.unobserve(this);
+    // Don't evict from queue cache — other avatars for the same email still benefit.
   }
 
   /**
@@ -475,17 +743,22 @@ class AvatarElement extends HtmlCustomTag {
 
     if (this.saved) return this._on_load();
 
-    let url = AVATAR_URL.replace('%0', this._email);
-    
     this.setAttribute('data-state', 'loading');
-    let img = this.navigator.querySelector('img');
-    img.onload = this._on_load.bind(this);
-    img.onerror = this._on_error.bind(this);
-    img.src = url.replaceAll('_is_from=iframe', EMPTY_STRING);
 
-    img = null;
+    AvatarRequestQueue.getInstance()
+      .request(this._email)
+      .then((objectUrl) => {
+        const img = this.navigator.querySelector('img');
+        if (!img) return; // element was removed from DOM during fetch
+
+        img.onload = this._on_load.bind(this);
+        img.onerror = this._on_error.bind(this);
+        img.src = objectUrl;
+      })
+      .catch(() => {
+        this._on_error();
+      });
   }
-
   /**
    * Récupère le block de style lié au forcage de la taille
    * @package
@@ -729,7 +1002,9 @@ Object.defineProperty(AvatarElement, 'IsLoaded', {
 //#endregion
 if (!window.avatarloadedthings) {
   window.addEventListener('load', function () {
-    onLoaded();
+    requestAnimationFrame(() => {
+      onLoaded();
+    });
   });
   window.avatarloadedthings = true;
 }

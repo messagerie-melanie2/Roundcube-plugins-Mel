@@ -2923,6 +2923,23 @@ $(document).ready(() => {
         if (this.css_rules.ruleExist(mel_message_space))
           this.css_rules.remove(mel_message_space);
 
+        {
+          const message_space_keys = {
+            [rcmail.gettext('larger', 'mel_metapage')]: 'mail-large',
+            [rcmail.gettext('smaller', 'mel_metapage')]: 'mail-small',
+          };
+          const html = document.querySelector('html');
+
+          for (const key of Object.keys(message_space_keys)) {
+            html.classList.remove(message_space_keys[key]);
+          }
+
+          const html_class_to_add =
+            message_space_keys[mailConfig[mel_message_space]];
+
+          if (html_class_to_add) html.classList.add(html_class_to_add);
+        }
+
         //Espacement des messages
         if (
           mailConfig[mel_message_space] ===

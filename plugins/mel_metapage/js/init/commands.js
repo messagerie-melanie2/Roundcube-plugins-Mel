@@ -849,7 +849,6 @@ if (rcmail) {
       'update_mail_css_old',
       (args) => {
         const { key, value } = args;
-
         MEL_ELASTIC_UI.update_mail_css_async({ key, value });
 
         for (const iterator of top.$('iframe.mm-frame')) {

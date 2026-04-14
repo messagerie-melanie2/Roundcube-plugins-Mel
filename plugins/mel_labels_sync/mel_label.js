@@ -117,7 +117,9 @@ function rcm_tb_label_insert(uid, row) {
     var html = '';
     var rowobj = $(row.obj);
     for (idx in message.flags.tb_labels) {
-      rowobj.addClass('label_' + message.flags.tb_labels[idx].replace('~', ''));
+      rowobj
+        .addClass('label_' + message.flags.tb_labels[idx].replace('~', ''))
+        .addClass('has-label');
       html += `<span class="text_${'label_' + message.flags.tb_labels[idx].replace('~', '')}">${rcmail.env.labels_translate[message.flags.tb_labels[idx].replace('~', '')]}</span>`;
     }
     if (html !== '')
@@ -170,7 +172,9 @@ function rcm_tb_label_flag_toggle(flag_uids, toggle_label, onoff) {
   if (headers_table.length && flag_uids.length) {
     if (onoff == true) {
       // adcolor
-      headers_table.addClass('label_' + toggle_label.replace('~', ''));
+      headers_table
+        .addClass('label_' + toggle_label.replace('~', ''))
+        .addClass('has-label');
       // add to flag list
       tb_labels_for_message.push(toggle_label);
 
@@ -200,7 +204,9 @@ function rcm_tb_label_flag_toggle(flag_uids, toggle_label, onoff) {
       }
     } else {
       // remove color
-      headers_table.removeClass('label_' + toggle_label);
+      headers_table
+        .removeClass('label_' + toggle_label)
+        .removeClass('has-label');
       var pos = jQuery.inArray(toggle_label, tb_labels_for_message);
       if (pos > -1) tb_labels_for_message.splice(pos, 1);
 
@@ -253,7 +259,9 @@ function rcm_tb_label_flag_toggle(flag_uids, toggle_label, onoff) {
     if (onoff == true) {
       // add colors
       var rowobj = $(row.obj);
-      rowobj.addClass('label_' + toggle_label.replace('~', ''));
+      rowobj
+        .addClass('label_' + toggle_label.replace('~', ''))
+        .addClass('has-label');
       // add to flag list
       message.flags.tb_labels.push(toggle_label);
 
@@ -289,7 +297,9 @@ function rcm_tb_label_flag_toggle(flag_uids, toggle_label, onoff) {
     } else {
       // remove colors
       var rowobj = $(row.obj);
-      rowobj.removeClass('label_' + toggle_label.replace('~', ''));
+      rowobj
+        .removeClass('label_' + toggle_label.replace('~', ''))
+        .removeClass('has-label');
       // remove from flag list
       var pos = jQuery.inArray(toggle_label, message.flags.tb_labels);
       if (pos > -1) message.flags.tb_labels.splice(pos, 1);

@@ -1220,7 +1220,6 @@ if (rcmail && window.mel_metapage) {
           .split(newline);
 
         let element;
-        let tmp_link = "";
         for (let index = 0; index < tmp_location.length; ++index) {
           element = tmp_location[index];
 
@@ -1229,11 +1228,9 @@ if (rcmail && window.mel_metapage) {
             element.includes('|') ||
             element.includes('/public/webconf')
           ) {
-            [tmp_link,location_phone] = element.split(' : ');
-            element = tmp_link;
+            [element,location_phone] = element.split(' : ');
             location_phone = location_phone.replace(')', '').split('|');
           }
-
           location += mel_metapage.Functions.updateRichText(element)
             .replaceAll('#visio:', '')
             .replaceAll('@visio:', '');
@@ -1245,7 +1242,6 @@ if (rcmail && window.mel_metapage) {
       const iconStyle = `display:inline-block; vertical-align:top; margin-top:5px`;
       const rowStyle  = `margin-top:15px`;
       const colStyle  = `overflow:hidden; display:flex; text-overflow:ellipsis`;
-
 
       //Affichage du lieu
       // Affichage du lieu (lien audioconf non cliquable)

@@ -4,6 +4,8 @@ import {
   DsCssProperty,
   DsCssRule,
   DsDocument,
+  HTMLBnumAvatarAction,
+  HTMLBnumButtonIcon,
   HTMLBnumFolder,
 } from '../ds-module-bnum';
 import ABridge from './ABridge.js';
@@ -367,9 +369,71 @@ export default class BridgeMail extends ABridge {
 
     const avatar = AvatarElement.Create({
       email: row.querySelector('.rcmContactAddress')?.getAttribute?.('title'),
-    });
+    }).addClass('mail-avatar--avatar');
 
-    avatar.addClass('mail-avatar');
+    /**
+     * @type {import("../ds-module-bnum.js").HTMLBnumButtonIcon}
+     */
+    const action = HTMLBnumButtonIcon.Create('add')
+      .attr('id', `action-of-${row.id}`)
+      .addClass('mail-avatar--action');
+
+    action.addEventListener(
+      'click',
+      function (rowId, e) {
+        e.stopImmediatePropagation();
+        e.stopPropagation();
+        e.preventDefault();
+
+        const updateButton = document.querySelector(`#${rowId} .msgicon`);
+
+        if (updateButton) {
+          const isUnread =
+            !document.getElementById(rowId)?.classList?.contains?.('unread') ??
+            false;
+          const icon = isUnread ? 'mark_email_read' : 'mark_email_unread';
+          this.icon = icon;
+          updateButton.click();
+        } else
+          throw new Error(
+            'Impossible de trouver le bouton pour changer le status du mail !',
+          );
+      }.bind(action, row.id),
+    );
+
+    /**
+     * @type {import("../ds-module-bnum.js").HTMLBnumAvatarAction}
+     */
+    const avatarContainer = HTMLBnumAvatarAction.Create({ avatar, action });
+    avatarContainer
+      .data('row-id', row.id)
+      .addClass('mail-avatar')
+      .onEnter.push((caller) => {
+        /**
+         * @type {string}
+         */
+        const rowId = caller.data('row-id');
+        /**
+         * @type {import("../ds-module-bnum.js").HTMLBnumButtonIcon}
+         */
+        const avatarAction = document.getElementById(`action-of-${rowId}`);
+
+        if (avatarAction) {
+          const isUnread =
+            document.getElementById(rowId)?.classList?.contains?.('unread') ??
+            false;
+          const icon = isUnread ? 'mark_email_read' : 'mark_email_unread';
+
+          avatarAction.icon = icon;
+        } else
+          throw new Error(
+            `Impossible de trouver l'élément : action-of-${rowId}`,
+          );
+      });
+    // requestAnimationFrame(() => {
+    //   avatarContainer._handleOnMouseEnter();
+    // });
+
     // avatar.style.width = '30px';
     // avatar.style.height = '30px';
     // avatar.style.position = 'absolute';
@@ -377,7 +441,7 @@ export default class BridgeMail extends ABridge {
     // avatar.style.left = '8px';
 
     row.style.position = 'relative';
-    row.prepend(avatar);
+    row.prepend(avatarContainer);
 
     return row;
   }

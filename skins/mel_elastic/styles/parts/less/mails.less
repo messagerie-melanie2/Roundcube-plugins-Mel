@@ -93,11 +93,24 @@ table.messagelist {
   tr {
     //Normal
     .mail-avatar {
-      height: 30px;
-      width: 30px;
+      --avatar-size: 30px;
+      height: var(--avatar-size);
+      width: var(--avatar-size);
       position: absolute;
       left: 8px;
       top: 16px;
+
+      .mail-avatar--action,
+      .mail-avatar--avatar {
+        height: var(--avatar-size);
+        width: var(--avatar-size);
+      }
+
+      .mail-avatar--action {
+        display: block;
+        margin-top: var(--mail-avatar-action-correction, 3px);
+        margin-left: var(--mail-avatar-action-correction, 3px);
+      }
     }
 
     &.has-label {

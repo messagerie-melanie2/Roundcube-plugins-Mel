@@ -563,7 +563,7 @@ function CapitalizeLine(line) {
           .join(' ');
 }
 
-var css_248z$s = ":host([block]){display:block;flex:1;width:100%}:host(.flex){display:flex}:host(.center){align-items:center;justify-content:center;text-align:center}";
+var css_248z$t = ":host([block]){display:block;flex:1;width:100%}:host(.flex){display:flex}:host(.center){align-items:center;justify-content:center;text-align:center}";
 
 class BnumDOM {
     /**
@@ -1437,7 +1437,7 @@ class BnumElement extends HTMLElement {
 /**
  * Style commun à tous les BnumElement.
  */
-const BASE_STYLE = BnumElement.ConstructCSSStyleSheet(css_248z$s);
+const BASE_STYLE = BnumElement.ConstructCSSStyleSheet(css_248z$t);
 
 class RotomecaCookies {
     /**
@@ -2531,7 +2531,7 @@ class SchedulerArray {
     }
 }
 
-var css_248z$r = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{border-radius:var(--bnum-badge-border-radius,100px);display:var(--bnum-badge-display,inline-block);padding:var(--bnum-badge-padding,var(--bnum-space-xs,5px))}:host(:state(is-circle)){aspect-ratio:1;border-radius:var(--bnum-badge-circle-border-radius,100%)}:host(:state(is-circle)) span{align-items:center;display:flex;height:100%;justify-content:center}:host(:state(variation-primary)){background-color:var(--bnum-badge-primary-color,var(--bnum-color-primary,#000091));color:var(--bnum-badge-primary-text-color,var(--bnum-text-on-primary,#f5f5fe))}:host(:state(variation-secondary)){background-color:var(--bnum-badge-secondary-color,var(--bnum-color-secondary,#3a3a3a));color:var(--bnum-badge-secondary-text-color,var(--bnum-text-on-secondary,#fff))}:host(:state(variation-secondary)){border:var(--bnum-badge-type,solid) var(--bnum-badge-size,thin) var(--bnum-badge-secondary-text-color,var(--bnum-text-on-secondary,#fff))}:host(:state(variation-danger)){background-color:var(--bnum-badge-danger-color,var(--bnum-color-danger,#ce0500));color:var(--bnum-badge-danger-text-color,var(--bnum-text-on-danger,#f5f5fe))}";
+var css_248z$s = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{border-radius:var(--bnum-badge-border-radius,100px);display:var(--bnum-badge-display,inline-block);padding:var(--bnum-badge-padding,var(--bnum-space-xs,5px))}:host(:state(is-circle)){aspect-ratio:1;border-radius:var(--bnum-badge-circle-border-radius,100%)}:host(:state(is-circle)) span{align-items:center;display:flex;height:100%;justify-content:center}:host(:state(variation-primary)){background-color:var(--bnum-badge-primary-color,var(--bnum-color-primary,#000091));color:var(--bnum-badge-primary-text-color,var(--bnum-text-on-primary,#f5f5fe))}:host(:state(variation-secondary)){background-color:var(--bnum-badge-secondary-color,var(--bnum-color-secondary,#3a3a3a));color:var(--bnum-badge-secondary-text-color,var(--bnum-text-on-secondary,#fff))}:host(:state(variation-secondary)){border:var(--bnum-badge-type,solid) var(--bnum-badge-size,thin) var(--bnum-badge-secondary-text-color,var(--bnum-text-on-secondary,#fff))}:host(:state(variation-danger)){background-color:var(--bnum-badge-danger-color,var(--bnum-color-danger,#ce0500));color:var(--bnum-badge-danger-text-color,var(--bnum-text-on-danger,#f5f5fe))}";
 
 /**
  * Décorateur de classe pour définir un Web Component.
@@ -3035,7 +3035,7 @@ const STATE_VARIATION_PREFIX = 'variation-';
  */
 let HTMLBnumBadge = (() => {
     let _classDecorators = [Define({
-            styles: css_248z$r,
+            styles: css_248z$s,
             tag: TAG_BADGE,
         }), UpdateAll()];
     let _classDescriptor;
@@ -3503,9 +3503,9 @@ function OnIconChangeInitializer(event, self) {
     });
 }
 
-var css_248z$q = "@font-face{font-family:Material Symbols Outlined;font-style:normal;font-weight:200;src:url(fonts/material-symbol-v2.woff2) format(\"woff2\")}.material-symbols-outlined{word-wrap:normal;-moz-font-feature-settings:\"liga\";-moz-osx-font-smoothing:grayscale;direction:ltr;display:inline-block;font-family:Material Symbols Outlined;font-size:24px;font-style:normal;font-weight:400;letter-spacing:normal;line-height:1;text-transform:none;white-space:nowrap}";
+var css_248z$r = "@font-face{font-family:Material Symbols Outlined;font-style:normal;font-weight:200;src:url(fonts/material-symbol-v2.woff2) format(\"woff2\")}.material-symbols-outlined{word-wrap:normal;-moz-font-feature-settings:\"liga\";-moz-osx-font-smoothing:grayscale;direction:ltr;display:inline-block;font-family:Material Symbols Outlined;font-size:24px;font-style:normal;font-weight:400;letter-spacing:normal;line-height:1;text-transform:none;white-space:nowrap}";
 
-var css_248z$p = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{font-size:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem));font-variation-settings:\"FILL\" var(--bnum-icon-fill,0),\"wght\" var(--bnum-icon-weight,400),\"GRAD\" var(--bnum-icon-grad,0),\"opsz\" var(--bnum-icon-opsz,24);font-weight:var(--bnum-icon-font-weight,var(--bnum-font-weight-normal,normal));height:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem));width:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem))}:host(:state(loading)){opacity:0}";
+var css_248z$q = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{font-size:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem));font-variation-settings:\"FILL\" var(--bnum-icon-fill,0),\"wght\" var(--bnum-icon-weight,400),\"GRAD\" var(--bnum-icon-grad,0),\"opsz\" var(--bnum-icon-opsz,24);font-weight:var(--bnum-icon-font-weight,var(--bnum-font-weight-normal,normal));height:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem));width:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem))}:host(:state(loading)){opacity:0}";
 
 /**
  * Classe CSS utilisée pour les icônes Material Symbols.
@@ -3514,8 +3514,8 @@ const ICON_CLASS = 'material-symbols-outlined';
 /**
  * Feuille de style CSS pour les icônes Material Symbols.
  */
-const SYMBOLS = BnumElement.ConstructCSSStyleSheet(css_248z$q.replaceAll(`.${ICON_CLASS}`, ':host'));
-const STYLE = BnumElement.ConstructCSSStyleSheet(css_248z$p);
+const SYMBOLS = BnumElement.ConstructCSSStyleSheet(css_248z$r.replaceAll(`.${ICON_CLASS}`, ':host'));
+const STYLE = BnumElement.ConstructCSSStyleSheet(css_248z$q);
 /**
  * Composant personnalisé "bnum-icon" pour afficher une icône Material Symbol.
  *
@@ -3779,7 +3779,7 @@ let HTMLBnumIcon = (() => {
     return HTMLBnumIcon = _classThis;
 })();
 
-var css_248z$o = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{--bnum-icon-font-size:var(--bnum-body-font-size);border-radius:var(--bnum-button-border-radius,0);cursor:var(--bnum-button-cursor,pointer);display:var(--bnum-button-display,inline-block);font-weight:600;height:-moz-fit-content;height:fit-content;line-height:1.5rem;padding:var(--bnum-button-padding,.5rem 1rem);transition:background-color .2s ease,color .2s ease;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}:host(:state(rounded)){border-radius:var(--bnum-button-rounded-border-radius,5px)}:host(:state(without-icon)){padding-bottom:var(--bnum-button-without-icon-padding-bottom,7.5px);padding-top:var(--bnum-button-without-icon-padding-top,7.5px)}:host(:disabled),:host(:state(disabled)){cursor:not-allowed;opacity:var(--bnum-button-disabled-opacity,.6);pointer-events:var(--bnum-button-disabled-pointer-events,none)}:host(:state(loading)){cursor:progress}:host(:state(icon)){--bnum-button-icon-gap:var(--custom-bnum-button-icon-margin,var(--bnum-space-s,10px))}:host(:state(icon))>.wrapper{align-items:center;display:flex;flex-direction:row;gap:var(--bnum-button-icon-gap);justify-content:center}:host(:state(icon-pos-left)) .wrapper{flex-direction:row-reverse}:host(:focus-visible){outline:2px solid #0969da;outline-offset:2px}:host>.wrapper{align-items:var(--bnum-button-wrapper-align-items,center);display:var(--bnum-button-wrapper-display,flex)}:host bnum-icon.icon{display:var(--bnum-button-icon-display,flex)}:host bnum-icon.icon.hidden{display:none}:host bnum-icon.loader{display:var(--bnum-button-loader-display,flex)}:host(:is(:state(loading):state(without-icon-loading))) slot{display:none}@keyframes spin{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host .loader,:host .spin,:host(:state(loading)) .icon{animation:spin var(--bnum-button-spin-duration,.75s) var(--bnum-button-spin-timing,linear) var(--bnum-button-spin-iteration,infinite)}:host(:state(hide-text-on-small)) .slot,:host(:state(hide-text-on-touch)) .slot{display:var(--size-display-state,inline-block)}:host(:state(hide-text-on-small)) .icon,:host(:state(hide-text-on-touch)) .icon{margin-left:var(--size-margin-left-state,var(--custom-button-icon-margin-left))!important;margin-right:var(--size-margin-right-state,var(--custom-button-icon-margin-right))!important}:host .hidden,:host [hidden]{display:none!important}:host(:state(primary)){background-color:var(--bnum-button-primary-background-color,var(--bnum-color-primary));border:var(--bnum-button-primary-border,solid thin var(--bnum-button-primary-border-color,var(--bnum-color-primary)));color:var(--bnum-button-primary-text-color,var(--bnum-text-on-primary))}:host(:state(primary):hover){background-color:var(--bnum-button-primary-hover-background-color,var(--bnum-color-primary-hover));border:var(--bnum-button-primary-hover-border,solid thin var(--bnum-button-primary-hover-border-color,var(--bnum-color-primary-hover)));color:var(--bnum-button-primary-hover-text-color,var(--bnum-text-on-primary-hover))}:host(:state(primary):active){background-color:var(--bnum-button-primary-active-background-color,var(--bnum-color-primary-active));border:var(--bnum-button-primary-active-border,solid thin var(--bnum-button-primary-active-border-color,var(--bnum-color-primary-active)));color:var(--bnum-button-primary-active-text-color,var(--bnum-text-on-primary-active))}:host(:state(secondary)){background-color:var(--bnum-button-secondary-background-color,var(--bnum-color-secondary));border:var(--bnum-button-secondary-border,solid thin var(--bnum-button-secondary-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-text-color,var(--bnum-text-on-secondary))}:host(:state(secondary):hover){background-color:var(--bnum-button-secondary-hover-background-color,var(--bnum-color-secondary-hover));border:var(--bnum-button-secondary-hover-border,solid thin var(--bnum-button-secondary-hover-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-hover-text-color,var(--bnum-text-on-secondary-hover))}:host(:state(secondary):active){background-color:var(--bnum-button-secondary-active-background-color,var(--bnum-color-secondary-active));border:var(--bnum-button-secondary-active-border,solid thin var(--bnum-button-secondary-active-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-active-text-color,var(--bnum-text-on-secondary-active))}:host(:state(danger)){background-color:var(--bnum-button-danger-background-color,var(--bnum-color-danger));border:var(--bnum-button-danger-border,solid thin var(--bnum-button-danger-border-color,var(--bnum-color-danger)));color:var(--bnum-button-danger-text-color,var(--bnum-text-on-danger))}:host(:state(danger):hover){background-color:var(--bnum-button-danger-hover-background-color,var(--bnum-color-danger-hover));border:var(--bnum-button-danger-hover-border,solid thin var(--bnum-button-danger-hover-border-color,var(--bnum-color-danger-hover)));color:var(--bnum-button-danger-hover-text-color,var(--bnum-text-on-danger-hover))}:host(:state(danger):active){background-color:var(--bnum-button-danger-active-background-color,var(--bnum-color-danger-active));border:var(--bnum-button-danger-active-border,solid thin var(--bnum-button-danger-active-border-color,var(--bnum-color-danger-active)));color:var(--bnum-button-danger-active-text-color,var(--bnum-text-on-danger-active))}";
+var css_248z$p = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{--bnum-icon-font-size:var(--bnum-body-font-size);border-radius:var(--bnum-button-border-radius,0);cursor:var(--bnum-button-cursor,pointer);display:var(--bnum-button-display,inline-block);font-weight:600;height:-moz-fit-content;height:fit-content;line-height:1.5rem;padding:var(--bnum-button-padding,.5rem 1rem);transition:background-color .2s ease,color .2s ease;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}:host(:state(rounded)){border-radius:var(--bnum-button-rounded-border-radius,5px)}:host(:state(without-icon)){padding-bottom:var(--bnum-button-without-icon-padding-bottom,7.5px);padding-top:var(--bnum-button-without-icon-padding-top,7.5px)}:host(:disabled),:host(:state(disabled)){cursor:not-allowed;opacity:var(--bnum-button-disabled-opacity,.6);pointer-events:var(--bnum-button-disabled-pointer-events,none)}:host(:state(loading)){cursor:progress}:host(:state(icon)){--bnum-button-icon-gap:var(--custom-bnum-button-icon-margin,var(--bnum-space-s,10px))}:host(:state(icon))>.wrapper{align-items:center;display:flex;flex-direction:row;gap:var(--bnum-button-icon-gap);justify-content:center}:host(:state(icon-pos-left)) .wrapper{flex-direction:row-reverse}:host(:focus-visible){outline:2px solid #0969da;outline-offset:2px}:host>.wrapper{align-items:var(--bnum-button-wrapper-align-items,center);display:var(--bnum-button-wrapper-display,flex)}:host bnum-icon.icon{display:var(--bnum-button-icon-display,flex)}:host bnum-icon.icon.hidden{display:none}:host bnum-icon.loader{display:var(--bnum-button-loader-display,flex)}:host(:is(:state(loading):state(without-icon-loading))) slot{display:none}@keyframes spin{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host .loader,:host .spin,:host(:state(loading)) .icon{animation:spin var(--bnum-button-spin-duration,.75s) var(--bnum-button-spin-timing,linear) var(--bnum-button-spin-iteration,infinite)}:host(:state(hide-text-on-small)) .slot,:host(:state(hide-text-on-touch)) .slot{display:var(--size-display-state,inline-block)}:host(:state(hide-text-on-small)) .icon,:host(:state(hide-text-on-touch)) .icon{margin-left:var(--size-margin-left-state,var(--custom-button-icon-margin-left))!important;margin-right:var(--size-margin-right-state,var(--custom-button-icon-margin-right))!important}:host .hidden,:host [hidden]{display:none!important}:host(:state(primary)){background-color:var(--bnum-button-primary-background-color,var(--bnum-color-primary));border:var(--bnum-button-primary-border,solid thin var(--bnum-button-primary-border-color,var(--bnum-color-primary)));color:var(--bnum-button-primary-text-color,var(--bnum-text-on-primary))}:host(:state(primary):hover){background-color:var(--bnum-button-primary-hover-background-color,var(--bnum-color-primary-hover));border:var(--bnum-button-primary-hover-border,solid thin var(--bnum-button-primary-hover-border-color,var(--bnum-color-primary-hover)));color:var(--bnum-button-primary-hover-text-color,var(--bnum-text-on-primary-hover))}:host(:state(primary):active){background-color:var(--bnum-button-primary-active-background-color,var(--bnum-color-primary-active));border:var(--bnum-button-primary-active-border,solid thin var(--bnum-button-primary-active-border-color,var(--bnum-color-primary-active)));color:var(--bnum-button-primary-active-text-color,var(--bnum-text-on-primary-active))}:host(:state(secondary)){background-color:var(--bnum-button-secondary-background-color,var(--bnum-color-secondary));border:var(--bnum-button-secondary-border,solid thin var(--bnum-button-secondary-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-text-color,var(--bnum-text-on-secondary))}:host(:state(secondary):hover){background-color:var(--bnum-button-secondary-hover-background-color,var(--bnum-color-secondary-hover));border:var(--bnum-button-secondary-hover-border,solid thin var(--bnum-button-secondary-hover-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-hover-text-color,var(--bnum-text-on-secondary-hover))}:host(:state(secondary):active){background-color:var(--bnum-button-secondary-active-background-color,var(--bnum-color-secondary-active));border:var(--bnum-button-secondary-active-border,solid thin var(--bnum-button-secondary-active-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-active-text-color,var(--bnum-text-on-secondary-active))}:host(:state(danger)){background-color:var(--bnum-button-danger-background-color,var(--bnum-color-danger));border:var(--bnum-button-danger-border,solid thin var(--bnum-button-danger-border-color,var(--bnum-color-danger)));color:var(--bnum-button-danger-text-color,var(--bnum-text-on-danger))}:host(:state(danger):hover){background-color:var(--bnum-button-danger-hover-background-color,var(--bnum-color-danger-hover));border:var(--bnum-button-danger-hover-border,solid thin var(--bnum-button-danger-hover-border-color,var(--bnum-color-danger-hover)));color:var(--bnum-button-danger-hover-text-color,var(--bnum-text-on-danger-hover))}:host(:state(danger):active){background-color:var(--bnum-button-danger-active-background-color,var(--bnum-color-danger-active));border:var(--bnum-button-danger-active-border,solid thin var(--bnum-button-danger-active-border-color,var(--bnum-color-danger-active)));color:var(--bnum-button-danger-active-text-color,var(--bnum-text-on-danger-active))}";
 
 // core/decorators/ui.ts
 function UI(selectorMap, options) {
@@ -3838,7 +3838,7 @@ function UI(selectorMap, options) {
 const ICON_LOADER = 'progress_activity';
 //#endregion External Constants
 //#region Template
-const TEMPLATE$f = (h("div", { class: CLASS_WRAPPER, children: [h("span", { class: CLASS_SLOT, children: h("slot", {}) }), h(HTMLBnumIcon, { hidden: "true", class: CLASS_ICON })] }));
+const TEMPLATE$g = (h("div", { class: CLASS_WRAPPER, children: [h("span", { class: CLASS_SLOT, children: h("slot", {}) }), h(HTMLBnumIcon, { hidden: "true", class: CLASS_ICON })] }));
 //#endregion Template
 //#region Documentation
 /**
@@ -3958,8 +3958,8 @@ const TEMPLATE$f = (h("div", { class: CLASS_WRAPPER, children: [h("span", { clas
 let HTMLBnumButton = (() => {
     let _classDecorators = [Define({
             tag: TAG_BUTTON,
-            template: TEMPLATE$f,
-            styles: css_248z$o,
+            template: TEMPLATE$g,
+            styles: css_248z$p,
         })];
     let _classDescriptor;
     let _classExtraInitializers = [];
@@ -5181,14 +5181,14 @@ function RenderFrame() {
     };
 }
 
-var css_248z$n = ":host{border-bottom:thin dotted;cursor:help}";
+var css_248z$o = ":host{border-bottom:thin dotted;cursor:help}";
 
 /**
  * Constante représentant l'icône utilisée par défaut.
  */
 const ICON = 'help';
 (() => {
-    let _classDecorators = [Define({ tag: TAG_HELPER, styles: css_248z$n })];
+    let _classDecorators = [Define({ tag: TAG_HELPER, styles: css_248z$o })];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
@@ -5261,12 +5261,12 @@ function OnLinkedClickEventInitializer(event, instance) {
     });
 }
 
-var css_248z$m = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{cursor:pointer;font-variation-settings:\"wght\" 400;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}:host(:hover){--bnum-icon-fill:1}:host(:active){--bnum-icon-fill:1;--bnum-icon-weight:700;--bnum-icon-grad:200;--bnum-icon-opsz:20}:host(:disabled),:host([disabled]){cursor:not-allowed;opacity:var(--bnum-button-disabled-opacity,.6);pointer-events:var(--bnum-button-disabled-pointer-events,none)}";
+var css_248z$n = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{cursor:pointer;font-variation-settings:\"wght\" 400;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}:host(:hover){--bnum-icon-fill:1}:host(:active){--bnum-icon-fill:1;--bnum-icon-weight:700;--bnum-icon-grad:200;--bnum-icon-opsz:20}:host(:disabled),:host([disabled]){cursor:not-allowed;opacity:var(--bnum-button-disabled-opacity,.6);pointer-events:var(--bnum-button-disabled-pointer-events,none)}";
 
 //#region Global Constants
 const ID_ICON$1 = 'icon';
 //#endregion Global Constants
-const TEMPLATE$e = (h(HTMLBnumIcon, { id: ID_ICON$1, children: h("slot", {}) }));
+const TEMPLATE$f = (h(HTMLBnumIcon, { id: ID_ICON$1, children: h("slot", {}) }));
 /**
  * Button contenant une icône.
  *
@@ -5284,7 +5284,7 @@ const TEMPLATE$e = (h(HTMLBnumIcon, { id: ID_ICON$1, children: h("slot", {}) }))
  * @slot (default) - Contenu de l'icône (nom de l'icône à afficher)
  */
 let HTMLBnumButtonIcon = (() => {
-    let _classDecorators = [Define({ styles: css_248z$m, tag: TAG_ICON_BUTTON, template: TEMPLATE$e }), Observe('click')];
+    let _classDecorators = [Define({ styles: css_248z$n, tag: TAG_ICON_BUTTON, template: TEMPLATE$f }), Observe('click')];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
@@ -5413,7 +5413,7 @@ let HTMLBnumButtonIcon = (() => {
          */
         static Create(icon) {
             const node = document.createElement(this.TAG);
-            node.icon = icon;
+            node.appendChild(document.createTextNode(icon));
             return node;
         }
         /**
@@ -5428,7 +5428,7 @@ let HTMLBnumButtonIcon = (() => {
     return HTMLBnumButtonIcon = _classThis;
 })();
 
-var css_248z$l = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host .addons__inner{position:relative;width:100%}:host #input__button,:host #input__icon,:host .state{display:none}:host(:disabled),:host(:state(disabled)){cursor:not-allowed;opacity:.6;pointer-events:none}:host(:state(button)) .addons{display:flex;gap:0}:host(:state(button)) .addons .addon__inner{flex:1}:host(:state(button)) input{border-top-right-radius:0}:host(:state(button)) #input__button,:host(:state(button)) input{--bnum-input-line-color:var(--bnum-color-primary,#000091)}:host(:state(button)) #input__button{border-bottom-left-radius:0;border-bottom-right-radius:0;border-top-left-radius:0;display:block;height:auto}:host(:state(button):state(obi)) #input__button{--bnum-button-icon-gap:0;display:flex}:host(:state(icon)) #input__icon{display:block;position:absolute;right:var(--bnum-input-icon-right,10px);top:var(--bnum-input-icon-top,10px)}:host(:state(state):state(success)) #input__button,:host(:state(state):state(success)) input{--bnum-input-line-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(state):state(error)) #input__button,:host(:state(state):state(error)) input{--bnum-input-line-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}";
+var css_248z$m = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host .addons__inner{position:relative;width:100%}:host #input__button,:host #input__icon,:host .state{display:none}:host(:disabled),:host(:state(disabled)){cursor:not-allowed;opacity:.6;pointer-events:none}:host(:state(button)) .addons{display:flex;gap:0}:host(:state(button)) .addons .addon__inner{flex:1}:host(:state(button)) input{border-top-right-radius:0}:host(:state(button)) #input__button,:host(:state(button)) input{--bnum-input-line-color:var(--bnum-color-primary,#000091)}:host(:state(button)) #input__button{border-bottom-left-radius:0;border-bottom-right-radius:0;border-top-left-radius:0;display:block;height:auto}:host(:state(button):state(obi)) #input__button{--bnum-button-icon-gap:0;display:flex}:host(:state(icon)) #input__icon{display:block;position:absolute;right:var(--bnum-input-icon-right,10px);top:var(--bnum-input-icon-top,10px)}:host(:state(state):state(success)) #input__button,:host(:state(state):state(success)) input{--bnum-input-line-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(state):state(error)) #input__button,:host(:state(state):state(error)) input{--bnum-input-line-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}";
 
 const ID_INPUT$1 = 'bnum-input';
 const ID_HINT_TEXT = 'hint-text';
@@ -5496,12 +5496,12 @@ function OnButtonClickedInitializer(event, instance) {
     });
 }
 
-var css_248z$k = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}.label-container{--internal-gap:var(--bnum-input-gap,0.5rem);display:flex;flex-direction:column;gap:var(--internal-gap,.5rem);margin-bottom:var(--bnum-input-container-margin-bottom,var(--internal-gap,.5rem))}.label-container--label{font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-label-size,var(--bnum-font-size-m));line-height:var(--bnum-font-label-line-height,var(--bnum-font-height-text-m))}.label-container--hint{color:var(--bnum-input-hint-text-color,var(--bnum-text-hint,#666));font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-hint-size,var(--bnum-font-size-xs));line-height:var(--bnum-font-hint-line-height,var(--bnum-font-height-text-xs))}.input-like{background-color:var(--bnum-input-background-color,var(--bnum-color-input,#eee));border:none;border-radius:.25rem .25rem 0 0;box-shadow:var(--bnum-input-box-shadow,inset 0 -2px 0 0 var(--bnum-input-line-color,var(--bnum-color-input-border,#3a3a3a)));color:var(--bnum-input-color,var(--bnum-text-on-input,#666));display:block;font-size:1rem;line-height:1.5rem;padding:.5rem 1rem;width:100%}";
+var css_248z$l = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}.label-container{--internal-gap:var(--bnum-input-gap,0.5rem);display:flex;flex-direction:column;gap:var(--internal-gap,.5rem);margin-bottom:var(--bnum-input-container-margin-bottom,var(--internal-gap,.5rem))}.label-container--label{font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-label-size,var(--bnum-font-size-m));line-height:var(--bnum-font-label-line-height,var(--bnum-font-height-text-m))}.label-container--hint{color:var(--bnum-input-hint-text-color,var(--bnum-text-hint,#666));font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-hint-size,var(--bnum-font-size-xs));line-height:var(--bnum-font-hint-line-height,var(--bnum-font-height-text-xs))}.input-like{background-color:var(--bnum-input-background-color,var(--bnum-color-input,#eee));border:none;border-radius:.25rem .25rem 0 0;box-shadow:var(--bnum-input-box-shadow,inset 0 -2px 0 0 var(--bnum-input-line-color,var(--bnum-color-input-border,#3a3a3a)));color:var(--bnum-input-color,var(--bnum-text-on-input,#666));display:block;font-size:1rem;line-height:1.5rem;padding:.5rem 1rem;width:100%}";
 
-var css_248z$j = ":host(:state(state)){border-left:2px solid var(--internal-border-color);display:block;padding-left:10px}:host(:state(state)) .state{align-items:center;color:var(--internal-color);display:flex;font-size:.75rem;margin-top:1rem}:host(:state(state)) .state bnum-icon{--bnum-icon-font-size:1rem;margin-right:5px}:host(:state(state)) .hint-label{color:var(--internal-color)}:host(:state(state)) .error,:host(:state(state)) .success{display:none;margin-bottom:-4px}:host(:state(state):state(success)){--internal-border-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(state):state(success)) .hint-label,:host(:state(state):state(success)) .state{--internal-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(state):state(success)) .success{display:block}:host(:state(state):state(error)){--internal-border-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}:host(:state(state):state(error)) .hint-label,:host(:state(state):state(error)) .state{--internal-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}:host(:state(state):state(error)) .error{display:block}";
+var css_248z$k = ":host(:state(state)){border-left:2px solid var(--internal-border-color);display:block;padding-left:10px}:host(:state(state)) .state{align-items:center;color:var(--internal-color);display:flex;font-size:.75rem;margin-top:1rem}:host(:state(state)) .state bnum-icon{--bnum-icon-font-size:1rem;margin-right:5px}:host(:state(state)) .hint-label{color:var(--internal-color)}:host(:state(state)) .error,:host(:state(state)) .success{display:none;margin-bottom:-4px}:host(:state(state):state(success)){--internal-border-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(state):state(success)) .hint-label,:host(:state(state):state(success)) .state{--internal-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(state):state(success)) .success{display:block}:host(:state(state):state(error)){--internal-border-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}:host(:state(state):state(error)) .hint-label,:host(:state(state):state(error)) .state{--internal-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}:host(:state(state):state(error)) .error{display:block}";
 
-const INPUT_BASE_STYLE = BnumElementInternal.ConstructCSSStyleSheet(css_248z$k);
-const INPUT_STYLE_STATES = BnumElementInternal.ConstructCSSStyleSheet(css_248z$j);
+const INPUT_BASE_STYLE = BnumElementInternal.ConstructCSSStyleSheet(css_248z$l);
+const INPUT_STYLE_STATES = BnumElementInternal.ConstructCSSStyleSheet(css_248z$k);
 const OBSERVED_ATTRIBUTES = [
     ATTRIBUTE_DATA_VALUE,
     ATTRIBUTE_PLACEHOLDER,
@@ -5639,7 +5639,7 @@ let HTMLBnumInput = (() => {
             tag: TAG_INPUT,
             // eslint-disable-next-line no-restricted-syntax
             template: Render(),
-            styles: [INPUT_BASE_STYLE, INPUT_STYLE_STATES, css_248z$l],
+            styles: [INPUT_BASE_STYLE, INPUT_STYLE_STATES, css_248z$m],
         }), Observe(OBSERVED_ATTRIBUTES)];
     let _classDescriptor;
     let _classExtraInitializers = [];
@@ -6285,9 +6285,9 @@ let HTMLBnumInput = (() => {
     return _classThis;
 })();
 
-var css_248z$i = ":host(:state(icon)) #input__icon{--bnum-input-icon-right:var(--bnum-input-number-icon-right,40px)}";
+var css_248z$j = ":host(:state(icon)) #input__icon{--bnum-input-icon-right:var(--bnum-input-number-icon-right,40px)}";
 
-const SHEET$3 = HTMLBnumInput.ConstructCSSStyleSheet(css_248z$i);
+const SHEET$3 = HTMLBnumInput.ConstructCSSStyleSheet(css_248z$j);
 const TYPE$2 = 'number';
 /**
  * Input nombre.
@@ -6533,7 +6533,7 @@ let HTMLBnumInputDate = (() => {
     return _classThis;
 })();
 
-var css_248z$h = ":host .container{position:relative}:host #input-search-actions-container{display:flex;position:absolute;right:45px;top:5px}:host #input-search-actions-container #input-clear-button{display:none}:host(:state(value)) #input-search-actions-container #input-clear-button{display:inline-block}";
+var css_248z$i = ":host .container{position:relative}:host #input-search-actions-container{display:flex;position:absolute;right:45px;top:5px}:host #input-search-actions-container #input-clear-button{display:none}:host(:state(value)) #input-search-actions-container #input-clear-button{display:inline-block}";
 
 const ID_ACTIONS_CONTAINER = 'input-search-actions-container';
 const ID_CLEAR_BUTTON = 'input-clear-button';
@@ -6597,9 +6597,9 @@ function Listen(eventName, { selector = null } = {}) {
     };
 }
 
-const SHEET$2 = HTMLBnumInput.ConstructCSSStyleSheet(css_248z$h);
+const SHEET$2 = HTMLBnumInput.ConstructCSSStyleSheet(css_248z$i);
 //#region Template
-const TEMPLATE$d = (h("div", { id: ID_ACTIONS_CONTAINER, part: ID_ACTIONS_CONTAINER, children: [h(HTMLBnumButtonIcon, { id: ID_CLEAR_BUTTON, children: "close" }), h("slot", { name: SLOT_ACTIONS })] }));
+const TEMPLATE$e = (h("div", { id: ID_ACTIONS_CONTAINER, part: ID_ACTIONS_CONTAINER, children: [h(HTMLBnumButtonIcon, { id: ID_CLEAR_BUTTON, children: "close" }), h("slot", { name: SLOT_ACTIONS })] }));
 //#endregion Template
 /**
  * Composant d'input de recherche.
@@ -6642,7 +6642,7 @@ const TEMPLATE$d = (h("div", { id: ID_ACTIONS_CONTAINER, part: ID_ACTIONS_CONTAI
  */
 // eslint-disable-next-line no-restricted-syntax
 let HTMLBnumInputSearch = (() => {
-    let _classDecorators = [Define({ template: Render(TEMPLATE$d), tag: TAG_INPUT_SEARCH })];
+    let _classDecorators = [Define({ template: Render(TEMPLATE$e), tag: TAG_INPUT_SEARCH })];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
@@ -7258,7 +7258,7 @@ function NonStd(reason, fatal = false) {
     };
 }
 
-var css_248z$g = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{--_internal-color:var(--bnum-radio-color,var(--bnum-color-primary,#000091));--_internal-font-size:var(--bnum-radio-font-size,var(--bnum-body-font-size,var(--bnum-font-size-m,1rem)));--_internal-radio-outer-size:var(--_internal-font-size);--_internal-radio-inner-size:calc(var(--_internal-radio-outer-size)*0.6);--_internal-border-size:var(--bnum-radio-border-size,1px);--_internal-border-radius:var(--bnum-radio-border-radius,var(--bnum-radius-circle,50%));position:relative}.radio{height:0;opacity:0;position:absolute;width:0}.radio__label{display:flex;flex-direction:column;margin-left:calc(var(--_internal-radio-outer-size) + 10px)}.radio__label--legend{font-size:var(--_internal-font-size)}.radio__label:before{border:solid var(--_internal-border-size) var(--_internal-color);box-sizing:border-box;height:var(--_internal-radio-outer-size);left:0;top:0;width:var(--_internal-radio-outer-size)}.radio__label:after,.radio__label:before{border-radius:var(--_internal-border-radius);content:\"\";position:absolute}.radio__label:after{--_internal-pos:calc(var(--_internal-radio-outer-size)/2);background:var(--_internal-color);display:none;height:var(--_internal-radio-inner-size);left:var(--_internal-pos);top:var(--_internal-pos);transform:translate(-50%,-50%);width:var(--_internal-radio-inner-size)}.radio:checked~.radio__label:after{display:block}.radio:focus~.radio__label:before,:host(:focus-visible) .radio__label:before{outline-color:#0a76f6;outline-offset:2px;outline-style:solid;outline-width:2px}:host(:focus-visible){outline:none}:host(:disabled),:host([disabled]){opacity:.6;pointer-events:none}";
+var css_248z$h = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{--_internal-color:var(--bnum-radio-color,var(--bnum-color-primary,#000091));--_internal-font-size:var(--bnum-radio-font-size,var(--bnum-body-font-size,var(--bnum-font-size-m,1rem)));--_internal-radio-outer-size:var(--_internal-font-size);--_internal-radio-inner-size:calc(var(--_internal-radio-outer-size)*0.6);--_internal-border-size:var(--bnum-radio-border-size,1px);--_internal-border-radius:var(--bnum-radio-border-radius,var(--bnum-radius-circle,50%));position:relative}.radio{height:0;opacity:0;position:absolute;width:0}.radio__label{display:flex;flex-direction:column;margin-left:calc(var(--_internal-radio-outer-size) + 10px)}.radio__label--legend{font-size:var(--_internal-font-size)}.radio__label:before{border:solid var(--_internal-border-size) var(--_internal-color);box-sizing:border-box;height:var(--_internal-radio-outer-size);left:0;top:0;width:var(--_internal-radio-outer-size)}.radio__label:after,.radio__label:before{border-radius:var(--_internal-border-radius);content:\"\";position:absolute}.radio__label:after{--_internal-pos:calc(var(--_internal-radio-outer-size)/2);background:var(--_internal-color);display:none;height:var(--_internal-radio-inner-size);left:var(--_internal-pos);top:var(--_internal-pos);transform:translate(-50%,-50%);width:var(--_internal-radio-inner-size)}.radio:checked~.radio__label:after{display:block}.radio:focus~.radio__label:before,:host(:focus-visible) .radio__label:before{outline-color:#0a76f6;outline-offset:2px;outline-style:solid;outline-width:2px}:host(:focus-visible){outline:none}:host(:disabled),:host([disabled]){opacity:.6;pointer-events:none}";
 
 //#region Utilities
 /**
@@ -7347,7 +7347,7 @@ const SYNCED_ATTRIBUTES$2 = ['name', 'checked', 'value', 'disabled'];
  * Comprend un input radio natif et un label avec des slots pour le contenu et l'indice.
  * @internal
  */
-const TEMPLATE$c = (h(HTMLBnumFragment, { children: [h("input", { type: "radio", id: ID_INPUT, class: "radio" }), h("label", { part: "label", for: "radio", class: "radio__label", children: [h("span", { class: "radio__label--legend", children: h("slot", { id: "legend" }) }), h("span", { class: "radio--hint label-container--hint", children: h("slot", { id: "hint", name: "hint" }) })] })] }));
+const TEMPLATE$d = (h(HTMLBnumFragment, { children: [h("input", { type: "radio", id: ID_INPUT, class: "radio" }), h("label", { part: "label", for: "radio", class: "radio__label", children: [h("span", { class: "radio__label--legend", children: h("slot", { id: "legend" }) }), h("span", { class: "radio--hint label-container--hint", children: h("slot", { id: "hint", name: "hint" }) })] })] }));
 //#endregion Global Constants
 /**
  * Composant personnalisé représentant un bouton radio avec support de formulaire.
@@ -7413,9 +7413,9 @@ const TEMPLATE$c = (h(HTMLBnumFragment, { children: [h("input", { type: "radio",
  */
 let HTMLBnumRadio = (() => {
     let _classDecorators = [Define({
-            template: TEMPLATE$c,
+            template: TEMPLATE$d,
             tag: TAG_RADIO,
-            styles: [INPUT_BASE_STYLE, css_248z$g],
+            styles: [INPUT_BASE_STYLE, css_248z$h],
         })];
     let _classDescriptor;
     let _classExtraInitializers = [];
@@ -8030,7 +8030,7 @@ function Schedule() {
     };
 }
 
-var css_248z$f = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host([no-legend]) .bnum-select__container__label{clip:rect(1px,1px,1px,1px)!important;border:0!important;clip-path:inset(50%)!important;height:1px!important;overflow:hidden!important;padding:0!important;position:absolute!important;white-space:nowrap!important;width:1px!important}select{appearance:none;-webkit-appearance:none;-moz-appearance:none;cursor:pointer}.icon-arrow-down{position:absolute;right:5px;top:50%;transform:translateY(-50%);user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}.select-container{position:relative}";
+var css_248z$g = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host([no-legend]) .bnum-select__container__label{clip:rect(1px,1px,1px,1px)!important;border:0!important;clip-path:inset(50%)!important;height:1px!important;overflow:hidden!important;padding:0!important;position:absolute!important;white-space:nowrap!important;width:1px!important}select{appearance:none;-webkit-appearance:none;-moz-appearance:none;cursor:pointer}.icon-arrow-down{position:absolute;right:5px;top:50%;transform:translateY(-50%);user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}.select-container{position:relative}";
 
 //#endregon Types
 //#region Global Constants
@@ -8045,7 +8045,7 @@ const SYNCED_ATTRIBUTES$1 = [
     'name',
     'value',
 ];
-const TEMPLATE$b = (h("div", { class: "bnum-select__container", children: [h("label", { id: "select-label", class: "bnum-select__container__label label-container", for: "select", children: [h("span", { class: "bnum-select__container__label--legend label-container--label", children: h("slot", { name: "label" }) }), h("span", { class: "bnum-select__container__label--hint label-container--hint", children: h("slot", { name: "hint" }) })] }), h("div", { class: "select-container", children: [h("select", { id: "select", class: "bnum-select__container__select input-like" }), h(HTMLBnumIcon, { "data-icon": "keyboard_arrow_down", class: "icon-arrow-down" })] })] }));
+const TEMPLATE$c = (h("div", { class: "bnum-select__container", children: [h("label", { id: "select-label", class: "bnum-select__container__label label-container", for: "select", children: [h("span", { class: "bnum-select__container__label--legend label-container--label", children: h("slot", { name: "label" }) }), h("span", { class: "bnum-select__container__label--hint label-container--hint", children: h("slot", { name: "hint" }) })] }), h("div", { class: "select-container", children: [h("select", { id: "select", class: "bnum-select__container__select input-like" }), h(HTMLBnumIcon, { "data-icon": "keyboard_arrow_down", class: "icon-arrow-down" })] })] }));
 //#endregion Global Constants
 /**
  *
@@ -8101,8 +8101,8 @@ const TEMPLATE$b = (h("div", { class: "bnum-select__container", children: [h("la
 let HTMLBnumSelect = (() => {
     let _classDecorators = [Define({
             tag: TAG_SELECT,
-            template: TEMPLATE$b,
-            styles: [INPUT_BASE_STYLE, css_248z$f],
+            template: TEMPLATE$c,
+            styles: [INPUT_BASE_STYLE, css_248z$g],
         }), UpdateAll()];
     let _classDescriptor;
     let _classExtraInitializers = [];
@@ -8494,7 +8494,7 @@ let HTMLBnumSelect = (() => {
     return _classThis;
 })();
 
-var css_248z$e = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{--_color:var(--bnum-checkbox-color,var(--bnum-primary-color,#000091));--_background-color:var(--bnum-checkbox-background-color,var(--bnum-color-background,#fff));--_internal-border-color:var(--_color);--_internal-error:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}:host .checkbox__label{align-content:center;align-items:center;display:inline-flex;flex-direction:row;position:relative;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}:host .checkbox__label:before{background:var(--_background-color);border:thin solid var(--_internal-border-color);border-radius:500px;box-sizing:border-box;content:\"\";cursor:pointer;display:inline-block;height:1.5rem;width:2.5rem}:host .checkbox__label:after{background-color:var(--_background-color);border:thin solid var(--_internal-border-color);border-radius:100%;box-sizing:border-box;content:\"\";cursor:pointer;display:block;height:1.5rem;left:0;position:absolute;top:0;width:1.5rem}:host .checkbox__label__desc{color:var(--_color)!important;display:none;left:0;position:absolute;top:24px}:host .checkbox__state{display:none}:host .checkbox__label--hint{display:block;margin-top:1rem;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}#native-input{height:0;opacity:0;position:absolute;width:0}#native-input:focus-visible~.checkbox__label:before{outline-color:#0a76f6;outline-offset:2px;outline-style:solid;outline-width:2px}#native-input:checked~.checkbox__label:before{background:var(--_color)}#native-input:checked~.checkbox__label:after{color:var(--_color);content:\"\\e5ca\";font-family:var(--bnum-icon-font-family);font-size:21px;line-height:22px;transform:translateX(1rem)}:host(:state(state)) .checkbox__state{display:block}:host(:state(state):state(error)){--_internal-border-color:var(--_internal-error)}:host(:state(state):state(error)) #active-text,:host(:state(state):state(error)) #inactive-text{color:var(--_internal-error)!important}:host(:state(helper)) #inactive-text{display:block}:host(:state(helper)) #active-text{display:none}:host(:state(helper)) #native-input:checked #inactive-text,:host([checked]:state(helper)) #inactive-text{display:none}:host(:state(helper)) #native-input:checked #active-text,:host([checked]:state(helper)) #active-text{display:block}:host([disabled]){opacity:.5;pointer-events:none}";
+var css_248z$f = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{--_color:var(--bnum-checkbox-color,var(--bnum-primary-color,#000091));--_background-color:var(--bnum-checkbox-background-color,var(--bnum-color-background,#fff));--_internal-border-color:var(--_color);--_internal-error:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}:host .checkbox__label{align-content:center;align-items:center;display:inline-flex;flex-direction:row;position:relative;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}:host .checkbox__label:before{background:var(--_background-color);border:thin solid var(--_internal-border-color);border-radius:500px;box-sizing:border-box;content:\"\";cursor:pointer;display:inline-block;height:1.5rem;width:2.5rem}:host .checkbox__label:after{background-color:var(--_background-color);border:thin solid var(--_internal-border-color);border-radius:100%;box-sizing:border-box;content:\"\";cursor:pointer;display:block;height:1.5rem;left:0;position:absolute;top:0;width:1.5rem}:host .checkbox__label__desc{color:var(--_color)!important;display:none;left:0;position:absolute;top:24px}:host .checkbox__state{display:none}:host .checkbox__label--hint{display:block;margin-top:1rem;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}#native-input{height:0;opacity:0;position:absolute;width:0}#native-input:focus-visible~.checkbox__label:before{outline-color:#0a76f6;outline-offset:2px;outline-style:solid;outline-width:2px}#native-input:checked~.checkbox__label:before{background:var(--_color)}#native-input:checked~.checkbox__label:after{color:var(--_color);content:\"\\e5ca\";font-family:var(--bnum-icon-font-family);font-size:21px;line-height:22px;transform:translateX(1rem)}:host(:state(state)) .checkbox__state{display:block}:host(:state(state):state(error)){--_internal-border-color:var(--_internal-error)}:host(:state(state):state(error)) #active-text,:host(:state(state):state(error)) #inactive-text{color:var(--_internal-error)!important}:host(:state(helper)) #inactive-text{display:block}:host(:state(helper)) #active-text{display:none}:host(:state(helper)) #native-input:checked #inactive-text,:host([checked]:state(helper)) #inactive-text{display:none}:host(:state(helper)) #native-input:checked #active-text,:host([checked]:state(helper)) #active-text{display:block}:host([disabled]){opacity:.5;pointer-events:none}";
 
 //#region Utilities
 /**
@@ -8639,7 +8639,7 @@ const SYNCED_ATTRIBUTES = ['name', 'checked', 'value', 'disabled', 'required'];
  *
  * @internal
  */
-const TEMPLATE$a = (h(HTMLBnumFragment, { children: [h("input", { id: "native-input", type: "checkbox", role: "switch" }), h("label", { class: "checkbox__label label-container hint-label", for: "native-input", children: [h("span", { class: "checkbox__label--legend label-container--label ", children: h("slot", { id: "legend" }) }), h("span", { id: "active-text", class: "checkbox__label__desc checkbox__label__desc--ok label-container--hint", children: h("slot", { name: "activeText", children: TEXT_ACTIVE_DEFAULT }) }), h("span", { id: "inactive-text", class: "checkbox__label__desc checkbox__label__desc--no label-container--hint", children: h("slot", { name: "inactiveText", children: TEXT_INACTIVE_DEFAULT }) })] }), h("span", { class: "checkbox__label--hint hint-label label-container--hint", children: h("slot", { id: ID_HINT$1, name: ID_HINT$1 }) }), h("div", { class: "checkbox__state state", children: [h(HTMLBnumIcon, { id: "icon" }), h("span", { id: ID_VALIDITY_TEXT })] })] }));
+const TEMPLATE$b = (h(HTMLBnumFragment, { children: [h("input", { id: "native-input", type: "checkbox", role: "switch" }), h("label", { class: "checkbox__label label-container hint-label", for: "native-input", children: [h("span", { class: "checkbox__label--legend label-container--label ", children: h("slot", { id: "legend" }) }), h("span", { id: "active-text", class: "checkbox__label__desc checkbox__label__desc--ok label-container--hint", children: h("slot", { name: "activeText", children: TEXT_ACTIVE_DEFAULT }) }), h("span", { id: "inactive-text", class: "checkbox__label__desc checkbox__label__desc--no label-container--hint", children: h("slot", { name: "inactiveText", children: TEXT_INACTIVE_DEFAULT }) })] }), h("span", { class: "checkbox__label--hint hint-label label-container--hint", children: h("slot", { id: ID_HINT$1, name: ID_HINT$1 }) }), h("div", { class: "checkbox__state state", children: [h(HTMLBnumIcon, { id: "icon" }), h("span", { id: ID_VALIDITY_TEXT })] })] }));
 //#endregion Template
 /**
  * Composant personnalisé représentant un checkbox avec support de formulaire.
@@ -8713,8 +8713,8 @@ const TEMPLATE$a = (h(HTMLBnumFragment, { children: [h("input", { id: "native-in
 let HTMLBnumSwitch = (() => {
     let _classDecorators = [Define({
             tag: 'bnum-switch',
-            template: TEMPLATE$a,
-            styles: [INPUT_BASE_STYLE, INPUT_STYLE_STATES, css_248z$e],
+            template: TEMPLATE$b,
+            styles: [INPUT_BASE_STYLE, INPUT_STYLE_STATES, css_248z$f],
         })];
     let _classDescriptor;
     let _classExtraInitializers = [];
@@ -9513,6 +9513,94 @@ let HTMLBnumSwitch = (() => {
          */
         static get formAssociated() {
             return true;
+        }
+    });
+    return _classThis;
+})();
+
+var css_248z$e = ":host #action{display:none}:host(:state(action)) #action{display:block}:host(:state(action)) #avatar{display:none}";
+
+const TEMPLATE$a = (h(HTMLBnumFragment, { children: [h("span", { id: "avatar", children: h("slot", { name: "avatar" }) }), h("span", { id: "action", children: h("slot", { name: "action" }) })] }));
+let HTMLBnumAvatarAction = (() => {
+    let _classDecorators = [Define({ template: TEMPLATE$a, styles: css_248z$e, tag: 'bnum-avatar-action' })];
+    let _classDescriptor;
+    let _classExtraInitializers = [];
+    let _classThis;
+    let _classSuper = BnumElementInternal;
+    let _instanceExtraInitializers = [];
+    let _onEnter_decorators;
+    let _onEnter_initializers = [];
+    let _onEnter_extraInitializers = [];
+    let _onLeave_decorators;
+    let _onLeave_initializers = [];
+    let _onLeave_extraInitializers = [];
+    let __handleOnHover_decorators;
+    let __handleOnLeave_decorators;
+    (class extends _classSuper {
+        static { _classThis = this; }
+        static {
+            const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
+            _onEnter_decorators = [Listener()];
+            _onLeave_decorators = [Listener()];
+            __handleOnHover_decorators = [Listen('mouseenter')];
+            __handleOnLeave_decorators = [Listen('mouseleave')];
+            __esDecorate(this, null, _onEnter_decorators, { kind: "accessor", name: "onEnter", static: false, private: false, access: { has: obj => "onEnter" in obj, get: obj => obj.onEnter, set: (obj, value) => { obj.onEnter = value; } }, metadata: _metadata }, _onEnter_initializers, _onEnter_extraInitializers);
+            __esDecorate(this, null, _onLeave_decorators, { kind: "accessor", name: "onLeave", static: false, private: false, access: { has: obj => "onLeave" in obj, get: obj => obj.onLeave, set: (obj, value) => { obj.onLeave = value; } }, metadata: _metadata }, _onLeave_initializers, _onLeave_extraInitializers);
+            __esDecorate(this, null, __handleOnHover_decorators, { kind: "method", name: "_handleOnHover", static: false, private: false, access: { has: obj => "_handleOnHover" in obj, get: obj => obj._handleOnHover }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, __handleOnLeave_decorators, { kind: "method", name: "_handleOnLeave", static: false, private: false, access: { has: obj => "_handleOnLeave" in obj, get: obj => obj._handleOnLeave }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+            _classThis = _classDescriptor.value;
+            if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+            __runInitializers(_classThis, _classExtraInitializers);
+        }
+        #onEnter_accessor_storage = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _onEnter_initializers, void 0));
+        get onEnter() { return this.#onEnter_accessor_storage; }
+        set onEnter(value) { this.#onEnter_accessor_storage = value; }
+        #onLeave_accessor_storage = (__runInitializers(this, _onEnter_extraInitializers), __runInitializers(this, _onLeave_initializers, void 0));
+        get onLeave() { return this.#onLeave_accessor_storage; }
+        set onLeave(value) { this.#onLeave_accessor_storage = value; }
+        constructor() {
+            super();
+            __runInitializers(this, _onLeave_extraInitializers);
+        }
+        _p_attach() {
+            super._p_attach();
+            this.#_addListeners();
+        }
+        #_addListeners() {
+            this._handleOnHover();
+            this._handleOnLeave();
+            return this;
+        }
+        _handleOnHover() {
+            return this._handleOnMouseEnter;
+        }
+        _handleOnLeave() {
+            return this._handleOnMouseLeave;
+        }
+        _handleOnMouseEnter() {
+            if (this.onEnter.haveEvents())
+                this.onEnter.call(this);
+            this._p_addState('action');
+        }
+        _handleOnMouseLeave() {
+            if (this.onLeave.haveEvents())
+                this.onLeave.call(this);
+            this._p_removeState('action');
+        }
+        static Create({ avatar = null, action = null, } = {}) {
+            const node = document.createElement(this.TAG);
+            if (avatar) {
+                if (!avatar.hasAttribute('slot'))
+                    avatar.setAttribute('slot', 'avatar');
+                node.appendChild(avatar);
+            }
+            if (action) {
+                if (!action.hasAttribute('slot'))
+                    action.setAttribute('slot', 'action');
+                node.appendChild(action);
+            }
+            return node;
         }
     });
     return _classThis;
@@ -15764,5 +15852,5 @@ if (typeof window !== 'undefined' && window.DsBnumConfig) {
     });
 }
 
-export { BREAKPOINTS, BnumElement, BnumRadioCheckedChangeEvent, ButtonVariation, ColumnSlot, BnumConfig as Config, RotomecaCssProperty as DsCssProperty, RotomecaCssRule as DsCssRule, RotomecaDocument as DsDocument, HTMLBnumBadge, HTMLBnumButton, HTMLBnumButtonIcon, HTMLBnumCardAgenda, HTMLBnumCardElement, HTMLBnumCardEmail, HTMLBnumCardItem, HTMLBnumCardItemAgenda, HTMLBnumCardItemMail, HTMLBnumCardList, HTMLBnumCardTitle, HTMLBnumColumn, HTMLBnumDangerButton, HTMLBnumDate, HTMLBnumFolder, HTMLBnumFolderList, HTMLBnumFragment, HTMLBnumHeader, HTMLBnumHide, HTMLBnumIcon, HTMLBnumInput, HTMLBnumInputDate, HTMLBnumInputNumber, HTMLBnumInputSearch, HTMLBnumInputText, HTMLBnumInputTime, HTMLBnumPrimaryButton, HTMLBnumRadio, HTMLBnumRadioGroup, HTMLBnumSecondaryButton, HTMLBnumSegmentedControl, HTMLBnumSegmentedItem, HTMLBnumSelect, HTMLBnumSwitch, HTMLBnumTree, HideTextOnLayoutSize, INPUT_BASE_STYLE, INPUT_STYLE_STATES, IconPosition, MODES };
+export { BREAKPOINTS, BnumElement, BnumRadioCheckedChangeEvent, ButtonVariation, ColumnSlot, BnumConfig as Config, RotomecaCssProperty as DsCssProperty, RotomecaCssRule as DsCssRule, RotomecaDocument as DsDocument, HTMLBnumAvatarAction, HTMLBnumBadge, HTMLBnumButton, HTMLBnumButtonIcon, HTMLBnumCardAgenda, HTMLBnumCardElement, HTMLBnumCardEmail, HTMLBnumCardItem, HTMLBnumCardItemAgenda, HTMLBnumCardItemMail, HTMLBnumCardList, HTMLBnumCardTitle, HTMLBnumColumn, HTMLBnumDangerButton, HTMLBnumDate, HTMLBnumFolder, HTMLBnumFolderList, HTMLBnumFragment, HTMLBnumHeader, HTMLBnumHide, HTMLBnumIcon, HTMLBnumInput, HTMLBnumInputDate, HTMLBnumInputNumber, HTMLBnumInputSearch, HTMLBnumInputText, HTMLBnumInputTime, HTMLBnumPrimaryButton, HTMLBnumRadio, HTMLBnumRadioGroup, HTMLBnumSecondaryButton, HTMLBnumSegmentedControl, HTMLBnumSegmentedItem, HTMLBnumSelect, HTMLBnumSwitch, HTMLBnumTree, HideTextOnLayoutSize, INPUT_BASE_STYLE, INPUT_STYLE_STATES, IconPosition, MODES };
 //# sourceMappingURL=ds-module-bnum.js.map

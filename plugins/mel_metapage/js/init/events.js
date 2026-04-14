@@ -1207,7 +1207,7 @@ if (rcmail && window.mel_metapage) {
 
       html += `<div class=row style="margin-top:5px">${rec !== null ? `<div class=col-6>${rec}</div>` : ''}${alarm !== null ? `<div class=col-6><span class="icon-mel-notif mel-cal-icon"></span>Rappel : ${alarm}</div>` : ''}</div>`;
 
-      const hasLocation = Boolean(event.location);
+      const hasLocation = !!event.location;
       let location_phone = '';
       let location = '';
 

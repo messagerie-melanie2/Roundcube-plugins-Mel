@@ -68,20 +68,71 @@ table.messagelist {
   --_idle-hover: '\e94d';
   --_unread: var(--_idle-hover);
   --_unread-hover: var(--_idle);
-  td.subject span.msgicon.status {
-    &::before {
-      height: 2.04rem;
-      content: var(--message-state-icon, var(--_idle)) !important;
+  td.subject {
+    span {
+      &.fromto,
+      &.subject {
+        margin-left: var(--bnum-space-s);
+      }
     }
 
-    &:hover {
+    span.msgicon.status {
       &::before {
-        content: var(--message-state-icon, var(--_idle-hover)) !important;
+        height: 2.04rem;
+        content: var(--message-state-icon, var(--_idle)) !important;
+      }
+
+      &:hover {
+        &::before {
+          content: var(--message-state-icon, var(--_idle-hover)) !important;
+        }
       }
     }
   }
 
   tr {
+    //Normal
+    .mail-avatar {
+      height: 30px;
+      width: 30px;
+      position: absolute;
+      left: 8px;
+      top: 16px;
+    }
+
+    &.has-label {
+      .mail-avatar {
+        top: 35px;
+      }
+    }
+
+    // Small
+    html.mail-small & {
+      .mail-avatar {
+        top: 7px;
+      }
+
+      &.has-label {
+        .mail-avatar {
+          top: 24px;
+        }
+      }
+    }
+
+    //large
+    // Small
+    html.mail-large & {
+      .mail-avatar {
+        top: 24px;
+      }
+
+      &.has-label {
+        .mail-avatar {
+          top: 43px;
+        }
+      }
+    }
+
     &.unread {
       td.subject span.msgicon.status {
         &::before {

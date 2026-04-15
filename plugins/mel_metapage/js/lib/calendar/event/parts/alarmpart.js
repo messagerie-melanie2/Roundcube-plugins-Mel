@@ -159,7 +159,7 @@ class AlarmData {
 				break;
 
 			default:
-				text_key = 'minutes';
+				text_key = 'minute';
 				break;
 		}
 
@@ -299,21 +299,59 @@ export class AlarmPart extends FakePart {
 		//Génère les options du select
 		let $option;
 		for (const alarm of options_alarms) {
-			$option = MelHtml.start
-				.option({ value: alarm.value })
-				.text(alarm.label)
-				.end()
-				.generate()
-				.appendTo(this._$fakeField);
-
-			if (alarm.value === val) {
-				$option.attr('selected', 'selected');
+			if (alarm.value === -2  ) {
+				if(rcmail.env['__local:part:isStartEvent'] === true){
+					$option = MelHtml.start
+						.option({ value: alarm.value })
+						.text(alarm.label + this._getDefaultText())
+						.end()
+						.generate()
+						.appendTo(this._$fakeField);
+					$option.attr('selected', 'selected').data('label', alarm.label);
+				}
+				
 			}
-		}
+			else{
+				$option = MelHtml.start
+					.option({ value: alarm.value })
+					.text(alarm.label )
+					.end()
+					.generate()
+					.appendTo(this._$fakeField);
+				if (alarm.value === val) {
+					$option.attr('selected', 'selected');
+				}
+			}
 
+		}
 		$option = null;
 
+		// En mode création : écoute le basculement allDay pour mettre à jour
+		// le texte de l'option "Par défaut" entre "(aucun)" et "(15 min)".
+
+		if (this.isStartEvent) {
+			$('#edit-allday').off('change.alarmpart-label').on('change.alarmpart-label', () => {
+				const $opt = this._$fakeField.find(`option[value= -2]`);
+				$opt.text($opt.data('label') + this._getDefaultText());
+			});
+		}
+
 		return this;
+	}
+
+	/**
+	 * Retourne le texte à afficher entre parenthèses pour l'option « Par défaut ».
+	 *
+	 * Retourne ``" (aucun)"`` si ``allDay`` est ``true`` ou si aucun rappel par défaut
+	 * n'est configuré, sinon retourne la durée lisible, ex. ``" (10 minutes)"``.
+	 * 
+	 * @returns {string}
+	 */
+	_getDefaultText() {
+		const isAllDay = $('#edit-allday').is(':checked');
+		const minutes = this._getDefaultAlarmMinutes();
+		if (isAllDay || minutes === null) return ` (${AlarmPart.PREDEFINED.find(x => x.value === 0).label})`;
+		return ` (${new AlarmData(minutes).toString()})`;
 	}
 
 	/**
@@ -433,6 +471,32 @@ export class AlarmPart extends FakePart {
 			this._$fakeField.val(0);
 		});
 	}
+
+	/**
+	 * Récupère la valeur du rappel par défaut en minutes depuis l'environnement
+	 * rcmail, ou ``null`` si aucun rappel par défaut n'est configuré.
+	 *
+	 * @private
+	 * @returns {number|null}
+	 */
+	_getDefaultAlarmMinutes() {
+		const raw = rcmail.env.calendar_default_alarm_offset;
+		if (!raw) return null;
+ 
+		const match = raw.match(/(\d+)([MHDW])/i);
+		if (!match) return null;
+ 
+		const num = parseInt(match[1], 10);
+		const unit = match[2].toUpperCase();
+ 
+		switch (unit) {
+			case 'W': return num * 60 * 24 * 7;
+			case 'D': return num * 60 * 24;
+			case 'H': return num * 60;
+			default:  return num; // 'M'
+		}
+	} 
+
 }
 
 /**
@@ -441,13 +505,12 @@ export class AlarmPart extends FakePart {
  * @property {string} label Sera affiché
  * @property {number} value Valeur en minute
  */
-
 /**
  * Liste des rappels prédéfinis
  * @type {Array<PredefinedOption>}
  */
 AlarmPart.PREDEFINED = [
-	{ label: 'Aucune', value: 0 },
+	{ label: 'Aucun', value: 0 },
 	{ label: '5 minutes', value: 5 },
 	{ label: '10 minutes', value: 10 },
 	{ label: '15 minutes', value: 15 },
@@ -458,4 +521,5 @@ AlarmPart.PREDEFINED = [
 	{ label: '1 jour', value: 60 * 24 },
 	{ label: '1 semaine', value: 60 * 24 * 7 },
 	{ label: 'Personnalisé', value: -1 },
+	{ label: 'Par défaut', value: -2 },
 ];

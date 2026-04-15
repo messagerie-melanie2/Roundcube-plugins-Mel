@@ -16,6 +16,8 @@ import { CONFIG_FOLDER_SPACE as CFS } from './constants.js';
 
 const LOCALIZATION_PLUGIN = 'mel_metapage';
 const CONFIG_FOLDER_SPACE = CFS;
+const ICON_AVATAR_HOVER = 'check_box';
+const ICON_AVATAR_HOVER_2 = 'check_box_outline_blank';
 
 /**
  * Pont principal entre le Design System Bnum et Roundcube.
@@ -351,6 +353,41 @@ export default class BridgeMail extends ABridge {
   }
 
   /**
+   * Vérifie si une ligne de mail est séléctionné
+   * @param {string | HTMLElement} rowOrRowId
+   * @returns {boolean}
+   */
+  #_isSelected(rowOrRowId) {
+    return (
+      (typeof rowOrRowId === 'string'
+        ? document.getElementById(rowOrRowId)
+        : rowOrRowId
+      )?.classList?.contains?.('selected') ?? false
+    );
+  }
+  /**
+   * Vérifie si une ligne de mail est séléctionné
+   * @param {string | HTMLElement} rowOrRowId
+   * @returns {string}
+   */
+  #_getIcon(rowOrRowId, { inverted = false } = {}) {
+    var isSelected = this.#_isSelected(rowOrRowId);
+
+    if (inverted) isSelected = !isSelected;
+
+    return isSelected ? ICON_AVATAR_HOVER_2 : ICON_AVATAR_HOVER;
+  }
+
+  /**
+   * @private
+   * @param {string | HTMLElement} rowOrRowId
+   * @returns {typeof ICON_AVATAR_HOVER | typeof ICON_AVATAR_HOVER_2}
+   */
+  _getIcon(rowOrRowId, { inverted = false } = {}) {
+    return this.#_getIcon(rowOrRowId, { inverted });
+  }
+
+  /**
    *
    * @param {Readonly<HTMLElement>} row
    */
@@ -380,25 +417,28 @@ export default class BridgeMail extends ABridge {
 
     action.addEventListener(
       'click',
-      function (rowId, e) {
+      /**
+       *
+       * @param {string} rowId
+       * @param {(row: string | HTMLElement, ?{inverted?:boolean}) => (typeof ICON_AVATAR_HOVER | typeof ICON_AVATAR_HOVER_2)} getIcon
+       * @param {MouseEvent} e
+       * @this BridgeMail
+       */
+      function (rowId, getIcon, e) {
         e.stopImmediatePropagation();
         e.stopPropagation();
         e.preventDefault();
 
-        const updateButton = document.querySelector(`#${rowId} .msgicon`);
+        const updateButton = document.querySelector(`#${rowId} .selection`);
 
         if (updateButton) {
-          const isUnread =
-            !document.getElementById(rowId)?.classList?.contains?.('unread') ??
-            false;
-          const icon = isUnread ? 'mark_email_read' : 'mark_email_unread';
-          this.icon = icon;
+          this.icon = getIcon(rowId, { inverted: true });
           updateButton.click();
         } else
           throw new Error(
             'Impossible de trouver le bouton pour changer le status du mail !',
           );
-      }.bind(action, row.id),
+      }.bind(action, row.id, this._getIcon.bind(this)),
     );
 
     /**
@@ -419,12 +459,7 @@ export default class BridgeMail extends ABridge {
         const avatarAction = document.getElementById(`action-of-${rowId}`);
 
         if (avatarAction) {
-          const isUnread =
-            document.getElementById(rowId)?.classList?.contains?.('unread') ??
-            false;
-          const icon = isUnread ? 'mark_email_read' : 'mark_email_unread';
-
-          avatarAction.icon = icon;
+          avatarAction.icon = this.#_getIcon(rowId);
         } else
           throw new Error(
             `Impossible de trouver l'élément : action-of-${rowId}`,

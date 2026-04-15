@@ -695,7 +695,7 @@ export class EventView {
     }
     
     const $alarmField = this.parts.alarm._$fakeField;
-    if (is_valid && rcmail.env['__local:part:isStartEvent'] && +this.parts.alarm._$fakeField.val() === -2) {
+    if (is_valid && rcmail.env['__local:part:isStartEvent'] && +$alarmField.val() === -2) {
       $alarmField.val(this.parts.date.is_all_day() ? 0 : this.parts.alarm._getDefaultAlarmMinutes()).change();
     }
 

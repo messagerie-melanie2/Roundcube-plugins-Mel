@@ -1,3 +1,4 @@
+//compress:false
 #input-search-mail {
   position: relative;
   --bnum-input-container-margin-bottom: 0;
@@ -117,6 +118,10 @@ table.messagelist {
       .mail-avatar {
         top: 35px;
       }
+    }
+
+    &.has-label:hover td {
+      background-color: transparent !important;
     }
 
     // Small
@@ -241,19 +246,19 @@ table.messagelist {
 
   &.unread:hover {
     .unread-action {
-      display: none;
+      display: block;
     }
     .read-action {
-      display: block;
+      display: none;
     }
   }
 
   &.flagged:hover {
     .flag-action {
-      display: none;
+      display: block;
     }
     .unflag-action {
-      display: block;
+      display: none;
     }
   }
 }

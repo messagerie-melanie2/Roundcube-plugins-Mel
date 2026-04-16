@@ -1,3 +1,4 @@
+import { MelEnumerable } from '../../../../plugins/mel_metapage/js/lib/classes/enum.js';
 import { EMPTY_STRING } from '../../../../plugins/mel_metapage/js/lib/constants/constants.js';
 import { AvatarElement } from '../../../../plugins/mel_metapage/js/lib/html/JsHtml/CustomAttributes/avatar.js';
 import {
@@ -18,6 +19,24 @@ const LOCALIZATION_PLUGIN = 'mel_metapage';
 const CONFIG_FOLDER_SPACE = CFS;
 const ICON_AVATAR_HOVER = 'check_box';
 const ICON_AVATAR_HOVER_2 = 'check_box_outline_blank';
+
+/**
+ * @typedef ActionSettings
+ * @property {number} order
+ * @property {string} icon
+ * @property {ActionCallback} onclick
+ * @property {ActionCallback} onstart
+ * @property {ActionCallback} onhover
+ */
+
+/**
+ * @callback ActionCallback
+ * @this {HTMLElement}
+ * @param {import("../ds-module-bnum.js").HTMLBnumButtonIcon} caller
+ * @param {ActionSettings} settings
+ * @param {Event} e
+ * @returns {void}
+ */
 
 /**
  * Pont principal entre le Design System Bnum et Roundcube.
@@ -375,7 +394,7 @@ export default class BridgeMail extends ABridge {
 
     if (inverted) isSelected = !isSelected;
 
-    return isSelected ? ICON_AVATAR_HOVER_2 : ICON_AVATAR_HOVER;
+    return !isSelected ? ICON_AVATAR_HOVER_2 : ICON_AVATAR_HOVER;
   }
 
   /**
@@ -465,18 +484,103 @@ export default class BridgeMail extends ABridge {
             `Impossible de trouver l'élément : action-of-${rowId}`,
           );
       });
-    // requestAnimationFrame(() => {
-    //   avatarContainer._handleOnMouseEnter();
-    // });
 
-    // avatar.style.width = '30px';
-    // avatar.style.height = '30px';
-    // avatar.style.position = 'absolute';
-    // avatar.style.top = '7px';
-    // avatar.style.left = '8px';
+    const rowActions = document.createElement('div');
+    rowActions.classList.add('row-actions');
+
+    /**
+     * @type {Record<string, ActionSettings>}
+     */
+    const actions = {
+      unread: {
+        order: 0,
+        icon: 'mail',
+        onclick(_, __, e) {
+          e.stopImmediatePropagation();
+          e.stopPropagation();
+          e.preventDefault();
+
+          this.querySelector('.msgicon').click();
+        },
+        onstart(caller) {
+          caller.classList.add('unread-action');
+        },
+      },
+      flag: {
+        order: 2,
+        icon: 'flag_check',
+        onclick(_, __, e) {
+          e.stopImmediatePropagation();
+          e.stopPropagation();
+          e.preventDefault();
+          const text = this.querySelector('.flags .flag .unflagged');
+
+          if (text) text.click();
+        },
+        onstart(caller) {
+          caller.classList.add('flag-action');
+        },
+      },
+      unflag: {
+        order: 3,
+        icon: 'flag',
+        onclick(_, __, e) {
+          e.stopImmediatePropagation();
+          e.stopPropagation();
+          e.preventDefault();
+          const text = this.querySelector('.flags .flag .flagged');
+
+          if (text) text.click();
+        },
+        onstart(caller) {
+          caller.classList.add('unflag-action');
+        },
+      },
+      delete: {
+        order: 4,
+        icon: 'delete',
+        onclick(_, __, e) {
+          e.stopImmediatePropagation();
+          e.stopPropagation();
+          e.preventDefault();
+
+          document.querySelector(`action-of-${this.id}`).click();
+          rcmail.delete_messages(e);
+        },
+        onstart(caller) {
+          caller.classList.add('delete-action');
+        },
+      },
+    };
+
+    actions.read = {
+      order: 1,
+      icon: 'draft',
+      onclick: actions.unread.onclick,
+      onstart(caller) {
+        caller.classList.add('read-action');
+      },
+    };
+
+    for (const { value: settings } of MelEnumerable.from(actions).orderBy(
+      (x) => x.value.order,
+    )) {
+      // const settings = actions[key];
+      const button = HTMLBnumButtonIcon.Create(settings.icon);
+
+      settings.onstart?.call?.(row, button, settings);
+      button.addEventListener(
+        'click',
+        settings.onclick.bind(row, button, settings),
+      );
+
+      button.classList.add('sub-action');
+
+      rowActions.appendChild(button);
+    }
 
     row.style.position = 'relative';
-    row.prepend(avatarContainer);
+    row.prepend(avatarContainer, rowActions);
 
     return row;
   }

@@ -513,7 +513,9 @@ export default class BridgeMail extends ABridge {
           e.stopImmediatePropagation();
           e.stopPropagation();
           e.preventDefault();
-          const text = this.querySelector('.flags .flag .unflagged');
+          const text =
+            this.querySelector('.flags .flag .unflagged') ??
+            this.querySelector('.flags .flag .flagged');
 
           if (text) text.click();
         },
@@ -528,7 +530,9 @@ export default class BridgeMail extends ABridge {
           e.stopImmediatePropagation();
           e.stopPropagation();
           e.preventDefault();
-          const text = this.querySelector('.flags .flag .flagged');
+          const text =
+            this.querySelector('.flags .flag .flagged') ??
+            this.querySelector('.flags .flag .unflagged');
 
           if (text) text.click();
         },
@@ -544,7 +548,8 @@ export default class BridgeMail extends ABridge {
           e.stopPropagation();
           e.preventDefault();
 
-          document.querySelector(`action-of-${this.id}`).click();
+          rcmail.message_list.clear_selection();
+          document.querySelector(`#action-of-${this.id}`).click();
           rcmail.delete_messages(e);
         },
         onstart(caller) {
@@ -555,7 +560,7 @@ export default class BridgeMail extends ABridge {
 
     actions.read = {
       order: 1,
-      icon: 'draft',
+      icon: 'drafts',
       onclick: actions.unread.onclick,
       onstart(caller) {
         caller.classList.add('read-action');

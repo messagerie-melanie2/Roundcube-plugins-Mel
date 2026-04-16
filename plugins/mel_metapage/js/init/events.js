@@ -1223,13 +1223,17 @@ if (rcmail && window.mel_metapage) {
         for (let index = 0; index < tmp_location.length; ++index) {
           element = tmp_location[index];
 
-          if (
-            element.includes(':') ||
-            element.includes('|') ||
-            element.includes('/public/webconf')
-          ) {
+          if (element.includes(' : ') && element.includes('|') 
+          ) {// Forma "URL : numéro| PIN"
             [element,location_phone] = element.split(' : ');
             location_phone = location_phone.replace(')', '').split('|');
+          }else if (element.includes('(') && element.includes('|')) {
+            // Format "URL (numéro | PIN)"
+            const match = element.match(/^(.*?)\s*\(([^|]+)\|([^)]+)\)/);
+            if (match) {
+              element = match[1].trim();
+              location_phone = [match[2].trim(), match[3].trim()];
+            }
           }
           location += mel_metapage.Functions.updateRichText(element)
             .replaceAll('#visio:', '')
@@ -1280,10 +1284,9 @@ if (rcmail && window.mel_metapage) {
               </span>
 
               <!-- Séparateur -->
-              <span style="margin: 0 6px"> – </span>
+              <span style="margin: 0 3px"> –</span>
 
               <!-- Code PIN non cliquable avec icône -->
-              <span style="${iconStyle}" class="icon-mel-key mel-cal-icon"></span>
               <bnum-icon class="alignself-center mr-2 material-symbols-outlined" data-loaded="true">pin</bnum-icon>
               <span style="display:inline-block">${pinCode}</span>
 

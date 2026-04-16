@@ -192,6 +192,69 @@ table.messagelist {
         }
       }
     }
+
+    .row-actions-mixin();
+  }
+}
+
+.row-actions-mixin() {
+  .row-actions {
+    display: none;
+    position: absolute;
+    top: 0px;
+    right: 5px;
+    height: calc(100% - 2px);
+    z-index: 1;
+    align-items: center;
+
+    .sub-action {
+      margin-top: 8px;
+    }
+  }
+
+  &:hover {
+    .row-actions {
+      display: flex;
+    }
+
+    &.message {
+      .flags,
+      .size,
+      .date {
+        opacity: 0;
+      }
+    }
+
+    .unread-action {
+      display: none;
+    }
+    .read-action {
+      display: block;
+    }
+    .flag-action {
+      display: none;
+    }
+    .unflag-action {
+      display: block;
+    }
+  }
+
+  &.unread:hover {
+    .unread-action {
+      display: none;
+    }
+    .read-action {
+      display: block;
+    }
+  }
+
+  &.flagged:hover {
+    .flag-action {
+      display: none;
+    }
+    .unflag-action {
+      display: block;
+    }
   }
 }
 

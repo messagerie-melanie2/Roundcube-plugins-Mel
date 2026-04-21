@@ -155,12 +155,15 @@
           </label></li>
       </ul>
       <div class="input-group">
-        <div class="input-group-prepend">
+        <!-- <div class="input-group-prepend">
           <label for="s_scope" class="input-group-text">
             <roundcube:label name="searchscope" />
           </label>
-        </div>
-        <select name="s_scope" id="s_scope">
+        </div> -->
+        <bnum-select name="s_scope" id="s_scope" class="bds-full-width bds-space-s-bottom bds-block">
+                    <label slot="label" class="bstp-input-group-text">
+            <roundcube:label name="searchscope" />
+          </label>
           <option value="base">
             <roundcube:label name="currentfolder" />
           </option>
@@ -170,9 +173,15 @@
           <option value="all">
             <roundcube:label name="allfolders" />
           </option>
-        </select>
+        </bnum-select>
       </div>
-      <div class="input-group">
+      <!-- SearchFilter -->
+       <bnum-select id="search-filter-dummy" class="bds-full-width bds-space-s-bottom bds-block">
+          <label slot="label" class="bdst-input-group-text">
+            <roundcube:label name="type" />
+          </label>
+       </bnum-select>
+      <div class="input-group bds-hidden">
         <div class="input-group-prepend">
           <label for="searchfilter" class="input-group-text">
             <roundcube:label name="type" />
@@ -180,7 +189,14 @@
         </div>
         <roundcube:object name="searchfilter" id="searchfilter" noevent="true" />
       </div>
-      <div class="input-group">
+      <!-- SearchFilter::end -->
+       <!-- Interval -->
+        <bnum-select id="s-date-dummy" class="bds-full-width bds-space-s-bottom bds-block">
+          <label slot="label" class="bdst-input-group-text">
+            <roundcube:label name="date" />
+          </label>
+       </bnum-select>
+      <div class="input-group bds-hidden">
         <div class="input-group-prepend">
           <label for="s_interval" class="input-group-text">
             <roundcube:label name="date" />
@@ -189,6 +205,7 @@
         <roundcube:object name="searchinterval" id="s_interval" />
       </div>
     </div>
+     <!-- Interval::end -->
     <div class="formbuttons">
       <button type="button" class="btn btn-primary icon search" onclick="return rcmail.command('search')">
         <roundcube:label name="search" />

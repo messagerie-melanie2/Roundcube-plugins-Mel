@@ -30,6 +30,19 @@
   }
 }
 
+#searchmenu {
+  --searchmenu-text-color: var(--body-text-color);
+  background-color: white;
+  // color: black;
+  z-index: 1;
+  top: 60px;
+  right: 15px;
+  max-width: 300px;
+  box-shadow: 0px 0px 6px 4px #00000033 !important;
+  border-radius: 5px !important;
+  position: absolute;
+}
+
 html,
 html.layout-phone,
 html.layout-small {
@@ -116,7 +129,7 @@ table.messagelist {
 
     &.has-label {
       .mail-avatar {
-        top: 35px;
+        top: 42px;
       }
     }
 
@@ -132,13 +145,12 @@ table.messagelist {
 
       &.has-label {
         .mail-avatar {
-          top: 24px;
+          top: 31px;
         }
       }
     }
 
     //large
-    // Small
     html.mail-large & {
       .mail-avatar {
         top: 24px;
@@ -146,7 +158,22 @@ table.messagelist {
 
       &.has-label {
         .mail-avatar {
-          top: 43px;
+          top: 50px;
+        }
+      }
+    }
+
+    td {
+      &.labels {
+        margin-top: var(--bnum-space-xs, 5px);
+
+        &::before {
+          content: none !important;
+        }
+
+        span {
+          padding: 2px 6px;
+          margin-left: -7px;
         }
       }
     }

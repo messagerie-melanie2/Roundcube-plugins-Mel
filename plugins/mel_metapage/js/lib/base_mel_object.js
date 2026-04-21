@@ -50,7 +50,6 @@ export default class ABaseMelObject {
    * Récupère "rcmail" | les fonctions utiles à roundcube
    * @param {boolean} top Si on doit récupérer rcmail sur frame principale ou non
    * @returns {rcube_webmail}
-   * @protected
    */
   rcmail(top = false) {
     return top && !!Top.top()?.rcmail ? Top.top().rcmail : window.rcmail;

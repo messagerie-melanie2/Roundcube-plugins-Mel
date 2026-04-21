@@ -18,7 +18,7 @@ export class ElasticUiMail extends ABaseModuleWithSubModules {
   }
 
   _p_init() {
-    this.loadSubModules();
+    if (this.get_env('task') === 'mail') this.loadSubModules();
   }
 
   static _p_ignoreLifeCycles() {

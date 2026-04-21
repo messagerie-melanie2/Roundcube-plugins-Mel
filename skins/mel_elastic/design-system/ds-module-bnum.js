@@ -546,22 +546,56 @@ let BnumConfig = (() => {
     };
 })();
 
-const EMPTY_STRING = '';
+/**
+ * Représente un string vide.
+ *
+ * Cela permet d'améliorer la visualisation du code, un peu comme `string.Empty` en `C#`.
+ * @see {@link https://learn.microsoft.com/fr-fr/dotnet/api/system.string.empty?view=net-9.0}
+ */
+const EMPTY_STRING$1 = '';
+/**
+ * Représente un espace.
+ *
+ * Cela permet d'améliorer la visualisation du code, dans le même esprit que {@link EMPTY_STRING}
+ */
+const SPACE = ' ';
 
 //#region MiscFunctions
+/**
+ * Vérifie si une valeur est `null` ou `undefined`.
+ * @param item Valeur à tester
+ * @returns `true` si l'élément est `null` ou `undefined`, sinon `false`
+ */
 function isNullOrUndefined$1(item) {
-    return item !== null || item !== undefined;
+    return item === null || item === undefined;
 }
-
-function Capitalize(word) {
-  return word.charAt(0).toUpperCase() + word.slice(1)
+/**
+ * Met la première lettre d'un mot en majuscule.
+ * @param word Mot à transformer
+ * @returns Le mot transformé avec une première lettre en majuscule
+ */
+function capitalize(word) {
+    return word.charAt(0).toUpperCase() + word.slice(1);
 }
-
+/**
+ * @deprecated Utilisez {@link capitalizeLine} à la place.
+ * @param line Texte à transformer
+ * @returns Le texte transformé avec chaque mot capitalisé
+ */
 function CapitalizeLine(line) {
-  return line.split(' ')
-          .map(Capitalize)
-          .join(' ');
+    return capitalizeLine(line);
 }
+/**
+ * Met la première lettre de chaque mot d'une ligne en majuscule.
+ * @param line Ligne de texte à transformer
+ * @returns Ligne transformée avec chaque mot capitalisé
+ */
+function capitalizeLine(line) {
+    return line.split(SPACE)
+        .map(capitalize)
+        .join(SPACE);
+}
+//#endregion
 
 var css_248z$t = ":host([block]){display:block;flex:1;width:100%}:host(.flex){display:flex}:host(.center){align-items:center;justify-content:center;text-align:center}";
 
@@ -684,6 +718,7 @@ class BnumElement extends HTMLElement {
     /** Données mises en mémoire, accessibles via la méthode data(). */
     #_data = null;
     #_pendingAttributes = null;
+    #_disposables = null;
     #_updateScheduled = false;
     /** Indique si le composant a déjà été chargé une première fois. */
     #firstLoad = false;
@@ -749,6 +784,7 @@ class BnumElement extends HTMLElement {
         if (!this.#firstLoad) {
             this.render();
         }
+        this._p_DOM();
     }
     /**
      * Callback appelée lorsque le composant est retiré du DOM.
@@ -757,6 +793,17 @@ class BnumElement extends HTMLElement {
     disconnectedCallback() {
         this._p_preunload();
         this._p_detach();
+        if (this.#_disposables) {
+            for (const disposable of this.#_disposables) {
+                if (typeof disposable === 'function') {
+                    disposable();
+                }
+                else {
+                    disposable.dispose();
+                }
+            }
+            this.#_disposables.clear();
+        }
     }
     /**
      * Déclenche le rendu du composant.
@@ -896,7 +943,7 @@ class BnumElement extends HTMLElement {
     }
     text(value) {
         if (value === undefined)
-            return this.textContent || EMPTY_STRING;
+            return this.textContent || EMPTY_STRING$1;
         this.textContent = value;
         return this;
     }
@@ -1056,7 +1103,7 @@ class BnumElement extends HTMLElement {
      * @returns La valeur de la donnée.
      */
     #_getData(name, fromAttribute) {
-        let data = EMPTY_STRING;
+        let data = EMPTY_STRING$1;
         if (fromAttribute) {
             data = this.getAttribute(`data-${name}`);
         }
@@ -1114,6 +1161,13 @@ class BnumElement extends HTMLElement {
     // ======================
     //#region protected
     /**
+     * Callback appelé lors du rendu du composant.
+     *
+     * Est appelé à chaque fois que l'élément est inséré dans le dom.
+     * @virtual
+     */
+    _p_DOM() { }
+    /**
      * Permet d'attacher un shadowroot custom au lieu de juste `{mode:'open'}`
      * @returns Null si pas de root custom.
      */
@@ -1162,6 +1216,15 @@ class BnumElement extends HTMLElement {
         this.#_data ??= new Map();
         this.#_data.set(name, value);
         return this;
+    }
+    /**
+     * Enregistre un objet disposable ou une fonction de nettoyage.
+     * Ces éléments seront automatiquement appelés lors du `disconnectedCallback`.
+     * @param disposable Objet implémentant `Disposable` ou fonction de nettoyage.
+     */
+    _p_registerDisposable(disposable) {
+        this.#_disposables ??= new Set();
+        this.#_disposables.add(disposable);
     }
     /**
      * Vérifie si une donnée interne existe.
@@ -1301,7 +1364,7 @@ class BnumElement extends HTMLElement {
      * @deprecated Utiliser _p_getStylesheet ou _p_getStylesheets à la place.
      */
     _p_getStyle() {
-        return EMPTY_STRING;
+        return EMPTY_STRING$1;
     }
     /**
      * Retourne la liste des feuilles de style CSS à injecter dans le composant.
@@ -1380,7 +1443,7 @@ class BnumElement extends HTMLElement {
     //#region static
     static _p_WriteAttributes(attrs) {
         if (Object.keys(attrs).length === 0)
-            return EMPTY_STRING;
+            return EMPTY_STRING$1;
         return ArrayUtils.toStringAttribs(attrs);
     }
     /**
@@ -1438,6 +1501,8 @@ class BnumElement extends HTMLElement {
  * Style commun à tous les BnumElement.
  */
 const BASE_STYLE = BnumElement.ConstructCSSStyleSheet(css_248z$t);
+
+const EMPTY_STRING = '';
 
 class RotomecaCookies {
     /**
@@ -2373,6 +2438,11 @@ class Scheduler {
      */
     #_lastValue = null;
     /**
+     * Identifiant du frame planifié.
+     * @private
+     */
+    #_frameId = null;
+    /**
      * Callback à exécuter lors de la planification.
      * @private
      */
@@ -2385,6 +2455,18 @@ class Scheduler {
         this.#_callback = callback;
     }
     /**
+     * Libère les ressources du scheduler.
+     */
+    dispose() {
+        if (this.#_frameId !== null) {
+            cancelAnimationFrame(this.#_frameId);
+            this.#_frameId = null;
+        }
+        this.#_callback = null;
+        this.#_lastValue = null;
+        this.#_started = false;
+    }
+    /**
      * Demande la planification de l'exécution de la callback avec la valeur donnée.
      * Si une exécution est déjà planifiée, seule la dernière valeur sera utilisée.
      * @param value Valeur la plus récente planifiée pour l'exécution.
@@ -2393,8 +2475,9 @@ class Scheduler {
         this.#_lastValue = value;
         if (!this.#_started) {
             this.#_started = true;
-            requestAnimationFrame(() => {
-                this.#_callback(this.#_lastValue);
+            this.#_frameId = requestAnimationFrame(() => {
+                this.#_frameId = null;
+                this.#_callback?.(this.#_lastValue);
                 this.#_started = false;
                 this.#_lastValue = null;
             });
@@ -2417,7 +2500,7 @@ class Scheduler {
      * @param value Valeur à transmettre au callback
      */
     call(value) {
-        this.#_callback(value);
+        this.#_callback?.(value);
     }
 }
 /**
@@ -2444,6 +2527,11 @@ class SchedulerArray {
      */
     #_stack = [];
     /**
+     * Identifiant du frame planifié.
+     * @private
+     */
+    #_frameId = null;
+    /**
      * Callback à exécuter lors de la planification.
      * @private
      */
@@ -2457,13 +2545,28 @@ class SchedulerArray {
         this.#_callback = callback;
         this.#_resetSymbol = resetSymbol;
     }
+    /**
+     * Libère les ressources du scheduler.
+     */
+    dispose() {
+        if (this.#_frameId !== null) {
+            cancelAnimationFrame(this.#_frameId);
+            this.#_frameId = null;
+        }
+        this.#_callback = null;
+        this.#_stack.length = 0;
+        this.#_started = false;
+    }
     schedule(value) {
         this.#_add(value);
         if (!this.#_started) {
             this.#_started = true;
-            requestAnimationFrame(() => {
-                for (const element of this.#_getStackItems()) {
-                    this.#_callback(element);
+            this.#_frameId = requestAnimationFrame(() => {
+                this.#_frameId = null;
+                if (this.#_callback) {
+                    for (const element of this.#_getStackItems()) {
+                        this.#_callback(element);
+                    }
                 }
                 this.#_started = false;
                 this.#_stack.length = 0;
@@ -2481,8 +2584,10 @@ class SchedulerArray {
             this.#_stack.length = 0;
             this.#_add(value);
         }
-        for (const element of this.#_getStackItems()) {
-            this.#_callback(element);
+        if (this.#_callback) {
+            for (const element of this.#_getStackItems()) {
+                this.#_callback(element);
+            }
         }
         this.#_stack.length = 0;
     }
@@ -2635,7 +2740,7 @@ function initStyle(clazz, styles) {
         else
             strStyles += style;
     }
-    if (strStyles && strStyles !== EMPTY_STRING) {
+    if (strStyles && strStyles !== EMPTY_STRING$1) {
         const sheet = new CSSStyleSheet();
         sheet.replaceSync(strStyles);
         clazz.__CACHE_STYLE__.push(sheet);
@@ -2654,13 +2759,13 @@ function Attr(attributeName) {
                 const val = this.getAttribute(attrName);
                 // Logique de conversion selon la valeur de l'attribut
                 // On utilise "as unknown as Value" pour satisfaire le compilateur
-                if (val === EMPTY_STRING || val === 'true')
+                if (val === EMPTY_STRING$1 || val === 'true')
                     return true;
                 if (val === null)
                     return false;
                 // Si c'est un nombre (on vérifie si la conversion est possible)
                 const num = Number(val);
-                if (val !== EMPTY_STRING && !isNaN(num))
+                if (val !== EMPTY_STRING$1 && !isNaN(num))
                     return num;
                 return val;
             },
@@ -2670,7 +2775,7 @@ function Attr(attributeName) {
                 }
                 else {
                     // Si c'est un booléen true, on met un attribut vide (pattern HTML standard)
-                    const strVal = value === true ? EMPTY_STRING : String(value);
+                    const strVal = value === true ? EMPTY_STRING$1 : String(value);
                     this.setAttribute(attrName, strVal);
                 }
             },
@@ -2698,12 +2803,12 @@ function Data(nameOrOptions, maybeOptions) {
                 const val = typeof this.data === 'function'
                     ? this.data(finalAttrName)
                     : this.getAttribute(`data-${finalAttrName}`);
-                if (val === EMPTY_STRING || val === 'true')
+                if (val === EMPTY_STRING$1 || val === 'true')
                     return true;
                 if (val === null || val === undefined)
                     return _target.get.call(this);
                 const num = Number(val);
-                if (val !== EMPTY_STRING && !isNaN(num))
+                if (val !== EMPTY_STRING$1 && !isNaN(num))
                     return num;
                 return val;
             },
@@ -2711,7 +2816,7 @@ function Data(nameOrOptions, maybeOptions) {
                 if (!setter)
                     return;
                 const isFalsy = value === null || value === undefined || value === false;
-                const strVal = value === true ? EMPTY_STRING : String(value);
+                const strVal = value === true ? EMPTY_STRING$1 : String(value);
                 if (typeof this.data === 'function') {
                     this.data(finalAttrName, isFalsy ? null : strVal);
                 }
@@ -3055,7 +3160,7 @@ let HTMLBnumBadge = (() => {
         /**
          * Valeur affichée dans le badge.
          */
-        #_value = EMPTY_STRING;
+        #_value = EMPTY_STRING$1;
         /**
          * Planificateur de mise à jour asynchrone.
          */
@@ -3070,7 +3175,7 @@ let HTMLBnumBadge = (() => {
          * Récupère la valeur depuis l'attribut data-value.
          */
         get #_dataValue() {
-            return this.data(DATA_VALUE) || EMPTY_STRING;
+            return this.data(DATA_VALUE) || EMPTY_STRING$1;
         }
         /**
          * Récupère la variation depuis l'attribut data-variation.
@@ -3129,9 +3234,11 @@ let HTMLBnumBadge = (() => {
          * Demande une mise à jour asynchrone du composant.
          */
         #_requestUpdate() {
-            (this.#_updateSchduler ??= new Scheduler(() => {
-                this.#_update();
-            })).schedule(0);
+            if (!this.#_updateSchduler) {
+                this.#_updateSchduler = new Scheduler(() => this.#_update());
+                this._p_registerDisposable(this.#_updateSchduler);
+            }
+            this.#_updateSchduler.schedule(0);
             return this;
         }
         /**
@@ -3143,7 +3250,7 @@ let HTMLBnumBadge = (() => {
             this._p_clearStates();
             const value = this.value;
             this.#_spanElement.textContent = value;
-            if (value !== EMPTY_STRING)
+            if (value !== EMPTY_STRING$1)
                 this._p_addState(STATE_HAS_VALUE);
             else
                 this._p_addState(STATE_NO_VALUE);
@@ -3338,7 +3445,7 @@ function h(tag, props, ...argsChildren) {
         const children = argsChildren.length ? argsChildren : props?.children || [];
         return tag({ ...props, children });
     }
-    let attrs = EMPTY_STRING;
+    let attrs = EMPTY_STRING$1;
     if (props) {
         for (const key in props) {
             const value = props[key];
@@ -3346,7 +3453,7 @@ function h(tag, props, ...argsChildren) {
                 continue;
             const name = key === 'className' ? 'class' : key;
             if (key === 'style' && typeof value === 'object') {
-                let styleStr = EMPTY_STRING;
+                let styleStr = EMPTY_STRING$1;
                 for (const sKey in value) {
                     styleStr += `${sKey}:${value[sKey]};`;
                 }
@@ -3370,9 +3477,9 @@ function h(tag, props, ...argsChildren) {
 // Helper récursif ultra-rapide pour les enfants
 function renderChildren(child) {
     if (child == null || child === false || child === true)
-        return EMPTY_STRING;
+        return EMPTY_STRING$1;
     if (Array.isArray(child)) {
-        let str = EMPTY_STRING;
+        let str = EMPTY_STRING$1;
         for (let i = 0; i < child.length; i++) {
             str += renderChildren(child[i]);
         }
@@ -3578,7 +3685,7 @@ let HTMLBnumIcon = (() => {
         get icon() {
             const icon = this.textContent?.trim?.() ||
                 this.data(DATA_ICON) ||
-                EMPTY_STRING;
+                EMPTY_STRING$1;
             return icon;
         }
         /**
@@ -4104,7 +4211,7 @@ let HTMLBnumButton = (() => {
         }
         set icon(value) {
             if (this.alreadyLoaded)
-                this.oniconchange.call(value || EMPTY_STRING, this.icon || EMPTY_STRING);
+                this.oniconchange.call(value || EMPTY_STRING$1, this.icon || EMPTY_STRING$1);
             if (typeof value === 'string' && /^[\w-]+$/.test(value)) {
                 const fromAttribute = false;
                 this.data(ATTR_ICON$1, value, fromAttribute);
@@ -4139,7 +4246,7 @@ let HTMLBnumButton = (() => {
         }
         set iconMargin(value) {
             if (this.alreadyLoaded)
-                this.oniconpropchange.call('margin', value || EMPTY_STRING);
+                this.oniconpropchange.call('margin', value || EMPTY_STRING$1);
             if (typeof value === 'string' && REG_XSS_SAFE.test(value)) {
                 const fromAttribute = false;
                 this.data(ATTR_ICON_MARGIN, value, fromAttribute);
@@ -4372,7 +4479,7 @@ let HTMLBnumButton = (() => {
         static _p_Create(buttonClass, options) {
             const config = { ...DEFAULT_BUTTON_OPTIONS, ...options };
             const node = document.createElement(buttonClass.TAG);
-            node.textContent = config.text ?? EMPTY_STRING;
+            node.textContent = config.text ?? EMPTY_STRING$1;
             const finalMargin = config.iconMargin === 0 ? '0px' : config.iconMargin;
             for (const { prop, attr, isBool } of BUTTON_ATTRIBUTE_MAP) {
                 const val = prop === 'iconMargin'
@@ -4382,7 +4489,7 @@ let HTMLBnumButton = (() => {
                     continue;
                 if (isBool && val === true)
                     node.setAttribute(attr, 'true');
-                else if (!isBool && val !== EMPTY_STRING)
+                else if (!isBool && val !== EMPTY_STRING$1)
                     node.setAttribute(attr, String(val));
             }
             return node;
@@ -4537,7 +4644,7 @@ let BnumDateUtils = (() => {
                             for (let index = values.length; index < tokens.length; ++index) {
                                 values.push(Array.from(tokens[index])
                                     .map(() => '0')
-                                    .join(EMPTY_STRING));
+                                    .join(EMPTY_STRING$1));
                             }
                         }
                         else
@@ -4846,6 +4953,7 @@ let HTMLBnumDate = (() => {
         /** L'élément SPAN interne qui contient le texte formaté */
         #_outputElement = null;
         #_renderSheduled = false;
+        #_renderFrameId;
         #formatEvent_accessor_storage = __runInitializers(this, _formatEvent_initializers, void 0);
         //#endregion Private fields
         //#region Getter/Setters
@@ -4898,6 +5006,12 @@ let HTMLBnumDate = (() => {
             this.#_outputElement = document.createElement('span');
             this.#_outputElement.setAttribute('part', 'date-text'); // Permet de styler depuis l'extérieur
             container.append(this.#_outputElement);
+        }
+        _p_detach() {
+            if (!isNullOrUndefined$1(this.#_renderFrameId)) {
+                cancelAnimationFrame(this.#_renderFrameId);
+                this.#_renderFrameId = null;
+            }
         }
         /**
          * Phase de pré-chargement (avant _p_buildDOM).
@@ -5040,7 +5154,8 @@ let HTMLBnumDate = (() => {
             if (this.#_renderSheduled)
                 return;
             this.#_renderSheduled = true;
-            requestAnimationFrame(() => {
+            this.#_renderFrameId = requestAnimationFrame(() => {
+                this.#_renderFrameId = null;
                 this.#_renderSheduled = false;
                 this.#_renderDate();
             });
@@ -5058,7 +5173,7 @@ let HTMLBnumDate = (() => {
                 return; // Pas encore prêt
             }
             if (!this.#_originalDate) {
-                this.#_outputElement.textContent = EMPTY_STRING; // Affiche une chaîne vide si date invalide/null
+                this.#_outputElement.textContent = EMPTY_STRING$1; // Affiche une chaîne vide si date invalide/null
                 this._p_addState(STATE_INVALID);
                 return;
             }
@@ -5083,7 +5198,7 @@ let HTMLBnumDate = (() => {
          * mais suit le pattern de BnumElement).
          */
         static Create(dateInput, options) {
-            const el = document.createElement(this.TAG).condAttr(options?.startFormat, ATTRIBUTE_START_FORMAT, options?.startFormat ?? EMPTY_STRING);
+            const el = document.createElement(this.TAG).condAttr(options?.startFormat, ATTRIBUTE_START_FORMAT, options?.startFormat ?? EMPTY_STRING$1);
             if (options?.format)
                 el.format = options.format;
             if (options?.locale)
@@ -5203,8 +5318,8 @@ const ICON = 'help';
             _private__render_decorators = [RenderFrame()];
             __esDecorate(this, _private__render_descriptor = { value: __setFunctionName(function () {
                     if (this.hasChildNodes()) {
-                        this.setAttribute('title', this.textContent ?? EMPTY_STRING);
-                        this.textContent = EMPTY_STRING;
+                        this.setAttribute('title', this.textContent ?? EMPTY_STRING$1);
+                        this.textContent = EMPTY_STRING$1;
                     }
                 }, "#_render") }, _private__render_decorators, { kind: "method", name: "#_render", static: false, private: true, access: { has: obj => #_render in obj, get: obj => obj.#_render }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
@@ -5342,7 +5457,7 @@ let HTMLBnumButtonIcon = (() => {
          */
         get icon() {
             return ((this.#_iconElement.icon || this.#_throw('Icon is not defined')) ??
-                EMPTY_STRING);
+                EMPTY_STRING$1);
         }
         set icon(value) {
             this.#_iconElement.icon = value;
@@ -5358,18 +5473,18 @@ let HTMLBnumButtonIcon = (() => {
          */
         _p_buildDOM() {
             HTMLBnumButton.ToButton(this);
-            if (this.title === EMPTY_STRING)
+            if (this.title === EMPTY_STRING$1)
                 Log.warn(this._.TAG, 'Icon button should have a title for accessibility purposes');
             if (this.hasAttribute('click')) {
                 const click = this.getAttribute('click');
-                this.#_updateAttributeClick(click ?? EMPTY_STRING);
+                this.#_updateAttributeClick(click ?? EMPTY_STRING$1);
             }
         }
         _p_update(name, oldVal, newVal) {
             if (oldVal === newVal)
                 return;
             if (name === 'click') {
-                this.#_updateAttributeClick(newVal ?? EMPTY_STRING);
+                this.#_updateAttributeClick(newVal ?? EMPTY_STRING$1);
             }
         }
         //#endregion Lifecycle
@@ -5482,7 +5597,7 @@ const STATE_STATE$1 = 'state';
 const ICON_SUCCESS = 'check_circle';
 const ICON_ERROR = 'cancel';
 
-function Render(addonInner = EMPTY_STRING) {
+function Render(addonInner = EMPTY_STRING$1) {
     return (h(HTMLBnumFragment, { children: [h("label", { id: ID_HINT_TEXT, for: ID_INPUT$1, class: "label-container", children: [h("span", { id: ID_HINT_TEXT_LABEL, class: "label-container--label", children: h("slot", {}) }), h("span", { id: ID_HINT_TEXT_HINT, class: "label-container--hint hint-label", children: h("slot", { name: SLOT_HINT }) })] }), h("div", { class: "container", children: [h("div", { class: "addons", children: [h("div", { class: "addon__inner", children: [addonInner, h(HTMLBnumIcon, { id: ID_INPUT_ICON }), h("input", { class: "input-like", id: ID_INPUT$1, type: DEFAULT_INPUT_TYPE })] }), h(HTMLBnumButton, { id: ID_INPUT_BUTTON, rounded: true, "data-variation": DEFAULT_BUTTON_VARIATION, children: h("slot", { name: SLOT_BUTTON }) })] }), h("span", { id: ID_STATE, class: "state", part: "state-container", children: [h(HTMLBnumIcon, { id: ID_STATE_ICON }), h("span", { id: ID_SUCCESS_TEXT, class: CLASS_STATE_TEXT_SUCCESS, children: h("slot", { name: SLOT_SUCCESS, children: TEXT_VALID_INPUT }) }), h("span", { id: ID_ERROR_TEXT, class: CLASS_STATE_TEXT_ERROR, children: h("slot", { name: SLOT_ERROR, children: TEXT_INVALID_INPUT }) })] })] })] }));
 }
 
@@ -5735,7 +5850,7 @@ let HTMLBnumInput = (() => {
         /**
          * Valeur initiale (pour la réinitialisation du formulaire)
          */
-        #_initValue = (__runInitializers(this, _instanceExtraInitializers), EMPTY_STRING);
+        #_initValue = (__runInitializers(this, _instanceExtraInitializers), EMPTY_STRING$1);
         //#endregion Private fields
         //#region Getters/Setters
         /** Référence à la classe HTMLBnumInput */
@@ -5749,7 +5864,7 @@ let HTMLBnumInput = (() => {
          */
         get onButtonClicked() { return this.#onButtonClicked_accessor_storage; }
         set onButtonClicked(value) { this.#onButtonClicked_accessor_storage = value; }
-        #name_accessor_storage = (__runInitializers(this, _onButtonClicked_extraInitializers), __runInitializers(this, _name_initializers, EMPTY_STRING));
+        #name_accessor_storage = (__runInitializers(this, _onButtonClicked_extraInitializers), __runInitializers(this, _name_initializers, EMPTY_STRING$1));
         // -- Formulaire --
         /**
          * Nom du champ (attribut HTML name).
@@ -5762,7 +5877,7 @@ let HTMLBnumInput = (() => {
         get value() {
             return (this.#_ui.input?.value ||
                 this.getAttribute(ATTRIBUTE_DATA_VALUE) ||
-                EMPTY_STRING);
+                EMPTY_STRING$1);
         }
         set value(val) {
             if (this.#_ui.input === null)
@@ -5781,7 +5896,7 @@ let HTMLBnumInput = (() => {
         constructor() {
             super();
             __runInitializers(this, _name_extraInitializers);
-            this.#_initValue = this.getAttribute(ATTRIBUTE_DATA_VALUE) ?? EMPTY_STRING;
+            this.#_initValue = this.getAttribute(ATTRIBUTE_DATA_VALUE) ?? EMPTY_STRING$1;
         }
         /**
          * Attache un Shadow DOM personnalisé.
@@ -5793,10 +5908,10 @@ let HTMLBnumInput = (() => {
          * Construit le DOM interne et attache les écouteurs d'événements.
          */
         _p_buildDOM() {
-            this.#_ui.input.addEventListener(EVENT_INPUT, e => {
+            this.#_ui.input.addEventListener(EVENT_INPUT, (e) => {
                 this.#_inputValueChangedCallback(e);
             });
-            this.#_ui.input.addEventListener(EVENT_CHANGE$4, e => {
+            this.#_ui.input.addEventListener(EVENT_CHANGE$4, (e) => {
                 this.#_inputValueChangedCallback(e);
             });
             this.#_initialiseButton().#_update().#_removeValueAttribute();
@@ -6003,7 +6118,7 @@ let HTMLBnumInput = (() => {
                 this.#_ui.button.icon = button_icon;
                 if (!this._p_hasState(STATE_BUTTON))
                     this._p_addStates(STATE_BUTTON, STATE_OBI);
-                else if (btnValue === EMPTY_STRING)
+                else if (btnValue === EMPTY_STRING$1)
                     this._p_addState(STATE_OBI);
             }
             const icon = this.attr(ATTRIBUTE_ICON);
@@ -6029,7 +6144,7 @@ let HTMLBnumInput = (() => {
             input.value = this.value;
             input.type = this.getAttribute(ATTRIBUTE_TYPE) || DEFAULT_INPUT_TYPE;
             input.placeholder =
-                this.getAttribute(ATTRIBUTE_PLACEHOLDER) || EMPTY_STRING;
+                this.getAttribute(ATTRIBUTE_PLACEHOLDER) || EMPTY_STRING$1;
             // 2. États Booléens (On utilise .disabled / .readOnly pour la réactivité JS)
             input.disabled =
                 this.hasAttribute(ATTRIBUTE_DISABLED$1) || this._p_hasState(STATE_DISABLED$2);
@@ -6109,7 +6224,7 @@ let HTMLBnumInput = (() => {
             else {
                 this.#_safeCheckValidity().match({
                     Ok: isValid => {
-                        const isSuccess = isValid && this.#_ui.input.validationMessage === EMPTY_STRING;
+                        const isSuccess = isValid && this.#_ui.input.validationMessage === EMPTY_STRING$1;
                         if (isSuccess) {
                             this.#_internalSetValidity({});
                         }
@@ -6130,7 +6245,7 @@ let HTMLBnumInput = (() => {
          */
         #_syncValidationUI(isManualError) {
             const input = this.#_ui.input;
-            const hasNativeError = input.validationMessage !== EMPTY_STRING;
+            const hasNativeError = input.validationMessage !== EMPTY_STRING$1;
             const isError = isManualError || (hasNativeError && !input.validity.valid);
             const isSuccess = !isManualError && hasNativeError && input.validity.valid;
             const hasState = isError || isSuccess;
@@ -6164,7 +6279,7 @@ let HTMLBnumInput = (() => {
          */
         #_initialiseButton() {
             if (this.#_ui.button !== null) {
-                this.#_ui.button.addEventListener('click', e => {
+                this.#_ui.button.addEventListener('click', (e) => {
                     this.onButtonClicked.call(e);
                 });
             }
@@ -6274,7 +6389,7 @@ let HTMLBnumInput = (() => {
             }
             return el;
         }
-        static CreateRender(html = EMPTY_STRING) {
+        static CreateRender(html = EMPTY_STRING$1) {
             // eslint-disable-next-line no-restricted-syntax
             return Render(html);
         }
@@ -6738,7 +6853,7 @@ let HTMLBnumInputSearch = (() => {
                     if (params?.after)
                         after = params.after;
                 }
-                this.value = EMPTY_STRING;
+                this.value = EMPTY_STRING$1;
                 this._p_inputValueChangedCallback(new Event('input'));
                 this._triggerEventSearch();
                 this.trigger(EVENT_CLEAR, { caller: this });
@@ -7559,7 +7674,7 @@ let HTMLBnumRadio = (() => {
          */
         get #_ui() { return _private__ui_descriptor.get.call(this); }
         set #_ui(value) { return _private__ui_descriptor.set.call(this, value); }
-        #name_accessor_storage = (__runInitializers(this, _private__ui_extraInitializers), __runInitializers(this, _name_initializers, EMPTY_STRING));
+        #name_accessor_storage = (__runInitializers(this, _private__ui_extraInitializers), __runInitializers(this, _name_initializers, EMPTY_STRING$1));
         /**
          * Le nom du groupe de boutons radio.
          *
@@ -7571,7 +7686,7 @@ let HTMLBnumRadio = (() => {
          */
         get name() { return this.#name_accessor_storage; }
         set name(value) { this.#name_accessor_storage = value; }
-        #value_accessor_storage = (__runInitializers(this, _name_extraInitializers), __runInitializers(this, _value_initializers, EMPTY_STRING));
+        #value_accessor_storage = (__runInitializers(this, _name_extraInitializers), __runInitializers(this, _value_initializers, EMPTY_STRING$1));
         /**
          * La valeur associée au bouton radio.
          *
@@ -7604,7 +7719,7 @@ let HTMLBnumRadio = (() => {
          */
         get disabled() { return this.#disabled_accessor_storage; }
         set disabled(value) { this.#disabled_accessor_storage = value; }
-        #_legend_accessor_storage = (__runInitializers(this, _disabled_extraInitializers), __runInitializers(this, _private__legend_initializers, EMPTY_STRING));
+        #_legend_accessor_storage = (__runInitializers(this, _disabled_extraInitializers), __runInitializers(this, _private__legend_initializers, EMPTY_STRING$1));
         /**
          * Texte de la légende principale du bouton radio.
          *
@@ -7624,7 +7739,7 @@ let HTMLBnumRadio = (() => {
          */
         get onstatechange() { return this.#onstatechange_accessor_storage; }
         set onstatechange(value) { this.#onstatechange_accessor_storage = value; }
-        #_hint_accessor_storage = (__runInitializers(this, _onstatechange_extraInitializers), __runInitializers(this, _private__hint_initializers, EMPTY_STRING));
+        #_hint_accessor_storage = (__runInitializers(this, _onstatechange_extraInitializers), __runInitializers(this, _private__hint_initializers, EMPTY_STRING$1));
         /**
          * Texte de l'indice/aide du bouton radio.
          *
@@ -8022,8 +8137,13 @@ function Schedule() {
             let scheduler;
             if (caches.has(sKey))
                 scheduler = caches.get(sKey);
-            else
+            else {
                 scheduler = new Scheduler(target.bind(this, ...args));
+                caches.set(sKey, scheduler);
+                if (typeof this._p_registerDisposable === 'function') {
+                    this._p_registerDisposable(scheduler);
+                }
+            }
             if (scheduler)
                 scheduler.schedule(args[0]);
         };
@@ -8137,8 +8257,7 @@ let HTMLBnumSelect = (() => {
     let _noLegend_decorators;
     let _noLegend_initializers = [];
     let _noLegend_extraInitializers = [];
-    let _private__obserse_decorators;
-    let _private__obserse_descriptor;
+    let __obserse_decorators;
     let _private__scheduleMoveOptions_decorators;
     let _private__scheduleMoveOptions_descriptor;
     let _private__tryInitValue_decorators;
@@ -8162,7 +8281,7 @@ let HTMLBnumSelect = (() => {
             _private__defaultText_decorators = [Data('default-text', { setter: false })];
             _name_decorators = [Attr()];
             _noLegend_decorators = [Attr('no-legend')];
-            _private__obserse_decorators = [Autobind];
+            __obserse_decorators = [Autobind];
             _private__scheduleMoveOptions_decorators = [Schedule()];
             _private__tryInitValue_decorators = [Risky()];
             _private__setFormValue_decorators = [Risky()];
@@ -8176,12 +8295,7 @@ let HTMLBnumSelect = (() => {
             __esDecorate(this, _private__defaultText_descriptor = { get: __setFunctionName(function () { return this.#_defaultText_accessor_storage; }, "#_defaultText", "get"), set: __setFunctionName(function (value) { this.#_defaultText_accessor_storage = value; }, "#_defaultText", "set") }, _private__defaultText_decorators, { kind: "accessor", name: "#_defaultText", static: false, private: true, access: { has: obj => #_defaultText in obj, get: obj => obj.#_defaultText, set: (obj, value) => { obj.#_defaultText = value; } }, metadata: _metadata }, _private__defaultText_initializers, _private__defaultText_extraInitializers);
             __esDecorate(this, null, _name_decorators, { kind: "accessor", name: "name", static: false, private: false, access: { has: obj => "name" in obj, get: obj => obj.name, set: (obj, value) => { obj.name = value; } }, metadata: _metadata }, _name_initializers, _name_extraInitializers);
             __esDecorate(this, null, _noLegend_decorators, { kind: "accessor", name: "noLegend", static: false, private: false, access: { has: obj => "noLegend" in obj, get: obj => obj.noLegend, set: (obj, value) => { obj.noLegend = value; } }, metadata: _metadata }, _noLegend_initializers, _noLegend_extraInitializers);
-            __esDecorate(this, _private__obserse_descriptor = { value: __setFunctionName(function (mutations) {
-                    const hasOptionMutation = mutations.some(m => Array.from(m.addedNodes).some(n => n instanceof HTMLOptionElement || n instanceof HTMLOptGroupElement));
-                    if (hasOptionMutation) {
-                        this.#_scheduleMoveOptions();
-                    }
-                }, "#_obserse") }, _private__obserse_decorators, { kind: "method", name: "#_obserse", static: false, private: true, access: { has: obj => #_obserse in obj, get: obj => obj.#_obserse }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, __obserse_decorators, { kind: "method", name: "_obserse", static: false, private: false, access: { has: obj => "_obserse" in obj, get: obj => obj._obserse }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, _private__scheduleMoveOptions_descriptor = { value: __setFunctionName(function () {
                     this.#_moveOptions();
                 }, "#_scheduleMoveOptions") }, _private__scheduleMoveOptions_decorators, { kind: "method", name: "#_scheduleMoveOptions", static: false, private: true, access: { has: obj => #_scheduleMoveOptions in obj, get: obj => obj.#_scheduleMoveOptions }, metadata: _metadata }, null, _instanceExtraInitializers);
@@ -8255,7 +8369,7 @@ let HTMLBnumSelect = (() => {
          */
         get #_defaultText() { return _private__defaultText_descriptor.get.call(this); }
         set #_defaultText(value) { return _private__defaultText_descriptor.set.call(this, value); }
-        #name_accessor_storage = (__runInitializers(this, _private__defaultText_extraInitializers), __runInitializers(this, _name_initializers, EMPTY_STRING));
+        #name_accessor_storage = (__runInitializers(this, _private__defaultText_extraInitializers), __runInitializers(this, _name_initializers, EMPTY_STRING$1));
         /**
          * Nom de l'input
          */
@@ -8313,7 +8427,7 @@ let HTMLBnumSelect = (() => {
          */
         connectedCallback() {
             super.connectedCallback();
-            (this.#_observer ??= new MutationObserver(this.#_obserse)).observe(this, {
+            (this.#_observer ??= new MutationObserver(this._obserse)).observe(this, {
                 childList: true,
             });
         }
@@ -8407,7 +8521,7 @@ let HTMLBnumSelect = (() => {
          * Réinitialise la valeur du champ lors d'une remise à zéro du formulaire parent.
          */
         formResetCallback() {
-            this.value = this.#_defaultValue ?? EMPTY_STRING;
+            this.value = this.#_defaultValue ?? EMPTY_STRING$1;
         }
         /**
          * Active ou désactive le champ selon l'état du fieldset parent.
@@ -8422,7 +8536,12 @@ let HTMLBnumSelect = (() => {
         #_initListeners() {
             return this.#_onInnerSelect();
         }
-        get #_obserse() { return _private__obserse_descriptor.value; }
+        _obserse(mutations) {
+            const hasOptionMutation = mutations.some(m => Array.from(m.addedNodes).some(n => n instanceof HTMLOptionElement || n instanceof HTMLOptGroupElement));
+            if (hasOptionMutation) {
+                this.#_scheduleMoveOptions();
+            }
+        }
         get #_scheduleMoveOptions() { return _private__scheduleMoveOptions_descriptor.value; }
         #_moveOptions() {
             this.#_ui.select.append(...this.#_lightOptions);
@@ -9027,7 +9146,7 @@ let HTMLBnumSwitch = (() => {
          * @override
          */
         _p_update(name, oldVal, newVal) {
-            if (newVal === EMPTY_STRING)
+            if (newVal === EMPTY_STRING$1)
                 newVal = ARIA_TRUE;
             if (oldVal === newVal)
                 return;
@@ -9615,17 +9734,17 @@ var css_248z$d = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:ro
  * @returns Le template de l'item de carte.
  */
 function render(childTemplate, options) {
-    const { defaultSlot = true, slotName = EMPTY_STRING } = options || {};
+    const { defaultSlot = true, slotName = EMPTY_STRING$1 } = options || {};
     const attrs = { id: 'defaultslot' };
     if (slotName)
         attrs['name'] = slotName;
-    const slot = defaultSlot ? h("slot", { ...attrs }) : EMPTY_STRING;
+    const slot = defaultSlot ? h("slot", { ...attrs }) : EMPTY_STRING$1;
     return slot + childTemplate;
 }
 /**
  * Indique qu'on utilise le slot par défaut.
  */
-const DEFAULT = EMPTY_STRING;
+const DEFAULT = EMPTY_STRING$1;
 /**
  * Indique qu'on n'utilise pas le slot par défaut.
  */
@@ -10055,19 +10174,19 @@ let HTMLBnumCardItemAgenda = (() => {
          */
         get onstartdefineaction() { return this.#onstartdefineaction_accessor_storage; }
         set onstartdefineaction(value) { this.#onstartdefineaction_accessor_storage = value; }
-        #_baseDate_accessor_storage = (__runInitializers(this, _onstartdefineaction_extraInitializers), __runInitializers(this, _private__baseDate_initializers, EMPTY_STRING));
+        #_baseDate_accessor_storage = (__runInitializers(this, _onstartdefineaction_extraInitializers), __runInitializers(this, _private__baseDate_initializers, EMPTY_STRING$1));
         get #_baseDate() { return _private__baseDate_descriptor.get.call(this); }
         set #_baseDate(value) { return _private__baseDate_descriptor.set.call(this, value); }
         #_baseDateFormat_accessor_storage = (__runInitializers(this, _private__baseDate_extraInitializers), __runInitializers(this, _private__baseDateFormat_initializers, FORMAT_DATE_DEFAULT));
         get #_baseDateFormat() { return _private__baseDateFormat_descriptor.get.call(this); }
         set #_baseDateFormat(value) { return _private__baseDateFormat_descriptor.set.call(this, value); }
-        #_startDate_accessor_storage = (__runInitializers(this, _private__baseDateFormat_extraInitializers), __runInitializers(this, _private__startDate_initializers, EMPTY_STRING));
+        #_startDate_accessor_storage = (__runInitializers(this, _private__baseDateFormat_extraInitializers), __runInitializers(this, _private__startDate_initializers, EMPTY_STRING$1));
         get #_startDate() { return _private__startDate_descriptor.get.call(this); }
         set #_startDate(value) { return _private__startDate_descriptor.set.call(this, value); }
         #_startDateFormat_accessor_storage = (__runInitializers(this, _private__startDate_extraInitializers), __runInitializers(this, _private__startDateFormat_initializers, FORMAT_DATE_TIME_DEFAULT));
         get #_startDateFormat() { return _private__startDateFormat_descriptor.get.call(this); }
         set #_startDateFormat(value) { return _private__startDateFormat_descriptor.set.call(this, value); }
-        #_endDate_accessor_storage = (__runInitializers(this, _private__startDateFormat_extraInitializers), __runInitializers(this, _private__endDate_initializers, EMPTY_STRING));
+        #_endDate_accessor_storage = (__runInitializers(this, _private__startDateFormat_extraInitializers), __runInitializers(this, _private__endDate_initializers, EMPTY_STRING$1));
         get #_endDate() { return _private__endDate_descriptor.get.call(this); }
         set #_endDate(value) { return _private__endDate_descriptor.set.call(this, value); }
         #_endDateFormat_accessor_storage = (__runInitializers(this, _private__endDate_extraInitializers), __runInitializers(this, _private__endDateFormat_initializers, FORMAT_DATE_TIME_DEFAULT));
@@ -10250,8 +10369,8 @@ let HTMLBnumCardItemAgenda = (() => {
             // Gestion de l'action
             const eventResult = this.onstartdefineaction.call({
                 location: this.#_isSlotLocationEmpty()
-                    ? this.#_location || EMPTY_STRING
-                    : this.#_ui.slotLocation.textContent || EMPTY_STRING,
+                    ? this.#_location || EMPTY_STRING$1
+                    : this.#_ui.slotLocation.textContent || EMPTY_STRING$1,
                 action: undefined,
             });
             if (eventResult.action) {
@@ -10435,7 +10554,7 @@ let HTMLBnumCardItemAgenda = (() => {
                 return;
             }
             this._p_addState(STATE_ACTION_DEFINED);
-            this.#_ui.overrideAction.innerHTML = EMPTY_STRING;
+            this.#_ui.overrideAction.innerHTML = EMPTY_STRING$1;
             this.#_ui.overrideAction.appendChild(element);
             this.#_ui.slotAction.hidden = true;
             this.#_ui.overrideAction.hidden = false;
@@ -10450,7 +10569,7 @@ let HTMLBnumCardItemAgenda = (() => {
                 this.#_resetItem(this.#_ui.overrideTitle, this.#_ui.slotTitle);
                 return;
             }
-            this.#_ui.overrideTitle.innerHTML = EMPTY_STRING;
+            this.#_ui.overrideTitle.innerHTML = EMPTY_STRING$1;
             if (typeof element === 'string') {
                 const textNode = document.createTextNode(element);
                 this.#_ui.overrideTitle.appendChild(textNode);
@@ -10471,7 +10590,7 @@ let HTMLBnumCardItemAgenda = (() => {
                 this.#_resetItem(this.#_ui.overrideLocation, this.#_ui.slotLocation);
                 return;
             }
-            this.#_ui.overrideLocation.innerHTML = EMPTY_STRING;
+            this.#_ui.overrideLocation.innerHTML = EMPTY_STRING$1;
             if (typeof element === 'string') {
                 const textNode = document.createTextNode(element);
                 this.#_ui.overrideLocation.appendChild(textNode);
@@ -10483,7 +10602,7 @@ let HTMLBnumCardItemAgenda = (() => {
             this.#_ui.overrideLocation.hidden = false;
         }
         #_resetItem(action, slot) {
-            action.innerHTML = EMPTY_STRING;
+            action.innerHTML = EMPTY_STRING$1;
             slot.hidden = false;
             action.hidden = true;
             return this;
@@ -10564,8 +10683,8 @@ let HTMLBnumCardItemAgenda = (() => {
                 selector: endDateSelector,
             });
             const allDay = agendaEvent?.allDay ?? allDaySelector?.(agendaEvent) ?? false;
-            const title = agendaEvent?.title ?? titleSelector?.(agendaEvent) ?? EMPTY_STRING;
-            const location = agendaEvent?.location ?? locationSelector?.(agendaEvent) ?? EMPTY_STRING;
+            const title = agendaEvent?.title ?? titleSelector?.(agendaEvent) ?? EMPTY_STRING$1;
+            const location = agendaEvent?.location ?? locationSelector?.(agendaEvent) ?? EMPTY_STRING$1;
             return this.Create(baseDate, startDate, endDate, {
                 allDay: allDay,
                 title: title,
@@ -10818,19 +10937,19 @@ let HTMLBnumCardItemMail = (() => {
          * Retourne le sujet du mail depuis l'attribut data.
          */
         get #_mailSubject() {
-            return this.data(DATA_SUBJECT) || EMPTY_STRING;
+            return this.data(DATA_SUBJECT) || EMPTY_STRING$1;
         }
         /**
          * Retourne la date du mail depuis l'attribut data.
          */
         get #_mailDate() {
-            return this.data(DATA_DATE) || EMPTY_STRING;
+            return this.data(DATA_DATE) || EMPTY_STRING$1;
         }
         /**
          * Retourne l'expéditeur du mail depuis l'attribut data.
          */
         get #_mailSender() {
-            return this.data(DATA_SENDER) || EMPTY_STRING;
+            return this.data(DATA_SENDER) || EMPTY_STRING$1;
         }
         //#endregion Getters
         //#region Lifecycle
@@ -10856,12 +10975,12 @@ let HTMLBnumCardItemMail = (() => {
          */
         _p_attach() {
             super._p_attach();
-            if (this.#_mailSubject !== EMPTY_STRING)
+            if (this.#_mailSubject !== EMPTY_STRING$1)
                 this._p_slot.appendChild(this._p_createTextNode(this.#_mailSubject));
             // Crée le nœud texte pour l'EXPÉDITEUR par défaut
-            if (this.#_mailSender !== EMPTY_STRING)
+            if (this.#_mailSender !== EMPTY_STRING$1)
                 this.#_ui.slotSender.appendChild(this._p_createTextNode(this.#_mailSender));
-            if (this.#_mailDate !== EMPTY_STRING) {
+            if (this.#_mailDate !== EMPTY_STRING$1) {
                 // Crée l'élément DATE par défaut
                 const defaultDate = HTMLBnumDate.Create(this.#_mailDate);
                 this.#_configureDateElement(defaultDate); // Applique la logique
@@ -11227,7 +11346,7 @@ let HTMLBnumCardList = (() => {
         }
         #_modifier(items) {
             if (items === SYMBOL_RESET$1) {
-                this.innerHTML = EMPTY_STRING;
+                this.innerHTML = EMPTY_STRING$1;
             }
             else
                 this.append(...items);
@@ -11574,7 +11693,7 @@ let HTMLBnumFolderList = (() => {
          * @param  attrs Un dictionnaire (clé-valeur) représentant les attributs HTML à appliquer au composant.
          * @returns L'élément rendu
          */
-        static Write(content = EMPTY_STRING, attrs = {}) {
+        static Write(content = EMPTY_STRING$1, attrs = {}) {
             if (attrs && Object.keys(attrs).length > 0)
                 return h(HTMLBnumFolderList, { ...attrs, children: content });
             else
@@ -11855,8 +11974,8 @@ let HTMLBnumFolder = (() => {
             this.addEventListener(EVENT_SELECT, this.#_onFolderSelect.bind(this));
             // Initialisation des valeurs visuelles basées sur les attributs initiaux
             this.attr(ATTR_ROLE, VAL_ROLE_TREEITEM)
-                .#_updateIcon(this.attr(ATTR_ICON) ?? EMPTY_STRING)
-                .#_updateLabel(this.attr(ATTR_LABEL) ?? EMPTY_STRING)
+                .#_updateIcon(this.attr(ATTR_ICON) ?? EMPTY_STRING$1)
+                .#_updateLabel(this.attr(ATTR_LABEL) ?? EMPTY_STRING$1)
                 .#_updateLevel(this.attr(ATTR_LEVEL) ? +this.attr(ATTR_LEVEL) : 0)
                 .#_updateSelected(this.attr(ATTR_IS_SELECTED) === VAL_TRUE)
                 .#_updateIsCollapsed(this.attr(ATTR_IS_COLLAPSED) === VAL_TRUE)
@@ -11884,13 +12003,13 @@ let HTMLBnumFolder = (() => {
                 return;
             switch (name) {
                 case ATTR_LABEL:
-                    this.#_updateLabel(newVal ?? EMPTY_STRING);
+                    this.#_updateLabel(newVal ?? EMPTY_STRING$1);
                     break;
                 case ATTR_UNREAD:
                     this.#_updateUnread(newVal ? +newVal : 0);
                     break;
                 case ATTR_ICON:
-                    this.#_updateIcon(newVal ?? EMPTY_STRING);
+                    this.#_updateIcon(newVal ?? EMPTY_STRING$1);
                     break;
                 case ATTR_IS_COLLAPSED:
                     this.#_updateIsCollapsed(newVal === VAL_TRUE);
@@ -11980,7 +12099,7 @@ let HTMLBnumFolder = (() => {
         #_applyBadgeState(value, isCollapsed) {
             const badge = this.#_ui.badge;
             let state = STATE_NO_UNREAD;
-            let text = EMPTY_STRING;
+            let text = EMPTY_STRING$1;
             if (value > VAL_MAX_UNREAD) {
                 text = VAL_99_PLUS;
                 state = STATE_TRIPLE_DIGIT;
@@ -12119,7 +12238,7 @@ let HTMLBnumFolder = (() => {
          * @returns {string} Le HTML sous forme de chaîne.
          */
         static Write({ attributes = {}, children = [], } = {}) {
-            const childrenString = children.join(EMPTY_STRING);
+            const childrenString = children.join(EMPTY_STRING$1);
             if (attributes && Object.keys(attributes).length > 0)
                 return h(HTMLBnumFolder, { ...attributes, children: childrenString });
             else
@@ -12180,7 +12299,7 @@ let HTMLBnumHide = (() => {
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             __handleChange_decorators = [Autobind];
-            _private__hide_decorators = [SetAttr('hidden', EMPTY_STRING)];
+            _private__hide_decorators = [SetAttr('hidden', EMPTY_STRING$1)];
             __esDecorate(this, null, __handleChange_decorators, { kind: "method", name: "_handleChange", static: false, private: false, access: { has: obj => "_handleChange" in obj, get: obj => obj._handleChange }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, _private__hide_descriptor = { value: __setFunctionName(function () {
                     this.style.display = 'none';
@@ -12295,7 +12414,7 @@ var css_248z$7 = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:ro
 //#region Global constants
 // eslint-disable-next-line quotes
 const DEFAULT_LABEL = "Perdu dans l'arbre";
-const DEFAULT_HINT = EMPTY_STRING;
+const DEFAULT_HINT = EMPTY_STRING$1;
 const ID_GROUP = 'group';
 const ID_LEGEND = 'legend';
 const ID_HINT = 'hint';
@@ -12482,21 +12601,21 @@ let HTMLBnumRadioGroup = (() => {
          */
         get #_ui() { return _private__ui_descriptor.get.call(this); }
         set #_ui(value) { return _private__ui_descriptor.set.call(this, value); }
-        #name_accessor_storage = (__runInitializers(this, _private__ui_extraInitializers), __runInitializers(this, _name_initializers, EMPTY_STRING));
+        #name_accessor_storage = (__runInitializers(this, _private__ui_extraInitializers), __runInitializers(this, _name_initializers, EMPTY_STRING$1));
         /**
          * Le nom du groupe de boutons radio.
          * Cet attribut est appliqué à tous les boutons radio enfants pour assurer qu'ils appartiennent au même groupe logique.
          */
         get name() { return this.#name_accessor_storage; }
         set name(value) { this.#name_accessor_storage = value; }
-        #_label_accessor_storage = (__runInitializers(this, _name_extraInitializers), __runInitializers(this, _private__label_initializers, EMPTY_STRING));
+        #_label_accessor_storage = (__runInitializers(this, _name_extraInitializers), __runInitializers(this, _private__label_initializers, EMPTY_STRING$1));
         /**
          * Le libellé du groupe.
          * @private
          */
         get #_label() { return _private__label_descriptor.get.call(this); }
         set #_label(value) { return _private__label_descriptor.set.call(this, value); }
-        #_hint_accessor_storage = (__runInitializers(this, _private__label_extraInitializers), __runInitializers(this, _private__hint_initializers, EMPTY_STRING));
+        #_hint_accessor_storage = (__runInitializers(this, _private__label_extraInitializers), __runInitializers(this, _private__hint_initializers, EMPTY_STRING$1));
         /**
          * Le texte d'indice ou d'aide pour le groupe.
          * @private
@@ -13063,7 +13182,7 @@ let HTMLBnumSegmentedItem = (() => {
         /** @attr {boolean} (optional) (default: false) disabled - État désactivé. */
         get disabled() { return this.#disabled_accessor_storage; }
         set disabled(value) { this.#disabled_accessor_storage = value; }
-        #_icon_accessor_storage = (__runInitializers(this, _disabled_extraInitializers), __runInitializers(this, _private__icon_initializers, EMPTY_STRING));
+        #_icon_accessor_storage = (__runInitializers(this, _disabled_extraInitializers), __runInitializers(this, _private__icon_initializers, EMPTY_STRING$1));
         /** @attr {string} (optional) (default: '') data-icon - Nom de l'icône à afficher. */
         get #_icon() { return _private__icon_descriptor.get.call(this); }
         set #_icon(value) { return _private__icon_descriptor.set.call(this, value); }
@@ -13073,7 +13192,7 @@ let HTMLBnumSegmentedItem = (() => {
         set onSelected(value) { this.#onSelected_accessor_storage = value; }
         /** @attr {string} value - Valeur technique de l'item. */
         get value() {
-            return this.getAttribute('value') || this.innerText || EMPTY_STRING;
+            return this.getAttribute('value') || this.innerText || EMPTY_STRING$1;
         }
         set value(value) {
             this.setAttribute('value', value);
@@ -13129,7 +13248,7 @@ let HTMLBnumSegmentedItem = (() => {
                     result = this.hasAttribute(ATTR_DISABLED);
                     break;
                 case States.ICON:
-                    result = this.#_icon !== EMPTY_STRING;
+                    result = this.#_icon !== EMPTY_STRING$1;
                     break;
                 default:
                     throw new Error(`State "${state}" is not recognized.`);
@@ -13992,7 +14111,7 @@ let HTMLBnumCardElement = (() => {
          * @private
          */
         #_scheduleAppend = null;
-        #_titleIcon_accessor_storage = __runInitializers(this, __titleIcon_initializers, EMPTY_STRING);
+        #_titleIcon_accessor_storage = __runInitializers(this, __titleIcon_initializers, EMPTY_STRING$1);
         //#endregion Private fields
         //#region Getters/Setters
         /**
@@ -14001,14 +14120,14 @@ let HTMLBnumCardElement = (() => {
          */
         get _titleIcon() { return this.#_titleIcon_accessor_storage; }
         set _titleIcon(value) { this.#_titleIcon_accessor_storage = value; }
-        #_titleText_accessor_storage = (__runInitializers(this, __titleIcon_extraInitializers), __runInitializers(this, __titleText_initializers, EMPTY_STRING));
+        #_titleText_accessor_storage = (__runInitializers(this, __titleIcon_extraInitializers), __runInitializers(this, __titleText_initializers, EMPTY_STRING$1));
         /**
          * Texte du titre récupéré depuis les attributs de données du composant (`data-title-text`).
          * @private
          */
         get _titleText() { return this.#_titleText_accessor_storage; }
         set _titleText(value) { this.#_titleText_accessor_storage = value; }
-        #_titleLink_accessor_storage = (__runInitializers(this, __titleText_extraInitializers), __runInitializers(this, __titleLink_initializers, EMPTY_STRING));
+        #_titleLink_accessor_storage = (__runInitializers(this, __titleText_extraInitializers), __runInitializers(this, __titleLink_initializers, EMPTY_STRING$1));
         /**
          * Lien du titre récupéré depuis les attributs de données du composant (`data-title-link`).
          * @private
@@ -14096,7 +14215,7 @@ let HTMLBnumCardElement = (() => {
         _p_buildDOM(container) {
             const titleData = this._titleData;
             if (titleData.has()) {
-                HTMLBnumCardTitle.Create(titleData.text || EMPTY_STRING, {
+                HTMLBnumCardTitle.Create(titleData.text || EMPTY_STRING$1, {
                     icon: titleData.icon || null,
                     link: titleData.link || null,
                 }).appendTo(container.querySelector(`slot[name="${SLOT_TITLE}"]`));
@@ -14238,7 +14357,7 @@ let HTMLBnumCardElement = (() => {
             const oldBodyNodes = Array.from(this.childNodes).filter(node => (node.nodeType === Node.ELEMENT_NODE &&
                 node.getAttribute('slot') !== SLOT_TITLE) ||
                 (node.nodeType === Node.TEXT_NODE &&
-                    node.textContent?.trim() !== EMPTY_STRING));
+                    node.textContent?.trim() !== EMPTY_STRING$1));
             oldBodyNodes.forEach(node => node.remove());
             this.appendChild(element);
         }
@@ -14250,7 +14369,7 @@ let HTMLBnumCardElement = (() => {
             const nodes = Array.from(this.childNodes).filter(node => (node.nodeType === Node.ELEMENT_NODE &&
                 node.getAttribute('slot') !== SLOT_TITLE) ||
                 (node.nodeType === Node.TEXT_NODE &&
-                    node.textContent?.trim() !== EMPTY_STRING));
+                    node.textContent?.trim() !== EMPTY_STRING$1));
             nodes.forEach(node => node.remove());
         }
         /**
@@ -14555,7 +14674,7 @@ let HTMLBnumCardAgenda = (() => {
         #loading_accessor_storage = (__runInitializers(this, _onElementChanged_extraInitializers), __runInitializers(this, _loading_initializers, false));
         get loading() { return this.#loading_accessor_storage; }
         set loading(value) { this.#loading_accessor_storage = value; }
-        #_url_accessor_storage = (__runInitializers(this, _loading_extraInitializers), __runInitializers(this, _private__url_initializers, EMPTY_STRING));
+        #_url_accessor_storage = (__runInitializers(this, _loading_extraInitializers), __runInitializers(this, _private__url_initializers, EMPTY_STRING$1));
         get #_url() { return _private__url_descriptor.get.call(this); }
         set #_url(value) { return _private__url_descriptor.set.call(this, value); }
         #_max_accessor_storage = (__runInitializers(this, _private__url_extraInitializers), __runInitializers(this, _private__max_initializers, void 0));
@@ -14596,7 +14715,7 @@ let HTMLBnumCardAgenda = (() => {
             __runInitializers(this, _private__max_extraInitializers);
         }
         _p_attach() {
-            if (this.#_url !== EMPTY_STRING) {
+            if (this.#_url !== EMPTY_STRING$1) {
                 this.#_ui.cardTitle.url = this.#_url;
                 this.#_ui.cardTitle.onurlclick.add(EVENT_DEFAULT, e => {
                     this.trigger(EVENT_URL_TITLE_CLICK$1, { inner: e }, { bubbles: e.bubbles, cancelable: e.cancelable });
@@ -14642,7 +14761,7 @@ let HTMLBnumCardAgenda = (() => {
          * Vide le composant.
          */
         clear() {
-            this.innerHTML = EMPTY_STRING; // Vide le Light DOM
+            this.innerHTML = EMPTY_STRING$1; // Vide le Light DOM
             return this;
         }
         //#endregion Public methods
@@ -14651,8 +14770,8 @@ let HTMLBnumCardAgenda = (() => {
          * Met la card en mode loading
          * @param param0
          */
-        #_setLoading({ attributeValue = EMPTY_STRING, } = {}) {
-            this.#_cardPart.setAttribute(ATTRIBUTE_LOADING$1, attributeValue ?? EMPTY_STRING);
+        #_setLoading({ attributeValue = EMPTY_STRING$1, } = {}) {
+            this.#_cardPart.setAttribute(ATTRIBUTE_LOADING$1, attributeValue ?? EMPTY_STRING$1);
         }
         /**
          * Gère le tri des éléments.
@@ -14715,9 +14834,9 @@ let HTMLBnumCardAgenda = (() => {
          * @param param0.url URL du titre
          * @returns Nouvelle node HTMLBnumCardAgenda
          */
-        static Create({ contents = [], url = EMPTY_STRING, } = {}) {
+        static Create({ contents = [], url = EMPTY_STRING$1, } = {}) {
             const node = document.createElement(this.TAG);
-            if (url !== EMPTY_STRING)
+            if (url !== EMPTY_STRING$1)
                 node.setAttribute(ATTRIBUTE_DATA_URL$1, url);
             if (contents.length > 0)
                 node.add(...contents);
@@ -14916,7 +15035,7 @@ let HTMLBnumCardEmail = (() => {
         #loading_accessor_storage = (__runInitializers(this, _onElementChanged_extraInitializers), __runInitializers(this, _loading_initializers, false));
         get loading() { return this.#loading_accessor_storage; }
         set loading(value) { this.#loading_accessor_storage = value; }
-        #_url_accessor_storage = (__runInitializers(this, _loading_extraInitializers), __runInitializers(this, _private__url_initializers, EMPTY_STRING));
+        #_url_accessor_storage = (__runInitializers(this, _loading_extraInitializers), __runInitializers(this, _private__url_initializers, EMPTY_STRING$1));
         get #_url() { return _private__url_descriptor.get.call(this); }
         set #_url(value) { return _private__url_descriptor.set.call(this, value); }
         get #_cardPart() {
@@ -14935,7 +15054,7 @@ let HTMLBnumCardEmail = (() => {
             __runInitializers(this, _private__url_extraInitializers);
         }
         _p_attach() {
-            if (this.#_url !== EMPTY_STRING) {
+            if (this.#_url !== EMPTY_STRING$1) {
                 this.#_ui.cardTitle.url = this.#_url;
                 this.#_ui.cardTitle.onurlclick.add(EVENT_DEFAULT, (e) => {
                     this.trigger(EVENT_URL_TITLE_CLICK, { inner: e }, { bubbles: e.bubbles, cancelable: e.cancelable });
@@ -14973,7 +15092,7 @@ let HTMLBnumCardEmail = (() => {
          * Vide le composant.
          */
         clear() {
-            this.innerHTML = EMPTY_STRING; // Vide le Light DOM
+            this.innerHTML = EMPTY_STRING$1; // Vide le Light DOM
             return this;
         }
         //#endregion Public methods
@@ -14982,8 +15101,8 @@ let HTMLBnumCardEmail = (() => {
          * Met la card en mode loading
          * @param param0
          */
-        #_setLoading({ attributeValue = EMPTY_STRING } = {}) {
-            this.#_cardPart.setAttribute(ATTRIBUTE_LOADING, attributeValue ?? EMPTY_STRING);
+        #_setLoading({ attributeValue = EMPTY_STRING$1 } = {}) {
+            this.#_cardPart.setAttribute(ATTRIBUTE_LOADING, attributeValue ?? EMPTY_STRING$1);
         }
         /**
          * Gère le tri des éléments.
@@ -15018,9 +15137,9 @@ let HTMLBnumCardEmail = (() => {
          * @param param0.url URL du titre
          * @returns Nouvelle node HTMLBnumCardEmail
          */
-        static Create({ contents = [], url = EMPTY_STRING, } = {}) {
+        static Create({ contents = [], url = EMPTY_STRING$1, } = {}) {
             const node = document.createElement(this.TAG);
-            if (url !== EMPTY_STRING)
+            if (url !== EMPTY_STRING$1)
                 node.setAttribute(ATTRIBUTE_DATA_URL, url);
             if (contents.length > 0)
                 node.add(...contents);
@@ -15336,10 +15455,8 @@ let HTMLBnumTree = (() => {
     let _instanceExtraInitializers = [];
     let _static_TryIncludeStyle_decorators;
     let __p_attach_decorators;
-    let _private__listenKeyDown_decorators;
-    let _private__listenKeyDown_descriptor;
-    let _private__listenClick_decorators;
-    let _private__listenClick_descriptor;
+    let __handleSelection_decorators;
+    let __handleKeyDown_decorators;
     (class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -15348,17 +15465,13 @@ let HTMLBnumTree = (() => {
                     role: 'tree',
                     tabindex: '0',
                 })];
-            _private__listenKeyDown_decorators = [Listen('keydown')];
-            _private__listenClick_decorators = [Listen('click')];
+            __handleSelection_decorators = [Autobind];
+            __handleKeyDown_decorators = [Autobind];
             _static_TryIncludeStyle_decorators = [Risky()];
             __esDecorate(this, null, _static_TryIncludeStyle_decorators, { kind: "method", name: "TryIncludeStyle", static: true, private: false, access: { has: obj => "TryIncludeStyle" in obj, get: obj => obj.TryIncludeStyle }, metadata: _metadata }, null, _staticExtraInitializers);
             __esDecorate(this, null, __p_attach_decorators, { kind: "method", name: "_p_attach", static: false, private: false, access: { has: obj => "_p_attach" in obj, get: obj => obj._p_attach }, metadata: _metadata }, null, _instanceExtraInitializers);
-            __esDecorate(this, _private__listenKeyDown_descriptor = { value: __setFunctionName(function () {
-                    return this.#_handleKeyDown;
-                }, "#_listenKeyDown") }, _private__listenKeyDown_decorators, { kind: "method", name: "#_listenKeyDown", static: false, private: true, access: { has: obj => #_listenKeyDown in obj, get: obj => obj.#_listenKeyDown }, metadata: _metadata }, null, _instanceExtraInitializers);
-            __esDecorate(this, _private__listenClick_descriptor = { value: __setFunctionName(function () {
-                    return this.#_handleSelection;
-                }, "#_listenClick") }, _private__listenClick_decorators, { kind: "method", name: "#_listenClick", static: false, private: true, access: { has: obj => #_listenClick in obj, get: obj => obj.#_listenClick }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, __handleSelection_decorators, { kind: "method", name: "_handleSelection", static: false, private: false, access: { has: obj => "_handleSelection" in obj, get: obj => obj._handleSelection }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, __handleKeyDown_decorators, { kind: "method", name: "_handleKeyDown", static: false, private: false, access: { has: obj => "_handleKeyDown" in obj, get: obj => obj._handleKeyDown }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -15379,7 +15492,16 @@ let HTMLBnumTree = (() => {
                 Log.warn('HTMLBnumTree', "Un arbre doit avoir un attribut aria-label ou aria-labelledby pour des raisons d'accessibilité.", 'Un texte par défaut a été ajouté.');
                 this.attr('aria-label', 'Arbre perdu dans la forêt');
             }
+        }
+        _p_DOM() {
+            super._p_DOM();
             this.#_initListeners().#_initializeRovingTabindex();
+        }
+        _p_detach() {
+            super._p_detach();
+            this.#_clearListeners();
+            this.#_selectedItem = null;
+            this.#_focusedItem = null;
         }
         //#endregion Lifecycle
         //#region Public Methods
@@ -15388,6 +15510,8 @@ let HTMLBnumTree = (() => {
          * @param item L'élément à sélectionner
          */
         SelectItem(item) {
+            if (!item || !item.isConnected)
+                return;
             // 1. Désélection de l'ancien (O(1))
             if (this.#_selectedItem && this.#_selectedItem !== item) {
                 this.#_selectedItem.setAttribute(ATTR_SELECTED, 'false');
@@ -15462,7 +15586,7 @@ let HTMLBnumTree = (() => {
          * Gestionnaire de sélection générique
          * @param e Événement de clic
          */
-        #_handleSelection(e) {
+        _handleSelection(e) {
             // On cherche l'élément treeitem le plus proche de la cible du clic
             const target = e.target.closest(ROLE_ITEM);
             if (!target || target.getAttribute('is-virtual') === 'true')
@@ -15474,10 +15598,21 @@ let HTMLBnumTree = (() => {
             this.#_listenClick();
             return this;
         }
-        get #_listenKeyDown() { return _private__listenKeyDown_descriptor.value; }
-        get #_listenClick() { return _private__listenClick_descriptor.value; }
-        #_handleKeyDown(e) {
+        #_clearListeners() {
+            this.removeEventListener('keydown', this._handleKeyDown);
+            this.removeEventListener('click', this._handleSelection);
+            return this;
+        }
+        #_listenKeyDown() {
+            this.addEventListener('keydown', this._handleKeyDown);
+        }
+        #_listenClick() {
+            this.addEventListener('click', this._handleSelection);
+        }
+        _handleKeyDown(e) {
             const current = this.#_focusedItem;
+            if (!this.#_focusedItem?.isConnected)
+                this.#_focusedItem = null;
             if (!current)
                 return;
             const visibleItems = this.#_getVisibleItems();

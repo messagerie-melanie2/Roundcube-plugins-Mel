@@ -503,6 +503,7 @@ les propriétés « nom » et « valeur ».
         this.reset_extra_states();
         $('#mailsearchlist .searchbar').removeClass('active');
         rcmail.command('reset-search');
+        rcmail.triggerEvent('quick-filter.reset');
 
         if (on_reset) on_reset(filter, event);
       }
@@ -564,7 +565,9 @@ les propriétés « nom » et « valeur ».
                 .val(search);
             }
 
-            $(rcmail.gui_objects.search_filter).val(search);
+            $(rcmail.gui_objects.search_filter)
+              .val(search)[0]
+              .dispatchEvent(new Event('change'));
 
             if (filter.action === 'ALL') {
               this._base_callback_reset_action(filter, event, on_reset);

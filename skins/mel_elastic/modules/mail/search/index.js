@@ -2,7 +2,7 @@ import { EMPTY_STRING } from '../../../../../plugins/mel_metapage/js/lib/constan
 import { ABaseSubModule } from '../../core/ABaseSubModule.js';
 import { FilterAction } from './filterAction.js';
 import { update_show_contentframe } from './index.internal/show_contentframe.js';
-import { Ui } from './ui.js';
+import { FilterUi, Ui } from './ui.js';
 
 /**
  * Arguments transmis lors de la réinitialisation du champ de recherche.
@@ -15,6 +15,7 @@ import { Ui } from './ui.js';
 
 export class Search extends ABaseSubModule {
   #__ui;
+  #___ui;
 
   /**
    * Retourne l'interface DOM du module, en initialisant une instance de Ui si nécessaire.
@@ -22,6 +23,13 @@ export class Search extends ABaseSubModule {
    */
   get #_ui() {
     return (this.#__ui ??= new Ui());
+  }
+
+  /**
+   * @returns {FilterUi}
+   */
+  get #_filterUi() {
+    return (this.#___ui ??= new FilterUi());
   }
 
   constructor(parent) {
@@ -35,7 +43,92 @@ export class Search extends ABaseSubModule {
    */
   _p_main() {
     FilterAction.Start(this.#_ui);
-    this.#_addOverrides().#_addListeners().#_addRcmailListeners();
+    this.#_init().#_addOverrides().#_addListeners().#_addRcmailListeners();
+  }
+
+  #_init() {
+    return this.#_initFilters();
+  }
+
+  #_initFilters() {
+    return this.#_initSearchFilter().#_initDateFilter();
+  }
+
+  #_initSearchFilter() {
+    this.#_copyFiltersOptions('searchfilter', 'search-filter-dummy');
+    this.#_filterUi.searchFilterDummy.addEventListener('change', (e) => {
+      const original = this.#_filterUi.searchFilter;
+      const dummy = this.#_filterUi.searchFilterDummy;
+
+      original.value = dummy.value;
+
+      original.dispatchEvent(e);
+    });
+
+    this.#_filterUi.searchFilter.addEventListener('change', () => {
+      const original = this.#_filterUi.searchFilter;
+      const dummy = this.#_filterUi.searchFilterDummy;
+
+      const valExist = dummy.select.querySelector(
+        `option[value="${original.value}]"`,
+      );
+      if (!valExist) {
+        dummy.select.querySelector('#dummy-custom')?.remove?.();
+
+        const option = document.createElement('option');
+        option.setAttribute('value', original.value);
+        option.setAttribute('id', 'dummy-custom');
+        option.innerText = 'Custom';
+        dummy.appendChild(option);
+      }
+
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          dummy.value = original.value;
+        }, 0);
+      });
+    });
+
+    return this;
+  }
+
+  #_initDateFilter() {
+    this.#_copyFiltersOptions('s_interval', 's-date-dummy');
+    this.#_filterUi.searchDateDummy.addEventListener('change', (e) => {
+      const original = this.#_filterUi.searchDate;
+      const dummy = this.#_filterUi.searchDateDummy;
+
+      original.value = dummy.value;
+
+      original.dispatchEvent(e);
+    });
+
+    return this;
+  }
+
+  #_copyFiltersOptions(idOriginal, idDummy) {
+    /**
+     * @type {HTMLSelectElement}
+     */
+    const original =
+      document.getElementById(idOriginal) ??
+      this.#_throw(`Impossible de trouver ${idOriginal}`);
+    /**
+     * @type {HTMLSelectElement}
+     */
+    const dummy =
+      document.getElementById(idDummy) ??
+      this.#_throw(`Impossible de trouver ${idDummy}`);
+
+    const originalOptions = original.querySelectorAll('option');
+
+    dummy.append(...Array.from(originalOptions).map((x) => x.cloneNode(true)));
+
+    return this;
+  }
+
+  #_throw(message) {
+    throw new Error(message);
   }
 
   /**
@@ -101,10 +194,11 @@ export class Search extends ABaseSubModule {
    * @returns {this}
    */
   #_addRcmailListeners() {
-    this.listen('responseaftersearch', () => this.#_afterSearch()).listen(
-      'responseafterlist',
-      () => this.#_afterList(),
-    );
+    this.listen('responseaftersearch', () => this.#_afterSearch())
+      .listen('responseafterlist', () => this.#_afterList())
+      .listen('quick-filter.reset', () => {
+        this.#_filterUi.searchFilterDummy.value = 'ALL';
+      });
 
     return this;
   }

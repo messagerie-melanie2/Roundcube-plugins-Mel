@@ -39,3 +39,36 @@ export class Ui {
     return document.getElementById('search-menu-mini-switch');
   }
 }
+
+export class FilterUi {
+  constructor() {}
+
+  get searchFilter() {
+    return document.getElementById('searchfilter');
+  }
+
+  get searchFilterContainer() {
+    return this.searchFilter.parentElement;
+  }
+
+  /**
+   * @type {import('../../../design-system/ds-module-bnum.js').HTMLBnumSelect}
+   */
+  get searchFilterDummy() {
+    return document.getElementById('search-filter-dummy');
+  }
+
+  /**
+   * @type {HTMLSelectElement}
+   */
+  get searchDate() {
+    return document.getElementById('s_interval');
+  }
+
+  /**
+   * @type {import('../../../design-system/ds-module-bnum.js').HTMLBnumSelect}
+   */
+  get searchDateDummy() {
+    return document.getElementById('s-date-dummy');
+  }
+}

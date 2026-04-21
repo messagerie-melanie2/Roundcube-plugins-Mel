@@ -1,3 +1,4 @@
+import ABaseMelObject from '../../../../plugins/mel_metapage/js/lib/base_mel_object.js';
 import { MelEnumerable } from '../../../../plugins/mel_metapage/js/lib/classes/enum.js';
 import { EMPTY_STRING } from '../../../../plugins/mel_metapage/js/lib/constants/constants.js';
 import { AvatarElement } from '../../../../plugins/mel_metapage/js/lib/html/JsHtml/CustomAttributes/avatar.js';
@@ -548,9 +549,27 @@ export default class BridgeMail extends ABridge {
           e.stopPropagation();
           e.preventDefault();
 
-          rcmail.message_list.clear_selection();
-          document.querySelector(`#action-of-${this.id}`).click();
-          rcmail.delete_messages(e);
+          const helper = ABaseMelObject.Empty();
+          const selectedsCount = helper
+            .rcmail()
+            .message_list.get_selection().length;
+          const isSelected = this.classList.contains('selected');
+          const isOnlySelected = isSelected && selectedsCount === 1;
+
+          if (selectedsCount >= 1 && !isOnlySelected) {
+            if (
+              !confirm(
+                'Vous allez supprimer plusieurs autres messages avec celui-ci, êtes-vous sûr de faire ça ?',
+              )
+            ) {
+              return;
+            }
+          }
+
+          if (!this.classList.contains('selected'))
+            document.querySelector(`#action-of-${this.id}`).click();
+
+          helper.rcmail().delete_messages(e);
         },
         onstart(caller) {
           caller.classList.add('delete-action');

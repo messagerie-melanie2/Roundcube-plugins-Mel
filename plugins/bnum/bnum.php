@@ -53,6 +53,9 @@ class bnum extends bnum_plugin {
     return $_ENV[FORCE_CALENDAR_DRIVER] === true;
   }
 
+  /**
+   * Gestion du cookie once per day en php et JS
+   */
   public function refresh($args) {
     if(!isset($_COOKIE['once_per_day'])) {
 

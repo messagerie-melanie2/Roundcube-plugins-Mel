@@ -125,34 +125,76 @@
   </div>
 </div>
 
- <div id="searchmenu" class="hidden searchoptions scroller propform formcontainer"
+ <div id="searchmenu" class="hidden searchoptions  propform formcontainer bds-border-radius-m bds-zindex-dropdown-important"
     aria-labelledby="aria-label-search-menu" aria-controls="messagelist" style="flex:1 0 auto;">
     <h3 id="aria-label-search-menu" class="voice">
       <roundcube:label name="searchmod" />
     </h3>
-    <div class="formcontent">
+    <div class="formcontent scroller">
       <ul class="proplist">
-        <li><label><input type="checkbox" name="s_mods[]" value="subject" />
+        <li>
+          <!-- true -->
+          <label class="bds-hidden custom-control-label">
+            <input type="checkbox" class="form-check-input custom-control-input" name="s_mods[]" value="subject" />
             <roundcube:label name="subject" />
-          </label></li>
-        <li><label><input type="checkbox" name="s_mods[]" value="from" />
+          </label>
+          <!-- fake -->
+          <bnum-switch name="fake_s_mods[]" value="subject" data-no-hint="true" data-legend="<roundcube:label name="subject" />" ></bnum-switch>
+        </li>
+        <li>
+          <!-- true -->
+          <label class="bds-hidden custom-control-label">
+            <input class="form-check-input custom-control-input" type="checkbox" name="s_mods[]" value="from" />
             <roundcube:label name="from" />
-          </label></li>
-        <li><label><input type="checkbox" name="s_mods[]" value="to" />
+          </label>
+          <!-- fake -->
+          <bnum-switch name="fake_s_mods[]" data-no-hint="true" data-legend="<roundcube:label name="from" />" value="from"></bnum-switch>
+         </li>
+        <li>
+          <!-- true -->
+          <label class="bds-hidden custom-control-label">
+            <input class="form-check-input custom-control-input" type="checkbox" name="s_mods[]" value="to" />
             <roundcube:label name="to" />
-          </label></li>
-        <li><label><input type="checkbox" name="s_mods[]" value="cc" />
+          </label>
+          <!-- fake -->
+          <bnum-switch name="fake_s_mods[]" data-no-hint="true" data-legend="<roundcube:label name="to" />" value="to"></bnum-switch>
+        </li>
+        <li>
+          <!-- true -->
+          <label class="bds-hidden custom-control-label">
+            <input class="form-check-input custom-control-input" type="checkbox" name="s_mods[]" value="cc" />
             <roundcube:label name="cc" />
-          </label></li>
-        <li><label><input type="checkbox" name="s_mods[]" value="bcc" />
+          </label>
+          <!-- fake -->
+          <bnum-switch name="fake_s_mods[]" data-no-hint="true" data-legend="<roundcube:label name="cc" />" value="cc"></bnum-switch>
+        </li>
+        <li>
+          <!-- true -->
+          <label class="bds-hidden custom-control-label">
+            <input class="form-check-input custom-control-input" type="checkbox" name="s_mods[]" value="bcc" />
             <roundcube:label name="bcc" />
-          </label></li>
-        <li><label><input type="checkbox" name="s_mods[]" value="body" />
+          </label>
+          <!-- fake -->
+          <bnum-switch name="fake_s_mods[]" data-no-hint="true" data-legend="<roundcube:label name="bcc" />" value="bcc"></bnum-switch>
+        </li>
+        <li>
+          <!-- true -->
+          <label class="bds-hidden custom-control-label">
+            <input class="form-check-input custom-control-input" type="checkbox" name="s_mods[]" value="body" />
             <roundcube:label name="body" />
-          </label></li>
-        <li><label><input type="checkbox" name="s_mods[]" value="text" />
+          </label>
+          <!-- fake -->
+          <bnum-switch name="fake_s_mods[]" data-no-hint="true" data-legend="<roundcube:label name="body" />" value="body"></bnum-switch>
+        </li>
+        <li>
+          <!-- true-->
+          <label class="bds-hidden custom-control-label">
+            <input class="form-check-input custom-control-input" type="checkbox" name="s_mods[]" value="text" />
             <roundcube:label name="msgtext" />
-          </label></li>
+          </label>
+          <!-- fake -->
+           <bnum-switch name="fake_s_mods[]" data-no-hint="true" data-legend="<roundcube:label name="msgtext" />" value="text"></bnum-switch>
+        </li>
       </ul>
       <div class="input-group">
         <!-- <div class="input-group-prepend">
@@ -207,9 +249,12 @@
     </div>
      <!-- Interval::end -->
     <div class="formbuttons">
-      <button type="button" class="btn btn-primary icon search" onclick="return rcmail.command('search')">
+      <bnum-primary-button class="bds-full-width" data-icon="search" onclick="return rcmail.command('search')">
         <roundcube:label name="search" />
-      </button>
+      </bnum-primary-button>
+      <!-- <button type="button" class="btn btn-primary icon search" onclick="return rcmail.command('search')">
+        <roundcube:label name="search" />
+      </button> -->
     </div>
   </div>
 

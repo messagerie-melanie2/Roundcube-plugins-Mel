@@ -52,10 +52,10 @@ class mel_doubleauth extends bnum_plugin
 
         // hooks
         if (!$this->is_internal()) { // Connexion intranet => pas de double auth
-            $this->add_hook('login_after', array($this, 'login_after'));
             $this->add_hook('logout_after', array($this, 'logout_after'));
             $this->add_hook('send_page', array($this, 'check_2FAlogin'));
             $this->add_hook('render_page', array($this, 'popup_msg_enrollment'));
+            $this->add_hook('once_per_day', [$this,'login_after']);
         } else {
             // Si on est internal on considère qu'on s'est connecté avec la double auth (en cas de changement de VPN)
             $_SESSION['mel_doubleauth_login'] = time();

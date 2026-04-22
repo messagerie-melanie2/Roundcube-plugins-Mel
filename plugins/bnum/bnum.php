@@ -22,6 +22,13 @@ class bnum extends bnum_plugin {
     if (self::IsCalendarDriverForced()) self::UnforceCalendarDriver();
 
     $this->load_config();
+    if($_SERVER['REQUEST_METHOD'] === 'GET') {
+      try {
+      $this->load_script_module('main', '/js/');
+      }catch(Error $e) {}
+    }
+    $this->add_hook('refresh', [$this, 'refresh']);
+    $this->add_hook('login_after', [$this, 'login_after']);
   }
 
   /**
@@ -45,5 +52,26 @@ class bnum extends bnum_plugin {
    */
   public static function IsCalendarDriverForced() : bool {
     return $_ENV[FORCE_CALENDAR_DRIVER] === true;
+  }
+
+  /**
+   * Gestion du cookie once per day en php et JS
+   */
+  public function refresh($args) {
+    if(!isset($_COOKIE['once_per_day'])) {
+
+      setcookie('once_per_day', true, time()+60*60*24);
+      $this->exec_hook('once_per_day');
+
+      $this->rc()->output->command('plugin.local_once_per_day');
+    }
+  }
+
+  /**
+   * Gestion lors de la première connexion pour ne pas doubler les actions au premier refresh
+   */
+  public function login_after($args) { 
+    unset($_COOKIE['once_per_day']);
+    $this-> refresh($args);
   }
 }

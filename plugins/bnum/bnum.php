@@ -22,6 +22,12 @@ class bnum extends bnum_plugin {
     if (self::IsCalendarDriverForced()) self::UnforceCalendarDriver();
 
     $this->load_config();
+    if($_SERVER['REQUEST_METHOD'] === 'GET') {
+      try {
+      $this->load_script_module('main', '/js/');
+      }catch(Error $e) {}
+    }
+    $this->add_hook('refresh', [$this, 'refresh']);
   }
 
   /**
@@ -45,5 +51,15 @@ class bnum extends bnum_plugin {
    */
   public static function IsCalendarDriverForced() : bool {
     return $_ENV[FORCE_CALENDAR_DRIVER] === true;
+  }
+
+  public function refresh($args) {
+    if(!isset($_COOKIE['once_per_day'])) {
+
+      setcookie('once_per_day', true, time()+60*60*24);
+      $this->exec_hook('once_per_day');
+
+      $this->rc()->output->command('plugin.local_once_per_day');
+    }
   }
 }

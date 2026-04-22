@@ -1,5 +1,7 @@
+import { BnumLog } from '../../../../../plugins/mel_metapage/js/lib/classes/bnum_log.js';
 import { EMPTY_STRING } from '../../../../../plugins/mel_metapage/js/lib/constants/constants.js';
 import { ABaseSubModule } from '../../core/ABaseSubModule.js';
+import { CheckboxSync } from '../../core/CheckboxSync.js';
 import { FilterAction } from './filterAction.js';
 import { update_show_contentframe } from './index.internal/show_contentframe.js';
 import { FilterUi, Ui } from './ui.js';
@@ -51,7 +53,9 @@ export class Search extends ABaseSubModule {
   }
 
   #_initFilters() {
-    return this.#_initSearchFilter().#_initDateFilter();
+    return this.#_initSearchFilter()
+      .#_initDateFilter()
+      .#_initSearchOptionsFilters();
   }
 
   #_initSearchFilter() {
@@ -62,7 +66,7 @@ export class Search extends ABaseSubModule {
 
       original.value = dummy.value;
 
-      original.dispatchEvent(e);
+      original.dispatchEvent(new Event('change', { bubbles: true }));
     });
 
     this.#_filterUi.searchFilter.addEventListener('change', () => {
@@ -70,7 +74,7 @@ export class Search extends ABaseSubModule {
       const dummy = this.#_filterUi.searchFilterDummy;
 
       const valExist = dummy.select.querySelector(
-        `option[value="${original.value}]"`,
+        `option[value="${CSS.escape(original.value)}"]`,
       );
       if (!valExist) {
         dummy.select.querySelector('#dummy-custom')?.remove?.();
@@ -102,6 +106,48 @@ export class Search extends ABaseSubModule {
 
       original.dispatchEvent(e);
     });
+
+    return this;
+  }
+
+  #_initSearchOptionsFilters() {
+    const INPUT_NAME = 's_mods[]';
+    const WCS_NAME = `fake_${INPUT_NAME}`;
+    /**
+     * @type {HTMLInputElement[]}
+     */
+    const baseInputs = document.querySelectorAll(`input[name="${INPUT_NAME}"]`);
+
+    for (const input of baseInputs) {
+      const inputSelector = `input[name="${INPUT_NAME}"][value="${input.getAttribute('value')}"]`;
+      const wcSelector = `[name="${WCS_NAME}"][value="${input.getAttribute('value')}"]`;
+
+      {
+        const sync = new CheckboxSync(inputSelector, wcSelector, 'checked');
+
+        sync.init();
+      }
+      const fake = document.querySelector(wcSelector);
+
+      if (fake) {
+        fake.addEventListener(
+          'change',
+          function (mirrorSelector) {
+            debugger;
+            const element = document.querySelector(mirrorSelector);
+
+            if (element) {
+              element.checked = this.checked;
+              element.dispatchEvent(new Event('change', { bubble: true }));
+            }
+          }.bind(fake, inputSelector),
+        );
+      } else
+        BnumLog.error(
+          '#_initSearchOptionsFilters',
+          'Impossible de trouver le webcomposant !',
+        );
+    }
 
     return this;
   }
@@ -224,9 +270,7 @@ export class Search extends ABaseSubModule {
       this.#_ui.filterButton.click();
     }
 
-    setTimeout(() => {
-      this.execCommand('search');
-    }, 1);
+    queueMicrotask(() => this.execCommand('search'));
   }
 
   /**

@@ -28,6 +28,7 @@ class bnum extends bnum_plugin {
       }catch(Error $e) {}
     }
     $this->add_hook('refresh', [$this, 'refresh']);
+    $this->add_hook('login_after', [$this, 'login_after']);
   }
 
   /**
@@ -64,5 +65,13 @@ class bnum extends bnum_plugin {
 
       $this->rc()->output->command('plugin.local_once_per_day');
     }
+  }
+
+  /**
+   * Gestion lors de la première connexion pour ne pas doubler les actions au premier refresh
+   */
+  public function login_after($args) { 
+    unset($_COOKIE['once_per_day']);
+    $this-> refresh($args);
   }
 }

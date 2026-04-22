@@ -524,9 +524,9 @@ class mel extends rcube_plugin
   }
 
   /**
-   * supprime le paramètre plugin.show_password_change de la session
+   * Supprime le paramètre plugin.show_password_change de la session
    */
-  public function unset_show_password_change ($args)
+  public function unset_show_password_change($args)
   {
     unset($_SESSION['plugin.show_password_change']);
     return $args;

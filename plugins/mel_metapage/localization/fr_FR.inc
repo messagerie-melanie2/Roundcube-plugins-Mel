@@ -534,3 +534,7 @@ $labels['image_title'] = 'Image de l\'espace de travail';
 $labels['workspace_title_min_length'] = 'Le titre de l\'espace de travail doit contenir au minimum %d caractères.';
 $labels['workspace_title_invalid_first_char'] = 'Le titre de l\'espace de travail doit commencer par une lettre ou un chiffre.';
 $labels['workspace_title_title'] = 'Le titre doit contenir au minimum %d caractères et commencer par une lettre ou un chiffre.';
+
+$labels['forword_the_invitation'] = 'Transmettre l\'invitation';
+$labels['share_ics_joined'] = 'Le fichier ICS sera joint au message';
+$labels['share_ics_not_joined'] = 'Seules les informations de l\'évènement seront envoyées (titre, horaires, lieu, description)';

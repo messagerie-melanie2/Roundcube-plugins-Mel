@@ -385,4 +385,12 @@ $labels['changerecurrence'] = 'Ancienne répétition';
 $labels['notification'] = 'Notification'; 
 // PAMELA - #386 - 🚑 Les participants invité à une réunion avec une ressource ne fonctionne pas
 $labels['rsc-denied'] = 'La ressource $name est occupée';
+
+// PAMELA - 0009361 Partage d'un évènement sans ICS
+$labels['share_title'] = 'Titre : ';
+$labels['share_start'] = 'Début : ';
+$labels['share_end'] = 'Fin : ';
+$labels['share_location'] = 'Lieu : ';
+$labels['share_description'] = 'Description : ';
+
 ?>

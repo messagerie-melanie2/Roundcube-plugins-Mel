@@ -1,6 +1,9 @@
 import { MelObject } from '../../mel_metapage/js/lib/mel_object.js';
 import { Commands } from './commands.js';
 
+/**
+ * Class regroupant les différents modules du bnum
+ */
 class Main extends MelObject {
   constructor() {
     super();

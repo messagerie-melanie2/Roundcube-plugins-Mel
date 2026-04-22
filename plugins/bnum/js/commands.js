@@ -1,5 +1,8 @@
 import { MelObject } from '../../mel_metapage/js/lib/mel_object.js';
 
+/**
+ * Class qui enregistre et lance différentes commandes/triggers
+ */
 export class Commands extends MelObject {
   constructor() {
     super();
@@ -9,6 +12,9 @@ export class Commands extends MelObject {
     });
   }
 
+  /**
+   * trigger évènement roundcube once_per_day
+   */
   #_oncePerDay() {
     this.trigger('once_per_day');
   }

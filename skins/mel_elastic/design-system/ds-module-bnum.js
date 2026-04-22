@@ -8613,7 +8613,7 @@ let HTMLBnumSelect = (() => {
     return _classThis;
 })();
 
-var css_248z$f = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{--_color:var(--bnum-checkbox-color,var(--bnum-primary-color,#000091));--_background-color:var(--bnum-checkbox-background-color,var(--bnum-color-background,#fff));--_internal-border-color:var(--_color);--_internal-error:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}:host .checkbox__label{align-content:center;align-items:center;display:inline-flex;flex-direction:row;position:relative;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}:host .checkbox__label:before{background:var(--_background-color);border:thin solid var(--_internal-border-color);border-radius:500px;box-sizing:border-box;content:\"\";cursor:pointer;display:inline-block;height:1.5rem;width:2.5rem}:host .checkbox__label:after{background-color:var(--_background-color);border:thin solid var(--_internal-border-color);border-radius:100%;box-sizing:border-box;content:\"\";cursor:pointer;display:block;height:1.5rem;left:0;position:absolute;top:0;width:1.5rem}:host .checkbox__label__desc{color:var(--_color)!important;display:none;left:0;position:absolute;top:24px}:host .checkbox__state{display:none}:host .checkbox__label--hint{display:block;margin-top:1rem;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}#native-input{height:0;opacity:0;position:absolute;width:0}#native-input:focus-visible~.checkbox__label:before{outline-color:#0a76f6;outline-offset:2px;outline-style:solid;outline-width:2px}#native-input:checked~.checkbox__label:before{background:var(--_color)}#native-input:checked~.checkbox__label:after{color:var(--_color);content:\"\\e5ca\";font-family:var(--bnum-icon-font-family);font-size:21px;line-height:22px;transform:translateX(1rem)}:host(:state(state)) .checkbox__state{display:block}:host(:state(state):state(error)){--_internal-border-color:var(--_internal-error)}:host(:state(state):state(error)) #active-text,:host(:state(state):state(error)) #inactive-text{color:var(--_internal-error)!important}:host(:state(helper)) #inactive-text{display:block}:host(:state(helper)) #active-text{display:none}:host(:state(helper)) #native-input:checked #inactive-text,:host([checked]:state(helper)) #inactive-text{display:none}:host(:state(helper)) #native-input:checked #active-text,:host([checked]:state(helper)) #active-text{display:block}:host([disabled]){opacity:.5;pointer-events:none}";
+var css_248z$f = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{--_color:var(--bnum-checkbox-color,var(--bnum-primary-color,#000091));--_background-color:var(--bnum-checkbox-background-color,var(--bnum-color-background,#fff));--_internal-border-color:var(--_color);--_internal-error:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}:host .checkbox__label{align-content:center;align-items:center;display:inline-flex;flex-direction:row;height:1.5rem;position:relative;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}:host .checkbox__label:before{background:var(--_background-color);border:thin solid var(--_internal-border-color);border-radius:500px;box-sizing:border-box;content:\"\";cursor:pointer;display:inline-block;height:1.5rem;width:2.5rem}:host .checkbox__label:after{background-color:var(--_background-color);border:thin solid var(--_internal-border-color);border-radius:100%;box-sizing:border-box;content:\"\";cursor:pointer;display:block;height:1.5rem;left:0;position:absolute;top:calc(50% - 1px);transform:translateY(-50%);width:1.5rem}:host .checkbox__label__desc{color:var(--_color)!important;display:none;left:0;position:absolute;top:24px}:host .checkbox__state{display:none}:host .checkbox__label--hint{display:block;margin-top:1rem;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}:host(:state(no-hint)) .checkbox__label--hint{display:none;margin:0}#native-input{height:0;opacity:0;position:absolute;width:0}#native-input:focus-visible~.checkbox__label:before{outline-color:#0a76f6;outline-offset:2px;outline-style:solid;outline-width:2px}#native-input:checked~.checkbox__label:before{background:var(--_color)}#native-input:checked~.checkbox__label:after{color:var(--_color);content:\"\\e5ca\";font-family:var(--bnum-icon-font-family);font-size:21px;line-height:22px;transform:translateY(-50%) translateX(1rem)}:host(:state(state)) .checkbox__state{display:block}:host(:state(state):state(error)){--_internal-border-color:var(--_internal-error)}:host(:state(state):state(error)) #active-text,:host(:state(state):state(error)) #inactive-text{color:var(--_internal-error)!important}:host(:state(helper)) #inactive-text{display:block}:host(:state(helper)) #active-text{display:none}:host(:state(helper)) #native-input:checked #inactive-text,:host([checked]:state(helper)) #inactive-text{display:none}:host(:state(helper)) #native-input:checked #active-text,:host([checked]:state(helper)) #active-text{display:block}:host([disabled]){opacity:.5;pointer-events:none}";
 
 //#region Utilities
 /**
@@ -8821,6 +8821,7 @@ const TEMPLATE$b = (h(HTMLBnumFragment, { children: [h("input", { id: "native-in
  * @attr {boolean} (optional) (default: false) disabled - Désactive l'élément
  * @attr {boolean} (optional) (default: false) required - Rend le champ obligatoire
  * @attr {boolean} (optional) (default: false) helper - Active le mode d'aide visuelle
+ * @attr {boolean} (optional) (default: false) data-no-hint - Désactive les styles lié aux indices
  *
  * @state error - Lorsque la validation échoue
  * @state helper - Lorsque l'attribut helper est actif
@@ -8872,6 +8873,10 @@ let HTMLBnumSwitch = (() => {
     let _private__hint_initializers = [];
     let _private__hint_extraInitializers = [];
     let _private__hint_descriptor;
+    let _private__noHint_decorators;
+    let _private__noHint_initializers = [];
+    let _private__noHint_extraInitializers = [];
+    let _private__noHint_descriptor;
     let _oncheckedchange_decorators;
     let _oncheckedchange_initializers = [];
     let _oncheckedchange_extraInitializers = [];
@@ -8908,6 +8913,7 @@ let HTMLBnumSwitch = (() => {
             _helper_decorators = [Attr()];
             _private__legend_decorators = [Data()];
             _private__hint_decorators = [Data()];
+            _private__noHint_decorators = [Data('no-hint')];
             _oncheckedchange_decorators = [Listener(OnCheckedChangeInitializer)];
             _private__checkValidity_decorators = [Risky()];
             _private__reportValidity_decorators = [Risky()];
@@ -8926,6 +8932,7 @@ let HTMLBnumSwitch = (() => {
             __esDecorate(this, null, _helper_decorators, { kind: "accessor", name: "helper", static: false, private: false, access: { has: obj => "helper" in obj, get: obj => obj.helper, set: (obj, value) => { obj.helper = value; } }, metadata: _metadata }, _helper_initializers, _helper_extraInitializers);
             __esDecorate(this, _private__legend_descriptor = { get: __setFunctionName(function () { return this.#_legend_accessor_storage; }, "#_legend", "get"), set: __setFunctionName(function (value) { this.#_legend_accessor_storage = value; }, "#_legend", "set") }, _private__legend_decorators, { kind: "accessor", name: "#_legend", static: false, private: true, access: { has: obj => #_legend in obj, get: obj => obj.#_legend, set: (obj, value) => { obj.#_legend = value; } }, metadata: _metadata }, _private__legend_initializers, _private__legend_extraInitializers);
             __esDecorate(this, _private__hint_descriptor = { get: __setFunctionName(function () { return this.#_hint_accessor_storage; }, "#_hint", "get"), set: __setFunctionName(function (value) { this.#_hint_accessor_storage = value; }, "#_hint", "set") }, _private__hint_decorators, { kind: "accessor", name: "#_hint", static: false, private: true, access: { has: obj => #_hint in obj, get: obj => obj.#_hint, set: (obj, value) => { obj.#_hint = value; } }, metadata: _metadata }, _private__hint_initializers, _private__hint_extraInitializers);
+            __esDecorate(this, _private__noHint_descriptor = { get: __setFunctionName(function () { return this.#_noHint_accessor_storage; }, "#_noHint", "get"), set: __setFunctionName(function (value) { this.#_noHint_accessor_storage = value; }, "#_noHint", "set") }, _private__noHint_decorators, { kind: "accessor", name: "#_noHint", static: false, private: true, access: { has: obj => #_noHint in obj, get: obj => obj.#_noHint, set: (obj, value) => { obj.#_noHint = value; } }, metadata: _metadata }, _private__noHint_initializers, _private__noHint_extraInitializers);
             __esDecorate(this, null, _oncheckedchange_decorators, { kind: "accessor", name: "oncheckedchange", static: false, private: false, access: { has: obj => "oncheckedchange" in obj, get: obj => obj.oncheckedchange, set: (obj, value) => { obj.oncheckedchange = value; } }, metadata: _metadata }, _oncheckedchange_initializers, _oncheckedchange_extraInitializers);
             __esDecorate(this, _private__checkValidity_descriptor = { value: __setFunctionName(function () {
                     return this.#_ui.input.checkValidity();
@@ -9052,7 +9059,7 @@ let HTMLBnumSwitch = (() => {
          */
         get helper() { return this.#helper_accessor_storage; }
         set helper(value) { this.#helper_accessor_storage = value; }
-        #_legend_accessor_storage = (__runInitializers(this, _helper_extraInitializers), __runInitializers(this, _private__legend_initializers, undefined));
+        #_legend_accessor_storage = (__runInitializers(this, _helper_extraInitializers), __runInitializers(this, _private__legend_initializers, void 0));
         /**
          * Texte de la légende principale du checkbox.
          *
@@ -9065,7 +9072,7 @@ let HTMLBnumSwitch = (() => {
          */
         get #_legend() { return _private__legend_descriptor.get.call(this); }
         set #_legend(value) { return _private__legend_descriptor.set.call(this, value); }
-        #_hint_accessor_storage = (__runInitializers(this, _private__legend_extraInitializers), __runInitializers(this, _private__hint_initializers, undefined));
+        #_hint_accessor_storage = (__runInitializers(this, _private__legend_extraInitializers), __runInitializers(this, _private__hint_initializers, void 0));
         /**
          * Texte de l'indice/aide du checkbox.
          *
@@ -9078,7 +9085,19 @@ let HTMLBnumSwitch = (() => {
          */
         get #_hint() { return _private__hint_descriptor.get.call(this); }
         set #_hint(value) { return _private__hint_descriptor.set.call(this, value); }
-        #oncheckedchange_accessor_storage = (__runInitializers(this, _private__hint_extraInitializers), __runInitializers(this, _oncheckedchange_initializers, void 0));
+        #_noHint_accessor_storage = (__runInitializers(this, _private__hint_extraInitializers), __runInitializers(this, _private__noHint_initializers, void 0));
+        /**
+         * Supprime les styles lié aux indices/aide.
+         *
+         * @remarks
+         * Ne permet plus d'en mettre ensuite.
+         *
+         * @default false
+         * @internal
+         */
+        get #_noHint() { return _private__noHint_descriptor.get.call(this); }
+        set #_noHint(value) { return _private__noHint_descriptor.set.call(this, value); }
+        #oncheckedchange_accessor_storage = (__runInitializers(this, _private__noHint_extraInitializers), __runInitializers(this, _oncheckedchange_initializers, void 0));
         /**
          * Événement personnalisé déclenché lors du changement d'état coché.
          *
@@ -9290,6 +9309,11 @@ let HTMLBnumSwitch = (() => {
          * @private
          */
         #_initDataHint() {
+            if (this.#_noHint) {
+                this._p_addState('no-hint');
+                this.#_hint = undefined;
+                return this;
+            }
             return this.#_initData(this.#_hint, this.#_ui.slotHint);
         }
         /**

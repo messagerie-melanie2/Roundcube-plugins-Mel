@@ -1141,6 +1141,15 @@ bnum-hide {
 .bds-zindex-tooltip {
   z-index: var(--bnum-zindex-tooltip);
 }
+.bds-zindex-dropdown-important {
+  z-index: var(--bnum-zindex-dropdown) !important;
+}
+.bds-zindex-modal-important {
+  z-index: var(--bnum-zindex-modal) !important;
+}
+.bds-zindex-tooltip-important {
+  z-index: var(--bnum-zindex-tooltip) !important;
+}
 .bds-list-item,
 .bds-list-table tr {
   --_bdsli-idle: var(--bnum-list-item-color, var(--bnum-body-text-color, var(--bnum-text-primary)));

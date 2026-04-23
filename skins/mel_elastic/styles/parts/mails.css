@@ -42,6 +42,16 @@ html.layout-phone body.task-mail .header a.selection,
 html.layout-small body.task-mail .header a.selection {
   display: none !important;
 }
+table.messagelist tr.message td.threads {
+  position: absolute;
+  top: 4px;
+  left: 40px;
+  border: none;
+}
+table.messagelist tr.message td.threads + .subject span.subject,
+table.messagelist tr.message td.threads + .subject .fromto {
+  margin-left: calc(var(--bnum-space-xl) + var(--bnum-space-xs));
+}
 table.messagelist td.subject:hover span.msgicon::before {
   content: '\e94d';
 }

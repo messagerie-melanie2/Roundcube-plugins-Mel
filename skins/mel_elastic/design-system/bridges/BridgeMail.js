@@ -299,6 +299,8 @@ export default class BridgeMail extends ABridge {
       ),
     );
 
+    this.listen('responseaftersearch', this.#_setupMessageListHooks.bind(this));
+
     return this;
   }
 

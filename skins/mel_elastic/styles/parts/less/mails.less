@@ -61,6 +61,23 @@ html.layout-small {
 
 table {
   &.messagelist {
+    tr.message {
+      td {
+        &.threads {
+          position: absolute;
+          top: 4px;
+          left: 40px;
+          border: none;
+
+          & + .subject {
+            span.subject,
+            .fromto {
+              margin-left: calc(var(--bnum-space-xl) + var(--bnum-space-xs));
+            }
+          }
+        }
+      }
+    }
     td {
       &.subject {
         &:hover {

@@ -673,7 +673,7 @@ export class EventView {
     let is_valid = true;
 
     await this.parts.location.waitComplete();
-    
+
     if (!this.parts.location.is_valid()) {
       this.parts.location.invalid_action();
       is_valid = false;
@@ -681,7 +681,7 @@ export class EventView {
       this.parts.date.invalid_action();
       is_valid = false;
     }
-    
+
     this.#_setModifier();
     if (!this.#_recEndDateValid()) {
       const localizationKey = 'event-not-ok-rec-date';
@@ -693,10 +693,20 @@ export class EventView {
         eMessageType.Error,
       );
     }
-    
+
     const $alarmField = this.parts.alarm._$fakeField;
-    if (is_valid && rcmail.env['__local:part:isStartEvent'] && +$alarmField.val() === -2) {
-      $alarmField.val(this.parts.date.is_all_day() ? 0 : this.parts.alarm._getDefaultAlarmMinutes()).change();
+    if (
+      is_valid &&
+      rcmail.env['__local:part:isStartEvent'] &&
+      +$alarmField.val() === -2
+    ) {
+      $alarmField
+        .val(
+          this.parts.date.is_all_day
+            ? 0
+            : this.parts.alarm._getDefaultAlarmMinutes(),
+        )
+        .change();
     }
 
     return is_valid;

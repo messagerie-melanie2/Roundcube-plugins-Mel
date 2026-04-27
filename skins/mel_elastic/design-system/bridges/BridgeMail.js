@@ -349,10 +349,14 @@ export default class BridgeMail extends ABridge {
 
     if (tbody.dataset.hasBridgeListeners) return this;
 
-    tbody.addEventListener('click', (e) => {
-      const row = e.target.closest('tr');
-      if (row) BridgeEvents.Instance.onMailClick(e);
-    });
+    tbody.addEventListener(
+      'click',
+      (e) => {
+        const row = e.target.closest('tr');
+        if (row) BridgeEvents.Instance.onMailClick(e);
+      },
+      true,
+    );
 
     tbody.addEventListener('dblclick', (e) => {
       const row = e.target.closest('tr');

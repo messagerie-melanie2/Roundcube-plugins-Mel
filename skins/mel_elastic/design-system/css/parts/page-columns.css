@@ -95,6 +95,8 @@ html.layout-large .task-mail #layout-sidebar > .header {
   color: var(--_hover-color);
   --layout-list-header-background-hover-color: var(--_hover-background);
   --layout-list-header-text-hover-color: var(--_hover-color);
+  --layout-content-header-background-hover-color: var(--_hover-background);
+  --layout-content-header-text-hover-color: var(--_hover-color);
 }
 .nav-button a:not(.disabled):active,
 .bds-nav-button:not(.disabled):active {
@@ -112,6 +114,8 @@ html.layout-large .task-mail #layout-sidebar > .header {
   --layout-list-header-background-hover-color: var(--_focus-background);
   --layout-list-header-text-hover-color: var(--_focus-color);
   --secondary-bckg-color: var(--_focus-background);
+  --layout-content-header-background-hover-color: var(--_focus-background);
+  --layout-content-header-text-hover-color: var(--_focus-color);
 }
 .bds-nav-button {
   --default-text-color: var(--_idle-color);
@@ -129,21 +133,26 @@ html.layout-large .task-mail #layout-sidebar > .header {
 }
 #layout-list,
 #layout-list > .header,
-#layout-list > .header > .old-header {
+#layout-list > .header > .old-header,
+#layout-content,
+#layout-content > .header {
   --_color: var(--layout-list-header-color, var(--bnum-body-text-color, var(--bnum-text-primary)));
   --_background: var(--layout-list-header-background, var(--bnum-header-color, var(--bnum-color-background, #ffffff)));
   color: var(--_color);
   background-color: var(--_background);
   --secondary-text-color: var(--_color);
+  --layout-content-header-text-color: var(--_color);
   --layout-list-header-background-color: var(--_background);
+  --layout-content-header-background-color: var(--_background);
 }
-#layout-list > .header {
+#layout-list > .header,
+#layout-content > .header {
   height: 60px;
   border-bottom: var(--bnum-border-column);
   box-sizing: border-box;
 }
 #layout-list > .header > .old-header {
-  height: 100%;
+  height: 59px;
 }
 #layout-list > .header > .old-header a {
   --_idle-background: var(--nav-button-background, transparent);
@@ -163,6 +172,8 @@ html.layout-large .task-mail #layout-sidebar > .header {
   color: var(--_hover-color);
   --layout-list-header-background-hover-color: var(--_hover-background);
   --layout-list-header-text-hover-color: var(--_hover-color);
+  --layout-content-header-background-hover-color: var(--_hover-background);
+  --layout-content-header-text-hover-color: var(--_hover-color);
 }
 #layout-list > .header > .old-header a:not(.disabled):active {
   background-color: var(--_active-background);
@@ -178,6 +189,52 @@ html.layout-large .task-mail #layout-sidebar > .header {
   --layout-list-header-background-hover-color: var(--_focus-background);
   --layout-list-header-text-hover-color: var(--_focus-color);
   --secondary-bckg-color: var(--_focus-background);
+  --layout-content-header-background-hover-color: var(--_focus-background);
+  --layout-content-header-text-hover-color: var(--_focus-color);
+}
+#layout-content {
+  border-left: var(--bnum-border-column);
+}
+#layout-content > .header {
+  border-left: var(--bnum-border-column);
+}
+#layout-content > .header a {
+  --_idle-background: var(--nav-button-background, transparent);
+  --_idle-color: var(--nav-button-color, var(--bnum-body-text-color, var(--bnum-text-primary)));
+  --_hover-background: var(--nav-button-background-hover, var(--bnum-color-secondary-hover));
+  --_hover-color: var(--nav-button-color-hover, var(--_idle-color));
+  --_active-background: var(--nav-button-background-active, var(--bnum-color-secondary-active));
+  --_active-color: var(--nav-button-color-active, var(--_idle-color));
+  --_focus-background: var(--nav-button-color-focus, var(--_active-background));
+  --_focus-color: var(--nav-button-color-focus, var(--_active-color));
+  color: var(--_idle-color);
+  background-color: var(--_idle-background);
+  --layout-list-header-text-color: var(--_idle-color);
+}
+#layout-content > .header a:not(.disabled):hover {
+  background-color: var(--_hover-background);
+  color: var(--_hover-color);
+  --layout-list-header-background-hover-color: var(--_hover-background);
+  --layout-list-header-text-hover-color: var(--_hover-color);
+  --layout-content-header-background-hover-color: var(--_hover-background);
+  --layout-content-header-text-hover-color: var(--_hover-color);
+}
+#layout-content > .header a:not(.disabled):active {
+  background-color: var(--_active-background);
+  color: var(--_active-color);
+}
+#layout-content > .header a:not(.disabled):focus {
+  outline-color: #0a76f6;
+  outline-offset: 2px;
+  outline-style: solid;
+  outline-width: 2px;
+  background-color: var(--_focus-background);
+  color: var(--_focus-color);
+  --layout-list-header-background-hover-color: var(--_focus-background);
+  --layout-list-header-text-hover-color: var(--_focus-color);
+  --secondary-bckg-color: var(--_focus-background);
+  --layout-content-header-background-hover-color: var(--_focus-background);
+  --layout-content-header-text-hover-color: var(--_focus-color);
 }
 #toolbar-list-menu {
   display: flex;

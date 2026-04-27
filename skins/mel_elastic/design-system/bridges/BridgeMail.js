@@ -236,7 +236,7 @@ export default class BridgeMail extends ABridge {
     const menu = this.rcmail().contextmenu.init(
       {
         menu_name: 'folderlist',
-        menu_source: '#mailboxoptionsmenu',
+        menu_source: '#mailboxoptions-menu ul',
         list_object: null,
       },
       {
@@ -250,7 +250,7 @@ export default class BridgeMail extends ABridge {
     BridgeEvents.Instance.delegate(
       document,
       'contextmenu',
-      BridgeMail.#_ENVS.MAILBOXES_FOLDERS_MAILBOX,
+      BridgeMail.#_SELECTORS.MAILBOXES_FOLDERS_MAILBOX,
       BridgeEvents.Instance.onFolderContextMenu.bind(
         BridgeEvents.Instance,
         menu,
@@ -266,9 +266,12 @@ export default class BridgeMail extends ABridge {
       (...args) => void BridgeEvents.Instance.onMenuOpen(...args),
     );
 
-    this.rcmail().contextmenu.init_folder(BridgeMail.#_ENVS.MAILBOXES_FOLDERS, {
-      menu_source: BridgeMail.#_ENVS.MENU_SOURCES,
-    });
+    this.rcmail().contextmenu.init_folder(
+      BridgeMail.#_SELECTORS.MAILBOXES_FOLDERS,
+      {
+        menu_source: BridgeMail.#_SELECTORS.MENU_SOURCES,
+      },
+    );
 
     return this;
   }

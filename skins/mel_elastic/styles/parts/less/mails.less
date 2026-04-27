@@ -1,0 +1,312 @@
+//compress:false
+#input-search-mail {
+  position: relative;
+  --bnum-input-container-margin-bottom: 0;
+  --bnum-input-gap: 0;
+  margin-right: var(--bnum-space-m);
+  display: block;
+
+  &::part(state-container) {
+    display: none;
+  }
+}
+
+#toolbar-list-menu {
+  &.popupmenu {
+    min-width: 0;
+  }
+}
+
+#mailsearchlist {
+  margin-right: 0 !important;
+  position: relative;
+
+  &.hoverable {
+    right: 0 !important;
+  }
+
+  html.touch & {
+    position: relative !important;
+  }
+}
+
+#searchmenu {
+  --searchmenu-text-color: var(--body-text-color);
+  background-color: white;
+  // color: black;
+  z-index: 1;
+  top: 60px;
+  right: 15px;
+  max-width: 300px;
+  box-shadow: 0px 0px 6px 4px #00000033 !important;
+  border-radius: 5px !important;
+  position: absolute;
+}
+
+html,
+html.layout-phone,
+html.layout-small {
+  body.task-mail {
+    .header {
+      a.toolbar-list-button {
+        display: none !important;
+      }
+
+      a.selection {
+        display: none !important;
+      }
+    }
+  }
+}
+
+table {
+  &.messagelist {
+    tr.message {
+      td {
+        &.threads {
+          position: absolute;
+          top: 4px;
+          left: 40px;
+          border: none;
+
+          & + .subject {
+            span.subject,
+            .fromto {
+              margin-left: calc(var(--bnum-space-xl) + var(--bnum-space-xs));
+            }
+          }
+        }
+      }
+    }
+    td {
+      &.subject {
+        &:hover {
+          span {
+            &.msgicon {
+              &::before {
+                content: '\e94d';
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+table.messagelist {
+  --_idle: '\e94e';
+  --_idle-hover: '\e94d';
+  --_unread: var(--_idle-hover);
+  --_unread-hover: var(--_idle);
+  td.subject {
+    span {
+      &.fromto,
+      &.subject {
+        margin-left: var(--bnum-space-s);
+      }
+    }
+
+    span.msgicon.status {
+      &::before {
+        height: 2.04rem;
+        content: var(--message-state-icon, var(--_idle)) !important;
+      }
+
+      &:hover {
+        &::before {
+          content: var(--message-state-icon, var(--_idle-hover)) !important;
+        }
+      }
+    }
+  }
+
+  tr {
+    //Normal
+    .mail-avatar {
+      --avatar-size: 30px;
+      height: var(--avatar-size);
+      width: var(--avatar-size);
+      position: absolute;
+      left: 8px;
+      top: 16px;
+
+      .mail-avatar--action,
+      .mail-avatar--avatar {
+        height: var(--avatar-size);
+        width: var(--avatar-size);
+      }
+
+      .mail-avatar--action {
+        display: block;
+        margin-top: var(--mail-avatar-action-correction, 3px);
+        margin-left: var(--mail-avatar-action-correction, 3px);
+      }
+    }
+
+    &.has-label {
+      .mail-avatar {
+        top: 42px;
+      }
+    }
+
+    &.has-label:hover td {
+      background-color: transparent !important;
+    }
+
+    // Small
+    html.mail-small & {
+      .mail-avatar {
+        top: 7px;
+      }
+
+      &.has-label {
+        .mail-avatar {
+          top: 31px;
+        }
+      }
+    }
+
+    //large
+    html.mail-large & {
+      .mail-avatar {
+        top: 24px;
+      }
+
+      &.has-label {
+        .mail-avatar {
+          top: 50px;
+        }
+      }
+    }
+
+    td {
+      &.labels {
+        margin-top: var(--bnum-space-xs, 5px);
+
+        &::before {
+          content: none !important;
+        }
+
+        span {
+          padding: 2px 6px;
+          margin-left: -7px;
+        }
+      }
+    }
+
+    &.unread {
+      td.subject span.msgicon.status {
+        &::before {
+          content: var(--message-state-icon, var(--_unread)) !important;
+        }
+
+        &:hover {
+          &::before {
+            content: var(--message-state-icon, var(--_unread-hover)) !important;
+          }
+        }
+      }
+    }
+
+    &.message:hover {
+      --_flag: '\e958';
+      --_flag-hover: '\e957';
+      --_flagged: var(--_flag-hover);
+      --_flagged-hover: var(--_flag);
+
+      td.flags span {
+        &.unflagged {
+          &::before {
+            content: var(--_flag) !important;
+          }
+
+          &:hover {
+            &::before {
+              content: var(--_flag-hover) !important;
+            }
+          }
+        }
+
+        &.flagged {
+          &::before {
+            content: var(--_flagged) !important;
+          }
+
+          &:hover {
+            &::before {
+              content: var(--_flagged-hover) !important;
+            }
+          }
+        }
+      }
+    }
+
+    .row-actions-mixin();
+  }
+}
+
+.row-actions-mixin() {
+  .row-actions {
+    display: none;
+    position: absolute;
+    top: 0px;
+    right: 5px;
+    height: calc(100% - 2px);
+    z-index: 1;
+    align-items: center;
+
+    .sub-action {
+      margin-top: 8px;
+    }
+  }
+
+  &:hover {
+    .row-actions {
+      display: flex;
+    }
+
+    &.message {
+      .flags,
+      .size,
+      .date {
+        opacity: 0;
+      }
+    }
+
+    .unread-action {
+      display: none;
+    }
+    .read-action {
+      display: block;
+    }
+    .flag-action {
+      display: none;
+    }
+    .unflag-action {
+      display: block;
+    }
+  }
+
+  &.unread:hover {
+    .unread-action {
+      display: block;
+    }
+    .read-action {
+      display: none;
+    }
+  }
+
+  &.flagged:hover {
+    .flag-action {
+      display: block;
+    }
+    .unflag-action {
+      display: none;
+    }
+  }
+}
+
+#list-toggle-button {
+  display: none;
+}

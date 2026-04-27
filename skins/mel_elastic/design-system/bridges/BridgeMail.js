@@ -1,8 +1,13 @@
+import ABaseMelObject from '../../../../plugins/mel_metapage/js/lib/base_mel_object.js';
+import { MelEnumerable } from '../../../../plugins/mel_metapage/js/lib/classes/enum.js';
 import { EMPTY_STRING } from '../../../../plugins/mel_metapage/js/lib/constants/constants.js';
+import { AvatarElement } from '../../../../plugins/mel_metapage/js/lib/html/JsHtml/CustomAttributes/avatar.js';
 import {
   DsCssProperty,
   DsCssRule,
   DsDocument,
+  HTMLBnumAvatarAction,
+  HTMLBnumButtonIcon,
   HTMLBnumFolder,
 } from '../ds-module-bnum';
 import ABridge from './ABridge.js';
@@ -13,6 +18,26 @@ import { CONFIG_FOLDER_SPACE as CFS } from './constants.js';
 
 const LOCALIZATION_PLUGIN = 'mel_metapage';
 const CONFIG_FOLDER_SPACE = CFS;
+const ICON_AVATAR_HOVER = 'check_box';
+const ICON_AVATAR_HOVER_2 = 'check_box_outline_blank';
+
+/**
+ * @typedef ActionSettings
+ * @property {number} order
+ * @property {string} icon
+ * @property {ActionCallback} onclick
+ * @property {ActionCallback} onstart
+ * @property {ActionCallback} onhover
+ */
+
+/**
+ * @callback ActionCallback
+ * @this {HTMLElement}
+ * @param {import("../ds-module-bnum.js").HTMLBnumButtonIcon} caller
+ * @param {ActionSettings} settings
+ * @param {Event} e
+ * @returns {void}
+ */
 
 /**
  * Pont principal entre le Design System Bnum et Roundcube.
@@ -211,7 +236,7 @@ export default class BridgeMail extends ABridge {
     const menu = this.rcmail().contextmenu.init(
       {
         menu_name: 'folderlist',
-        menu_source: '#mailboxoptionsmenu',
+        menu_source: '#mailboxoptions-menu ul',
         list_object: null,
       },
       {
@@ -225,7 +250,7 @@ export default class BridgeMail extends ABridge {
     BridgeEvents.Instance.delegate(
       document,
       'contextmenu',
-      BridgeMail.#_ENVS.MAILBOXES_FOLDERS_MAILBOX,
+      BridgeMail.#_SELECTORS.MAILBOXES_FOLDERS_MAILBOX,
       BridgeEvents.Instance.onFolderContextMenu.bind(
         BridgeEvents.Instance,
         menu,
@@ -241,9 +266,12 @@ export default class BridgeMail extends ABridge {
       (...args) => void BridgeEvents.Instance.onMenuOpen(...args),
     );
 
-    this.rcmail().contextmenu.init_folder(BridgeMail.#_ENVS.MAILBOXES_FOLDERS, {
-      menu_source: BridgeMail.#_ENVS.MENU_SOURCES,
-    });
+    this.rcmail().contextmenu.init_folder(
+      BridgeMail.#_SELECTORS.MAILBOXES_FOLDERS,
+      {
+        menu_source: BridgeMail.#_SELECTORS.MENU_SOURCES,
+      },
+    );
 
     return this;
   }
@@ -273,6 +301,8 @@ export default class BridgeMail extends ABridge {
         this.#_setupMessageListHooks.bind(this),
       ),
     );
+
+    this.listen('responseaftersearch', this.#_setupMessageListHooks.bind(this));
 
     return this;
   }
@@ -317,15 +347,19 @@ export default class BridgeMail extends ABridge {
 
     const rows = tbody.querySelectorAll('tr');
     for (let i = 0, len = rows.length; i < len; i++) {
-      rows[i].setAttribute('draggable', 'true');
+      this.#_update_row(rows[i]).setAttribute('draggable', 'true');
     }
 
     if (tbody.dataset.hasBridgeListeners) return this;
 
-    tbody.addEventListener('click', (e) => {
-      const row = e.target.closest('tr');
-      if (row) BridgeEvents.Instance.onMailClick(e);
-    });
+    tbody.addEventListener(
+      'click',
+      (e) => {
+        const row = e.target.closest('tr');
+        if (row) BridgeEvents.Instance.onMailClick(e);
+      },
+      true,
+    );
 
     tbody.addEventListener('dblclick', (e) => {
       const row = e.target.closest('tr');
@@ -345,6 +379,243 @@ export default class BridgeMail extends ABridge {
     tbody.dataset.hasBridgeListeners = 'true';
 
     return this;
+  }
+
+  /**
+   * Vérifie si une ligne de mail est séléctionné
+   * @param {string | HTMLElement} rowOrRowId
+   * @returns {boolean}
+   */
+  #_isSelected(rowOrRowId) {
+    return (
+      (typeof rowOrRowId === 'string'
+        ? document.getElementById(rowOrRowId)
+        : rowOrRowId
+      )?.classList?.contains?.('selected') ?? false
+    );
+  }
+  /**
+   * Vérifie si une ligne de mail est séléctionné
+   * @param {string | HTMLElement} rowOrRowId
+   * @returns {string}
+   */
+  #_getIcon(rowOrRowId, { inverted = false } = {}) {
+    var isSelected = this.#_isSelected(rowOrRowId);
+
+    if (inverted) isSelected = !isSelected;
+
+    return !isSelected ? ICON_AVATAR_HOVER_2 : ICON_AVATAR_HOVER;
+  }
+
+  /**
+   * @private
+   * @param {string | HTMLElement} rowOrRowId
+   * @returns {typeof ICON_AVATAR_HOVER | typeof ICON_AVATAR_HOVER_2}
+   */
+  _getIcon(rowOrRowId, { inverted = false } = {}) {
+    return this.#_getIcon(rowOrRowId, { inverted });
+  }
+
+  /**
+   *
+   * @param {Readonly<HTMLElement>} row
+   */
+  #_update_row(row) {
+    {
+      /**
+       * @type {HTMLElement}
+       */
+      const msgicon = row.querySelector('.msgicon');
+
+      if (msgicon) {
+        msgicon.style.opacity = 0;
+        msgicon.style.pointerEvents = 'none';
+      }
+    }
+
+    const avatar = AvatarElement.Create({
+      email: row.querySelector('.rcmContactAddress')?.getAttribute?.('title'),
+    }).addClass('mail-avatar--avatar');
+
+    /**
+     * @type {import("../ds-module-bnum.js").HTMLBnumButtonIcon}
+     */
+    const action = HTMLBnumButtonIcon.Create('add')
+      .attr('id', `action-of-${row.id}`)
+      .addClass('mail-avatar--action');
+
+    action.addEventListener(
+      'click',
+      /**
+       *
+       * @param {string} rowId
+       * @param {(row: string | HTMLElement, ?{inverted?:boolean}) => (typeof ICON_AVATAR_HOVER | typeof ICON_AVATAR_HOVER_2)} getIcon
+       * @param {MouseEvent} e
+       * @this BridgeMail
+       */
+      function (rowId, getIcon, e) {
+        e.stopImmediatePropagation();
+        e.stopPropagation();
+        e.preventDefault();
+
+        const updateButton = document.querySelector(`#${rowId} .selection`);
+
+        if (updateButton) {
+          this.icon = getIcon(rowId, { inverted: true });
+          updateButton.click();
+        } else
+          throw new Error(
+            'Impossible de trouver le bouton pour changer le status du mail !',
+          );
+      }.bind(action, row.id, this._getIcon.bind(this)),
+    );
+
+    /**
+     * @type {import("../ds-module-bnum.js").HTMLBnumAvatarAction}
+     */
+    const avatarContainer = HTMLBnumAvatarAction.Create({ avatar, action });
+    avatarContainer
+      .data('row-id', row.id)
+      .addClass('mail-avatar')
+      .onEnter.push((caller) => {
+        /**
+         * @type {string}
+         */
+        const rowId = caller.data('row-id');
+        /**
+         * @type {import("../ds-module-bnum.js").HTMLBnumButtonIcon}
+         */
+        const avatarAction = document.getElementById(`action-of-${rowId}`);
+
+        if (avatarAction) {
+          avatarAction.icon = this.#_getIcon(rowId);
+        } else
+          throw new Error(
+            `Impossible de trouver l'élément : action-of-${rowId}`,
+          );
+      });
+
+    const rowActions = document.createElement('div');
+    rowActions.classList.add('row-actions');
+
+    /**
+     * @type {Record<string, ActionSettings>}
+     */
+    const actions = {
+      unread: {
+        order: 0,
+        icon: 'mail',
+        onclick(_, __, e) {
+          e.stopImmediatePropagation();
+          e.stopPropagation();
+          e.preventDefault();
+
+          this.querySelector('.msgicon').click();
+        },
+        onstart(caller) {
+          caller.classList.add('unread-action');
+        },
+      },
+      flag: {
+        order: 2,
+        icon: 'flag_check',
+        onclick(_, __, e) {
+          e.stopImmediatePropagation();
+          e.stopPropagation();
+          e.preventDefault();
+          const text =
+            this.querySelector('.flags .flag .unflagged') ??
+            this.querySelector('.flags .flag .flagged');
+
+          if (text) text.click();
+        },
+        onstart(caller) {
+          caller.classList.add('flag-action');
+        },
+      },
+      unflag: {
+        order: 3,
+        icon: 'flag',
+        onclick(_, __, e) {
+          e.stopImmediatePropagation();
+          e.stopPropagation();
+          e.preventDefault();
+          const text =
+            this.querySelector('.flags .flag .flagged') ??
+            this.querySelector('.flags .flag .unflagged');
+
+          if (text) text.click();
+        },
+        onstart(caller) {
+          caller.classList.add('unflag-action');
+        },
+      },
+      delete: {
+        order: 4,
+        icon: 'delete',
+        onclick(_, __, e) {
+          e.stopImmediatePropagation();
+          e.stopPropagation();
+          e.preventDefault();
+
+          const helper = ABaseMelObject.Empty();
+          const selectedsCount = helper
+            .rcmail()
+            .message_list.get_selection().length;
+          const isSelected = this.classList.contains('selected');
+          const isOnlySelected = isSelected && selectedsCount === 1;
+
+          if (selectedsCount >= 1 && !isOnlySelected) {
+            if (
+              !confirm(
+                'Vous allez supprimer plusieurs autres messages avec celui-ci, êtes-vous sûr de faire ça ?',
+              )
+            ) {
+              return;
+            }
+          }
+
+          if (!this.classList.contains('selected'))
+            document.querySelector(`#action-of-${this.id}`).click();
+
+          helper.rcmail().delete_messages(e);
+        },
+        onstart(caller) {
+          caller.classList.add('delete-action');
+        },
+      },
+    };
+
+    actions.read = {
+      order: 1,
+      icon: 'drafts',
+      onclick: actions.unread.onclick,
+      onstart(caller) {
+        caller.classList.add('read-action');
+      },
+    };
+
+    for (const { value: settings } of MelEnumerable.from(actions).orderBy(
+      (x) => x.value.order,
+    )) {
+      // const settings = actions[key];
+      const button = HTMLBnumButtonIcon.Create(settings.icon);
+
+      settings.onstart?.call?.(row, button, settings);
+      button.addEventListener(
+        'click',
+        settings.onclick.bind(row, button, settings),
+      );
+
+      button.classList.add('sub-action');
+
+      rowActions.appendChild(button);
+    }
+
+    row.style.position = 'relative';
+    row.prepend(avatarContainer, rowActions);
+
+    return row;
   }
 
   /**

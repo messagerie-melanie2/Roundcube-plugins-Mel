@@ -2412,6 +2412,12 @@ $(document).ready(() => {
             $target.attr('href').includes('&_download=1'))
         )
           return;
+        else if (
+          !$target.attr('href') ||
+          $target.attr('href').length === 0 ||
+          $target.attr('href')[0] === '#'
+        )
+          return;
         else {
           // Permet de laisser les plugins de gérer l'interception des liens comme ils le souhaitent
           const value = rcmail.triggerEvent('rcube_spy_url', {
@@ -2467,7 +2473,7 @@ $(document).ready(() => {
         let after = null;
         let update = false;
 
-        let _switch = (spies || Enumerable.from([])).firstOrDefault(
+        let _switch = (spies || Enumerable.from([]))?.firstOrDefault(
           (x) => url.includes(x.key),
           null,
         );

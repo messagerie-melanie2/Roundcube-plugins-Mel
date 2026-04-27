@@ -1,0 +1,191 @@
+#input-search-mail {
+  position: relative;
+  --bnum-input-container-margin-bottom: 0;
+  --bnum-input-gap: 0;
+  margin-right: var(--bnum-space-m);
+  display: block;
+}
+#input-search-mail::part(state-container) {
+  display: none;
+}
+#toolbar-list-menu.popupmenu {
+  min-width: 0;
+}
+#mailsearchlist {
+  margin-right: 0 !important;
+  position: relative;
+}
+#mailsearchlist.hoverable {
+  right: 0 !important;
+}
+html.touch #mailsearchlist {
+  position: relative !important;
+}
+#searchmenu {
+  --searchmenu-text-color: var(--body-text-color);
+  background-color: white;
+  z-index: 1;
+  top: 60px;
+  right: 15px;
+  max-width: 300px;
+  box-shadow: 0px 0px 6px 4px #00000033 !important;
+  border-radius: 5px !important;
+  position: absolute;
+}
+html body.task-mail .header a.toolbar-list-button,
+html.layout-phone body.task-mail .header a.toolbar-list-button,
+html.layout-small body.task-mail .header a.toolbar-list-button {
+  display: none !important;
+}
+html body.task-mail .header a.selection,
+html.layout-phone body.task-mail .header a.selection,
+html.layout-small body.task-mail .header a.selection {
+  display: none !important;
+}
+table.messagelist tr.message td.threads {
+  position: absolute;
+  top: 4px;
+  left: 40px;
+  border: none;
+}
+table.messagelist tr.message td.threads + .subject span.subject,
+table.messagelist tr.message td.threads + .subject .fromto {
+  margin-left: calc(var(--bnum-space-xl) + var(--bnum-space-xs));
+}
+table.messagelist td.subject:hover span.msgicon::before {
+  content: '\e94d';
+}
+table.messagelist {
+  --_idle: '\e94e';
+  --_idle-hover: '\e94d';
+  --_unread: var(--_idle-hover);
+  --_unread-hover: var(--_idle);
+}
+table.messagelist td.subject span.fromto,
+table.messagelist td.subject span.subject {
+  margin-left: var(--bnum-space-s);
+}
+table.messagelist td.subject span.msgicon.status::before {
+  height: 2.04rem;
+  content: var(--message-state-icon, var(--_idle)) !important;
+}
+table.messagelist td.subject span.msgicon.status:hover::before {
+  content: var(--message-state-icon, var(--_idle-hover)) !important;
+}
+table.messagelist tr .mail-avatar {
+  --avatar-size: 30px;
+  height: var(--avatar-size);
+  width: var(--avatar-size);
+  position: absolute;
+  left: 8px;
+  top: 16px;
+}
+table.messagelist tr .mail-avatar .mail-avatar--action,
+table.messagelist tr .mail-avatar .mail-avatar--avatar {
+  height: var(--avatar-size);
+  width: var(--avatar-size);
+}
+table.messagelist tr .mail-avatar .mail-avatar--action {
+  display: block;
+  margin-top: var(--mail-avatar-action-correction, 3px);
+  margin-left: var(--mail-avatar-action-correction, 3px);
+}
+table.messagelist tr.has-label .mail-avatar {
+  top: 42px;
+}
+table.messagelist tr.has-label:hover td {
+  background-color: transparent !important;
+}
+html.mail-small table.messagelist tr .mail-avatar {
+  top: 7px;
+}
+html.mail-small table.messagelist tr.has-label .mail-avatar {
+  top: 31px;
+}
+html.mail-large table.messagelist tr .mail-avatar {
+  top: 24px;
+}
+html.mail-large table.messagelist tr.has-label .mail-avatar {
+  top: 50px;
+}
+table.messagelist tr td.labels {
+  margin-top: var(--bnum-space-xs, 5px);
+}
+table.messagelist tr td.labels::before {
+  content: none !important;
+}
+table.messagelist tr td.labels span {
+  padding: 2px 6px;
+  margin-left: -7px;
+}
+table.messagelist tr.unread td.subject span.msgicon.status::before {
+  content: var(--message-state-icon, var(--_unread)) !important;
+}
+table.messagelist tr.unread td.subject span.msgicon.status:hover::before {
+  content: var(--message-state-icon, var(--_unread-hover)) !important;
+}
+table.messagelist tr.message:hover {
+  --_flag: '\e958';
+  --_flag-hover: '\e957';
+  --_flagged: var(--_flag-hover);
+  --_flagged-hover: var(--_flag);
+}
+table.messagelist tr.message:hover td.flags span.unflagged::before {
+  content: var(--_flag) !important;
+}
+table.messagelist tr.message:hover td.flags span.unflagged:hover::before {
+  content: var(--_flag-hover) !important;
+}
+table.messagelist tr.message:hover td.flags span.flagged::before {
+  content: var(--_flagged) !important;
+}
+table.messagelist tr.message:hover td.flags span.flagged:hover::before {
+  content: var(--_flagged-hover) !important;
+}
+table.messagelist tr .row-actions {
+  display: none;
+  position: absolute;
+  top: 0px;
+  right: 5px;
+  height: calc(100% - 2px);
+  z-index: 1;
+  align-items: center;
+}
+table.messagelist tr .row-actions .sub-action {
+  margin-top: 8px;
+}
+table.messagelist tr:hover .row-actions {
+  display: flex;
+}
+table.messagelist tr:hover.message .flags,
+table.messagelist tr:hover.message .size,
+table.messagelist tr:hover.message .date {
+  opacity: 0;
+}
+table.messagelist tr:hover .unread-action {
+  display: none;
+}
+table.messagelist tr:hover .read-action {
+  display: block;
+}
+table.messagelist tr:hover .flag-action {
+  display: none;
+}
+table.messagelist tr:hover .unflag-action {
+  display: block;
+}
+table.messagelist tr.unread:hover .unread-action {
+  display: block;
+}
+table.messagelist tr.unread:hover .read-action {
+  display: none;
+}
+table.messagelist tr.flagged:hover .flag-action {
+  display: block;
+}
+table.messagelist tr.flagged:hover .unflag-action {
+  display: none;
+}
+#list-toggle-button {
+  display: none;
+}

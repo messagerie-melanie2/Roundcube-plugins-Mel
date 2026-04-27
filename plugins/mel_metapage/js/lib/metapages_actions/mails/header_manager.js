@@ -26,7 +26,7 @@ export class UIMailHeaderManager extends MailModule {
       })
       .reverse();
 
-    $(ll_search_selector).before(
+    $(`${ll_selector} .header-left`).append(
       JsHtml.start
         .div({ id: selected_action_list_id, style: 'display:none' })
         .ul({ class: 'menu toolbar listing iconized' })

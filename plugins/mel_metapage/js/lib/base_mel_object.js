@@ -4,12 +4,42 @@ import { EMPTY_STRING } from './constants/constants.js';
 import { isNullOrUndefined } from './mel.js';
 import { Top } from './top.js';
 
+const _proxyCache = new WeakMap();
+
 /**
  * Classe abstraite qui contient des méthodes utiles pour les objets Mel
  * @abstract
  * @class
  */
 export default class ABaseMelObject {
+  /**
+   * Proxy qui permet de faire this.$('id') au lieu de document.getElementById('id') et qui cache les éléments déjà récupérés pour éviter les appels redondants à getElementById, ce qui améliore les performances.
+   * @returns {Record<string, HTMLElement | null> | null | ((id: string) => HTMLElement | null)} Un élément du DOM correspondant à l'id donné, ou une fonction qui fait la même chose si l'id n'est pas une propriété valide.
+   * @readonly
+   */
+  get $() {
+    if (_proxyCache.has(this)) return _proxyCache.get(this).proxy;
+
+    const entry = { proxy: null, _cache: {} };
+    _proxyCache.set(this, entry);
+
+    const resolveId = (id) => {
+      const { _cache } = _proxyCache.get(this);
+      return (_cache[id] ??= document.getElementById(id));
+    };
+
+    const resolveProp = (prop) => resolveId(prop.replaceAll('_', '-'));
+
+    entry.proxy = new Proxy((id) => resolveId(id), {
+      get: (target, prop) => {
+        if (typeof prop !== 'string') return Reflect.get(target, prop);
+        return resolveProp(prop);
+      },
+    });
+
+    return entry.proxy;
+  }
+
   constructor() {
     if (this.constructor.name === 'ABaseMelObject') {
       throw new Error("Can't instantiate abstract class!");
@@ -20,7 +50,6 @@ export default class ABaseMelObject {
    * Récupère "rcmail" | les fonctions utiles à roundcube
    * @param {boolean} top Si on doit récupérer rcmail sur frame principale ou non
    * @returns {rcube_webmail}
-   * @protected
    */
   rcmail(top = false) {
     return top && !!Top.top()?.rcmail ? Top.top().rcmail : window.rcmail;

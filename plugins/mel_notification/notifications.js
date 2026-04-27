@@ -700,8 +700,10 @@ function m_mp_NotificationsAppendToPanel(notifications) {
     unreadCat = [],
     notificationspanel = document.getElementById('notifications-panel');
 
+  if (!notificationspanel) return;
+
   // Création initiale
-  if (notificationspanel.innerHTML == '') {
+  if (notificationspanel.innerHTML === '') {
     notificationspanel.append(
       m_mp_NotificationsAppendFilters(),
       e('dropdown-menu-scroll', e('content')),

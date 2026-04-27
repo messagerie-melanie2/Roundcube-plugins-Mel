@@ -23,7 +23,7 @@
       </bnum-hide>
 
     <bnum-hide breakpoint="touch" mode="down" slot="header">
-      <bnum-primary-button click="floating-sendbtn" data-hide="touch" block data-icon="border_color">Nouveau message</bnum-primary-button>
+      <bnum-primary-button style="--bnum-button-padding:6px 10px;" click="floating-sendbtn" data-hide="touch" block data-icon="border_color">Nouveau message</bnum-primary-button>
     </bnum-hide>
 
     <bnum-icon-button name="folderactions" title="folderactions" label="actions"
@@ -51,75 +51,55 @@
   </div>
  </bnum-column> 
 
-<!-- folders list -->
- <!-- <div id="layout-sidebar" class="listbox" role="navigation" aria-labelledby="aria-label-folderlist">
-  <div class="header">
-    <a class="button icon back-list-button" href="#back"><span class="inner">
-        <roundcube:label name="back" />
-      </span></a>
-    <span class="header-title username">
-      <roundcube:object name="username" />
-    </span>
-  </div>
-  <h2 id="aria-label-folderlist" class="voice">
-    <roundcube:label name="arialabelfolderlist" />
-  </h2>
-  <div id="folderlist-content" class="scroller">
-    <roundcube:button name="folderactions" type="link" title="folderactions" label="actions"
-      class="button icon sidebar-menu" innerclass="inner" data-popup="mailboxoptions-menu" />
-    <roundcube:object name="mailboxlist" id="mailboxlist" class="treelist listing folderlist" folder_filter="mail"
-      unreadwrap="%s" />
-  </div>
-  <div class="footer small">
-    <roundcube:if condition="env:quota" />
-    <div id="quotadisplay" class="quota-widget">
-      <span class="voice">
-        <roundcube:label name="quota">
-      </span>
-      <roundcube:object name="quotaDisplay" class="count" display="text" />
-    </div>
-    <roundcube:endif />
-  </div>
-</div>  -->
-
 <!-- messages list -->
-<div id="layout-list" class="initial listbox selected">
-
-  <bnum-hide breakdown="touch" mode="up">
-    <bnum-primary-button data-icon="edit" rounded id="floating-sendbtn" class="mail-floating-button" onclick="return rcmail.command('mel-compose','',this,event)">
-      Nouveau message
-    </bnum-primary-button>
-  </bnum-hide>
-
-  <div id="messagelist-header" class="header">
+<bnum-column id="layout-list" class="initial listbox selected">
+  <div id="messagelist-header" class="header" slot="header"> 
+    <div class="header-container bds-flex bds-full-width bds-flex-justify-between">
+    <div class="header-left bds-flex ">
     <a class="button icon task-menu-button" href="#menu"><span class="inner">
         <roundcube:label name="menu" />
       </span></a>
-    <a class="button icon back-sidebar-button folders mel-circle-icon-button hidden-large" href="#sidebar"><span class="inner">
+      <!-- back button -->
+     <a class="button bds-nav-button-important icon back-sidebar-button folders mel-circle-icon-button hidden-large" href="#sidebar"><span class="inner">
         <roundcube:label name="mailboxlist" />
       </span></a>
     <span style="display: none;" class="header-title"></span>
+    <!-- Refresh button -->
+    <roundcube:button command="checkmail" type="link" class="button bds-nav-button-important icon toolbar-button refresh" label="refresh" title="checkmail" innerclass="inner" />
     <div class="toolbar menu" role="toolbar">
-      <!-- <a href="#select" class="select disabled" data-popup="listselect-menu" data-toggle-button="list-toggle-button"
-        title="<roundcube:label name="select" />"><span class="inner">
-        <roundcube:label name="select" />
-      </span></a> -->
-      <roundcube:if condition="env:threads" />
-      <a href="#threads" class="threads disabled" data-popup="threadselect-menu" title="<roundcube:label name="threads" />"><span class="inner">
-        <roundcube:label name="threads" />
-      </span></a>
-      <roundcube:endif />
-      <roundcube:object name="listmenulink" class="options active" label="options" innerclass="inner" />
-      <roundcube:container name="listcontrols" id="listcontrols" />
+      <bnum-hide breakpoint="small" mode="down">
+        <roundcube:if condition="env:threads" />
+        <a href="#threads" class="threads disabled" data-popup="threadselect-menu" title="<roundcube:label name="threads" />"><span class="inner">
+          <roundcube:label name="threads" />
+        </span></a>
+        <roundcube:endif />
+        <roundcube:object name="listmenulink" class="options active" label="options" innerclass="inner" />
+        <a href="#search" id="search-menu-mini-switch" style="display: none;" class="search active"  title="Ouvrir la recherche"><span class="inner">
+          Recherche
+        </span></a>
+        <roundcube:container name="listcontrols" id="listcontrols" />
+      </bnum-hide>
+      <bnum-hide breakpoint="small" mode="up">
+        <li id="limelmailplusmenu" class="marked" role="menuitem">
+                        <!--Added-->
+<a id="melplusmails" href="#plus" data-popup="melmorethings-menu" aria-haspopup="true" aria-expanded="false"
+  aria-owns="melmorethings-menu"  class="more active" id="moremailsoptions"
+  title="Plus d'actions" tabindex="0"><span class="inner">Plus</span></a>
+                        </li>
+      </bnum-hide>
     </div>
-    <roundcube:button command="checkmail" type="link" class="button icon toolbar-button refresh" label="refresh" title="checkmail" innerclass="inner" />
-    <a id="mel-added-list-menu" class="button icon toolbar-menu-button" href="#list-menu"><span class="inner">
+    
+    <!-- <a id="mel-added-list-menu" class="button icon toolbar-menu-button" href="#list-menu"><span class="inner">
         <roundcube:label name="menu" />
-      </span></a>
+      </span></a> -->
 
-    <div id=mailsearchlist style="margin-top: 11px;
+
+
+  </div>
+      <div id=mailsearchlist style="margin-top: 11px;
+      position:relative;
 		margin-bottom: 5px;">
-      <div class="form-control input-mel mel-input-container" id="mail-search-border">
+      <div class="form-control input-mel mel-input-container" id="mail-search-border" style="display: none;">
         <div style="margin-top:-6px;width: calc(100% - 24px);">
           <roundcube:object name="searchform" id="mailsearchform"
             wrapper="searchbar menu input-child-mel-focus mel-invisible-background mel-child-form-before-remover"
@@ -135,46 +115,97 @@
         </div>
       </div>
 
+      <bnum-input-search id="input-search-mail">
+        <span class="sr-only">Recherche dans les messages</span>
+        <bnum-icon-button slot="actions" title="Fermer la recherche" id="input-search-back-button" class="bds-hidden">arrow_back</bnum-icon-button>
+        <bnum-icon-button slot="actions" title="Ouvrir/fermer les filtres" id="input-search-filter-button">filter_list</bnum-icon-button>
+      </bnum-input-search>
+
     </div>
-
   </div>
+</div>
 
-  <div id="searchmenu" class="hidden searchoptions scroller propform formcontainer"
-    aria-labelledby="aria-label-search-menu" aria-controls="messagelist">
+ <div id="searchmenu" class="hidden searchoptions  propform formcontainer bds-border-radius-m bds-zindex-dropdown-important"
+    aria-labelledby="aria-label-search-menu" aria-controls="messagelist" style="flex:1 0 auto;">
     <h3 id="aria-label-search-menu" class="voice">
       <roundcube:label name="searchmod" />
     </h3>
-    <div class="formcontent">
+    <div class="formcontent scroller">
       <ul class="proplist">
-        <li><label><input type="checkbox" name="s_mods[]" value="subject" />
+        <li>
+          <!-- true -->
+          <label class="bds-hidden custom-control-label">
+            <input type="checkbox" class="form-check-input custom-control-input" name="s_mods[]" value="subject" />
             <roundcube:label name="subject" />
-          </label></li>
-        <li><label><input type="checkbox" name="s_mods[]" value="from" />
+          </label>
+          <!-- fake -->
+          <bnum-switch name="fake_s_mods[]" value="subject" data-no-hint="true" data-legend="<roundcube:label name="subject" />" ></bnum-switch>
+        </li>
+        <li>
+          <!-- true -->
+          <label class="bds-hidden custom-control-label">
+            <input class="form-check-input custom-control-input" type="checkbox" name="s_mods[]" value="from" />
             <roundcube:label name="from" />
-          </label></li>
-        <li><label><input type="checkbox" name="s_mods[]" value="to" />
+          </label>
+          <!-- fake -->
+          <bnum-switch name="fake_s_mods[]" data-no-hint="true" data-legend="<roundcube:label name="from" />" value="from"></bnum-switch>
+         </li>
+        <li>
+          <!-- true -->
+          <label class="bds-hidden custom-control-label">
+            <input class="form-check-input custom-control-input" type="checkbox" name="s_mods[]" value="to" />
             <roundcube:label name="to" />
-          </label></li>
-        <li><label><input type="checkbox" name="s_mods[]" value="cc" />
+          </label>
+          <!-- fake -->
+          <bnum-switch name="fake_s_mods[]" data-no-hint="true" data-legend="<roundcube:label name="to" />" value="to"></bnum-switch>
+        </li>
+        <li>
+          <!-- true -->
+          <label class="bds-hidden custom-control-label">
+            <input class="form-check-input custom-control-input" type="checkbox" name="s_mods[]" value="cc" />
             <roundcube:label name="cc" />
-          </label></li>
-        <li><label><input type="checkbox" name="s_mods[]" value="bcc" />
+          </label>
+          <!-- fake -->
+          <bnum-switch name="fake_s_mods[]" data-no-hint="true" data-legend="<roundcube:label name="cc" />" value="cc"></bnum-switch>
+        </li>
+        <li>
+          <!-- true -->
+          <label class="bds-hidden custom-control-label">
+            <input class="form-check-input custom-control-input" type="checkbox" name="s_mods[]" value="bcc" />
             <roundcube:label name="bcc" />
-          </label></li>
-        <li><label><input type="checkbox" name="s_mods[]" value="body" />
+          </label>
+          <!-- fake -->
+          <bnum-switch name="fake_s_mods[]" data-no-hint="true" data-legend="<roundcube:label name="bcc" />" value="bcc"></bnum-switch>
+        </li>
+        <li>
+          <!-- true -->
+          <label class="bds-hidden custom-control-label">
+            <input class="form-check-input custom-control-input" type="checkbox" name="s_mods[]" value="body" />
             <roundcube:label name="body" />
-          </label></li>
-        <li><label><input type="checkbox" name="s_mods[]" value="text" />
+          </label>
+          <!-- fake -->
+          <bnum-switch name="fake_s_mods[]" data-no-hint="true" data-legend="<roundcube:label name="body" />" value="body"></bnum-switch>
+        </li>
+        <li>
+          <!-- true-->
+          <label class="bds-hidden custom-control-label">
+            <input class="form-check-input custom-control-input" type="checkbox" name="s_mods[]" value="text" />
             <roundcube:label name="msgtext" />
-          </label></li>
+          </label>
+          <!-- fake -->
+           <bnum-switch name="fake_s_mods[]" data-no-hint="true" data-legend="<roundcube:label name="msgtext" />" value="text"></bnum-switch>
+        </li>
       </ul>
       <div class="input-group">
-        <div class="input-group-prepend">
+        <!-- <div class="input-group-prepend">
           <label for="s_scope" class="input-group-text">
             <roundcube:label name="searchscope" />
           </label>
-        </div>
-        <select name="s_scope" id="s_scope">
+        </div> -->
+        <bnum-select name="s_scope" id="s_scope" class="bds-full-width bds-space-s-bottom bds-block">
+                    <label slot="label" class="bstp-input-group-text">
+            <roundcube:label name="searchscope" />
+          </label>
           <option value="base">
             <roundcube:label name="currentfolder" />
           </option>
@@ -184,9 +215,15 @@
           <option value="all">
             <roundcube:label name="allfolders" />
           </option>
-        </select>
+        </bnum-select>
       </div>
-      <div class="input-group">
+      <!-- SearchFilter -->
+       <bnum-select id="search-filter-dummy" class="bds-full-width bds-space-s-bottom bds-block">
+          <label slot="label" class="bdst-input-group-text">
+            <roundcube:label name="type" />
+          </label>
+       </bnum-select>
+      <div class="input-group bds-hidden">
         <div class="input-group-prepend">
           <label for="searchfilter" class="input-group-text">
             <roundcube:label name="type" />
@@ -194,7 +231,14 @@
         </div>
         <roundcube:object name="searchfilter" id="searchfilter" noevent="true" />
       </div>
-      <div class="input-group">
+      <!-- SearchFilter::end -->
+       <!-- Interval -->
+        <bnum-select id="s-date-dummy" class="bds-full-width bds-space-s-bottom bds-block">
+          <label slot="label" class="bdst-input-group-text">
+            <roundcube:label name="date" />
+          </label>
+       </bnum-select>
+      <div class="input-group bds-hidden">
         <div class="input-group-prepend">
           <label for="s_interval" class="input-group-text">
             <roundcube:label name="date" />
@@ -203,10 +247,14 @@
         <roundcube:object name="searchinterval" id="s_interval" />
       </div>
     </div>
+     <!-- Interval::end -->
     <div class="formbuttons">
-      <button type="button" class="btn btn-primary icon search" onclick="return rcmail.command('search')">
+      <bnum-primary-button class="bds-full-width" data-icon="search" onclick="return rcmail.command('search')">
         <roundcube:label name="search" />
-      </button>
+      </bnum-primary-button>
+      <!-- <button type="button" class="btn btn-primary icon search" onclick="return rcmail.command('search')">
+        <roundcube:label name="search" />
+      </button> -->
     </div>
   </div>
 
@@ -218,7 +266,7 @@
       <!-- MANTIS -->
       <li class="input-group">
         <input type="checkbox" id="select-mail-state" />
-        <button id="list-select-mail-choices" data-popup="listselect-menu" data-toggle-button="list-toggle-button" title="Sélectionner" aria-haspopup="true" aria-expanded="false" aria-owns="listselect-menu" data-original-title="Sélectionner" class="btn mel-button no-button-margin no-margin-button bckg true"><span class="material-symbols-outlined">expand_more</span></button>
+        <button id="list-select-mail-choices" data-popup="listselect-menu" data-toggle-button="list-toggle-button" title="Sélectionner" aria-haspopup="true" aria-expanded="false" aria-owns="listselect-menu" data-original-title="Sélectionner" class="btn bds-nav-button"><span class="material-symbols-outlined">expand_more</span></button>
       </li>
       <roundcube:container name="messagelistfiltersmenu" id="messagelistfiltersmenu" />
     </ul>
@@ -228,11 +276,12 @@
     <h2 id="aria-label-messagelist" class="voice">
       <roundcube:label name="arialabelmessagelist" />
     </h2>
-    <roundcube:object name="messages" id="messagelist" class="listing messagelist sortheader fixedheader"
+    <roundcube:object name="messages" id="messagelist" class="listing messagelist sortheader fixedheader bds-list-table --no-shadow --no-rc"
       aria-labelledby="aria-label-messagelist" data-list="message_list" data-label-msg="listempty" />
   </div>
   <roundcube:include file="includes/pagenav.html" />
-</div>
+
+</bnum-column>
 
 <!-- message preview -->
 <div id="layout-content" class="layout-hidden" style="display:none">
@@ -368,10 +417,7 @@
   </ul>
 </div>
 
-<!--Added-->
-<a id="melplusmails" href="#plus" data-popup="melmorethings-menu" aria-haspopup="true" aria-expanded="false"
-  aria-owns="melmorethings-menu" style="display:none;" class="more active" id="moremailsoptions"
-  title="Plus d'actions" tabindex="0"><span class="inner">Plus</span></a>
+
 <div id="melmorethings-menu" class="popupmenu">
   <h3 id="aria-label-melmorethings-menu" class="voice">
     <roundcube:label name="" />

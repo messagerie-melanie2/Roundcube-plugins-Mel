@@ -151,107 +151,107 @@ body.task-mail {
     border-radius: var(--main-panel-border-radius);
   }
 
-  #messagelist-content {
-    background-color: var(
-      --message-list-content-row-background-color
-    ) !important;
+  // #messagelist-content {
+  //   // background-color: var(
+  //   //   --message-list-content-row-background-color
+  //   // ) !important;
 
-    table.messagelist:not(.threaded) tbody tr:nth-child(2n) {
-      td {
-        background-color: var(
-          --message-list-content-row-alternate-background-color
-        );
-      }
+  //   // table.messagelist:not(.threaded) tbody tr:nth-child(2n) {
+  //   //   td {
+  //   //     background-color: var(
+  //   //       --message-list-content-row-alternate-background-color
+  //   //     );
+  //   //   }
 
-      &:hover {
-        background-color: var(
-          --message-list-content-row-background-hover-color
-        );
-      }
-    }
+  //   //   &:hover {
+  //   //     background-color: var(
+  //   //       --message-list-content-row-background-hover-color
+  //   //     );
+  //   //   }
+  //   // }
 
-    table.messagelist:not(.threaded) tbody tr.unread td {
-      background-color: var(--message-list-content-row-background-color);
-    }
+  //   // table.messagelist:not(.threaded) tbody tr.unread td {
+  //   //   background-color: var(--message-list-content-row-background-color);
+  //   // }
 
-    table.messagelist {
-      tr {
-        &.selected td {
-          background-color: var(
-            --message-list-content-selected-row-background-color
-          ) !important;
-        }
+  //   table.messagelist {
+  //     tr {
+  //       // &.selected td {
+  //       //   background-color: var(
+  //       //     --message-list-content-selected-row-background-color
+  //       //   ) !important;
+  //       // }
 
-        &.message {
-          &.selected:hover {
-            background-color: var(
-              --message-list-content-selected-row-background-hover-color
-            ) !important;
-            html.dark-mode-custom & {
-              background-color: var(
-                --message-list-content-row-background-hover-color
-              ) !important;
-            }
-          }
+  //       &.message {
+  //         &.selected:hover {
+  //           background-color: var(
+  //             --message-list-content-selected-row-background-hover-color
+  //           ) !important;
+  //           html.dark-mode-custom & {
+  //             background-color: var(
+  //               --message-list-content-row-background-hover-color
+  //             ) !important;
+  //           }
+  //         }
 
-          &:hover {
-            box-shadow: var(--message-list-hover-shadow);
-            background-color: var(
-              --message-list-content-row-background-hover-color
-            ) !important;
+  //         &:hover {
+  //           box-shadow: var(--message-list-hover-shadow);
+  //           background-color: var(
+  //             --message-list-content-row-background-hover-color
+  //           ) !important;
 
-            td {
-              background-color: var(
-                --message-list-content-row-background-hover-color
-              ) !important;
-            }
+  //           td {
+  //             background-color: var(
+  //               --message-list-content-row-background-hover-color
+  //             ) !important;
+  //           }
 
-            td.subject span.msgicon.status:hover::before {
-              color: var(--mail-unread-icon-hover-color) !important;
-            }
-          }
+  //           td.subject span.msgicon.status:hover::before {
+  //             color: var(--mail-unread-icon-hover-color) !important;
+  //           }
+  //         }
 
-          td {
-            border-bottom: var(--message-list-border-bottom);
-          }
+  //         td {
+  //           border-bottom: var(--message-list-border-bottom);
+  //         }
 
-          &.selected > td.selection + td {
-            border-left-color: var(
-              --message-list-content-selected-row-border-color
-            ) !important;
-          }
-        }
+  //         &.selected > td.selection + td {
+  //           border-left-color: var(
+  //             --message-list-content-selected-row-border-color
+  //           ) !important;
+  //         }
+  //       }
 
-        &.unread {
-          td.subject span.msgicon::before {
-            color: var(--message-list-content-mail-address-color) !important;
-          }
+  //       &.unread {
+  //         td.subject span.msgicon::before {
+  //           color: var(--message-list-content-mail-address-color) !important;
+  //         }
 
-          &.selected {
-            td.subject span.msgicon::before {
-              color: var(
-                --message-list-content-selected-mail-button-color
-              ) !important;
-            }
-          }
-        }
+  //         &.selected {
+  //           td.subject span.msgicon::before {
+  //             color: var(
+  //               --message-list-content-selected-mail-button-color
+  //             ) !important;
+  //           }
+  //         }
+  //       }
 
-        &.flagged {
-          td.subject span.fromto {
-            color: var(--mail-unread-flagged-text-color) !important;
-          }
+  //       &.flagged {
+  //         td.subject span.fromto {
+  //           color: var(--mail-unread-flagged-text-color) !important;
+  //         }
 
-          &.selected {
-            td.subject span.fromto {
-              color: var(
-                --message-list-content-selected-mail-address-color
-              ) !important;
-            }
-          }
-        }
-      }
-    }
-  }
+  //         &.selected {
+  //           td.subject span.fromto {
+  //             color: var(
+  //               --message-list-content-selected-mail-address-color
+  //             ) !important;
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
   #layout-sidebar,
   #layout-sidebar > .header,

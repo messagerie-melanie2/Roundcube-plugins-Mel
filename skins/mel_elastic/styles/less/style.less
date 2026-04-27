@@ -741,7 +741,7 @@ a.button.icon:not(.disabled):focus {
 
         &.date {
           font-size: 85%;
-          padding-top: 2px;
+          // padding-top: 2px;
         }
       }
     }
@@ -6689,8 +6689,13 @@ a.mel-button.survey-button {
   min-width: 175px;
   max-height: 50px;
 
-  &:hover { background: darken(#fdcf42, 6%); }
-  &:focus { outline: none; box-shadow: 0 0 0 3px fade(#fdcf42, 45%); }
+  &:hover {
+    background: darken(#fdcf42, 6%);
+  }
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px fade(#fdcf42, 45%);
+  }
 }
 
 /* Conteneur interne (image + texte) centré en colonne */
@@ -6698,7 +6703,7 @@ a.mel-button.survey-button .survey-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: .25rem; /* petit espace entre les lignes / image */
+  gap: 0.25rem; /* petit espace entre les lignes / image */
 }
 
 /* Texte sur 2 lignes, centré */
@@ -6728,19 +6733,24 @@ a.mel-button.survey-button.show-icon .survey-content {
   flex-direction: row; /* texte + image sur une ligne */
   align-items: center;
   justify-content: center; /* toujours centré dans le bouton */
-  gap: .5rem;
+  gap: 0.5rem;
 }
 
 /* Ordre : texte puis image */
-a.mel-button.survey-button.show-icon .survey-text  { order: 1; text-align: center; }
-a.mel-button.survey-button.show-icon .survey-icon  { order: 2; }
+a.mel-button.survey-button.show-icon .survey-text {
+  order: 1;
+  text-align: center;
+}
+a.mel-button.survey-button.show-icon .survey-icon {
+  order: 2;
+}
 
 /* Affichage et taille de l’image à droite */
 a.mel-button.survey-button.show-icon .survey-icon {
-  display: inline-block !important;  /* supprime le display:none de base */
+  display: inline-block !important; /* supprime le display:none de base */
   height: 28px;
   width: auto;
-  margin-left: .25rem;
+  margin-left: 0.25rem;
 }
 
 /* Ajustement pour les petits écrans */
@@ -6749,5 +6759,3 @@ a.mel-button.survey-button.show-icon .survey-icon {
     height: 24px;
   }
 }
-
-

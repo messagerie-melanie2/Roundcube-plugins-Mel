@@ -1,3 +1,4 @@
+import { EMPTY_STRING } from '../../../../plugins/mel_metapage/js/lib/constants/constants.js';
 import { ABaseModuleWithSubModules } from '../core/ABaseModule.js';
 import { Search } from './search/index.js';
 
@@ -18,7 +19,12 @@ export class ElasticUiMail extends ABaseModuleWithSubModules {
   }
 
   _p_init() {
-    if (this.get_env('task') === 'mail') this.loadSubModules();
+    if (
+      this.get_env('task') === 'mail' &&
+      (this.get_env('action') === EMPTY_STRING ||
+        this.get_env('action') === 'index')
+    )
+      this.loadSubModules();
   }
 
   static _p_ignoreLifeCycles() {

@@ -1502,6 +1502,46 @@ if (rcmail && window.mel_metapage) {
             ),
           );
 
+          // Ajout de la checkbox
+          let $icsToggleWrapper = $(`
+            <div class="row my-2" style="margin-top:25px !important;">
+              <div class="custom-control custom-switch no-click-focus d-flex align-items-center">
+                <input name="transmit_ics" id="share-ics-toggle" type="checkbox" checked class="form-check-input custom-control-input no-click-focus">
+                <label for="share-ics-toggle" class="custom-control-label option-switch no-click-focus"></label>
+                <div class="d-flex justify-content-center align-items-center ml-2">
+                  <div>
+                    ${rcmail.gettext('mel_metapage.forword_the_invitation')}
+                    <p id="share-ics-description" style="font-size:11px; color:var(--input-mel-text-color); margin:0;">${rcmail.gettext('mel_metapage.share_ics_joined')}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `);
+
+          // Comportement du toggle
+          $icsToggleWrapper.find('input[name="transmit_ics"]').on('change', function () {
+            const $desc = $icsToggleWrapper.find('#share-ics-description');
+
+            if (this.checked) {
+              $desc.text(rcmail.gettext('mel_metapage.share_ics_joined'));
+            } else {
+              $desc.text(rcmail.gettext('mel_metapage.share_ics_not_joined'));
+            }
+          });
+
+          $icsToggleWrapper.on('click', function (e) {
+            e.stopImmediatePropagation();
+          });
+
+          $icsToggleWrapper.find('label.custom-control-label').on('click', function (e) {
+            e.stopImmediatePropagation();
+            e.preventDefault();
+            const $cb = $icsToggleWrapper.find('input[name="transmit_ics"]');
+            $cb.prop('checked', !$cb.prop('checked')).trigger('change');
+          });
+
+          modal.appendToBody($icsToggleWrapper);
+
           modal.footer.querry.html('');
           modal.footer.querry
             .append(
@@ -1559,6 +1599,9 @@ if (rcmail && window.mel_metapage) {
                   }
                 }
 
+                //
+                const transmitIcs = $icsToggleWrapper.find('input[name="transmit_ics"]').is(':checked');
+
                 modal.close();
                 rcmail.http_post(
                   'event',
@@ -1569,6 +1612,7 @@ if (rcmail && window.mel_metapage) {
                     _comment: comment,
                     _subject: subject,
                     _organizer: event.source.ajaxSettings.owner,
+                    _transmit_ics: transmitIcs ? 1 : 0,
                   },
                   loading,
                 );

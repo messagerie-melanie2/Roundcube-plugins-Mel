@@ -380,6 +380,11 @@ function m_mp_Create() {
  * @async
  */
 async function m_mp_Task() {
+  if (window.create_popUp !== undefined) {
+    // Fermer la boite de dialog
+    window.create_popUp.close();
+    window.create_popUp = undefined;
+  }
   await PageManager.SwitchFrame('tasks', {});
   PageManager.Instance.get_frame()[0].contentWindow.rcmail.command('newtask');
 }

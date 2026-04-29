@@ -53,6 +53,11 @@
 
 <!-- messages list -->
 <bnum-column id="layout-list" class="initial listbox selected">
+  <bnum-hide breakpoint="touch" mode="up">
+    <bnum-primary-button data-icon="edit" id="floating-sendbtn" type="button" class="mail-floating-button" onclick="return rcmail.command('mel-compose','',this,event)">
+    Nouveau
+    </bnum-primary-button>
+  </bnum-hide>
   <div id="messagelist-header" class="header" slot="header"> 
     <div class="header-container bds-flex bds-full-width bds-flex-justify-between">
     <div class="header-left bds-flex ">

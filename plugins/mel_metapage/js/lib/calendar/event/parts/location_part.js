@@ -13,6 +13,7 @@ import { EMPTY_STRING } from '../../../constants/constants.js';
 import {
   REG_ALPHANUM,
   REG_NUMBER,
+  REG_PHONE_NUMBER,
   REG_URL,
 } from '../../../constants/regexp.js';
 import { MelHtml } from '../../../html/JsHtml/MelHtml.js';
@@ -1286,7 +1287,14 @@ class Phone extends ALocationPart {
    * @override
    */
   static Has(location) {
-    return location.includes(this.Url());
+    location = location.replaceAll(this.Url(), EMPTY_STRING);
+
+    return (
+      !VisioManager.Has(location) &&
+      location.match(REG_PHONE_NUMBER) &&
+      location.includes('|') &&
+      location.split('|')[1].match(REG_NUMBER) /* Gérer les faux positifs */
+    );
   }
 
   /**

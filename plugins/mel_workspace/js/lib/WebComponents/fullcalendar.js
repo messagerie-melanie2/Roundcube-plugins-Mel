@@ -1,9 +1,13 @@
+import ABaseMelObject from '../../../../mel_metapage/js/lib/base_mel_object.js';
 import { MelEnumerable } from '../../../../mel_metapage/js/lib/classes/enum.js';
 import {
   EWebComponentMode,
   HtmlCustomDataTag,
 } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/js_html_base_web_elements.js';
-import { isNullOrUndefined } from '../../../../mel_metapage/js/lib/mel.js';
+import {
+  capitalize,
+  isNullOrUndefined,
+} from '../../../../mel_metapage/js/lib/mel.js';
 import { BnumEvent } from '../../../../mel_metapage/js/lib/mel_events.js';
 import { RenderEvent, ViewRender } from './events.js';
 
@@ -178,6 +182,12 @@ export class FullCalendarElement extends HtmlCustomDataTag {
       slotWidth: 30,
       minTime: this.#_set_buisness_hour(settings.work_start),
       maxTime: this.#_set_buisness_hour(settings.work_end),
+      locale: 'fr',
+      resourceLabelText: capitalize(
+        ABaseMelObject.Empty().getLocalization('resources', {
+          plugin: 'mel_workspace',
+        }),
+      ),
     };
 
     if (!isNullOrUndefined(this.slotSize)) config.slotSize = this.slotSize;

@@ -34,3 +34,4 @@ $labels['tchap_bot_needed'] = 'Attention ! La présence de Bot-Gmcd [Developpeme
 $labels['add_user'] = 'Ajouter un utilisateur ';
 $labels['change_to'] = 'Passer en ';
 $labels['successfully_saved'] = 'Modification enregistrée';
+$labels['resources'] = 'ressources';

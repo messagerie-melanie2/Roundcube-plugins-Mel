@@ -1220,3 +1220,38 @@ bnum-hide {
   --_bdsli-active-bg: var(--_bdsli-hover-bg);
   --_bdsli-alt-bg: var(--_bdsli-hover-bg);
 }
+.popover {
+  --_idle-background: var(--nav-button-background, transparent);
+  --_idle-color: var(--nav-button-color, var(--bnum-body-text-color, var(--bnum-text-primary)));
+  --_hover-background: var(--nav-button-background-hover, var(--bnum-color-secondary-hover));
+  --_hover-color: var(--nav-button-color-hover, var(--_idle-color));
+  --_active-background: var(--nav-button-background-active, var(--bnum-color-secondary-active));
+  --_active-color: var(--nav-button-color-active, var(--_idle-color));
+  --_focus-background: var(--nav-button-color-focus, var(--_active-background));
+  --_focus-color: var(--nav-button-color-focus, var(--_active-color));
+}
+.popover span {
+  background-color: transparent !important;
+}
+.popover .menu .dropbutton a.dropdown,
+.popover a {
+  background-color: var(--_idle-background);
+  color: var(--_idle-color);
+}
+.popover .menu .dropbutton a.dropdown:hover,
+.popover a:hover {
+  background-color: var(--_hover-background);
+  color: var(--_hover-color);
+  --popover-hover-background-color: var(--_hover-background);
+  --popover-hover-text-color: var(--_hover-color);
+}
+.popover .menu .dropbutton a.dropdown:active,
+.popover a:active {
+  background-color: var(--_active-background);
+  color: var(--_active-color);
+}
+.popover .menu .dropbutton a.dropdown:focus,
+.popover a:focus {
+  background-color: var(--_focus-background);
+  color: var(--_focus-color);
+}

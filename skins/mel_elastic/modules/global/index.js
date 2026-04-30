@@ -1,4 +1,3 @@
-import { HTMLBnumColumn } from '../../design-system/ds-module-bnum';
 import { ABaseModule } from '../core/ABaseModule';
 
 export class Global extends ABaseModule {
@@ -9,7 +8,33 @@ export class Global extends ABaseModule {
   }
 
   _p_init() {
-    this.#_addListeners();
+    this.#_addListeners().#_removeUselessRcButtons();
+  }
+
+  #_removeUselessRcButtons() {
+    /**
+     * @type {Array<string | {selector:string, removeParent: boolean}>}
+     */
+    const buttonsToRemove = [
+      { selector: '#toolbar-menu a.compose', removeParent: true },
+    ];
+
+    /**
+     * @type {HTMLElement}
+     */
+    let element;
+    for (const item of buttonsToRemove) {
+      element = document.querySelector(
+        typeof item === 'string' ? item : item.selector,
+      );
+
+      if (item?.removeParent) element = element.parentElement;
+
+      element?.remove?.();
+      element = null;
+    }
+
+    return this;
   }
 
   #_addListeners() {

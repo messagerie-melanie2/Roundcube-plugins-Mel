@@ -15,6 +15,9 @@ import { FilterUi, Ui } from './ui.js';
  * @property {?() => void | undefined} after Fonction optionnelle à exécuter après l'effacement.
  */
 
+/**
+ * Sous module qui cherche la recherche
+ */
 export class Search extends ABaseSubModule {
   #__ui;
   #___ui;
@@ -133,7 +136,6 @@ export class Search extends ABaseSubModule {
         fake.addEventListener(
           'change',
           function (mirrorSelector) {
-            debugger;
             const element = document.querySelector(mirrorSelector);
 
             if (element) {

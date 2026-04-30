@@ -1153,10 +1153,9 @@ class Phone extends ALocationPart {
   constructor(location, index) {
     super(location, index);
 
-    if (location.includes(Phone.Url())) {
-      let data = location.split(SEPARATOR_AUDIO_URL_LOCATION)[1];
-      const [phone, pin] = data.split(SEPARATOR_AUDIO_PIN);
-      this._phone = phone;
+    if (Phone.Has(location)) {
+      const [phone, pin] = location.split(SEPARATOR_AUDIO_PIN);
+      this._phone = phone.split(SEPARATOR_AUDIO_URL_LOCATION).at('-1');
       this._pin = pin || EMPTY_STRING;
     }
   }
@@ -1181,8 +1180,7 @@ class Phone extends ALocationPart {
     this._pin = EMPTY_STRING;
 
     Object.defineProperty(this, 'location', {
-      get: () =>
-        `${Phone.Url()}${SEPARATOR_AUDIO_URL_LOCATION}${this._phone}${SEPARATOR_AUDIO_PIN}${this._pin}`,
+      get: () => `${this._phone}${SEPARATOR_AUDIO_PIN}${this._pin}`,
     });
   }
 

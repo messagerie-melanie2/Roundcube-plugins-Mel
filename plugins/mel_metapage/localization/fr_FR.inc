@@ -324,6 +324,7 @@ $labels['statusneeds-action'] = 'En attente';
 $labels['webconf_toggle_chat_help'] = "Affiche ou ferme le tchat interne";
 $labels['webconf_phone_help'] = "Copie le numéro de téléphone pour permettre à d'autre de rejoindre la visio en cours";
 $labels['webconf_phone'] = "Rejoindre par téléphone";
+$labels['webconf_phone_2'] = "Rejoindre la visio par téléphone";
 $labels['visio'] = 'Visioconférences';
 $labels['chat'] = 'Discussions';
 

@@ -1162,6 +1162,46 @@ if (rcmail && window.mel_metapage) {
   rcmail.addEventListener(
     'calendar.event_show_dialog.custom',
     async (datas) => {
+      // --- Helpers HTML ---
+      const iconStyle =
+        'display:inline-block; vertical-align:top; margin-top:5px';
+      const rowStyle = 'margin-top:15px';
+      const colStyle = 'overflow:hidden; display:flex; text-overflow:ellipsis';
+
+      /**
+       * Génère le html pour afficher un audio et un pin
+       * @param {number | string} phone
+       * @param {number | string} pin
+       * @param {string} textKey
+       * @param {string} icon
+       * @returns {string}
+       * @package
+       */
+      const audioFunction = function (phone, pin, textKey, icon) {
+        return `
+          <div id="location-mel-phone-calendar" class="row" style="${rowStyle}">
+            <div class="col-12" style="${colStyle}">
+
+              <!-- Numéro de téléphone cliquable avec icône tél -->
+              <bnum-icon style="margin-right:8px;font-size: 18px;vertical-align: center;line-height: 1.6;">${icon}</bnum-icon>
+              <span style="display:inline-block">
+                <a title= "${rcmail.gettext(textKey, 'mel_metapage')}"
+                  href="tel:${phone}#${pin}">
+                    ${phone}
+                  </a>
+              </span>
+
+              <!-- Séparateur -->
+              <span style="margin: 0 3px"> –</span>
+
+              <!-- Code PIN non cliquable avec icône -->
+              <bnum-icon class="alignself-center mr-2 material-symbols-outlined" data-loaded="true">pin</bnum-icon>
+              <span style="display:inline-block">${pin}</span>
+
+            </div>
+          </div>`;
+      };
+
       const Alarm = (
         await loadJsModule('mel_metapage', 'alarms', '/js/lib/calendar/')
       ).Alarm;
@@ -1207,8 +1247,9 @@ if (rcmail && window.mel_metapage) {
 
       html += `<div class=row style="margin-top:5px">${rec !== null ? `<div class=col-6>${rec}</div>` : ''}${alarm !== null ? `<div class=col-6><span class="icon-mel-notif mel-cal-icon"></span>Rappel : ${alarm}</div>` : ''}</div>`;
 
-      const hasLocation = !!event.location;
+      let hasLocation = !!event.location;
       let location_phone = '';
+      let location_visioconf = null;
       let location = '';
 
       if (hasLocation) {
@@ -1223,18 +1264,24 @@ if (rcmail && window.mel_metapage) {
         for (let index = 0; index < tmp_location.length; ++index) {
           element = tmp_location[index];
 
-          if (element.includes(' : ') && element.includes('|') 
-          ) {// Forma "URL : numéro| PIN"
-            [element,location_phone] = element.split(' : ');
-            location_phone = location_phone.replace(')', '').split('|');
-          }else if (element.includes('(') && element.includes('|')) {
-            // Format "URL (numéro | PIN)"
-            const match = element.match(/^(.*?)\s*\(([^|]+)\|([^)]+)\)/);
-            if (match) {
-              element = match[1].trim();
-              location_phone = [match[2].trim(), match[3].trim()];
-            }
+          if (
+            element.includes('(') &&
+            element.includes('|') &&
+            element.includes('/public/webconf')
+          ) {
+            location_phone = element.split('(');
+            element = location_phone[0];
+            location_phone = location_phone[1].replace(')', '').split('|');
+          } else if (element.includes('|')) {
+            // c'est une audioconf on l'ajoutera pas à la loca
+            element = element.split('|');
+            location_visioconf = {
+              phone: element[0].split(':').at(-1),
+              pin: element[1],
+            };
+            continue;
           }
+
           location += mel_metapage.Functions.updateRichText(element)
             .replaceAll('#visio:', '')
             .replaceAll('@visio:', '');
@@ -1242,19 +1289,12 @@ if (rcmail && window.mel_metapage) {
           if (index !== tmp_location.length - 1) location += '<br/>';
         }
       }
-      // --- Helpers HTML ---
-      const iconStyle = `display:inline-block; vertical-align:top; margin-top:5px`;
-      const rowStyle  = `margin-top:15px`;
-      const colStyle  = `overflow:hidden; display:flex; text-overflow:ellipsis`;
+
+      if (!location) hasLocation = false;
 
       //Affichage du lieu
-      // Affichage du lieu (lien audioconf non cliquable)
       if (hasLocation) {
-        // On récupère le texte linkifié puis on supprime le <a> sur les liens audioconf
-        const locationHtml = linkify(location).replace(
-          /<a\s+[^>]*href=["'][^"']*audioconf[^"']*["'][^>]*>(.*?)<\/a>/gi,
-          '$1'
-        );
+        let locationHtml = linkify(location);
 
         html += `
           <div id="location-mel-edited-calendar" class="row" style="${rowStyle}">
@@ -1264,34 +1304,19 @@ if (rcmail && window.mel_metapage) {
             </div>
           </div>`;
       }
+
       // Affichage téléphone + code PIN
       if (location_phone !== '') {
         const phoneNumber = location_phone[0];
-        const pinCode     = location_phone[1];
-        const title = rcmail.gettext( 'event_title', "mel_metapage");
-  
-        html += `
-          <div id="location-mel-phone-calendar" class="row" style="${rowStyle}">
-            <div class="col-12" style="${colStyle}">
+        const pinCode = location_phone[1];
+        const textKey = 'webconf_phone_2';
+        html += audioFunction(phoneNumber, pinCode, textKey, 'add_call');
+      }
 
-              <!-- Numéro de téléphone cliquable avec icône tél -->
-              <span style="${iconStyle}" class="icon-mel-phone mel-cal-icon"></span>
-              <span style="display:inline-block">
-                <a title= "${title}"
-                  href="tel:${phoneNumber}#${pinCode}">
-                    ${phoneNumber}
-                  </a>
-              </span>
-
-              <!-- Séparateur -->
-              <span style="margin: 0 3px"> –</span>
-
-              <!-- Code PIN non cliquable avec icône -->
-              <bnum-icon class="alignself-center mr-2 material-symbols-outlined" data-loaded="true">pin</bnum-icon>
-              <span style="display:inline-block">${pinCode}</span>
-
-            </div>
-          </div>`;
+      if (location_visioconf) {
+        const textKey = 'event_title';
+        const { phone, pin } = location_visioconf;
+        html += audioFunction(phone, pin, textKey, 'call');
       }
 
       // Affichage catégorie / workspace
@@ -1299,10 +1324,12 @@ if (rcmail && window.mel_metapage) {
         const isWsp = event.categories[0].includes('ws#');
 
         if (isWsp) {
-          const wsp      = event.categories[0].replace('ws#', '');
-          const wsp_name = mel_metapage.Storage.get(
-            mel_metapage.Storage.title_workspaces, wsp
-          )[wsp] ?? wsp;
+          const wsp = event.categories[0].replace('ws#', '');
+          const wsp_name =
+            mel_metapage.Storage.get(
+              mel_metapage.Storage.title_workspaces,
+              wsp,
+            )[wsp] ?? wsp;
 
           html += `
             <div class="row" style="margin-top:5px">
@@ -1563,26 +1590,30 @@ if (rcmail && window.mel_metapage) {
           `);
 
           // Comportement du toggle
-          $icsToggleWrapper.find('input[name="transmit_ics"]').on('change', function () {
-            const $desc = $icsToggleWrapper.find('#share-ics-description');
+          $icsToggleWrapper
+            .find('input[name="transmit_ics"]')
+            .on('change', function () {
+              const $desc = $icsToggleWrapper.find('#share-ics-description');
 
-            if (this.checked) {
-              $desc.text(rcmail.gettext('mel_metapage.share_ics_joined'));
-            } else {
-              $desc.text(rcmail.gettext('mel_metapage.share_ics_not_joined'));
-            }
-          });
+              if (this.checked) {
+                $desc.text(rcmail.gettext('mel_metapage.share_ics_joined'));
+              } else {
+                $desc.text(rcmail.gettext('mel_metapage.share_ics_not_joined'));
+              }
+            });
 
           $icsToggleWrapper.on('click', function (e) {
             e.stopImmediatePropagation();
           });
 
-          $icsToggleWrapper.find('label.custom-control-label').on('click', function (e) {
-            e.stopImmediatePropagation();
-            e.preventDefault();
-            const $cb = $icsToggleWrapper.find('input[name="transmit_ics"]');
-            $cb.prop('checked', !$cb.prop('checked')).trigger('change');
-          });
+          $icsToggleWrapper
+            .find('label.custom-control-label')
+            .on('click', function (e) {
+              e.stopImmediatePropagation();
+              e.preventDefault();
+              const $cb = $icsToggleWrapper.find('input[name="transmit_ics"]');
+              $cb.prop('checked', !$cb.prop('checked')).trigger('change');
+            });
 
           modal.appendToBody($icsToggleWrapper);
 
@@ -1644,7 +1675,9 @@ if (rcmail && window.mel_metapage) {
                 }
 
                 //
-                const transmitIcs = $icsToggleWrapper.find('input[name="transmit_ics"]').is(':checked');
+                const transmitIcs = $icsToggleWrapper
+                  .find('input[name="transmit_ics"]')
+                  .is(':checked');
 
                 modal.close();
                 rcmail.http_post(

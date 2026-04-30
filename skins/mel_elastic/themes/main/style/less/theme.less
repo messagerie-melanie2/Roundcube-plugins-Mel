@@ -859,11 +859,22 @@ input.input-mel,
   color: var(--option-menu-title-color);
 }
 
-.menu.toolbar li,
+.force-height-60px {
+  height: 60px !important;
+}
+
 #taskmenu a,
 #otherapps a,
 #layout-menu:hover a > span.inner {
-  height: 60px !important;
+  &:extend(.force-height-60px);
+}
+
+.menu.toolbar li {
+  &:extend(.force-height-60px);
+
+  .popover & {
+    height: auto !important;
+  }
 }
 
 .html-editor .editor-toolbar {

@@ -1162,6 +1162,46 @@ if (rcmail && window.mel_metapage) {
   rcmail.addEventListener(
     'calendar.event_show_dialog.custom',
     async (datas) => {
+      // --- Helpers HTML ---
+      const iconStyle =
+        'display:inline-block; vertical-align:top; margin-top:5px';
+      const rowStyle = 'margin-top:15px';
+      const colStyle = 'overflow:hidden; display:flex; text-overflow:ellipsis';
+
+      /**
+       * Génère le html pour afficher un audio et un pin
+       * @param {number | string} phone
+       * @param {number | string} pin
+       * @param {string} textKey
+       * @param {string} icon
+       * @returns {string}
+       * @package
+       */
+      const audioFunction = function (phone, pin, textKey, icon) {
+        return `
+          <div id="location-mel-phone-calendar" class="row" style="${rowStyle}">
+            <div class="col-12" style="${colStyle}">
+
+              <!-- Numéro de téléphone cliquable avec icône tél -->
+              <bnum-icon style="margin-right:8px;font-size: 18px;vertical-align: center;line-height: 1.6;">${icon}</bnum-icon>
+              <span style="display:inline-block">
+                <a title= "${rcmail.gettext(textKey, 'mel_metapage')}"
+                  href="tel:${phone}#${pin}">
+                    ${phone}
+                  </a>
+              </span>
+
+              <!-- Séparateur -->
+              <span style="margin: 0 3px"> –</span>
+
+              <!-- Code PIN non cliquable avec icône -->
+              <bnum-icon class="alignself-center mr-2 material-symbols-outlined" data-loaded="true">pin</bnum-icon>
+              <span style="display:inline-block">${pin}</span>
+
+            </div>
+          </div>`;
+      };
+
       const Alarm = (
         await loadJsModule('mel_metapage', 'alarms', '/js/lib/calendar/')
       ).Alarm;
@@ -1207,11 +1247,9 @@ if (rcmail && window.mel_metapage) {
 
       html += `<div class=row style="margin-top:5px">${rec !== null ? `<div class=col-6>${rec}</div>` : ''}${alarm !== null ? `<div class=col-6><span class="icon-mel-notif mel-cal-icon"></span>Rappel : ${alarm}</div>` : ''}</div>`;
 
-      const hasLocation =
-        event.location !== undefined &&
-        event.location !== null &&
-        event.location !== '';
+      let hasLocation = !!event.location;
       let location_phone = '';
+      let location_visioconf = null;
       let location = '';
 
       if (hasLocation) {
@@ -1234,6 +1272,14 @@ if (rcmail && window.mel_metapage) {
             location_phone = element.split('(');
             element = location_phone[0];
             location_phone = location_phone[1].replace(')', '').split('|');
+          } else if (element.includes('|')) {
+            // c'est une audioconf on l'ajoutera pas à la loca
+            element = element.split('|');
+            location_visioconf = {
+              phone: element[0].split(':').at(-1),
+              pin: element[1],
+            };
+            continue;
           }
 
           location += mel_metapage.Functions.updateRichText(element)
@@ -1244,22 +1290,39 @@ if (rcmail && window.mel_metapage) {
         }
       }
 
-      //Affichage du lieu
-      if (hasLocation)
-        html += `<div id="location-mel-edited-calendar" class=row style="margin-top:15px"><div class=col-12 style="overflow: hidden;
-            /*white-space: nowrap;*/
-            display:flex;
-            text-overflow: ellipsis;"><span style="display: inline-block;
-            vertical-align: top;margin-top:5px" class="icon-mel-pin-location mel-cal-icon"></span><span style='display:inline-block'>${linkify(location)}</span></div></div>`;
+      if (!location) hasLocation = false;
 
-      if (location_phone !== '')
-        html += `<div id="location-mel-edited-calendar" class=row style="margin-top:15px"><div class=col-12 style="overflow: hidden;
-            /*white-space: nowrap;*/
-            display:flex;
-            text-overflow: ellipsis;"><span style="display: inline-block;
-            vertical-align: top;margin-top:5px" class="icon-mel-phone mel-cal-icon"></span><span style='display:inline-block'><a title="Rejoindre la visio par téléphone. Le code pin est ${location_phone[1]}." href="tel:${location_phone[0]};${location_phone[1]}#">${location_phone[0]}</a> - PIN : ${location_phone[1]}</span></div></div>`;
+      //Affichage du lieu
+      if (hasLocation) {
+        let locationHtml = linkify(location);
+
+        html += `
+          <div id="location-mel-edited-calendar" class="row" style="${rowStyle}">
+            <div class="col-12" style="${colStyle}">
+              <span style="${iconStyle}" class="icon-mel-pin-location mel-cal-icon"></span>
+              <span style="display:inline-block">${locationHtml}</span>
+            </div>
+          </div>`;
+      }
+
+      // Affichage téléphone + code PIN
+      if (location_phone !== '') {
+        const phoneNumber = location_phone[0];
+        const pinCode = location_phone[1];
+        const textKey = 'webconf_phone_2';
+        html += audioFunction(phoneNumber, pinCode, textKey, 'add_call');
+      }
+
+      if (location_visioconf) {
+        const textKey = 'event_title';
+        const { phone, pin } = location_visioconf;
+        html += audioFunction(phone, pin, textKey, 'call');
+      }
+
+      // Affichage catégorie / workspace
       if (event.categories !== undefined && event.categories.length > 0) {
         const isWsp = event.categories[0].includes('ws#');
+
         if (isWsp) {
           const wsp = event.categories[0].replace('ws#', '');
           const wsp_name =
@@ -1267,19 +1330,27 @@ if (rcmail && window.mel_metapage) {
               mel_metapage.Storage.title_workspaces,
               wsp,
             )[wsp] ?? wsp;
-          html += `<div class=row style="margin-top:5px">
-                                    <div class=col-12>
-                                        <span class="icon-mel-workplace mel-cal-icon"></span>
-                                        <a class='a-event-wsp-link' href="${mel_metapage.Functions.url('workspace', 'workspace', { _uid: wsp })}" style="color:#${rcmail.env.calendar_categories[event.categories[0]]}" >${wsp_name}</a>
-                                    </div>
-                                </div>`;
+
+          html += `
+            <div class="row" style="margin-top:5px">
+              <div class="col-12">
+                <span class="icon-mel-workplace mel-cal-icon"></span>
+                <a class="a-event-wsp-link"
+                  href="${mel_metapage.Functions.url('workspace', 'workspace', { _uid: wsp })}"
+                  style="color:#${rcmail.env.calendar_categories[event.categories[0]]}">
+                  ${wsp_name}
+                </a>
+              </div>
+            </div>`;
         } else {
-          html += `<div class=row style="margin-top:5px">
-                            <div class=col-12>
-                                <span style="color:#${rcmail.env.calendar_categories[event.categories[0]]}" class="icon-mel-label-full mel-cal-icon"></span>
-                                <span>${event.categories[0]}</span>
-                            </div>
-                        </div>`;
+          html += `
+            <div class="row" style="margin-top:5px">
+              <div class="col-12">
+                <span style="color:#${rcmail.env.calendar_categories[event.categories[0]]}"
+                      class="icon-mel-label-full mel-cal-icon"></span>
+                <span>${event.categories[0]}</span>
+              </div>
+            </div>`;
         }
       }
 
@@ -1519,26 +1590,30 @@ if (rcmail && window.mel_metapage) {
           `);
 
           // Comportement du toggle
-          $icsToggleWrapper.find('input[name="transmit_ics"]').on('change', function () {
-            const $desc = $icsToggleWrapper.find('#share-ics-description');
+          $icsToggleWrapper
+            .find('input[name="transmit_ics"]')
+            .on('change', function () {
+              const $desc = $icsToggleWrapper.find('#share-ics-description');
 
-            if (this.checked) {
-              $desc.text(rcmail.gettext('mel_metapage.share_ics_joined'));
-            } else {
-              $desc.text(rcmail.gettext('mel_metapage.share_ics_not_joined'));
-            }
-          });
+              if (this.checked) {
+                $desc.text(rcmail.gettext('mel_metapage.share_ics_joined'));
+              } else {
+                $desc.text(rcmail.gettext('mel_metapage.share_ics_not_joined'));
+              }
+            });
 
           $icsToggleWrapper.on('click', function (e) {
             e.stopImmediatePropagation();
           });
 
-          $icsToggleWrapper.find('label.custom-control-label').on('click', function (e) {
-            e.stopImmediatePropagation();
-            e.preventDefault();
-            const $cb = $icsToggleWrapper.find('input[name="transmit_ics"]');
-            $cb.prop('checked', !$cb.prop('checked')).trigger('change');
-          });
+          $icsToggleWrapper
+            .find('label.custom-control-label')
+            .on('click', function (e) {
+              e.stopImmediatePropagation();
+              e.preventDefault();
+              const $cb = $icsToggleWrapper.find('input[name="transmit_ics"]');
+              $cb.prop('checked', !$cb.prop('checked')).trigger('change');
+            });
 
           modal.appendToBody($icsToggleWrapper);
 
@@ -1600,7 +1675,9 @@ if (rcmail && window.mel_metapage) {
                 }
 
                 //
-                const transmitIcs = $icsToggleWrapper.find('input[name="transmit_ics"]').is(':checked');
+                const transmitIcs = $icsToggleWrapper
+                  .find('input[name="transmit_ics"]')
+                  .is(':checked');
 
                 modal.close();
                 rcmail.http_post(

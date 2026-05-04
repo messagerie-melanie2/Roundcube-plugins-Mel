@@ -1233,25 +1233,42 @@ bnum-hide {
 .popover span {
   background-color: transparent !important;
 }
+.popover li,
 .popover .menu .dropbutton a.dropdown,
 .popover a {
   background-color: var(--_idle-background);
   color: var(--_idle-color);
 }
+.popover li:hover,
 .popover .menu .dropbutton a.dropdown:hover,
-.popover a:hover {
+.popover a:hover,
+.popover li:hover + a.dropdown,
+.popover .menu .dropbutton a.dropdown:hover + a.dropdown,
+.popover a:hover + a.dropdown {
   background-color: var(--_hover-background);
   color: var(--_hover-color);
   --popover-hover-background-color: var(--_hover-background);
   --popover-hover-text-color: var(--_hover-color);
+  --popover-hover-icon-color: var(--_hover-color);
 }
+.popover li:hover + a.dropdown,
+.popover .menu .dropbutton a.dropdown:hover + a.dropdown,
+.popover a:hover + a.dropdown {
+  --_idle-background: var(--_hover-background);
+  --_idle-color: var(--_hover-color);
+}
+.popover li:active,
 .popover .menu .dropbutton a.dropdown:active,
 .popover a:active {
   background-color: var(--_active-background);
   color: var(--_active-color);
 }
+.popover li:focus,
 .popover .menu .dropbutton a.dropdown:focus,
 .popover a:focus {
   background-color: var(--_focus-background);
   color: var(--_focus-color);
+}
+.popover .menu li a[aria-haspopup]::after {
+  color: var(--_idle-color);
 }

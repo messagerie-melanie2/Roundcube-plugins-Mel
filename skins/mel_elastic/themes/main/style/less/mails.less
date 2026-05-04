@@ -31,19 +31,6 @@
     tr@{name} {
       &.message {
         position: relative;
-        span.attachment span::before {
-          color: @subject-color;
-        }
-
-        .flags {
-          color: @address-color;
-        }
-
-        &.flagged {
-          td {
-            color: @address-color;
-          }
-        }
 
         span.size {
           display: block;
@@ -55,59 +42,8 @@
 
         &:hover {
           td.subject {
-            span.fromto,
-            span.msgicon.status::before {
-              color: @address-color-hover !important;
-            }
-
-            span.msgicon.status:hover::before {
-              color: @button-color-hover !important;
-            }
-
-            span.date,
-            span.size,
-            a {
-              color: @subject-color-hover !important;
-            }
-
             span.date {
               display: block;
-            }
-          }
-
-          span.attachment span::before {
-            color: @subject-color-hover;
-          }
-
-          td.flags {
-            span.flagged:hover::before {
-              color: @button-color-hover !important;
-            }
-          }
-        }
-
-        td {
-          &.subject {
-            span {
-              &.fromto {
-                color: @address-color !important;
-              }
-
-              &.msgicon::before {
-                color: @button-color !important;
-              }
-
-              &.date {
-                color: @subject-color !important;
-              }
-
-              &.size {
-                color: @subject-color !important;
-              }
-            }
-
-            a {
-              color: @subject-color !important;
             }
           }
         }

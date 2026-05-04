@@ -310,3 +310,28 @@ table.messagelist {
 #list-toggle-button {
   display: none;
 }
+
+#layout-list {
+  --message-list-quick-filter-background-color: var(
+    --layout-list-header-background,
+    var(--bnum-header-color, var(--bnum-color-background, #fff))
+  );
+  --input-button-text-color: var(
+    --layout-list-header-color,
+    var(--bnum-body-text-color, var(--bnum-text-primary))
+  );
+}
+
+#list-select-mail-choices {
+  &.hidden {
+    // Hack
+    display: flex !important;
+  }
+}
+
+.messagelist.__no-rc td.subject span.size {
+  color: var(
+    --_no-rc-color,
+    var(--bnum-body-text-color, var(--bnum-text-primary))
+  );
+}

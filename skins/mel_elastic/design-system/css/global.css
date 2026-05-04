@@ -253,6 +253,7 @@ html.dark-mode-custom:root {
      donc on se base sur le classique pour le selected,
      sur le hover pour le hover
      et le selected pour le drag and drop*/
+  --bnum-color-list-idle: #161616;
   --bnum-color-list: #474747;
   --bnum-color-list-hover: #343434;
   --bnum-color-list-drag: #343434;
@@ -1160,25 +1161,25 @@ bnum-hide {
   --_bdsli-idle-bg: var(--bnum-list-item-bg-color, var(--bnum-color-list-idle, transparent));
   --_bdsli-hover-bg: var(--bnum-list-item-bg-color-hover, var(--bnum-color-list-hover, transparent));
   --_bdsli-active-bg: var(--bnum-list-item-bg-color-active, var(--bnum-color-list-drag, transparent));
-  background-color: var(--_bdsli-idle-bg);
-  color: var(--_bdsli-idle);
+  background-color: var(--_bdsli-background-color, var(--_bdsli-idle-bg));
+  color: var(--_bdsli-color, var(--_bdsli-idle));
 }
 .bds-list-item.selected,
 .bds-list-item:active,
 .bds-list-table tr.selected,
 .bds-list-table tr:active {
-  background-color: var(--_bdsli-active-bg);
-  color: var(--_bdsli-active);
+  --_bdsli-background-color: var(--_bdsli-active-bg);
+  --_bdsli-color: var(--_bdsli-active);
 }
 .bds-list-item.unread,
 .bds-list-table tr.unread {
-  background-color: var(--_bdsli-alt-bg);
-  color: var(--_bdsli-alt);
+  --_bdsli-background-color: var(--_bdsli-alt-bg);
+  --_bdsli-color: var(--_bdsli-alt);
 }
 .bds-list-item:hover,
 .bds-list-table tr:hover {
-  background-color: var(--_bdsli-hover-bg);
-  color: var(--_bdsli-hover);
+  --_bdsli-background-color: var(--_bdsli-hover-bg);
+  --_bdsli-color: var(--_bdsli-hover);
 }
 .bds-list-item.--no-shadow,
 .bds-list-table.--no-shadow tr {
@@ -1188,19 +1189,27 @@ bnum-hide {
 .bds-list-item.--no-rc,
 .bds-list-table.--no-rc,
 .bds-list-table.--no-rc tr {
+  --_no-rc-color: var(--_bdsli-color, var(--_bdsli-idle));
+  --message-list-content-mail-address-color: var(--_no-rc-color);
+  --message-list-content-mail-address-hover-color: var(--_no-rc-color);
+  --message-list-content-mail-subject-color: var(--_no-rc-color);
+  --message-list-content-mail-subject-hover-color: var(--_no-rc-color);
+  --message-list-content-selected-mail-subject-color: var(--_no-rc-color);
+  --mail-unread-icon-color: var(--_no-rc-color);
   --mail-unread-icon-hover-color: var(--_bdsli-hover);
   --mail-icon-hover-color: var(--_bdsli-hover);
 }
 .bds-list-item.--no-rc.selected,
 .bds-list-table.--no-rc tr.selected {
+  --message-list-content-selected-mail-subject-color: var(--_no-rc-color);
   --secondary-bckg-color: var(--_bdsli-active-bg);
   --secondary-text-color: var(--_bdsli-active, red);
   --message-list-content-selected-mail-button-color: var(--_bdsli-active, red);
   --message-list-content-selected-mail-subject-hover-color: var(--_bdsli-active, red);
-  --message-list-content-selected-mail-subject-color: var(--_bdsli-active, red);
   --message-list-content-selected-mail-address-hover-color: var(--_bdsli-active, red);
   --message-list-content-selected-mail-button-hover-color: var(--_bdsli-active, red);
   --mail-icon-hover-color: var(--_bdsli-active, red);
+  --message-list-content-selected-mail-subject-color: var(--_bdsli-active, red);
 }
 .bds-list-item.--no-rc.selected span,
 .bds-list-item.--no-rc.selected td,
@@ -1219,6 +1228,9 @@ bnum-hide {
 .bds-list-table.--no-rc tr:hover {
   --_bdsli-active-bg: var(--_bdsli-hover-bg);
   --_bdsli-alt-bg: var(--_bdsli-hover-bg);
+}
+.bds-list-table.--no-rc tr td {
+  background-color: transparent !important;
 }
 .popover {
   --_idle-background: var(--nav-button-background, transparent);

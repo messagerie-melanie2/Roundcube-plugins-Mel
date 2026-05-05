@@ -4,6 +4,7 @@
  */
 
 import { custom_alarm_dialog } from '../../../../../skins/mel_elastic/js_templates/custom_alarm.js';
+import ABaseMelObject from '../../../base_mel_object.js';
 import { MelEnumerable } from '../../../classes/enum.js';
 import { RcmailDialog, RcmailDialogButton } from '../../../classes/modal.js';
 import { EMPTY_STRING } from '../../../constants/constants.js';
@@ -19,6 +20,14 @@ import { FakePart, Parts } from './parts.js';
  * @package
  */
 class AlarmData {
+  /**
+   * Helper pour récupérer toute les fonctions utiles
+   * @readonly
+   */
+  get helper() {
+    return ABaseMelObject.Empty();
+  }
+
   /**
    *
    * @param {number} value Durée en minutes
@@ -77,10 +86,12 @@ class AlarmData {
    * @returns {{text:string, value:number}}
    */
   _getText(val, multiplier, text_key) {
+    const textPlugin = 'mel_metapage';
+
     let has_s = val > 1;
-    let offset = rcmail.gettext(
+    let offset = this.helper.getLocalization(
       `${text_key}${has_s ? '_plurial' : EMPTY_STRING}`,
-      'mel_metapage',
+      { plugin: textPlugin },
     );
 
     if (isDecimal(val)) {
@@ -90,10 +101,10 @@ class AlarmData {
 
       if (val === 1) offset = offset.slice(0, offset.length - 1);
 
-      offset += rcmail
-        .gettext(
+      offset += this.helper
+        .getLocalization(
           `${text_key}_after${has_s ? '_plurial' : EMPTY_STRING}`,
-          'mel_metapage',
+          { plugin: textPlugin },
         )
         .replaceAll('%0', tmp);
     }
@@ -242,13 +253,17 @@ export class AlarmPart extends FakePart {
     //Génère le tooltip du champs
     this._$fakeField.tooltip({
       title: () => {
+        const textPlugin = 'mel_metapage';
         const val = this._$fakeField.val();
 
         if (!!(val || false) && val !== 0 && val !== '0')
-          return rcmail
-            .gettext('rappel_of', 'mel_metapage')
+          this.helper
+            .getLocalization('rappel_of', { plugin: textPlugin })
             .replaceAll('%0', this._$fakeField.find('option:selected').text());
-        else return rcmail.gettext('no_rappel', 'mel_metapage');
+        else
+          return this.helper.getLocalization('no_rappel', {
+            plugin: textPlugin,
+          });
       },
       trigger: 'hover',
     });
@@ -289,9 +304,12 @@ export class AlarmPart extends FakePart {
             );
         }
       }
-    } else if (rcmail.env.calendar_default_alarm_offset) {
+    } else if (
+      this.helper.get_env('calendar_default_alarm_offset') &&
+      this.isStartEvent
+    ) {
       //Si il y a un rappel par défaut et pas de rappel dans l'évènement, on le rajoute
-      event.alarms = rcmail.env.calendar_default_alarm_offset;
+      event.alarms = this.helper.get_env('calendar_default_alarm_offset');
       event.alarms = `${event.alarms[0]}PT${event.alarms.slice(1)}:DISPLAY`;
       return this.init(event);
     }
@@ -300,7 +318,7 @@ export class AlarmPart extends FakePart {
     let $option;
     for (const alarm of options_alarms) {
       if (alarm.value === -2) {
-        if (rcmail.env['__local:part:isStartEvent'] === true) {
+        if (this.isStartEvent) {
           $option = MelHtml.start
             .option({ value: alarm.value })
             .text(alarm.label + this._getDefaultText())
@@ -327,7 +345,8 @@ export class AlarmPart extends FakePart {
     // le texte de l'option "Par défaut" entre "(aucun)" et "(15 min)".
 
     if (this.isStartEvent) {
-      $('#edit-allday')
+      this.helper
+        .select('#edit-allday')
         .off('change.alarmpart-label')
         .on('change.alarmpart-label', () => {
           const $opt = this._$fakeField.find('option[value= -2]');
@@ -347,7 +366,7 @@ export class AlarmPart extends FakePart {
    * @returns {string}
    */
   _getDefaultText() {
-    const isAllDay = $('#edit-allday').is(':checked');
+    const isAllDay = this.helper.select('#edit-allday').is(':checked');
     const minutes = this._getDefaultAlarmMinutes();
     if (isAllDay || minutes === null)
       return ` (${AlarmPart.PREDEFINED.find((x) => x.value === 0).label})`;
@@ -397,7 +416,7 @@ export class AlarmPart extends FakePart {
    * @override
    */
   onChange(...args) {
-    let $e = $(args[0].currentTarget);
+    let $e = this.helper.select(args[0].currentTarget);
 
     this.onUpdate(+$e.val());
   }
@@ -407,10 +426,17 @@ export class AlarmPart extends FakePart {
    * @package
    */
   _startModalCustomAlarm() {
+    const textPlugin = 'mel_metapage';
+    const titleText = this.helper.getLocalization('custom_alarm_title', {
+      plugin: textPlugin,
+    });
+    const validateButtonText = this.helper.getLocalization('validate', {
+      plugin: textPlugin,
+    });
     let $dialog = new RcmailDialog(custom_alarm_dialog, {
-      title: rcmail.gettext('custom_alarm_title', 'mel_metapage'),
+      title: titleText,
       buttons: [
-        new RcmailDialogButton(rcmail.gettext('validate', 'mel_metapage'), {
+        new RcmailDialogButton(validateButtonText, {
           click: () => {
             let offset = $dialog._$dialog
               .find('select')
@@ -467,7 +493,7 @@ export class AlarmPart extends FakePart {
       ],
     });
 
-    $($dialog._$dialog).on('dialogbeforeclose', () => {
+    this.helper.select($dialog._$dialog).on('dialogbeforeclose', () => {
       this._$fakeField.val(0);
     });
   }
@@ -480,7 +506,7 @@ export class AlarmPart extends FakePart {
    * @returns {number|null}
    */
   _getDefaultAlarmMinutes() {
-    const raw = rcmail.env.calendar_default_alarm_offset;
+    const raw = this.helper.get_env('calendar_default_alarm_offset');
     if (!raw) return null;
 
     const match = raw.match(/(\d+)([MHDW])/i);

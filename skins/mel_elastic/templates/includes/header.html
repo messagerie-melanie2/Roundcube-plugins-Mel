@@ -1,3 +1,5 @@
+<!-- Style -->
+ <!-- TODO : le placer dans un fichier css -->
 <style>
     #button-user {
         padding: 0;
@@ -13,6 +15,7 @@
     }
 </style>
 
+<!-- Lien rapides uniquement accessibles au clavier -->
 <div>
     <p class="sr-only">Liens rapides</p>
     <!-- <a class="sr-only sr-only-focusable mel-rapid-link" href="#" onclick="mm_st_OpenOrCreateFrame('home', true)">Accueil</a> -->
@@ -24,17 +27,25 @@
 </div>
 
 <bnum-header class="barup">
+    <!-- Logo du bnum -->
     <img slot="logo" src="skins/mel_elastic/images/bnumloader.svg" alt="Logo du bnum"/>
+    <!-- Titre de la page -->
     <bnum-hide breakdown="touch" slot="title"><h1><roundcube:object name="defaultpagetitle"  /></h1></bnum-hide>
 
+    <!-- Bouton créer -->
     <bnum-secondary-button slot="actions" data-icon="add" id="create-button" title="<roundcube:label name='mel_metapage.create_help' />"><roundcube:label name="mel_metapage.create" /></bnum-secondary-button>
+    <!-- Bouton des notes -->
     <bnum-icon-button slot="actions" id="button-notes" title="Notes">article</bnum-icon-button>
 
+    <!-- Bouton d'aide -->
     <roundcube:if condition="env:plugin_list_help===true"/>
         <bnum-icon-button id="button-help" slot="actions">help</bnum-icon-button>
     <roundcube:endif/>
+
+    <!-- Bouton des paramètres -->
     <bnum-icon-button slot="actions" id="button-settings">settings</bnum-icon-button>
 
+    <!-- Notifications -->
     <!-- <roundcube:if condition="env:plugin_list_notifications===true"/>
         <div id="notification-dropdown" class="dropdown" slot="actions" style="position: relative;">
           <button id="button-notifications" style="width: 1; height: 1; position: absolute; top:0;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
@@ -53,6 +64,7 @@
         !-- <bnum-icon-button slot="actions">notifications</bnum-icon-button> --
     <roundcube:endif/> -->
 
+    <!-- Bouton avatar utilisateur -->
     <button id="button-user" slot="avatar" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
         class="transparent-icon-button barup-icons-button"
         title="<roundcube:label name='mel_metapage.user_help' />">
@@ -70,14 +82,35 @@
     </button>
 </bnum-header>
 
-
+<!-- Bouton "Fermer le menu" en mode mobile -->
 <li style="display: none;" id=menu-small-li>
-<a aria-expanded="false" style="display: block!important;"  id="menu-small" class="menu-small stopAppMenu -normal-touch icofont-navigation-menu" label="fermer le menu" role=button href="#"><span class="button-inner inner"></span></a>
+<bnum-hide breakdown="touch" mode="up">
+    <a aria-expanded="false" style="display: block!important;"  id="menu-small" class="menu-small stopAppMenu -normal-touch icofont-navigation-menu" label="fermer le menu" role=button href="#"><span class="button-inner inner"></span></a>
+</bnum-hide>
 </li>
 
+<!-- Navigation secondaire de la navigation principale -->
+<nav style="display: none;flex-direction: column;" id=otherapps class="menu toolbar otherapps">
+    <nav style="flex:1;overflow: auto;">
+        <ul id=listotherapps class="listotherapps ignore-bullet">
+            <roundcube:container name="otherappsbar" id="otherappsbar" />
+        </ul>
+    </nav>
+    <nav>
+        <ul id="otherapp-down" class="ignore-bullet">
+            <roundcube:container name="settingsotherappsbar" id="settingsotherappsbar" />
+        </ul>
+    </nav>
+</nav>
+
+<!-- Options rapides -->
 <roundcube:include file="includes/quickoptions.html" />
+
+<!-- Menu utilisateur  -->
 <roundcube:include file="includes/user.html" />
 
+<!-- Script utilitaires -->
+<!-- TODO: Le placer dans un fichier js -->
 <script>
     (() => {
         /**

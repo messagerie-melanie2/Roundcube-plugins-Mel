@@ -1,3 +1,11 @@
+.barup {
+  --bnum-font-size-h1: var(--barup-title-font-size, var(--bnum-font-size-xl, 1rem));
+  --bnum-space-xl: var(--barup-title-margin-bottom, 0);
+}
+html.touch .barup {
+  left: 0;
+  width: 100%;
+}
 #input-search-mail {
   position: relative;
   --bnum-input-container-margin-bottom: 0;

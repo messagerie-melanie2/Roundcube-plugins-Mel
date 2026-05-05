@@ -289,7 +289,7 @@ export class AlarmPart extends FakePart {
             );
         }
       }
-    } else if (rcmail.env.calendar_default_alarm_offset) {
+    } else if (rcmail.env.calendar_default_alarm_offset && this.isStartEvent) {
       //Si il y a un rappel par défaut et pas de rappel dans l'évènement, on le rajoute
       event.alarms = rcmail.env.calendar_default_alarm_offset;
       event.alarms = `${event.alarms[0]}PT${event.alarms.slice(1)}:DISPLAY`;

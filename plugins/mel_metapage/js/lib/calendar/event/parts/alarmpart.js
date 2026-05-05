@@ -19,180 +19,180 @@ import { FakePart, Parts } from './parts.js';
  * @package
  */
 class AlarmData {
-	/**
-	 *
-	 * @param {number} value Durée en minutes
-	 */
-	constructor(value) {
-		/**
-		 * Durée en minutes
-		 * @member
-		 * @type {number}
-		 */
-		this.value = value;
-		/**
-		 * Unitée de la durée
-		 *
-		 * Peut être : ``-W`` pour semaine, ``-D`` pour jour, ``-H`` pour heure, ``-M`` pour minute
-		 * @member
-		 * @readonly
-		 * @type {string}
-		 */
-		this.offset = EMPTY_STRING;
+  /**
+   *
+   * @param {number} value Durée en minutes
+   */
+  constructor(value) {
+    /**
+     * Durée en minutes
+     * @member
+     * @type {number}
+     */
+    this.value = value;
+    /**
+     * Unitée de la durée
+     *
+     * Peut être : ``-W`` pour semaine, ``-D`` pour jour, ``-H`` pour heure, ``-M`` pour minute
+     * @member
+     * @readonly
+     * @type {string}
+     */
+    this.offset = EMPTY_STRING;
 
-		Object.defineProperty(this, 'offset', {
-			get: () => {
-				if (this.value >= 60 * 24 * 7) {
-					return AlarmData.OFFSETS.WEEK;
-				} else if (this.value >= 60 * 24) {
-					return AlarmData.OFFSETS.DAY;
-				} else if (this.value >= 60) {
-					return AlarmData.OFFSETS.HOUR;
-				} else {
-					return AlarmData.OFFSETS.MINUTE;
-				}
-			},
-		});
-	}
+    Object.defineProperty(this, 'offset', {
+      get: () => {
+        if (this.value >= 60 * 24 * 7) {
+          return AlarmData.OFFSETS.WEEK;
+        } else if (this.value >= 60 * 24) {
+          return AlarmData.OFFSETS.DAY;
+        } else if (this.value >= 60) {
+          return AlarmData.OFFSETS.HOUR;
+        } else {
+          return AlarmData.OFFSETS.MINUTE;
+        }
+      },
+    });
+  }
 
-	/**
-	 * Récupère le texte d'une valeur sous format : x unite et x sous unités.
-	 *
-	 * Prend en compte les pluriels.
-	 *
-	 * Dans la localization du plugin, il doit y avoir les clés suivantes : `text_key`, `text_key_plurial`, `text_key_after`, `text_key_after_plurial`.
-	 *
-	 * (Remplacez ``text_key`` par le nom de la clé que vous voulez utiliser, exemple : ``week`` pour la semaine, ``day`` pour la journée etc...)
-	 *
-	 * `_plurial` signifie le pluriel
-	 *
-	 * `_after` signifie l'affichage de la deuxième unitée de temps. Celle ci doit contenir `%0`.
-	 *
-	 * example : `hour` => heure, `hour_plurial` => heures, `hour_after` =>  et %0 minute, `hour_after_plurial` =>  et %0 minutes
-	 *
-	 * @private
-	 * @param {number} multiplier Le multiplier qui permet de déduire le nombre de sous unitées sous forme entière (ex: 7 pour les semaines, 24 pour les jours etc...)
-	 * @param {number} val Valeur du rappel en minute
-	 * @param {string} text_key Clé qui sera utiliser par `rcmail.gettext()`
-	 * @returns {{text:string, value:number}}
-	 */
-	_getText(val, multiplier, text_key) {
-		let has_s = val > 1;
-		let offset = rcmail.gettext(
-			`${text_key}${has_s ? '_plurial' : EMPTY_STRING}`,
-			'mel_metapage',
-		);
+  /**
+   * Récupère le texte d'une valeur sous format : x unite et x sous unités.
+   *
+   * Prend en compte les pluriels.
+   *
+   * Dans la localization du plugin, il doit y avoir les clés suivantes : `text_key`, `text_key_plurial`, `text_key_after`, `text_key_after_plurial`.
+   *
+   * (Remplacez ``text_key`` par le nom de la clé que vous voulez utiliser, exemple : ``week`` pour la semaine, ``day`` pour la journée etc...)
+   *
+   * `_plurial` signifie le pluriel
+   *
+   * `_after` signifie l'affichage de la deuxième unitée de temps. Celle ci doit contenir `%0`.
+   *
+   * example : `hour` => heure, `hour_plurial` => heures, `hour_after` =>  et %0 minute, `hour_after_plurial` =>  et %0 minutes
+   *
+   * @private
+   * @param {number} multiplier Le multiplier qui permet de déduire le nombre de sous unitées sous forme entière (ex: 7 pour les semaines, 24 pour les jours etc...)
+   * @param {number} val Valeur du rappel en minute
+   * @param {string} text_key Clé qui sera utiliser par `rcmail.gettext()`
+   * @returns {{text:string, value:number}}
+   */
+  _getText(val, multiplier, text_key) {
+    let has_s = val > 1;
+    let offset = rcmail.gettext(
+      `${text_key}${has_s ? '_plurial' : EMPTY_STRING}`,
+      'mel_metapage',
+    );
 
-		if (isDecimal(val)) {
-			const tmp = Math.round((val - ~~val) * multiplier);
-			val = ~~val;
-			has_s = tmp > 1;
+    if (isDecimal(val)) {
+      const tmp = Math.round((val - ~~val) * multiplier);
+      val = ~~val;
+      has_s = tmp > 1;
 
-			if (1 === val) offset = offset.slice(0, offset.length - 1);
+      if (val === 1) offset = offset.slice(0, offset.length - 1);
 
-			offset += rcmail
-				.gettext(
-					`${text_key}_after${has_s ? '_plurial' : EMPTY_STRING}`,
-					'mel_metapage',
-				)
-				.replaceAll('%0', tmp);
-		}
+      offset += rcmail
+        .gettext(
+          `${text_key}_after${has_s ? '_plurial' : EMPTY_STRING}`,
+          'mel_metapage',
+        )
+        .replaceAll('%0', tmp);
+    }
 
-		return { text: offset, value: val };
-	}
+    return { text: offset, value: val };
+  }
 
-	/**
-	 * Récupère le temps convertit à partir de l'unitée.
-	 * @param {boolean} include_week Par défaut : ``false``. Si ``true``, inclut les semaines dans le calcul.
-	 * @returns {number}
-	 */
-	getTime(include_week = false) {
-		let val;
-		switch (this.offset) {
-			case AlarmData.OFFSETS.WEEK:
-				if (include_week) {
-					val = this.value / 60 / 24 / 7;
-					break;
-				}
-			case AlarmData.OFFSETS.DAY:
-				val = this.value / 60 / 24;
-				break;
+  /**
+   * Récupère le temps convertit à partir de l'unitée.
+   * @param {boolean} include_week Par défaut : ``false``. Si ``true``, inclut les semaines dans le calcul.
+   * @returns {number}
+   */
+  getTime(include_week = false) {
+    let val;
+    switch (this.offset) {
+      case AlarmData.OFFSETS.WEEK:
+        if (include_week) {
+          val = this.value / 60 / 24 / 7;
+          break;
+        }
+      case AlarmData.OFFSETS.DAY:
+        val = this.value / 60 / 24;
+        break;
 
-			case AlarmData.OFFSETS.HOUR:
-				val = this.value / 60;
-				break;
+      case AlarmData.OFFSETS.HOUR:
+        val = this.value / 60;
+        break;
 
-			case AlarmData.OFFSETS.MINUTE:
-				val = this.value;
-				break;
+      case AlarmData.OFFSETS.MINUTE:
+        val = this.value;
+        break;
 
-			default:
-				val = 0;
-				break;
-		}
+      default:
+        val = 0;
+        break;
+    }
 
-		return val;
-	}
+    return val;
+  }
 
-	/**
-	 * Affiche la donnée en texte lisible et compréhensible pour un être humain.
-	 * @returns {string}
-	 */
-	toString() {
-		let val = this.getTime(true);
-		let text_key = EMPTY_STRING;
-		let multiplier = 0;
+  /**
+   * Affiche la donnée en texte lisible et compréhensible pour un être humain.
+   * @returns {string}
+   */
+  toString() {
+    let val = this.getTime(true);
+    let text_key = EMPTY_STRING;
+    let multiplier = 0;
 
-		switch (this.offset) {
-			case AlarmData.OFFSETS.WEEK:
-				text_key = 'week';
-				multiplier = 7;
+    switch (this.offset) {
+      case AlarmData.OFFSETS.WEEK:
+        text_key = 'week';
+        multiplier = 7;
 
-				break;
-			case AlarmData.OFFSETS.DAY:
-				text_key = 'day';
-				multiplier = 24;
-				break;
-			case AlarmData.OFFSETS.HOUR:
-				text_key = 'hour';
-				multiplier = 60;
-				break;
+        break;
+      case AlarmData.OFFSETS.DAY:
+        text_key = 'day';
+        multiplier = 24;
+        break;
+      case AlarmData.OFFSETS.HOUR:
+        text_key = 'hour';
+        multiplier = 60;
+        break;
 
-			default:
-				text_key = 'minute';
-				break;
-		}
+      default:
+        text_key = 'minute';
+        break;
+    }
 
-		const { text, value } = this._getText(val, multiplier, text_key);
-		const offset = text;
-		val = value;
+    const { text, value } = this._getText(val, multiplier, text_key);
+    const offset = text;
+    val = value;
 
-		return `${val} ${offset}`;
-	}
+    return `${val} ${offset}`;
+  }
 
-	/**
-	 * Créer une instance de ``AlarmData`` à partir d'une durée et d'une unitée.
-	 * @static
-	 * @param {number} val Durée en minutes
-	 * @param {string} offset Unitée de la durée. Peut être : ``-W`` pour semaine, ``-D`` pour jour, ``-H`` pour heure, ``-M`` pour minute
-	 * @returns {AlarmData}
-	 * @see {@link AlarmData.OFFSETS}
-	 */
-	static From(val, offset) {
-		switch (offset) {
-			case AlarmData.OFFSETS.WEEK:
-				val *= 7;
-			case AlarmData.OFFSETS.DAY:
-				val *= 24;
-			case AlarmData.OFFSETS.HOUR:
-				val *= 60;
+  /**
+   * Créer une instance de ``AlarmData`` à partir d'une durée et d'une unitée.
+   * @static
+   * @param {number} val Durée en minutes
+   * @param {string} offset Unitée de la durée. Peut être : ``-W`` pour semaine, ``-D`` pour jour, ``-H`` pour heure, ``-M`` pour minute
+   * @returns {AlarmData}
+   * @see {@link AlarmData.OFFSETS}
+   */
+  static From(val, offset) {
+    switch (offset) {
+      case AlarmData.OFFSETS.WEEK:
+        val *= 7;
+      case AlarmData.OFFSETS.DAY:
+        val *= 24;
+      case AlarmData.OFFSETS.HOUR:
+        val *= 60;
 
-			default:
-				break;
-		}
+      default:
+        break;
+    }
 
-		return new AlarmData(val);
-	}
+    return new AlarmData(val);
+  }
 }
 
 /**
@@ -203,10 +203,10 @@ class AlarmData {
  * @see {@link AlarmData.From}
  */
 AlarmData.OFFSETS = {
-	WEEK: '-W',
-	DAY: '-D',
-	HOUR: '-H',
-	MINUTE: '-M',
+  WEEK: '-W',
+  DAY: '-D',
+  HOUR: '-H',
+  MINUTE: '-M',
 };
 
 /**
@@ -217,286 +217,289 @@ AlarmData.OFFSETS = {
  * @frommodule EventView/Parts
  */
 export class AlarmPart extends FakePart {
-	/**
-	 *
-	 * @param {external:jQuery} $alarm_type Champ qui gère le type d'alarme
-	 * @param {external:jQuery} $alarm_offset Champ qui gère la durée de l'alarme
-	 * @param {external:jQuery} $alarf_offset_type Champ qui gère l'unitée de l'alarme
-	 * @param {external:jQuery} $alarm Champ visuel qui sera afficher à la place du champ de base
-	 */
-	constructor($alarm_type, $alarm_offset, $alarf_offset_type, $alarm) {
-		super($alarm_offset, $alarm, Parts.MODE.change);
-		/**
-		 * Champ qui gère le type d'alarme
-		 * @type {external:jQuery}
-		 * @package
-		 */
-		this._$fieldAlarmType = $alarm_type;
-		/**
-		 * Champ qui gère l'unitée de l'alarme
-		 * @type {external:jQuery}
-		 * @package
-		 */
-		this._$fieldAlarmOffsetType = $alarf_offset_type;
+  /**
+   *
+   * @param {external:jQuery} $alarm_type Champ qui gère le type d'alarme
+   * @param {external:jQuery} $alarm_offset Champ qui gère la durée de l'alarme
+   * @param {external:jQuery} $alarf_offset_type Champ qui gère l'unitée de l'alarme
+   * @param {external:jQuery} $alarm Champ visuel qui sera afficher à la place du champ de base
+   */
+  constructor($alarm_type, $alarm_offset, $alarf_offset_type, $alarm) {
+    super($alarm_offset, $alarm, Parts.MODE.change);
+    /**
+     * Champ qui gère le type d'alarme
+     * @type {external:jQuery}
+     * @package
+     */
+    this._$fieldAlarmType = $alarm_type;
+    /**
+     * Champ qui gère l'unitée de l'alarme
+     * @type {external:jQuery}
+     * @package
+     */
+    this._$fieldAlarmOffsetType = $alarf_offset_type;
 
-		//Génère le tooltip du champs
-		this._$fakeField.tooltip({
-			title: () => {
-				const val = this._$fakeField.val();
+    //Génère le tooltip du champs
+    this._$fakeField.tooltip({
+      title: () => {
+        const val = this._$fakeField.val();
 
-				if (!!(val || false) && 0 !== val && '0' !== val)
-					return rcmail
-						.gettext('rappel_of', 'mel_metapage')
-						.replaceAll('%0', this._$fakeField.find('option:selected').text());
-				else return rcmail.gettext('no_rappel', 'mel_metapage');
-			},
-			trigger: 'hover',
-		});
-	}
+        if (!!(val || false) && val !== 0 && val !== '0')
+          return rcmail
+            .gettext('rappel_of', 'mel_metapage')
+            .replaceAll('%0', this._$fakeField.find('option:selected').text());
+        else return rcmail.gettext('no_rappel', 'mel_metapage');
+      },
+      trigger: 'hover',
+    });
+  }
 
-	/**
-	 * Initialise la classe par rapport à l'évènement
-	 * @param {*} event Evènement de plugin `calendar`
-	 * @returns {AlarmPart} Chaînage
-	 */
-	init(event) {
-		this._$fakeField.html(EMPTY_STRING);
-		let options_alarms = AlarmPart.PREDEFINED;
-		let val = 0;
+  /**
+   * Initialise la classe par rapport à l'évènement
+   * @param {*} event Evènement de plugin `calendar`
+   * @returns {AlarmPart} Chaînage
+   */
+  init(event) {
+    this._$fakeField.html(EMPTY_STRING);
+    let options_alarms = AlarmPart.PREDEFINED;
+    let val = 0;
 
-		// Ajoute une option si une alarm existe déjà
-		if (event.alarms) {
-			const alarm = new Alarm(event.alarms);
+    // Ajoute une option si une alarm existe déjà
+    if (event.alarms) {
+      const alarm = new Alarm(event.alarms);
 
-			if (0 !== alarm.getTime()) {
-				const time = alarm.getTime() / 1000 / 60;
-				val = time;
+      if (alarm.getTime() !== 0) {
+        const time = alarm.getTime() / 1000 / 60;
+        val = time;
 
-				if (
-					!MelEnumerable.from(AlarmPart.PREDEFINED)
-						.where(x => x.value === time)
-						.any()
-				) {
-					const data = new AlarmData(time);
-					const str = data.toString();
-					options_alarms = MelEnumerable.from(options_alarms)
-						.aggregate({
-							value: data.value,
-							label: str,
-						})
-						.orderBy(x =>
-							-1 === x.value ? Number.POSITIVE_INFINITY : x.value,
-						);
-				}
-			}
-		} else if (rcmail.env.calendar_default_alarm_offset) {
-			//Si il y a un rappel par défaut et pas de rappel dans l'évènement, on le rajoute
-			event.alarms = rcmail.env.calendar_default_alarm_offset;
-			event.alarms = `${event.alarms[0]}PT${event.alarms.slice(1)}:DISPLAY`;
-			return this.init(event);
-		}
+        if (
+          !MelEnumerable.from(AlarmPart.PREDEFINED)
+            .where((x) => x.value === time)
+            .any()
+        ) {
+          const data = new AlarmData(time);
+          const str = data.toString();
+          options_alarms = MelEnumerable.from(options_alarms)
+            .aggregate({
+              value: data.value,
+              label: str,
+            })
+            .orderBy((x) =>
+              x.value === -1 ? Number.POSITIVE_INFINITY : x.value,
+            );
+        }
+      }
+    } else if (rcmail.env.calendar_default_alarm_offset) {
+      //Si il y a un rappel par défaut et pas de rappel dans l'évènement, on le rajoute
+      event.alarms = rcmail.env.calendar_default_alarm_offset;
+      event.alarms = `${event.alarms[0]}PT${event.alarms.slice(1)}:DISPLAY`;
+      return this.init(event);
+    }
 
-		//Génère les options du select
-		let $option;
-		for (const alarm of options_alarms) {
-			if (alarm.value === -2  ) {
-				if(rcmail.env['__local:part:isStartEvent'] === true){
-					$option = MelHtml.start
-						.option({ value: alarm.value })
-						.text(alarm.label + this._getDefaultText())
-						.end()
-						.generate()
-						.appendTo(this._$fakeField);
-					$option.attr('selected', 'selected').data('label', alarm.label);
-				}
-				
-			}
-			else{
-				$option = MelHtml.start
-					.option({ value: alarm.value })
-					.text(alarm.label )
-					.end()
-					.generate()
-					.appendTo(this._$fakeField);
-				if (alarm.value === val) {
-					$option.attr('selected', 'selected');
-				}
-			}
+    //Génère les options du select
+    let $option;
+    for (const alarm of options_alarms) {
+      if (alarm.value === -2) {
+        if (rcmail.env['__local:part:isStartEvent'] === true) {
+          $option = MelHtml.start
+            .option({ value: alarm.value })
+            .text(alarm.label + this._getDefaultText())
+            .end()
+            .generate()
+            .appendTo(this._$fakeField);
+          $option.attr('selected', 'selected').data('label', alarm.label);
+        }
+      } else {
+        $option = MelHtml.start
+          .option({ value: alarm.value })
+          .text(alarm.label)
+          .end()
+          .generate()
+          .appendTo(this._$fakeField);
+        if (alarm.value === val) {
+          $option.attr('selected', 'selected');
+        }
+      }
+    }
+    $option = null;
 
-		}
-		$option = null;
+    // En mode création : écoute le basculement allDay pour mettre à jour
+    // le texte de l'option "Par défaut" entre "(aucun)" et "(15 min)".
 
-		// En mode création : écoute le basculement allDay pour mettre à jour
-		// le texte de l'option "Par défaut" entre "(aucun)" et "(15 min)".
+    if (this.isStartEvent) {
+      $('#edit-allday')
+        .off('change.alarmpart-label')
+        .on('change.alarmpart-label', () => {
+          const $opt = this._$fakeField.find('option[value= -2]');
+          $opt.text($opt.data('label') + this._getDefaultText());
+        });
+    }
 
-		if (this.isStartEvent) {
-			$('#edit-allday').off('change.alarmpart-label').on('change.alarmpart-label', () => {
-				const $opt = this._$fakeField.find(`option[value= -2]`);
-				$opt.text($opt.data('label') + this._getDefaultText());
-			});
-		}
+    return this;
+  }
 
-		return this;
-	}
+  /**
+   * Retourne le texte à afficher entre parenthèses pour l'option « Par défaut ».
+   *
+   * Retourne ``" (aucun)"`` si ``allDay`` est ``true`` ou si aucun rappel par défaut
+   * n'est configuré, sinon retourne la durée lisible, ex. ``" (10 minutes)"``.
+   *
+   * @returns {string}
+   */
+  _getDefaultText() {
+    const isAllDay = $('#edit-allday').is(':checked');
+    const minutes = this._getDefaultAlarmMinutes();
+    if (isAllDay || minutes === null)
+      return ` (${AlarmPart.PREDEFINED.find((x) => x.value === 0).label})`;
+    return ` (${new AlarmData(minutes).toString()})`;
+  }
 
-	/**
-	 * Retourne le texte à afficher entre parenthèses pour l'option « Par défaut ».
-	 *
-	 * Retourne ``" (aucun)"`` si ``allDay`` est ``true`` ou si aucun rappel par défaut
-	 * n'est configuré, sinon retourne la durée lisible, ex. ``" (10 minutes)"``.
-	 * 
-	 * @returns {string}
-	 */
-	_getDefaultText() {
-		const isAllDay = $('#edit-allday').is(':checked');
-		const minutes = this._getDefaultAlarmMinutes();
-		if (isAllDay || minutes === null) return ` (${AlarmPart.PREDEFINED.find(x => x.value === 0).label})`;
-		return ` (${new AlarmData(minutes).toString()})`;
-	}
+  /**
+   * Action qui sera effectué lors de la mise à jour du champ visuel
+   * @param {string} val Valeur du select
+   * @override
+   */
+  onUpdate(val) {
+    switch (val) {
+      case undefined:
+      case null:
+      case 0:
+        this._$field.val(0);
+        this._$fieldAlarmType.val(EMPTY_STRING).change();
+        this._$fieldAlarmOffsetType.val(AlarmData.OFFSETS.MINUTE).change();
+        break;
 
-	/**
-	 * Action qui sera effectué lors de la mise à jour du champ visuel
-	 * @param {string} val Valeur du select
-	 * @override
-	 */
-	onUpdate(val) {
-		switch (val) {
-			case undefined:
-			case null:
-			case 0:
-				this._$field.val(0);
-				this._$fieldAlarmType.val(EMPTY_STRING).change();
-				this._$fieldAlarmOffsetType.val(AlarmData.OFFSETS.MINUTE).change();
-				break;
+      case -1:
+        this._startModalCustomAlarm(val);
+        break;
 
-			case -1:
-				this._startModalCustomAlarm(val);
-				break;
+      default:
+        // eslint-disable-next-line no-case-declarations
+        const alarm = new AlarmData(val);
+        this._$fieldAlarmType.val('DISPLAY').change();
+        this._$field.val(alarm.getTime());
+        this._$fieldAlarmOffsetType
+          .val(
+            AlarmData.OFFSETS.WEEK === alarm.offset
+              ? AlarmData.OFFSETS.DAY
+              : alarm.offset,
+          )
+          .change();
+        break;
+    }
+  }
 
-			default:
-				// eslint-disable-next-line no-case-declarations
-				const alarm = new AlarmData(val);
-				this._$fieldAlarmType.val('DISPLAY').change();
-				this._$field.val(alarm.getTime());
-				this._$fieldAlarmOffsetType
-					.val(
-						AlarmData.OFFSETS.WEEK === alarm.offset
-							? AlarmData.OFFSETS.DAY
-							: alarm.offset,
-					)
-					.change();
-				break;
-		}
-	}
+  /**
+   * Action qui sera appelé lors de la mise à jour du champ visuel
+   *
+   * Appele la fonction @see {@link AlarmPart~onUpdate}
+   * @param  {...any} args
+   * @override
+   */
+  onChange(...args) {
+    let $e = $(args[0].currentTarget);
 
-	/**
-	 * Action qui sera appelé lors de la mise à jour du champ visuel
-	 *
-	 * Appele la fonction @see {@link AlarmPart~onUpdate}
-	 * @param  {...any} args
-	 * @override
-	 */
-	onChange(...args) {
-		let $e = $(args[0].currentTarget);
+    this.onUpdate(+$e.val());
+  }
 
-		this.onUpdate(+$e.val());
-	}
+  /**
+   * Ouvre une boîte de dialogue pour choisir une alarme personnalisée
+   * @package
+   */
+  _startModalCustomAlarm() {
+    let $dialog = new RcmailDialog(custom_alarm_dialog, {
+      title: rcmail.gettext('custom_alarm_title', 'mel_metapage'),
+      buttons: [
+        new RcmailDialogButton(rcmail.gettext('validate', 'mel_metapage'), {
+          click: () => {
+            let offset = $dialog._$dialog
+              .find('select')
+              .attr('disabled', 'disabled')
+              .addClass('disabled')
+              .val();
+            let value = +$dialog._$dialog
+              .find('input')
+              .attr('disabled', 'disabled')
+              .addClass('disabled')
+              .val();
 
-	/**
-	 * Ouvre une boîte de dialogue pour choisir une alarme personnalisée
-	 * @package
-	 */
-	_startModalCustomAlarm() {
-		let $dialog = new RcmailDialog(custom_alarm_dialog, {
-			title: rcmail.gettext('custom_alarm_title', 'mel_metapage'),
-			buttons: [
-				new RcmailDialogButton(rcmail.gettext('validate', 'mel_metapage'), {
-					click: () => {
-						let offset = $dialog._$dialog
-							.find('select')
-							.attr('disabled', 'disabled')
-							.addClass('disabled')
-							.val();
-						let value = +$dialog._$dialog
-							.find('input')
-							.attr('disabled', 'disabled')
-							.addClass('disabled')
-							.val();
+            if (AlarmData.OFFSETS.WEEK === offset) {
+              offset = AlarmData.OFFSETS.DAY;
+              value *= 7;
+            }
 
-						if (AlarmData.OFFSETS.WEEK === offset) {
-							offset = AlarmData.OFFSETS.DAY;
-							value *= 7;
-						}
+            const alarm = AlarmData.From(value, offset);
+            this.onUpdate(alarm.value);
+            if (
+              !MelEnumerable.from(AlarmPart.PREDEFINED)
+                .where((x) => x.value === alarm.value)
+                .any()
+            ) {
+              this._$fakeField.html(EMPTY_STRING);
+              let enu = MelEnumerable.from(AlarmPart.PREDEFINED)
+                .aggregate([
+                  {
+                    value: alarm.value,
+                    label: alarm.toString(),
+                  },
+                ])
+                .orderBy((x) =>
+                  x.value === -1 ? Number.POSITIVE_INFINITY : x.value,
+                )
+                .toArray();
 
-						const alarm = AlarmData.From(value, offset);
-						this.onUpdate(alarm.value);
-						if (
-							!MelEnumerable.from(AlarmPart.PREDEFINED)
-								.where(x => x.value === alarm.value)
-								.any()
-						) {
-							this._$fakeField.html(EMPTY_STRING);
-							let enu = MelEnumerable.from(AlarmPart.PREDEFINED)
-								.aggregate([
-									{
-										value: alarm.value,
-										label: alarm.toString(),
-									},
-								])
-								.orderBy(x =>
-									-1 === x.value ? Number.POSITIVE_INFINITY : x.value,
-								)
-								.toArray();
+              for (const iterator of enu) {
+                MelHtml.start
+                  .option({ value: iterator.value })
+                  .text(iterator.label)
+                  .end()
+                  .generate()
+                  .appendTo(this._$fakeField);
+              }
+            }
 
-							for (const iterator of enu) {
-								MelHtml.start
-									.option({ value: iterator.value })
-									.text(iterator.label)
-									.end()
-									.generate()
-									.appendTo(this._$fakeField);
-							}
-						}
+            setTimeout(() => {
+              this._$fakeField.val(alarm.value);
+              $dialog.destroy();
+            }, 10);
+          },
+        }),
+      ],
+    });
 
-						setTimeout(() => {
-							this._$fakeField.val(alarm.value);
-							$dialog.destroy();
-						}, 10);
-					},
-				}),
-			],
-		});
+    $($dialog._$dialog).on('dialogbeforeclose', () => {
+      this._$fakeField.val(0);
+    });
+  }
 
-		$($dialog._$dialog).on('dialogbeforeclose', () => {
-			this._$fakeField.val(0);
-		});
-	}
+  /**
+   * Récupère la valeur du rappel par défaut en minutes depuis l'environnement
+   * rcmail, ou ``null`` si aucun rappel par défaut n'est configuré.
+   *
+   * @private
+   * @returns {number|null}
+   */
+  _getDefaultAlarmMinutes() {
+    const raw = rcmail.env.calendar_default_alarm_offset;
+    if (!raw) return null;
 
-	/**
-	 * Récupère la valeur du rappel par défaut en minutes depuis l'environnement
-	 * rcmail, ou ``null`` si aucun rappel par défaut n'est configuré.
-	 *
-	 * @private
-	 * @returns {number|null}
-	 */
-	_getDefaultAlarmMinutes() {
-		const raw = rcmail.env.calendar_default_alarm_offset;
-		if (!raw) return null;
- 
-		const match = raw.match(/(\d+)([MHDW])/i);
-		if (!match) return null;
- 
-		const num = parseInt(match[1], 10);
-		const unit = match[2].toUpperCase();
- 
-		switch (unit) {
-			case 'W': return num * 60 * 24 * 7;
-			case 'D': return num * 60 * 24;
-			case 'H': return num * 60;
-			default:  return num; // 'M'
-		}
-	} 
+    const match = raw.match(/(\d+)([MHDW])/i);
+    if (!match) return null;
 
+    const num = parseInt(match[1], 10);
+    const unit = match[2].toUpperCase();
+
+    switch (unit) {
+      case 'W':
+        return num * 60 * 24 * 7;
+      case 'D':
+        return num * 60 * 24;
+      case 'H':
+        return num * 60;
+      default:
+        return num; // 'M'
+    }
+  }
 }
 
 /**
@@ -510,16 +513,16 @@ export class AlarmPart extends FakePart {
  * @type {Array<PredefinedOption>}
  */
 AlarmPart.PREDEFINED = [
-	{ label: 'Aucun', value: 0 },
-	{ label: '5 minutes', value: 5 },
-	{ label: '10 minutes', value: 10 },
-	{ label: '15 minutes', value: 15 },
-	{ label: '30 minutes', value: 30 },
-	{ label: '1 heure', value: 60 },
-	{ label: '2 heures', value: 120 },
-	{ label: '12 heures', value: 60 * 12 },
-	{ label: '1 jour', value: 60 * 24 },
-	{ label: '1 semaine', value: 60 * 24 * 7 },
-	{ label: 'Personnalisé', value: -1 },
-	{ label: 'Par défaut', value: -2 },
+  { label: 'Aucun', value: 0 },
+  { label: '5 minutes', value: 5 },
+  { label: '10 minutes', value: 10 },
+  { label: '15 minutes', value: 15 },
+  { label: '30 minutes', value: 30 },
+  { label: '1 heure', value: 60 },
+  { label: '2 heures', value: 120 },
+  { label: '12 heures', value: 60 * 12 },
+  { label: '1 jour', value: 60 * 24 },
+  { label: '1 semaine', value: 60 * 24 * 7 },
+  { label: 'Personnalisé', value: -1 },
+  { label: 'Par défaut', value: -2 },
 ];

@@ -15418,7 +15418,7 @@ let HTMLBnumHeader = (() => {
          * @inheritdoc
          */
         _p_buildDOM(container) {
-            if (this.breakpoints ?? true) {
+            if (!(this.breakpoints ?? true)) {
                 for (const hide of container.querySelectorAll(HTMLBnumHide.TAG)) {
                     hide.disable();
                 }

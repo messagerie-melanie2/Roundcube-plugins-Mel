@@ -12334,11 +12334,15 @@ let HTMLBnumHide = (() => {
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
+        /**
+         * Si le comportement est actif ou non
+         */
+        #_disabled = (__runInitializers(this, _instanceExtraInitializers), false);
         //#region Private fields
         /**
          * Liste de requêtes média pour le suivi du breakpoint.
          */
-        #_mediaQueryList = (__runInitializers(this, _instanceExtraInitializers), null);
+        #_mediaQueryList = null;
         /**
          * Référence liée de la fonction de gestion du changement de média pour l'abonnement/désabonnement.
          */
@@ -12373,6 +12377,24 @@ let HTMLBnumHide = (() => {
             this.#_setupListener();
         }
         //#endregion Lifecycle
+        //#region Publics Methods
+        /**
+         * Active la mécanique
+         * @returns Chaîne
+         */
+        enable() {
+            this.#_disabled = false;
+            return this;
+        }
+        /**
+         * Désactive la mécanique
+         * @returns Chaîne
+         */
+        disable() {
+            this.#_disabled = true;
+            return this;
+        }
+        //#endregion Publics Methods
         //#region Private methods
         /**
          * Configure l'écouteur `matchMedia` en fonction des attributs actuels.
@@ -12391,7 +12413,7 @@ let HTMLBnumHide = (() => {
                 ? `(min-width: ${width}px)`
                 : `(max-width: ${width - 0.02}px)`;
             this.#_mediaQueryList = window.matchMedia(query);
-            this._handleChange(this.#_mediaQueryList);
+            this.#_forceHandleChange(this.#_mediaQueryList);
             this.#_mediaQueryList.addEventListener('change', this.#_boundHandleChange);
         }
         /**
@@ -12410,11 +12432,27 @@ let HTMLBnumHide = (() => {
          * @param mq Objet MediaQueryList ou événement associé.
          */
         _handleChange(mq) {
+            if (this.#_disabled)
+                return;
             const shouldHide = mq.matches;
             if (shouldHide)
                 this.#_hide();
             else
                 this.#_show();
+        }
+        /**
+         * Réagit au changement de statut de la requête média.
+         * Si la requête correspond, l'élément est caché.
+         *
+         * Même si le comportement est désactivé, il s'effectue quand même.
+         *
+         * @param mq Objet MediaQueryList ou événement associé.
+         */
+        #_forceHandleChange(mq) {
+            const old = this.#_disabled;
+            this.#_disabled = false;
+            this._handleChange(mq);
+            this.#_disabled = old;
         }
         /**
          * Cache l'élément en ajoutant l'attribut `hidden` et en forçant le style CSS.
@@ -15214,15 +15252,15 @@ function onBackgroundChangedInitializer(event, instance) {
 
 //#endregion Types
 //#region Template
-const TEMPLATE = (h("div", { class: CLASS_HEADER_MODIFIER, part: CLASS_HEADER_MODIFIER, children: h("div", { part: PART_HEADER_CONTAINER, class: CLASS_HEADER_CONTAINER, children: [h("div", { part: PART_HEADER_LEFT, class: CLASS_HEADER_LEFT, children: [h("slot", { name: SLOT_NAME_LOGO }), h("slot", { name: SLOT_NAME_TITLE }), h("h1", { part: PART_HEADER_TITLE, id: ID_TITLE_TEXT, class: CLASS_HEADER_TITLE, hidden: true }), h("div", { part: PART_HEADER_CUSTOM, id: ID_TITLE_CUSTOM, class: CLASS_HEADER_CUSTOM, hidden: true })] }), h("div", { part: PART_HEADER_RIGHT, class: CLASS_HEADER_RIGHT, children: [h("slot", { name: SLOT_NAME_ACTIONS }), h("slot", { name: SLOT_NAME_AVATAR })] })] }) }));
+const TEMPLATE = (h("div", { class: CLASS_HEADER_MODIFIER, part: CLASS_HEADER_MODIFIER, children: h("div", { part: PART_HEADER_CONTAINER, class: CLASS_HEADER_CONTAINER, children: [h("div", { part: PART_HEADER_LEFT, class: CLASS_HEADER_LEFT, children: [h(HTMLBnumHide, { breakdown: "touch", mode: "up", children: h(HTMLBnumButtonIcon, { id: "menu", children: "menu" }) }), h("slot", { name: SLOT_NAME_LOGO }), h(HTMLBnumHide, { breakdown: "touch", children: [h("slot", { name: SLOT_NAME_TITLE }), h("h1", { part: PART_HEADER_TITLE, id: ID_TITLE_TEXT, class: CLASS_HEADER_TITLE, hidden: true }), h("div", { part: PART_HEADER_CUSTOM, id: ID_TITLE_CUSTOM, class: CLASS_HEADER_CUSTOM, hidden: true })] })] }), h("div", { part: PART_HEADER_RIGHT, class: CLASS_HEADER_RIGHT, children: [h("slot", { name: SLOT_NAME_ACTIONS }), h("slot", { name: SLOT_NAME_AVATAR })] })] }) }));
 //#endregion Template
 /**
  * Composant Header du Bnum
  *
  * @structure Par défaut
  * <bnum-header>
- * <img slot="logo" src="assets/bnumloader.svg" alt="Logo du bnum"/>
- * <h1 slot="title">Accueil</h1>
+ * <img slot="logo" src="../../assets/bnumloader.svg" alt="Logo du bnum"/>
+ * <div slot="title">Accueil</div>
  *
  * <bnum-secondary-button slot="actions" data-icon="add">Créer</bnum-secondary-button>
  * <bnum-icon-button slot="actions">article</bnum-icon-button>
@@ -15230,13 +15268,13 @@ const TEMPLATE = (h("div", { class: CLASS_HEADER_MODIFIER, part: CLASS_HEADER_MO
  * <bnum-icon-button slot="actions">settings</bnum-icon-button>
  * <bnum-icon-button slot="actions">notifications</bnum-icon-button>
  *
- * <img slot="avatar" style="border-radius: 100%" src="assets/avatar.png" alt="Avatar de remplacement"></img>
+ * <img slot="avatar" style="border-radius: 100%" src="../../assets/avatar.png" alt="Avatar de remplacement"></img>
  * </bnum-header>
  *
  * @structure Avec image de fond
- * <bnum-header data-background="assets/headerbackground.gif">
- * <img slot="logo" src="assets/bnumloader.svg" alt="Logo du bnum"/>
- * <h1 slot="title">Accueil</h1>
+ * <bnum-header data-background="../../assets/headerbackground.gif">
+ * <img slot="logo" src="../../assets/bnumloader.svg" alt="Logo du bnum"/>
+ * <div slot="title">Accueil</div>
  *
  * <bnum-secondary-button slot="actions" data-icon="add">Créer</bnum-secondary-button>
  * <bnum-icon-button slot="actions">article</bnum-icon-button>
@@ -15244,7 +15282,7 @@ const TEMPLATE = (h("div", { class: CLASS_HEADER_MODIFIER, part: CLASS_HEADER_MO
  * <bnum-icon-button slot="actions">settings</bnum-icon-button>
  * <bnum-icon-button slot="actions">notifications</bnum-icon-button>
  *
- * <img slot="avatar" style="border-radius: 100%" src="assets/avatar.png" alt="Avatar de remplacement"></img>
+ * <img slot="avatar" style="border-radius: 100%" src="../../assets/avatar.png" alt="Avatar de remplacement"></img>
  * </bnum-header>
  *
  * @slot logo - Slot pour le logo
@@ -15255,7 +15293,9 @@ const TEMPLATE = (h("div", { class: CLASS_HEADER_MODIFIER, part: CLASS_HEADER_MO
  * @state with-background - Actif si une image de fond est définie
  *
  * @attr {string | undefined} (optional) data-background - Met une image de fond par défaut
+ * @attr {boolean} (optional) (default: true) data-breakpoints - Si on active ou non les changements lié à la taille de l'écran.
  * @event {CustomEvent<{newBackground:Nullable<string>}>} bnum-header:background.changed - Événement déclenché lorsque l'image de fond change
+ * @event {CustomEvent<{caller: HTMLBnumButtonIcon}>} bnum-header:menu - Déclancher au click du bouton "menu".
  *
  * @cssvar {block} --bnum-header-display - Définit le type d'affichage du header
  * @cssvar {60px} --bnum-header-height - Hauteur du header
@@ -15278,6 +15318,7 @@ let HTMLBnumHeader = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = BnumElementInternal;
+    let _instanceExtraInitializers = [];
     let _private__ui_decorators;
     let _private__ui_initializers = [];
     let _private__ui_extraInitializers = [];
@@ -15285,9 +15326,16 @@ let HTMLBnumHeader = (() => {
     let _onBackgroundChanged_decorators;
     let _onBackgroundChanged_initializers = [];
     let _onBackgroundChanged_extraInitializers = [];
+    let _onMenuClick_decorators;
+    let _onMenuClick_initializers = [];
+    let _onMenuClick_extraInitializers = [];
     let _imgBackground_decorators;
     let _imgBackground_initializers = [];
     let _imgBackground_extraInitializers = [];
+    let _breakpoints_decorators;
+    let _breakpoints_initializers = [];
+    let _breakpoints_extraInitializers = [];
+    let __handleMenuClicked_decorators;
     (class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -15296,12 +15344,19 @@ let HTMLBnumHeader = (() => {
                     slotTitle: `slot[name="${SLOT_NAME_TITLE}"]`,
                     titleText: `#${ID_TITLE_TEXT}`,
                     customTitleContainer: `#${ID_TITLE_CUSTOM}`,
+                    menuButton: '#menu',
                 })];
             _onBackgroundChanged_decorators = [Listener(onBackgroundChangedInitializer)];
+            _onMenuClick_decorators = [Listener()];
             _imgBackground_decorators = [Data(DATA_BACKGROUND)];
+            _breakpoints_decorators = [Data()];
+            __handleMenuClicked_decorators = [Autobind, Fire('bnum-header:menu')];
             __esDecorate(this, _private__ui_descriptor = { get: __setFunctionName(function () { return this.#_ui_accessor_storage; }, "#_ui", "get"), set: __setFunctionName(function (value) { this.#_ui_accessor_storage = value; }, "#_ui", "set") }, _private__ui_decorators, { kind: "accessor", name: "#_ui", static: false, private: true, access: { has: obj => #_ui in obj, get: obj => obj.#_ui, set: (obj, value) => { obj.#_ui = value; } }, metadata: _metadata }, _private__ui_initializers, _private__ui_extraInitializers);
             __esDecorate(this, null, _onBackgroundChanged_decorators, { kind: "accessor", name: "onBackgroundChanged", static: false, private: false, access: { has: obj => "onBackgroundChanged" in obj, get: obj => obj.onBackgroundChanged, set: (obj, value) => { obj.onBackgroundChanged = value; } }, metadata: _metadata }, _onBackgroundChanged_initializers, _onBackgroundChanged_extraInitializers);
+            __esDecorate(this, null, _onMenuClick_decorators, { kind: "accessor", name: "onMenuClick", static: false, private: false, access: { has: obj => "onMenuClick" in obj, get: obj => obj.onMenuClick, set: (obj, value) => { obj.onMenuClick = value; } }, metadata: _metadata }, _onMenuClick_initializers, _onMenuClick_extraInitializers);
             __esDecorate(this, null, _imgBackground_decorators, { kind: "accessor", name: "imgBackground", static: false, private: false, access: { has: obj => "imgBackground" in obj, get: obj => obj.imgBackground, set: (obj, value) => { obj.imgBackground = value; } }, metadata: _metadata }, _imgBackground_initializers, _imgBackground_extraInitializers);
+            __esDecorate(this, null, _breakpoints_decorators, { kind: "accessor", name: "breakpoints", static: false, private: false, access: { has: obj => "breakpoints" in obj, get: obj => obj.breakpoints, set: (obj, value) => { obj.breakpoints = value; } }, metadata: _metadata }, _breakpoints_initializers, _breakpoints_extraInitializers);
+            __esDecorate(this, null, __handleMenuClicked_decorators, { kind: "method", name: "_handleMenuClicked", static: false, private: false, access: { has: obj => "_handleMenuClicked" in obj, get: obj => obj._handleMenuClicked }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -15312,7 +15367,7 @@ let HTMLBnumHeader = (() => {
         /**
          * Scheduler pour la mise à jour du titre
          */
-        #_scheduleUpdateTitle = null;
+        #_scheduleUpdateTitle = (__runInitializers(this, _instanceExtraInitializers), null);
         /**
          * Scheduler pour la mise à jour de l'image de fond
          */
@@ -15328,9 +15383,24 @@ let HTMLBnumHeader = (() => {
          */
         get onBackgroundChanged() { return this.#onBackgroundChanged_accessor_storage; }
         set onBackgroundChanged(value) { this.#onBackgroundChanged_accessor_storage = value; }
-        #imgBackground_accessor_storage = (__runInitializers(this, _onBackgroundChanged_extraInitializers), __runInitializers(this, _imgBackground_initializers, null));
+        #onMenuClick_accessor_storage = (__runInitializers(this, _onBackgroundChanged_extraInitializers), __runInitializers(this, _onMenuClick_initializers, void 0));
+        /**
+         * Evènement au click sur le menu
+         */
+        get onMenuClick() { return this.#onMenuClick_accessor_storage; }
+        set onMenuClick(value) { this.#onMenuClick_accessor_storage = value; }
+        #imgBackground_accessor_storage = (__runInitializers(this, _onMenuClick_extraInitializers), __runInitializers(this, _imgBackground_initializers, null));
+        /**
+         * Données de l'image de fond
+         */
         get imgBackground() { return this.#imgBackground_accessor_storage; }
         set imgBackground(value) { this.#imgBackground_accessor_storage = value; }
+        #breakpoints_accessor_storage = (__runInitializers(this, _imgBackground_extraInitializers), __runInitializers(this, _breakpoints_initializers, true));
+        /**
+         * Si on active les changements en mode mobile ou non
+         */
+        get breakpoints() { return this.#breakpoints_accessor_storage; }
+        set breakpoints(value) { this.#breakpoints_accessor_storage = value; }
         /**
          * Scheduler pour la mise à jour de l'image de fond
          */
@@ -15342,7 +15412,17 @@ let HTMLBnumHeader = (() => {
         //#region Lifecycle
         constructor() {
             super();
-            __runInitializers(this, _imgBackground_extraInitializers);
+            __runInitializers(this, _breakpoints_extraInitializers);
+        }
+        /**
+         * @inheritdoc
+         */
+        _p_buildDOM(container) {
+            if (this.breakpoints ?? true) {
+                for (const hide of container.querySelectorAll(HTMLBnumHide.TAG)) {
+                    hide.disable();
+                }
+            }
         }
         /**
          * @inheritdoc
@@ -15350,6 +15430,7 @@ let HTMLBnumHeader = (() => {
         _p_attach() {
             if (this.imgBackground !== null)
                 this.#_backgroundScheduler.call(this.imgBackground);
+            this.#_ui.menuButton.addEventListener('click', this._handleMenuClicked);
         }
         /**
          * Change le titre dynamiquement.
@@ -15383,6 +15464,15 @@ let HTMLBnumHeader = (() => {
         }
         //#endregion Public methods
         //#region Private methods
+        /**
+         * Trigger `bnum-header:menu` quand le bouton du menu est cliqué
+         * @returns Les détails de l'évènement
+         */
+        _handleMenuClicked() {
+            if (this.onMenuClick && this.onMenuClick.haveEvents())
+                this.onMenuClick.call(this, this.#_ui.menuButton);
+            return { caller: this.#_ui.menuButton };
+        }
         /**
          * Exécuté par le Scheduler (au prochain frame ou microtask)
          * @param content Contenu à appliquer

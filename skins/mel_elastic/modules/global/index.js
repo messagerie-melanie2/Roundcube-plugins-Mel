@@ -1,3 +1,4 @@
+import { HTMLBnumHeader } from '../../design-system/ds-module-bnum';
 import { ABaseModule } from '../core/ABaseModule';
 
 export class Global extends ABaseModule {
@@ -11,11 +12,16 @@ export class Global extends ABaseModule {
     this.#_addListeners().#_removeUselessRcButtons();
   }
 
+  /**
+   * Supprime les bouttons que l'on utilise plus dans roundcube.
+   * @returns Chaîne
+   */
   #_removeUselessRcButtons() {
     /**
      * @type {Array<string | {selector:string, removeParent: boolean}>}
      */
     const buttonsToRemove = [
+      // Bouton créerun email, il pose problème en mode mobile et existe déjà de toute façon
       { selector: '#toolbar-menu a.compose', removeParent: true },
     ];
 
@@ -28,7 +34,9 @@ export class Global extends ABaseModule {
         typeof item === 'string' ? item : item.selector,
       );
 
-      if (item?.removeParent) element = element.parentElement;
+      if (!element) continue;
+
+      if (item?.removeParent) element = element?.parentElement;
 
       element?.remove?.();
       element = null;
@@ -37,12 +45,49 @@ export class Global extends ABaseModule {
     return this;
   }
 
+  /**
+   * Ajoute des écouteurs
+   * @returns Chaîne
+   */
   #_addListeners() {
-    return this.#_onResize();
+    return this.#_onResize().#_onSwitchChange();
   }
 
+  /**
+   * Change le titre du header en fonction de la frame en cours
+   * @returns
+   */
+  #_onSwitchChange() {
+    return this.listen('switch_frame', (args) => {
+      const { task } = args;
+      const element = document.querySelector(
+        `#taskmenu li a[data-task="${task}"]`,
+      );
+
+      if (element) {
+        /**
+         * @type {HTMLBnumHeader}
+         */
+        const header = document.querySelector(`${HTMLBnumHeader.TAG}.barup`);
+
+        if (header) {
+          const currentTask = element.innerText;
+
+          const h1 = header.querySelector('h1');
+
+          if (h1) h1.innerText = currentTask;
+          else header.setPageTitle(currentTask);
+        }
+      }
+    });
+  }
+
+  /**
+   * Ecouteurs sur l'évènement "onresize" de "window";
+   * @returns
+   */
   #_onResize() {
-    $(window).on('resize', () => {
+    window.addEventListener('resize', () => {
       if (this.#_isResize) return;
       this.#_isResize = true;
       requestAnimationFrame(() => {

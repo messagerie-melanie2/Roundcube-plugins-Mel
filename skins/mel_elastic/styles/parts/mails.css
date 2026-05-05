@@ -30,8 +30,8 @@ html.touch #mailsearchlist {
   position: relative !important;
 }
 #searchmenu {
-  --searchmenu-text-color: var(--body-text-color);
-  background-color: white;
+  --searchmenu-text-color: var(--body-text-color, black);
+  background-color: var(--bnum-color-background, white);
   z-index: 1;
   top: 60px;
   right: 15px;

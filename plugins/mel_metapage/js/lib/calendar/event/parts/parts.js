@@ -1,10 +1,11 @@
+/* eslint-disable no-unused-vars */
 /**
  * @module EventView/Parts
  * @local Parts
  * @local FakePart
  */
 
-import { MelObject } from '../../../mel_object';
+import { MelObject } from '../../../mel_object.js';
 
 export { Parts, FakePart };
 
@@ -14,6 +15,14 @@ export { Parts, FakePart };
  * @classdesc Représentation d'une partie de la vue de la création/édition d'un évènement. Il gère les actions visuels et comportements de cette partie.
  */
 class Parts {
+  /**
+   * Helper qui possède pleins de fonctions utiles
+   * @readonly
+   */
+  get helper() {
+    return MelObject.Empty();
+  }
+
   /**
    * Constructeur de la classe. Il demande le champs qui sera gérer ainsi que son "mode de fonctionnement". (cad, si il est actionner par un clique ou un changement d'état)
    * @param {external:jQuery} $field Champs qui sera gérer par cette classe.

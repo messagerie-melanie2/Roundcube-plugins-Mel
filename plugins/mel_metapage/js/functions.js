@@ -1320,7 +1320,6 @@ async function m_mp_check_w(step, next) {
             .parent()
             .append('<span id=wspte class=input-error-r style=color:red></span>');
         }
-        // $('#wspte').html(`* ${title_error}`);
         $('#wspte').css('display', '');
         stop = true;
       } else {

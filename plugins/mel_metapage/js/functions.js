@@ -1312,20 +1312,21 @@ async function m_mp_check_w(step, next) {
   let stop = false;
   switch (step) {
     case 1:
-      if ($('#workspace-title').val() === '') {
+      const title_error = validate_workspace_title($('#workspace-title').val());
+      if (title_error !== null) {
         $('#workspace-title').css('border-color', 'red');
-        if ($('#wspte').length === 0)
+        if ($('#wspte').length === 0) {
           $('#workspace-title')
             .parent()
-            .append(
-              '<span id=wspte class=input-error-r style=color:red></span>',
-            );
-        $('#wspte').html("* L'espace de travail doit avoir un titre !");
+            .append('<span id=wspte class=input-error-r style=color:red></span>');
+        }
+        $('#wspte').html(`* ${title_error}`);
         $('#wspte').css('display', '');
         stop = true;
       } else {
         $('#wspte').css('display', 'none');
         $('#workspace-title').css('border-color', '');
+        $('#workspace-title').val(($('#workspace-title').val() || '').trim());
       }
       if (
         $('#workspace-private')[0].checked === false &&

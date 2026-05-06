@@ -412,7 +412,7 @@ class mel_workspace extends bnum_plugin
             // validation du titre de l'edt
             $validation = $this->_validate_workspace_title($data['title']);
             if ($validation !== true) {
-                $this->sendEncodeExit(['error' => $validation]);
+                $this->sendEncodedExit(['error' => $validation], []);
             }
 
             if ($data["color"] === "" || $data["color"] === null) $data["color"] = "#FFFFFF";

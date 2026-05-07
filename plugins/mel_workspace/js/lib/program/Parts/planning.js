@@ -74,9 +74,35 @@ class WorkspacePlanning extends WorkspaceObject {
            * @param {Object} obj - Objet contenant des informations sur le module.
            */
           onSetFullScreen(obj) {
-            obj.module
-              .querySelector('bnum-planning')
-              .fullcalendar.option('height', 'auto');
+            const planningEl = obj.module.querySelector('bnum-planning');
+
+            const updateHeight = () => {
+              const planningRect = planningEl.getBoundingClientRect();
+
+              // Cherche la grille FullCalendar (le corps, après tous les headers)
+              const fcGrid = planningEl.querySelector(
+                '.fc-view-harness, .fc-view, .fc-resourcetimeline-view, [class*="view-harness"]'
+              );
+
+              let availableHeight;
+
+              if (fcGrid) {
+                // Méthode la plus précise : on prend exactement la hauteur de la zone de grille
+                const gridRect = fcGrid.getBoundingClientRect();
+                availableHeight = window.innerHeight - gridRect.top - 20;
+              } else {
+                // Fallback si la vue n'est pas trouvée
+                availableHeight = window.innerHeight - planningRect.top - 160 - 20;
+              }
+
+              planningEl.fullcalendar.option('height', availableHeight);
+            };
+
+            requestAnimationFrame(() => {
+              updateHeight();
+              planningEl._resizeHandler = updateHeight;
+              window.addEventListener('resize', planningEl._resizeHandler);
+            });
           },
           /**
            * Callback pour rétablir la hauteur par défaut du calendrier.

@@ -137,19 +137,26 @@ bnum-separate {
   }
 }
 
+#module-planning {
+  .module-block-content {
+    max-height: unset  ;
+    min-height: unset ;
+  }
+}
+
 .module-block {
   &__parent {
     &__parent {
       &--fullscreen {
         height: 100% !important;
-
+        
         > div {
           display: none;
-
+          
           bnum-workspace-module {
             height: calc(100% - 30px) !important;
             box-shadow: unset !important;
-
+            
             .module-block-content-alt,
             .module-block-content {
               min-height: 0;
@@ -160,13 +167,13 @@ bnum-separate {
         }
       }
     }
-
+    
     &--fullscreen {
       height: 100% !important;
       display: block !important;
       max-width: 100% !important;
       width: 100% !important;
-      flex: 1 !important;
+      flex: 1 !important;     
     }
   }
 }

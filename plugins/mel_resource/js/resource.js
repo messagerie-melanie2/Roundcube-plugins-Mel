@@ -281,14 +281,14 @@
     document.getElementById('calendar-group-share-add-btn')?.addEventListener('click', () => {
       const input = document.getElementById('calendar-group-share-input');
       const values = input.value.split(', ').filter(i => i);
-      const type = document.getElementById('calendar-group-share-select').value;
+      const typeVal = document.getElementById('calendar-group-share-select').value;
 
       for (const value of values) {
         rcmail.http_post('settings/plugin.mel_resource_' + type(), {
           _act: 'add_calendar_share',
           _group: true,
           _user: value,
-          _acl: type,
+          _acl: typeVal,
           _resource_uid: rcmail.env.resource_uid,
         }, rcmail.set_busy(true, 'loading'));
       }

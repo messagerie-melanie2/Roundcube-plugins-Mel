@@ -231,7 +231,7 @@
       if ((rcmail.env.resource_name !== document.getElementById('resource_name').value 
             || rcmail.env.resource_building !== select.options[select.selectedIndex].text)
             && !confirm(rcmail.gettext('modify_resource_confirm', 'mel_resource'))) {
-        e.preventDefault()
+        e.preventDefault();
         return false;
       }
     });
@@ -261,14 +261,14 @@
     document.getElementById('calendar-share-add-btn')?.addEventListener('click', () => {
       const input = document.getElementById('calendar-share-input');
       const values = input.value.split(', ').filter(i => i);
-      const type = document.getElementById('calendar-share-select').value;
+      const typeVal = document.getElementById('calendar-share-select').value;
 
       for (const value of values) {
         rcmail.http_post('settings/plugin.mel_resource_' + type(), {
           _act: 'add_calendar_share',
           _group: false,
           _user: value,
-          _acl: type,
+          _acl: typeVal,
           _resource_uid: rcmail.env.resource_uid,
         }, rcmail.set_busy(true, 'loading'));
       }
@@ -561,7 +561,7 @@
       const tr = document.createElement('tr');
 
       // Resource infos
-      if (rcmail.env.resource_type == 'Flex Office') {
+      if (rcmail.env.resource_type === 'Flex Office') {
         tr.appendChild(createTd(escapeHTML(item.room)));
         tr.appendChild(createTd(escapeHTML(item.name.split(rcmail.get_label('mel_resource.resource_place') + ' ')[1] || item.name)));
         tr.appendChild(createTd(escapeHTML(item.building)));
@@ -574,11 +574,11 @@
         tr.appendChild(createTd(escapeHTML(item.locality)));
         tr.appendChild(createTd(escapeHTML(item.room)));
   
-        if (rcmail.env.resource_type == 'Véhicule') {
+        if (rcmail.env.resource_type === 'Véhicule') {
           tr.appendChild(createTd(escapeHTML(item.floor)));
           tr.appendChild(createTd(escapeHTML(item.capacity)));
         }
-        else if (rcmail.env.resource_type == 'Matériel') {
+        else if (rcmail.env.resource_type === 'Matériel') {
           tr.appendChild(createTd(escapeHTML(item.floor)));
         }
         else {

@@ -3,11 +3,11 @@
 /**
  * Plugin mel_resource
  *
- * Ce plugin permet de gérer les resources du Bnum, pour l'instant les VRooms.
+ * Ce plugin permet de gérer les resources du Bnum.
  */
 class mel_resource extends bnum_plugin
 {
-  public $task = 'settings|vroom';
+  public $task = 'settings';
 
   /**
    * Ressource courante.
@@ -78,9 +78,30 @@ class mel_resource extends bnum_plugin
     if ($this->get_current_task() === 'settings') {
 
       $this->add_hook('settings_actions', array($this, 'hook_settings_actions'));
-      $this->api->register_action('plugin.mel_resource', $this->ID, [
+
+      $this->api->register_action('plugin.mel_resource_vroom', $this->ID, [
         $this,
-        'action_settings'
+        'action_vroom'
+      ]);
+
+      $this->api->register_action('plugin.mel_resource_salle', $this->ID, [
+        $this,
+        'action_salle'
+      ]);
+
+      $this->api->register_action('plugin.mel_resource_vehicule', $this->ID, [
+        $this,
+        'action_vehicule'
+      ]);
+
+      $this->api->register_action('plugin.mel_resource_materiel', $this->ID, [
+        $this,
+        'action_materiel'
+      ]);
+
+      $this->api->register_action('plugin.mel_resource_flex_office', $this->ID, [
+        $this,
+        'action_flex_office'
       ]);
       
       $this->include_stylesheet($this->local_skin_path() . '/resource.css');
@@ -89,21 +110,21 @@ class mel_resource extends bnum_plugin
   }
 
   /**
-   * Récupère toutes les VRooms disponibles dans la localité spécifiée.
+   * Récupère toutes les ressources disponibles dans la localité spécifiée.
    * 
-   * Cette méthode utilise le driver MEL pour obtenir les ressources VRoom
+   * Cette méthode utilise le driver MEL pour obtenir les ressources
    * 
    * Les données récupérées incluent le nom, l'étage, la capacité, le bâtiment,
-   * le numéro de la salle et les caractéristiques de chaque VRoom.
+   * le numéro de la salle et les caractéristiques de chaque ressources.
    * 
    * Les données sont ensuite envoyées en réponse à la requête AJAX sous forme de tableau.
    * 
    * @return void
    */
-  public function action_get_all_vrooms()
+  public function action_list_resources($type)
   {
-    if (!$this->check_rights_user()) {
-      $this->send_command('plugin.mel_vroom_vrooms_data', [
+    if (!$this->check_rights_user($type)) {
+      $this->send_command('plugin.mel_resources_list', [
         'success' => false,
         'error'   => $this->gettext('access_denied'),
         'data'    => [],
@@ -111,39 +132,76 @@ class mel_resource extends bnum_plugin
       $this->send_and_exit();
     }
 
-    $vrooms = [];
+    $resources = [];
     $data = [];
 
-    foreach ($this->get_user_localities() as $locality) {
-      $vrooms = array_merge($vrooms, driver_mel::gi()->resources_vroom($locality));
+    foreach ($this->get_user_localities($type) as $locality) {
+      switch ($type) {
+        case LibMelanie\Api\Defaut\Resource::TYPE_VROOM:
+          $resources = array_merge($resources, driver_mel::gi()->resources_vroom($locality));
+          break;
+
+        case LibMelanie\Api\Defaut\Resource::TYPE_SALLE:
+          $resources = array_merge($resources, driver_mel::gi()->resources_salle($locality));
+          break;
+
+        case LibMelanie\Api\Defaut\Resource::TYPE_VEHICULE:
+          $resources = array_merge($resources, driver_mel::gi()->resources_vehicule($locality));
+          break;
+
+        case LibMelanie\Api\Defaut\Resource::TYPE_MATERIEL:
+          $resources = array_merge($resources, driver_mel::gi()->resources_materiel($locality));
+          break;
+
+        case LibMelanie\Api\Defaut\Resource::TYPE_FLEX_OFFICE:
+          $resources = array_merge($resources, driver_mel::gi()->resources_flex_office($locality));
+          break;
+      }
     }
 
-    foreach ($vrooms as $vroom) {
+    foreach ($resources as $resource) {
       $data[] = [
-        'name'      => $vroom->fullname,
-        'floor'     => $vroom->etage,
-        'capacity'  => $vroom->capacite,
-        'building'  => $vroom->batiment,
-        'room'      => $vroom->roomnumber,
-        'settings'  => $vroom->caracteristiques,
-        'uid'       => $vroom->uid,
+        'name'      => $resource->name,
+        'floor'     => $resource->etage,
+        'capacity'  => $resource->capacite,
+        'building'  => $resource->batiment,
+        'locality'  => $resource->locality,
+        'room'      => $resource->roomnumber,
+        'settings'  => $resource->caracteristiques,
+        'uid'       => $resource->uid,
       ];
     }
 
-    $this->send_command('plugin.mel_vroom_vrooms_data', [
+    $this->send_command('plugin.mel_resources_list', [
         'success' => true,
         'data' => $data
     ]);
   }
 
   /**
+   * Formate le type de ressource pour l'affichage.
+   * 
+   * Cette méthode prend un type de ressource en entrée (ex: VROOM, SALLE, VEHICULE) et retourne une version formatée
+   * en remplaçant les caractères spéciaux et en mettant le texte en minuscules pour une utilisation cohérente dans les clés de configuration et les classes CSS.
+   * 
+   * @param string $type Le type de ressource à formater.
+   * 
+   * @return string Le type de ressource formaté (ex: vroom, salle, vehicule).
+   */
+  protected function type($type)
+  {
+    return str_replace(['é', ' '], ['e', '_'], strtolower($type));
+  }
+
+  /**
    * Vérifie si l'utilisateur courant a les droits d'administration
+   * @param string $type 
    * @return bool
    */
-  protected function check_rights_user()
+  protected function check_rights_user($type)
   {
     $current_user = driver_mel::gi()->getUser()->uid;
-    $admin_users = $this->get_config('vrooms_admin_list', []);
+    $admin_users = $this->get_config($this->type($type) . 's_admin_list', []);
 
     return isset($admin_users[$current_user]);
   }
@@ -151,15 +209,27 @@ class mel_resource extends bnum_plugin
   /**
    * Récupère les localités de l'utilisateur courant basé sur la configuration
    * 
+   * @param string $type Le type de ressource (ex: VROOM) pour lequel récupérer les localités de l'utilisateur.
+   * 
    * @return array
    */
-  protected function get_user_localities()
+  protected function get_user_localities($type)
   {
     $current_user = driver_mel::gi()->getUser()->uid;
-    $admin_users = $this->get_config('vrooms_admin_list', []);
+    $admin_users = $this->get_config($this->type($type) . 's_admin_list', []);
 
     if (!is_array($admin_users[$current_user])) {
-      $admin_users[$current_user] = [$admin_users[$current_user]];
+      if ($admin_users[$current_user] == '*') {
+        $localities = driver_mel::gi()->resources_localities();
+        $admin_users[$current_user] = [];
+
+        foreach ($localities as $locality) {
+          $admin_users[$current_user][] = $locality->uid;
+        }
+      }
+      else {
+        $admin_users[$current_user] = [$admin_users[$current_user]];
+      }
     }
 
     return $admin_users[$current_user];
@@ -175,7 +245,7 @@ class mel_resource extends bnum_plugin
     $resource_uid = rcube_utils::get_input_value('_resource_uid', rcube_utils::INPUT_GPC);
 
     if (!empty($resource_uid)) {
-      if (isset($_POST['vroom_name'])) {
+      if (isset($_POST['resource_type'])) {
         $resource = driver_mel::gi()->resource([null, 'webmail.resource']);
       }
       else {
@@ -186,7 +256,7 @@ class mel_resource extends bnum_plugin
 
       if ($resource->load()) {
         $this->resource = $resource;
-        $localities = $this->get_user_localities();
+        $localities = $this->get_user_localities($this->resource->type);
 
         return in_array($this->get_resource_locality(), $localities);
       }
@@ -219,15 +289,56 @@ class mel_resource extends bnum_plugin
   public function hook_settings_actions($args)
   {
     // Vérifier les droits avant d'ajouter l'action
-    if ($this->check_rights_user()) {
+    if ($this->check_rights_user(LibMelanie\Api\Defaut\Resource::TYPE_VROOM)) {
       $args['actions'][] = array(
-        'action' => 'plugin.mel_resource',
-        'class'  => 'mel_resource',
+        'action' => 'plugin.mel_resource_vroom',
+        'class'  => 'mel_resource_room',
         'label'  => 'vroom',
         'domain' => 'mel_resource',
         'title'  => 'vroom_title',
       );
     }
+
+    if ($this->check_rights_user(LibMelanie\Api\Defaut\Resource::TYPE_SALLE)) {
+      $args['actions'][] = array(
+        'action' => 'plugin.mel_resource_salle',
+        'class'  => 'mel_resource_room',
+        'label'  => 'salle',
+        'domain' => 'mel_resource',
+        'title'  => 'salle_title',
+      );
+    }
+
+    if ($this->check_rights_user(LibMelanie\Api\Defaut\Resource::TYPE_FLEX_OFFICE)) {
+      $args['actions'][] = array(
+        'action' => 'plugin.mel_resource_flex_office',
+        'class'  => 'mel_resource_office',
+        'label'  => 'flex_office',
+        'domain' => 'mel_resource',
+        'title'  => 'flex_office_title',
+      );
+    }
+
+    if ($this->check_rights_user(LibMelanie\Api\Defaut\Resource::TYPE_VEHICULE)) {
+      $args['actions'][] = array(
+        'action' => 'plugin.mel_resource_vehicule',
+        'class'  => 'mel_resource_car',
+        'label'  => 'vehicule',
+        'domain' => 'mel_resource',
+        'title'  => 'vehicule_title',
+      );
+    }
+
+    if ($this->check_rights_user(LibMelanie\Api\Defaut\Resource::TYPE_MATERIEL)) {
+      $args['actions'][] = array(
+        'action' => 'plugin.mel_resource_materiel',
+        'class'  => 'mel_resource_hardware',
+        'label'  => 'materiel',
+        'domain' => 'mel_resource',
+        'title'  => 'materiel_title',
+      );
+    }
+
     return $args;
   }
 
@@ -262,12 +373,12 @@ class mel_resource extends bnum_plugin
 
         if ($share->asRight(\LibMelanie\Config\ConfigMelanie::WRITE)) {
           $acl['share'] = 'rw';
-          $acl['share_label'] = $this->gettext('vroom_calendar_share_rw');
+          $acl['share_label'] = $this->gettext('resource_calendar_share_rw');
           $result[] = $acl;
         }
         else if ($share->asRight(\LibMelanie\Config\ConfigMelanie::READ)) {
           $acl['share'] = 'r';
-          $acl['share_label'] = $this->gettext('vroom_calendar_share_r');
+          $acl['share_label'] = $this->gettext('resource_calendar_share_r');
           $result[] = $acl;
         }
       }
@@ -284,26 +395,68 @@ class mel_resource extends bnum_plugin
   /**
    * Génère un sélecteur HTML pour les bâtiments des VRooms.
    */
-  public function vroom_building_select($attrib)
+  public function resource_building_select_vroom($attrib)
+  {
+    return $this->resource_building_select($attrib, LibMelanie\Api\Defaut\Resource::TYPE_VROOM);
+  }
+
+  /**
+   * Génère un sélecteur HTML pour les bâtiments des Salles.
+   */
+  public function resource_building_select_salle($attrib)
+  {
+    return $this->resource_building_select($attrib, LibMelanie\Api\Defaut\Resource::TYPE_SALLE);
+  }
+
+  /**
+   * Génère un sélecteur HTML pour les bâtiments des Vehicules.
+   */
+  public function resource_building_select_vehicule($attrib)
+  {
+    return $this->resource_building_select($attrib, LibMelanie\Api\Defaut\Resource::TYPE_VEHICULE);
+  }
+
+  /**
+   * Génère un sélecteur HTML pour les bâtiments des Materiels.
+   */
+  public function resource_building_select_materiel($attrib)
+  {
+    return $this->resource_building_select($attrib, LibMelanie\Api\Defaut\Resource::TYPE_MATERIEL);
+  }
+
+  /**
+   * Génère un sélecteur HTML pour les bâtiments des flex offices.
+   */
+  public function resource_building_select_flex_office($attrib)
+  {
+    return $this->resource_building_select($attrib, LibMelanie\Api\Defaut\Resource::TYPE_FLEX_OFFICE);
+  }
+
+  /**
+   * Génère un sélecteur HTML pour les bâtiments des resources.
+   */
+  public function resource_building_select($attrib, $type)
   {
     if (!$attrib['id']) {
-      $attrib['id'] = 'rcmvroombuildingselect';
+      $attrib['id'] = 'rcmresourcebuildingselect';
     }
 
     $html_select = new html_select($attrib);
-    $buildings = $this->get_config('vrooms_address_list', []);  
+    $buildings = $this->get_config($this->type($type) . 's_address_list', []);  
 
     if (isset($this->resource)) {
       foreach ($buildings[$this->get_resource_locality()] as $building => $address) {
         $html_select->add($address['name'], $building);
       }
 
-      return $html_select->show($this->get_resource_building_key());
+      return $html_select->show($this->get_resource_building_key($type));
     }
     else {
-      foreach ($this->get_user_localities() as $locality) {
-        foreach ($buildings[$locality] as $building => $address) {
-          $html_select->add($address['name'], $locality. '/' . $building);
+      foreach ($this->get_user_localities($type) as $locality) {
+        if (is_array($buildings[$locality])) {
+          foreach ($buildings[$locality] as $building => $address) {
+            $html_select->add($address['name'], $locality. '/' . $building);
+          }
         }
       }
 
@@ -314,10 +467,50 @@ class mel_resource extends bnum_plugin
   /**
    * Génère un sélecteur HTML pour les capacités des VRooms.
    */
-  public function vroom_capacity_select($attrib)
+  public function resource_capacity_select_vroom($attrib)
+  {
+    return $this->resource_capacity_select($attrib, LibMelanie\Api\Defaut\Resource::TYPE_VROOM);
+  }
+
+  /**
+   * Génère un sélecteur HTML pour les capacités des Salles.
+   */
+  public function resource_capacity_select_salle($attrib)
+  {
+    return $this->resource_capacity_select($attrib, LibMelanie\Api\Defaut\Resource::TYPE_SALLE);
+  }
+
+  /**
+   * Génère un sélecteur HTML pour les capacités des Vehicules.
+   */
+  public function resource_capacity_select_vehicule($attrib)
+  {
+    return $this->resource_capacity_select($attrib, LibMelanie\Api\Defaut\Resource::TYPE_VEHICULE);
+  }
+
+  /**
+   * Génère un sélecteur HTML pour les capacités des Materiels.
+   */
+  public function resource_capacity_select_materiel($attrib)
+  {
+    return $this->resource_capacity_select($attrib, LibMelanie\Api\Defaut\Resource::TYPE_MATERIEL);
+  }
+
+  /**
+   * Génère un sélecteur HTML pour les capacités des flex offices.
+   */
+  public function resource_capacity_select_flex_office($attrib)
+  {
+    return $this->resource_capacity_select($attrib, LibMelanie\Api\Defaut\Resource::TYPE_FLEX_OFFICE);
+  }
+
+  /**
+   * Génère un sélecteur HTML pour les capacités des resources.
+   */
+  public function resource_capacity_select($attrib, $type)
   {
     if (!$attrib['id']) {
-      $attrib['id'] = 'rcmvroomcapacityselect';
+      $attrib['id'] = 'rcmresourcecapacityselect';
     }
 
     $html_select = new html_select($attrib);
@@ -326,35 +519,37 @@ class mel_resource extends bnum_plugin
       $html_select->add("$i", "$i");
     }
 
-    for ($i = 60; $i <= 200; $i += 10) {
-      $html_select->add("$i", "$i");
-    }
-
-    for ($i = 300; $i <= 1000; $i += 100) {
-      $html_select->add("$i", "$i");
-    }
+    if ($type != LibMelanie\Api\Defaut\Resource::TYPE_VEHICULE) {
+      for ($i = 60; $i <= 200; $i += 10) {
+        $html_select->add("$i", "$i");
+      }
+  
+      for ($i = 300; $i <= 1000; $i += 100) {
+        $html_select->add("$i", "$i");
+      }
+    }   
 
     if (isset($this->resource)) {
       return $html_select->show($this->resource->capacite);
     }
     else {
-      return $html_select->show("10");
+      return $html_select->show($type == LibMelanie\Api\Defaut\Resource::TYPE_VEHICULE ? '5' : '10');
     }
   }
 
   /**
-   * Génère un sélecteur HTML pour les caractéristiques des VRooms.
+   * Génère un sélecteur HTML pour les caractéristiques des resources.
    */
-  public function vroom_add_caracteristique_select($attrib)
+  public function resource_add_caracteristique_select($attrib)
   {
     if (!$attrib['id']) {
-      $attrib['id'] = 'rcmvroomcaracteristiqueselect';
+      $attrib['id'] = 'rcmresourcecaracteristiqueselect';
     }
 
     $html_select = new html_select($attrib);
     $resource_caracteristiques = json_decode($this->resource->caracteristiques ?? '[]', true) ?: [];
 
-    foreach ($this->get_config('vrooms_caracteristiques', []) as $caracteristique) {
+    foreach ($this->get_config($this->type($this->resource->type) . 's_caracteristiques', []) as $caracteristique) {
       if (!isset($resource_caracteristiques[$caracteristique])) {
         $html_select->add($caracteristique, $caracteristique);
       }
@@ -366,11 +561,13 @@ class mel_resource extends bnum_plugin
   /**
    * Récupère la clé du bâtiment de la ressource courante.
    * 
+   * @param string $type Le type de ressource (ex: VROOM) pour lequel récupérer la clé du bâtiment.
+   * 
    * @return string|null La clé du bâtiment ou null si non trouvée.
    */
-  protected function get_resource_building_key()
+  protected function get_resource_building_key($type)
   {
-    $buildings = $this->get_config('vrooms_address_list', []);
+    $buildings = $this->get_config($this->type($type) . 's_address_list', []);
     $locality = $this->get_resource_locality();
 
     foreach ($buildings[$locality] as $building => $address) {
@@ -387,15 +584,56 @@ class mel_resource extends bnum_plugin
    * 
    * @param string $batiment La clé du bâtiment.
    * @param string $locality_uid L'UID de la localité.
+   * @param string $type Le type de ressource (ex: VROOM) pour lequel récupérer les informations du bâtiment.
    * 
    * @return array Les informations du bâtiment ou un tableau vide si non trouvée.
    */
-  protected function get_resource_building_infos($batiment, $locality_uid)
+  protected function get_resource_building_infos($batiment, $locality_uid, $type)
   {
-    $buildings = $this->get_config('vrooms_address_list', []);
+    $buildings = $this->get_config($this->type($type) . 's_address_list', []);
 
     return isset($buildings[$locality_uid][$batiment]) ? 
         array_merge($buildings[$locality_uid][$batiment], ['key' => $batiment]) : [];
+  }
+
+  /**
+   * Affiche la page de configuration des VRooms.
+   */
+  public function action_vroom() 
+  {
+    return $this->action_settings(LibMelanie\Api\Defaut\Resource::TYPE_VROOM);
+  }
+
+  /**
+   * Affiche la page de configuration des Salles.
+   */
+  public function action_salle() 
+  {
+    return $this->action_settings(LibMelanie\Api\Defaut\Resource::TYPE_SALLE);
+  }
+
+  /**
+   * Affiche la page de configuration des Vehicules.
+   */
+  public function action_vehicule() 
+  {
+    return $this->action_settings(LibMelanie\Api\Defaut\Resource::TYPE_VEHICULE);
+  }
+
+  /**
+   * Affiche la page de configuration des Matériel.
+   */
+  public function action_materiel() 
+  {
+    return $this->action_settings(LibMelanie\Api\Defaut\Resource::TYPE_MATERIEL);
+  }
+
+  /**
+   * Affiche la page de configuration des Flex office.
+   */
+  public function action_flex_office() 
+  {
+    return $this->action_settings(LibMelanie\Api\Defaut\Resource::TYPE_FLEX_OFFICE);
   }
 
   /**
@@ -403,16 +641,22 @@ class mel_resource extends bnum_plugin
    * 
    * Vérification des droits utilisateur. Si ce dernier n'a pas les droits il ne peut pas
    * accéder à la liste des Urls suspectes.
+   * 
+   * @param string $type Le type de ressource à afficher (ex: VRoom).
    */
-  public function action_settings()
+  public function action_settings($type)
   {
-    if ($this->check_rights_user()) {
+    $_ltype = $this->type($type);
+
+    if ($this->check_rights_user($type)) {
       // Affichage normal de la page de configuration
       $this->include_script('js/resource.js');
 
       $action = trim(rcube_utils::get_input_value('_act', rcube_utils::INPUT_GPC));
 
-      if ($this->check_user_access_to_ressource()) {
+      $this->set_env('resource_type', $type);
+
+      if ($this->check_user_access_to_ressource($type)) {
         switch ($action) {
           case 'show':
             $this->action_show_ressource();
@@ -439,29 +683,29 @@ class mel_resource extends bnum_plugin
         switch ($action) {
           case 'create':
             $this->add_handlers([
-              'vroom_building'    => [$this, 'vroom_building_select'],
-              'vroom_capacity'    => [$this, 'vroom_capacity_select'],
-              'vroom_add_caracteristique'    => [$this, 'vroom_add_caracteristique_select'],
+              'resource_building'               => [$this, 'resource_building_select_' . $_ltype ],
+              'resource_capacity'               => [$this, 'resource_capacity_select_' . $_ltype],
+              'resource_add_caracteristique'    => [$this, 'resource_add_caracteristique_select'],
             ]);
-    
+
             // Gestion du POST pour enregistrer la VRoom
-            if (isset($_POST['vroom_name'])) {
+            if (isset($_POST['resource_type'])) {
               $this->action_create_ressource();
             }
             
-            $this->set_page_title($this->gettext('create_title'));
-            $this->send_and_exit('mel_resource.vroom_creation');
+            $this->set_page_title($this->gettext('create_' . $_ltype .'_title'));
+            $this->send_and_exit('mel_resource.' . $_ltype . '_creation');
             break;
   
-          case 'get_all_vrooms':
-            $this->action_get_all_vrooms();
+          case 'get_all_resources':
+            $this->action_list_resources($type);
             break;
   
         }
       }
       else {
-        $this->set_page_title($this->gettext('vroom'));
-        $this->send_and_exit('mel_resource.vroom_settings');
+        $this->set_page_title($this->gettext($_ltype));
+        $this->send_and_exit('mel_resource.' . $_ltype . '_settings');
       }
     } else {
       $this->show_message_error($this->gettext('access_denied'));
@@ -470,20 +714,21 @@ class mel_resource extends bnum_plugin
   }
 
   /**
-   * Affiche les détails d'une ressource VRoom spécifique.
+   * Affiche les détails d'une ressource spécifique.
    */
   protected function action_show_ressource()
   {
-    $this->set_page_title($this->gettext('vroom') . ' - ' . $this->resource->fullname);
+    $type = $this->type($this->resource->type);
+    $this->set_page_title($this->gettext($type) . ' - ' . $this->resource->fullname);
 
     $this->add_handlers([
-      'vroom_building'    => [$this, 'vroom_building_select'],
-      'vroom_capacity'    => [$this, 'vroom_capacity_select'],
-      'vroom_add_caracteristique'    => [$this, 'vroom_add_caracteristique_select'],
+      'resource_building'               => [$this, 'resource_building_select_' . $type],
+      'resource_capacity'               => [$this, 'resource_capacity_select_' . $type],
+      'resource_add_caracteristique'    => [$this, 'resource_add_caracteristique_select'],
     ]);
 
-    // Gestion du POST pour enregistrer la VRoom
-    if (isset($_POST['vroom_name'])) {
+    // Gestion du POST pour enregistrer la ressource
+    if (isset($_POST['resource_type'])) {
       $this->action_modify_ressource();
     }
 
@@ -491,7 +736,7 @@ class mel_resource extends bnum_plugin
     
     rcmail_action::html_editor();
 
-    $this->send_and_exit('mel_resource.vroom_show');
+    $this->send_and_exit('mel_resource.' . $type . '_show');
   }
 
   /**
@@ -500,56 +745,71 @@ class mel_resource extends bnum_plugin
   protected function set_envs_from_ressource()
   {
     $this->set_envs([
-      'vroom_uid'         => $this->resource->uid,
-      'vroom_fullname'    => $this->resource->fullname,
-      'vroom_name'        => $this->resource->name,
-      'vroom_room'        => $this->resource->roomnumber,
-      'vroom_floor'       => $this->resource->etage,
-      'vroom_capacity'    => $this->resource->capacite,
-      'vroom_building'    => $this->resource->batiment,
-      'vroom_street'      => $this->resource->street,
-      'vroom_postalcode'  => $this->resource->postalcode,
-      'vroom_locality'    => $this->resource->locality,
-      'vroom_email'       => $this->resource->email,
-      'vroom_zoom_email'  => $this->resource->zoom_internal_email,
-      'vroom_description' => $this->resource->description,
-      'vroom_caracteristiques'      => json_decode($this->resource->caracteristiques ?? '[]', true) ?: [],
-      'vroom_calendar_shares'       => $this->get_calendar_shares($this->resource),
-      'vroom_calendar_group_shares' => $this->get_calendar_shares($this->resource, true),
-      'vroom_additionnal_caracteristiques' => $this->get_config('vrooms_caracteristiques', []),
+      'resource_type'        => $this->resource->type,
+      'resource_uid'         => $this->resource->uid,
+      'resource_fullname'    => $this->resource->fullname,
+      'resource_name'        => $this->resource->name,
+      'resource_room'        => $this->resource->roomnumber,
+      'resource_floor'       => $this->resource->etage,
+      'resource_capacity'    => $this->resource->capacite,
+      'resource_building'    => $this->resource->batiment,
+      'resource_street'      => $this->resource->street,
+      'resource_postalcode'  => $this->resource->postalcode,
+      'resource_locality'    => $this->resource->locality,
+      'resource_email'       => $this->resource->email,
+      'resource_description' => $this->resource->description,
+      'resource_caracteristiques'             => json_decode($this->resource->caracteristiques ?? '[]', true) ?: [],
+      'resource_calendar_shares'              => $this->get_calendar_shares($this->resource),
+      'resource_calendar_group_shares'        => $this->get_calendar_shares($this->resource, true),
+      'resource_additionnal_caracteristiques' => $this->get_config($this->type($this->resource->type) . 's_caracteristiques', []),
     ]);
+
+    // Environnement spécifique par type
+    if ($this->resource->type == LibMelanie\Api\Defaut\Resource::TYPE_VROOM) {
+      $this->set_env('vroom_zoom_email', $this->resource->zoom_internal_email);
+    }
+    else if ($this->resource->type == LibMelanie\Api\Defaut\Resource::TYPE_FLEX_OFFICE) {
+      $exp = explode($this->gettext('resource_place'), $this->resource->name, 2);
+      $this->set_env('resource_place', $exp && isset($exp[1]) ? $exp[1] : '');
+    }
   }
 
   /**
-   * Création d'une ressource VRoom.
+   * Création d'une ressource.
    */
   protected function action_create_ressource()
   {
     $resource = driver_mel::gi()->resource([null, 'webmail.resource']);
     
+    $resource->type             = trim(rcube_utils::get_input_value('resource_type', rcube_utils::INPUT_GPC));
+    $resource->uid              = $this->generate_uid($resource->type);
+
     $resource = $this->resource_from_post($resource);
 
-    $resource->type = LibMelanie\Api\Defaut\Resource::TYPE_VROOM;
-    $resource->service = "Bnum/Ressources/$resource->locality";
-    $resource->zoom_account_id = $this->get_config('vrooms_zoom_account_id', '');
-    $resource->uid = $this->generate_uid($resource->type);
+    $resource->service          = "Bnum/Ressources/$resource->locality";
+
+    if ($resource->type == LibMelanie\Api\Defaut\Resource::TYPE_VROOM) {
+      $resource->zoom_account_id  = $this->get_config('vrooms_zoom_account_id', '');
+    }
 
     $ret = $resource->save();
 
+    $type = $this->type($resource->type);
+
     if (is_null($ret)) {
-      $this->show_message_error($this->gettext('error_add_vroom'));
+      $this->show_message_error($this->gettext('error_add_' . $type));
     } else {
-      $this->show_message($this->gettext('vroom_added'), 'confirmation');
+      $this->show_message($this->gettext($type . '_added'), 'confirmation');
       mel_logs::get_instance()->log(mel_logs::INFO, "[Ressources] Création de la VRoom '$resource->name'");
       $this->resource = $resource;
       $this->set_envs_from_ressource();
-      $this->set_page_title($this->gettext('vroom') . ' - ' . $this->resource->fullname);
-      $this->send_and_exit('mel_resource.vroom_show');
+      $this->set_page_title($this->gettext($type) . ' - ' . $this->resource->fullname);
+      $this->send_and_exit('mel_resource.' . $type . '_show');
     }
   }
 
   /**
-   * Modifie les informations d'une ressource VRoom.
+   * Modifie les informations d'une ressource.
    */
   protected function action_modify_ressource()
   {
@@ -557,35 +817,44 @@ class mel_resource extends bnum_plugin
     
     $resource = $this->resource_from_post($resource);
 
+    // Gestion de la description
+    $description  = trim(rcube_utils::get_input_value('resource_description', rcube_utils::INPUT_GPC, true));
+
+    if (empty($description)) {
+      $resource->description = null;
+    } else {
+      $resource->description = $description;
+    }
+
     $ret = $resource->save();
 
     if (is_null($ret)) {
-      $this->show_message_error($this->gettext('error_modify_vroom'));
+      $this->show_message_error($this->gettext('error_modify_' . $this->type($this->resource->type)));
     } else {
       $this->resource = $resource;
       mel_logs::get_instance()->log(mel_logs::INFO, "[Resources] Modification de la VRoom '$resource->name'");
-      $this->show_message($this->gettext('vroom_modified'), 'confirmation');
+      $this->show_message($this->gettext($this->type($this->resource->type) . '_modified'), 'confirmation');
     }
   }
 
   /**
-   * Supprime une ressource VRoom.
+   * Supprime une ressource.
    */
   protected function action_delete_ressource()
   {
     if ($this->resource->delete()) {
       mel_logs::get_instance()->log(mel_logs::INFO, "[Resources] Suppression de la VRoom '$this->resource->name'");
-      $this->show_message($this->gettext('vroom_deleted'), 'confirmation');
-      $this->send_and_exit('mel_resource.vroom_settings');
+      $this->show_message($this->gettext($this->type($this->resource->type) . '_deleted'), 'confirmation');
+      $this->send_and_exit('mel_resource.' . $this->type($this->resource->type) . '_settings');
     }
     else {
-      $this->show_message_error($this->gettext('error_delete_vroom'));
+      $this->show_message_error($this->gettext('error_delete_' . $this->type($this->resource->type)));
       $this->action_show_ressource();
     }
   }
 
   /**
-   * Remplit une ressource VRoom avec les données provenant du POST.
+   * Remplit une ressource avec les données provenant du POST.
    * 
    * @param Resource $resource La ressource à remplir.
    * 
@@ -593,30 +862,28 @@ class mel_resource extends bnum_plugin
    */
   protected function resource_from_post($resource) 
   {
-    $resource->name         = trim(rcube_utils::get_input_value('vroom_name', rcube_utils::INPUT_GPC));
-    $resource->etage        = trim(rcube_utils::get_input_value('vroom_floor', rcube_utils::INPUT_GPC));
-    $resource->roomnumber   = trim(rcube_utils::get_input_value('vroom_room', rcube_utils::INPUT_GPC));
-    $resource->capacite     = trim(rcube_utils::get_input_value('vroom_capacity', rcube_utils::INPUT_GPC));
-    $resource->zoom_internal_email     = trim(rcube_utils::get_input_value('vroom_zoom_email', rcube_utils::INPUT_GPC));
-    $resource->fullname     = LibMelanie\Api\Defaut\Resource::TYPE_VROOM . " $resource->name";
-    $resource->displayname  = LibMelanie\Api\Defaut\Resource::TYPE_VROOM . " $resource->name";
+    $resource->name         = trim(rcube_utils::get_input_value('resource_name', rcube_utils::INPUT_GPC));
+    $resource->etage        = trim(rcube_utils::get_input_value('resource_floor', rcube_utils::INPUT_GPC));
+    $resource->roomnumber   = trim(rcube_utils::get_input_value('resource_room', rcube_utils::INPUT_GPC));
+    $resource->capacite     = trim(rcube_utils::get_input_value('resource_capacity', rcube_utils::INPUT_GPC));
 
-    // Gestion de la description
-    $description  = trim(rcube_utils::get_input_value('vroom_description', rcube_utils::INPUT_GPC, true));
-
-    if (empty($description)) {
-      $resource->description = '';
-    } else {
-      $resource->description = $description;
+    if ($resource->type == LibMelanie\Api\Defaut\Resource::TYPE_VROOM) {
+      $resource->zoom_internal_email     = trim(rcube_utils::get_input_value('vroom_zoom_email', rcube_utils::INPUT_GPC));
+      $resource->is_zoom_room = true;
+    }
+    else if ($resource->type == LibMelanie\Api\Defaut\Resource::TYPE_FLEX_OFFICE) {
+      $place = trim(rcube_utils::get_input_value('resource_place', rcube_utils::INPUT_GPC));
+      $resource->name = $this->gettext('resource_room') . ' ' . $resource->roomnumber . ' ' . $this->gettext('resource_place') . ' ' . $place;
     }
 
-    $resource->is_zoom_room = true;
+    $resource->fullname     = $resource->type . " $resource->name";
+    $resource->displayname  = $resource->type . " $resource->name";
 
-    $vroom_building = trim(rcube_utils::get_input_value('vroom_building', rcube_utils::INPUT_GPC));
+    $resource_building = trim(rcube_utils::get_input_value('resource_building', rcube_utils::INPUT_GPC));
 
-    if (strpos($vroom_building, '/') !== false) {
+    if (strpos($resource_building, '/') !== false) {
       // Format locality/building
-      list($locality_uid, $vroom_building) = explode('/', $vroom_building, 2);
+      list($locality_uid, $resource_building) = explode('/', $resource_building, 2);
 
       $resource->dn = "cn=$resource->fullname,ou=$locality_uid," . driver_mel::gi()->constant('Resource::DN');
     }
@@ -625,7 +892,7 @@ class mel_resource extends bnum_plugin
       $locality_uid = $this->get_resource_locality();
     }
 
-    $building = $this->get_resource_building_infos($vroom_building, $locality_uid);
+    $building = $this->get_resource_building_infos($resource_building, $locality_uid, $resource->type);
 
     if (!empty($building)) {
       $resource->batiment     = $building['name'];
@@ -643,9 +910,9 @@ class mel_resource extends bnum_plugin
     $resource->email_list = [$resource->email];
 
     // Gestion des caractéristiques
-    if (isset($_POST['vroom_caracteristiques']) && is_array($_POST['vroom_caracteristiques'])) {
+    if (isset($_POST['resource_caracteristiques']) && is_array($_POST['resource_caracteristiques'])) {
       $caracteristiques = [];
-      foreach (rcube_utils::get_input_value('vroom_caracteristiques', rcube_utils::INPUT_POST) as $caracteristique) {
+      foreach (rcube_utils::get_input_value('resource_caracteristiques', rcube_utils::INPUT_POST) as $caracteristique) {
         $caracteristiques[$caracteristique] = 1;
       }
       $resource->caracteristiques = json_encode($caracteristiques, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
@@ -665,7 +932,7 @@ class mel_resource extends bnum_plugin
    */
   protected function generate_uid($type)
   {
-    return strtolower($type) . bin2hex(random_bytes(12));
+    return str_replace(' ', '', strtolower($type)) . bin2hex(random_bytes(12));
   }
 
   /**
@@ -680,7 +947,7 @@ class mel_resource extends bnum_plugin
   protected function resource_email($resource, $locality_uid, $building_key)
   {
     mel_helper::load_helper($this->rc())->include_utilities();
-    return mel_utils::remove_accents(str_replace(' ', '-', strtolower("vroom-{$resource->name}-{$building_key}-{$locality_uid}@" . $this->get_config('vrooms_email_domain', ''))));
+    return mel_utils::remove_accents(str_replace([' ', '_'], ['-', '-'], strtolower("{$this->type($resource->type)}-{$resource->name}-{$building_key}-{$locality_uid}@" . $this->get_config($this->type($resource->type) . 's_email_domain', ''))));
   }
 
   /**
@@ -688,9 +955,9 @@ class mel_resource extends bnum_plugin
    */
   protected function action_add_calendar_share()
   {
-    $user  = trim(rcube_utils::get_input_value('_user', rcube_utils::INPUT_GPC));
+    $user   = trim(rcube_utils::get_input_value('_user', rcube_utils::INPUT_GPC));
     $group  = trim(rcube_utils::get_input_value('_group', rcube_utils::INPUT_GPC));
-    $acl   = trim(rcube_utils::get_input_value('_acl', rcube_utils::INPUT_GPC));
+    $acl    = trim(rcube_utils::get_input_value('_acl', rcube_utils::INPUT_GPC));
 
     $group = $group === 'true' ? true : false;
 
@@ -701,7 +968,7 @@ class mel_resource extends bnum_plugin
     if (!$calendar->load()) {
       // Créer le calendrier s'il n'existe pas puis le recharger (pour récupérer son ID)
       if (!$this->resource->createDefaultCalendar()) {
-        $this->send_command('plugin.mel_vroom_add_calendar_share', [
+        $this->send_command('plugin.mel_resource_add_calendar_share', [
           'success' => false,
           'error'   => $this->gettext('calendar does not exist'),
           'data'    => [],
@@ -715,7 +982,7 @@ class mel_resource extends bnum_plugin
     }
 
     if ($group && $this->get_group($user) === null || !$group && $this->get_user($user) === null) {
-      $this->send_command('plugin.mel_vroom_add_calendar_share', [
+      $this->send_command('plugin.mel_resource_add_calendar_share', [
         'success' => false,
         'error'   => $group ? $this->gettext('group does not exist') : $this->gettext('user does not exist'),
         'data'    => [],
@@ -739,7 +1006,7 @@ class mel_resource extends bnum_plugin
       $share->acl = LibMelanie\Api\Defaut\Share::ACL_READ
         | LibMelanie\Api\Defaut\Share::ACL_FREEBUSY;
     } else {
-      $this->send_command('plugin.mel_vroom_add_calendar_share', [
+      $this->send_command('plugin.mel_resource_add_calendar_share', [
         'success' => false,
         'error'   => $this->gettext('bad acl value'),
         'data'    => [],
@@ -750,7 +1017,7 @@ class mel_resource extends bnum_plugin
     $ret = $share->save();
 
     if (is_null($ret)) {
-      $this->send_command('plugin.mel_vroom_add_calendar_share', [
+      $this->send_command('plugin.mel_resource_add_calendar_share', [
         'success' => false,
         'error'   => $this->gettext('cannot add share'),
         'data'    => [],
@@ -758,14 +1025,14 @@ class mel_resource extends bnum_plugin
       $this->send_and_exit();
     } else {
       \mel::unsetCache('users');
-      $this->send_command('plugin.mel_vroom_add_calendar_share', [
+      $this->send_command('plugin.mel_resource_add_calendar_share', [
         'success' => true,
         'group'   => $group,
         'data'    => [
           'user'        => $user,
           'displayname' => $group ? $this->get_group($user)->fullname : $this->get_user($user)->name,
           'share'       => $acl,
-          'share_label' => $this->gettext('vroom_calendar_share_' . $acl),
+          'share_label' => $this->gettext('resource_calendar_share_' . $acl),
         ],
       ]);
     }
@@ -786,7 +1053,7 @@ class mel_resource extends bnum_plugin
     $calendar->id = $this->resource->uid;
 
     if (!$calendar->load()) {
-      $this->send_command('plugin.mel_vroom_add_calendar_share', [
+      $this->send_command('plugin.mel_resource_add_calendar_share', [
         'success' => false,
         'error'   => $this->gettext('calendar does not exist'),
         'data'    => [],
@@ -800,7 +1067,7 @@ class mel_resource extends bnum_plugin
 
     if ($share->delete()) {
       \mel::unsetCache('users');
-      $this->send_command('plugin.mel_vroom_delete_calendar_share', [
+      $this->send_command('plugin.mel_resource_delete_calendar_share', [
         'success' => true,
         'group'   => $group,
         'data'    => [
@@ -808,7 +1075,7 @@ class mel_resource extends bnum_plugin
         ],
       ]);
     } else {
-      $this->send_command('plugin.mel_vroom_delete_calendar_share', [
+      $this->send_command('plugin.mel_resource_delete_calendar_share', [
         'success' => false,
         'error'   => $this->gettext('cannot delete share'),
         'data'    => [],

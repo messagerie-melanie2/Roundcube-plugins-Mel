@@ -1142,7 +1142,14 @@ $("#rcmfd_new_category").keypress(function(event) {
             break;
         //PAMELA
         case 'share':
+
+            // PAMELA - 0009361 Partage d'un évènement sans ICS
+            $this->require_plugin('mel_helper');
+
              $users_email = rcube_utils::get_input_value('_users_to_share', rcube_utils::INPUT_POST);
+
+             // PAMELA - 0009361 Partage d'un évènement sans ICS
+            $transmit_ics = (int) rcube_utils::get_input_value('_transmit_ics', rcube_utils::INPUT_POST) === 1;
 
             if (!isset($event['attendees']) || !is_array($event['attendees']))
             {
@@ -1196,6 +1203,9 @@ $("#rcmfd_new_category").keypress(function(event) {
             $event['_comment'] = rcube_utils::get_input_value('_comment', rcube_utils::INPUT_POST);
             $event['_notify'] = "3";
             $event['share'] = true;
+
+            // PAMELA - 0009361 Partage d'un évènement sans ICS
+            $event['_transmit_ics'] = $transmit_ics;
 
             $event['created'] = new Datetime($event['created']);
             $event['changed'] = new Datetime($event['changed']);
@@ -2833,6 +2843,40 @@ $("#rcmfd_new_category").keypress(function(event) {
             // skip myself for obvious reasons
             if (empty($attendee['email']) || in_array(strtolower($attendee['email']), $emails)) {
                 if (!empty($attendee['email'])) $orga = $attendee;
+                continue;
+            }
+
+            // PAMELA - 0009361 Partage d'un évènement sans ICS
+            if ($action === 'share' && isset($event['_transmit_ics']) && $event['_transmit_ics'] === false) {
+                $start = is_object($event['start']) ? $event['start']->format('d/m/Y H:i') : $event['start'];
+                $end = is_object($event['end']) ? $event['end']->format('d/m/Y H:i')   : $event['end'];
+
+                $body = $this->gettext('share_title') . ($event['title'] ?? '') . "\n\n";
+                $body .= $this->gettext('share_start') . $start . "\n";
+                $body .= $this->gettext('share_end') . $end . "\n\n";
+                $body .= $this->gettext('share_location') . ($event['location'] ?? '') . "\n\n";
+                $body .= $this->gettext('share_description') . ($event['description'] ?? '') . "\n";
+
+                if (!empty($event['_comment'])) {
+                    $body .= "\n" . $event['_comment'];
+                }
+
+                $default_identity = $this->rc->user->get_identity();
+                $from = $default_identity['email'];
+
+                $recipient = [
+                    'email' => $attendee['email'],
+                    'name' => $attendee['name'] ?? $attendee['email'],
+                ];
+
+                $sent += mel_helper::send_mail(
+                    $event['_subject'],
+                    $body,
+                    $from,
+                    $recipient,
+                    false
+                ) ? 1 : -100;
+
                 continue;
             }
 

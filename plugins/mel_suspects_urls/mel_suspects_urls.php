@@ -112,7 +112,8 @@ class mel_suspects_urls extends bnum_plugin
       'add_suspect_url' => [$this, 'add_suspect_url'],
       'delete_suspect_url' => [$this, 'delete_suspect_url'],
       'update_url_status' => [$this, 'update_url_status'],
-      'get_all_urls' => [$this, 'get_all_urls']
+      'get_all_urls' => [$this, 'get_all_urls'],
+      'export_csv' => [$this, 'export_csv'],
     ]);
   }
 
@@ -293,6 +294,71 @@ class mel_suspects_urls extends bnum_plugin
       }
 
       $this->send_and_exit();
+  }
+
+  /**
+   * Exporte les URLs suspectes au format CSV.
+   *
+   * Récupère les données en base (URL, statut, date),
+   * puis génère un fichier CSV téléchargeable avec
+   * formatage des dates en français.
+   *
+   * @return void
+   */
+  function export_csv()
+  {
+    if (!$this->check_rights_user()) {
+      header('HTTP/1.1 403 Forbidden');
+      echo $this->gettext('mel_suspects_urls.access_denied');
+      exit;
+    }
+
+    try {
+      $sql = "SELECT url, statut, created_at FROM mel_suspects_urls ORDER BY url_id ASC";
+      $stmt = $this->db()->query($sql);
+
+      if ($stmt === false) {
+        header('HTTP/1.1 500 Internal Server Error');
+        echo $this->gettext('mel_suspects_urls.download_error');
+        exit;
+      }
+
+      $filename = 'suspect_urls_' . date('Ymd') . '.csv';
+
+      header('Content-Type: text/csv; charset=UTF-8');
+      header('Content-Disposition: attachment; filename="' . $filename . '"');
+      header('Pragma: no-cache');
+      header('Expires: 0');
+
+      $output = fopen('php://output', 'w');
+
+      fprintf($output, chr(0xEF) .chr(0xBB) . chr(0xBF));
+
+      fputcsv($output, [
+        $this->gettext('mel_suspects_urls.suspects_urls'),
+        $this->gettext('mel_suspects_urls.status'),
+        $this->gettext('mel_suspects_urls.url_date_added'),
+      ], ';');
+
+      $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
+
+      while ($row = $this->db()->fetch_assoc($stmt)) {
+
+        $timestamp = strtotime($row['created_at']);
+        $date_formatted = $formatter->format($timestamp);
+
+        fputcsv($output, [
+          $row['url'],
+          ((int) $row['statut'] === 1 ? $this->gettext('mel_suspects_urls.blocked') : $this->gettext('mel_suspects_urls.suspect')), '="' . $date_formatted . '"',], ';');
+      }
+
+      fclose($output);
+      exit;
+    } catch (Exception $e) {
+      header('HTTP/1.1 500 Internal Server Error');
+      echo 'Erreur lors de l\'export CSV : ' . $e->getMessage();
+      exit;
+    }
   }
 
   /**

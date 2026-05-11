@@ -380,6 +380,11 @@ function m_mp_Create() {
  * @async
  */
 async function m_mp_Task() {
+  if (window.create_popUp !== undefined) {
+    // Fermer la boite de dialog
+    window.create_popUp.close();
+    window.create_popUp = undefined;
+  }
   await PageManager.SwitchFrame('tasks', {});
   PageManager.Instance.get_frame()[0].contentWindow.rcmail.command('newtask');
 }
@@ -991,6 +996,122 @@ function m_mp_input_uid_change(params) {
   } else $(params).data('edited', true);
 }
 
+/**
+ * Valide le titre d'un espace de travail selon les règles suivantes :
+ *
+ * - minimum 5 caractères
+ * - le premier caractère doit être alphanumérique (pas d'espace ni caractère spécial)
+ *
+ * @param {string} value - Valeur saisie dans le champ titre
+ * @returns {string|null} Message d'erreur si invalide, sinon null
+ */
+function validate_workspace_title(value) {
+  const title = (value || '').trim();
+
+  if (title.length < 5) {
+    return rcmail.gettext('workspace_title_min_length', 'mel_metapage')
+      .replace('%d', 5);
+  }
+
+  if (!/^[A-Za-z0-9]/.test(title)) {
+    return rcmail.gettext('workspace_title_invalid_first_char','mel_metapage');
+  }
+
+  return null;
+}
+
+/**
+ * Initialise la validation du champ "Nom de l'espace de travail".
+ *
+ * - Ajoute les attributs HTML (minlength, pattern, title)
+ * - Injecte dynamiquement l'erreur
+ * - Gère les événements :
+ *   - beforeinput : bloque les caractères invalides en première position
+ *   - blur : valide et nettoie la valeur
+ *   - input : met à jour le message d'erreur en temps réel
+ *   - paste : nettoie et valide après collage
+ *
+ * @returns {void}
+ */
+function init_workspace_title_validation() {
+  const $title = $('#workspace-title');
+
+  if ($title.length === 0) return;
+
+  $title.attr({
+    minlength: 5,
+    pattern: '^[A-Za-z0-9].{4,}$',
+    title: rcmail
+    .gettext('workspace_title_title', 'mel_metapage')
+    .replace('%d', 5),
+  });
+
+  if ($('#workspace-title-error').length === 0) {
+    $title.after(
+      '<div id="workspace-title-error" class="workspace-field-error" style="display:none;margin-top:6px;font-size:0.875rem;color:#c62828;"></div>',
+    );
+  }
+
+  const $error = $('#workspace-title-error');
+
+  const show_error = (message) => {
+    if (!message) {
+      $error.hide().text('');
+      $title.removeClass('input-error').attr('aria-invalid', 'false');
+    } else {
+      $error.text(message).show();
+      $title.addClass('input-error').attr('aria-invalid', 'true');
+    }
+  };
+
+  const check_title = () => {
+    const value = ($title.val() || '').trim();
+    $title.val(value);
+
+    const error = validate_workspace_title(value);
+    show_error(error);
+
+    return !error;
+  };
+
+  $title.on('beforeinput.workspaceTitle', function (e) {
+    const currentValue = $(this).val() || '';
+    const nativeEvent = e.originalEvent;
+
+    if (currentValue.length === 0 && nativeEvent?.data) {
+      const char = nativeEvent.data;
+
+      if (!/^[A-Za-z0-9]$/.test(char)) {
+        e.preventDefault();
+      }
+    }
+  });
+
+  $title.on('blur.workspaceTitle', function () {
+    check_title();
+  });
+
+  $title.on('input.workspaceTitle', function () {
+    if ($error.is(':visible')) {
+      const error = validate_workspace_title(($(this).val() || '').trim());
+      show_error(error);
+    } else {
+      show_error(null);
+    }
+  });
+
+  $title.on('paste.workspaceTitle', function () {
+    setTimeout(() => {
+      const cleaned = ($(this).val() || '').trim();
+      $(this).val(cleaned);
+      const error = validate_workspace_title(cleaned);
+      show_error(error);
+    }, 0);
+  });
+
+  $title.data('workspace-check-title', check_title);
+}
+
 function m_mp_createworkspace() {
   try {
     let html = '';
@@ -1022,6 +1143,9 @@ function m_mp_createworkspace() {
             datas +
             `<div style=display:none class=step id=workspace-step3>${object.step3()}</div>`,
         );
+
+        // Initialise la validation du champ titre de l'espace de travail
+        init_workspace_title_validation();
 
         if ($('#tmpavatar').find('a').length === 0)
           $('#worspace-avatar-a')
@@ -1188,20 +1312,20 @@ async function m_mp_check_w(step, next) {
   let stop = false;
   switch (step) {
     case 1:
-      if ($('#workspace-title').val() === '') {
+      const title_error = validate_workspace_title($('#workspace-title').val());
+      if (title_error !== null) {
         $('#workspace-title').css('border-color', 'red');
-        if ($('#wspte').length === 0)
+        if ($('#wspte').length === 0) {
           $('#workspace-title')
             .parent()
-            .append(
-              '<span id=wspte class=input-error-r style=color:red></span>',
-            );
-        $('#wspte').html("* L'espace de travail doit avoir un titre !");
+            .append('<span id=wspte class=input-error-r style=color:red></span>');
+        }
         $('#wspte').css('display', '');
         stop = true;
       } else {
         $('#wspte').css('display', 'none');
         $('#workspace-title').css('border-color', '');
+        $('#workspace-title').val(($('#workspace-title').val() || '').trim());
       }
       if (
         $('#workspace-private')[0].checked === false &&
@@ -3489,22 +3613,26 @@ function external_link_modal(_url, isSuspect = false) {
     { class: 'span-mel t2' },
     rcmail.gettext('mel_metapage.leaving_bnum'),
   );
-  let link = new mel_html('p', { class: 'external_url' }, _url);
+
+  const suspectClass = isSuspect ? 'warning-suspect' : '';
+  
   let warning = new mel_html2('label', {
-    attribs: { class: 'text-danger mt-3 warning-label' },
+    attribs: { class: `text-danger mt-3 warning-label ${suspectClass}` },
     contents: [
       new mel_html(
         'span',
-        { class: 'material-symbols-outlined warning-icon-large' },
+        { class: `material-symbols-outlined warning-icon-large ${suspectClass} `},
         'warning',
       ),
       new mel_html(
         'span',
-        { class: 'ml-2' },
-        rcmail.gettext('mel_metapage.warning_external_link'),
+        { class: 'ml-2 warning-text'  },
+        isSuspect ? rcmail.gettext('mel_metapage.warning_suspect') : rcmail.gettext('mel_metapage.warning_external_link'),
       ),
     ],
   });
+  
+  let link = new mel_html('p', { class: 'external_url' }, _url);
   let disableButton = false;
   let custom_switch = null;
 
@@ -3556,21 +3684,27 @@ function external_link_modal(_url, isSuspect = false) {
           'label',
           {
             for: 'warning_suspect_url',
-            class: 'custom-control-label option-switch no-click-focus pl-6',
+            class: `custom-control-label option-switch no-click-focus pl-6 ${suspectClass}`,
           },
           '<span class="external_domain">' +
             domain +
             '</span>' +
-            rcmail.gettext('mel_metapage.warning_suspect_url'),
+            isSuspect ? rcmail.gettext('mel_metapage.warning_suspect_url_avoid') : rcmail.gettext('mel_metapage.warning_suspect_url'),
         ),
       ],
     });
   }
 
   html.addContent(title);
+  if(isSuspect) {
+    html.addContent(warning);
+  }
+  
   html.addContent(link);
   html.addContent(custom_switch);
-  html.addContent(warning);
+  if(!isSuspect) {
+    html.addContent(warning);
+  }
 
   let buttons = [
     {

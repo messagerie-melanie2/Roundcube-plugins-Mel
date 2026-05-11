@@ -324,6 +324,7 @@ $labels['statusneeds-action'] = 'En attente';
 $labels['webconf_toggle_chat_help'] = "Affiche ou ferme le tchat interne";
 $labels['webconf_phone_help'] = "Copie le numéro de téléphone pour permettre à d'autre de rejoindre la visio en cours";
 $labels['webconf_phone'] = "Rejoindre par téléphone";
+$labels['webconf_phone_2'] = "Rejoindre la visio par téléphone";
 $labels['visio'] = 'Visioconférences';
 $labels['chat'] = 'Discussions';
 
@@ -402,6 +403,8 @@ $labels['attention'] = 'Attention';
 $labels['leaving_bnum'] = 'Vous êtes sur le point de quitter le Bnum pour aller sur le site suivant :';
 $labels['always_authorize'] = 'Toujours autoriser les liens provenant de ';
 $labels['warning_suspect_url'] = ' est référencé comme risque potentiel de phishing. Je reconnais que je ne donnerai pas mes identifiants Bnum.';
+$labels['warning_suspect_url_avoid'] = 'Je confirme vouloir accéder à ce site potentiellement dangereux et reconnais que je ne donnerai pas mes identifiants Bnum ';
+$labels['warning_suspect'] = 'Attention, site référencé comme risque potentiel de phishing';
 $labels['warning_external_link'] = 'Attention, ne jamais donner vos identifiants ou mots de passe Bnum ou Mél sur le site que vous allez visiter';
 $labels['open_external_link'] = 'Visiter le site';
 
@@ -509,6 +512,7 @@ $labels['start_search'] = 'Lancer la recherche';
 $labels['erase_text'] = 'Effacer la saisie';
 $labels['add_users_not_added'] = 'Certains utilisateurs n\'ont pas encore été ajoutés à la liste des participants, les ajouter ?';
 
+
 $labels['return_to_creation_window'] = 'Retour à la fenêtre de création (email, espaces de travail, etc...)';
 $labels['return_to_creation_modal'] = 'Retour à la modale de création';
 $labels['create_workspace_title'] = 'Création d\'un espace de travail';
@@ -526,3 +530,14 @@ $labels['duplicateevent'] = 'Dupliquer l\'original';
 $labels['copyeventseries'] = 'Copier l\'original';
 
 $labels['event-not-ok-rec-date'] = 'La date de fin de la récurrence est inférieur ou égale à la date actuelle';
+$labels['image_title'] = 'Image de l\'espace de travail';
+
+$labels['workspace_title_min_length'] = 'Le titre de l\'espace de travail doit contenir au minimum %d caractères.';
+$labels['workspace_title_invalid_first_char'] = 'Le titre de l\'espace de travail doit commencer par une lettre ou un chiffre.';
+$labels['workspace_title_title'] = 'Le titre doit contenir au minimum %d caractères et commencer par une lettre ou un chiffre.';
+
+$labels['forword_the_invitation'] = 'Transmettre l\'invitation';
+$labels['share_ics_joined'] = 'Le fichier ICS sera joint au message';
+$labels['share_ics_not_joined'] = 'Seules les informations de l\'évènement seront envoyées (titre, horaires, lieu, description)';
+
+$labels['event_title']= 'Rejoindre l\'audioconférence par téléphone';

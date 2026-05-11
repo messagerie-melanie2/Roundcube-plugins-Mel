@@ -465,8 +465,15 @@ export class EventView {
    */
   _main(event) {
     let warning_panel = WarningPanel.Get();
-    this.parts.init(event, this.inputs, this.fakes);
 
+    const hasTitle =
+      event.title !== EMPTY_STRING &&
+      event.title !== null &&
+      event.title !== undefined;
+
+    MelObject.Empty().rcmail().env['__local:part:isStartEvent'] = !hasTitle;
+
+    this.parts.init(event, this.inputs, this.fakes);
     this._generate_dialog_events();
 
     $(MAIN_FORM_SELECTOR).css('opacity', '1');
@@ -676,10 +683,8 @@ export class EventView {
     }
 
     this.#_setModifier();
-
     if (!this.#_recEndDateValid()) {
       const localizationKey = 'event-not-ok-rec-date';
-
       is_valid = false;
       BnumMessage.DisplayMessage(
         ABaseMelObject.Empty().getLocalization(localizationKey, {
@@ -687,6 +692,21 @@ export class EventView {
         }),
         eMessageType.Error,
       );
+    }
+
+    const $alarmField = this.parts.alarm._$fakeField;
+    if (
+      is_valid &&
+      rcmail.env['__local:part:isStartEvent'] &&
+      +$alarmField.val() === -2
+    ) {
+      $alarmField
+        .val(
+          this.parts.date.is_all_day
+            ? 0
+            : this.parts.alarm._getDefaultAlarmMinutes(),
+        )
+        .change();
     }
 
     return is_valid;

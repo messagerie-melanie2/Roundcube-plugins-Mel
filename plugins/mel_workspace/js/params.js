@@ -1862,13 +1862,25 @@
     rcmail.register_command(
       'workspace.update_title',
       () => {
+        const $title = $('#spaceTitle');
+        const title = ($title.val() || '').trim();
+        const titleError = validate_workspace_title(title);
+
+        if (titleError !== null) {
+          $title.css('border-color', 'red');
+          rcmail.display_message(titleError, 'error');
+          $title.focus();
+          return;
+        }
+        $title.val(title);
+        
         if (
           !confirm(rcmail.gettext('change_title_confirmation', 'mel_workspace'))
         )
           return;
         rcmail.env.WSP_Param.update_primary_parameters({
           type: 'title',
-          input: $('#spaceTitle'),
+          input: $title,
           checks: 'empty;already-exist',
           text_on_error:
             "Une erreur est survenue.\r\nImpossible de changer le titre de l'espace.",

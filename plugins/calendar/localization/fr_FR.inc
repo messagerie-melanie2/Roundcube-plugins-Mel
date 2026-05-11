@@ -335,6 +335,11 @@ $labels['gereragenda'] = 'Gérer les agendas';
 // MANTIS 3607: Permettre de remplacer tous les évènements lors d'un import
 $labels['deleteallcalendarconfirm'] = 'Voulez-vous vraiment supprimer tous les évènements de cet agenda (l\'opération ne peut pas être annulée) ?';
 $labels['event private'] = "Évènement privé";
+$labels['event busy'] = "Évènement occupé";
+$labels['event tentative'] = "Évènement provisoire";
+$labels['event telework'] = "Évènement télétravail";
+$labels['event vacation'] = "Congés";
+$labels['event free'] = "Évènement libre";
 $labels['copied_url'] = 'Lien copié !';
 $labels['copied_url_default'] = 'Copier le lien';
 $labels['copied_url_title'] = 'Cliquez-ici pour copier le lien de l\'agenda';
@@ -380,4 +385,12 @@ $labels['changerecurrence'] = 'Ancienne répétition';
 $labels['notification'] = 'Notification'; 
 // PAMELA - #386 - 🚑 Les participants invité à une réunion avec une ressource ne fonctionne pas
 $labels['rsc-denied'] = 'La ressource $name est occupée';
+
+// PAMELA - 0009361 Partage d'un évènement sans ICS
+$labels['share_title'] = 'Titre : ';
+$labels['share_start'] = 'Début : ';
+$labels['share_end'] = 'Fin : ';
+$labels['share_location'] = 'Lieu : ';
+$labels['share_description'] = 'Description : ';
+
 ?>

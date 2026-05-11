@@ -13,6 +13,7 @@ import { EMPTY_STRING } from '../../../constants/constants.js';
 import {
   REG_ALPHANUM,
   REG_NUMBER,
+  REG_PHONE_NUMBER,
   REG_URL,
 } from '../../../constants/regexp.js';
 import { MelHtml } from '../../../html/JsHtml/MelHtml.js';
@@ -1152,10 +1153,9 @@ class Phone extends ALocationPart {
   constructor(location, index) {
     super(location, index);
 
-    if (location.includes(Phone.Url())) {
-      let data = location.split(SEPARATOR_AUDIO_URL_LOCATION)[1];
-      const [phone, pin] = data.split(SEPARATOR_AUDIO_PIN);
-      this._phone = phone;
+    if (Phone.Has(location)) {
+      const [phone, pin] = location.split(SEPARATOR_AUDIO_PIN);
+      this._phone = phone.split(SEPARATOR_AUDIO_URL_LOCATION).at('-1');
       this._pin = pin || EMPTY_STRING;
     }
   }
@@ -1180,8 +1180,7 @@ class Phone extends ALocationPart {
     this._pin = EMPTY_STRING;
 
     Object.defineProperty(this, 'location', {
-      get: () =>
-        `${Phone.Url()}${SEPARATOR_AUDIO_URL_LOCATION}${this._phone}${SEPARATOR_AUDIO_PIN}${this._pin}`,
+      get: () => `${this._phone}${SEPARATOR_AUDIO_PIN}${this._pin}`,
     });
   }
 
@@ -1286,7 +1285,14 @@ class Phone extends ALocationPart {
    * @override
    */
   static Has(location) {
-    return location.includes(this.Url());
+    location = location.replaceAll(this.Url(), EMPTY_STRING);
+
+    return (
+      !VisioManager.Has(location) &&
+      location.match(REG_PHONE_NUMBER) &&
+      location.includes('|') &&
+      location.split('|')[1].match(REG_NUMBER) /* Gérer les faux positifs */
+    );
   }
 
   /**

@@ -467,7 +467,8 @@ rcube_webmail.prototype.contextmenu = {
             p.enabled = false;
             // From rcmail::subscription_select()
             var folder;
-            if ((folder = rcmail.env.subscriptionrows[rcmail.env.context_menu_source_id]) && !folder[2]) {
+            // PAMELA - 0008986 Désactivation de "Supprimer" pour le dossier Modèles dans le menu contextuel (déclenché au clic droit)
+            if ((folder = rcmail.env.subscriptionrows[rcmail.env.context_menu_source_id]) && !folder[2] && !rcmail.is_templates_folder(rcmail.env.context_menu_source_id)) {
                 p.enabled = true;
             }
         }

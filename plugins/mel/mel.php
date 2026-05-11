@@ -88,7 +88,6 @@ class mel extends rcube_plugin
     include_once __DIR__ . '/../../version.php';
     self::$VERSION .= " " . Version::VERSION;
     // Définition des hooks
-    $this->add_hook('login_after',          array($this, 'login_after'));
     $this->add_hook('user_create',          array($this, 'user_create'));
     $this->add_hook('m2_get_account',       array($this, 'm2_get_account'));
     $this->add_hook('smtp_connect',         array($this, 'smtp_connect'));
@@ -99,6 +98,8 @@ class mel extends rcube_plugin
     $this->add_hook('identity_update',      array($this, 'identity_update'));
     $this->add_hook('message_before_send',  array($this, 'message_before_send'));
     $this->add_hook('imap_search_before', [$this, 'imap_search_before']);
+    $this->add_hook('once_per_day',           [$this, 'login_after']);
+    $this->add_hook('once_per_day',       [$this, 'unset_show_password_change']);
 
     // Template
     $this->add_hook('template_object_loginform',  array($this, 'login_form'));
@@ -519,6 +520,15 @@ class mel extends rcube_plugin
     foreach ($delete_identities as $delete_iid) {
       $this->rc->user->delete_identity($delete_iid);
     }
+    return $args;
+  }
+
+  /**
+   * Supprime le paramètre plugin.show_password_change de la session
+   */
+  public function unset_show_password_change($args)
+  {
+    unset($_SESSION['plugin.show_password_change']);
     return $args;
   }
 

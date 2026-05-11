@@ -365,6 +365,9 @@ h5.no-margin,
 h6.no-margin {
   margin-bottom: 0;
 }
+iframe {
+  border: var(--bnum-iframe-border, none);
+}
 .ds-block {
   display: block;
   width: 100%;

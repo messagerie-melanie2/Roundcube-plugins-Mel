@@ -60,6 +60,9 @@ export class Global extends ABaseModule {
   #_onSwitchChange() {
     return this.listen('switch_frame', (args) => {
       const { task } = args;
+      /**
+       * @type {HTMLElement}
+       */
       const element = document.querySelector(
         `#taskmenu li a[data-task="${task}"]`,
       );
@@ -71,7 +74,9 @@ export class Global extends ABaseModule {
         const header = document.querySelector(`${HTMLBnumHeader.TAG}.barup`);
 
         if (header) {
-          const currentTask = element.innerText;
+          const currentTask =
+            element.innerText?.split?.('\n')?.slice?.(0, -1)?.join?.('') ||
+            element.innerText;
 
           const h1 = header.querySelector('h1');
 

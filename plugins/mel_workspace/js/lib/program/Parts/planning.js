@@ -100,6 +100,11 @@ class WorkspacePlanning extends WorkspaceObject {
 
             requestAnimationFrame(() => {
               updateHeight();
+              //Nettoya de l'ancien listener avant le nouveau listener
+              if(planningEl._resizeHandler){
+                window.removeEventListener('resize', planningEl._resizeHandler);
+              }
+              //nouveau listener
               planningEl._resizeHandler = updateHeight;
               window.addEventListener('resize', planningEl._resizeHandler);
             });

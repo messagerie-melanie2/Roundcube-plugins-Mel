@@ -355,6 +355,11 @@ export default class BridgeMail extends ABridge {
     tbody.addEventListener(
       'click',
       (e) => {
+        if (
+          e.target.hasAttribute &&
+          e.target.hasAttribute('data-ignore-capture')
+        )
+          return;
         const row = e.target.closest('tr');
         if (row) BridgeEvents.Instance.onMailClick(e);
       },
@@ -440,8 +445,12 @@ export default class BridgeMail extends ABridge {
     /**
      * @type {import("../ds-module-bnum.js").HTMLBnumButtonIcon}
      */
-    const action = HTMLBnumButtonIcon.Create('add')
-      .attr('id', `action-of-${row.id}`)
+    const action = HTMLBnumButtonIcon.Create('add');
+    action
+      .attrs({
+        id: `action-of-${row.id}`,
+        'data-ignore-capture': 'true',
+      })
       .addClass('mail-avatar--action');
 
     action.addEventListener(
@@ -461,6 +470,9 @@ export default class BridgeMail extends ABridge {
         const updateButton = document.querySelector(`#${rowId} .selection`);
 
         if (updateButton) {
+          if (!updateButton.hasAttribute('data-ignore-capture'))
+            updateButton.setAttribute('data-ignore-capture', true);
+
           this.icon = getIcon(rowId, { inverted: true });
           updateButton.click();
         } else
@@ -468,6 +480,7 @@ export default class BridgeMail extends ABridge {
             'Impossible de trouver le bouton pour changer le status du mail !',
           );
       }.bind(action, row.id, this._getIcon.bind(this)),
+      true,
     );
 
     /**

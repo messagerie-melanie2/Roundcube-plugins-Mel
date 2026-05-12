@@ -76,37 +76,36 @@ class WorkspacePlanning extends WorkspaceObject {
           onSetFullScreen(obj) {
             const planningEl = obj.module.querySelector('bnum-planning');
 
-            const updateHeight = () => {
-              const planningRect = planningEl.getBoundingClientRect();
-
+            const FC_GRID_SELECTORS = [
+              '.fc-view-harness',
+              '.fc-resourcetimeline-view',
+              '.fc-view',
+              '[class*="view-harness"]',
+            ];
+            
+            const getGridTop = () => {
               // Cherche la grille FullCalendar (le corps, après tous les headers)
-              const fcGrid = planningEl.querySelector(
-                '.fc-view-harness, .fc-view, .fc-resourcetimeline-view, [class*="view-harness"]'
-              );
-
-              let availableHeight;
-
-              if (fcGrid) {
-                // Méthode la plus précise : on prend exactement la hauteur de la zone de grille
-                const gridRect = fcGrid.getBoundingClientRect();
-                availableHeight = window.innerHeight - gridRect.top - 20;
-              } else {
-                // Fallback si la vue n'est pas trouvée
-                availableHeight = window.innerHeight - planningRect.top - 160 - 20;
+              for (const selector of FC_GRID_SELECTORS) {
+                const el = planningEl.querySelector(selector);
+                if (el) return el.getBoundingClientRect().top;
               }
+              return planningEl.getBoundingClientRect().top + 160;
+            };
 
+            const updateHeight = () => {
+              const availableHeight = window.innerHeight - getGridTop() - 20;
               planningEl.fullcalendar.option('height', availableHeight);
             };
 
             requestAnimationFrame(() => {
               updateHeight();
               //Nettoya de l'ancien listener avant le nouveau listener
-              if(planningEl._resizeHandler){
-                window.removeEventListener('resize', planningEl._resizeHandler);
+              if(planningEl._resizeObserver){
+                planningEl._resizeObserver.disconnect();
               }
               //nouveau listener
-              planningEl._resizeHandler = updateHeight;
-              window.addEventListener('resize', planningEl._resizeHandler);
+              planningEl._resizeObserver = new ResizeObserver(updateHeight);
+              planningEl._resizeObserver.observe(obj.module);
             });
           },
           /**

@@ -47,6 +47,7 @@
   justify-content: space-between;
   height: 60px;
   border-bottom: var(--bnum-border-column);
+  --secondary-text-color: var(--bnum-body-text-color, var(--bnum-text-primary));
 }
 #layout-sidebar .old-header {
   width: 100%;

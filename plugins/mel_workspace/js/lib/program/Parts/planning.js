@@ -45,6 +45,50 @@ class WorkspacePlanning extends WorkspaceObject {
   }
 
   /**
+    * Retourne le top de la grille FullCalendar dans la fenêtre.
+    * Cherche le premier sélecteur FC qui matche, sinon fallback.
+    */
+  static getGridTop(planningEl) {
+    const FC_GRID_SELECTORS = [
+      '.fc-view-harness',
+      '.fc-resourcetimeline-view',
+      '.fc-view',
+      '[class*="view-harness"]',
+    ];
+
+    for (const selector of FC_GRID_SELECTORS) {
+       const el = planningEl.querySelector(selector);
+       if (el) return el.getBoundingClientRect().top;
+      }
+
+    // Fallback : position du composant + hauteur estimée du header interne
+    return planningEl.getBoundingClientRect().top + 160;
+  }
+
+  /**
+    * Calcule et applique la hauteur disponible à FullCalendar.
+    */
+  static updateHeight(planningEl) {
+    const gridTop = WorkspacePlanning.getGridTop(planningEl);
+    const availableHeight = window.innerHeight - gridTop - 20;
+    planningEl.fullcalendar.option('height', availableHeight);
+  }
+
+  /**
+    * Singleton : initialise le listener resize UNE SEULE FOIS sur l'élément.
+    * Si le handler existe déjà → on garde l'existant, on n'en crée pas un nouveau.
+    */
+  static tryInitResize(planningEl) {
+    if (planningEl._resizeHandler) return; // déjà initialisé, on sort
+
+    planningEl._resizeHandler = () => {
+      WorkspacePlanning.updateHeight(planningEl);
+    };
+
+    window.addEventListener('resize', planningEl._resizeHandler);
+  }
+
+  /**
    * Méthode principale appelée pour initialiser le module.
    */
   main() {
@@ -76,36 +120,12 @@ class WorkspacePlanning extends WorkspaceObject {
           onSetFullScreen(obj) {
             const planningEl = obj.module.querySelector('bnum-planning');
 
-            const FC_GRID_SELECTORS = [
-              '.fc-view-harness',
-              '.fc-resourcetimeline-view',
-              '.fc-view',
-              '[class*="view-harness"]',
-            ];
-            
-            const getGridTop = () => {
-              // Cherche la grille FullCalendar (le corps, après tous les headers)
-              for (const selector of FC_GRID_SELECTORS) {
-                const el = planningEl.querySelector(selector);
-                if (el) return el.getBoundingClientRect().top;
-              }
-              return planningEl.getBoundingClientRect().top + 160;
-            };
+            //  s'assurer qu'un seul listener existe
+            WorkspacePlanning.tryInitResize(planningEl);
 
-            const updateHeight = () => {
-              const availableHeight = window.innerHeight - getGridTop() - 20;
-              planningEl.fullcalendar.option('height', availableHeight);
-            };
-
+            //  requestAnimationFrame : attend le bon moment pour mesurer le DOM
             requestAnimationFrame(() => {
-              updateHeight();
-              //Nettoya de l'ancien listener avant le nouveau listener
-              if(planningEl._resizeObserver){
-                planningEl._resizeObserver.disconnect();
-              }
-              //nouveau listener
-              planningEl._resizeObserver = new ResizeObserver(updateHeight);
-              planningEl._resizeObserver.observe(obj.module);
+              WorkspacePlanning.updateHeight(planningEl);
             });
           },
           /**

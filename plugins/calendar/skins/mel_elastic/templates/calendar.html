@@ -8,19 +8,27 @@
 <!-- calendars list -->
 <div id="layout-sidebar" class="listbox" role="navigation" aria-labelledby="arial-label-calendars">
   <div class="header">
-    <a class="button icon back-content-button" href="#back" data-hidden="big"><span class="inner">
+    <!-- Bouton retour (mobile) -->
+    <a class="button icon back-content-button" href="#back" data-hidden="big">
+      <span class="inner">
         <roundcube:label name="back" />
-      </span></a>
-      <span class="material-symbols-outlined colored-header-icon calendar_app only-current no-hover only-background">
-        calendar_month
-        </span>
-        <span class="colored-header-title">
-          <roundcube:label name="calendar.calendar" />
-        </span>
-    </span>
-    <roundcube:button name="calendaractionsmenu" id="calendaroptionsmenulink" type="link"
-      title="calendar.calendaractions" class="button icon sidebar-menu" data-popup="calendaractions-menu"
-      innerClass="inner" label="actions" />
+      </span>
+    </a>
+    <!-- Bouton d'action -->
+    <bnum-primary-button style="--bnum-button-padding:6px 10px;" click="rcmbtn129" data-hide="touch" block data-icon="add">Nouveau message</bnum-primary-button>
+    <!-- Bouton + d'actions -->
+    <bnum-icon-button 
+      name="calendaractionsmenu" 
+      id="bnum-calendaroptionsmenulink" 
+      type="link"
+      title="calendar.calendaractions" 
+      class="sidebar-menu" 
+      data-popup="calendaractions-menu"
+      innerClass="inner" 
+      label="actions" 
+      style="display: flex!important;" >
+        more_vert
+      </bnum-icon-button>
   </div>
   <roundcube:object name="libkolab.folder_search_form" id="calendarlistsearch" wrapper="searchbar menu" ariatag="h2"
     label="calsearchform" label-domain="calendar" buttontitle="findcalendars" />
@@ -34,7 +42,7 @@
     <roundcube:label name="calendar.arialabelminical" />
   </h2>
   <div id="datepicker" class="calendar-datepicker" role="presentation"></div>
-</div>
+</div> 
 
 <!-- calendar -->
 <div id="layout-content" class="selected no-navbar" role="main">

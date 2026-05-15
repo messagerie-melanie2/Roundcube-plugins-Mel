@@ -821,9 +821,9 @@ class mel_resource extends bnum_plugin
     // Gestion de la description
     $description  = trim(rcube_utils::get_input_value('resource_description', rcube_utils::INPUT_GPC, true));
 
-    if (empty($description)) {
-      $resource->description = null;
-    } else {
+    if (empty($description) && !empty($resource->description)) {
+      $resource->description = '';
+    } else if (!empty($description)) {
       $resource->description = $description;
     }
 

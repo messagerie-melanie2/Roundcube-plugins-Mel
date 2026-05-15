@@ -844,7 +844,7 @@ class mel_resource extends bnum_plugin
   protected function action_delete_ressource()
   {
     if ($this->resource->delete()) {
-      mel_logs::get_instance()->log(mel_logs::INFO, "[Resources] Suppression de $resource->type '$this->resource->name'");
+      mel_logs::get_instance()->log(mel_logs::INFO, "[Resources] Suppression de {$this->resource->type} '{$this->resource->name}'");
       $this->show_message($this->gettext($this->type($this->resource->type) . '_deleted'), 'confirmation');
       $this->send_and_exit('mel_resource.' . $this->type($this->resource->type) . '_settings');
     }

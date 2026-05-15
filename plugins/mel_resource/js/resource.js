@@ -45,7 +45,7 @@
     'plugin.mel_resource_add_calendar_share',
     function (response) {
       if (response.success) {
-        const label = response.group ? 'share_group_added_' . type() : 'share_added_' . type();
+        const label = response.group ? 'share_group_added_' + type() : 'share_added_' + type();
         rcmail.display_message(
           rcmail.get_label(label, 'mel_resource', { name: response.data.displayname, type: rcmail.get_label('mel_resource.resource_calendar_share_' + response.data.share) }),
           'confirmation'

@@ -28,8 +28,6 @@ $labels['groups'] = 'Groupes';
 $labels['share_name'] = 'Utilisateur';
 $labels['share_group_name'] = 'Groupe';
 $labels['share_value'] = 'Partage';
-$labels['resource_no_calendar_share'] = 'Aucun partage utilisateur positionné sur le calendrier de cette ressource.';
-$labels['resource_no_calendar_group_share'] = 'Aucun partage de groupe positionné sur le calendrier de cette ressource.';
 $labels['resource_calendar_share_rw'] = 'Lecture/Écriture';
 $labels['resource_calendar_share_r'] = 'Lecture seule';
 $labels['add_calendar_share'] = 'Ajouter un partage utilisateur au calendrier';
@@ -79,6 +77,9 @@ $labels['share_added_vroom'] = 'Droit de partage "$type" ajouté pour l\'utilisa
 $labels['share_group_added_vroom'] = 'Droit de partage "$type" ajouté pour le groupe $name sur le calendrier de la VRoom.';
 $labels['resource_zoom_email'] = 'Adresse email interne Zoom';
 $labels['resource_zoom_email_info'] = 'Adresse email fournie par Zoom au format "rooms_***@developpement-durable.gouv.fr", correspondant à la Zoom Room associée à cette VRoom.';
+$labels['vroom_no_calendar_share'] = 'Aucun partage utilisateur positionné sur le calendrier de cette VRoom.';
+$labels['vroom_no_calendar_group_share'] = 'Aucun partage de groupe positionné sur le calendrier de cette VRoom.';
+
 
 // Salle
 $labels['salle'] = 'Gestion des salles';
@@ -110,6 +111,9 @@ $labels['button_title_add_calendar_share_salle'] = 'Ajouter un partage pour cet 
 $labels['button_title_add_calendar_group_share_salle'] = 'Ajouter un partage pour ce groupe sur le calendrier de la salle (le partage est pris en compte toutes les heures)';
 $labels['share_added_salle'] = 'Droit de partage "$type" ajouté pour l\'utilisateur $name sur le calendrier de la salle.';
 $labels['share_group_added_salle'] = 'Droit de partage "$type" ajouté pour le groupe $name sur le calendrier de la salle.';
+$labels['salle_no_calendar_share'] = 'Aucun partage utilisateur positionné sur le calendrier de cette salle.';
+$labels['salle_no_calendar_group_share'] = 'Aucun partage de groupe positionné sur le calendrier de cette salle.';
+
 
 // Véhicule
 $labels['vehicule'] = 'Gestion des véhicules';
@@ -141,6 +145,9 @@ $labels['button_title_add_calendar_share_vehicule'] = 'Ajouter un partage pour c
 $labels['button_title_add_calendar_group_share_vehicule'] = 'Ajouter un partage pour ce groupe sur le calendrier du véhicule (le partage est pris en compte toutes les heures)';
 $labels['share_added_vehicule'] = 'Droit de partage "$type" ajouté pour l\'utilisateur $name sur le calendrier du véhicule.';
 $labels['share_group_added_vehicule'] = 'Droit de partage "$type" ajouté pour le groupe $name sur le calendrier du véhicule.';
+$labels['vehicule_no_calendar_share'] = 'Aucun partage utilisateur positionné sur le calendrier de ce véhicule.';
+$labels['vehicule_no_calendar_group_share'] = 'Aucun partage de groupe positionné sur le calendrier de ce véhicule.';
+
 
 // Matériel
 $labels['materiel'] = 'Gestion des matériels';
@@ -172,6 +179,8 @@ $labels['button_title_add_calendar_share_materiel'] = 'Ajouter un partage pour c
 $labels['button_title_add_calendar_group_share_materiel'] = 'Ajouter un partage pour ce groupe sur le calendrier du matériel (le partage est pris en compte toutes les heures)';
 $labels['share_added_materiel'] = 'Droit de partage "$type" ajouté pour l\'utilisateur $name sur le calendrier du matériel.';
 $labels['share_group_added_materiel'] = 'Droit de partage "$type" ajouté pour le groupe $name sur le calendrier du matériel.';
+$labels['materiel_no_calendar_share'] = 'Aucun partage utilisateur positionné sur le calendrier de ce matériel.';
+$labels['materiel_no_calendar_group_share'] = 'Aucun partage de groupe positionné sur le calendrier de ce matériel.';
 
 // Flex office
 $labels['flex_office'] = 'Gestion des bureaux';
@@ -203,6 +212,8 @@ $labels['button_title_add_calendar_share_flex_office'] = 'Ajouter un partage pou
 $labels['button_title_add_calendar_group_share_flex_office'] = 'Ajouter un partage pour ce groupe sur le calendrier du bureau (le partage est pris en compte toutes les heures)';
 $labels['share_added_flex_office'] = 'Droit de partage "$type" ajouté pour l\'utilisateur $name sur le calendrier du bureau.';
 $labels['share_group_added_flex_office'] = 'Droit de partage "$type" ajouté pour le groupe $name sur le calendrier du bureau.';
+$labels['flex_office_no_calendar_share'] = 'Aucun partage utilisateur positionné sur le calendrier de ce bureau.';
+$labels['flex_office_no_calendar_group_share'] = 'Aucun partage de groupe positionné sur le calendrier de ce bureau.';
 
 
 $labels['caracteristique'] = 'Caractéristique';

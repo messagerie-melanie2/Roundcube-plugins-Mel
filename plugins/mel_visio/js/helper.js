@@ -206,7 +206,6 @@ class BnumVisio extends MelObject {
         args: params ?? { _page: 'index' },
       });
     } else if (page !== 'index') {
-
       // GARDE : si une visio est déjà en cours
       if (window.current_visio) {
         const _window = top ?? parent ?? window;
@@ -243,7 +242,6 @@ class BnumVisio extends MelObject {
   }
 
   stopVisio() {
-    window.current_visio = null;
     FramesManager.Instance.enable_manual_multiframe().stop_custom_multi_frame();
     return this;
   }

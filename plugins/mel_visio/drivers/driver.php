@@ -1,5 +1,9 @@
 <?php
 
+namespace MelVisio;
+
+use rcmail;
+
 /**
  * Classe abstraite de base pour les drivers du plugin mel_visio.
  *
@@ -23,16 +27,16 @@ abstract class Driver
      * Instance du plugin mel_visio parent.
      * Accessible en lecture seule via @see _p_plugin().
      *
-     * @var mel_visio
+     * @var \mel_visio
      * @todo En php 8.5, passer en readonly
      */
-    private mel_visio $plugin;
+    private \mel_visio $plugin;
 
     /**
-     * @param mel_visio $plugin Instance du plugin parent,
+     * @param \mel_visio $plugin Instance du plugin parent,
      *                          injectée à la création du driver.
      */
-    public function __construct(mel_visio $plugin) {
+    public function __construct(\mel_visio $plugin) {
         $this->plugin = $plugin;
     }
 
@@ -42,10 +46,10 @@ abstract class Driver
      * Point d'accès unique à $plugin pour les sous-classes,
      * en lecture seule (pas de setter).
      *
-     * @return mel_visio
+     * @return \mel_visio
      * @todo En php 8.5, la supprimer et utiliser la variable readonly
      */
-    protected function _p_plugin(): mel_visio {
+    protected function _p_plugin(): \mel_visio {
         return $this->plugin;
     }
 
@@ -132,4 +136,8 @@ abstract class Driver
      * @return bool   true si le driver a rendu la page, false sinon
      */
     protected function _p_page(string $page): bool { return false; }
+
+    protected function rc(): \rcmail {
+        return rcmail::get_instance();
+    }
 }

@@ -311,15 +311,15 @@ html.layout-phone .--row {
 
 bnum-card-email,
 bnum-card-agenda {
-  height: 430px;
-  --bnum-card-height: 430px;
+  height: 285px;
+  --bnum-card-height: 285px;
 }
 
 bnum-card-item-agenda,
 bnum-card-item-mail {
-  height: 115px;
+  height: 85px;
 }
 
 bnum-card {
-  height: 464px;
+  height: 319px;
 }

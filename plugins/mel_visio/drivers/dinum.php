@@ -11,7 +11,7 @@ use MelVisio\Driver;
  * @see Driver
  * @final
  */
-final class dnum extends Driver
+final class dinum extends Driver
 {
     /**
      * URL de la plateforme de visioconférence.
@@ -44,7 +44,7 @@ final class dnum extends Driver
             && $this->_is_index();
 
         if ($is_top_context) {
-            $this->_p_plugin()->load_script_module_driver('dnum_top_context');
+            $this->_p_plugin()->load_script_module_driver('dinum_top_context');
             $this->rc()->output->set_env('dvisio_url', self::URL);
         }
     }

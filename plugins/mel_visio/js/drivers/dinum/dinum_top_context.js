@@ -5,7 +5,7 @@ import { ADriver } from '../driver.js';
  * actif uniquement dans le contexte de la page principale (top context).
  *
  * Modifie le bouton de création de visioconférence pour qu'il ouvre
- * la plateforme dnum dans un nouvel onglet, à partir de l'URL
+ * la plateforme dinum dans un nouvel onglet, à partir de l'URL
  * exposée côté serveur via la variable d'environnement `dvisio_url`.
  *
  * Instancié et initialisé automatiquement au chargement du module
@@ -13,17 +13,17 @@ import { ADriver } from '../driver.js';
  *
  * @extends ADriver
  */
-class DnumTopContext extends ADriver {
+class DinumTopContext extends ADriver {
   constructor() {
     super();
   }
 
   /**
    * Modifie le bouton de création de visioconférence pour ouvrir
-   * la plateforme dnum dans un nouvel onglet.
+   * la plateforme dinum dans un nouvel onglet.
    *
    * Récupère l'URL depuis la variable d'environnement roundcube `dvisio_url`,
-   * injectée par le driver PHP {@link dnum} lors de l'initialisation serveur.
+   * injectée par le driver PHP {@link dinum} lors de l'initialisation serveur.
    *
    * @param {VisioAction} visioData Configuration actuelle du bouton visio
    * @returns {VisioAction} Configuration modifiée avec la nouvelle action d'ouverture
@@ -37,4 +37,4 @@ class DnumTopContext extends ADriver {
   }
 }
 
-DnumTopContext.Start();
+DinumTopContext.Start();

@@ -45,7 +45,7 @@ final class dinum extends Driver
 
         if ($is_top_context) {
             $this->_p_plugin()->load_script_module_driver('dinum_top_context');
-            $this->rc()->output->set_env('dvisio_url', self::URL);
+            $this->rc()->output->set_env('dvisio_url', $this->_url(self::URL));
         }
     }
 
@@ -58,5 +58,13 @@ final class dinum extends Driver
      */
     private function _is_index(): bool {
         return $this->rc()->action === EMPTY_STRING || $this->rc()->action === 'index';
+    }
+
+    /**
+     * URL de la plateforme de visioconférence.
+     * @param string $defaultUrl Url par défaut si la config n'est pas trouvé.
+     */
+    private function _url(string $defaultUrl = EMPTY_STRING): string {
+        return ($this->_p_plugin()->load_driver_config() ?? [])['url'] ?? $defaultUrl;
     }
 }

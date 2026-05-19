@@ -1,5 +1,6 @@
 <?php
 use \Firebase\JWT\JWT;
+use MelVisio\Driver;
 
 class mel_visio extends bnum_plugin
 {
@@ -92,13 +93,20 @@ class mel_visio extends bnum_plugin
 
         if ($driverName === 'driver') return;
 
+        $baseDriverPath = __DIR__.'/drivers/driver.php';
+
+        if (!file_exists($baseDriverPath)) {
+            throw new \RuntimeException("Base driver file not found: $baseDriverPath");
+        }
+
+        include_once $baseDriverPath;
+
         $path = __DIR__ . "/drivers/$driverName.php";
 
         if (!file_exists($path)) {
             throw new \RuntimeException("Driver file not found: $path");
         }
 
-        include_once __DIR__.'./drivers/driver.php';
         include_once $path;
 
         if (!class_exists($driverName)) {
@@ -452,7 +460,7 @@ class mel_visio extends bnum_plugin
     }
 
     public function load_script_module_driver(string $name) {
-        $this->load_script_module($name, "/drivers/$this->driverName/");
+        $this->load_script_module($name, "/js/drivers/$this->driverName/");
     }
 
 }

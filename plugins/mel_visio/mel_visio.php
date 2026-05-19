@@ -463,4 +463,12 @@ class mel_visio extends bnum_plugin
         $this->load_script_module($name, "/js/drivers/$this->driverName/");
     }
 
+    public function load_driver_config(): ?array {
+        $data = $this->get_config('othervisiosdata', []);
+
+        if ($data && $data[$this->driverName]) return $data[$this->driverName];
+
+        return null;
+    }
+
 }

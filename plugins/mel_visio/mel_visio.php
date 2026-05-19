@@ -459,10 +459,29 @@ class mel_visio extends bnum_plugin
         return $key;
     }
 
-    public function load_script_module_driver(string $name) {
+    /**
+     * Charge un module JavaScript appartenant au driver actif.
+     *
+     * Raccourci vers {@see load_script_module} qui cible automatiquement
+     * le répertoire JS du driver courant (`/js/drivers/{driverName}/`).
+     *
+     * @param string $name Nom du module à charger (sans extension)
+     */
+    public function load_script_module_driver(string $name): void {
         $this->load_script_module($name, "/js/drivers/$this->driverName/");
     }
 
+    /**
+     * Charge la configuration spécifique au driver actif.
+     *
+     * Récupère le tableau `othervisiosdata` depuis la config du plugin,
+     * puis retourne uniquement la section correspondant au driver courant.
+     *
+     * Retourne `null` si la config est absente ou si aucune entrée
+     * ne correspond au driver actif.
+     *
+     * @return array|null Configuration du driver, ou null si non définie
+     */
     public function load_driver_config(): ?array {
         $data = $this->get_config('othervisiosdata', []);
 

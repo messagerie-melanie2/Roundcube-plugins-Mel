@@ -22,7 +22,9 @@ class bnum extends bnum_plugin {
     if (self::IsCalendarDriverForced()) self::UnforceCalendarDriver();
 
     $this->load_config();
-    if($_SERVER['REQUEST_METHOD'] === 'GET') {
+
+    $isLogged = $this->rc()->user->ID && $this->rc()->task !== 'login';
+    if($_SERVER['REQUEST_METHOD'] === 'GET' && $isLogged) {
       try {
       $this->load_script_module('main', '/js/');
       }catch(Error $e) {}

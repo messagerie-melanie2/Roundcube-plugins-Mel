@@ -339,8 +339,6 @@ class mel_doubleauth extends bnum_plugin
             && $this->rc->action == 'plugin.mel_doubleauth'
         ) {
 
-           rcube_utils::setcookie('popup_msg_enrollment', 'enrolled', time()+60*60*24);
-
             // add overlay input box to html page
             $this->rc->output->add_footer(
                 html::tag(
@@ -362,26 +360,18 @@ class mel_doubleauth extends bnum_plugin
     }
 
     public function hook_oncePerDay($args) {
-        if (isset($_COOKIE['popup_msg_enrollment'])) {
-            unset($_COOKIE['popup_msg_enrollment']);
-            rcube_utils::setcookie('popup_msg_enrollment', '-del-', time() - 60);
-            return;
-        }
-
         $config_2FA = $this->__get2FAconfig();
 
-        if (
-            !$config_2FA['activate']
-            && $this->rc->config->get('force_enrollment_users')
-            && $this->rc->task == 'settings'
-            && $this->rc->action == 'plugin.mel_doubleauth'
+        if ( $this->is_bnum_task() && 
+            !$config_2FA['activate'] && 
+             $this->rc->config->get('force_enrollment_users') 
+            // && $this->rc->task == 'settings'
+            // && $this->rc->action == 'plugin.mel_doubleauth'
         ) {
             try {
-                $this->rc()->output->add_script(
-                "$('#enrollment_dialog').show().dialog({ modal:true, resizable:false, closeOnEscape: true, width:420 });",
-                );
+                $this->rc()->output->command('plugin.force-start-da-modal');
             } catch (\Throwable $th) {
-                //throw $th;
+
             }
         }
 

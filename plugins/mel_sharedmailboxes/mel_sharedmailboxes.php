@@ -602,13 +602,45 @@ class mel_sharedmailboxes extends rcube_plugin {
             mel_logs::gi()->l(mel_logs::DEBUG, "mel::identity_select()");
 
         // Gestion de l'identité par défaut en fonction de l'account
-        if ($this->rc->task == "mail" && $this->rc->action == "compose") {
-            // Parcour les identités pour définir celle par défaut
-            foreach ($args['identities'] as $key => $identity) {
-                if ($identity['uid'] == $this->mel->get_share_objet()) {
-                    $args['selected'] = $key;
+        if ($this->rc->task == 'mail') {
+            switch ($this->rc->action) {
+                case 'compose':
+                    // Parcour les identités pour définir celle par défaut
+                    foreach ($args['identities'] as $key => $identity) {
+                        if ($identity['uid'] == $this->mel->get_share_objet()) {
+                            $args['selected'] = $key;
+                            break;
+                        }
+                    }
                     break;
-                }
+
+                case 'sendmdn':
+                    if ($args['selected'] === null) {
+                        $userid = driver_mel::gi()->getUser()->uid;
+                        $tos = explode(',', $args['message']->get_header('to'));
+                        $toIdentity = [];
+
+                        foreach ($tos as $value) {
+                            if (strpos($value, '<') !== false) {
+                                $value = str_replace('>', '', explode('<', $value)[1]);
+                            } 
+
+                            if (!in_array($value, $toIdentity)) $toIdentity[] = $value;
+                        }
+
+                        foreach ($args['identities'] as $key => $identity) {
+                            foreach ($toIdentity as $to) {
+                                if ("$userid.-.".$to === $identity['email']) {
+                                    $args['selected'] = $key;
+                                    break 2;
+                                }  
+                            }
+                        }
+                    }
+                    break;
+                
+                default:
+                    break;
             }
         }
         return $args;

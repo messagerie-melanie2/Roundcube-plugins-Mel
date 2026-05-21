@@ -910,6 +910,13 @@ if (rcmail && window.mel_metapage) {
     else $('.ct-cm').css('display', 'none');
   });
 
+  rcmail.addEventListener('plugin.force-start-da-modal', function () {
+    rcmail.triggerEvent('start-da-modal', {
+      $input: $('#mail-da-input'),
+      $button: $('#start-button-modal'),
+    });
+  });
+
   rcmail.addEventListener('start-da-modal', async function (args) {
     const loader =
       window.loadJsModule ?? parent?.loadJsModule ?? top?.loadJsModule;

@@ -4980,8 +4980,15 @@ class mel_metapage extends bnum_plugin
         // Set the text color of image 
         $text_color = imagecolorallocate($image, $colors['text'][0], $colors['text'][1], $colors['text'][2]);
 
-        $tmp = imagefttext($image, 120, 0, 50, 160, $text_color, __DIR__ . '/skins/mel_elastic/roboto.ttf', strtoupper(substr($email, 0, 1)));
-        //imagestring($image, 2, 20, 20, substr($email, 0, 1), $text_color);
+        $font = __DIR__ . '/skins/mel_elastic/roboto.ttf';
+        $letter = strtoupper(substr($email, 0, 1));
+        $font_size = 120;
+
+        $bbox = imagettfbbox($font_size, 0, $font, $letter);
+        $x = (200 - ($bbox[2] - $bbox[0])) / 2 - $bbox[0];
+        $y = (200 - ($bbox[1] + $bbox[7])) / 2;
+
+        $tmp = imagefttext($image, $font_size, 0, $x, $y, $text_color, $font, $letter);
 
         return $image;
     }

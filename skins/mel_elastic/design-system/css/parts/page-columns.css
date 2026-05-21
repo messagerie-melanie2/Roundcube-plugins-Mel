@@ -39,7 +39,7 @@
   --mail-header-layout-list-background-color: var(--bnum-layout-sidebar-bg, var(--bnum-color-left-column, #f6f6f6));
   background-color: var(--layout-sidebar-background-color, var(--bnum-layout-sidebar-bg, var(--bnum-color-left-column, #f6f6f6)));
   color: var(--layout-sidebar-text-color, var(--bnum-layout-sidebar-color, var(--bnum-text-primary, #3a3a3a)));
-  padding: var(--layout-sidebar-header-padding, 12px 16px 12px 16px);
+  padding: var(--layout-sidebar-header-padding, 12px 8px 12px 16px);
   margin: 0;
   display: flex;
   align-items: center;
@@ -70,6 +70,7 @@ html.layout-large .task-mail bnum-column#layout-sidebar > .header,
 html.layout-large .task-mail bnum-column-sidebar#layout-sidebar > .header,
 html.layout-large .task-mail #layout-sidebar > .header {
   display: flex;
+  gap: 8px;
   margin: 0;
 }
 .task-mail #layout-sidebar {
@@ -108,10 +109,6 @@ html.layout-large .task-mail #layout-sidebar > .header {
 }
 .nav-button a:not(.disabled):focus,
 .bds-nav-button:not(.disabled):focus {
-  outline-color: #0a76f6;
-  outline-offset: 2px;
-  outline-style: solid;
-  outline-width: 2px;
   background-color: var(--_focus-background);
   color: var(--_focus-color);
   --layout-list-header-background-hover-color: var(--_focus-background);
@@ -187,10 +184,6 @@ html.layout-large .task-mail #layout-sidebar > .header {
   color: var(--_active-color);
 }
 #layout-list > .header > .old-header a:not(.disabled):focus {
-  outline-color: #0a76f6;
-  outline-offset: 2px;
-  outline-style: solid;
-  outline-width: 2px;
   background-color: var(--_focus-background);
   color: var(--_focus-color);
   --layout-list-header-background-hover-color: var(--_focus-background);
@@ -234,10 +227,6 @@ html.layout-large .task-mail #layout-sidebar > .header {
   color: var(--_active-color);
 }
 #layout-content > .header a:not(.disabled):focus {
-  outline-color: #0a76f6;
-  outline-offset: 2px;
-  outline-style: solid;
-  outline-width: 2px;
   background-color: var(--_focus-background);
   color: var(--_focus-color);
   --layout-list-header-background-hover-color: var(--_focus-background);
@@ -289,10 +278,6 @@ html.layout-small div.header {
   color: var(--_active-color);
 }
 .footer a:not(.disabled):focus {
-  outline-color: #0a76f6;
-  outline-offset: 2px;
-  outline-style: solid;
-  outline-width: 2px;
   background-color: var(--_focus-background);
   color: var(--_focus-color);
   --layout-list-header-background-hover-color: var(--_focus-background);

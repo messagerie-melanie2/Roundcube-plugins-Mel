@@ -81,12 +81,13 @@ table.messagelist td.subject span.msgicon.status:hover::before {
   content: var(--message-state-icon, var(--_idle-hover)) !important;
 }
 table.messagelist tr .mail-avatar {
-  --avatar-size: 30px;
+  --avatar-size: 40px;
   height: var(--avatar-size);
   width: var(--avatar-size);
   position: absolute;
   left: 8px;
-  top: 16px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 table.messagelist tr .mail-avatar .mail-avatar--action,
 table.messagelist tr .mail-avatar .mail-avatar--avatar {
@@ -105,13 +106,10 @@ table.messagelist tr.has-label:hover td {
   background-color: transparent !important;
 }
 html.mail-small table.messagelist tr .mail-avatar {
-  top: 7px;
+  --avatar-size: 30px;
 }
 html.mail-small table.messagelist tr.has-label .mail-avatar {
   top: 31px;
-}
-html.mail-large table.messagelist tr .mail-avatar {
-  top: 24px;
 }
 html.mail-large table.messagelist tr.has-label .mail-avatar {
   top: 50px;
@@ -158,9 +156,14 @@ table.messagelist tr .row-actions {
   height: calc(100% - 2px);
   z-index: 1;
   align-items: center;
+  color: #000091;
 }
 table.messagelist tr .row-actions .sub-action {
+  font-variation-settings: 'wght' 300 !important;
   margin-top: 8px;
+}
+table.messagelist tr .row-actions .delete-action {
+  color: red;
 }
 table.messagelist tr:hover .row-actions {
   display: flex;
@@ -206,4 +209,13 @@ table.messagelist tr.flagged:hover .unflag-action {
 }
 .messagelist.__no-rc td.subject span.size {
   color: var(--_no-rc-color, var(--bnum-body-text-color, var(--bnum-text-primary)));
+}
+#folderlist-content {
+  max-height: calc(100% - 120px);
+}
+.footer {
+  position: absolute;
+  bottom: 5px;
+  left: 0;
+  right: 0;
 }

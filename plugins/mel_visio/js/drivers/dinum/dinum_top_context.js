@@ -25,12 +25,19 @@ class DinumTopContext extends ADriver {
    * Récupère l'URL depuis la variable d'environnement roundcube `dvisio_url`,
    * injectée par le driver PHP {@link dinum} lors de l'initialisation serveur.
    *
-   * @param {VisioAction} visioData Configuration actuelle du bouton visio
-   * @returns {VisioAction} Configuration modifiée avec la nouvelle action d'ouverture
+   * @param {import('../driver.js').VisioAction} visioData Configuration actuelle du bouton visio
+   * @returns {import('../driver.js').VisioAction} Configuration modifiée avec la nouvelle action d'ouverture
    * @override
    */
   _p_updateCreateVisioButton(visioData) {
     visioData = super._p_updateCreateVisioButton(visioData);
+
+    if (this.get_env('dvisio_text_key')) {
+      visioData.text = this.getLocalization(this.get_env('dvisio_text_key'), {
+        plugin: 'mel_visio',
+      });
+    }
+
     visioData.action = `window.open('${this.get_env('dvisio_url')}', '_blank');`;
 
     return visioData;

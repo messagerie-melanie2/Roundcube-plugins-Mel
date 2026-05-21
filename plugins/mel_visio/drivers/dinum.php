@@ -44,8 +44,10 @@ final class dinum extends Driver
             && $this->_is_index();
 
         if ($is_top_context) {
+            $this->_p_plugin()->load_driver_localization();
             $this->_p_plugin()->load_script_module_driver('dinum_top_context');
             $this->rc()->output->set_env('dvisio_url', $this->_url(self::URL));
+            $this->rc()->output->set_env('dvisio_text_key', $this->_create_button_text_key());
         }
     }
 
@@ -66,5 +68,18 @@ final class dinum extends Driver
      */
     private function _url(string $defaultUrl = EMPTY_STRING): string {
         return ($this->_p_plugin()->load_driver_config() ?? [])['url'] ?? $defaultUrl;
+    }
+
+    /**
+     * Construit la clé de texte du bouton à partir de la configuration du driver.
+     *
+     * Charge la configuration du driver associé au plugin parent et retourne
+     * la valeur de la clé 'text'. Retourne 'unknown text' si la configuration
+     * est absente ou si la clé n'existe pas.
+     *
+     * @return string Clé de texte du bouton, ou 'unknown text' par défaut
+     */
+    private function _create_button_text_key(): ?string {
+        return ($this->_p_plugin()->load_driver_config() ?? [])['text'];
     }
 }

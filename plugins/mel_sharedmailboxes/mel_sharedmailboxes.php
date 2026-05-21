@@ -616,6 +616,7 @@ class mel_sharedmailboxes extends rcube_plugin {
 
                 case 'sendmdn':
                     if ($args['selected'] === null) {
+                        $DELIMITER = driver_mel::gi()->objectShareDelimiter();
                         $user_id = driver_mel::gi()->getUser()->uid;
 
                         $to_raw = $args['message']->get_header('to');
@@ -627,7 +628,7 @@ class mel_sharedmailboxes extends rcube_plugin {
 
                         foreach ($args['identities'] as $key => $identity) {
                             foreach ($to_emails as $to) {
-                                if ("$user_id.-.".$to === $identity['email']) {
+                                if ($user_id.$DELIMITER.$to === $identity['email']) {
                                     $args['selected'] = $key;
                                     break 2;
                                 }  

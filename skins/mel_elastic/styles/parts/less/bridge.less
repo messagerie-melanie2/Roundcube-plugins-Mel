@@ -1,0 +1,15 @@
+@rc_default_border_bottom: 1px solid #d4dbde;
+@rc_default_color: #2c363a;
+@rc_default_background_color: #f4f4f4;
+
+#layout > div > .header {
+  border-bottom: var(
+    --rc-header-border-bottom,
+    @rc_default_border_bottom
+  ) !important;
+  color: var(--rc-header-color, @rc_default_color) !important;
+  background-color: var(
+    --rc-header-background-color,
+    @rc_default_background_color
+  ) !important;
+}

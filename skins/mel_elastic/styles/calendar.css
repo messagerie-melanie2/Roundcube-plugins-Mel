@@ -726,6 +726,9 @@ ul#calendarslist .calendar.focusview {
 ul#calendarslist li.selected > .calendar {
   cursor: default;
 }
+ul#calendarslist.treelist li div.treetoggle {
+  z-index: 1;
+}
 ul#calendarslist.treelist li div.treetoggle::before {
   margin-left: 6.5px;
 }

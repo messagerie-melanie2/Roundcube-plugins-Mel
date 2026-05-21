@@ -206,6 +206,23 @@ class BnumVisio extends MelObject {
         args: params ?? { _page: 'index' },
       });
     } else if (page !== 'index') {
+      // GARDE : si une visio est déjà en cours
+      if (window.current_visio) {
+        const _window = top ?? parent ?? window;
+        const $html = _window.$('html');
+  
+        if (!$html.hasClass('fullscreen-visio')) {
+          // Visio minimisée → on la remet en plein écran
+          FramesManager.Instance.switch_frame('webconf', {});
+          $html.addClass('fullscreen-visio').removeClass('visio-minimised');
+          
+          _window.$('#visio-back-button')
+            .attr('title', 'Minimiser la visioconférence')
+            .find('bnum-icon').text('fullscreen_exit');
+        }
+        // déjà en plein écran : on ne fait rien
+        return;
+      }
       params._page = page || 'init';
       FramesManager.Instance.close_except_selected()
         .disable_manual_multiframe()

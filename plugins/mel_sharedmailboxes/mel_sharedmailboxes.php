@@ -616,21 +616,18 @@ class mel_sharedmailboxes extends rcube_plugin {
 
                 case 'sendmdn':
                     if ($args['selected'] === null) {
-                        $userid = driver_mel::gi()->getUser()->uid;
-                        $tos = explode(',', $args['message']->get_header('to'));
-                        $toIdentity = [];
+                        $user_id = driver_mel::gi()->getUser()->uid;
 
-                        foreach ($tos as $value) {
-                            if (strpos($value, '<') !== false) {
-                                $value = str_replace('>', '', explode('<', $value)[1]);
-                            } 
+                        $to_raw = $args['message']->get_header('to');
+                        $to_parsed = rcube_mime::decode_address_list($to_raw);
 
-                            if (!in_array($value, $toIdentity)) $toIdentity[] = $value;
-                        }
+                        $to_emails = array_unique(
+                            array_filter(array_column($to_parsed, 'mailto'))
+                        );
 
                         foreach ($args['identities'] as $key => $identity) {
-                            foreach ($toIdentity as $to) {
-                                if ("$userid.-.".$to === $identity['email']) {
+                            foreach ($to_emails as $to) {
+                                if ("$user_id.-.".$to === $identity['email']) {
                                     $args['selected'] = $key;
                                     break 2;
                                 }  

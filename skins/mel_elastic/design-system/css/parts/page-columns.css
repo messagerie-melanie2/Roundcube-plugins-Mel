@@ -31,6 +31,8 @@
   --mail-header-layout-list-background-color: var(--bnum-layout-sidebar-bg, var(--bnum-color-left-column, #f6f6f6));
   background-color: var(--layout-sidebar-background-color, var(--bnum-layout-sidebar-bg, var(--bnum-color-left-column, #f6f6f6)));
   color: var(--layout-sidebar-text-color, var(--bnum-layout-sidebar-color, var(--bnum-text-primary, #3a3a3a)));
+  --rc-header-color: var(--layout-sidebar-background-color, var(--bnum-layout-sidebar-bg, var(--bnum-color-left-column, #f6f6f6)));
+  --rc-header-background-color: var(--layout-sidebar-background-color, var(--bnum-layout-sidebar-bg, var(--bnum-color-left-column, #f6f6f6)));
   border-right: var(--bnum-border-column);
 }
 #layout-sidebar .header {
@@ -39,6 +41,8 @@
   --mail-header-layout-list-background-color: var(--bnum-layout-sidebar-bg, var(--bnum-color-left-column, #f6f6f6));
   background-color: var(--layout-sidebar-background-color, var(--bnum-layout-sidebar-bg, var(--bnum-color-left-column, #f6f6f6)));
   color: var(--layout-sidebar-text-color, var(--bnum-layout-sidebar-color, var(--bnum-text-primary, #3a3a3a)));
+  --rc-header-color: var(--layout-sidebar-background-color, var(--bnum-layout-sidebar-bg, var(--bnum-color-left-column, #f6f6f6)));
+  --rc-header-background-color: var(--layout-sidebar-background-color, var(--bnum-layout-sidebar-bg, var(--bnum-color-left-column, #f6f6f6)));
   padding: var(--layout-sidebar-header-padding, 12px 8px 12px 16px);
   margin: 0;
   display: flex;
@@ -47,6 +51,7 @@
   justify-content: space-between;
   height: 60px;
   border-bottom: var(--bnum-border-column);
+  --rc-header-border-bottom: var(--bnum-border-column);
   --secondary-text-color: var(--bnum-body-text-color, var(--bnum-text-primary));
 }
 #layout-sidebar .old-header {
@@ -145,6 +150,8 @@ html.layout-large .task-mail #layout-sidebar > .header {
   --_background: var(--layout-list-header-background, var(--bnum-header-color, var(--bnum-color-background, #ffffff)));
   color: var(--_color);
   background-color: var(--_background);
+  --rc-header-color: var(--_color);
+  --rc-header-background-color: var(--_background);
   --secondary-text-color: var(--_color);
   --layout-content-header-text-color: var(--_color);
   --mail-header-button-color: var(--_color);
@@ -155,6 +162,7 @@ html.layout-large .task-mail #layout-sidebar > .header {
 #layout-content > .header {
   height: 60px;
   border-bottom: var(--bnum-border-column);
+  --rc-header-border-bottom: var(--bnum-border-column);
   box-sizing: border-box;
 }
 #layout-list > .header > .old-header {

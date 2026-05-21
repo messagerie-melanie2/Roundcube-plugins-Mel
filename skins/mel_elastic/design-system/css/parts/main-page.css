@@ -38,8 +38,9 @@
   --_layout-menu-action-background-color: transparent;
   --_layout-menu-action-background-alt: var(--bnum-main-nav-color-hover, #474747);
   --_layout-menu-action-border: solid 4px var(--_layout-menu-action-border-color, var(--_layout-menu-action-background-color));
+  --_layout-menu-action-box-shadow: inset 4px 0 0 0 var(--_layout-menu-action-border-color, var(--_layout-menu-action-background-color));
   background-color: var(--_layout-menu-action-background-color);
-  border-left: var(--_layout-menu-action-border) !important;
+  box-shadow: var(--_layout-menu-action-box-shadow) !important;
 }
 #layout-menu a:hover {
   --_layout-menu-action-background-color: var(--_layout-menu-action-background-alt);

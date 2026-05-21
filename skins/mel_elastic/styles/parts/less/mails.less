@@ -138,12 +138,13 @@ table.messagelist {
   tr {
     //Normal
     .mail-avatar {
-      --avatar-size: 30px;
+      --avatar-size: 40px;
       height: var(--avatar-size);
       width: var(--avatar-size);
       position: absolute;
       left: 8px;
-      top: 16px;
+      top: 50%;
+      transform: translateY(-50%);
 
       .mail-avatar--action,
       .mail-avatar--avatar {
@@ -171,7 +172,8 @@ table.messagelist {
     // Small
     html.mail-small & {
       .mail-avatar {
-        top: 7px;
+        // top: 7px;
+        --avatar-size: 30px;
       }
 
       &.has-label {
@@ -184,7 +186,7 @@ table.messagelist {
     //large
     html.mail-large & {
       .mail-avatar {
-        top: 24px;
+        // top: 24px;
       }
 
       &.has-label {
@@ -269,9 +271,16 @@ table.messagelist {
     height: calc(100% - 2px);
     z-index: 1;
     align-items: center;
+    color: #000091;
 
     .sub-action {
+    font-variation-settings: 'wght' 300 !important;
+
       margin-top: 8px;
+    }
+
+    .delete-action {
+     color: red;
     }
   }
 
@@ -348,4 +357,16 @@ table.messagelist {
     --_no-rc-color,
     var(--bnum-body-text-color, var(--bnum-text-primary))
   );
+}
+
+#folderlist-content {
+  max-height: calc(100% - 120px);
+}
+
+.footer {
+  //On fixe le footer en bas de la colonne
+  position: absolute;
+  bottom: 5px;
+  left: 0;
+  right: 0;
 }

@@ -70,6 +70,9 @@
   --bnum-main-nav-color-hover: #474747;
   --bnum-main-nav-color-active: #5b5b5b;
   --bnum-header-color: #ffffff;
+  --bnum-scrollbar-handler-color: #a7a7a7;
+  --bnum-scrollbar-background-color: #f6f6f6;
+  --bnum-scrollbar-width: thin;
   /* Texte */
   --bnum-text-primary: #3a3a3a;
   /* Texte principal */
@@ -120,7 +123,7 @@
   --bnum-font-size-title-m: 4rem;
   --bnum-font-size-title-s: 3.5rem;
   --bnum-font-size-title-xs: 3rem;
-  --bnum-font-badge-s: 0.5625rem;
+  --bnum-font-badge-s: 0.675rem;
   --bnum-body-font-size: var(--bnum-font-size-m, 1rem);
   /* Line heights */
   --bnum-font-height-h1: 48px;
@@ -230,11 +233,11 @@ html.dark-mode-custom:root {
   --bnum-color-danger: #ff5655;
   --bnum-color-danger-hover: #ff8c8c;
   --bnum-color-danger-active: #ffa6a6;
-  --bnum-color-background: #161616;
+  --bnum-color-background: #242424;
   /* Le fond de la page */
-  --bnum-color-surface: var(--bnum-color-background);
-  --bnum-color-surface-hover: #343434;
-  --bnum-color-surface-active: #474747;
+  --bnum-color-surface: #1e1e1e;
+  --bnum-color-surface-hover: #3f3f3f;
+  --bnum-color-surface-active: #525252;
   --bnum-header-color: #161616;
   /* Le fond des surfaces */
   --bnum-color-border: #353535;
@@ -257,9 +260,12 @@ html.dark-mode-custom:root {
   --bnum-color-list: #474747;
   --bnum-color-list-hover: #343434;
   --bnum-color-list-drag: #343434;
-  --bnum-main-nav-color: #242424;
-  --bnum-main-nav-color-hover: #474747;
-  --bnum-main-nav-color-active: #5b5b5b;
+  --bnum-main-nav-color: #161616;
+  --bnum-main-nav-color-hover: #343434;
+  --bnum-main-nav-color-active: #474747;
+  --bnum-scrollbar-handler-color: #bababa;
+  --bnum-scrollbar-background-color: #717171;
+  --bnum-scrollbar-width: thin;
   /* Texte */
   --bnum-text-primary: #cecece;
   /* Texte principal */
@@ -287,14 +293,15 @@ html.dark-mode-custom:root {
   --bnum-semantic-success: #36b37e;
   /* Vert "TES" */
   --_border: var(--bnum-border-style-default) var(--bnum-border-width-s) var(--bnum-color-border);
-  --bnum-border-on-surface-top: var(--_border);
-  --bnum-border-on-surface-left: var(--_border);
-  --bnum-border-on-surface-right: var(--_border);
   --bnum-button-secondary-background-color: var(--bnum-color-background);
   --_image-url: var(--_image-dark);
 }
 .hidden {
   display: none;
+}
+* {
+  scrollbar-color: var(--bnum-scrollbar-handler-color) var(--bnum-scrollbar-background-color) !important;
+  scrollbar-width: var(--bnum-scrollbar-width) !important;
 }
 html.layout-small,
 html.layout-phone,
@@ -368,7 +375,7 @@ h6.no-margin {
 iframe {
   border: var(--bnum-iframe-border, none);
 }
-.ds-block {
+scrollba .ds-block {
   display: block;
   width: 100%;
   flex: 1;

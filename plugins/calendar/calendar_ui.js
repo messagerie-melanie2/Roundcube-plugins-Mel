@@ -5141,6 +5141,10 @@ function rcube_calendar_ui(settings) {
           }
         }
 
+        if (!source.length && source) {
+          sources.push(source);
+        }
+
         fc.fullCalendar('refetchEventSources', sources);
       } else fc.fullCalendar('refetchEvents');
 

@@ -1,1 +1,0 @@
-/home/thomas/Developpement/git/digital-workplace/roundcube-mel-deploiement/webmail/../deploiement/init/plugins/calendar/config.inc.php

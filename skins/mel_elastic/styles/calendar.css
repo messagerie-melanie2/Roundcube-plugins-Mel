@@ -34,7 +34,6 @@
 }
 .task-calendar #layout #layout-content > .header {
   background-color: var(--calendar-content-header-background-color) !important;
-  color: var(--calendar-content-header-color) !important;
 }
 .task-calendar #layout #layout-content > .header a.button {
   color: var(--calendar-toolbar-roundcube-color);
@@ -42,10 +41,6 @@
 }
 .task-calendar #layout #layout-content > .header a.button.reset {
   color: black;
-}
-.task-calendar #layout #layout-content > .header a.button:not(.disabled):hover {
-  color: var(--calendar-toolbar-roundcube-hover-color) !important;
-  background-color: var(--calendar-toolbar-roundcube-hover-background-color) !important;
 }
 .task-calendar #layout #layout-content > .header #toolbar-menu {
   text-align: left;

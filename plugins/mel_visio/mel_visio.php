@@ -490,4 +490,8 @@ class mel_visio extends bnum_plugin
         return null;
     }
 
+    public function load_driver_localization(bool $includeJs = true): void {
+        $this->add_texts("localization/drivers/$this->driverName", $includeJs);  
+    } 
+
 }

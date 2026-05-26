@@ -35,7 +35,12 @@ class bnum_agenda extends bnum_plugin {
           'get_master_event' => [$this, 'action_get_master_event']
         ]);
 
-        if ($this->rc()->output !== null) $this->include_module('main.js');
+        if ($this->rc()->output !== null) {
+          $this->include_module('main.js');
+          $path = __DIR__.'/'.$this->local_skin_path().'/js/main.js';
+
+          if (file_exists($path)) $this->include_module('main.js', $this->local_skin_path().'/js');
+        }
         break;
       
       default:

@@ -85,8 +85,11 @@
         </div>
       </div>
       <div class="col-4">
-        <roundcube:object name="plugin.searchform" id="searchform" wrapper="searchbar menu" label="searchform"
+        <bnum-input-search id="bnum-calendar-search" data-mirror="searchform"><span class="sr-only">Rechercher un évènement</span></bnum-input-search>
+        <div class="hidden" data-used-to="mirror">
+          <roundcube:object name="plugin.searchform" id="searchform" wrapper="searchbar menu" label="searchform"
           buttontitle="calendar.findevents" label-domain="calendar" ariatag="h2" />
+        </div>
       </div>
     </div>
   </div>

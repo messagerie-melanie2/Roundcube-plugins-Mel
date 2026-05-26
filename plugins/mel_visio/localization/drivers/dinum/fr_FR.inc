@@ -1,3 +1,3 @@
 <?php
 $labels = [];
-$labels['dnumvisio'] = 'Une Visio';
+$labels['dinumvisio'] = 'Une Visio';

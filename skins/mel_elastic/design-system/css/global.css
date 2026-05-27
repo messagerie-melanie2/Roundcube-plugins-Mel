@@ -1296,3 +1296,28 @@ bnum-hide {
 .popover .menu li a[aria-haspopup]::after {
   color: var(--_idle-color);
 }
+/* Règle de base commune */
+ul.treelist {
+  --_trl-idle-background-color: var(--treelist-idle-bg-color, var(--bnum-color-list-idle, transparent));
+  --_trl-idle-background-color-hover: var(--bnum-color-list-alt-hover, #dfdfdf);
+  --_trl-idle-background-color-active: var(--bnum-color-list-alt-active, #cfcfcf);
+  --_trl-idle-background-color-selected: var(--bnum-color-list-hover, #c1c1fb);
+}
+ul.treelist li > a,
+ul.treelist li > div {
+  background-color: var(--_trl-idle-background-color) !important;
+}
+ul.treelist li > a:active,
+ul.treelist li > div:active {
+  background-color: var(--_trl-idle-background-color-active) !important;
+}
+ul.treelist li:hover:not(:has(li:hover)) > a,
+ul.treelist li:hover:not(:has(li:hover)) > div {
+  background-color: var(--_trl-idle-background-color-hover) !important;
+}
+ul.treelist li.selected > a,
+ul.treelist li.selected > div {
+  background-color: var(--_trl-idle-background-color-selected) !important;
+  --_trl-idle-background-color-hover: var(--_trl-idle-background-color-selected);
+  --calendar-list-item-selected-background-color: var(--_trl-idle-background-color-selected);
+}

@@ -35,10 +35,6 @@
 .task-calendar #layout #layout-content > .header {
   background-color: var(--calendar-content-header-background-color) !important;
 }
-.task-calendar #layout #layout-content > .header a.button {
-  color: var(--calendar-toolbar-roundcube-color);
-  background-color: var(--calendar-toolbar-roundcube-background-color);
-}
 .task-calendar #layout #layout-content > .header a.button.reset {
   color: black;
 }

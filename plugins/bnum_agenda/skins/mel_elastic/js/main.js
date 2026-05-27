@@ -1,6 +1,7 @@
+import { ModuleInit } from './init.js';
 import { SearchModule } from './search.js';
 
-const loader = [SearchModule];
+const loader = [SearchModule, ModuleInit];
 class AgendaMelElasticMain {
   constructor() {
     this.#_load();

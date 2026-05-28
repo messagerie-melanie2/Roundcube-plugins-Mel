@@ -71,7 +71,7 @@ table.messagelist {
 }
 table.messagelist td.subject span.fromto,
 table.messagelist td.subject span.subject {
-  margin-left: var(--bnum-space-s);
+  margin-left: var(--bnum-space-l);
 }
 table.messagelist td.subject span.msgicon.status::before {
   height: 2.04rem;
@@ -95,9 +95,9 @@ table.messagelist tr .mail-avatar .mail-avatar--avatar {
   width: var(--avatar-size);
 }
 table.messagelist tr .mail-avatar .mail-avatar--action {
-  display: block;
-  margin-top: var(--mail-avatar-action-correction, 3px);
-  margin-left: var(--mail-avatar-action-correction, 3px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 table.messagelist tr.has-label .mail-avatar {
   top: 42px;

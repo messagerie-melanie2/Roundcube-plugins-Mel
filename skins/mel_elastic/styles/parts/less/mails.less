@@ -117,7 +117,7 @@ table.messagelist {
     span {
       &.fromto,
       &.subject {
-        margin-left: var(--bnum-space-s);
+        margin-left: var(--bnum-space-l);
       }
     }
 
@@ -153,9 +153,12 @@ table.messagelist {
       }
 
       .mail-avatar--action {
-        display: block;
-        margin-top: var(--mail-avatar-action-correction, 3px);
-        margin-left: var(--mail-avatar-action-correction, 3px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        // display: block;
+        // margin-top: var(--mail-avatar-action-correction, 3px);
+        // margin-left: var(--mail-avatar-action-correction, 3px);
       }
     }
 

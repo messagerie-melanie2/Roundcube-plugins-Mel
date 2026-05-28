@@ -40,6 +40,8 @@ class bnum_agenda extends bnum_plugin {
           $path = __DIR__.'/'.$this->local_skin_path().'/js/main.js';
 
           if (file_exists($path)) $this->include_module('main.js', $this->local_skin_path().'/js');
+
+          $this->include_css('styles/bnum_agenda.css');
         }
         break;
       

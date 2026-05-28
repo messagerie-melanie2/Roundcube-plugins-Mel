@@ -1287,9 +1287,9 @@ bnum-hide {
 /* Règle de base commune */
 ul.treelist {
   --_trl-idle-background-color: var(--treelist-idle-bg-color, var(--bnum-color-list-idle, transparent));
-  --_trl-idle-background-color-hover: var(--bnum-color-list-alt-hover, #dfdfdf);
+  --_trl-idle-background-color-hover: var(--bnum-color-list-hover, #c1c1fb);
   --_trl-idle-background-color-active: var(--bnum-color-list-alt-active, #cfcfcf);
-  --_trl-idle-background-color-selected: var(--bnum-color-list-hover, #c1c1fb);
+  --_trl-idle-background-color-selected: var(--bnum-color-list, #e3e3fd);
 }
 ul.treelist li > a,
 ul.treelist li > div {

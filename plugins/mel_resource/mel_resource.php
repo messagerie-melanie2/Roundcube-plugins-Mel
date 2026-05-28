@@ -798,9 +798,10 @@ class mel_resource extends bnum_plugin
 
     if (is_null($ret)) {
       $this->show_message_error($this->gettext('error_add_' . $type));
+      mel_logs::get_instance()->log(mel_logs::ERROR, "[Ressources] Erreur de création de $resource->type '$resource->name' : ");
     } else {
       $this->show_message($this->gettext($type . '_added'), 'confirmation');
-      mel_logs::get_instance()->log(mel_logs::INFO, "[Ressources] Création de la VRoom '$resource->name'");
+      mel_logs::get_instance()->log(mel_logs::INFO, "[Ressources] Création de $resource->type '$resource->name'");
       $this->resource = $resource;
       $this->set_envs_from_ressource();
       $this->set_page_title($this->gettext($type) . ' - ' . $this->resource->fullname);
@@ -820,9 +821,9 @@ class mel_resource extends bnum_plugin
     // Gestion de la description
     $description  = trim(rcube_utils::get_input_value('resource_description', rcube_utils::INPUT_GPC, true));
 
-    if (empty($description)) {
-      $resource->description = null;
-    } else {
+    if (empty($description) && !empty($resource->description)) {
+      $resource->description = '';
+    } else if (!empty($description)) {
       $resource->description = $description;
     }
 
@@ -832,7 +833,7 @@ class mel_resource extends bnum_plugin
       $this->show_message_error($this->gettext('error_modify_' . $this->type($this->resource->type)));
     } else {
       $this->resource = $resource;
-      mel_logs::get_instance()->log(mel_logs::INFO, "[Resources] Modification de la VRoom '$resource->name'");
+      mel_logs::get_instance()->log(mel_logs::INFO, "[Resources] Modification de $resource->type '$resource->name'");
       $this->show_message($this->gettext($this->type($this->resource->type) . '_modified'), 'confirmation');
     }
   }
@@ -843,7 +844,7 @@ class mel_resource extends bnum_plugin
   protected function action_delete_ressource()
   {
     if ($this->resource->delete()) {
-      mel_logs::get_instance()->log(mel_logs::INFO, "[Resources] Suppression de la VRoom '$this->resource->name'");
+      mel_logs::get_instance()->log(mel_logs::INFO, "[Resources] Suppression de {$this->resource->type} '{$this->resource->name}'");
       $this->show_message($this->gettext($this->type($this->resource->type) . '_deleted'), 'confirmation');
       $this->send_and_exit('mel_resource.' . $this->type($this->resource->type) . '_settings');
     }

@@ -1,0 +1,7 @@
+<?php
+// [key (drivername): string => array & [url: string]]
+// ex : ['homedriver' => ['url' => 'http://exemple.com', 'miscdata' => 'blue']];
+$rcmail_config['othervisiosdata'] = [];
+// Driver name. It's the same name in the key of `othervisiosdata`, the php file in drivers folder and the folder in the js/drivers folder.
+$rcmail_config['visio-driver'] = null;
+

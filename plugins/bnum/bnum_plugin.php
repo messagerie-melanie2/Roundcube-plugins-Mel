@@ -253,6 +253,7 @@ abstract class bnum_plugin extends rcube_plugin
      * @return mixed
      */
     protected function get_config($key, $default_value = null) {
+        $this->load_config();
         return $this->rc()->config->get($key, $default_value);
     }
 

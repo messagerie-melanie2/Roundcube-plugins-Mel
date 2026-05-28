@@ -1,0 +1,363 @@
+<?php
+
+// Url pour une réunion audio
+$config['audio_event_url'] = $_ENV['RC_MEL_METAPAGE_AUDIO_EVENT_URL'];
+
+// Ne pas activer le chat par défaut
+$config['chat_startup'] = $_ENV['RC_MEL_METAPAGE_CHAT_STARTUP'] ?? false;
+
+// Configuration de la recherche dans le menu du haut.
+$config["search"] = [];
+
+// Vous pouvez commenter les recherches qui ne vous interesse pas, une recheche ce configure comme ceci : 
+/*
+$config["search"]["module"] = [
+    "type" => "type d'action",
+    "action" => "action dans le plugin",
+    "headers" => "où chercher",
+    "startDate" => "date de départ de la recherche",
+    "endDate"  => "date de fin de la recherche"
+];
+
+"type" sert à dire de quel plugin vient la recherche, "default" pour le plugin mel_metapage, "calendar" pour le plugin calendar.
+=> Liste des types disponibles : "default", "calendar"
+
+"action" c'est l'action à efféctuer lorsque l'on effectue une recherche dans la barre de recherche.
+=> Uniquement disponible pour le type "default"
+
+"headers" ce sont les champs, si ils éxistent, à tester.
+=> Uniquement disponible pour le type "défaut"
+
+"startDate", la date de départ pour la recherche des évènements dans le calendrier. "now" signifie la date de maintenant, auquel on peut ajouter ou soustraire un nombre de jours.
+"endDate", la date de fin pour la recherche des évènements dans le calendrier. 
+=> Uniquement disponible pour le type "calendar".
+
+ */
+$config["search"]["mail"] = [
+    "type" => "default",
+    "action" => "search_mail"
+];
+$config["search"]["contact"] = [
+    "type" => "default",
+    "action" => "search_contact",
+    //Possibilité d'enlever des champs, vous pouvez choisir de rechercher dans tout les champs
+    //contact en mettant seulement '*'.
+    "headers" => "name,firstname,surname,email"
+    //nom complet, prénom, nom de famille, email  
+];
+$config["search"]["calendar"] = [
+    "type" => "calendar",
+    //nom peux être suivi de + ou - ainsi qu'un nombre de jours.
+    "startDate" => "now",
+    "endDate" => "now+60"
+];
+
+// Configuration de la popup d'ariane.
+$config["pop_up_ariane"] = [
+    //A ne pas supprimer, position par défaut pour toute les pages.
+    "all" => ["right" => "50px", "bottom" => "50px"],
+    //Exception pour la page "Discussion", cache le bouton.
+    "discussion" => ["hidden"=> true],
+    //Exception pour la page "Ariane", cache le bouton.
+    "ariane" => ["hidden" => true]
+];
+
+//Configuration des type de documents disponible à la création.
+/*
+    name => nom du type de document
+    icon => icon qui sera affiché
+    default_ext => extention par défaut du fichier
+    type => type de document, existe : 
+        raw => un fichier texte
+        text => un fichier text libre office
+        calc => une feuille de calcul libre office
+        presentation => un "power point" libre office
+    tags => Différents comportements,
+        "f" => "Féminin", le nom du type de document est féminin.
+        "l" => "libre", il est possible de changer l'extention à la création.
+*/
+$config["documents_types"] = [
+    ["name" => "text_document", "icon" => "txt", "default_ext" => "txt", "type" => "raw", "tags" => ["l"]],
+    ["name" => "text_office_document", "icon" => "word", "default_ext" => "odt", "type" => "text"],
+    ["name" => "worksheet", "icon" => "calc", "default_ext" => "ods", "type" => "calc", "tags" => ["f"]],
+    ["name" => "presentation", "icon" => "pp", "default_ext" => "odp", "type" => "presentation", "tags" => ["f"]],
+    ["name" => "text_document", "icon" => "txt", "default_ext" => "txt", "type" => "raw", "tags" => ["l"]],
+    ["name" => "text_office_document", "icon" => "word", "default_ext" => "odt", "type" => "text"],
+    ["name" => "worksheet", "icon" => "calc", "default_ext" => "ods", "type" => "calc", "tags" => ["f"]],
+    ["name" => "presentation", "icon" => "pp", "default_ext" => "odp", "type" => "presentation", "tags" => ["f"]]
+];
+
+$config["documents_models"] = [
+  "text_office_document" =>
+  [
+    ["name" => "empty"],
+    ["name" => "mtect"],
+    ["name" => "mtect_mte_mer"],
+    ["name" => "transport"]
+  ],
+  "presentation" =>
+  [
+    ["name" => "empty"],
+    ["name" => "mte_ppt_marianne"],
+    ["name" => "mtect_ppt_marianne"],
+    ["name" => "secmer_ppt_marianne"],
+    ["name" => "mct_presentation_arial_16_9"]
+  ]
+];
+
+$config["workspace_services"] = [
+    //["name" => "Liste de diffusion", "icon" => "mail", "type" => "mail"],
+    ["name" => "Canal de discussions", "icon" => "ariane", "type" => "channel", "param" => true],
+    //["name" => "Agenda partagé", "icon" => "agenda", "type" => "calendar"],
+    //["name" => "Flux d'informations", "icon" => "rss", "type" => "flux"],
+    ["name" => "Gestion de documents", "icon" => "nextcloud", "type" => "doc"],
+    //["name" => "Sondage Pégase", "icon" => "survey", "type" => "survey"],
+    ["name" => "Tâches & Kanban", "icon" => "tasks", "type" => "tasks", "param" => true],
+    //["name" => "Favoris", "icon" => "start", "type" => "fav"],
+];
+
+$config["web_conf"] = "";
+$config["webconf_feedback_url"] = '';
+
+/**
+ * Payload pour la génération du token JWT
+ * 
+ * @var array
+ */
+$config['webconf_jwt_payload'] = [
+    "iss" => "", // Identifiant unique fourni par le serveur
+    "exp" => "", // date d'expiration du token en timestamp (j'ai mis date_actuelle + 12h)
+    "aud" => "",
+    "sub" => "",
+    "room" => "", // caractères alphanumériques uniquement. 10 caractères minimum dont au moins 3 chiffres.
+];
+/**
+ * Clé a utiliser pour la génération du token JWT
+ * 
+ * @var string
+ */
+$config['webconf_jwt_key'] = $_ENV['RC_MEL_METAPAGE_WEBCONF_JWT_KEY'];
+$config['new_webconf_jwt_key'] = $_ENV['RC_MEL_METAPAGE_NEW_WEBCONF_JWT_KEY'];
+$config['new_webconf_date'] = $_ENV['RC_MEL_METAPAGE_NEW_WEBCONF_DATE'] ?? '2022-09-09';
+$config['webconf_voxify_indicatif'] = $_ENV['RC_MEL_METAPAGE_WEBCONF_VOXIFY_INDICATIF'] ?? 'FR';
+
+$config['maintenance'] = $_ENV['RC_MEL_METAPAGE_MAINTENANCE'] ?? false;
+$config['maintenance_datas'] = [
+    "show" => false,
+    "day" => "09/12/221",
+    "when" => "après-midi",
+    "before-howmany" => "pendant",
+    "howmany" => "environs moins d'une heure"
+];
+
+$config['search_mail_max'] = $_ENV['RC_MEL_METAPAGE_SEARCH_MAIL_MAX'] ?? 9999;
+$config['search_on_all_bal'] = $_ENV['RC_MEL_METAPAGE_SEARCH_ON_ALL_BAL'] ?? true;
+$config['search_on_all_bali_folders'] = $_ENV['RC_MEL_METAPAGE_SEARCH_ON_ALL_BALI_FOLDERS'] ?? true;
+
+$config["mel_suspect_url"] = [];
+
+$config['mel_bloqued_url'] = $_ENV['RC_MEL_METAPAGE_MEL_BLOQUED_URL'];
+
+$config['mel_custom_suspected_url'] = [
+	//"url" => ["bloqued" => true"]
+];
+
+$config['mel_official_domain'] = $_ENV['RC_MEL_METAPAGE_MEL_OFFICIAL_DOMAIN'];
+
+$config['template_navigation_apps'] = [
+  'app_calendar' => [
+		'enabled' => true,
+	],
+	'app_chat' => [
+		'enabled' => true,
+	],
+  'app_workspace' => [
+		'enabled' => true,
+	],
+	'app_documents' => [
+		'enabled' => true,
+	],
+  'app_tasks' => [
+		'enabled' => false,
+	],
+	'app_news' => [
+		'enabled' => false,
+	],
+	'app_ul' => [
+		'enabled' => false,
+	],
+  'app_survey' => [
+		'enabled' => false,
+	],
+	'app_kanban' => [
+		'enabled' => false,
+	],
+	'app_parapheur' => [
+		'enabled' => false,
+	],	
+	'app_rizomo' => [
+		'enabled' => false,
+	],	
+];
+
+$config['navigation_apps'] = $_ENV['RC_MEL_METAPAGE_NAVIGATION_APPS'] ?? $config['template_navigation_apps'];
+
+$config['experimental-settings'] = $_ENV['RC_MEL_METAPAGE_EXPERIMENTAL-SETTINGS'];
+
+$config['voxify_url'] = $_ENV['RC_MEL_METAPAGE_VOXIFY_URL'];
+
+$config['picture-mode'] = $_ENV['RC_MEL_METAPAGE_PICTURE-MODE'] ?? false;
+
+$config['trusted_mails'] = $_ENV['RC_MEL_METAPAGE_TRUSTED_MAILS'];
+
+
+//Forcer l'état désactiver
+$config['mail_delay_forced_disabled'] = $_ENV['RC_MEL_METAPAGE_MAIL_DELAY_FORCED_DISABLED'] ?? false;
+//En seconde
+$config['mail_delay'] = $_ENV['RC_MEL_METAPAGE_MAIL_DELAY'] ?? 5;
+//En seconde
+$config['mail_max_delay'] = $_ENV['RC_MEL_METAPAGE_MAIL_MAX_DELAY'] ?? 30;
+//Si la barre de navigation principale peut être dépliée ou non
+$config['main_nav_can_deploy'] = $_ENV['RC_MEL_METAPAGE_MAIN_NAV_CAN_DEPLOY'] ?? true;
+
+////////////METRICS////////////
+$config['metrics_preprod_url'] = $_ENV['RC_MEL_METAPAGE_METRICS_PREPROD_URL'];
+$config['metrics_prod_url'] = $_ENV['RC_MEL_METAPAGE_METRICS_PROD_URL'];
+$config['metrics_url'] = $_ENV['RC_MEL_METAPAGE_METRICS_URL'] ?? $config['metrics_preprod_url'];
+$config['metrics_token'] = $_ENV['RC_MEL_METAPAGE_METRICS_TOKEN'];
+$config['metrics_send_interval'] = 60; //en secondes
+
+$config['visio_enabled'] = $_ENV['RC_MEL_METAPAGE_VISIO_ENABLED'] ?? true;
+
+$config["workspace_services"] = [
+    ["name" => "Canal de discussions", "icon" => "ariane", "type" => "channel", "param" => true],
+    ["name" => "Gestion de documents", "icon" => "nextcloud", "type" => "doc"],
+    ["name" => "Tâches & Kanban", "icon" => "tasks", "type" => "tasks", "param" => true],
+];
+
+// Configuration de la Webconf de l'État
+$config["web_conf"] = "https://webconf.numerique.gouv.fr";
+$config["webconf_feedback_url"] = 'https://webconf.numerique.gouv.fr/feedback';
+
+/**
+ * Payload pour la génération du token JWT
+ * 
+ * @var array
+ */
+$config['webconf_jwt_payload'] = [
+    "iss" => "", // Identifiant unique fourni par le serveur
+    "exp" => "", // date d'expiration du token en timestamp (j'ai mis date_actuelle + 12h)
+    "aud" => "",
+    "sub" => "webconf.numerique.gouv.fr",
+    "room" => "", // caractères alphanumériques uniquement. 10 caractères minimum dont au moins 3 chiffres.
+];
+/**
+ * Clé a utiliser pour la génération du token JWT
+ * 
+ * @var string
+ */
+$config['webconf_jwt_key'] = $_ENV['RC_MEL_METAPAGE_WEBCONF_JWT_KEY'];
+$config['new_webconf_jwt_key'] = $_ENV['RC_MEL_METAPAGE_NEW_WEBCONF_JWT_KEY'];
+$config['new_webconf_date'] = $_ENV['RC_MEL_METAPAGE_NEW_WEBCONF_DATE'] ?? '2022-09-09';
+$config['voxify_url'] = $_ENV['RC_MEL_METAPAGE_VOXIFY_URL'];
+$config['webconf_voxify_indicatif'] = $_ENV['RC_MEL_METAPAGE_WEBCONF_VOXIFY_INDICATIF'] ?? 'FR';
+
+// Configuration de la maintenance
+$config['maintenance'] = $_ENV['RC_MEL_METAPAGE_MAINTENANCE'] ?? false;
+$config['maintenance_datas'] = [
+    "show" => false,
+    "day" => "09/12/221",
+    "when" => "après-midi",
+    "before-howmany" => "pendant",
+    "howmany" => "environs moins d'une heure"
+];
+
+// Gestion de la météo (à ne pas activer)
+$config['enable_weather'] = $_ENV['RC_MEL_METAPAGE_ENABLE_WEATHER'] ?? false;
+$config['weather_proxy'] = $_ENV['RC_MEL_METAPAGE_WEATHER_PROXY'];
+
+$config['search_mail_max'] = $_ENV['RC_MEL_METAPAGE_SEARCH_MAIL_MAX'] ?? 9999;
+$config['search_on_all_bal'] = $_ENV['RC_MEL_METAPAGE_SEARCH_ON_ALL_BAL'] ?? true;
+$config['search_on_all_bali_folders'] = $_ENV['RC_MEL_METAPAGE_SEARCH_ON_ALL_BALI_FOLDERS'] ?? true;
+
+// Afficher un warning sur un mail quand un lien suspect est trouvé
+$config["mel_suspect_url"] = [];
+
+// Bloquer l'affichage du mail quand un lien suspect est trouvé
+$config['mel_bloqued_url'] = $_ENV['RC_MEL_METAPAGE_MEL_BLOQUED_URL'];
+
+$config['mel_custom_suspected_url'] = [
+	//"url" => ["bloqued" => true"]
+];
+
+// Ne pas sécuriser l'ouverture des liens pour les domaines en gouv.fr
+$config['mel_official_domain'] = [
+  'gouv.fr',
+];
+
+$config['template_navigation_apps'] = [
+  'app_calendar' => [
+		'enabled' => true,
+	],
+	'app_chat' => [
+		'enabled' => true,
+	],
+  'app_workspace' => [
+		'enabled' => true,
+	],
+	'app_documents' => [
+		'enabled' => true,
+	],
+    'app_tasks' => [
+		'enabled' => false,
+	],
+	'app_news' => [
+		'enabled' => false,
+	],
+	'app_ul' => [
+		'enabled' => false,
+	],
+    'app_survey' => [
+		'enabled' => false,
+	],
+	'app_kanban' => [
+		'enabled' => false,
+	],
+	'app_parapheur' => [
+		'enabled' => false,
+	],	
+	'app_rizomo' => [
+		'enabled' => false,
+	],	
+];
+
+$config['navigation_apps'] = $_ENV['RC_MEL_METAPAGE_NAVIGATION_APPS'] ?? $config['template_navigation_apps'];
+
+$config['experimental-settings'] = $_ENV['RC_MEL_METAPAGE_EXPERIMENTAL-SETTINGS'];
+
+$config['picture-mode'] = $_ENV['RC_MEL_METAPAGE_PICTURE-MODE'] ?? false;
+
+// Liste des emails de confiance
+$config['trusted_mails'] = $_ENV['RC_MEL_METAPAGE_TRUSTED_MAILS'];
+
+// Gestion du délai avant l'envoi d'un mail
+$config['mail_delay_forced_disabled'] = $_ENV['RC_MEL_METAPAGE_MAIL_DELAY_FORCED_DISABLED'] ?? false;
+// En seconde
+$config['mail_delay'] = $_ENV['RC_MEL_METAPAGE_MAIL_DELAY'] ?? 5;
+// En seconde
+$config['mail_max_delay'] = $_ENV['RC_MEL_METAPAGE_MAIL_MAX_DELAY'] ?? 30;
+// Si la barre de navigation principale peut être dépliée ou non
+$config['main_nav_can_deploy'] = $_ENV['RC_MEL_METAPAGE_MAIN_NAV_CAN_DEPLOY'] ?? true;
+
+// Configuration des metrics dans Grafana
+$config['metrics_preprod_url'] = $_ENV['RC_MEL_METAPAGE_METRICS_PREPROD_URL'];
+$config['metrics_prod_url'] = $_ENV['RC_MEL_METAPAGE_METRICS_PROD_URL'];
+$config['metrics_url'] = $_ENV['RC_MEL_METAPAGE_METRICS_URL'] ?? $config['metrics_preprod_url'];
+$config['metrics_token'] = $_ENV['RC_MEL_METAPAGE_METRICS_TOKEN'] ?? '123456789';
+$config['metrics_send_interval'] = 60; // en secondes
+
+///////////SONDAGE///////////
+// Activer/Désactiver le bouton de sondage "SurveyLime"
+$config['survey'] = $_ENV['RC_MEL_METAPAGE_SURVEY'] ?? false;
+// Valeurs par défaut utilisées si $config['survey'] === true
+$config['survey_defaults'] = [];

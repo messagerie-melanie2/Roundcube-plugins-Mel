@@ -21,6 +21,12 @@
     &right {
       display: flex;
       align-items: center;
+
+      button {
+        &.btn {
+          display: none;
+        }
+      }
     }
 
     &header-toolbar {
@@ -46,4 +52,38 @@
 
 #calendarOptionSelect {
   margin-left: var(--bnum-space-m, 15px);
+}
+
+#ba-group,
+.group-button {
+  display: flex;
+  align-self: stretch;
+
+  margin: var(--bnum-space-xs, 5px) var(--bnum-space-xs, 5px)
+    var(--bnum-space-xs, 5px) 0 !important;
+  .navigation-button {
+    display: block;
+    height: auto;
+
+    &::part(container) {
+      height: 100%;
+    }
+
+    &:state(icon) {
+      --bnum-button-padding: 0.5rem var(--bnum-space-xs, 5);
+    }
+
+    &:first-child {
+      --bnum-button-rounded-border-radius: 5px 0 0 5px;
+    }
+
+    &:not(:first-child):not(:last-child) {
+      border-right: none;
+      border-left: none;
+    }
+
+    &:last-child {
+      --bnum-button-rounded-border-radius: 0 5px 5px 0;
+    }
+  }
 }

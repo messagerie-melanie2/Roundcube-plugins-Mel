@@ -417,7 +417,7 @@ class calendar_ui
             }
 
             
-            $content = html::div(['class' => join(' ', $classes), 'data-color' => '#'.(empty($prop['color']) ? '000' : $prop['color']), 'style' => '--agenda-color:#'.(empty($prop['color']) ? '000' : $prop['color'])], $content);
+            $content = html::div(['class' => join(' ', $classes), 'data-color' => '#'.(empty($prop['color']) ? '000' : $prop['color'])], $content);
         }
 
         return $content;

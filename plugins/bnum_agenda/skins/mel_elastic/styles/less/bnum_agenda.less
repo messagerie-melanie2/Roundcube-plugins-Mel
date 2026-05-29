@@ -117,11 +117,18 @@ ul {
 
       > div {
         &.calendar {
-          --default-agenda-color: attr(data-color type(<color>));
-          --calendar-color: var(
-            --agenda-color,
-            var(--default-agenda-color, black)
-          );
+          @supports (x: attr(x type(*))) {
+            --calendar-color: ~'attr(data-color type(<color>))';
+          }
+
+          @supports not (x: attr(x type(*))) {
+            --calendar-color: var(--agenda-color, black);
+          }
+          // --default-agenda-color: attr(data-color type(<color>));
+          // --calendar-color: var(
+          //   --agenda-color,
+          //   var(--default-agenda-color, black)
+          // );
 
           > div {
             > .custom-switch {

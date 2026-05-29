@@ -578,7 +578,10 @@ rcube_webmail.prototype.mel_label_show_tooltip = async function ($parent) {
         )
           .data(
             'value',
-            key.replace('_-s-_', '$').replace('_-t-_', '~').toUpperCase(),
+            key.replace('_-s-_', '$')
+                .replace('_-t-_', '~')
+                .replace('_-p-_', '.')
+                .replace('_-e-_', '&').toUpperCase(),
           )
           .text(element)
           .click((e) => {

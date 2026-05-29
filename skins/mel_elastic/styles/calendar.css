@@ -179,14 +179,6 @@ html.layout-small .task-calendar .calendar-datepicker .ui-datepicker {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.task-calendar .listing li > div.calendar .calname::before {
-  /* margin-left: 15px; */
-  position: absolute;
-  content: '\e94d';
-  margin-left: -42px;
-  font-family: DWP;
-  font-size: 9px !important;
-}
 .task-calendar .listing li > div.calendar .actions {
   padding-right: 10px;
 }

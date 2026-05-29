@@ -572,7 +572,25 @@ export default class BridgeMail extends ABridge {
       container.appendChild(button);
     }
 
+    for (const eventType of ['mouseenter', 'mouseleave']) {
+      row.addEventListener(
+        eventType,
+        this.#_handleRowRowOver.bind(this, row, eventType),
+      );
+    }
+
     return container;
+  }
+
+   /**
+   * Action générique qui permet de piloter l'action de {@link HTMLBnumAvatarAction}.
+   * @param {HTMLElement} row
+   * @param {'mouseenter' | 'mouseleave'} eventType
+   */
+  #_handleRowRowOver(row, eventType) {
+    const avatar = row.querySelector(HTMLBnumAvatarAction.TAG);
+
+    if (avatar) avatar.dispatchEvent(new MouseEvent(eventType));
   }
 
   // ─── Icônes de sélection ───────────────────────────────────────────────────

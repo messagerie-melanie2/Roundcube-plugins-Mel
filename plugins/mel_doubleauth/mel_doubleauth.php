@@ -52,10 +52,11 @@ class mel_doubleauth extends bnum_plugin
 
         // hooks
         if (!$this->is_internal()) { // Connexion intranet => pas de double auth
+            $this->add_hook('login_after', [$this,'login_after']);
             $this->add_hook('logout_after', array($this, 'logout_after'));
             $this->add_hook('send_page', array($this, 'check_2FAlogin'));
             $this->add_hook('render_page', array($this, 'popup_msg_enrollment'));
-            $this->add_hook('once_per_day', [$this,'login_after']);
+            $this->add_hook('once_per_day', [$this,'hook_oncePerDay']);
         } else {
             // Si on est internal on considère qu'on s'est connecté avec la double auth (en cas de changement de VPN)
             $_SESSION['mel_doubleauth_login'] = time();
@@ -356,6 +357,25 @@ class mel_doubleauth extends bnum_plugin
                 'docready'
             );
         }
+    }
+
+    public function hook_oncePerDay($args) {
+        $config_2FA = $this->__get2FAconfig();
+
+        if ( $this->is_bnum_task() && 
+            !$config_2FA['activate'] && 
+             $this->rc->config->get('force_enrollment_users') 
+            // && $this->rc->task == 'settings'
+            // && $this->rc->action == 'plugin.mel_doubleauth'
+        ) {
+            try {
+                $this->rc()->output->command('plugin.force-start-da-modal');
+            } catch (\Throwable $th) {
+
+            }
+        }
+
+        return $args;
     }
 
     /**

@@ -1,5 +1,6 @@
 <?php
 use \Firebase\JWT\JWT;
+use MelVisio\Driver;
 
 class mel_visio extends bnum_plugin
 {
@@ -10,9 +11,20 @@ class mel_visio extends bnum_plugin
     public $task = '?(?!login|logout).*';
 
     /**
-     * Undocumented variable
+     * Driver du plugin
+     * @var Driver|null
+     */
+    private $driver = null;
+
+    /**
+     * @var ?string
+     */
+    private $driverName = null;
+
+    /**
+     * Données diverses
      *
-     * @var [VisioParams]
+     * @var VisioParams
      */
     private $data;
     /**
@@ -22,6 +34,10 @@ class mel_visio extends bnum_plugin
      */
     function init()
     {
+        $this->_load_driver();
+
+        if ($this->driver && $this->driver->intercept()) return;
+
         $this->add_texts('localization/', false);  
 
         switch ($this->get_current_task()) {
@@ -64,6 +80,49 @@ class mel_visio extends bnum_plugin
         }
     }
 
+    private function _load_driver(): void {
+        $driverName = $this->get_config('visio-driver');
+
+        if (!$driverName) return;
+        
+        $driverName = strtolower($driverName);
+
+        if (!preg_match('/^[a-z0-9_]+$/', $driverName)) {
+            throw new \InvalidArgumentException("Invalid driver name: $driverName");
+        }
+
+        if ($driverName === 'driver') return;
+
+        $baseDriverPath = __DIR__.'/drivers/driver.php';
+
+        if (!file_exists($baseDriverPath)) {
+            throw new \RuntimeException("Base driver file not found: $baseDriverPath");
+        }
+
+        include_once $baseDriverPath;
+
+        $path = __DIR__ . "/drivers/$driverName.php";
+
+        if (!file_exists($path)) {
+            throw new \RuntimeException("Driver file not found: $path");
+        }
+
+        include_once $path;
+
+        if (!class_exists($driverName)) {
+            throw new \RuntimeException("Class '$driverName' not found in $path");
+        }
+
+        $instance = new $driverName($this);
+
+        if (!$instance instanceof Driver) {
+            throw new \RuntimeException("'$driverName' must extend Driver");
+        }
+
+        $this->driverName = $driverName;
+        $this->driver = $instance;
+    }
+
     function index() {
         $page =  rcube_utils::get_input_value('_page', rcube_utils::INPUT_GET) ?? 'init';
 
@@ -74,8 +133,10 @@ class mel_visio extends bnum_plugin
         else $this->go_to_page($page);
     }
 
-    function go_to_page($page) {
+    function go_to_page(string $page) {
         $data = $this->api->exec_hook("visio.$page", ['break' => false]);
+
+        if ($this->driver && $this->driver->page($page)) return;
 
         if (!$data['break']) {
             call_user_func([$this, "page_$page"]);
@@ -183,9 +244,15 @@ class mel_visio extends bnum_plugin
     }
 
     public function send_visio_config() {
-        $this->rc()->output->set_env('visio.voxify_indicatif', $this->rc()->config->get('webconf_voxify_indicatif', 'FR'));
-        $this->rc()->output->set_env('visio.voxify_url', $this->rc()->config->get('voxify_url'));   
-        $this->rc()->output->set_env('visio.url', $this->rc()->config->get('visio_url'));     
+        $config = [
+            'visio.voxify_indicatif' => $this->get_config('webconf_voxify_indicatif', 'FR'),
+            'visio.voxify_url' => $this->get_config('voxify_url'),
+            'visio.url' => $this->get_config('visio_url'),
+        ];
+
+        if ($this->driver) $config = $this->driver->updateVisioConfig($config) ?? $config;
+
+        $this->set_envs($config);
     }
 
     public function get_ariane_rooms($classes = "", $ownerOnly = false, $only = 0)
@@ -391,5 +458,40 @@ class mel_visio extends bnum_plugin
 
         return $key;
     }
+
+    /**
+     * Charge un module JavaScript appartenant au driver actif.
+     *
+     * Raccourci vers {@see load_script_module} qui cible automatiquement
+     * le répertoire JS du driver courant (`/js/drivers/{driverName}/`).
+     *
+     * @param string $name Nom du module à charger (sans extension)
+     */
+    public function load_script_module_driver(string $name): void {
+        $this->load_script_module($name, "/js/drivers/$this->driverName/");
+    }
+
+    /**
+     * Charge la configuration spécifique au driver actif.
+     *
+     * Récupère le tableau `othervisiosdata` depuis la config du plugin,
+     * puis retourne uniquement la section correspondant au driver courant.
+     *
+     * Retourne `null` si la config est absente ou si aucune entrée
+     * ne correspond au driver actif.
+     *
+     * @return array|null Configuration du driver, ou null si non définie
+     */
+    public function load_driver_config(): ?array {
+        $data = $this->get_config('othervisiosdata', []);
+
+        if ($data && $data[$this->driverName]) return $data[$this->driverName];
+
+        return null;
+    }
+
+    public function load_driver_localization(bool $includeJs = true): void {
+        $this->add_texts("localization/drivers/$this->driverName", $includeJs);  
+    } 
 
 }

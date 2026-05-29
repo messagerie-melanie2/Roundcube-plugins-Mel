@@ -476,7 +476,7 @@ class AvatarElement extends HtmlCustomTag {
     if (this.saved) return this._on_load();
 
     let url = AVATAR_URL.replace('%0', this._email);
-    
+
     this.setAttribute('data-state', 'loading');
     let img = this.navigator.querySelector('img');
     img.onload = this._on_load.bind(this);
@@ -721,8 +721,9 @@ Object.defineProperty(AvatarElement, 'IsLoaded', {
 });
 //#endregion
 //#region Definition
+export const AVATAR_TAG = 'bnum-avatar';
 {
-  const TAG = 'bnum-avatar';
+  const TAG = AVATAR_TAG;
 
   if (!customElements.get(TAG)) customElements.define(TAG, AvatarElement);
 }

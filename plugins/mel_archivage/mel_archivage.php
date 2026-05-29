@@ -29,6 +29,8 @@ class mel_archivage extends rcube_plugin
    */
   public $task = 'mail|settings';
 
+  private $charset       = 'ASCII';
+
   /**
    * RFC4155: mbox date format
    */
@@ -130,8 +132,11 @@ class mel_archivage extends rcube_plugin
   {
     $messageset = [];
     $messageset = $this->traitement_archivage();
+
     $this->_download_messages($messageset);
     $this->move_message($messageset);
+
+    exit;
   }
 
 
@@ -262,7 +267,11 @@ class mel_archivage extends rcube_plugin
     exit;
   }
 
-  // Créer un folder "Mes messages archivés" si non existant et déplace les mails archivés
+  /**
+   * Créer un folder "Mes messages archivés" si non existant et déplace les mails archivés
+   * 
+   * @param array $messageset List of message UIDs to move
+   */
   private function move_message($messageset)
   {
     $rcmail = rcmail::get_instance();
@@ -297,32 +306,124 @@ class mel_archivage extends rcube_plugin
     }
   }
 
-  // /**
-  //  * Helper method to send the zip archive to the browser
-  //  */
+  /**
+   * Helper method to packs all the given messages into a zip archive
+   *
+   * @param array $messageset List of message UIDs to download
+   */
+  public function _download_messages($messageset)
+  {
+      $this->add_texts('localization');
+
+      $rcmail    = rcmail::get_instance();
+      $imap      = $rcmail->get_storage();
+      $delimiter = $imap->get_hierarchy_delimiter();
+      // PAMELA - Shared temp dir
+      $tmpfname  = rcube_utils::temp_filename('mel_archivage', true, true, true);
+      $tempfiles = [$tmpfname];
+      $folders   = count($messageset) > 1;
+      $messages  = [];
+
+      // collect messages metadata (and check size limit)
+      foreach ($messageset as $mbox => $uids) {
+          $imap->set_folder($mbox);
+
+          if ($uids === '*') {
+              $index = $imap->index($mbox, null, null, true);
+              $uids  = $index->get();
+          }
+
+          foreach ($uids as $uid) {
+              $headers = $imap->get_message_headers($uid);
+
+              // maildir
+              $subject = rcube_mime::decode_header($headers->subject, $headers->charset);
+              $subject = $this->_filename_from_subject(mb_substr($subject, 0, 16));
+              $subject = $this->_convert_filename($subject);
+
+              $path      = $folders ? str_replace($delimiter, '/', $mbox) . '/' : '';
+              $disp_name = $path . $uid . ($subject ? " $subject" : '') . '.eml';
+
+              $messages[$uid . ':' . $mbox] = $disp_name;              
+          }
+      }
+
+      // open zip file
+      $zip = new ZipArchive();
+      $zip->open($tmpfname, ZIPARCHIVE::OVERWRITE);
+
+      $last_key = array_key_last($messages);
+      foreach ($messages as $key => $value) {
+          list($uid, $mbox) = explode(':', $key, 2);
+          $imap->set_folder($mbox);
+
+          if (!empty($tmpfp)) {
+              fwrite($tmpfp, $value);
+
+              // Use stream filter to quote "From " in the message body
+              stream_filter_register('mbox_filter', 'zipdownload_mbox_filter');
+              $filter = stream_filter_append($tmpfp, 'mbox_filter');
+              $imap->get_raw_body($uid, $tmpfp);
+              stream_filter_remove($filter);
+              // Make sure the delimiter is a double \r\n
+              $fstat = fstat($tmpfp);
+              if (stream_get_contents($tmpfp, 2, $fstat['size'] - 2) != "\r\n") {
+              fwrite($tmpfp, "\r\n");
+              }
+              if ($key != $last_key) {
+                  fwrite($tmpfp, "\r\n");
+              }
+          }
+          else { // maildir
+              $tmpfn = rcube_utils::temp_filename('zipmessage');
+              $fp = fopen($tmpfn, 'w');
+              $imap->get_raw_body($uid, $fp);
+              $tempfiles[] = $tmpfn;
+              fclose($fp);
+              $zip->addFile($tmpfn, $value);
+          }
+      }
+
+      // Nom du fichier archive_<date>_dossier.zip
+      $archivage_date = rcube_utils::get_input_value('archivage_date', rcube_utils::INPUT_GET);
+      $date = DateTime::createFromFormat('d/m/Y', urldecode($archivage_date));
+      $_folder = rcube_charset::convert($imap->get_folder(), 'UTF7-IMAP');
+      if (strtoupper($_folder) == 'INBOX') {
+        $_folder = $rcmail->get_user_name();
+      } else if (
+        !isset($_GET['_account'])
+        || empty($_GET['_account'])
+      ) {
+        $_folder = $rcmail->get_user_name() . '-' . $_folder;
+      }
+      $filename = "archive_" . $date->format('Ymd') . "-" . $_folder;
+
+      if (!empty($tmpfp)) {
+          $tempfiles[] = $tmpfname . '.mbox';
+          fclose($tmpfp);
+          $zip->addFile($tmpfname . '.mbox', $filename . '.mbox');
+      }
+
+      $zip->close();
+
+      $this->_deliver_zipfile($tmpfname, $filename . '.zip');
+
+      // delete temporary files from disk
+      foreach ($tempfiles as $tmpfn) {
+          unlink($tmpfn);
+      }
+  }
+
+  /**
+   * Helper method to send the zip archive to the browser
+   */
   private function _deliver_zipfile($tmpfname, $filename)
   {
-    $browser = new rcube_browser;
-    $rcmail  = rcmail::get_instance();
+      $rcmail = rcmail::get_instance();
 
-    $rcmail->output->nocacheing_headers();
+      $rcmail->output->download_headers($filename, ['length' => filesize($tmpfname)]);
 
-    if ($browser->ie)
-      $filename = rawurlencode($filename);
-    else
-      $filename = addcslashes($filename, '"');
-
-    // send download headers
-    header("Content-Type: application/zip");
-    if ($browser->ie) {
-      header("Content-Type: application/force-download");
-    }
-
-    // don't kill the connection if download takes more than 30 sec.
-    @set_time_limit(0);
-    header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
-    header("Content-length: " . filesize($tmpfname));
-    readfile($tmpfname);
+      readfile($tmpfname);
   }
 
   /**
@@ -330,130 +431,18 @@ class mel_archivage extends rcube_plugin
    */
   private function _convert_filename($str)
   {
-    $str = strtr($str, array(':' => '', '/' => '-'));
+      $str = strtr($str, [':' => '', '/' => '-']);
 
-    return rcube_charset::convert($str, RCUBE_CHARSET, $this->charset);
+      return rcube_charset::convert($str, RCUBE_CHARSET, $this->charset);
   }
-
 
   /**
    * Helper function to convert message subject into filename
    */
   private function _filename_from_subject($str)
   {
-    $str = preg_replace('/[\t\n\r\0\x0B]+\s*/', ' ', $str);
+      $str = preg_replace('/[\t\n\r\0\x0B]+\s*/', ' ', $str);
 
-    return trim($str, " ./_");
-  }
-
-  /**
-   * Helper method to packs all the given messages into a zip archive
-   *
-   * @param array List of message UIDs to download
-   */
-  private function _download_messages($messageset)
-  {
-    $rcmail    = rcmail::get_instance();
-    $imap      = $rcmail->get_storage();
-    // Mode maildir par défaut
-    $mode      = 'maildir';
-    //$mode      = rcube_utils::get_input_value('_mode', rcube_utils::INPUT_POST);
-    $temp_dir  = $rcmail->config->get('temp_dir_shared', $rcmail->config->get('temp_dir'));
-    $tmpfname  = tempnam($temp_dir, 'mel_archivage');
-    $tempfiles = array($tmpfname);
-    $folders   = count($messageset) > 1;
-    // @TODO: file size limit
-
-    // open zip file
-    $zip = new ZipArchive();
-    $zip->open($tmpfname, ZIPARCHIVE::OVERWRITE);
-
-    foreach ($messageset as $mbox => $uids) {
-      $imap->set_folder($mbox);
-      $path = $folders ? str_replace($imap->get_hierarchy_delimiter(), '/', $mbox) . '/' : '';
-
-      if ($uids === '*') {
-        $index = $imap->index($mbox, null, null, true);
-        $uids  = $index->get();
-      }
-
-      foreach ($uids as $uid) {
-
-        $headers = $imap->get_message_headers($uid);
-
-        if ($mode == 'mbox') {
-          // Sender address
-          $from = rcube_mime::decode_address_list($headers->from, null, true, $headers->charset, true);
-          $from = array_shift($from);
-          $from = preg_replace('/\s/', '-', $from);
-
-          // Received (internal) date
-          $date = rcube_utils::anytodatetime($headers->internaldate);
-          if ($date) {
-            $date->setTimezone(new DateTimeZone('UTC'));
-            $date = $date->format(self::MBOX_DATE_FORMAT);
-          }
-
-          // Mbox format header (RFC4155)
-          $header = sprintf(
-            "From %s %s\r\n",
-            $from ?: 'MAILER-DAEMON',
-            $date ?: ''
-          );
-
-          fwrite($tmpfp, $header);
-
-          // Use stream filter to quote "From " in the message body
-          stream_filter_register('mbox_filter', 'mel_archivage_mbox_filter');
-          $filter = stream_filter_append($tmpfp, 'mbox_filter');
-          $imap->get_raw_body($uid, $tmpfp);
-          stream_filter_remove($filter);
-          fwrite($tmpfp, "\r\n");
-        } else { // maildir
-          $subject = rcube_mime::decode_header($headers->subject, $headers->charset);
-          $subject = $this->_filename_from_subject(mb_substr($subject, 0, 32));
-          $subject = $this->_convert_filename($subject);
-          $subject = preg_replace('/[^A-Z a-z0-9\-]/', '', $subject);
-
-          $disp_name = $path . $uid . ($subject ? " $subject" : '') . '.eml';
-
-          $tmpfn = tempnam($temp_dir, 'zipmessage');
-          $tmpfp = fopen($tmpfn, 'w');
-          $imap->get_raw_body($uid, $tmpfp);
-          $tempfiles[] = $tmpfn;
-          fclose($tmpfp);
-          $zip->addFile($tmpfn, $disp_name);
-        }
-      }
-    }
-
-    // Nom du fichier archive_<date>_dossier.zip
-    $archivage_date = rcube_utils::get_input_value('archivage_date', rcube_utils::INPUT_GET);
-    $date = DateTime::createFromFormat('d/m/Y', urldecode($archivage_date));
-    $_folder = rcube_charset::convert($imap->get_folder(), 'UTF7-IMAP');
-    if (strtoupper($_folder) == 'INBOX') {
-      $_folder = $rcmail->get_user_name();
-    } else if (
-      !isset($_GET['_account'])
-      || empty($_GET['_account'])
-    ) {
-      $_folder = $rcmail->get_user_name() . '-' . $_folder;
-    }
-    $filename = "archive_" . $date->format('Ymd') . "-" . $_folder;
-
-    if ($mode == 'mbox') {
-      $tempfiles[] = $tmpfname . '.mbox';
-      fclose($tmpfp);
-      $zip->addFile($tmpfname . '.mbox', $filename . '.mbox');
-    }
-
-    $zip->close();
-
-    $this->_deliver_zipfile($tmpfname, $filename . '.zip');
-
-    // delete temporary files from disk
-    foreach ($tempfiles as $tmpfn) {
-      unlink($tmpfn);
-    }
+      return trim($str, " ./_");
   }
 }

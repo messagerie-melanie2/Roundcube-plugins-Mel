@@ -46,6 +46,26 @@ export class ModuleInit extends ABaseMelObject {
   }
 
   #_init() {
+    return this.#_initAgendaCheckBoxColor();
+  }
+
+  #_initAgendaCheckBoxColor() {
+    if (!CSS.supports('x: attr(x type(*))')) {
+      /**
+       * @type {NodeListOf<HTMLElement>}
+       */
+      const calendars = document.querySelectorAll(
+        '#calendarslist [data-color]',
+      );
+
+      for (const calendar of calendars) {
+        calendar.style.setProperty(
+          '--agenda-color',
+          calendar.getAttribute('data-color'),
+        );
+      }
+    }
+
     return this;
   }
 

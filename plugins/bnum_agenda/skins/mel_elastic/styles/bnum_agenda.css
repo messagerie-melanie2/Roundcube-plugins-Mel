@@ -77,9 +77,15 @@ ul#calendarslist li div.calendar .calname::before {
 ul#calendarslist li div.calendar .custom-control {
   margin: 0;
 }
-ul#calendarslist li > div.calendar {
-  --default-agenda-color: attr(data-color type(<color>));
-  --calendar-color: var(--agenda-color, var(--default-agenda-color, black));
+@supports (x: attr(x type(*))) {
+  ul#calendarslist li > div.calendar {
+    --calendar-color: attr(data-color type(<color>));
+  }
+}
+@supports not (x: attr(x type(*))) {
+  ul#calendarslist li > div.calendar {
+    --calendar-color: var(--agenda-color, black);
+  }
 }
 ul#calendarslist li > div.calendar > div > .custom-switch > .custom-control-label::before {
   --calendar-list-item-switch-border-color: var(--calendar-color);

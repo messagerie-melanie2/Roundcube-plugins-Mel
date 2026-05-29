@@ -1,1 +1,146 @@
-.fc .fc-left{display:flex;align-items:center}.fc .fc-center{display:var(--bnum-agenda-fc-center-display, flex) !important;align-items:center;justify-content:center}.fc .fc-center>h2{margin-top:var(--bnum-agenda-fc-center-margin-top, 0) !important}.fc .fc-right{display:flex;align-items:center}.fc .fc-right button.btn{display:none}.fc .fc-header-toolbar{--_toolbar-header-background-color:var(--bnum-agenda-toolbar-background-color, var(--bnum-color-surface, #5870bf));--_toolbar-header-color:var(--bnum-body-text-color, var(--bnum-text-primary, white));background-color:var(--_toolbar-header-background-color);color:var(--_toolbar-header-color);--calendar-widget-header-background-color:var(--_toolbar-header-background-color);--calendar-widget-header-text-color:var(--_toolbar-header-color)}#calendarOptionSelect,.fc .fc-left .calendar{margin-left:var(--bnum-space-m, 15px)}#ba-group,.group-button{display:flex;align-self:stretch;margin:var(--bnum-space-xs, 5px) var(--bnum-space-xs, 5px) var(--bnum-space-xs, 5px) 0 !important}#ba-group .navigation-button,.group-button .navigation-button{display:block;height:auto}#ba-group .navigation-button::part(container),.group-button .navigation-button::part(container){height:100%}#ba-group .navigation-button:state(icon),.group-button .navigation-button:state(icon){--bnum-button-padding:.5rem var(--bnum-space-xs, 5)}#ba-group .navigation-button:first-child,.group-button .navigation-button:first-child{--bnum-button-rounded-border-radius:5px 0 0 5px}#ba-group .navigation-button:not(:first-child):not(:last-child),.group-button .navigation-button:not(:first-child):not(:last-child){border-right:none;border-left:none}#ba-group .navigation-button:last-child,.group-button .navigation-button:last-child{--bnum-button-rounded-border-radius:0 5px 5px 0}
+.fc .fc-left {
+  display: flex;
+  align-items: center;
+}
+.fc .fc-center {
+  display: var(--bnum-agenda-fc-center-display, flex) !important;
+  align-items: center;
+  justify-content: center;
+}
+.fc .fc-center > h2 {
+  margin-top: var(--bnum-agenda-fc-center-margin-top, 0) !important;
+}
+.fc .fc-right {
+  display: flex;
+  align-items: center;
+}
+.fc .fc-right button.btn {
+  display: none;
+}
+.fc .fc-header-toolbar {
+  --_toolbar-header-background-color: var(--bnum-agenda-toolbar-background-color, var(--bnum-color-surface, #5870bf));
+  --_toolbar-header-color: var(--bnum-body-text-color, var(--bnum-text-primary, white));
+  background-color: var(--_toolbar-header-background-color);
+  color: var(--_toolbar-header-color);
+  --calendar-widget-header-background-color: var(--_toolbar-header-background-color);
+  --calendar-widget-header-text-color: var(--_toolbar-header-color);
+}
+#calendarOptionSelect,
+.fc .fc-left .calendar {
+  margin-left: var(--bnum-space-m, 15px);
+}
+#ba-group,
+.group-button {
+  display: flex;
+  align-self: stretch;
+  margin: var(--bnum-space-xs, 5px) var(--bnum-space-xs, 5px) var(--bnum-space-xs, 5px) 0 !important;
+}
+#ba-group .navigation-button,
+.group-button .navigation-button {
+  display: block;
+  height: auto;
+}
+#ba-group .navigation-button::part(container),
+.group-button .navigation-button::part(container) {
+  height: 100%;
+}
+#ba-group .navigation-button:state(icon),
+.group-button .navigation-button:state(icon) {
+  --bnum-button-padding: 0.5rem var(--bnum-space-xs, 5);
+}
+#ba-group .navigation-button:first-child,
+.group-button .navigation-button:first-child {
+  --bnum-button-rounded-border-radius: 5px 0 0 5px;
+}
+#ba-group .navigation-button:not(:first-child):not(:last-child),
+.group-button .navigation-button:not(:first-child):not(:last-child) {
+  border-right: none;
+  border-left: none;
+}
+#ba-group .navigation-button:last-child,
+.group-button .navigation-button:last-child {
+  --bnum-button-rounded-border-radius: 0 5px 5px 0;
+}
+ul#calendarslist {
+  --_opacity-idle: 0.5;
+  --_opacity-hover: 1;
+  --_opacity-active: var(--_opacity-hover, 1);
+}
+ul#calendarslist li div.treetoggle {
+  left: unset;
+  right: 35px;
+}
+ul#calendarslist li div.calendar .calname::before {
+  content: unset;
+  display: none;
+}
+ul#calendarslist li div.calendar .custom-control {
+  margin: 0;
+}
+ul#calendarslist li > div.calendar {
+  --default-agenda-color: attr(data-color type(<color>));
+  --calendar-color: var(--agenda-color, var(--default-agenda-color, black));
+}
+ul#calendarslist li > div.calendar > div > .custom-switch > .custom-control-label::before {
+  --calendar-list-item-switch-border-color: var(--calendar-color);
+  border: 1px solid var(--calendar-list-item-switch-border-color);
+}
+ul#calendarslist li > div.calendar > div > .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+  --calendar-list-item-switch-background-color: color-mix(in srgb, var(--calendar-color) 20%, white);
+  background-color: var(--calendar-list-item-switch-background-color);
+}
+ul#calendarslist li > div.calendar > div > .custom-switch .custom-control-input:checked ~ .custom-control-label::after {
+  color: var(--calendar-color) !important;
+  --calendar-list-item-switch-tick-stroke-color: var(--calendar-color);
+  --calendar-list-item-switch-tick-stroke: 1px var(--calendar-list-item-switch-tick-stroke-color);
+  -webkit-text-stroke: var(--calendar-list-item-switch-tick-stroke);
+  text-stroke: var(--calendar-list-item-switch-tick-stroke);
+}
+ul#calendarslist li > div a.quickview::before {
+  --_color: var(--bnum-body-text-color, var(--bnum-text-primary, inherit));
+  opacity: var(--_opacity-idle);
+  color: var(--_color);
+  --fourth-text-color: var(--_color);
+}
+ul#calendarslist li > div a.quickview:hover::before {
+  opacity: var(--_opacity-hover);
+}
+ul#calendarslist li > div.focusview a.quickview::before {
+  opacity: var(--_opacity-active);
+}
+ul#calendarslist li[aria-level='1'] div.calendar > a {
+  padding-left: 0em !important;
+}
+ul#calendarslist li[aria-level='1'] div.calendar .custom-control {
+  padding-left: 0px !important;
+}
+ul#calendarslist li[aria-level='2'] div.calendar > a {
+  padding-left: 3em !important;
+}
+ul#calendarslist li[aria-level='2'] div.calendar .custom-control {
+  padding-left: 10px !important;
+}
+ul#calendarslist li[aria-level='3'] div.calendar > a {
+  padding-left: 4.5em !important;
+}
+ul#calendarslist li[aria-level='3'] div.calendar .custom-control {
+  padding-left: 20px !important;
+}
+ul#calendarslist li[aria-level='4'] div.calendar > a {
+  padding-left: 6em !important;
+}
+ul#calendarslist li[aria-level='4'] div.calendar .custom-control {
+  padding-left: 30px !important;
+}
+ul#calendarslist li[aria-level='5'] div.calendar > a {
+  padding-left: 7.5em !important;
+}
+ul#calendarslist li[aria-level='5'] div.calendar .custom-control {
+  padding-left: 40px !important;
+}
+ul#calendarslist li[aria-level='6'] div.calendar > a {
+  padding-left: 9em !important;
+}
+ul#calendarslist li[aria-level='6'] div.calendar .custom-control {
+  padding-left: 50px !important;
+}

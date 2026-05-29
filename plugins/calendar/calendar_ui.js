@@ -2147,10 +2147,10 @@ function rcube_calendar_ui(settings) {
       interval = allday
         ? 1440
         : freebusy_ui.interval * (settings.timeslots || 1);
-    (times_css = allday ? 'allday ' : ''),
+    ((times_css = allday ? 'allday ' : ''),
       (dates_row = '<tr class="dates">'),
       (times_row = '<tr class="times">'),
-      (slots_row = '');
+      (slots_row = ''));
 
     for (
       var s = 0, t = freebusy_ui.start.getTime();

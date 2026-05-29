@@ -1303,6 +1303,17 @@ ul.treelist {
   --_trl-idle-background-color-active: var(--bnum-color-list-alt-active, #cfcfcf);
   --_trl-idle-background-color-selected: var(--bnum-color-list, #e3e3fd);
 }
+ul.treelist li[aria-level='1'] {
+  border-bottom: var(--bnum-border-in-column);
+}
+ul.treelist li[aria-level='1'] > a,
+ul.treelist li[aria-level='1'] > div {
+  font-weight: var(--treelist-main-li-font-weight, var(--bnum-font-weight-bold, bold));
+}
+ul.treelist li:last-of-type {
+  border-bottom: none;
+  --bnum-border-in-column: none;
+}
 ul.treelist li > a,
 ul.treelist li > div {
   background-color: var(--_trl-idle-background-color) !important;

@@ -2,6 +2,7 @@ import ABaseMelObject from '../../../../plugins/mel_metapage/js/lib/base_mel_obj
 import { MelEnumerable } from '../../../../plugins/mel_metapage/js/lib/classes/enum.js';
 import { EMPTY_STRING } from '../../../../plugins/mel_metapage/js/lib/constants/constants.js';
 import { AvatarElement } from '../../../../plugins/mel_metapage/js/lib/html/JsHtml/CustomAttributes/avatar.js';
+import RoundShapeComponent from '../../../../plugins/mel_metapage/js/lib/html/JsHtml/CustomAttributes/button/RoundShapeComponent.js';
 import {
   DsCssProperty,
   DsCssRule,
@@ -582,7 +583,7 @@ export default class BridgeMail extends ABridge {
     return container;
   }
 
-   /**
+  /**
    * Action générique qui permet de piloter l'action de {@link HTMLBnumAvatarAction}.
    * @param {HTMLElement} row
    * @param {'mouseenter' | 'mouseleave'} eventType

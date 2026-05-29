@@ -1,3 +1,4 @@
+//compress:false
 .fc {
   .fc- {
     &left {
@@ -85,5 +86,155 @@
     &:last-child {
       --bnum-button-rounded-border-radius: 0 5px 5px 0;
     }
+  }
+}
+
+ul {
+  &#calendarslist {
+    --_opacity-idle: 0.5;
+    --_opacity-hover: 1;
+    --_opacity-active: var(--_opacity-hover, 1);
+    li {
+      div {
+        &.treetoggle {
+          left: unset;
+          right: 35px;
+        }
+
+        &.calendar {
+          .calname {
+            &::before {
+              content: unset;
+              display: none;
+            }
+          }
+          .custom-control {
+            // padding-left: var(--bnum-space-s, 10px);
+            margin: 0;
+          }
+        }
+      }
+
+      > div {
+        &.calendar {
+          --default-agenda-color: attr(data-color type(<color>));
+          --calendar-color: var(
+            --agenda-color,
+            var(--default-agenda-color, black)
+          );
+
+          > div {
+            > .custom-switch {
+              > .custom-control-label {
+                &::before {
+                  --calendar-list-item-switch-border-color: var(
+                    --calendar-color
+                  );
+                  border: 1px solid
+                    var(--calendar-list-item-switch-border-color);
+                }
+              }
+
+              .custom-control-input {
+                &:checked {
+                  ~ .custom-control-label {
+                    &::before {
+                      --calendar-list-item-switch-background-color: color-mix(
+                        in srgb,
+                        var(--calendar-color) 20%,
+                        white
+                      );
+                      background-color: var(
+                        --calendar-list-item-switch-background-color
+                      );
+                    }
+
+                    &::after {
+                      color: var(--calendar-color) !important;
+                      --calendar-list-item-switch-tick-stroke-color: var(
+                        --calendar-color
+                      );
+                      --calendar-list-item-switch-tick-stroke: 1px
+                        var(--calendar-list-item-switch-tick-stroke-color);
+                      -webkit-text-stroke: var(
+                        --calendar-list-item-switch-tick-stroke
+                      );
+                      text-stroke: var(--calendar-list-item-switch-tick-stroke);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        a {
+          &.quickview {
+            &::before {
+              --_color: var(
+                --bnum-body-text-color,
+                var(--bnum-text-primary, inherit)
+              );
+
+              opacity: var(--_opacity-idle);
+              color: var(--_color);
+              --fourth-text-color: var(--_color);
+            }
+
+            &:hover {
+              &::before {
+                opacity: var(--_opacity-hover);
+              }
+            }
+          }
+        }
+
+        &.focusview {
+          a {
+            &.quickview {
+              &::before {
+                opacity: var(--_opacity-active);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .tree-padding(@i) when (@i = 1) {
+      li[aria-level='@{i}'] {
+        div {
+          &.calendar {
+            > a {
+              padding-left: (@i - 1) * 1.5em !important;
+            }
+
+            .custom-control {
+              padding-left: (@i - 1) * 10px !important;
+            }
+          }
+        }
+      }
+    }
+
+    .tree-padding(@i) when (@i > 1) {
+      .tree-padding(@i - 1); // appel récursif
+
+      li[aria-level='@{i}'] {
+        div {
+          &.calendar {
+            > a {
+              padding-left: (@i) * 1.5em !important;
+            }
+
+            .custom-control {
+              padding-left: (@i - 1) * 10px !important;
+            }
+          }
+        }
+      }
+    }
+
+    .tree-padding(6);
   }
 }

@@ -55,6 +55,7 @@
   --bnum-color-input-border: #3a3a3a;
   /* Bordure des champs input */
   --bnum-color-left-column: #f6f6f6;
+  --bnum-color-middle-column: #ffffff;
   /* Les items d'une liste ont forcément un fond transparent, 
      donc on se base sur le classique pour le selected,
      sur le hover pour le hover
@@ -252,6 +253,7 @@ html.dark-mode-custom:root {
   --bnum-color-input-border: #cecece;
   /* Bordure des champs input */
   --bnum-color-left-column: #161616;
+  --bnum-color-middle-column: #3a3a3a;
   /* Les items d'une liste ont forcément un fond transparent, 
      donc on se base sur le classique pour le selected,
      sur le hover pour le hover
@@ -1170,7 +1172,7 @@ bnum-hide {
   --_bdsli-alt-bg: var(--bnum-color-list-alt);
   --_bdsli-idle-bg: var(--bnum-list-item-bg-color, var(--bnum-color-list-idle, transparent));
   --_bdsli-hover-bg: var(--bnum-list-item-bg-color-hover, var(--bnum-color-list-hover, transparent));
-  --_bdsli-active-bg: var(--bnum-list-item-bg-color-active, var(--bnum-color-list-drag, transparent));
+  --_bdsli-active-bg: var(--bnum-list-item-bg-color-active, var(--bnum-color-list, transparent));
   background-color: var(--_bdsli-background-color, var(--_bdsli-idle-bg));
   color: var(--_bdsli-color, var(--_bdsli-idle));
 }
@@ -1183,7 +1185,7 @@ bnum-hide {
 }
 .bds-list-item.unread,
 .bds-list-table tr.unread {
-  --_bdsli-background-color: var(--_bdsli-alt-bg);
+  --_bdsli-background-color: var(--_bdsli-background-color, var(--_bdsli-idle-bg));
   --_bdsli-color: var(--_bdsli-alt);
 }
 .bds-list-item:hover,
@@ -1238,9 +1240,6 @@ bnum-hide {
 .bds-list-table.--no-rc tr:hover {
   --_bdsli-active-bg: var(--_bdsli-hover-bg);
   --_bdsli-alt-bg: var(--_bdsli-hover-bg);
-}
-.bds-list-table.--no-rc tr td {
-  background-color: transparent !important;
 }
 .popover {
   --_idle-background: var(--nav-button-background, transparent);

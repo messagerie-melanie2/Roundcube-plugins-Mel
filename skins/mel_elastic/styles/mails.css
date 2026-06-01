@@ -107,11 +107,8 @@ html body.task-mail.action-show #layout-content {
   padding: 4px 15px;
 }
 /*Liste des messages*/
-table.messagelist tr.unread {
-  background-color: var(--alternate-bckg-color);
-}
 table.messagelist tr.unread > td:first-child {
-  border-left: 2px solid var(--message-list-unread-border-left) !important;
+  border-left: 5px solid var(--message-list-unread-border-left) !important;
 }
 table.messagelist tr.unread td {
   background-color: var(--invisible);
@@ -148,7 +145,7 @@ table.messagelist tr.unread td.subject a {
 }
 table.messagelist tr.message td {
   border-bottom: 1px solid var(--base-message-border-color);
-  border-color: var(--message-border-color);
+  border-color: var(--bnum-color-border);
   padding-top: 0.4rem;
   padding-bottom: 0.4rem;
   cursor: pointer !important;
@@ -383,7 +380,7 @@ table.messagelist .flags {
   color: var(--main-text-color);
 }
 table.messagelist:not(.withselection) tr.unread > td.selection + td {
-  border-left: 2px solid var(--message-list-unread-border-left) !important;
+  border-left: 5px solid var(--message-list-unread-border-left) !important;
 }
 #mailsearchlist {
   position: absolute;

@@ -581,14 +581,6 @@ ul.treelist {
   }
 
   tbody {
-    tr {
-      &.context-source:not(.selected) {
-        & > td {
-          background-color: var(--secondary-bckg-color) !important;
-        }
-      }
-    }
-
     td {
       color: var(--secondary-text-color);
       border: none;
@@ -2928,7 +2920,7 @@ html:not(.touch)
   tr.focused.unread
   > td.selection
   + td {
-  border-left: 2px solid var(--message-list-unread-border-left) !important;
+  border-left: 5px solid var(--message-list-unread-border-left) !important;
   border-radius: 0;
 }
 
@@ -5657,6 +5649,20 @@ html:not(.touch)
 .menu a:not(.disabled):focus {
   border-top-left-radius: 0 !important;
   border-bottom-left-radius: 0 !important;
+}
+
+//On supprime la barre de gauche pour le focus des mails
+html:not(.touch) .listing li > a:focus,
+html:not(.touch) .listing.focus tbody tr.focused > td:first-child,
+html:not(.touch)
+  body.task-mail
+  .listing.focus:not(.withselection)
+  tbody
+  tr.focused
+  > td.selection
+  + td,
+.menu a:not(.disabled):focus {
+  border-left: 2px solid transparent;
 }
 
 bnum-separate {

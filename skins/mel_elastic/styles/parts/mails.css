@@ -71,7 +71,7 @@ table.messagelist {
 }
 table.messagelist td.subject span.fromto,
 table.messagelist td.subject span.subject {
-  margin-left: var(--bnum-space-l);
+  margin-left: var(--bnum-space-xl);
 }
 table.messagelist td.subject span.msgicon.status::before {
   height: 2.04rem;
@@ -85,7 +85,7 @@ table.messagelist tr .mail-avatar {
   height: var(--avatar-size);
   width: var(--avatar-size);
   position: absolute;
-  left: 8px;
+  left: 11px;
   top: 50%;
   transform: translateY(-50%);
 }
@@ -204,6 +204,14 @@ table.messagelist tr.flagged:hover .unflag-action {
   --message-list-quick-filter-background-color: var(--layout-list-header-background, var(--bnum-header-color, var(--bnum-color-background, #fff)));
   --input-button-text-color: var(--layout-list-header-color, var(--bnum-body-text-color, var(--bnum-text-primary)));
 }
+#layout-list .menu a.search:before {
+  content: '\e8b6' !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
+}
 #list-select-mail-choices.hidden {
   display: flex !important;
 }
@@ -218,4 +226,7 @@ table.messagelist tr.flagged:hover .unflag-action {
   bottom: 5px;
   left: 0;
   right: 0;
+}
+.listing tbody tr.context-source:not(.selected) > td {
+  background-color: var(--_bdsli-active-bg) !important;
 }

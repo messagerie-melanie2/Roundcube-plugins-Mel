@@ -187,3 +187,6 @@ ul#calendarslist li[aria-level='6'] div.calendar .custom-control {
 #calendartoolbar .create {
   display: none;
 }
+#layout-content .header a.back-sidebar-button {
+  display: none !important;
+}

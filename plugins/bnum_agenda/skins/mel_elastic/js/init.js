@@ -4,6 +4,7 @@ import {
   HTMLBnumSelect,
 } from '../../../../../skins/mel_elastic/design-system/ds-module-bnum.js';
 import ABaseMelObject from '../../../../mel_metapage/js/lib/base_mel_object.js';
+import { BnumLog } from '../../../../mel_metapage/js/lib/classes/bnum_log.js';
 
 /**
  * @typedef {Object} InitSelectArgs
@@ -42,11 +43,69 @@ export class ModuleInit extends ABaseMelObject {
     await this.wait_something(() =>
       document.querySelector('#calendar > .fc-toolbar > .fc-right'),
     );
-    this.#_initRightButtons();
+    this.#_initMobile().#_initRightButtons();
   }
 
   #_init() {
     return this.#_initAgendaCheckBoxColor().#_initNewEventButton();
+  }
+
+  #_initMobile() {
+    return this.#_setupMobileButton('bnumelasticback', {
+      howToAdd(element, targetParent) {
+        targetParent.prepend(element);
+      },
+    }).#_setupMobileButton('bnumelasticother');
+  }
+
+  #_setupMobileButton(
+    id,
+    {
+      targetSelector = '#calendar .fc-toolbar .fc-center',
+      howToAdd = (element, targetParent) => targetParent.appendChild(element),
+    } = {},
+  ) {
+    const node = document.getElementById(id);
+
+    if (node) {
+      const targetParent = document.querySelector(targetSelector);
+
+      if (targetParent) {
+        howToAdd(node, targetParent);
+
+        requestAnimationFrame(() => {
+          /**
+           * @type {HTMLElement}
+           */
+          let children;
+          for (children of node.children ?? []) {
+            if (children && children.style && children.hasAttribute) {
+              if (children.hasAttribute('data-block-after-init')) {
+                children.style.display = children.getAttribute(
+                  'data-block-after-init',
+                );
+                children.removeAttribute('data-block-after-init');
+              } else children.style.display = null;
+            }
+          }
+        });
+      } else
+        BnumLog.error(
+          'bnum_agenda/ModuleInit/#_initMobile',
+          `Impossible de trouver ${targetSelector} !`,
+          node,
+          targetParent,
+          this,
+        );
+    } else
+      BnumLog.error(
+        'bnum_agenda/ModuleInit/#_initMobile',
+        `Impossible de trouver #${id} !`,
+        node,
+        this,
+      );
+
+    return this;
   }
 
   #_initAgendaCheckBoxColor() {

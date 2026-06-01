@@ -151,11 +151,9 @@
 table.messagelist {
   tr {
     &.unread {
-      background-color: var(--alternate-bckg-color);
-
       & > td {
         &:first-child {
-          border-left: 2px solid var(--message-list-unread-border-left) !important;
+          border-left: 5px solid var(--message-list-unread-border-left) !important;
         }
       }
 
@@ -239,7 +237,7 @@ table.messagelist {
     &.message {
       td {
         border-bottom: 1px solid var(--base-message-border-color);
-        border-color: var(--message-border-color);
+        border-color: var(--bnum-color-border);
         padding-top: 0.4rem;
         padding-bottom: 0.4rem;
         cursor: pointer !important;
@@ -720,7 +718,7 @@ table.messagelist {
         & > td {
           &.selection {
             & + td {
-              border-left: 2px solid var(--message-list-unread-border-left) !important;
+              border-left: 5px solid var(--message-list-unread-border-left) !important;
             }
           }
         }

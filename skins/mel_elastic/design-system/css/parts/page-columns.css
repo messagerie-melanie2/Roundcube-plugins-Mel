@@ -136,6 +136,11 @@ html.layout-large .task-mail #layout-sidebar > .header {
 #layout-list > .header > .old-header,
 #layout-content,
 #layout-content > .header {
+  --_layout-list-color: var(--bnum-layout-list-background-color, var(--bnum-color-middle-column, #ffffff));
+  --_message-list-border-color: var(--bnum-message-list-unread-border-left, var(--bnum-color-primary, #000091));
+  background-color: var(--_layout-list-color);
+  --layout-list-background-color: var(--_layout-list-color);
+  --message-list-unread-border-left: var(--_message-list-border-color);
   --_color: var(--layout-list-header-color, var(--bnum-body-text-color, var(--bnum-text-primary)));
   --_background: var(--layout-list-header-background, var(--bnum-header-color, var(--bnum-color-background, #ffffff)));
   color: var(--_color);

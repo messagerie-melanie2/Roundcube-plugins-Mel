@@ -292,17 +292,6 @@ function CalendarPageInit(init_date_picker = true) {
       );
 
     elementToAppend.appendChild(node);
-
-    // $(select)
-    //   .on('change', () => {
-    //     const val = $('#calendarOptionSelect')[0].value;
-
-    //     $(
-    //       'body.task-calendar .fc-toolbar.fc-header-toolbar .fc-left .fc-button-group .' +
-    //         val,
-    //     ).click();
-    //   })
-    //   .appendTo($('body.task-calendar .fc-toolbar.fc-header-toolbar .fc-left'));
   });
 
   switch (rcmail.env.mel_metapage_calendar_configs['mel-calendar-space']) {

@@ -245,3 +245,78 @@ ul {
     .tree-padding(6);
   }
 }
+
+#datepicker {
+  --_datepicker-bg: var(
+    --datepicker-bg-color,
+    var(--bnum-color-surface, #f6f6f6)
+  );
+  --_datepicker-color: var(
+    --datepicker-txt-color,
+    var(--bnum-body-text-color, var(--bnum-text-primary, black))
+  );
+  --_datepicker-border-top: var(
+    --datepicker-border-top,
+    var(--bnum-border-surface, solid thin black)
+  );
+
+  background-color: var(--_datepicker-bg);
+  color: var(--_datepicker-color);
+
+  border-top: var(--_datepicker-border-top);
+
+  //old compatibility
+  --calendar-widget-background-color: var(--_datepicker-bg);
+  --calendar-widget-text-color: var(--_datepicker-color);
+
+  .ui-datepicker-header {
+    .ui-datepicker-next,
+    .ui-datepicker-prev {
+      &::after {
+        content: '';
+        display: none;
+      }
+    }
+  }
+
+  .ui-datepicker-calendar {
+    --_datepicker-agenda-border-top: var(
+      --datepicker-agenda-border-top,
+      var(--bnum-border-in-surface, solid thin black)
+    );
+    border-top: var(--_datepicker-agenda-border-top);
+
+    //old compatibility
+    --calendar-datepicker-top-separator: var(--_datepicker-agenda-border-top);
+
+    .ui-state-default {
+      --_ui-state-active-bg: var(
+        --datepicker-day-selected-bg,
+        var(--bnum-color-primary-active, blue)
+      );
+      --_ui-state-active-text-color: var(
+        --datepicker-day-selected-text-color,
+        var(--bnum-text-on-primary, white)
+      );
+
+      &.ui-state-highlight,
+      &.ui-state-active {
+        border-radius: var(--bnum-radius-m, 5px);
+        background-color: var(--_ui-state-active-bg);
+        color: var(--_ui-state-active-text-color);
+
+        //old compatibility
+        --badge-background-color: var(--_ui-state-active-bg);
+        --badge-text-color: var(--_ui-state-active-text-color);
+        --roundbadge-bckg-color: var(--_ui-state-active-bg);
+        --calendar-highlight-text-color: var(--_ui-state-active-text-color);
+      }
+    }
+  }
+}
+
+#calendartoolbar {
+  .create {
+    display: none;
+  }
+}

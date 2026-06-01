@@ -46,7 +46,7 @@ export class ModuleInit extends ABaseMelObject {
   }
 
   #_init() {
-    return this.#_initAgendaCheckBoxColor();
+    return this.#_initAgendaCheckBoxColor().#_initNewEventButton();
   }
 
   #_initAgendaCheckBoxColor() {
@@ -64,6 +64,39 @@ export class ModuleInit extends ABaseMelObject {
           calendar.getAttribute('data-color'),
         );
       }
+    }
+
+    return this;
+  }
+
+  #_initNewEventButton() {
+    const element = document.getElementById('create-event-button');
+
+    if (element) {
+      element.addEventListener(
+        'click',
+        this.execCommand.bind(this, 'addevent'),
+      );
+
+      this.listen('enable-command', function (args) {
+        const { command, status } = args;
+
+        if (command === 'addevent') {
+          const nodeElement = document.getElementById('create-event-button');
+
+          if (nodeElement) {
+            switch (status) {
+              case true:
+                nodeElement.removeAttribute('disabled');
+                break;
+
+              default:
+                nodeElement.setAttribute('disabled', 'disabled');
+                break;
+            }
+          }
+        }
+      });
     }
 
     return this;

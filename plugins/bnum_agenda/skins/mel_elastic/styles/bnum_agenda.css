@@ -190,6 +190,9 @@ ul#calendarslist li[aria-level='6'] div.calendar .custom-control {
 #layout-content .header a.back-sidebar-button {
   display: none !important;
 }
+html.touch #layout-sidebar .header {
+  justify-content: space-between;
+}
 html.touch #layout-content .header {
   display: none;
 }

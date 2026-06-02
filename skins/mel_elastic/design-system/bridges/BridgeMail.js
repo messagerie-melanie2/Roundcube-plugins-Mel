@@ -55,7 +55,7 @@ const ICON_UNSELECTED = 'check_box_outline_blank';
 const ROW_ACTIONS = [
   {
     order: 0,
-    icon: 'mail',
+    icon: 'drafts',
     cssClass: 'unread-action',
     onclick(_, __, ignoreCapture, e) {
       e.stopImmediatePropagation();
@@ -66,7 +66,7 @@ const ROW_ACTIONS = [
   },
   {
     order: 1,
-    icon: 'drafts',
+    icon: 'mail',
     cssClass: 'read-action',
     onclick(_, __, ignoreCapture, e) {
       e.stopImmediatePropagation();
@@ -469,6 +469,8 @@ export default class BridgeMail extends ABridge {
    */
   #decorateRow(row) {
     this.#hideMsgIcon(row);
+    this.#addPriorityClass(row);
+
     const avatarContainer = this.#buildAvatarContainer(row);
     const rowActions = this.#buildRowActions(row);
 
@@ -476,6 +478,18 @@ export default class BridgeMail extends ABridge {
     row.prepend(avatarContainer, rowActions);
 
     return row;
+  }
+
+  /**
+   * Ajoute la classe 'priority' à une ligne si elle contient un élément de priorité.
+   * 
+   * @param {HTMLElement} row
+   * @returns {void}
+   */
+  #addPriorityClass(row) {
+    if (row.querySelector('.subject span.priority :is(.prio1, .prio2)')) {
+      row.classList.add('priority');
+    }
   }
 
   /**

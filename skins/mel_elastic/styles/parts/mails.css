@@ -100,7 +100,7 @@ table.messagelist tr .mail-avatar .mail-avatar--action {
   align-items: center;
 }
 table.messagelist tr.has-label .mail-avatar {
-  top: 42px;
+  top: 56px;
 }
 table.messagelist tr.has-label:hover td {
   background-color: transparent !important;
@@ -109,13 +109,13 @@ html.mail-small table.messagelist tr .mail-avatar {
   --avatar-size: 30px;
 }
 html.mail-small table.messagelist tr.has-label .mail-avatar {
-  top: 31px;
+  top: 46px;
 }
 html.mail-large table.messagelist tr.has-label .mail-avatar {
-  top: 50px;
+  top: 64px;
 }
 table.messagelist tr td.labels {
-  margin-top: var(--bnum-space-xs, 5px);
+  margin: var(--bnum-space-xs, 5px) 0;
 }
 table.messagelist tr td.labels::before {
   content: none !important;
@@ -129,6 +129,19 @@ table.messagelist tr.unread td.subject span.msgicon.status::before {
 }
 table.messagelist tr.unread td.subject span.msgicon.status:hover::before {
   content: var(--message-state-icon, var(--_unread-hover)) !important;
+}
+table.messagelist tr.message.priority td.subject span.fromto {
+  margin-left: 45px;
+}
+table.messagelist tr.message.priority td.subject span.priority span.prio1,
+table.messagelist tr.message.priority td.subject span.priority span.prio2 {
+  line-height: 1em;
+  margin-top: -53px;
+  margin-left: 49px;
+}
+html.mail-small table.messagelist tr.message.priority td.subject span.priority span.prio1,
+html.mail-small table.messagelist tr.message.priority td.subject span.priority span.prio2 {
+  margin-top: -44px;
 }
 table.messagelist tr.message:hover {
   --_flag: '\e958';

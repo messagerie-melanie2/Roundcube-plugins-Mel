@@ -161,7 +161,7 @@ table.messagelist {
 
     &.has-label {
       .mail-avatar {
-        top: 42px;
+        top: 56px;
       }
     }
 
@@ -178,7 +178,7 @@ table.messagelist {
 
       &.has-label {
         .mail-avatar {
-          top: 31px;
+          top: 46px;
         }
       }
     }
@@ -191,14 +191,14 @@ table.messagelist {
 
       &.has-label {
         .mail-avatar {
-          top: 50px;
+          top: 64px;
         }
       }
     }
 
     td {
       &.labels {
-        margin-top: var(--bnum-space-xs, 5px);
+        margin: var(--bnum-space-xs, 5px) 0;
 
         &::before {
           content: none !important;
@@ -223,6 +223,35 @@ table.messagelist {
           }
         }
       }
+    }
+
+    &.message.priority {
+      td.subject {
+        span.fromto {
+          margin-left: 45px;
+        }
+          span.priority span {
+              &.prio1,
+              &.prio2 {
+              line-height: 1em;
+              margin-top: -53px;
+              margin-left: 49px;
+          }
+        }
+      }
+    }
+
+    html.mail-small & { 
+        &.message.priority {
+      td.subject {
+          span.priority span {
+              &.prio1,
+              &.prio2 {
+              margin-top: -44px;
+          }
+        }
+      }
+    }
     }
 
     &.message:hover {

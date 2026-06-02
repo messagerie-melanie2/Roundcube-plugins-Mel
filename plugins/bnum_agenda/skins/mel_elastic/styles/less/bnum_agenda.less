@@ -330,3 +330,37 @@ ul {
     }
   }
 }
+
+html {
+  &.touch {
+    #layout-content {
+      .header {
+        display: none;
+      }
+    }
+    #calendar {
+      .force-block {
+        display: block !important;
+      }
+
+      .fc-toolbar {
+        flex-direction: column-reverse;
+
+        .fc-center {
+          justify-content: space-between;
+          background-color: var(--rc-header-background-color);
+
+          .toolbar-left {
+            display: flex;
+            gap: var(--bnum-space-xs, 5px);
+          }
+        }
+      }
+    }
+
+    #calendarOptionSelect,
+    .fc .fc-left .calendar {
+      margin: 0;
+    }
+  }
+}

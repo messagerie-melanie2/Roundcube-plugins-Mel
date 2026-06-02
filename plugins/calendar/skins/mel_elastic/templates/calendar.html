@@ -15,9 +15,18 @@
         <roundcube:label name="back" />
       </span>
     </a>
+    <bnum-hide breakpoint="touch" mode="up">
+        <bnum-primary-button click="old-back-button" data-icon="chevron_left" style="--bnum-button-icon-gap:0;" >
+          <span class="sr-only"><roundcube:label name="back" /></span>
+        </bnum-primary-button>
+        <span><roundcube:label name="calendar.calendars" /></span>
+    </bnum-hide>
     <!-- Bouton d'action -->
+     <bnum-hide breakpoint="touch" mode="down">
     <bnum-primary-button id="create-event-button" style="--bnum-button-padding:6px 10px;" data-hide="touch" block data-icon="calendar_add_on">Nouvel évènement</bnum-primary-button>
+     </bnum-hide>
     <!-- Bouton + d'actions -->
+      <bnum-hide breakpoint="touch" mode="down">
     <bnum-icon-button 
       name="calendaractionsmenu" 
       id="bnum-calendaroptionsmenulink" 
@@ -30,6 +39,13 @@
       style="display: flex!important;" >
         more_vert
       </bnum-icon-button>
+      </bnum-hide>
+      <bnum-hide breakpoint="touch" mode="up">
+        <bnum-secondary-button click="bnum-calendaroptionsmenulink" data-icon="more_vert" style="--bnum-button-icon-gap:0;" >
+          <span class="sr-only"><roundcube:label name="more" /></span>
+        </bnum-secondary-button>
+      </bnum-hide>
+
   </div>
   <roundcube:object name="libkolab.folder_search_form" id="calendarlistsearch" wrapper="searchbar menu" ariatag="h2"
     label="calsearchform" label-domain="calendar" buttontitle="findcalendars" />
@@ -105,7 +121,7 @@
   </div>
 
     <bnum-hide id="bnumelasticback" breakpoint="touch" mode="up" slot="header"> 
-        <bnum-primary-button click="sidebar-back" data-icon="home" style="--bnum-button-icon-gap:0;display:none!important;" >
+        <bnum-primary-button click="sidebar-back" data-icon="calendar_month" style="--bnum-button-icon-gap:0;display:none!important;" >
           <span class="sr-only"><roundcube:label name="calendar.calendars" /></span>
         </bnum-primary-button>
       </bnum-hide>

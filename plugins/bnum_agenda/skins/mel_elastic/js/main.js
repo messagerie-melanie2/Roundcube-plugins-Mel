@@ -1,10 +1,21 @@
 import ABaseMelObject from '../../../../mel_metapage/js/lib/base_mel_object.js';
-import { ModuleInit } from './init.js';
-import { SearchModule } from './search.js';
+import { ModuleInitAgendaColor } from './init/agenda-color-init.js';
+import { ModuleInitMobileButtons } from './init/mobile-buttons-init.js';
+import { ModuleInitNavigation } from './init/navigation-buttons-init.js';
+import { ModuleInitNewEventButton } from './init/new-event-button-init.js';
+import { ModuleInitSelect } from './init/select-init.js';
+import { ModuleSearch } from './search.js';
 
-const loader = [SearchModule, ModuleInit];
+const MODULES = [
+  ModuleInitAgendaColor,
+  ModuleInitNewEventButton,
+  ModuleInitSelect,
+  ModuleInitNavigation,
+  ModuleInitMobileButtons,
+  ModuleSearch,
+];
 class AgendaMelElasticMain extends ABaseMelObject {
-  #_callbacksOnDocumentReady = new Set();
+  #_onReadyCallbacks = [];
 
   constructor() {
     super();
@@ -12,33 +23,22 @@ class AgendaMelElasticMain extends ABaseMelObject {
   }
 
   #_load() {
-    for (const Module of loader) {
-      const module = new Module();
-
-      if (
-        module.onDocumentReady &&
-        typeof module.onDocumentReady === 'function'
-      ) {
-        this.#_callbacksOnDocumentReady.add(
-          module.onDocumentReady.bind(module),
-        );
+    for (const Module of MODULES) {
+      const instance = new Module();
+      if (typeof instance.onDocumentReady === 'function') {
+        this.#_onReadyCallbacks.push(instance.onDocumentReady.bind(instance));
       }
     }
-    loader.length = 0;
   }
 
   callForDocumentReady() {
-    if (this.#_callbacksOnDocumentReady.size) {
-      for (const fn of this.#_callbacksOnDocumentReady.values()) {
-        fn();
-      }
-    }
+    for (const fn of this.#_onReadyCallbacks) fn();
   }
 }
 
-const module = new AgendaMelElasticMain();
+const main = new AgendaMelElasticMain();
 
 document.addEventListener(
   'DOMContentLoaded',
-  module.callForDocumentReady.bind(module),
+  main.callForDocumentReady.bind(main),
 );

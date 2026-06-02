@@ -109,8 +109,9 @@
           <span class="sr-only"><roundcube:label name="calendar.calendars" /></span>
         </bnum-primary-button>
       </bnum-hide>
-          <bnum-hide id="bnumelasticother" breakpoint="touch" mode="up" slot="header"> 
-        <bnum-secondary-button style="--bnum-button-icon-gap:0;display:none!important;" click="mel-button-small-search" data-icon="search">
+    <bnum-hide id="bnumelasticother" breakpoint="touch" mode="up" slot="header">
+      <div class="toolbar-left">
+                <bnum-secondary-button style="--bnum-button-icon-gap:0;display:none!important;" click="mel-button-small-search" data-icon="search">
           <span class="sr-only">Rechercher</span>
         </bnum-secondary-button>
         <bnum-secondary-button style="--bnum-button-icon-gap:0;display:none!important;" data-block-after-init="block" data-popup="toolbar-menu-mel" aria-haspopup="true"
@@ -118,6 +119,7 @@
       data-icon="more_vert"
       ><span class="sr-only">Plus
         d'options</span></bnum-secondary-button>
+      </div>
     </bnum-hide>
 
   <h2 id="aria-label-calendarview" class="voice">

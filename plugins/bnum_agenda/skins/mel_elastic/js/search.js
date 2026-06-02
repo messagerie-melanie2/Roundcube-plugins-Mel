@@ -1,7 +1,7 @@
 import ABaseMelObject from '../../../../mel_metapage/js/lib/base_mel_object.js';
 import { BnumLog } from '../../../../mel_metapage/js/lib/classes/bnum_log.js';
 
-export { SearchModule };
+export { ModuleSearch };
 
 /**
  * Identifiant de repli pour l'input miroir lorsque l'attribut `data-mirror`
@@ -23,7 +23,7 @@ const MIRROR_FALLBACK_ID = 'searchform';
  *
  * @extends {ABaseMelObject}
  */
-class SearchModule extends ABaseMelObject {
+class ModuleSearch extends ABaseMelObject {
   /**
    * Référence mise en cache vers le composant de recherche.
    * Initialisée une seule fois à la construction pour éviter

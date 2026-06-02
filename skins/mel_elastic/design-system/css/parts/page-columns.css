@@ -161,6 +161,7 @@ html.layout-large .task-mail #layout-sidebar > .header {
   --mail-header-button-color: var(--_color);
   --layout-list-header-background-color: var(--_background);
   --layout-content-header-background-color: var(--_background);
+  --addressbook-list-pagenav-background-color: var(--layout-sidebar-text-color, var(--bnum-layout-sidebar-color, var(--bnum-text-primary, #3a3a3a)));
 }
 #layout-list > .header,
 #layout-content > .header {

@@ -265,12 +265,9 @@ html.dark-mode-custom:root {
   --bnum-main-nav-color: #161616;
   --bnum-main-nav-color-hover: #343434;
   --bnum-main-nav-color-active: #474747;
-<<<<<<< HEAD
   --bnum-scrollbar-handler-color: #bababa;
   --bnum-scrollbar-background-color: #717171;
   --bnum-scrollbar-width: thin;
-=======
->>>>>>> 4219df276 (fix(app): :lipstick: Diverses corrections de style)
   /* Texte */
   --bnum-text-primary: #cecece;
   /* Texte principal */

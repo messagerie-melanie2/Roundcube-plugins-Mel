@@ -50,7 +50,7 @@ class mel_elastic extends bnum_plugin
      *
      * @var array
      */
-    private $css = ["icofont.css", "jquery.datetimepicker.min.css", "mel-icons.css", "material-symbols.css", "design-system/css/global.css", "design-system/css/parts/page-columns.css", "styles/parts/mails.css", "styles/parts/bridge.css"];
+    private $css = ["icofont.css", "jquery.datetimepicker.min.css", "mel-icons.css", "material-symbols.css", "design-system/css/global.css", "design-system/css/parts/page-columns.css", "styles/parts/mails.css", "styles/parts/bnum.css", "styles/parts/bridge.css"];
 
     /**
      * Thème actuellement chargé.

@@ -487,7 +487,7 @@ export default class BridgeMail extends ABridge {
    * @returns {void}
    */
   #addPriorityClass(row) {
-    if (row.querySelector('.subject span.priority :is(.prio1, .prio2)')) {
+    if (row.querySelector('.subject span.priority :is(.prio, .prio1, .prio2, .prio4, .prio5)')) {
       row.classList.add('priority');
     }
   }

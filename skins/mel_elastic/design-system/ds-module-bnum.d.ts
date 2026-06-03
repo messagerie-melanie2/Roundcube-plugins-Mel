@@ -3341,6 +3341,16 @@ export declare class HTMLBnumSwitch extends BnumElementInternal {
 	 */
 	static get formAssociated(): Readonly<boolean>;
 }
+/**
+ * Bouton Bnum de type "Secondary".
+ *
+ * @todo Faire la documentation
+ *
+ * @category Buttons
+ */
+export declare class HTMLBnumTertiaryButton extends HTMLBnumButton {
+	constructor();
+}
 export declare class HTMLBnumAvatarAction extends BnumElementInternal {
 	#private;
 	accessor onEnter: JsEvent<(caller: HTMLBnumAvatarAction) => void>;

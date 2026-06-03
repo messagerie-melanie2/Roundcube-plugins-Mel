@@ -139,7 +139,7 @@ $labels['restore_mail'] = 'Récupérer';
 $labels['restore_dir_btn'] = 'Récupérer';
 
 // Mon compte
-$labels['moncompte'] = 'Mon Compte';
+$labels['moncompte'] = 'Mon compte';
 $labels['managemoncompte'] = 'Gérer votre compte Mél';
 $labels['button_restore'] = 'Restaurer';
 $labels['clic_here'] = 'Cliquer ici';

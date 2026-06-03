@@ -1035,7 +1035,7 @@ class mel extends rcube_plugin {
       if (isset($_object->email_send) && !empty($_object->email_send)) {
         $mails = [$_object->email_send];
         // Si on a une liste de mail en plus du principal
-        if (isset($_object->email_send_list) && count($_object->email_send_list) > 1) {
+        if (isset($_object->email_send_list) && count($_object->email_send_list)) {
           array_merge($mails, $_object->email_send_list);
         }
       }
@@ -1058,7 +1058,7 @@ class mel extends rcube_plugin {
     if (isset($user->email_send) && !empty($user->email_send)) {
       $mails = [$user->email_send];
       // Si on a une liste de mail en plus du principal
-      if (isset($user->email_send_list) && count($user->email_send_list) > 1) {
+      if (isset($user->email_send_list) && count($user->email_send_list)) {
         $mails = array_unique(array_merge($mails, $user->email_send_list));
       }
     }

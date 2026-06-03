@@ -320,7 +320,7 @@ class Gestionnairelistes extends Moncompteobject {
 			// Authentification
 			if ($user->authentification(Moncompte::get_current_user_password(), true)) {
 				$group = driver_mel::gi()->getGroup($dn_list, false, true, 'webmail.moncompte.grouplistes');
-				if ($group->load(['owners', 'fullname', 'members_email', 'is_dynamic']) 
+				if ($group->load(['owners', 'members', 'fullname', 'members_email', 'is_dynamic']) 
 						&& $group->isOwner($user) && !$group->is_dynamic) {
 					$members = implode("\r\n", $group->members_email);
 
@@ -352,7 +352,7 @@ class Gestionnairelistes extends Moncompteobject {
 			// Authentification
 			if ($user->authentification(Moncompte::get_current_user_password(), true)) {
 				$group = driver_mel::gi()->getGroup($dn_list, false, true, 'webmail.moncompte.grouplistes');
-				if ($group->load(['owners', 'fullname', 'members_email', 'is_dynamic']) 
+				if ($group->load(['owners', 'members', 'fullname', 'members_email', 'is_dynamic']) 
 						&& $group->isOwner($user) && !$group->is_dynamic) {
 					if ($filepath = $_FILES['_listes_csv']['tmp_name']) {
 						$lines = file($filepath);

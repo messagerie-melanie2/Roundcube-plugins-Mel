@@ -367,6 +367,19 @@ export default class BridgeMail extends ABridge {
       ),
     ).listen('responseaftersearch', this.#setupMessageListHooks.bind(this));
 
+    this.listen('init', () => {
+      if (!this.rcmail().message_list) return;
+      this.rcmail().message_list.addEventListener(
+        'select',
+        bridge.onMessagesSelected.bind(
+          bridge,
+          this.#getSelectionIcon.bind(this),
+          HTMLBnumAvatarAction,
+          HTMLBnumButtonIcon,
+        ),
+      );
+    });
+
     return this;
   }
 
@@ -468,6 +481,8 @@ export default class BridgeMail extends ABridge {
    * @returns {HTMLElement} La même ligne, modifiée.
    */
   #decorateRow(row) {
+    if (row.hasAttribute('decorated')) return row;
+
     this.#hideMsgIcon(row);
     this.#addPriorityClass(row);
 
@@ -476,13 +491,14 @@ export default class BridgeMail extends ABridge {
 
     row.style.position = 'relative';
     row.prepend(avatarContainer, rowActions);
+    row.setAttribute('decorated', true);
 
     return row;
   }
 
   /**
    * Ajoute la classe 'priority' à une ligne si elle contient un élément de priorité.
-   * 
+   *
    * @param {HTMLElement} row
    * @returns {void}
    */

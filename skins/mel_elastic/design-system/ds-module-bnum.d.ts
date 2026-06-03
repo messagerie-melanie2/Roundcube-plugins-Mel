@@ -3351,20 +3351,151 @@ export declare class HTMLBnumSwitch extends BnumElementInternal {
 export declare class HTMLBnumTertiaryButton extends HTMLBnumButton {
 	constructor();
 }
+/**
+ * Type de marque (*branded type*) garantissant qu'un `symbol` représente bien un état de {@link HTMLBnumAvatarAction}.
+ * @see {@link STATES}
+ */
+export type StateSymbol = symbol & {
+	__branded: "state";
+};
+/**
+ * Composant Web personnalisé affichant un avatar associé à une action contextuelle.
+ *
+ * @remarks
+ * L'action est rendue visible au survol de l'élément (`mouseenter` / `mouseleave`)
+ * ou sur demande explicite via {@link forceActionState}.
+ * Deux slots nommés sont exposés : `avatar` et `action`.
+ *
+ * Hérite de {@link BnumElementInternal} qui gère le cycle de vie attach/detach.
+ *
+ * @example
+ * ```html
+ * <bnum-avatar-action>
+ *   <img slot="avatar" src="user.png" />
+ *   <button slot="action">Modifier</button>
+ * </bnum-avatar-action>
+ * ```
+ *
+ * @example
+ * Création programmatique via {@link Create} :
+ * ```typescript
+ * const el = HTMLBnumAvatarAction.Create({ avatar: imgEl, action: btnEl });
+ * document.body.appendChild(el);
+ * ```
+ *
+ * @structure Exemple
+ * <bnum-avatar-action><slot name="avatar"><img src="https://bnum.din.gouv.fr/skins/mel_elastic/images/bnumloader.svg" height="50" /></slot><slot name="action"><button>Click</button></slot></bnum-avatar-action>
+ *
+ * @slot avatar - Slot qui affichera l'avatar (avatar qui sera affiché par défaut)
+ * @slot action - Elément qui sera affiché au survol de l'élément
+ *
+ * @state action - Actif si l'élément est survolé
+ * @state forced - Actif si appelé par `forceActionState`
+ *
+ * @event {MouseEvent} mouseenter - Événement déclenché au survol
+ * @event {MouseLeave} mouseenter - Événement déclenché au survol
+ *
+ */
 export declare class HTMLBnumAvatarAction extends BnumElementInternal {
 	#private;
+	/**
+	 * Événement déclenché lorsque le curseur entre dans l'élément (`mouseenter`).
+	 *
+	 * @remarks
+	 * Équivalent d'un `event` C# de type `EventHandler<T>`.
+	 * @see {@link https://learn.microsoft.com/fr-fr/dotnet/csharp/programming-guide/events/ | Événements (Guide C#)}
+	 * @event
+	 */
 	accessor onEnter: JsEvent<(caller: HTMLBnumAvatarAction) => void>;
+	/**
+	 * Événement déclenché lorsque le curseur quitte l'élément (`mouseleave`).
+	 * @event
+	 */
 	accessor onLeave: JsEvent<(caller: HTMLBnumAvatarAction) => void>;
+	/**
+	 * Événement déclenché lors du détachement de l'élément du DOM.
+	 * @event
+	 */
+	accessor onDestroy: JsEvent<(caller: HTMLBnumAvatarAction) => void>;
+	/**
+	 * État courant de l'élément parmi les valeurs de {@link STATES}.
+	 */
+	get state(): StateSymbol;
 	constructor();
+	/**
+	 * @inheritDoc
+	 *
+	 * @remarks
+	 * Enregistre les écouteurs de survol après l'attachement au DOM.
+	 */
 	protected _p_attach(): void;
+	/**
+	 * @inheritDoc
+	 *
+	 * @remarks
+	 * Déclenche {@link onDestroy} si des abonnés sont enregistrés,
+	 * puis vide la liste des abonnés.
+	 */
+	protected _p_detach(): void;
+	/**
+	 * Lie le gestionnaire {@link _handleOnMouseEnter} à l'événement `mouseenter`.
+	 * @returns Le gestionnaire lié.
+	 */
 	private _handleOnHover;
+	/**
+	 * Lie le gestionnaire {@link _handleOnMouseLeave} à l'événement `mouseleave`.
+	 * @returns Le gestionnaire lié.
+	 */
 	private _handleOnLeave;
+	/**
+	 * Gère l'entrée du curseur : déclenche {@link onEnter}, active le state CSS
+	 * `action` et met à jour {@link state}.
+	 */
 	private _handleOnMouseEnter;
+	/**
+	 * Gère la sortie du curseur : déclenche {@link onLeave}, retire le state CSS
+	 * `action` et met à jour {@link state}.
+	 */
 	private _handleOnMouseLeave;
+	/**
+	 * Force ou retire programmatiquement l'état d'action visible, indépendamment du survol.
+	 *
+	 * @param params - Paramètres de la méthode.
+	 * @param params.enabled - `true` pour forcer l'affichage de l'action, `false` pour le retirer.
+	 *
+	 * @remarks
+	 * Quand `enabled` est `true`, le state CSS `forced` est ajouté et {@link state}
+	 * passe à {@link STATES.FORCED} ou {@link STATES.FORCED_AND_ACTIVE} selon le survol courant.
+	 * L'opération inverse retire le state `forced` et restaure l'état précédent.
+	 */
+	forceActionState({ enabled }: {
+		enabled: boolean;
+	}): void;
+	/**
+	 * Crée et initialise une instance de {@link HTMLBnumAvatarAction} via `document.createElement`.
+	 *
+	 * @param params - Paramètres optionnels de construction.
+	 * @param params.avatar - Élément HTML à placer dans le slot `avatar`. Si l'attribut `slot` est absent, il est ajouté automatiquement.
+	 * @param params.action - Élément HTML à placer dans le slot `action`. Si l'attribut `slot` est absent, il est ajouté automatiquement.
+	 * @returns Une nouvelle instance de {@link HTMLBnumAvatarAction} prête à être insérée dans le DOM.
+	 */
 	static Create({ avatar, action, }?: {
 		avatar?: Nullable<HTMLElement>;
 		action?: Nullable<HTMLElement>;
 	}): HTMLBnumAvatarAction;
+	/**
+	 * Liste des états possibles du composant.
+	 */
+	static get States(): {
+		/** L'élément est inactif : ni survolé, ni forcé. */
+		readonly INACTIVE: StateSymbol;
+		/** L'élément est survolé par la souris. */
+		readonly ACTIVE: StateSymbol;
+		/** L'état d'action est forcé programmatiquement via {@link HTMLBnumAvatarAction.forceActionState}. */
+		readonly FORCED: StateSymbol;
+		/** L'état d'action est forcé **et** l'élément est simultanément survolé. */
+		readonly FORCED_AND_ACTIVE: StateSymbol;
+	};
 }
 /**
  * Représente un item d'une carte `<bnum-card>` qui peut être mis dans un `bnum-card-list`.

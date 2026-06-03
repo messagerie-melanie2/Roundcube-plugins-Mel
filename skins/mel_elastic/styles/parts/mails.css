@@ -134,13 +134,17 @@ table.messagelist tr.message.priority td.subject span.fromto {
   margin-left: 45px;
 }
 table.messagelist tr.message.priority td.subject span.priority span.prio1,
-table.messagelist tr.message.priority td.subject span.priority span.prio2 {
+table.messagelist tr.message.priority td.subject span.priority span.prio2,
+table.messagelist tr.message.priority td.subject span.priority span.prio4,
+table.messagelist tr.message.priority td.subject span.priority span.prio5 {
   line-height: 1em;
   margin-top: -53px;
   margin-left: 49px;
 }
 html.mail-small table.messagelist tr.message.priority td.subject span.priority span.prio1,
-html.mail-small table.messagelist tr.message.priority td.subject span.priority span.prio2 {
+html.mail-small table.messagelist tr.message.priority td.subject span.priority span.prio2,
+html.mail-small table.messagelist tr.message.priority td.subject span.priority span.prio4,
+html.mail-small table.messagelist tr.message.priority td.subject span.priority span.prio5 {
   margin-top: -44px;
 }
 table.messagelist tr.message:hover {

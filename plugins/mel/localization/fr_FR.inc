@@ -55,7 +55,7 @@ $labels['contacts_search_only'] = 'Utilisez le champ de recherche pour trouver l
 $labels['contacts_search_only_all'] = 'Utilisez le champ de recherche pour trouver les contacts de tous vos carnets et annuaires';
 
 // Mon compte
-$labels['moncompte'] = 'Mon Compte';
+$labels['moncompte'] = 'Mon compte';
 $labels['managemoncompte'] = 'Gérer votre compte Mél';
 
 // Mes statistiques

@@ -365,6 +365,29 @@ export default class BridgeEvents extends MelObject {
     this.rcmail().move_messages(folder, null, data);
   }
 
+  onMessagesSelected(
+    getSelectionIcon,
+    HTMLBnumAvatarAction,
+    HTMLBnumButtonIcon,
+    messageList,
+  ) {
+    const { rows, selection } = messageList;
+    const selectedUids = new Set(selection.map(String));
+
+    for (const [uid, { obj: row }] of Object.entries(rows)) {
+      const action = row.querySelector(HTMLBnumAvatarAction.TAG);
+      if (!action) continue;
+
+      const isSelected = selectedUids.has(uid);
+      action.forceActionState({ enabled: isSelected });
+
+      if (!isSelected) continue;
+
+      const icon = action.querySelector(HTMLBnumButtonIcon.TAG);
+      if (icon) icon.icon = getSelectionIcon(row);
+    }
+  }
+
   /**
    * Exécute un callback après la réponse de la liste (asynchrone).
    * @param {Function} callback

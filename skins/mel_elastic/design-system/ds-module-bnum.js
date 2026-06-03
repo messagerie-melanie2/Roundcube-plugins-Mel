@@ -9706,10 +9706,61 @@ let HTMLBnumTertiaryButton = (() => {
     return _classThis;
 })();
 
-var css_248z$e = ":host #action{display:none}:host(:state(action)) #action{display:block}:host(:state(action)) #avatar{display:none}";
+var css_248z$e = ":host #action{display:none}:host(:state(action)) #action,:host(:state(forced)) #action{display:block}:host(:state(action)) #avatar,:host(:state(forced)) #avatar{display:none}";
 var style$e = css_248z$e;
 
 const TEMPLATE$a = (h(HTMLBnumFragment, { children: [h("span", { id: "avatar", children: h("slot", { name: "avatar" }) }), h("span", { id: "action", children: h("slot", { name: "action" }) })] }));
+/**
+ * Ensemble des états possibles d'un {@link HTMLBnumAvatarAction}.
+ */
+const STATES = {
+    /** L'élément est inactif : ni survolé, ni forcé. */
+    INACTIVE: Symbol(),
+    /** L'élément est survolé par la souris. */
+    ACTIVE: Symbol(),
+    /** L'état d'action est forcé programmatiquement via {@link HTMLBnumAvatarAction.forceActionState}. */
+    FORCED: Symbol(),
+    /** L'état d'action est forcé **et** l'élément est simultanément survolé. */
+    FORCED_AND_ACTIVE: Symbol(),
+};
+/**
+ * Composant Web personnalisé affichant un avatar associé à une action contextuelle.
+ *
+ * @remarks
+ * L'action est rendue visible au survol de l'élément (`mouseenter` / `mouseleave`)
+ * ou sur demande explicite via {@link forceActionState}.
+ * Deux slots nommés sont exposés : `avatar` et `action`.
+ *
+ * Hérite de {@link BnumElementInternal} qui gère le cycle de vie attach/detach.
+ *
+ * @example
+ * ```html
+ * <bnum-avatar-action>
+ *   <img slot="avatar" src="user.png" />
+ *   <button slot="action">Modifier</button>
+ * </bnum-avatar-action>
+ * ```
+ *
+ * @example
+ * Création programmatique via {@link Create} :
+ * ```typescript
+ * const el = HTMLBnumAvatarAction.Create({ avatar: imgEl, action: btnEl });
+ * document.body.appendChild(el);
+ * ```
+ *
+ * @structure Exemple
+ * <bnum-avatar-action><slot name="avatar"><img src="https://bnum.din.gouv.fr/skins/mel_elastic/images/bnumloader.svg" height="50" /></slot><slot name="action"><button>Click</button></slot></bnum-avatar-action>
+ *
+ * @slot avatar - Slot qui affichera l'avatar (avatar qui sera affiché par défaut)
+ * @slot action - Elément qui sera affiché au survol de l'élément
+ *
+ * @state action - Actif si l'élément est survolé
+ * @state forced - Actif si appelé par `forceActionState`
+ *
+ * @event {MouseEvent} mouseenter - Événement déclenché au survol
+ * @event {MouseLeave} mouseenter - Événement déclenché au survol
+ *
+ */
 let HTMLBnumAvatarAction = (() => {
     let _classDecorators = [Define({ template: TEMPLATE$a, styles: style$e, tag: 'bnum-avatar-action' })];
     let _classDescriptor;
@@ -9723,6 +9774,9 @@ let HTMLBnumAvatarAction = (() => {
     let _onLeave_decorators;
     let _onLeave_initializers = [];
     let _onLeave_extraInitializers = [];
+    let _onDestroy_decorators;
+    let _onDestroy_initializers = [];
+    let _onDestroy_extraInitializers = [];
     let __handleOnHover_decorators;
     let __handleOnLeave_decorators;
     (class extends _classSuper {
@@ -9731,10 +9785,12 @@ let HTMLBnumAvatarAction = (() => {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _onEnter_decorators = [Listener()];
             _onLeave_decorators = [Listener()];
+            _onDestroy_decorators = [Listener()];
             __handleOnHover_decorators = [Listen('mouseenter')];
             __handleOnLeave_decorators = [Listen('mouseleave')];
             __esDecorate(this, null, _onEnter_decorators, { kind: "accessor", name: "onEnter", static: false, private: false, access: { has: obj => "onEnter" in obj, get: obj => obj.onEnter, set: (obj, value) => { obj.onEnter = value; } }, metadata: _metadata }, _onEnter_initializers, _onEnter_extraInitializers);
             __esDecorate(this, null, _onLeave_decorators, { kind: "accessor", name: "onLeave", static: false, private: false, access: { has: obj => "onLeave" in obj, get: obj => obj.onLeave, set: (obj, value) => { obj.onLeave = value; } }, metadata: _metadata }, _onLeave_initializers, _onLeave_extraInitializers);
+            __esDecorate(this, null, _onDestroy_decorators, { kind: "accessor", name: "onDestroy", static: false, private: false, access: { has: obj => "onDestroy" in obj, get: obj => obj.onDestroy, set: (obj, value) => { obj.onDestroy = value; } }, metadata: _metadata }, _onDestroy_initializers, _onDestroy_extraInitializers);
             __esDecorate(this, null, __handleOnHover_decorators, { kind: "method", name: "_handleOnHover", static: false, private: false, access: { has: obj => "_handleOnHover" in obj, get: obj => obj._handleOnHover }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, __handleOnLeave_decorators, { kind: "method", name: "_handleOnLeave", static: false, private: false, access: { has: obj => "_handleOnLeave" in obj, get: obj => obj._handleOnLeave }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
@@ -9742,41 +9798,150 @@ let HTMLBnumAvatarAction = (() => {
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
-        #onEnter_accessor_storage = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _onEnter_initializers, void 0));
+        /** État interne courant de l'élément. */
+        #_state = (__runInitializers(this, _instanceExtraInitializers), STATES.INACTIVE);
+        #onEnter_accessor_storage = __runInitializers(this, _onEnter_initializers, void 0);
+        /**
+         * Événement déclenché lorsque le curseur entre dans l'élément (`mouseenter`).
+         *
+         * @remarks
+         * Équivalent d'un `event` C# de type `EventHandler<T>`.
+         * @see {@link https://learn.microsoft.com/fr-fr/dotnet/csharp/programming-guide/events/ | Événements (Guide C#)}
+         * @event
+         */
         get onEnter() { return this.#onEnter_accessor_storage; }
         set onEnter(value) { this.#onEnter_accessor_storage = value; }
         #onLeave_accessor_storage = (__runInitializers(this, _onEnter_extraInitializers), __runInitializers(this, _onLeave_initializers, void 0));
+        /**
+         * Événement déclenché lorsque le curseur quitte l'élément (`mouseleave`).
+         * @event
+         */
         get onLeave() { return this.#onLeave_accessor_storage; }
         set onLeave(value) { this.#onLeave_accessor_storage = value; }
+        #onDestroy_accessor_storage = (__runInitializers(this, _onLeave_extraInitializers), __runInitializers(this, _onDestroy_initializers, void 0));
+        /**
+         * Événement déclenché lors du détachement de l'élément du DOM.
+         * @event
+         */
+        get onDestroy() { return this.#onDestroy_accessor_storage; }
+        set onDestroy(value) { this.#onDestroy_accessor_storage = value; }
+        /**
+         * État courant de l'élément parmi les valeurs de {@link STATES}.
+         */
+        get state() {
+            return this.#_state;
+        }
         constructor() {
             super();
-            __runInitializers(this, _onLeave_extraInitializers);
+            __runInitializers(this, _onDestroy_extraInitializers);
         }
+        /**
+         * @inheritDoc
+         *
+         * @remarks
+         * Enregistre les écouteurs de survol après l'attachement au DOM.
+         */
         _p_attach() {
             super._p_attach();
             this.#_addListeners();
         }
+        /**
+         * @inheritDoc
+         *
+         * @remarks
+         * Déclenche {@link onDestroy} si des abonnés sont enregistrés,
+         * puis vide la liste des abonnés.
+         */
+        _p_detach() {
+            if (this.onDestroy.haveEvents()) {
+                this.onDestroy.call(this);
+                this.onDestroy.events = {};
+            }
+        }
+        /**
+         * Enregistre les gestionnaires d'événements souris sur l'élément.
+         * @returns `this` pour le chaînage.
+         */
         #_addListeners() {
             this._handleOnHover();
             this._handleOnLeave();
             return this;
         }
+        /**
+         * Lie le gestionnaire {@link _handleOnMouseEnter} à l'événement `mouseenter`.
+         * @returns Le gestionnaire lié.
+         */
         _handleOnHover() {
             return this._handleOnMouseEnter;
         }
+        /**
+         * Lie le gestionnaire {@link _handleOnMouseLeave} à l'événement `mouseleave`.
+         * @returns Le gestionnaire lié.
+         */
         _handleOnLeave() {
             return this._handleOnMouseLeave;
         }
+        /**
+         * Gère l'entrée du curseur : déclenche {@link onEnter}, active le state CSS
+         * `action` et met à jour {@link state}.
+         */
         _handleOnMouseEnter() {
             if (this.onEnter.haveEvents())
                 this.onEnter.call(this);
             this._p_addState('action');
+            if (this.#_state === STATES.FORCED)
+                this.#_state = STATES.FORCED_AND_ACTIVE;
+            else
+                this.#_state = STATES.ACTIVE;
         }
+        /**
+         * Gère la sortie du curseur : déclenche {@link onLeave}, retire le state CSS
+         * `action` et met à jour {@link state}.
+         */
         _handleOnMouseLeave() {
             if (this.onLeave.haveEvents())
                 this.onLeave.call(this);
             this._p_removeState('action');
+            if (this.#_state === STATES.FORCED_AND_ACTIVE)
+                this.#_state = STATES.FORCED;
+            else
+                this.#_state = STATES.INACTIVE;
         }
+        /**
+         * Force ou retire programmatiquement l'état d'action visible, indépendamment du survol.
+         *
+         * @param params - Paramètres de la méthode.
+         * @param params.enabled - `true` pour forcer l'affichage de l'action, `false` pour le retirer.
+         *
+         * @remarks
+         * Quand `enabled` est `true`, le state CSS `forced` est ajouté et {@link state}
+         * passe à {@link STATES.FORCED} ou {@link STATES.FORCED_AND_ACTIVE} selon le survol courant.
+         * L'opération inverse retire le state `forced` et restaure l'état précédent.
+         */
+        forceActionState({ enabled }) {
+            if (enabled) {
+                this._p_addState('forced');
+                if (this.#_state === STATES.ACTIVE)
+                    this.#_state = STATES.FORCED_AND_ACTIVE;
+                else
+                    this.#_state = STATES.FORCED;
+            }
+            else {
+                this._p_removeState('forced');
+                if (this.#_state === STATES.FORCED_AND_ACTIVE)
+                    this.#_state = STATES.ACTIVE;
+                else
+                    this.#_state = STATES.INACTIVE;
+            }
+        }
+        /**
+         * Crée et initialise une instance de {@link HTMLBnumAvatarAction} via `document.createElement`.
+         *
+         * @param params - Paramètres optionnels de construction.
+         * @param params.avatar - Élément HTML à placer dans le slot `avatar`. Si l'attribut `slot` est absent, il est ajouté automatiquement.
+         * @param params.action - Élément HTML à placer dans le slot `action`. Si l'attribut `slot` est absent, il est ajouté automatiquement.
+         * @returns Une nouvelle instance de {@link HTMLBnumAvatarAction} prête à être insérée dans le DOM.
+         */
         static Create({ avatar = null, action = null, } = {}) {
             const node = document.createElement(this.TAG);
             if (avatar) {
@@ -9790,6 +9955,12 @@ let HTMLBnumAvatarAction = (() => {
                 node.appendChild(action);
             }
             return node;
+        }
+        /**
+         * Liste des états possibles du composant.
+         */
+        static get States() {
+            return STATES;
         }
     });
     return _classThis;

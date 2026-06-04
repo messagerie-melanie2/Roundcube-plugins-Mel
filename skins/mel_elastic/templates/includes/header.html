@@ -61,23 +61,15 @@
   <bnum-icon-button slot="actions" id="button-settings">settings</bnum-icon-button>
 
   <!-- Notifications -->
-  <!-- <roundcube:if condition="env:plugin_list_notifications===true"/>
-        <div id="notification-dropdown" class="dropdown" slot="actions" style="position: relative;">
-          <button id="button-notifications" style="width: 1; height: 1; position: absolute; top:0;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-            class="transparent-icon-button barup-icons-button" onclick=""
-            title="<roundcube:label name='mel_metapage.notifications_help' />">
-            <span id="notifications-icon" class="material-symbols-outlined">
-              notifications
-            </span>
-          </button>
-          <bnum-icon-button id="notifications-btn">notifications</bnum-icon-button>
-          <div class="dropdown-menu notification-dropdown-menu dropdown-menu-right p-2"
-            aria-labelledby="button-notifications">
-            <div id="notifications-panel"></div>
-          </div>
-        </div>
-        !-- <bnum-icon-button slot="actions">notifications</bnum-icon-button> --
-    <roundcube:endif/> -->
+  <roundcube:if condition="env:plugin_list_notifications===true" />
+  <div id="notification-dropdown" class="dropdown notification-icon-menu" slot="actions" style="position: relative;">
+    <bnum-icon-button slot="actions" data-toggle="dropdown">notifications</bnum-icon-button>
+    <div class="dropdown-menu notification-dropdown-menu dropdown-menu-right p-2"
+      aria-labelledby="button-notifications">
+      <div id="notifications-panel"></div>
+    </div>
+  </div>
+  <roundcube:endif />
 
   <!-- Bouton avatar utilisateur avec dropdown -->
   <div id="user-up-panel" class="dropdown dsfr-dropdown" slot="avatar">
@@ -90,28 +82,34 @@
     <div id="user-dropdown" class="dropdown-menu user-dropdown-menu dropdown-menu-right"
       aria-labelledby="button-notifications">
       <div class="user-menu-items">
-         <div class="user-menu-items-avatar">
-           <bnum-avatar data-shadow="true" id="user-menu-picture" comment="photo utilisateur" ></bnum-avatar>
-            <div class="user-menu-informations">
-              <span class="user-menu-fullname"><roundcube:var name="env:firstname" /> <roundcube:var name="env:lastname" /></span>
-            <span class="user-menu-email"><roundcube:var name="env:email" /></span>
-            </div>
-         </div>
-          <div class="user-menu-items-group">
-            <bnum-tertiary-button data-icon="account_circle" data-icon-pos="left" class="user-menu-button"
-              onclick="return rcmail.command('my_account','',this,event)" block>
-              <roundcube:label name='mel_moncompte.moncompte' />
-            </bnum-tertiary-button>
-            <bnum-tertiary-button data-icon="calendar_month" data-icon-pos="left" class="user-menu-button"
-              onclick="return rcmail.command('set_custom_abs','',this,event)" block>
-              <roundcube:label name='mel_moncompte.gestionnaireabsence' />
-            </bnum-tertiary-button>
+        <div class="user-menu-items-avatar">
+          <bnum-avatar data-shadow="true" id="user-menu-picture" comment="photo utilisateur"></bnum-avatar>
+          <div class="user-menu-informations">
+            <span class="user-menu-fullname">
+              <roundcube:var name="env:_template_current_user_name" />
+              <!-- <roundcube:exp expression="true ? (env:current_user)['name'] : null" /> -->
+              <roundcube:var name="current_user" />
+            </span>
+            <span class="user-menu-email">
+              <roundcube:var name="env:_template_current_user_email" />
+            </span>
           </div>
-          <bnum-tertiary-button data-icon="logout" data-icon-pos="left" class="user-menu-button"
-            onclick="return rcmail.command('logout','',this,event)" block>
-            <roundcube:label name='logout' />
+        </div>
+        <div class="user-menu-items-group">
+          <bnum-tertiary-button data-icon="account_circle" data-icon-pos="left" class="user-menu-button"
+            onclick="return rcmail.command('my_account','',this,event)" block>
+            <roundcube:label name='mel_moncompte.moncompte' />
+          </bnum-tertiary-button>
+          <bnum-tertiary-button data-icon="calendar_month" data-icon-pos="left" class="user-menu-button"
+            onclick="return rcmail.command('set_custom_abs','',this,event)" block>
+            <roundcube:label name='mel_moncompte.gestionnaireabsence' />
           </bnum-tertiary-button>
         </div>
+        <bnum-tertiary-button data-icon="logout" data-icon-pos="left" class="user-menu-button"
+          onclick="return rcmail.command('logout','',this,event)" block>
+          <roundcube:label name='logout' />
+        </bnum-tertiary-button>
+      </div>
     </div>
   </div>
 </bnum-header>

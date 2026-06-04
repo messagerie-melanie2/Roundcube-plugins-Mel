@@ -484,7 +484,7 @@ export default class BridgeMail extends ABridge {
     if (row.hasAttribute('decorated')) return row;
 
     this.#hideMsgIcon(row);
-    this.#addPriorityClass(row);
+    this.#addUtilityClass(row);
 
     const avatarContainer = this.#buildAvatarContainer(row);
     const rowActions = this.#buildRowActions(row);
@@ -502,13 +502,12 @@ export default class BridgeMail extends ABridge {
    * @param {HTMLElement} row
    * @returns {void}
    */
-  #addPriorityClass(row) {
-    if (
-      row.querySelector(
-        '.subject span.priority :is(.prio, .prio1, .prio2, .prio4, .prio5)',
-      )
-    ) {
+  #addUtilityClass(row) {
+    if (row.querySelector('.subject span.priority :is(.prio, .prio1, .prio2, .prio4, .prio5)')) {
       row.classList.add('priority');
+    }
+    if (row.querySelector('.msgicon:is(.forwarded, .replied)')) {
+      row.classList.add('handled');
     }
   }
 
@@ -517,7 +516,8 @@ export default class BridgeMail extends ABridge {
    * @param {HTMLElement} row
    */
   #hideMsgIcon(row) {
-    const msgicon = row.querySelector('.msgicon');
+    //On récupère les icones qui ne sont ni en replied ni en forwarded
+    const msgicon = row.querySelector('.msgicon:not(.forwarded, .replied)');
     if (msgicon) {
       msgicon.style.opacity = 0;
       msgicon.style.pointerEvents = 'none';

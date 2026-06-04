@@ -241,7 +241,6 @@ export default class BridgeEvents extends MelObject {
 
     pipe(p, this.#_positionContextMenu.bind(this))
       .pipe(this.#_activateMenulinks.bind(this))
-      .pipe(this.#_activateMenulinks.bind(this))
       .pipe(this.#_showMenu.bind(this));
   }
 

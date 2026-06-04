@@ -307,9 +307,7 @@ export default class BridgeEvents extends MelObject {
     const row = ev.target.closest('tr') || ev.target;
     const uid = this.#_getMsgListRowUid(row);
 
-    this.#_tryOpenDraft(uid);
-
-    this.#_messageListSelect(uid);
+    if (!this.#_tryOpenDraft(uid)) this.#_messageListSelect(uid);
   }
 
   /**

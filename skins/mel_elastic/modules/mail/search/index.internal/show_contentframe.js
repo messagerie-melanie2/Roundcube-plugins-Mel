@@ -69,16 +69,14 @@ export function update_show_contentframe() {
   if (!rcmail || !rcube_webmail) {
     return;
   }
+
   const rcmail_show_contentframe = rcmail.show_contentframe;
   const rcmail__prototype__show_contentframe =
     rcube_webmail.prototype.show_contentframe;
 
-  rcmail.show_contentframe = _show_contentframe.bind(
-    rcmail,
-    rcmail_show_contentframe,
-  );
-  rcube_webmail.prototype.show_contentframe = _show_contentframe.bind(
-    rcmail,
+  const applyPatch = (original) => _show_contentframe.bind(rcmail, original);
+  rcmail.show_contentframe = applyPatch(rcmail_show_contentframe);
+  rcube_webmail.prototype.show_contentframe = applyPatch(
     rcmail__prototype__show_contentframe,
   );
 

@@ -68,6 +68,11 @@ export default class BridgeEvents extends MelObject {
     return this;
   }
 
+  /**
+   * Masque tous les menus contextuels Roundcube actifs.
+   * @param {Event} e - Événement déclencheur
+   * @private
+   */
   #_hideContextMenus(e) {
     this.rcmail().contextmenu?.hide_all?.(e);
   }
@@ -162,10 +167,20 @@ export default class BridgeEvents extends MelObject {
     }
   }
 
+  /**
+   * Retourne l'instance du gestionnaire de menus contextuels Roundcube.
+   * @returns {Object} Instance de rcmail.contextmenu
+   * @private
+   */
   #_getContextMenu() {
     return this.rcmail().contextmenu;
   }
 
+  /**
+   * Initialise la fonction de positionnement du menu contextuel si elle n'existe pas encore.
+   * Positionne le menu en tenant compte des bords de la fenêtre pour éviter tout débordement.
+   * @private
+   */
   #_setContextMenuPosition() {
     const contextmenu = this.#_getContextMenu();
 
@@ -197,6 +212,14 @@ export default class BridgeEvents extends MelObject {
     }
   }
 
+  /**
+   * Positionne le menu contextuel selon l'événement d'ouverture.
+   * @param {Object} p - Paramètres de l'événement menu-open
+   * @param {string} p.name - Identifiant DOM du menu
+   * @param {Event} p.originalEvent - Événement DOM d'origine
+   * @returns {Object} p — retourné pour le chaînage via {@link pipe}
+   * @private
+   */
   #_positionContextMenu(p) {
     const contextmenu = this.#_getContextMenu();
 
@@ -207,6 +230,14 @@ export default class BridgeEvents extends MelObject {
     return p;
   }
 
+  /**
+   * Active visuellement les liens du menu dont la commande Roundcube associée est disponible.
+   * L'activation est déterminée par la présence d'une classe CSS préfixée par `cmd_` sur le lien.
+   * @param {Object} p - Paramètres de l'événement menu-open
+   * @param {string} p.name - Identifiant DOM du menu
+   * @returns {Object} p — retourné pour le chaînage via {@link pipe}
+   * @private
+   */
   #_activateMenulinks(p) {
     $(`#${p.name} ul li a`).each((_, element) => {
       const link = element;
@@ -226,6 +257,13 @@ export default class BridgeEvents extends MelObject {
     return p;
   }
 
+  /**
+   * Affiche le menu contextuel dans le DOM.
+   * @param {Object} p - Paramètres de l'événement menu-open
+   * @param {string} p.name - Identifiant DOM du menu
+   * @returns {Object} p — retourné pour le chaînage via {@link pipe}
+   * @private
+   */
   #_showMenu(p) {
     $(`#${p.name}`)?.show?.();
 
@@ -284,6 +322,13 @@ export default class BridgeEvents extends MelObject {
     return draftOpen;
   }
 
+  /**
+   * Récupère l'UID d'un message depuis une ligne du tableau de messages.
+   * @param {HTMLElement} row - Ligne `<tr>` du tableau de messages
+   * @returns {string | number} UID du message
+   * @throws {Error} Si l'UID est introuvable
+   * @private
+   */
   #_getMsgListRowUid(row) {
     const uid = this.rcmail().message_list?.get_row_uid?.(row);
 
@@ -293,6 +338,12 @@ export default class BridgeEvents extends MelObject {
     return uid;
   }
 
+  /**
+   * Sélectionne un message dans la liste Roundcube par son UID.
+   * @param {string | number} uid - UID du message à sélectionner
+   * @throws {Error} Si la méthode select n'est pas disponible sur message_list
+   * @private
+   */
   #_messageListSelect(uid) {
     if (this.rcmail()?.message_list?.select)
       this.rcmail().message_list.select(uid);
@@ -382,6 +433,11 @@ export default class BridgeEvents extends MelObject {
     dt.effectAllowed = 'move';
   }
 
+  /**
+   * Supprime la classe CSS `dragover` de tous les dossiers la portant.
+   * Appelé en fin de drag ou au début de chaque dragover pour réinitialiser l'état visuel.
+   * @private
+   */
   #_clearDragClasses() {
     for (const element of document.querySelectorAll(
       '#folderlist-content .dragover',

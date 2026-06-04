@@ -15,6 +15,13 @@ export default class ABridge extends MelObject {
     super();
   }
 
+  /**
+   * Initialise le cycle de vie du pont.
+   * Écoute l'événement Roundcube 'init' pour déclencher {@link _p_onInit},
+   * puis attend la disponibilité du DOM pour déclencher {@link _p_onReady}.
+   * @returns {this}
+   * @private
+   */
   #_start() {
     this.listen('init', () => {
       this._p_onInit();

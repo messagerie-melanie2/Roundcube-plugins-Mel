@@ -1,5 +1,6 @@
 import { BnumLog } from '../../../../plugins/mel_metapage/js/lib/classes/bnum_log.js';
 import { EMPTY_STRING } from '../../../../plugins/mel_metapage/js/lib/constants/constants.js';
+import { pipe } from '../../../../plugins/mel_metapage/js/lib/helpers/pipe.js';
 import { MelObject } from '../../../../plugins/mel_metapage/js/lib/mel_object.js';
 
 /**
@@ -202,44 +203,11 @@ export default class BridgeEvents extends MelObject {
     this.#_setContextMenuPosition();
 
     contextmenu.position(p.originalEvent, $(`#${p.name}`));
+
+    return p;
   }
 
-  /**
-   * Personnalise l'ouverture du menu contextuel.
-   * @param {Object} p
-   */
-  onMenuOpen(p) {
-    if (p.name !== 'rcm_folderlist') return;
-
-    // Positionnement personnalisé si absent
-    this.rcmail().contextmenu.position ??= (e, menuElement) => {
-      menuElement.css({ left: '-1000px', top: '-1000px' }).show();
-
-      const win = $(window);
-      const winH = win.height() || 0;
-      const winW = win.width() || 0;
-      const menuH = menuElement.height() || 0;
-      const menuW = menuElement.width() || 0;
-      let top = e.pageY;
-      let left = e.pageX;
-
-      if (top + menuH > winH) {
-        top -= menuH;
-        if (top < 0) top = Math.max(0, (winH - menuH) / 2);
-      }
-
-      if (left + menuW > winW) {
-        left -= left + menuW - winW + 10;
-      }
-
-      menuElement
-        .hide()
-        .css({ left: Math.max(0, left) + 'px', top: top + 'px' });
-    };
-
-    this.rcmail().contextmenu.position(p.originalEvent, $(`#${p.name}`));
-
-    // Activation visuelle des liens
+  #_activateMenulinks(p) {
     $(`#${p.name} ul li a`).each((_, element) => {
       const link = element;
       if (link.classList.contains('active')) return;
@@ -255,7 +223,26 @@ export default class BridgeEvents extends MelObject {
       }
     });
 
-    $(`#${p.name}`).show();
+    return p;
+  }
+
+  #_showMenu(p) {
+    $(`#${p.name}`)?.show?.();
+
+    return p;
+  }
+
+  /**
+   * Personnalise l'ouverture du menu contextuel.
+   * @param {Object} p
+   */
+  onMenuOpen(p) {
+    if (p.name !== 'rcm_folderlist') return;
+
+    pipe(p, this.#_positionContextMenu.bind(this))
+      .pipe(this.#_activateMenulinks.bind(this))
+      .pipe(this.#_activateMenulinks.bind(this))
+      .pipe(this.#_showMenu.bind(this));
   }
 
   /**

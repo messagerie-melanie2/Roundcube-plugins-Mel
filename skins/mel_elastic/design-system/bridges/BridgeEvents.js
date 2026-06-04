@@ -224,6 +224,46 @@ export default class BridgeEvents extends MelObject {
   }
 
   /**
+   * Vérifie si une mbox équivaut à la mbox des brouillons.
+   *
+   * @remark
+   * Si mbox et draftMbox sont `null` ou `undefined` elles sont récupérer depuis les varibles d'env `mailbox` et `drafts_mailbox`
+   *
+   * @param {Object} [param0={}]
+   * @param {string | undefined} [param0.mbox=this.get_env('mailbox')] Mbox à vérifier
+   * @param {string | undefined} [param0.draftMbox=this.get_env('drafts_mailbox')] Mbox des brouillons
+   *
+   * @returns {bool}
+   * @private
+   */
+  #_isDraftMailbox({
+    mbox = this.get_env('mailbox'),
+    draftMbox = this.get_env('drafts_mailbox'),
+  } = {}) {
+    mbox ??= this.get_env('mailbox');
+    draftMbox ??= this.get_env('drafts_mailbox');
+    return mbox === draftMbox;
+  }
+
+  /**
+   * Ouvre la fenêtre de composition des brouillons si la mbox est bien un brouillon
+   * @param {string} uid Id du message
+   * @param {string | undefined} [mbox=this.get_env('mailbox')] Mbox à tester
+   * @returns {boolean} `true` si la fenêtre de composition est ouverte
+   */
+  #_tryOpenDraft(uid, mbox = this.get_env('mailbox')) {
+    mbox ??= this.get_env('mailbox');
+    let draftOpen = false;
+
+    if (this.#_isDraftMailbox()) {
+      draftOpen = true;
+      this.open_compose_draft(uid, mbox);
+    }
+
+    return draftOpen;
+  }
+
+  /**
    * Gère le clic sur un mail (affichage ou édition brouillon).
    * @param {Event} ev
    */
@@ -231,14 +271,8 @@ export default class BridgeEvents extends MelObject {
     const rcmail = this.rcmail();
     const row = ev.target.closest('tr') || ev.target;
     const uid = rcmail.message_list.get_row_uid(row);
-    const mbox = this.get_env('mailbox');
 
-    if (mbox === this.get_env('drafts_mailbox')) {
-      return rcmail.open_compose_step({
-        _draft_uid: uid,
-        _mbox: mbox,
-      });
-    }
+    this.#_tryOpenDraft(uid);
 
     rcmail.message_list.select(uid);
   }
@@ -252,12 +286,7 @@ export default class BridgeEvents extends MelObject {
     const row = ev.target.closest('tr') || ev.target;
     const uid = rcmail.message_list.get_row_uid(row);
 
-    if (uid) {
-      const mbox = this.get_env('mailbox');
-      if (mbox === this.get_env('drafts_mailbox'))
-        rcmail.open_compose_step({ _draft_uid: uid, _mbox: mbox });
-      else rcmail.show_message(uid);
-    }
+    if (uid && !this.#_tryOpenDraft(uid)) rcmail.show_message(uid);
   }
 
   /**
@@ -320,15 +349,19 @@ export default class BridgeEvents extends MelObject {
     dt.effectAllowed = 'move';
   }
 
-  /**
-   * Nettoie les styles après un drag de mail.
-   */
-  onMailDragEnd() {
+  #_clearDragClasses() {
     for (const element of document.querySelectorAll(
       '#folderlist-content .dragover',
     )) {
       element.classList.remove('dragover');
     }
+  }
+
+  /**
+   * Nettoie les styles après un drag de mail.
+   */
+  onMailDragEnd() {
+    this.#_clearDragClasses();
   }
 
   /**
@@ -343,11 +376,7 @@ export default class BridgeEvents extends MelObject {
 
     if (innerEvent.dataTransfer) innerEvent.dataTransfer.dropEffect = 'move';
 
-    for (const element of document.querySelectorAll(
-      '#folderlist-content .dragover',
-    )) {
-      element.classList.remove('dragover');
-    }
+    this.#_clearDragClasses();
 
     target.classList.add('dragover');
   }

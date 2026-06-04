@@ -610,7 +610,7 @@ export default class BridgeMail extends ABridge {
     for (const eventType of ['mouseenter', 'mouseleave']) {
       row.addEventListener(
         eventType,
-        this._handleRowHover.bind(this, row, eventType),
+        this.#_handleRowHover.bind(this, row, eventType),
       );
     }
 
@@ -622,7 +622,7 @@ export default class BridgeMail extends ABridge {
    * @param {HTMLElement} row
    * @param {'mouseenter' | 'mouseleave'} eventType
    */
-  _handleRowHover(row, eventType) {
+  #_handleRowHover(row, eventType) {
     const avatar = row.querySelector(HTMLBnumAvatarAction.TAG);
 
     if (avatar) avatar.dispatchEvent(new MouseEvent(eventType));

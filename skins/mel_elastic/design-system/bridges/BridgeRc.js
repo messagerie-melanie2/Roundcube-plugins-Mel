@@ -91,15 +91,16 @@ export default class BridgeRc extends MelObject {
 
   /**
    * Lie une ancienne et une nouvelle fonction pour permettre le fallback.
-   * @param {Object} element
-   * @param {AnyFunction} old
-   * @param {AnyFunction} newF
+   * @param {Object} target
+   * @param {AnyFunction} oldFn
+   * @param {AnyFunction} newFn
    * @returns {AnyFunction}
    */
-  bind(element, old, newF) {
-    return function (rcmailRef, oldFunction, newFunction, ...args) {
-      return newFunction(rcmailRef, oldFunction, ...args);
-    }.bind(element, element, old, newF.bind(this));
+  bind(target, oldFn, newFn) {
+    const boundNew = newFn.bind(this);
+    return function (...args) {
+      return boundNew(target, oldFn, ...args);
+    };
   }
 
   /**

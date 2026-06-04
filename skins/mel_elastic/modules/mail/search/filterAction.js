@@ -2,6 +2,8 @@
  * @typedef {import('./ui.js').Ui} SearchUserInterface
  */
 
+import { pipe } from '../../../../../plugins/mel_metapage/js/lib/helpers/pipe.js';
+
 /**
  * Action de filtre pour basculer l'affichage du panneau de recherche.
  * Gère l'état du bouton et déclenche l'ouverture/fermeture du filtre Roundcube.
@@ -27,32 +29,41 @@ export class FilterAction {
     this.#_ui = ui;
   }
 
-  /**
-   * Affiche le panneau de filtre et met à jour l'icône du bouton.
-   * @returns {void}
-   */
-  #_show() {
-    const bnumInputButton = this.#_ui.filterButton;
+  #_setVisibility({ visible, button = this.#_ui.filterButton }) {
+    const bnumInputButton = button ?? this.#_ui.filterButton;
+
+    if (!bnumInputButton) throw new Error("Le bouton n'existe pas !");
+
+    bnumInputButton.data('show', visible);
+
+    return bnumInputButton;
+  }
+
+  #_updateIconButtonFromVisibility(button = this.#_ui.filterButton) {
+    button ??= this.#_ui.filterButton;
+
+    button.icon = button.data('show')
+      ? FilterAction.#_ICONS.hide
+      : FilterAction.#_ICONS.show;
+
+    return button;
+  }
+
+  #_clickRcFilterButton() {
     const rcFilterButton = this.#_ui.rcFilterButton;
 
-    bnumInputButton.data('show', true);
-    bnumInputButton.icon = FilterAction.#_ICONS.hide;
+    if (!rcFilterButton)
+      throw new Error('Impossible de trouver le bouton ref !');
 
     rcFilterButton.click();
   }
 
-  /**
-   * Masque le panneau de filtre et met à jour l'icône du bouton.
-   * @returns {void}
-   */
-  #_hide() {
-    const bnumInputButton = this.#_ui.filterButton;
-    const rcFilterButton = this.#_ui.rcFilterButton;
-
-    bnumInputButton.data('show', false);
-    bnumInputButton.icon = FilterAction.#_ICONS.show;
-
-    rcFilterButton.click();
+  #_toggleButtonState({ visible }) {
+    pipe(visible, (x) => {
+      return this.#_setVisibility({ visible: x });
+    })
+      .pipe(this.#_updateIconButtonFromVisibility.bind(this))
+      .pipe(this.#_clickRcFilterButton.bind(this));
   }
 
   /**
@@ -61,13 +72,9 @@ export class FilterAction {
    */
   toggle() {
     const bnumInputButton = this.#_ui.filterButton;
-    const isShown = bnumInputButton.data('show');
+    const isShown = !bnumInputButton.data('show');
 
-    if (isShown) {
-      this.#_hide();
-    } else {
-      this.#_show();
-    }
+    this.#_toggleButtonState({ visible: isShown });
   }
 
   /**

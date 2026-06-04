@@ -7,6 +7,7 @@
     color: var(--bnum-text-primary);
     min-width: 250px;
     --bnum-title-text-color: var(--bnum-text-title-primary);
+    border-bottom: var(--bnum-border-on-surface-bottom);
 
     .user-menu-items {
       width: fit-content;
@@ -45,7 +46,7 @@
     }
 
     &::after {
-      border-bottom: 8px solid  var(--bnum-color-background);
+      border-bottom: 8px solid var(--bnum-color-background);
       border-left: 9px solid rgba(0, 0, 0, 0);
       border-right: 9px solid rgba(0, 0, 0, 0);
       content: "";
@@ -68,5 +69,67 @@
 
     .user-child {
       height: 57px;
+    }
+  }
+
+  .notification-icon-menu {
+    margin-top: 3px;
+  }
+
+  #notification-dropdown {
+    .notification-dropdown-menu {
+      border-radius: 0;
+      border-color: var(--bnum-color-border);
+      background-color: var(--bnum-color-background);
+      color: var(--bnum-text-primary);
+      width: 400px;
+      --bnum-title-text-color: var(--bnum-text-title-primary);
+      border-bottom: var(--bnum-border-on-surface-bottom);
+      //Margin pour aligner proprement le dropdown au bouton
+      margin-top: 16px;
+      left: 9px !important;
+
+      .notifications-header {
+        border-bottom: var(--bnum-border-in-surface);
+        a span.material-symbols-outlined {
+          color: var(--bnum-text-primary);
+
+          &:hover {
+            font-variation-settings: 'FILL' 1;
+          }
+        }
+      }
+
+      .dropdown-menu-scroll {
+        max-height: 240px;
+        overflow: auto;
+
+        .dropdown-item {
+          &:last-child {
+            margin-bottom: 0 !important;
+          }
+
+          .notification-category {
+            font-size: 1rem;
+
+            .notification-date {
+              font-size: 11px;
+              color: #858585;
+              font-weight: 400;
+            }
+          }
+        }
+      }
+
+      &::after {
+        border-bottom: 8px solid var(--bnum-color-background);
+        border-left: 9px solid rgba(0, 0, 0, 0);
+        border-right: 9px solid rgba(0, 0, 0, 0);
+        content: "";
+        display: inline-block;
+        right: 11px;
+        position: absolute;
+        top: -7px;
+      }
     }
   }

@@ -130,7 +130,10 @@ table.messagelist tr.unread td.subject span.msgicon.status::before {
 table.messagelist tr.unread td.subject span.msgicon.status:hover::before {
   content: var(--message-state-icon, var(--_unread-hover)) !important;
 }
-table.messagelist tr.message.priority td.subject span.fromto {
+table.messagelist tr.flagged td.flags {
+  color: var(--main-text-color);
+}
+table.messagelist tr.message.priority td.subject span.subject {
   margin-left: 45px;
 }
 table.messagelist tr.message.priority td.subject span.priority span.prio1,
@@ -138,8 +141,26 @@ table.messagelist tr.message.priority td.subject span.priority span.prio2,
 table.messagelist tr.message.priority td.subject span.priority span.prio4,
 table.messagelist tr.message.priority td.subject span.priority span.prio5 {
   line-height: 1em;
-  margin-top: -53px;
+  margin-top: -25px;
   margin-left: 49px;
+}
+table.messagelist tr.message.handled td.subject span.fromto {
+  margin-left: 45px;
+}
+table.messagelist tr.message.handled td.subject span.msgicon {
+  pointer-events: none;
+}
+table.messagelist tr.message.handled td.subject span.msgicon.replied::before,
+table.messagelist tr.message.handled td.subject span.msgicon.forwarded::before {
+  margin-left: 8px;
+  margin-right: 7px !important;
+}
+table.messagelist tr.message.handled td.subject span.msgicon.replied.forwarded::after {
+  margin-right: 6px !important;
+}
+table.messagelist tr.message.handled td.subject span.msgicon.replied.forwarded::before {
+  content: '' !important;
+  margin-left: 3px;
 }
 html.mail-small table.messagelist tr.message.priority td.subject span.priority span.prio1,
 html.mail-small table.messagelist tr.message.priority td.subject span.priority span.prio2,

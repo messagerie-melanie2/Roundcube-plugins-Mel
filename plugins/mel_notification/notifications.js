@@ -782,7 +782,7 @@ function m_mp_NotificationsAppendFilters() {
     let elem = document.createElement('h6'),
       span = document.createElement('span');
     elem.className = className;
-    span.className = 'font-weight-bold blue-color text-center';
+    span.className = 'font-weight-bold text-center';
     span.textContent = textContent;
     elem.append(span);
     return elem;
@@ -814,7 +814,7 @@ function m_mp_NotificationsAppendFilters() {
     }
     span.className = 'filters_button';
     if (iconContent) {
-      icon.className = 'material-symbols-outlined blue-color';
+      icon.className = 'material-symbols-outlined';
       icon.textContent = iconContent;
       button.append(icon);
     }
@@ -827,10 +827,10 @@ function m_mp_NotificationsAppendFilters() {
     delete_all = document.createElement('span');
 
   settings.className =
-    'material-symbols-outlined fw-300 blue-color text-center';
+    'material-symbols-outlined fw-300 text-center';
   settings.innerText = 'settings';
 
-  delete_all.className = 'material-symbols-outlined fw-300 blue-color';
+  delete_all.className = 'material-symbols-outlined fw-300';
   delete_all.innerText = 'delete';
 
   // Select

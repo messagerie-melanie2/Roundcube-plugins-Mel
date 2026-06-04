@@ -33,7 +33,8 @@ function _show_contentframe(original, show) {
       const headerLeft = document.querySelector(
         '#messagelist-header .header-left',
       );
-      const searchContainer = searchBar.parentElement?.parentElement;
+      const closestParentClass = 'header-container';
+      const searchContainer = searchBar.closest(`.${closestParentClass}`);
 
       headerLeft.style.display = null;
       searchContainer.style.justifyContent = null;

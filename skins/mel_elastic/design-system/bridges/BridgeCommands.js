@@ -6,6 +6,7 @@ import { CONFIG_FOLDER_SPACE } from './constants.js';
  * Fournit des méthodes pour mettre à jour le style des dossiers mails et enregistrer des commandes personnalisées.
  */
 export default class BridgeCommands extends MelObject {
+  /** @type {BridgeCommands | null} Instance unique du singleton. */
   static #_instance = null;
   /**
    * Accès à l'instance unique de BridgeCommands (singleton).
@@ -14,11 +15,20 @@ export default class BridgeCommands extends MelObject {
   static get Instance() {
     return (this.#_instance ??= new BridgeCommands());
   }
+
+  /**
+   * Clés des variables d'environnement Roundcube utilisées par BridgeCommands.
+   * @type {{ TASK: string, MMP_CONFIGS: string }}
+   * @private
+   */
   static #_ENVS = {
     TASK: 'task',
     MMP_CONFIGS: 'mel_metapage_mail_configs',
   };
 
+  /**
+   * Constructeur privé — utiliser {@link BridgeCommands.Instance} pour accéder au singleton.
+   */
   constructor() {
     super();
   }

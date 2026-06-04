@@ -1,3 +1,4 @@
+import { BnumLog } from '../../../../plugins/mel_metapage/js/lib/classes/bnum_log.js';
 import { EMPTY_STRING } from '../../../../plugins/mel_metapage/js/lib/constants/constants.js';
 import { MelObject } from '../../../../plugins/mel_metapage/js/lib/mel_object.js';
 
@@ -42,7 +43,14 @@ export default class BridgeEvents extends MelObject {
         // On cherche l'élément correspondant au sélecteur le plus proche
         const element = e.target.closest(selector);
 
-        console.log('EVENT', element, target, target.contains(element));
+        if (BnumLog.log_level >= BnumLog.LogLevels.debug)
+          BnumLog.debug(
+            'BridgeEvents/delegate',
+            'EVENT',
+            element,
+            target,
+            target.contains(element),
+          );
 
         // On vérifie que l'élément trouvé est bien à l'intérieur de notre "target"
         if (element && target.contains(element)) {

@@ -104,6 +104,18 @@ export default class ABaseMelObject {
   }
 
   /**
+   * Ouvre la fenre de composition à partir d'un brouillon
+   * @param {string | number} uid Id du message
+   * @param {string | undefined} [mbox=this.get_env('drafts_mailbox')] Mbox des brouillons
+   */
+  open_compose_draft(uid, mbox = this.get_env('drafts_mailbox')) {
+    return this.rcmail().open_compose_step({
+      _draft_uid: uid,
+      _mbox: mbox,
+    });
+  }
+
+  /**
    * Récupère une clé sous forme de texte.
    * @param {string} key_text Clé
    * @param {!string} plugin Plugin d'où provient le texte traduit

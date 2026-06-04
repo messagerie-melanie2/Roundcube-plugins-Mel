@@ -1,10 +1,8 @@
 //compress:false
 
 .barup {
-  --bnum-font-size-h1: var(
-    --barup-title-font-size,
-    var(--bnum-font-size-xl, 1rem)
-  );
+  --bnum-font-size-h1: var(--barup-title-font-size,
+      var(--bnum-font-size-xl, 1rem));
   --bnum-space-xl: var(--barup-title-margin-bottom, 0);
 
   html.touch & {
@@ -83,7 +81,8 @@ table {
           left: 40px;
           border: none;
 
-          & + .subject {
+          &+.subject {
+
             span.subject,
             .fromto {
               margin-left: calc(var(--bnum-space-xl) + var(--bnum-space-xs));
@@ -92,6 +91,7 @@ table {
         }
       }
     }
+
     td {
       &.subject {
         &:hover {
@@ -113,8 +113,10 @@ table.messagelist {
   --_idle-hover: '\e94d';
   --_unread: var(--_idle-hover);
   --_unread-hover: var(--_idle);
+
   td.subject {
     span {
+
       &.fromto,
       &.subject {
         margin-left: var(--bnum-space-xl);
@@ -136,6 +138,7 @@ table.messagelist {
   }
 
   tr {
+
     //Normal
     .mail-avatar {
       --avatar-size: 40px;
@@ -225,9 +228,15 @@ table.messagelist {
       }
     }
 
+    &.flagged {
+      td.flags {
+        color: var(--main-text-color);
+      }
+    }
+
     &.message.priority {
       td.subject {
-        span.fromto {
+        span.subject {
           margin-left: 45px;
         }
           span.priority span {
@@ -236,26 +245,54 @@ table.messagelist {
               &.prio4,
               &.prio5 {
               line-height: 1em;
-              margin-top: -53px;
+              margin-top: -25px;
               margin-left: 49px;
           }
         }
       }
     }
 
-    html.mail-small & { 
-        &.message.priority {
+    &.message.handled {
       td.subject {
-          span.priority span {
-              &.prio1,
-              &.prio2,
-              &.prio4,
-              &.prio5 {
-              margin-top: -44px;
+        span.fromto {
+          margin-left: 45px;
+        }
+
+        span.msgicon {
+          pointer-events: none;
+
+          &.replied::before,
+          &.forwarded::before {
+            margin-left: 8px;
+            margin-right: 7px !important;
+          }
+
+          &.replied.forwarded::after {
+            margin-right: 6px !important;
+          }
+
+          &.replied.forwarded::before {
+            content: '' !important;
+            margin-left: 3px;
           }
         }
       }
     }
+
+    html.mail-small & {
+      &.message.priority {
+        td.subject {
+          span.priority span {
+
+            &.prio1,
+            &.prio2,
+            &.prio4,
+            &.prio5 {
+              margin-top: -44px;
+            }
+          }
+        }
+      }
     }
 
     &.message:hover {
@@ -308,13 +345,13 @@ table.messagelist {
 
 
     .sub-action {
-    font-variation-settings: 'wght' 300 !important;
+      font-variation-settings: 'wght' 300 !important;
 
       margin-top: 8px;
     }
 
     .delete-action {
-     color: red;
+      color: red;
     }
   }
 
@@ -324,6 +361,7 @@ table.messagelist {
     }
 
     &.message {
+
       .flags,
       .size,
       .date {
@@ -334,12 +372,15 @@ table.messagelist {
     .unread-action {
       display: none;
     }
+
     .read-action {
       display: block;
     }
+
     .flag-action {
       display: none;
     }
+
     .unflag-action {
       display: block;
     }
@@ -349,6 +390,7 @@ table.messagelist {
     .unread-action {
       display: block;
     }
+
     .read-action {
       display: none;
     }
@@ -358,6 +400,7 @@ table.messagelist {
     .flag-action {
       display: block;
     }
+
     .unflag-action {
       display: none;
     }
@@ -369,16 +412,12 @@ table.messagelist {
 }
 
 #layout-list {
-  --message-list-quick-filter-background-color: var(
-    --layout-list-header-background,
-    var(--bnum-header-color, var(--bnum-color-background, #fff))
-  );
-  --input-button-text-color: var(
-    --layout-list-header-color,
-    var(--bnum-body-text-color, var(--bnum-text-primary))
-  );
+  --message-list-quick-filter-background-color: var(--layout-list-header-background,
+      var(--bnum-header-color, var(--bnum-color-background, #fff)));
+  --input-button-text-color: var(--layout-list-header-color,
+      var(--bnum-body-text-color, var(--bnum-text-primary)));
 
-    .menu a.search:before {
+  .menu a.search:before {
     content: '\e8b6' !important;
     font-family: 'Material Symbols Outlined' !important;
     font-weight: normal !important;
@@ -396,10 +435,8 @@ table.messagelist {
 }
 
 .messagelist.__no-rc td.subject span.size {
-  color: var(
-    --_no-rc-color,
-    var(--bnum-body-text-color, var(--bnum-text-primary))
-  );
+  color: var(--_no-rc-color,
+      var(--bnum-body-text-color, var(--bnum-text-primary)));
 }
 
 #folderlist-content {
@@ -415,10 +452,10 @@ table.messagelist {
 }
 
 .listing {
-    tbody {
+  tbody {
     tr {
       &.context-source:not(.selected) {
-        & > td {
+        &>td {
           background-color: var(--_bdsli-active-bg) !important;
         }
       }

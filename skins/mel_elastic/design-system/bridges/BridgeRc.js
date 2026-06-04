@@ -91,15 +91,16 @@ export default class BridgeRc extends MelObject {
 
   /**
    * Lie une ancienne et une nouvelle fonction pour permettre le fallback.
-   * @param {Object} element
-   * @param {AnyFunction} old
-   * @param {AnyFunction} newF
+   * @param {Object} target
+   * @param {AnyFunction} oldFn
+   * @param {AnyFunction} newFn
    * @returns {AnyFunction}
    */
-  bind(element, old, newF) {
-    return function (rcmailRef, oldFunction, newFunction, ...args) {
-      return newFunction(rcmailRef, oldFunction, ...args);
-    }.bind(element, element, old, newF.bind(this));
+  bind(target, oldFn, newFn) {
+    const boundNew = newFn.bind(this);
+    return function (...args) {
+      return boundNew(target, oldFn, ...args);
+    };
   }
 
   /**
@@ -132,21 +133,57 @@ export default class BridgeRc extends MelObject {
   }
 
   /**
-   * Patch : initialise le menu contextuel des dossiers personnalisés.
+   * Réinitialise l'entrée `folderlist` dans l'environnement des menus contextuels Roundcube.
+   * @private
    */
-  patch_init_folder(_, __, el, props, events) {
-    const finalEvents = events || {};
-    document.getElementById('rcm_folderlist')?.remove?.();
-    this.get_env('contextmenus')['folderlist'] = undefined;
+  #_clearFolderlistMenu() {
+    const contextMenus = this.get_env('contextmenus');
+    if (!contextMenus) return;
 
-    const folderMenu = this.rcmail().contextmenu.init(
+    const folderListKey = 'folderlist';
+    if (contextMenus?.[folderListKey]) contextMenus[folderListKey] = undefined;
+  }
+
+  /**
+   * Délègue l'activation des commandes du menu contextuel de dossiers à Roundcube.
+   * @param {Object} p - Paramètres d'activation transmis par le gestionnaire de menu
+   * @returns {*} Résultat de contextmenu.activate_folder_commands
+   * @private
+   */
+  #_activateFolderCommands(p) {
+    return this.rcmail()?.contextmenu?.activate_folder_commands?.(p);
+  }
+
+  /**
+   * Supprime le nœud DOM du menu contextuel de dossiers et réinitialise son entrée en mémoire.
+   * Prépare une réinstanciation propre du menu via {@link #_buildFolderMenu}.
+   * @private
+   */
+  #_resetFolderListMenu() {
+    document.getElementById('rcm_folderlist')?.remove?.();
+    this.#_clearFolderlistMenu();
+  }
+
+  /**
+   * Construit et retourne l'instance du menu contextuel de dossiers.
+   * @param {Object} props - Propriétés transmises à contextmenu.init (menu_source, etc.)
+   * @param {Object} [events] - Gestionnaires d'événements supplémentaires à fusionner
+   *   (beforeactivate, activate, beforecommand, etc.)
+   * @returns {Object} Instance du menu contextuel initialisé
+   * @throws {Error} Si l'initialisation du menu contextuel échoue
+   * @private
+   */
+  #_buildFolderMenu(props, events) {
+    const finalEvents = events || {};
+
+    const foldermenu = this.rcmail()?.contextmenu?.init?.(
       { menu_name: 'folderlist', list_object: null, ...props },
       {
         beforeactivate: () => {
           this.get_env('contextmenu_messagecount_request')?.abort?.();
           this.update_env('contextmenu_messagecount_request', null);
         },
-        activate: (p) => this.rcmail().contextmenu.activate_folder_commands(p),
+        activate: (p) => this.#_activateFolderCommands(p),
         beforecommand: (p) => {
           const sourceId = this.get_env('context_menu_source_id');
           if (sourceId !== this.get_env('mailbox')) {
@@ -163,14 +200,39 @@ export default class BridgeRc extends MelObject {
       },
     );
 
+    if (!foldermenu)
+      throw new Error("Impossible d'initialiser le contextmenu !");
+
+    return foldermenu;
+  }
+
+  /**
+   * Attache les listeners de clic et de menu contextuel sur chaque dossier
+   * correspondant au sélecteur CSS fourni.
+   * @param {string} el - Sélecteur CSS ciblant les éléments dossiers
+   * @param {Object} menu - Instance du menu contextuel à afficher au clic droit
+   * @private
+   */
+  #_attachFolderListeners(el, menu) {
     for (const element of document.querySelectorAll(el)) {
       element.addEventListener('click', (e) => {
         BridgeEvents.Instance.onFolderClick(e);
       });
 
       element.addEventListener('contextmenu', (e) => {
-        BridgeEvents.Instance.onFolderContextMenu2(folderMenu, e);
+        BridgeEvents.Instance.onFolderContextMenu2(menu, e);
       });
     }
+  }
+
+  /**
+   * Patch : initialise le menu contextuel des dossiers personnalisés.
+   */
+  patch_init_folder(_, __, el, props, events) {
+    this.#_resetFolderListMenu();
+
+    const folderMenu = this.#_buildFolderMenu(props, events);
+
+    this.#_attachFolderListeners(el, folderMenu);
   }
 }

@@ -1,4 +1,6 @@
+import { BnumLog } from '../../../../plugins/mel_metapage/js/lib/classes/bnum_log.js';
 import { EMPTY_STRING } from '../../../../plugins/mel_metapage/js/lib/constants/constants.js';
+import { pipe } from '../../../../plugins/mel_metapage/js/lib/helpers/pipe.js';
 import { MelObject } from '../../../../plugins/mel_metapage/js/lib/mel_object.js';
 
 /**
@@ -42,7 +44,14 @@ export default class BridgeEvents extends MelObject {
         // On cherche l'élément correspondant au sélecteur le plus proche
         const element = e.target.closest(selector);
 
-        console.log('EVENT', element, target, target.contains(element));
+        if (BnumLog.log_level >= BnumLog.LogLevels.debug)
+          BnumLog.debug(
+            'BridgeEvents/delegate',
+            'EVENT',
+            element,
+            target,
+            target.contains(element),
+          );
 
         // On vérifie que l'élément trouvé est bien à l'intérieur de notre "target"
         if (element && target.contains(element)) {
@@ -60,15 +69,12 @@ export default class BridgeEvents extends MelObject {
   }
 
   /**
-   * Exécute une fonction lorsque le DOM est prêt.
-   * @param {Function} fn
+   * Masque tous les menus contextuels Roundcube actifs.
+   * @param {Event} e - Événement déclencheur
+   * @private
    */
-  callOnReady(fn) {
-    if (document.readyState !== 'loading') {
-      fn();
-    } else {
-      document.addEventListener('DOMContentLoaded', fn);
-    }
+  #_hideContextMenus(e) {
+    this.rcmail().contextmenu?.hide_all?.(e);
   }
 
   /**
@@ -76,7 +82,7 @@ export default class BridgeEvents extends MelObject {
    * @param {Event} e
    */
   onFolderClick(e) {
-    return this.rcmail().contextmenu.hide_all(e);
+    return this.#_hideContextMenus(e);
   }
 
   /**
@@ -87,7 +93,7 @@ export default class BridgeEvents extends MelObject {
   onFolderContextMenu2(folderMenu, e) {
     const source = e.target;
     source.blur();
-    this.rcmail().contextmenu.hide_all(e);
+    this.#_hideContextMenus(e);
     this.rcmail().contextmenu.show_one(
       e,
       source,
@@ -162,41 +168,77 @@ export default class BridgeEvents extends MelObject {
   }
 
   /**
-   * Personnalise l'ouverture du menu contextuel.
-   * @param {Object} p
+   * Retourne l'instance du gestionnaire de menus contextuels Roundcube.
+   * @returns {Object} Instance de rcmail.contextmenu
+   * @private
    */
-  onMenuOpen(p) {
-    if (p.name !== 'rcm_folderlist') return;
+  #_getContextMenu() {
+    return this.rcmail().contextmenu;
+  }
 
-    // Positionnement personnalisé si absent
-    this.rcmail().contextmenu.position ??= (e, menuElement) => {
-      menuElement.css({ left: '-1000px', top: '-1000px' }).show();
+  /**
+   * Initialise la fonction de positionnement du menu contextuel si elle n'existe pas encore.
+   * Positionne le menu en tenant compte des bords de la fenêtre pour éviter tout débordement.
+   * @private
+   */
+  #_setContextMenuPosition() {
+    const contextmenu = this.#_getContextMenu();
 
-      const win = $(window);
-      const winH = win.height() || 0;
-      const winW = win.width() || 0;
-      const menuH = menuElement.height() || 0;
-      const menuW = menuElement.width() || 0;
-      let top = e.pageY;
-      let left = e.pageX;
+    if (contextmenu) {
+      contextmenu.position ??= (e, menuElement) => {
+        menuElement.css({ left: '-1000px', top: '-1000px' }).show();
 
-      if (top + menuH > winH) {
-        top -= menuH;
-        if (top < 0) top = Math.max(0, (winH - menuH) / 2);
-      }
+        const win = $(window);
+        const winH = win.height() || 0;
+        const winW = win.width() || 0;
+        const menuH = menuElement.height() || 0;
+        const menuW = menuElement.width() || 0;
+        let top = e.pageY;
+        let left = e.pageX;
 
-      if (left + menuW > winW) {
-        left -= left + menuW - winW + 10;
-      }
+        if (top + menuH > winH) {
+          top -= menuH;
+          if (top < 0) top = Math.max(0, (winH - menuH) / 2);
+        }
 
-      menuElement
-        .hide()
-        .css({ left: Math.max(0, left) + 'px', top: top + 'px' });
-    };
+        if (left + menuW > winW) {
+          left -= left + menuW - winW + 10;
+        }
 
-    this.rcmail().contextmenu.position(p.originalEvent, $(`#${p.name}`));
+        menuElement
+          .hide()
+          .css({ left: Math.max(0, left) + 'px', top: top + 'px' });
+      };
+    }
+  }
 
-    // Activation visuelle des liens
+  /**
+   * Positionne le menu contextuel selon l'événement d'ouverture.
+   * @param {Object} p - Paramètres de l'événement menu-open
+   * @param {string} p.name - Identifiant DOM du menu
+   * @param {Event} p.originalEvent - Événement DOM d'origine
+   * @returns {Object} p — retourné pour le chaînage via {@link pipe}
+   * @private
+   */
+  #_positionContextMenu(p) {
+    const contextmenu = this.#_getContextMenu();
+
+    this.#_setContextMenuPosition();
+
+    contextmenu.position(p.originalEvent, $(`#${p.name}`));
+
+    return p;
+  }
+
+  /**
+   * Active visuellement les liens du menu dont la commande Roundcube associée est disponible.
+   * L'activation est déterminée par la présence d'une classe CSS préfixée par `cmd_` sur le lien.
+   * @param {Object} p - Paramètres de l'événement menu-open
+   * @param {string} p.name - Identifiant DOM du menu
+   * @returns {Object} p — retourné pour le chaînage via {@link pipe}
+   * @private
+   */
+  #_activateMenulinks(p) {
     $(`#${p.name} ul li a`).each((_, element) => {
       const link = element;
       if (link.classList.contains('active')) return;
@@ -212,7 +254,100 @@ export default class BridgeEvents extends MelObject {
       }
     });
 
-    $(`#${p.name}`).show();
+    return p;
+  }
+
+  /**
+   * Affiche le menu contextuel dans le DOM.
+   * @param {Object} p - Paramètres de l'événement menu-open
+   * @param {string} p.name - Identifiant DOM du menu
+   * @returns {Object} p — retourné pour le chaînage via {@link pipe}
+   * @private
+   */
+  #_showMenu(p) {
+    $(`#${p.name}`)?.show?.();
+
+    return p;
+  }
+
+  /**
+   * Personnalise l'ouverture du menu contextuel.
+   * @param {Object} p
+   */
+  onMenuOpen(p) {
+    if (p.name !== 'rcm_folderlist') return;
+
+    pipe(p, this.#_positionContextMenu.bind(this))
+      .pipe(this.#_activateMenulinks.bind(this))
+      .pipe(this.#_showMenu.bind(this));
+  }
+
+  /**
+   * Vérifie si une mbox équivaut à la mbox des brouillons.
+   *
+   * @remark
+   * Si mbox et draftMbox sont `null` ou `undefined` elles sont récupérer depuis les varibles d'env `mailbox` et `drafts_mailbox`
+   *
+   * @param {Object} [param0={}]
+   * @param {string | undefined} [param0.mbox=this.get_env('mailbox')] Mbox à vérifier
+   * @param {string | undefined} [param0.draftMbox=this.get_env('drafts_mailbox')] Mbox des brouillons
+   *
+   * @returns {bool}
+   * @private
+   */
+  #_isDraftMailbox({
+    mbox = this.get_env('mailbox'),
+    draftMbox = this.get_env('drafts_mailbox'),
+  } = {}) {
+    mbox ??= this.get_env('mailbox');
+    draftMbox ??= this.get_env('drafts_mailbox');
+    return mbox === draftMbox;
+  }
+
+  /**
+   * Ouvre la fenêtre de composition des brouillons si la mbox est bien un brouillon
+   * @param {string} uid Id du message
+   * @param {string | undefined} [mbox=this.get_env('mailbox')] Mbox à tester
+   * @returns {boolean} `true` si la fenêtre de composition est ouverte
+   */
+  #_tryOpenDraft(uid, mbox = this.get_env('mailbox')) {
+    mbox ??= this.get_env('mailbox');
+    let draftOpen = false;
+
+    if (this.#_isDraftMailbox()) {
+      draftOpen = true;
+      this.open_compose_draft(uid, mbox);
+    }
+
+    return draftOpen;
+  }
+
+  /**
+   * Récupère l'UID d'un message depuis une ligne du tableau de messages.
+   * @param {HTMLElement} row - Ligne `<tr>` du tableau de messages
+   * @returns {string | number} UID du message
+   * @throws {Error} Si l'UID est introuvable
+   * @private
+   */
+  #_getMsgListRowUid(row) {
+    const uid = this.rcmail().message_list?.get_row_uid?.(row);
+
+    if (this.isNullOrUndefined(uid))
+      throw new Error("Impossible de trouver l'uid !");
+
+    return uid;
+  }
+
+  /**
+   * Sélectionne un message dans la liste Roundcube par son UID.
+   * @param {string | number} uid - UID du message à sélectionner
+   * @throws {Error} Si la méthode select n'est pas disponible sur message_list
+   * @private
+   */
+  #_messageListSelect(uid) {
+    if (this.rcmail()?.message_list?.select)
+      this.rcmail().message_list.select(uid);
+    else throw new Error('Impossible de "select" un message !');
   }
 
   /**
@@ -220,19 +355,10 @@ export default class BridgeEvents extends MelObject {
    * @param {Event} ev
    */
   onMailClick(ev) {
-    const rcmail = this.rcmail();
     const row = ev.target.closest('tr') || ev.target;
-    const uid = rcmail.message_list.get_row_uid(row);
-    const mbox = this.get_env('mailbox');
+    const uid = this.#_getMsgListRowUid(row);
 
-    if (mbox === this.get_env('drafts_mailbox')) {
-      return rcmail.open_compose_step({
-        _draft_uid: uid,
-        _mbox: mbox,
-      });
-    }
-
-    rcmail.message_list.select(uid);
+    if (!this.#_tryOpenDraft(uid)) this.#_messageListSelect(uid);
   }
 
   /**
@@ -242,14 +368,9 @@ export default class BridgeEvents extends MelObject {
   onMailDblClick(ev) {
     const rcmail = this.rcmail();
     const row = ev.target.closest('tr') || ev.target;
-    const uid = rcmail.message_list.get_row_uid(row);
+    const uid = this.#_getMsgListRowUid(row);
 
-    if (uid) {
-      const mbox = this.get_env('mailbox');
-      if (mbox === this.get_env('drafts_mailbox'))
-        rcmail.open_compose_step({ _draft_uid: uid, _mbox: mbox });
-      else rcmail.show_message(uid);
-    }
+    if (uid && !this.#_tryOpenDraft(uid)) rcmail.show_message(uid);
   }
 
   /**
@@ -313,14 +434,23 @@ export default class BridgeEvents extends MelObject {
   }
 
   /**
-   * Nettoie les styles après un drag de mail.
+   * Supprime la classe CSS `dragover` de tous les dossiers la portant.
+   * Appelé en fin de drag ou au début de chaque dragover pour réinitialiser l'état visuel.
+   * @private
    */
-  onMailDragEnd() {
+  #_clearDragClasses() {
     for (const element of document.querySelectorAll(
       '#folderlist-content .dragover',
     )) {
       element.classList.remove('dragover');
     }
+  }
+
+  /**
+   * Nettoie les styles après un drag de mail.
+   */
+  onMailDragEnd() {
+    this.#_clearDragClasses();
   }
 
   /**
@@ -335,11 +465,7 @@ export default class BridgeEvents extends MelObject {
 
     if (innerEvent.dataTransfer) innerEvent.dataTransfer.dropEffect = 'move';
 
-    for (const element of document.querySelectorAll(
-      '#folderlist-content .dragover',
-    )) {
-      element.classList.remove('dragover');
-    }
+    this.#_clearDragClasses();
 
     target.classList.add('dragover');
   }

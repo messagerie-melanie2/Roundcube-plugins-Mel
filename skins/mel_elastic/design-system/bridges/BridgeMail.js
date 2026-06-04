@@ -503,7 +503,11 @@ export default class BridgeMail extends ABridge {
    * @returns {void}
    */
   #addPriorityClass(row) {
-    if (row.querySelector('.subject span.priority :is(.prio, .prio1, .prio2, .prio4, .prio5)')) {
+    if (
+      row.querySelector(
+        '.subject span.priority :is(.prio, .prio1, .prio2, .prio4, .prio5)',
+      )
+    ) {
       row.classList.add('priority');
     }
   }
@@ -606,7 +610,7 @@ export default class BridgeMail extends ABridge {
     for (const eventType of ['mouseenter', 'mouseleave']) {
       row.addEventListener(
         eventType,
-        this.#_handleRowRowOver.bind(this, row, eventType),
+        this.#_handleRowHover.bind(this, row, eventType),
       );
     }
 
@@ -618,7 +622,7 @@ export default class BridgeMail extends ABridge {
    * @param {HTMLElement} row
    * @param {'mouseenter' | 'mouseleave'} eventType
    */
-  #_handleRowRowOver(row, eventType) {
+  #_handleRowHover(row, eventType) {
     const avatar = row.querySelector(HTMLBnumAvatarAction.TAG);
 
     if (avatar) avatar.dispatchEvent(new MouseEvent(eventType));

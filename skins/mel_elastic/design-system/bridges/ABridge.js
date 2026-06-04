@@ -1,5 +1,4 @@
 import { MelObject } from '../../../../plugins/mel_metapage/js/lib/mel_object.js';
-import BridgeEvents from './BridgeEvents.js';
 
 /**
  * Classe abstraite représentant un pont (Bridge) pour le design system.
@@ -21,7 +20,8 @@ export default class ABridge extends MelObject {
       this._p_onInit();
     });
 
-    BridgeEvents.Instance.callOnReady(() => this._p_onReady());
+    if (document.readyState !== 'loading') this._p_onReady();
+    else document.addEventListener('DOMContentLoaded', () => this._p_onReady());
 
     return this;
   }

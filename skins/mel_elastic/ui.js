@@ -594,11 +594,11 @@ $(document).ready(() => {
        * @type {Mel_CSS_Style_Sheet}
        */
       this.css_rules = new Mel_CSS_Style_Sheet();
-      const tabs = this.init_theme_tabs({});
+      // const tabs = this.init_theme_tabs({});
       return this.init_const()
-        .init_theme($(`#theme-panel .${tabs[ID_THEME_CONTENT].id}`))
+        .init_theme($(`#theme-panel .null`))
         .init_theme_pictures({
-          picturePannel: `#theme-panel .${tabs[ID_PICTURES_CONTENT].id}`,
+          picturePannel: `#theme-panel`,
         })
         .init_footer();
     }

@@ -41,8 +41,11 @@ export class ABaseLoader {
         ? this.#_modules.get(moduleName)
         : new Module();
 
+      // Convention : 'go' est le nom public de la méthode de cycle de vie,
+      // mais les modules déclarent leur exclusion sous le nom 'main' dans _p_ignoreLifeCycles.
+      const lifecycleName = funcName === 'go' ? 'main' : funcName;
       if (
-        !Module.Ignore.includes(funcName === 'go' ? 'main' : funcName) &&
+        !Module.Ignore.includes(lifecycleName) &&
         typeof moduleInstance[funcName] === 'function'
       ) {
         moduleInstance[funcName]();

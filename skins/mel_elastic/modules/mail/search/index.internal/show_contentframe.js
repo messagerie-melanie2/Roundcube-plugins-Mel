@@ -33,7 +33,8 @@ function _show_contentframe(original, show) {
       const headerLeft = document.querySelector(
         '#messagelist-header .header-left',
       );
-      const searchContainer = searchBar.parentElement?.parentElement;
+      const closestParentClass = 'header-container';
+      const searchContainer = searchBar.closest(`.${closestParentClass}`);
 
       headerLeft.style.display = null;
       searchContainer.style.justifyContent = null;
@@ -69,16 +70,14 @@ export function update_show_contentframe() {
   if (!rcmail || !rcube_webmail) {
     return;
   }
+
   const rcmail_show_contentframe = rcmail.show_contentframe;
   const rcmail__prototype__show_contentframe =
     rcube_webmail.prototype.show_contentframe;
 
-  rcmail.show_contentframe = _show_contentframe.bind(
-    rcmail,
-    rcmail_show_contentframe,
-  );
-  rcube_webmail.prototype.show_contentframe = _show_contentframe.bind(
-    rcmail,
+  const applyPatch = (original) => _show_contentframe.bind(rcmail, original);
+  rcmail.show_contentframe = applyPatch(rcmail_show_contentframe);
+  rcube_webmail.prototype.show_contentframe = applyPatch(
     rcmail__prototype__show_contentframe,
   );
 

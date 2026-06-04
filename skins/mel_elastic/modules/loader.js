@@ -10,6 +10,8 @@ const MODULES = [ElasticUiMail, Global, SecondaryNav];
  * @extends ABaseLoader<import('./core/ABaseModule.js').ABaseModule>
  */
 export class ModuleLoader extends ABaseLoader {
+  static #_instance = null;
+
   constructor() {
     super(MODULES);
   }
@@ -20,6 +22,6 @@ export class ModuleLoader extends ABaseLoader {
    * @readonly
    */
   static get Instance() {
-    return (ModuleLoader._instance ??= new ModuleLoader());
+    return (ModuleLoader.#_instance ??= new ModuleLoader());
   }
 }

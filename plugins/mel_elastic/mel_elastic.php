@@ -170,7 +170,7 @@ class mel_elastic extends bnum_plugin
 
             return sprintf(
                 '<bnum-folder id="%s" folder-id="%s" label="%s" unread="%d" icon="%s" level="%d" %s %s %s %s %s rel="%s">',
-                rcube::Q($d['html_id']),
+                rcube::Q($d['id']),
                 rcube::Q($d['id']),
                 rcube::Q($d['label']),
                 $d['unread'],

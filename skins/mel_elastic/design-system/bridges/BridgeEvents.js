@@ -131,7 +131,41 @@ export default class BridgeEvents extends MelObject {
    */
   onFolderToggle(e) {
     const { caller, collapsed } = e.detail;
-    this.treelist.triggerEvent(collapsed ? 'collapse' : 'expand', caller);
+
+    if (!this.isNullOrUndefined(caller) && !this.isNullOrUndefined(collapsed))
+      this.treelist.triggerEvent(collapsed ? 'collapse' : 'expand', caller);
+    else this.#_onFolderCallerFallback(e);
+  }
+
+  #_onFolderCallerFallback(e) {
+    const detail = this.#_getToggleEventDetail(e);
+
+    this.onFolderToggle({ detail });
+  }
+
+  #_getToggleEventDetail(e) {
+    let currentEvent = e;
+
+    const throwError = (error) => {
+      const text = 'Impossible de trouver les bonnes données du folder !';
+      BnumLog.error('BridgeEvents/#_getToggleEventDetail', text, error);
+      throw new Error(text);
+    };
+    try {
+      while (
+        currentEvent.detail &&
+        this.isNullOrUndefined(currentEvent.detail?.collapsed) &&
+        !this.isNullOrUndefined(currentEvent.detail.innerEvent)
+      ) {
+        currentEvent = e.detail.innerEvent;
+      }
+    } catch (error) {
+      throwError(error);
+    }
+
+    if (!currentEvent) throwError(undefined);
+
+    return currentEvent.detail;
   }
 
   /**

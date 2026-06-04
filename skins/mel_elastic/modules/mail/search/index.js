@@ -19,22 +19,22 @@ import { FilterUi, Ui } from './ui.js';
  * Sous module qui cherche la recherche
  */
 export class Search extends ABaseSubModule {
-  #__ui;
-  #___ui;
+  #_uiCache;
+  #_filterUiCache;
 
   /**
    * Retourne l'interface DOM du module, en initialisant une instance de Ui si nécessaire.
    * @returns {Ui}
    */
   get #_ui() {
-    return (this.#__ui ??= new Ui());
+    return (this.#_uiCache ??= new Ui());
   }
 
   /**
    * @returns {FilterUi}
    */
   get #_filterUi() {
-    return (this.#___ui ??= new FilterUi());
+    return (this.#_filterUiCache ??= new FilterUi());
   }
 
   constructor(parent) {

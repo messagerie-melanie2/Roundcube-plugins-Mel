@@ -132,13 +132,25 @@ export default class BridgeRc extends MelObject {
     );
   }
 
+  #_clearFolderlistMenu() {
+    const contextMenus = this.get_env('contextmenus');
+    if (!contextMenus) return;
+
+    const folderListKey = 'folderlist';
+    if (contextMenus?.[folderListKey]) contextMenus[folderListKey] = undefined;
+  }
+
+  #_activateFolderCommands(p) {
+    return this.rcmail()?.contextmenu?.activate_folder_commands?.(p);
+  }
+
   /**
    * Patch : initialise le menu contextuel des dossiers personnalisés.
    */
   patch_init_folder(_, __, el, props, events) {
     const finalEvents = events || {};
     document.getElementById('rcm_folderlist')?.remove?.();
-    this.get_env('contextmenus')['folderlist'] = undefined;
+    this.#_clearFolderlistMenu();
 
     const folderMenu = this.rcmail().contextmenu.init(
       { menu_name: 'folderlist', list_object: null, ...props },
@@ -147,7 +159,7 @@ export default class BridgeRc extends MelObject {
           this.get_env('contextmenu_messagecount_request')?.abort?.();
           this.update_env('contextmenu_messagecount_request', null);
         },
-        activate: (p) => this.rcmail().contextmenu.activate_folder_commands(p),
+        activate: (p) => this.#_activateFolderCommands(p),
         beforecommand: (p) => {
           const sourceId = this.get_env('context_menu_source_id');
           if (sourceId !== this.get_env('mailbox')) {

@@ -95,7 +95,7 @@ export class CheckboxSync {
       const proto = Object.getPrototypeOf(input);
       const descriptor = Object.getOwnPropertyDescriptor(proto, 'checked');
       if (descriptor) {
-        Object.defineProperty(input, input, descriptor); // remove instance override
+        Object.defineProperty(input, 'checked', descriptor); // remove instance override
         delete input.checked; // let it fall through to prototype again
       }
     });

@@ -68,18 +68,6 @@ export default class BridgeEvents extends MelObject {
   }
 
   /**
-   * Exécute une fonction lorsque le DOM est prêt.
-   * @param {Function} fn
-   */
-  callOnReady(fn) {
-    if (document.readyState !== 'loading') {
-      fn();
-    } else {
-      document.addEventListener('DOMContentLoaded', fn);
-    }
-  }
-
-  /**
    * Gère le clic sur un dossier (ferme les menus contextuels).
    * @param {Event} e
    */

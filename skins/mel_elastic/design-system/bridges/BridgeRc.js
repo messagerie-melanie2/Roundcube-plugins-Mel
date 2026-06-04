@@ -132,6 +132,10 @@ export default class BridgeRc extends MelObject {
     );
   }
 
+  /**
+   * Réinitialise l'entrée `folderlist` dans l'environnement des menus contextuels Roundcube.
+   * @private
+   */
   #_clearFolderlistMenu() {
     const contextMenus = this.get_env('contextmenus');
     if (!contextMenus) return;
@@ -140,15 +144,35 @@ export default class BridgeRc extends MelObject {
     if (contextMenus?.[folderListKey]) contextMenus[folderListKey] = undefined;
   }
 
+  /**
+   * Délègue l'activation des commandes du menu contextuel de dossiers à Roundcube.
+   * @param {Object} p - Paramètres d'activation transmis par le gestionnaire de menu
+   * @returns {*} Résultat de contextmenu.activate_folder_commands
+   * @private
+   */
   #_activateFolderCommands(p) {
     return this.rcmail()?.contextmenu?.activate_folder_commands?.(p);
   }
 
+  /**
+   * Supprime le nœud DOM du menu contextuel de dossiers et réinitialise son entrée en mémoire.
+   * Prépare une réinstanciation propre du menu via {@link #_buildFolderMenu}.
+   * @private
+   */
   #_resetFolderListMenu() {
     document.getElementById('rcm_folderlist')?.remove?.();
     this.#_clearFolderlistMenu();
   }
 
+  /**
+   * Construit et retourne l'instance du menu contextuel de dossiers.
+   * @param {Object} props - Propriétés transmises à contextmenu.init (menu_source, etc.)
+   * @param {Object} [events] - Gestionnaires d'événements supplémentaires à fusionner
+   *   (beforeactivate, activate, beforecommand, etc.)
+   * @returns {Object} Instance du menu contextuel initialisé
+   * @throws {Error} Si l'initialisation du menu contextuel échoue
+   * @private
+   */
   #_buildFolderMenu(props, events) {
     const finalEvents = events || {};
 
@@ -182,6 +206,13 @@ export default class BridgeRc extends MelObject {
     return foldermenu;
   }
 
+  /**
+   * Attache les listeners de clic et de menu contextuel sur chaque dossier
+   * correspondant au sélecteur CSS fourni.
+   * @param {string} el - Sélecteur CSS ciblant les éléments dossiers
+   * @param {Object} menu - Instance du menu contextuel à afficher au clic droit
+   * @private
+   */
   #_attachFolderListeners(el, menu) {
     for (const element of document.querySelectorAll(el)) {
       element.addEventListener('click', (e) => {

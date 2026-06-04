@@ -144,15 +144,15 @@ export default class BridgeRc extends MelObject {
     return this.rcmail()?.contextmenu?.activate_folder_commands?.(p);
   }
 
-  /**
-   * Patch : initialise le menu contextuel des dossiers personnalisés.
-   */
-  patch_init_folder(_, __, el, props, events) {
-    const finalEvents = events || {};
+  #_resetFolderListMenu() {
     document.getElementById('rcm_folderlist')?.remove?.();
     this.#_clearFolderlistMenu();
+  }
 
-    const folderMenu = this.rcmail().contextmenu.init(
+  #_buildFolderMenu(props, events) {
+    const finalEvents = events || {};
+
+    const foldermenu = this.rcmail()?.contextmenu?.init?.(
       { menu_name: 'folderlist', list_object: null, ...props },
       {
         beforeactivate: () => {
@@ -176,14 +176,32 @@ export default class BridgeRc extends MelObject {
       },
     );
 
+    if (!foldermenu)
+      throw new Error("Impossible d'initialiser le contextmenu !");
+
+    return foldermenu;
+  }
+
+  #_attachFolderListeners(el, menu) {
     for (const element of document.querySelectorAll(el)) {
       element.addEventListener('click', (e) => {
         BridgeEvents.Instance.onFolderClick(e);
       });
 
       element.addEventListener('contextmenu', (e) => {
-        BridgeEvents.Instance.onFolderContextMenu2(folderMenu, e);
+        BridgeEvents.Instance.onFolderContextMenu2(menu, e);
       });
     }
+  }
+
+  /**
+   * Patch : initialise le menu contextuel des dossiers personnalisés.
+   */
+  patch_init_folder(_, __, el, props, events) {
+    this.#_resetFolderListMenu();
+
+    const folderMenu = this.#_buildFolderMenu(props, events);
+
+    this.#_attachFolderListeners(el, folderMenu);
   }
 }

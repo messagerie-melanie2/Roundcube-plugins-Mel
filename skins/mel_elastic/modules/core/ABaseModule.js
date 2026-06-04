@@ -44,7 +44,7 @@ export class ABaseModule extends MelObject {
   }
 
   static Start() {
-    return new this.constructor();
+    return new this();
   }
 }
 

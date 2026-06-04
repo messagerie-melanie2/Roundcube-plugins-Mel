@@ -67,12 +67,16 @@ export default class BridgeEvents extends MelObject {
     return this;
   }
 
+  #_hideContextMenus(e) {
+    this.rcmail().contextmenu?.hide_all?.(e);
+  }
+
   /**
    * Gère le clic sur un dossier (ferme les menus contextuels).
    * @param {Event} e
    */
   onFolderClick(e) {
-    return this.rcmail().contextmenu.hide_all(e);
+    return this.#_hideContextMenus(e);
   }
 
   /**
@@ -83,7 +87,7 @@ export default class BridgeEvents extends MelObject {
   onFolderContextMenu2(folderMenu, e) {
     const source = e.target;
     source.blur();
-    this.rcmail().contextmenu.hide_all(e);
+    this.#_hideContextMenus(e);
     this.rcmail().contextmenu.show_one(
       e,
       source,
@@ -155,6 +159,49 @@ export default class BridgeEvents extends MelObject {
       }
       return false;
     }
+  }
+
+  #_getContextMenu() {
+    return this.rcmail().contextmenu;
+  }
+
+  #_setContextMenuPosition() {
+    const contextmenu = this.#_getContextMenu();
+
+    if (contextmenu) {
+      contextmenu.position ??= (e, menuElement) => {
+        menuElement.css({ left: '-1000px', top: '-1000px' }).show();
+
+        const win = $(window);
+        const winH = win.height() || 0;
+        const winW = win.width() || 0;
+        const menuH = menuElement.height() || 0;
+        const menuW = menuElement.width() || 0;
+        let top = e.pageY;
+        let left = e.pageX;
+
+        if (top + menuH > winH) {
+          top -= menuH;
+          if (top < 0) top = Math.max(0, (winH - menuH) / 2);
+        }
+
+        if (left + menuW > winW) {
+          left -= left + menuW - winW + 10;
+        }
+
+        menuElement
+          .hide()
+          .css({ left: Math.max(0, left) + 'px', top: top + 'px' });
+      };
+    }
+  }
+
+  #_positionContextMenu(p) {
+    const contextmenu = this.#_getContextMenu();
+
+    this.#_setContextMenuPosition();
+
+    contextmenu.position(p.originalEvent, $(`#${p.name}`));
   }
 
   /**
@@ -251,18 +298,32 @@ export default class BridgeEvents extends MelObject {
     return draftOpen;
   }
 
+  #_getMsgListRowUid(row) {
+    const uid = this.rcmail().message_list?.get_row_uid?.(row);
+
+    if (this.isNullOrUndefined(uid))
+      throw new Error("Impossible de trouver l'uid !");
+
+    return uid;
+  }
+
+  #_messageListSelect(uid) {
+    if (this.rcmail()?.message_list?.select)
+      this.rcmail().message_list.select(uid);
+    else throw new Error('Impossible de "select" un message !');
+  }
+
   /**
    * Gère le clic sur un mail (affichage ou édition brouillon).
    * @param {Event} ev
    */
   onMailClick(ev) {
-    const rcmail = this.rcmail();
     const row = ev.target.closest('tr') || ev.target;
-    const uid = rcmail.message_list.get_row_uid(row);
+    const uid = this.#_getMsgListRowUid(row);
 
     this.#_tryOpenDraft(uid);
 
-    rcmail.message_list.select(uid);
+    this.#_messageListSelect(uid);
   }
 
   /**
@@ -272,7 +333,7 @@ export default class BridgeEvents extends MelObject {
   onMailDblClick(ev) {
     const rcmail = this.rcmail();
     const row = ev.target.closest('tr') || ev.target;
-    const uid = rcmail.message_list.get_row_uid(row);
+    const uid = this.#_getMsgListRowUid(row);
 
     if (uid && !this.#_tryOpenDraft(uid)) rcmail.show_message(uid);
   }

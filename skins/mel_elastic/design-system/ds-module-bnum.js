@@ -647,8 +647,8 @@ function capitalizeLine(line) {
     return line.split(SPACE).map(capitalize).join(SPACE);
 }
 
-var css_248z$s = ":host([block]){display:block;flex:1;width:100%}:host(.flex){display:flex}:host(.center){align-items:center;justify-content:center;text-align:center}";
-var style$p = css_248z$s;
+var css_248z$t = ":host([block]){display:block;flex:1;width:100%}:host(.flex){display:flex}:host(.center){align-items:center;justify-content:center;text-align:center}";
+var style$q = css_248z$t;
 
 class BnumDOM {
     /**
@@ -1551,7 +1551,7 @@ class BnumElement extends HTMLElement {
 /**
  * Style commun à tous les BnumElement.
  */
-const BASE_STYLE = BnumElement.ConstructCSSStyleSheet(style$p);
+const BASE_STYLE = BnumElement.ConstructCSSStyleSheet(style$q);
 
 class RotomecaCookies {
     /**
@@ -2685,8 +2685,8 @@ class SchedulerArray {
     }
 }
 
-var css_248z$r = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{border-radius:var(--bnum-badge-border-radius,100px);display:var(--bnum-badge-display,inline-block);padding:var(--bnum-badge-padding,var(--bnum-space-xs,5px))}:host(:state(is-circle)){aspect-ratio:1;border-radius:var(--bnum-badge-circle-border-radius,100%)}:host(:state(is-circle)) span{align-items:center;display:flex;height:100%;justify-content:center}:host(:state(variation-primary)){background-color:var(--bnum-badge-primary-color,var(--bnum-color-primary,#000091));color:var(--bnum-badge-primary-text-color,var(--bnum-text-on-primary,#f5f5fe))}:host(:state(variation-secondary)){background-color:var(--bnum-badge-secondary-color,var(--bnum-color-secondary,#3a3a3a));color:var(--bnum-badge-secondary-text-color,var(--bnum-text-on-secondary,#fff))}:host(:state(variation-secondary)){border:var(--bnum-badge-type,solid) var(--bnum-badge-size,thin) var(--bnum-badge-secondary-text-color,var(--bnum-text-on-secondary,#fff))}:host(:state(variation-danger)){background-color:var(--bnum-badge-danger-color,var(--bnum-color-danger,#ce0500));color:var(--bnum-badge-danger-text-color,var(--bnum-text-on-danger,#f5f5fe))}";
-var style$o = css_248z$r;
+var css_248z$s = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{border-radius:var(--bnum-badge-border-radius,100px);display:var(--bnum-badge-display,inline-block);padding:var(--bnum-badge-padding,var(--bnum-space-xs,5px))}:host(:state(is-circle)){aspect-ratio:1;border-radius:var(--bnum-badge-circle-border-radius,100%)}:host(:state(is-circle)) span{align-items:center;display:flex;height:100%;justify-content:center}:host(:state(variation-primary)){background-color:var(--bnum-badge-primary-color,var(--bnum-color-primary,#000091));color:var(--bnum-badge-primary-text-color,var(--bnum-text-on-primary,#f5f5fe))}:host(:state(variation-secondary)){background-color:var(--bnum-badge-secondary-color,var(--bnum-color-secondary,#3a3a3a));color:var(--bnum-badge-secondary-text-color,var(--bnum-text-on-secondary,#fff))}:host(:state(variation-secondary)){border:var(--bnum-badge-type,solid) var(--bnum-badge-size,thin) var(--bnum-badge-secondary-text-color,var(--bnum-text-on-secondary,#fff))}:host(:state(variation-danger)){background-color:var(--bnum-badge-danger-color,var(--bnum-color-danger,#ce0500));color:var(--bnum-badge-danger-text-color,var(--bnum-text-on-danger,#f5f5fe))}";
+var style$p = css_248z$s;
 
 /**
  * Décorateur de classe pour définir un Web Component.
@@ -3190,7 +3190,7 @@ const STATE_VARIATION_PREFIX = 'variation-';
  */
 let HTMLBnumBadge = (() => {
     let _classDecorators = [Define({
-            styles: style$o,
+            styles: style$p,
             tag: TAG_BADGE,
         }), UpdateAll()];
     let _classDescriptor;
@@ -3660,11 +3660,11 @@ function OnIconChangeInitializer(event, self) {
     });
 }
 
-var css_248z$q = "@font-face{font-family:Material Symbols Outlined;font-style:normal;font-weight:200;src:url(fonts/material-symbol-v2.woff2) format(\"woff2\")}.material-symbols-outlined{word-wrap:normal;-moz-font-feature-settings:\"liga\";-moz-osx-font-smoothing:grayscale;direction:ltr;display:inline-block;font-family:Material Symbols Outlined;font-size:24px;font-style:normal;font-weight:400;letter-spacing:normal;line-height:1;text-transform:none;white-space:nowrap}";
-var symbols = css_248z$q;
+var css_248z$r = "@font-face{font-family:Material Symbols Outlined;font-style:normal;font-weight:200;src:url(fonts/material-symbol-v2.woff2) format(\"woff2\")}.material-symbols-outlined{word-wrap:normal;-moz-font-feature-settings:\"liga\";-moz-osx-font-smoothing:grayscale;direction:ltr;display:inline-block;font-family:Material Symbols Outlined;font-size:24px;font-style:normal;font-weight:400;letter-spacing:normal;line-height:1;text-transform:none;white-space:nowrap}";
+var symbols = css_248z$r;
 
-var css_248z$p = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{font-size:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem));font-variation-settings:\"FILL\" var(--bnum-icon-fill,0),\"wght\" var(--bnum-icon-weight,200),\"GRAD\" var(--bnum-icon-grad,0),\"opsz\" var(--bnum-icon-opsz,24);font-weight:var(--bnum-icon-font-weight,var(--bnum-font-weight-normal,normal));height:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem));line-height:var(--bnum-icon-line-height,1);width:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem))}:host(:state(loading)){opacity:0}";
-var style$n = css_248z$p;
+var css_248z$q = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{font-size:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem));font-variation-settings:\"FILL\" var(--bnum-icon-fill,0),\"wght\" var(--bnum-icon-weight,200),\"GRAD\" var(--bnum-icon-grad,0),\"opsz\" var(--bnum-icon-opsz,24);font-weight:var(--bnum-icon-font-weight,var(--bnum-font-weight-normal,normal));height:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem));line-height:var(--bnum-icon-line-height,1);width:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem))}:host(:state(loading)){opacity:0}";
+var style$o = css_248z$q;
 
 /**
  * Classe CSS utilisée pour les icônes Material Symbols.
@@ -3674,7 +3674,7 @@ const ICON_CLASS = 'material-symbols-outlined';
  * Feuille de style CSS pour les icônes Material Symbols.
  */
 const SYMBOLS = BnumElement.ConstructCSSStyleSheet(symbols.replaceAll(`.${ICON_CLASS}`, ':host'));
-const STYLE = BnumElement.ConstructCSSStyleSheet(style$n);
+const STYLE = BnumElement.ConstructCSSStyleSheet(style$o);
 /**
  * Composant personnalisé "bnum-icon" pour afficher une icône Material Symbol.
  *
@@ -3938,8 +3938,8 @@ let HTMLBnumIcon = (() => {
     return HTMLBnumIcon = _classThis;
 })();
 
-var css_248z$o = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{--bnum-icon-font-size:var(--bnum-font-size-xl);border-radius:var(--bnum-button-border-radius,0);cursor:var(--bnum-button-cursor,pointer);display:var(--bnum-button-display,inline-block);font-weight:var(--bnum-button-font-weight,center);height:var(--bnum-button-height,-moz-fit-content);height:var(--bnum-button-height,fit-content);line-height:1.5rem;padding:var(--bnum-button-padding,.5rem 1rem);transition:background-color .2s ease,color .2s ease;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}:host(:state(rounded)){border-radius:var(--bnum-button-rounded-border-radius,5px)}:host(:state(without-icon)){padding-bottom:var(--bnum-button-without-icon-padding-bottom,7.5px);padding-top:var(--bnum-button-without-icon-padding-top,7.5px)}:host(:disabled),:host(:state(disabled)){cursor:not-allowed;opacity:var(--bnum-button-disabled-opacity,.6);pointer-events:var(--bnum-button-disabled-pointer-events,none)}:host(:state(loading)){cursor:progress}:host(:state(icon)){--bnum-button-icon-gap:var(--custom-bnum-button-icon-margin,var(--bnum-space-s,10px))}:host(:state(icon))>.wrapper{align-items:center;display:flex;flex-direction:row;gap:var(--bnum-button-icon-gap);justify-content:var(--bnum-button-justify-content,center)}:host(:state(icon-pos-left)) .wrapper{flex-direction:row-reverse}:host(:focus-visible){outline:2px solid #0969da;outline-offset:2px}:host>.wrapper{align-items:var(--bnum-button-wrapper-align-items,center);display:var(--bnum-button-wrapper-display,flex)}:host bnum-icon.icon{display:var(--bnum-button-icon-display,flex)}:host bnum-icon.icon.hidden{display:none}:host bnum-icon.loader{display:var(--bnum-button-loader-display,flex)}:host(:is(:state(loading):state(without-icon-loading))) slot{display:none}@keyframes spin{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host .loader,:host .spin,:host(:state(loading)) .icon{animation:spin var(--bnum-button-spin-duration,.75s) var(--bnum-button-spin-timing,linear) var(--bnum-button-spin-iteration,infinite)}:host(:state(hide-text-on-small)) .slot,:host(:state(hide-text-on-touch)) .slot{display:var(--size-display-state,inline-block)}:host(:state(hide-text-on-small)) .icon,:host(:state(hide-text-on-touch)) .icon{margin-left:var(--size-margin-left-state,var(--custom-button-icon-margin-left))!important;margin-right:var(--size-margin-right-state,var(--custom-button-icon-margin-right))!important}:host .hidden,:host [hidden]{display:none!important}:host(:state(primary)){background-color:var(--bnum-button-primary-background-color,var(--bnum-color-primary));border:var(--bnum-button-primary-border,solid thin var(--bnum-button-primary-border-color,var(--bnum-color-primary)));color:var(--bnum-button-primary-text-color,var(--bnum-text-on-primary))}:host(:state(primary):hover){background-color:var(--bnum-button-primary-hover-background-color,var(--bnum-color-primary-hover));border:var(--bnum-button-primary-hover-border,solid thin var(--bnum-button-primary-hover-border-color,var(--bnum-color-primary-hover)));color:var(--bnum-button-primary-hover-text-color,var(--bnum-text-on-primary-hover))}:host(:state(primary):active){background-color:var(--bnum-button-primary-active-background-color,var(--bnum-color-primary-active));border:var(--bnum-button-primary-active-border,solid thin var(--bnum-button-primary-active-border-color,var(--bnum-color-primary-active)));color:var(--bnum-button-primary-active-text-color,var(--bnum-text-on-primary-active))}:host(:state(secondary)){background-color:var(--bnum-button-secondary-background-color,var(--bnum-color-secondary));border:var(--bnum-button-secondary-border,solid thin var(--bnum-button-secondary-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-text-color,var(--bnum-text-on-secondary))}:host(:state(secondary):hover){background-color:var(--bnum-button-secondary-hover-background-color,var(--bnum-color-secondary-hover));border:var(--bnum-button-secondary-hover-border,solid thin var(--bnum-button-secondary-hover-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-hover-text-color,var(--bnum-text-on-secondary-hover))}:host(:state(secondary):active){background-color:var(--bnum-button-secondary-active-background-color,var(--bnum-color-secondary-active));border:var(--bnum-button-secondary-active-border,solid thin var(--bnum-button-secondary-active-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-active-text-color,var(--bnum-text-on-secondary-active))}:host(:state(tertiary)){background-color:var(--bnum-button-tertiary-background-color,var(--bnum-color-tertiary));border:var(--bnum-button-tertiary-border,solid thin var(--bnum-button-tertiary-border-color,transparent));color:var(--bnum-button-tertiary-text-color,var(--bnum-text-on-tertiary))}:host(:state(tertiary):hover){background-color:var(--bnum-button-tertiary-hover-background-color,var(--bnum-color-secondary-hover));border:var(--bnum-button-tertiary-hover-border,solid thin var(--bnum-button-tertiary-hover-border-color,transparent));color:var(--bnum-button-tertiary-hover-text-color,var(--bnum-text-on-tertiary-hover))}:host(:state(tertiary):active){background-color:var(--bnum-button-tertiary-active-background-color,var(--bnum-color-secondary-active));border:var(--bnum-button-tertiary-active-border,solid thin var(--bnum-button-tertiary-active-border-color,transparent));color:var(--bnum-button-tertiary-active-text-color,var(--bnum-text-on-tertiary-active))}:host(:state(danger)){background-color:var(--bnum-button-danger-background-color,var(--bnum-color-danger));border:var(--bnum-button-danger-border,solid thin var(--bnum-button-danger-border-color,var(--bnum-color-danger)));color:var(--bnum-button-danger-text-color,var(--bnum-text-on-danger))}:host(:state(danger):hover){background-color:var(--bnum-button-danger-hover-background-color,var(--bnum-color-danger-hover));border:var(--bnum-button-danger-hover-border,solid thin var(--bnum-button-danger-hover-border-color,var(--bnum-color-danger-hover)));color:var(--bnum-button-danger-hover-text-color,var(--bnum-text-on-danger-hover))}:host(:state(danger):active){background-color:var(--bnum-button-danger-active-background-color,var(--bnum-color-danger-active));border:var(--bnum-button-danger-active-border,solid thin var(--bnum-button-danger-active-border-color,var(--bnum-color-danger-active)));color:var(--bnum-button-danger-active-text-color,var(--bnum-text-on-danger-active))}:host(:state(tertiary)){--bnum-button-justify-content:start;--bnum-button-font-weight:500;transition:none}";
-var style$m = css_248z$o;
+var css_248z$p = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{--bnum-icon-font-size:var(--bnum-font-size-xl);border-radius:var(--bnum-button-border-radius,0);cursor:var(--bnum-button-cursor,pointer);display:var(--bnum-button-display,inline-block);font-weight:var(--bnum-button-font-weight,center);height:var(--bnum-button-height,-moz-fit-content);height:var(--bnum-button-height,fit-content);line-height:1.5rem;padding:var(--bnum-button-padding,.5rem 1rem);transition:background-color .2s ease,color .2s ease;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}:host(:state(rounded)){border-radius:var(--bnum-button-rounded-border-radius,5px)}:host(:state(without-icon)){padding-bottom:var(--bnum-button-without-icon-padding-bottom,7.5px);padding-top:var(--bnum-button-without-icon-padding-top,7.5px)}:host(:disabled),:host(:state(disabled)){cursor:not-allowed;opacity:var(--bnum-button-disabled-opacity,.6);pointer-events:var(--bnum-button-disabled-pointer-events,none)}:host(:state(loading)){cursor:progress}:host(:state(icon)){--bnum-button-icon-gap:var(--custom-bnum-button-icon-margin,var(--bnum-space-s,10px))}:host(:state(icon))>.wrapper{align-items:center;display:flex;flex-direction:row;gap:var(--bnum-button-icon-gap);justify-content:var(--bnum-button-justify-content,center)}:host(:state(icon-pos-left)) .wrapper{flex-direction:row-reverse}:host(:focus-visible){outline:2px solid #0969da;outline-offset:2px}:host>.wrapper{align-items:var(--bnum-button-wrapper-align-items,center);display:var(--bnum-button-wrapper-display,flex)}:host bnum-icon.icon{display:var(--bnum-button-icon-display,flex)}:host bnum-icon.icon.hidden{display:none}:host bnum-icon.loader{display:var(--bnum-button-loader-display,flex)}:host(:is(:state(loading):state(without-icon-loading))) slot{display:none}@keyframes spin{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host .loader,:host .spin,:host(:state(loading)) .icon{animation:spin var(--bnum-button-spin-duration,.75s) var(--bnum-button-spin-timing,linear) var(--bnum-button-spin-iteration,infinite)}:host(:state(hide-text-on-small)) .slot,:host(:state(hide-text-on-touch)) .slot{display:var(--size-display-state,inline-block)}:host(:state(hide-text-on-small)) .icon,:host(:state(hide-text-on-touch)) .icon{margin-left:var(--size-margin-left-state,var(--custom-button-icon-margin-left))!important;margin-right:var(--size-margin-right-state,var(--custom-button-icon-margin-right))!important}:host .hidden,:host [hidden]{display:none!important}:host(:state(primary)){background-color:var(--bnum-button-primary-background-color,var(--bnum-color-primary));border:var(--bnum-button-primary-border,solid thin var(--bnum-button-primary-border-color,var(--bnum-color-primary)));color:var(--bnum-button-primary-text-color,var(--bnum-text-on-primary))}:host(:state(primary):hover){background-color:var(--bnum-button-primary-hover-background-color,var(--bnum-color-primary-hover));border:var(--bnum-button-primary-hover-border,solid thin var(--bnum-button-primary-hover-border-color,var(--bnum-color-primary-hover)));color:var(--bnum-button-primary-hover-text-color,var(--bnum-text-on-primary-hover))}:host(:state(primary):active){background-color:var(--bnum-button-primary-active-background-color,var(--bnum-color-primary-active));border:var(--bnum-button-primary-active-border,solid thin var(--bnum-button-primary-active-border-color,var(--bnum-color-primary-active)));color:var(--bnum-button-primary-active-text-color,var(--bnum-text-on-primary-active))}:host(:state(secondary)){background-color:var(--bnum-button-secondary-background-color,var(--bnum-color-secondary));border:var(--bnum-button-secondary-border,solid thin var(--bnum-button-secondary-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-text-color,var(--bnum-text-on-secondary))}:host(:state(secondary):hover){background-color:var(--bnum-button-secondary-hover-background-color,var(--bnum-color-secondary-hover));border:var(--bnum-button-secondary-hover-border,solid thin var(--bnum-button-secondary-hover-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-hover-text-color,var(--bnum-text-on-secondary-hover))}:host(:state(secondary):active){background-color:var(--bnum-button-secondary-active-background-color,var(--bnum-color-secondary-active));border:var(--bnum-button-secondary-active-border,solid thin var(--bnum-button-secondary-active-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-active-text-color,var(--bnum-text-on-secondary-active))}:host(:state(tertiary)){background-color:var(--bnum-button-tertiary-background-color,var(--bnum-color-tertiary));border:var(--bnum-button-tertiary-border,solid thin var(--bnum-button-tertiary-border-color,transparent));color:var(--bnum-button-tertiary-text-color,var(--bnum-text-on-tertiary))}:host(:state(tertiary):hover){background-color:var(--bnum-button-tertiary-hover-background-color,var(--bnum-color-secondary-hover));border:var(--bnum-button-tertiary-hover-border,solid thin var(--bnum-button-tertiary-hover-border-color,transparent));color:var(--bnum-button-tertiary-hover-text-color,var(--bnum-text-on-tertiary-hover))}:host(:state(tertiary):active){background-color:var(--bnum-button-tertiary-active-background-color,var(--bnum-color-secondary-active));border:var(--bnum-button-tertiary-active-border,solid thin var(--bnum-button-tertiary-active-border-color,transparent));color:var(--bnum-button-tertiary-active-text-color,var(--bnum-text-on-tertiary-active))}:host(:state(danger)){background-color:var(--bnum-button-danger-background-color,var(--bnum-color-danger));border:var(--bnum-button-danger-border,solid thin var(--bnum-button-danger-border-color,var(--bnum-color-danger)));color:var(--bnum-button-danger-text-color,var(--bnum-text-on-danger))}:host(:state(danger):hover){background-color:var(--bnum-button-danger-hover-background-color,var(--bnum-color-danger-hover));border:var(--bnum-button-danger-hover-border,solid thin var(--bnum-button-danger-hover-border-color,var(--bnum-color-danger-hover)));color:var(--bnum-button-danger-hover-text-color,var(--bnum-text-on-danger-hover))}:host(:state(danger):active){background-color:var(--bnum-button-danger-active-background-color,var(--bnum-color-danger-active));border:var(--bnum-button-danger-active-border,solid thin var(--bnum-button-danger-active-border-color,var(--bnum-color-danger-active)));color:var(--bnum-button-danger-active-text-color,var(--bnum-text-on-danger-active))}:host(:state(tertiary)){--bnum-button-justify-content:start;--bnum-button-font-weight:500;transition:none}";
+var style$n = css_248z$p;
 
 // core/decorators/ui.ts
 function UI(selectorMap, options) {
@@ -4119,7 +4119,7 @@ let HTMLBnumButton = (() => {
     let _classDecorators = [Define({
             tag: TAG_BUTTON,
             template: TEMPLATE$g,
-            styles: style$m,
+            styles: style$n,
         })];
     let _classDescriptor;
     let _classExtraInitializers = [];
@@ -5355,8 +5355,8 @@ function OnLinkedClickEventInitializer(event, instance) {
     });
 }
 
-var css_248z$n = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{cursor:pointer;font-variation-settings:\"wght\" 400;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}:host(:hover){--bnum-icon-fill:1}:host(:active){--bnum-icon-fill:1;--bnum-icon-weight:700;--bnum-icon-grad:200;--bnum-icon-opsz:20}:host(:disabled),:host([disabled]){cursor:not-allowed;opacity:var(--bnum-button-disabled-opacity,.6);pointer-events:var(--bnum-button-disabled-pointer-events,none)}";
-var style$l = css_248z$n;
+var css_248z$o = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{cursor:pointer;font-variation-settings:\"wght\" 400;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}:host(:hover){--bnum-icon-fill:1}:host(:active){--bnum-icon-fill:1;--bnum-icon-weight:700;--bnum-icon-grad:200;--bnum-icon-opsz:20}:host(:disabled),:host([disabled]){cursor:not-allowed;opacity:var(--bnum-button-disabled-opacity,.6);pointer-events:var(--bnum-button-disabled-pointer-events,none)}";
+var style$m = css_248z$o;
 
 //#region Global Constants
 const ID_ICON$1 = 'icon';
@@ -5379,7 +5379,7 @@ const TEMPLATE$f = (h(HTMLBnumIcon, { id: ID_ICON$1, children: h("slot", {}) }))
  * @slot (default) - Contenu de l'icône (nom de l'icône à afficher)
  */
 let HTMLBnumButtonIcon = (() => {
-    let _classDecorators = [Define({ styles: style$l, tag: TAG_ICON_BUTTON, template: TEMPLATE$f }), Observe('click')];
+    let _classDecorators = [Define({ styles: style$m, tag: TAG_ICON_BUTTON, template: TEMPLATE$f }), Observe('click')];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
@@ -5523,8 +5523,8 @@ let HTMLBnumButtonIcon = (() => {
     return HTMLBnumButtonIcon = _classThis;
 })();
 
-var css_248z$m = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host .addons__inner{position:relative;width:100%}:host #input__button,:host #input__icon,:host .state{display:none}:host(:disabled),:host(:state(disabled)){cursor:not-allowed;opacity:.6;pointer-events:none}:host(:state(button)) .addons{display:flex;gap:0}:host(:state(button)) .addons .addon__inner{flex:1}:host(:state(button)) input{border-top-right-radius:0}:host(:state(button)) #input__button,:host(:state(button)) input{--bnum-input-line-color:var(--bnum-color-primary,#000091)}:host(:state(button)) #input__button{border-bottom-left-radius:0;border-bottom-right-radius:0;border-top-left-radius:0;display:block;height:auto}:host(:state(button):state(obi)) #input__button{--bnum-button-icon-gap:0;display:flex}:host(:state(icon)) #input__icon{display:block;position:absolute;right:var(--bnum-input-icon-right,10px);top:var(--bnum-input-icon-top,10px)}:host(:state(state):state(success)) #input__button,:host(:state(state):state(success)) input{--bnum-input-line-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(state):state(error)) #input__button,:host(:state(state):state(error)) input{--bnum-input-line-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}";
-var style$k = css_248z$m;
+var css_248z$n = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host .addons__inner{position:relative;width:100%}:host #input__button,:host #input__icon,:host .state{display:none}:host(:disabled),:host(:state(disabled)){cursor:not-allowed;opacity:.6;pointer-events:none}:host(:state(button)) .addons{display:flex;gap:0}:host(:state(button)) .addons .addon__inner{flex:1}:host(:state(button)) input{border-top-right-radius:0}:host(:state(button)) #input__button,:host(:state(button)) input{--bnum-input-line-color:var(--bnum-color-primary,#000091)}:host(:state(button)) #input__button{border-bottom-left-radius:0;border-bottom-right-radius:0;border-top-left-radius:0;display:block;height:auto}:host(:state(button):state(obi)) #input__button{--bnum-button-icon-gap:0;display:flex}:host(:state(icon)) #input__icon{display:block;position:absolute;right:var(--bnum-input-icon-right,10px);top:var(--bnum-input-icon-top,10px)}:host(:state(state):state(success)) #input__button,:host(:state(state):state(success)) input{--bnum-input-line-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(state):state(error)) #input__button,:host(:state(state):state(error)) input{--bnum-input-line-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}";
+var style$l = css_248z$n;
 
 const ID_INPUT$1 = 'bnum-input';
 const ID_HINT_TEXT = 'hint-text';
@@ -5592,11 +5592,11 @@ function OnButtonClickedInitializer(event, instance) {
     });
 }
 
-var css_248z$l = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}.label-container{--internal-gap:var(--bnum-input-gap,0.5rem);display:flex;flex-direction:column;gap:var(--internal-gap,.5rem);margin-bottom:var(--bnum-input-container-margin-bottom,var(--internal-gap,.5rem))}.label-container--label{font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-label-size,var(--bnum-font-size-m));line-height:var(--bnum-font-label-line-height,var(--bnum-font-height-text-m))}.label-container--hint{color:var(--bnum-input-hint-text-color,var(--bnum-text-hint,#666));font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-hint-size,var(--bnum-font-size-xs));line-height:var(--bnum-font-hint-line-height,var(--bnum-font-height-text-xs))}.input-like{background-color:var(--bnum-input-background-color,var(--bnum-color-input,#eee));border:none;border-radius:.25rem .25rem 0 0;box-shadow:var(--bnum-input-box-shadow,inset 0 -2px 0 0 var(--bnum-input-line-color,var(--bnum-color-input-border,#3a3a3a)));color:var(--bnum-input-color,var(--bnum-text-on-input,#666));display:block;font-size:1rem;line-height:1.5rem;padding:.5rem 1rem;width:100%}";
-var base = css_248z$l;
+var css_248z$m = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}.label-container{--internal-gap:var(--bnum-input-gap,0.5rem);display:flex;flex-direction:column;gap:var(--internal-gap,.5rem);margin-bottom:var(--bnum-input-container-margin-bottom,var(--internal-gap,.5rem))}.label-container--label{font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-label-size,var(--bnum-font-size-m));line-height:var(--bnum-font-label-line-height,var(--bnum-font-height-text-m))}.label-container--hint{color:var(--bnum-input-hint-text-color,var(--bnum-text-hint,#666));font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-hint-size,var(--bnum-font-size-xs));line-height:var(--bnum-font-hint-line-height,var(--bnum-font-height-text-xs))}.input-like{background-color:var(--bnum-input-background-color,var(--bnum-color-input,#eee));border:none;border-radius:.25rem .25rem 0 0;box-shadow:var(--bnum-input-box-shadow,inset 0 -2px 0 0 var(--bnum-input-line-color,var(--bnum-color-input-border,#3a3a3a)));color:var(--bnum-input-color,var(--bnum-text-on-input,#666));display:block;font-size:1rem;line-height:1.5rem;padding:.5rem 1rem;width:100%}";
+var base = css_248z$m;
 
-var css_248z$k = ":host(:state(state)){border-left:2px solid var(--internal-border-color);display:block;padding-left:10px}:host(:state(state)) .state{align-items:center;color:var(--internal-color);display:flex;font-size:.75rem;margin-top:1rem}:host(:state(state)) .state bnum-icon{--bnum-icon-font-size:1rem;margin-right:5px}:host(:state(state)) .hint-label{color:var(--internal-color)}:host(:state(state)) .error,:host(:state(state)) .success{display:none;margin-bottom:-4px}:host(:state(state):state(success)){--internal-border-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(state):state(success)) .hint-label,:host(:state(state):state(success)) .state{--internal-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(state):state(success)) .success{display:block}:host(:state(state):state(error)){--internal-border-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}:host(:state(state):state(error)) .hint-label,:host(:state(state):state(error)) .state{--internal-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}:host(:state(state):state(error)) .error{display:block}";
-var styleStates = css_248z$k;
+var css_248z$l = ":host(:state(state)){border-left:2px solid var(--internal-border-color);display:block;padding-left:10px}:host(:state(state)) .state{align-items:center;color:var(--internal-color);display:flex;font-size:.75rem;margin-top:1rem}:host(:state(state)) .state bnum-icon{--bnum-icon-font-size:1rem;margin-right:5px}:host(:state(state)) .hint-label{color:var(--internal-color)}:host(:state(state)) .error,:host(:state(state)) .success{display:none;margin-bottom:-4px}:host(:state(state):state(success)){--internal-border-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(state):state(success)) .hint-label,:host(:state(state):state(success)) .state{--internal-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(state):state(success)) .success{display:block}:host(:state(state):state(error)){--internal-border-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}:host(:state(state):state(error)) .hint-label,:host(:state(state):state(error)) .state{--internal-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}:host(:state(state):state(error)) .error{display:block}";
+var styleStates = css_248z$l;
 
 const INPUT_BASE_STYLE = BnumElementInternal.ConstructCSSStyleSheet(base);
 const INPUT_STYLE_STATES = BnumElementInternal.ConstructCSSStyleSheet(styleStates);
@@ -5737,7 +5737,7 @@ let HTMLBnumInput = (() => {
             tag: TAG_INPUT,
             // eslint-disable-next-line no-restricted-syntax
             template: Render(),
-            styles: [INPUT_BASE_STYLE, INPUT_STYLE_STATES, style$k],
+            styles: [INPUT_BASE_STYLE, INPUT_STYLE_STATES, style$l],
         }), Observe(OBSERVED_ATTRIBUTES)];
     let _classDescriptor;
     let _classExtraInitializers = [];
@@ -6383,10 +6383,10 @@ let HTMLBnumInput = (() => {
     return _classThis;
 })();
 
-var css_248z$j = ":host(:state(icon)) #input__icon{--bnum-input-icon-right:var(--bnum-input-number-icon-right,40px)}";
-var style$j = css_248z$j;
+var css_248z$k = ":host(:state(icon)) #input__icon{--bnum-input-icon-right:var(--bnum-input-number-icon-right,40px)}";
+var style$k = css_248z$k;
 
-const SHEET$3 = HTMLBnumInput.ConstructCSSStyleSheet(style$j);
+const SHEET$3 = HTMLBnumInput.ConstructCSSStyleSheet(style$k);
 const TYPE$2 = 'number';
 /**
  * Input nombre.
@@ -6632,8 +6632,8 @@ let HTMLBnumInputDate = (() => {
     return _classThis;
 })();
 
-var css_248z$i = ":host .container{position:relative}:host #input-search-actions-container{display:flex;position:absolute;right:50px;top:5px}:host #input-search-actions-container #input-clear-button{display:none}:host(:state(value)) #input-search-actions-container #input-clear-button{display:inline-block}";
-var style$i = css_248z$i;
+var css_248z$j = ":host .container{position:relative}:host #input-search-actions-container{display:flex;position:absolute;right:50px;top:5px}:host #input-search-actions-container #input-clear-button{display:none}:host(:state(value)) #input-search-actions-container #input-clear-button{display:inline-block}";
+var style$j = css_248z$j;
 
 const ID_ACTIONS_CONTAINER = 'input-search-actions-container';
 const ID_CLEAR_BUTTON = 'input-clear-button';
@@ -6697,7 +6697,7 @@ function Listen(eventName, { selector = null } = {}) {
     };
 }
 
-const SHEET$2 = HTMLBnumInput.ConstructCSSStyleSheet(style$i);
+const SHEET$2 = HTMLBnumInput.ConstructCSSStyleSheet(style$j);
 //#region Template
 const TEMPLATE$e = (h("div", { id: ID_ACTIONS_CONTAINER, part: ID_ACTIONS_CONTAINER, children: [h(HTMLBnumButtonIcon, { id: ID_CLEAR_BUTTON, children: "close" }), h("slot", { name: SLOT_ACTIONS })] }));
 //#endregion Template
@@ -7173,6 +7173,272 @@ let HTMLBnumInputTime = (() => {
                 ...options,
             };
             return super.Create(label, finalOptions);
+        }
+    });
+    return _classThis;
+})();
+
+var css_248z$i = ":host(:state(not-empty)){display:contents}";
+var style$i = css_248z$i;
+
+/**
+ * Composant de substitution transparent qui se comporte comme un `<span>` vide
+ * lorsqu'aucun nœud ne lui est assigné, ou comme un conteneur natif dès qu'un
+ * nœud est présent.
+ *
+ * @remarks
+ * Le contenu est isolé dans un shadow DOM en mode ouvert.
+ * À la déconnexion, le shadow DOM est intentionnellement préservé afin de
+ * permettre une restauration automatique lors d'une reconnexion au document.
+ *
+ * @example Assignation programmatique
+ * ```typescript
+ * const placeholder = document.querySelector('bnum-placeholder') as HTMLBnumPlaceholder;
+ * const div = document.createElement('div');
+ * div.textContent = 'Contenu dynamique';
+ * placeholder.set(div);
+ * ```
+ *
+ * @example Réinitialisation complète
+ * ```typescript
+ * placeholder.clear();
+ * console.log(placeholder.isEmpty); // true
+ * ```
+ */
+let HTMLBnumPlaceholder = (() => {
+    let _classDecorators = [Define({
+            tag: 'bnum-placeholder',
+            styles: style$i,
+        })];
+    let _classDescriptor;
+    let _classExtraInitializers = [];
+    let _classThis;
+    let _classSuper = BnumElementInternal;
+    (class extends _classSuper {
+        static { _classThis = this; }
+        static {
+            const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
+            __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+            _classThis = _classDescriptor.value;
+            if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+            __runInitializers(_classThis, _classExtraInitializers);
+        }
+        //#region Private Fields
+        /**
+         * Nœud DOM actuellement contenu dans le composant.
+         * Vaut `null` ou `undefined` lorsque le composant est vide.
+         *
+         * @internal
+         */
+        #_data;
+        //#endregion Private Fields
+        //#region Getters/Setters
+        /**
+         * Indique si le composant est actuellement vide.
+         *
+         * @returns `true` si aucun nœud n'est assigné, `false` sinon.
+         */
+        get isEmpty() {
+            return !this.#_data;
+        }
+        //#endregion Getters/Setters
+        //#region Lifecycle
+        constructor() {
+            super();
+        }
+        /**
+         * Appelé automatiquement lors de l'insertion du composant dans le DOM.
+         *
+         * @remarks
+         * Priorité d'initialisation :
+         * 1. Si le shadow DOM contient déjà un nœud, il est enregistré tel quel.
+         * 2. Sinon, si le DOM léger contient un nœud enfant, il est déplacé dans
+         *    le shadow DOM via {@link set}.
+         *
+         * @override
+         */
+        connectedCallback() {
+            super.connectedCallback();
+            const root = this.#_getOrCreateShadow();
+            if (root.firstElementChild)
+                this.#_setElementWithState(root.firstElementChild);
+            else if (this.firstElementChild)
+                this.set(this.firstElementChild);
+        }
+        /**
+         * Appelé par le `disconnectedCallback` de la classe parente lors du retrait
+         * du composant du DOM.
+         *
+         * @remarks
+         * Réinitialise la référence interne et l'état du composant, mais
+         * **préserve le contenu du shadow DOM** pour permettre une restauration
+         * transparente lors d'une reconnexion ultérieure.
+         *
+         * Comportement comparé à {@link clear} :
+         * | Opération        | `_p_detach` | `clear` |
+         * |------------------|:-----------:|:-------:|
+         * | Référence interne | ✅ reset   | ✅ reset |
+         * | État `not-empty`  | ✅ reset   | ✅ reset |
+         * | Shadow DOM        | ❌ préservé | ✅ vidé  |
+         *
+         * @override
+         */
+        _p_detach() {
+            super._p_detach();
+            this.#_clearData().#_removeState();
+        }
+        //#endregion Lifecycle
+        //#region Public Methods
+        /**
+         * Retourne le nœud DOM actuellement stocké dans le composant.
+         *
+         * @returns Le nœud assigné, ou `null`/`undefined` si le composant est vide.
+         */
+        get() {
+            return this.#_data;
+        }
+        /**
+         * Assigne un nœud au composant et l'insère dans le shadow DOM.
+         *
+         * @remarks
+         * L'opération est sans effet si le composant contient déjà un nœud.
+         * Pour remplacer le contenu existant, appeler {@link clear} au préalable.
+         *
+         * @param element - Nœud DOM à insérer dans le composant.
+         * @returns `true` si le nœud a été inséré, `false` si le composant était
+         *          déjà occupé.
+         */
+        set(element) {
+            if (!this.isEmpty)
+                return false;
+            const node = this.#_setElementWithState(element);
+            this.#_getOrCreateShadow().appendChild(node);
+            return true;
+        }
+        /**
+         * Réinitialise complètement le composant : efface la référence interne,
+         * vide le shadow DOM et retire l'état `not-empty`.
+         *
+         * @remarks
+         * Voir {@link _p_detach} pour la différence de comportement lors d'une
+         * déconnexion du DOM.
+         *
+         * @returns L'instance courante pour permettre le chaînage.
+         */
+        clear() {
+            return this.#_clearData().#_clearShadowroot().#_removeState();
+        }
+        //#endregion Public Methods
+        //#region Private Methods
+        /**
+         * Récupère le shadow root existant ou en crée un nouveau en mode ouvert.
+         *
+         * @returns Le shadow root du composant.
+         * @internal
+         */
+        #_getOrCreateShadow() {
+            let root;
+            if (!this.shadowRoot)
+                root = this.attachShadow({ mode: 'open' });
+            else
+                root = this.shadowRoot;
+            return root;
+        }
+        /**
+         * Assigne le nœud fourni à {@link #_data} et le retourne.
+         *
+         * @param element - Nœud à stocker.
+         * @returns Le nœud stocké.
+         * @internal
+         */
+        #_setElement(element) {
+            this.#_data = element;
+            return this.#_data;
+        }
+        /**
+         * Active l'état `not-empty` sur le composant.
+         *
+         * @returns L'instance courante pour permettre le chaînage.
+         * @internal
+         */
+        #_setState() {
+            return this._p_addState('not-empty');
+        }
+        /**
+         * Active l'état `not-empty` puis enregistre le nœud fourni.
+         *
+         * @param element - Nœud à stocker.
+         * @returns Le nœud stocké.
+         * @internal
+         */
+        #_setElementWithState(element) {
+            return this.#_setState().#_setElement(element);
+        }
+        /**
+         * Réinitialise {@link #_data} à `null`.
+         *
+         * @returns L'instance courante pour permettre le chaînage.
+         * @internal
+         */
+        #_clearData() {
+            this.#_data = null;
+            return this;
+        }
+        /**
+         * Vide le contenu du shadow DOM.
+         *
+         * @returns L'instance courante pour permettre le chaînage.
+         * @internal
+         */
+        #_clearShadowroot() {
+            this.#_getOrCreateShadow().innerHTML = EMPTY_STRING;
+            return this;
+        }
+        /**
+         * Supprime l'état `not-empty` du composant.
+         *
+         * @returns L'instance courante pour permettre le chaînage.
+         * @internal
+         */
+        #_removeState() {
+            return this._p_removeState('not-empty');
+        }
+        //#endregion Private Methods
+        /**
+         * Crée et retourne une nouvelle instance de {@link HTMLBnumPlaceholder}
+         * via `document.createElement`.
+         *
+         * @remarks
+         * Méthode de fabrique statique à privilégier sur l'instanciation directe.
+         * Si `node` est fourni, il est injecté dans le DOM léger avant la connexion
+         * au document — {@link connectedCallback} se chargera de le transférer
+         * automatiquement dans le shadow DOM.
+         *
+         * @param node - Nœud DOM initial à insérer dans le composant. Ignoré si
+         *               `null` ou `undefined`.
+         * @returns Une nouvelle instance de {@link HTMLBnumPlaceholder}, prête à
+         *          être insérée dans le DOM.
+         *
+         * @example Création sans contenu
+         * ```typescript
+         * const placeholder = HTMLBnumPlaceholder.Create();
+         * document.body.appendChild(placeholder);
+         * ```
+         *
+         * @example Création avec un nœud initial
+         * ```typescript
+         * const div = document.createElement('div');
+         * div.textContent = 'Contenu initial';
+         *
+         * const placeholder = HTMLBnumPlaceholder.Create(div);
+         * document.body.appendChild(placeholder);
+         * ```
+         */
+        static Create(node) {
+            const created = document.createElement(this.TAG);
+            if (node)
+                created.appendChild(node);
+            return created;
         }
     });
     return _classThis;
@@ -16326,5 +16592,5 @@ if (typeof window !== 'undefined' && window.DsBnumConfig) {
     });
 }
 
-export { BREAKPOINTS, BnumElement, BnumRadioCheckedChangeEvent, ButtonVariation, ColumnSlot, BnumConfig as Config, RotomecaCssProperty as DsCssProperty, RotomecaCssRule as DsCssRule, RotomecaDocument as DsDocument, HTMLBnumAvatarAction, HTMLBnumBadge, HTMLBnumButton, HTMLBnumButtonIcon, HTMLBnumCardAgenda, HTMLBnumCardElement, HTMLBnumCardEmail, HTMLBnumCardItem, HTMLBnumCardItemAgenda, HTMLBnumCardItemMail, HTMLBnumCardList, HTMLBnumCardTitle, HTMLBnumColumn, HTMLBnumDangerButton, HTMLBnumDate, HTMLBnumFolder, HTMLBnumFolderList, HTMLBnumFragment, HTMLBnumHeader, HTMLBnumHide, HTMLBnumIcon, HTMLBnumInput, HTMLBnumInputDate, HTMLBnumInputNumber, HTMLBnumInputSearch, HTMLBnumInputText, HTMLBnumInputTime, HTMLBnumPrimaryButton, HTMLBnumRadio, HTMLBnumRadioGroup, HTMLBnumSecondaryButton, HTMLBnumSegmentedControl, HTMLBnumSegmentedItem, HTMLBnumSelect, HTMLBnumSwitch, HTMLBnumTertiaryButton, HTMLBnumTree, HideTextOnLayoutSize, INPUT_BASE_STYLE, INPUT_STYLE_STATES, IconPosition, MODES };
+export { BREAKPOINTS, BnumElement, BnumRadioCheckedChangeEvent, ButtonVariation, ColumnSlot, BnumConfig as Config, RotomecaCssProperty as DsCssProperty, RotomecaCssRule as DsCssRule, RotomecaDocument as DsDocument, HTMLBnumAvatarAction, HTMLBnumBadge, HTMLBnumButton, HTMLBnumButtonIcon, HTMLBnumCardAgenda, HTMLBnumCardElement, HTMLBnumCardEmail, HTMLBnumCardItem, HTMLBnumCardItemAgenda, HTMLBnumCardItemMail, HTMLBnumCardList, HTMLBnumCardTitle, HTMLBnumColumn, HTMLBnumDangerButton, HTMLBnumDate, HTMLBnumFolder, HTMLBnumFolderList, HTMLBnumFragment, HTMLBnumHeader, HTMLBnumHide, HTMLBnumIcon, HTMLBnumInput, HTMLBnumInputDate, HTMLBnumInputNumber, HTMLBnumInputSearch, HTMLBnumInputText, HTMLBnumInputTime, HTMLBnumPlaceholder, HTMLBnumPrimaryButton, HTMLBnumRadio, HTMLBnumRadioGroup, HTMLBnumSecondaryButton, HTMLBnumSegmentedControl, HTMLBnumSegmentedItem, HTMLBnumSelect, HTMLBnumSwitch, HTMLBnumTertiaryButton, HTMLBnumTree, HideTextOnLayoutSize, INPUT_BASE_STYLE, INPUT_STYLE_STATES, IconPosition, MODES };
 //# sourceMappingURL=ds-module-bnum.js.map

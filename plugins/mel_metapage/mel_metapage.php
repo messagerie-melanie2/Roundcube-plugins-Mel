@@ -646,6 +646,14 @@ class mel_metapage extends bnum_plugin
                 'dn' => $user->dn
             ]);
 
+            $this->set_envs([
+                '_template_current_user_name' => $user->firstname,
+                '_template_current_user_lastname' => $user->lastname,
+                '_template_current_user_full' => $user->fullname,
+                '_template_current_user_email' => $user->email
+            ]);
+
+
             //            $this->include_script('js/actions/startup.js');
             if (rcube_utils::get_input_value(self::FROM_KEY, rcube_utils::INPUT_GET) !== self::FROM_VALUE) {
                 $this->include_script('js/actions/startup.js');

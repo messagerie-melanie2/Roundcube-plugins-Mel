@@ -17,7 +17,7 @@ export class FolderColor extends AFolderModifier {
     await super.generate_context_menu();
     this.rcmail().register_command(
       'update-color-folder',
-      (args) => {
+      () => {
         const $link = $('.popover .color-folder');
         const folder = $link.attr('rel');
         const color =

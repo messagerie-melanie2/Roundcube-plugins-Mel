@@ -2,6 +2,7 @@ import { BnumLog } from '../../mel_metapage/js/lib/classes/bnum_log.js';
 import { AVATAR_TAG } from '../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/avatar.js';
 import { MelObject } from '../../mel_metapage/js/lib/mel_object.js';
 import { Commands } from './commands.js';
+import { BnumModuleInitEventCleaner } from './lib/helpers/init-env-cleaner.js';
 
 /**
  * Class regroupant les différents modules du bnum
@@ -11,6 +12,7 @@ class Main extends MelObject {
     super();
     this.#_checkIfAvatarExist();
     new Commands();
+    new BnumModuleInitEventCleaner();
   }
 
   #_checkIfAvatarExist() {

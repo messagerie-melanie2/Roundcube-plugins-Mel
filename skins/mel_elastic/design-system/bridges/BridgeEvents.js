@@ -179,7 +179,6 @@ export default class BridgeEvents extends MelObject {
       target.getAttribute('folder-id') || target.getAttribute('rel');
 
     if (folderId) {
-      rcube_event.cancel(innerEvent);
       this.update_env('context_menu_source_id', folderId);
       menu.show_menu(target, innerEvent);
 

@@ -1,3 +1,4 @@
+import { HTMLBnumPlaceholder as DSHTMLBnumPlaceholder } from '../../../../../../../skins/mel_elastic/design-system/ds-module-bnum.js';
 import ABaseMelObject from '../../../base_mel_object.js';
 import { BaseStorage } from '../../../classes/base_storage.js';
 import { Random } from '../../../classes/random.js';
@@ -906,34 +907,7 @@ class BnumHtmlCenteredFlexContainer extends BnumHtmlFlexContainer {
 
 BnumHtmlCenteredFlexContainer.TAG = 'bnum-centered-flex-container';
 
-/**
- * @class
- * @classdesc
- * @extends HtmlCustomTag
- */
-class HTMLBnumPlaceholder extends HtmlCustomTag {
-  constructor() {
-    super();
-  }
-
-  /**
-   * Permet de créer un élément de type HTMLBnumPlaceholder
-   * @returns {HTMLBnumPlaceholder}
-   * @static
-   */
-  static CreateNode() {
-    return document.createElement(this.TAG);
-  }
-
-  /**
-   * @type {string}
-   * @readonly
-   * @static
-   */
-  static get TAG() {
-    return 'bnum-placeholder';
-  }
-}
+const HTMLBnumPlaceholder = DSHTMLBnumPlaceholder;
 
 {
   const TAGS = [

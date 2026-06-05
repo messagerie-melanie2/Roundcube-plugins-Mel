@@ -1,9 +1,14 @@
+// import { HTMLBnumFolder } from '../../../../../../skins/mel_elastic/design-system/ds-module-bnum.js';
 import { MelIconPrevisualiser } from '../../../../skins/mel_elastic/js_templates/blocks/icon_previsualiser.js';
+import { BnumLog } from '../../classes/bnum_log.js';
 import { MelEnumerable } from '../../classes/enum.js';
+import { EMPTY_STRING } from '../../constants/constants.js';
 import { BnumConnector } from '../../helpers/bnum_connections/bnum_connections.js';
+import { BnumHtmlIcon } from '../../html/JsHtml/CustomAttributes/js_html_base_web_elements.js';
 import { MelHtml } from '../../html/JsHtml/MelHtml.js';
 import { AFolderModifier } from './afolder_modifier.js';
 
+const BNUM_ICON_TAG = BnumHtmlIcon.TAG;
 export class FolderIcon extends AFolderModifier {
   constructor() {
     super();
@@ -13,20 +18,23 @@ export class FolderIcon extends AFolderModifier {
     await super.generate_context_menu();
     this.rcmail().register_command(
       'update-icon-folder',
-      (args) => {
+      () => {
         //Constantes
         const $link = $('.popover .icon-folder');
         const folder = $link.attr('relativeto');
         const selector = `[rel="${folder}"]`;
 
         // this._remove_visuals($(selector).parent());
-        $(selector).removeAttr('icon');
+        // $(selector).removeAttr('icon');
 
         const default_classes = MelEnumerable.from($(selector)[0].classList)
           .toArray()
           .join(' ');
+
         const base_icon = this.get_env('folders_icons')?.[folder];
-        const icon = base_icon === 'default' ? null : base_icon;
+        const icon =
+          (base_icon === 'default' ? null : base_icon) ??
+          $(selector).attr('icon');
 
         let popup = new MelIconPrevisualiser({});
 
@@ -66,31 +74,33 @@ export class FolderIcon extends AFolderModifier {
           });
         } else {
           popup.on_after_generate_jquery.push(($html, popup) => {
-            $html.find(`#${popup.previsu_id} bnum-icon`).text('');
+            $html.find(`#${popup.previsu_id} ${BNUM_ICON_TAG}`).text('');
 
             return $html;
           });
         }
 
-        popup.on_button_hover.push((icon, popup) => {
+        popup.on_button_hover.push(() => {
           this.get_skin().css_rules.remove(
             'previsu-update-folder-icon-default',
           );
         });
 
-        popup.on_button_leave.push((icon, popup) => {
+        popup.on_button_leave.push((_, popup) => {
           let $previsu = popup.get_previsu();
-          console.log(
-            $previsu.find('bnum-icon').text(),
-            $previsu.data('starticon'),
-          );
-          if ($previsu.find('bnum-icon').text() === '') {
+          if (BnumLog.log_level >= BnumLog.LogLevels.debug)
+            BnumLog.debug(
+              $previsu.find(BNUM_ICON_TAG).text(),
+              $previsu.data('starticon'),
+            );
+
+          if ($previsu.find(BNUM_ICON_TAG).text() === EMPTY_STRING) {
             this._default_button_on_hover(selector, null);
-            $previsu.data('starticon', '');
+            $previsu.data('starticon', EMPTY_STRING);
           }
         });
 
-        popup.on_create_show_selected.push((html, popup) => {
+        popup.on_create_show_selected.push(() => {
           if (icon) return icon;
           else return 'default';
         });
@@ -190,7 +200,7 @@ export class FolderIcon extends AFolderModifier {
     this.get_skin().css_rules.remove(key);
     this.get_skin().css_rules.addAdvanced(
       key,
-      `#${$previsu.attr('id')} bnum-icon:before`,
+      `#${$previsu.attr('id')} ${BNUM_ICON_TAG}:before`,
       `content:"\\${content}"`,
       `font-family:${font}`,
     );

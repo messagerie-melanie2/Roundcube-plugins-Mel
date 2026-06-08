@@ -713,7 +713,7 @@ function m_mp_NotificationsAppendToPanel(notifications) {
   let content = notificationspanel.querySelector('.content');
 
   // Nettoie le notifications panel pour le refresh
-  content.innerHTML = notifications.length > 0 ? '' : "<span class='d-flex justify-content-center'>Aucune nouvelles notifications</span>";
+  content.innerHTML = notifications.length > 0 ? '' : "<span class='d-flex justify-content-center'>Aucune notification</span>";
 
   for (const uid in notifications) {
     if (Object.hasOwnProperty.call(notifications, uid)) {

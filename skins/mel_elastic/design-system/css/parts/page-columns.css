@@ -46,7 +46,7 @@
   color: var(--layout-sidebar-text-color, var(--bnum-layout-sidebar-color, var(--bnum-text-primary, #3a3a3a)));
   --rc-header-color: var(--layout-sidebar-text-color, var(--bnum-layout-sidebar-color, var(--bnum-text-primary, #3a3a3a)));
   --rc-header-background-color: var(--layout-sidebar-background-color, var(--bnum-layout-sidebar-bg, var(--bnum-color-left-column, #f6f6f6)));
-  padding: var(--layout-sidebar-header-padding, 12px 8px 12px 16px);
+  padding: var(--layout-sidebar-header-padding, 12px 10px 12px 16px) !important;
   margin: 0;
   display: flex;
   align-items: center;
@@ -77,8 +77,11 @@ html.framed bnum-column-sidebar#layout-sidebar {
   margin-left: 0;
 }
 html.layout-large .task-mail bnum-column#layout-sidebar > .header,
+html.layout-large .task-calendar bnum-column#layout-sidebar > .header,
 html.layout-large .task-mail bnum-column-sidebar#layout-sidebar > .header,
-html.layout-large .task-mail #layout-sidebar > .header {
+html.layout-large .task-calendar bnum-column-sidebar#layout-sidebar > .header,
+html.layout-large .task-mail #layout-sidebar > .header,
+html.layout-large .task-calendar #layout-sidebar > .header {
   display: flex;
   gap: 8px;
   margin: 0;
@@ -253,6 +256,12 @@ html.layout-large .task-mail #layout-sidebar > .header {
   --secondary-bckg-color: var(--_focus-background);
   --layout-content-header-background-hover-color: var(--_focus-background);
   --layout-content-header-text-hover-color: var(--_focus-color);
+}
+#layout-content .content.frame-content {
+  background-color: var(--_background) !important;
+}
+#layout-content .content.frame-content .message-partheaders {
+  background-color: var(--bnum-subheader-color) !important;
 }
 #toolbar-list-menu {
   display: flex;

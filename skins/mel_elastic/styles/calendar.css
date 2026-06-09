@@ -171,9 +171,6 @@ html.layout-small .task-calendar .calendar-datepicker .ui-datepicker {
 .task-calendar .listing li.selected > div > * {
   background-color: var(--calendar-list-item-selected-background-color) !important;
 }
-.task-calendar .listing li > div.calendar {
-  margin-top: 5px;
-}
 .task-calendar .listing li > div.calendar .calname {
   width: 100%;
   overflow: hidden;
@@ -451,7 +448,7 @@ html.layout-phone .task-calendar select.mel-input.calendar {
   margin: 0;
 }
 .task-calendar ul.treelist.iconized li div.treetoggle {
-  top: 10px;
+  top: 5px;
   left: 10px;
 }
 .cal-space-old.task-calendar ul.treelist.iconized li div.treetoggle {

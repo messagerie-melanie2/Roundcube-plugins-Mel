@@ -2567,6 +2567,131 @@ export declare class HTMLBnumInputTime extends HTMLBnumInput {
 	static Create(label: string, options?: BnumInputNumericCreateOptions): HTMLBnumInputNumber;
 }
 /**
+ * Composant de substitution transparent qui se comporte comme un `<span>` vide
+ * lorsqu'aucun nœud ne lui est assigné, ou comme un conteneur natif dès qu'un
+ * nœud est présent.
+ *
+ * @remarks
+ * Le contenu est isolé dans un shadow DOM en mode ouvert.
+ * À la déconnexion, le shadow DOM est intentionnellement préservé afin de
+ * permettre une restauration automatique lors d'une reconnexion au document.
+ *
+ * @example Assignation programmatique
+ * ```typescript
+ * const placeholder = document.querySelector('bnum-placeholder') as HTMLBnumPlaceholder;
+ * const div = document.createElement('div');
+ * div.textContent = 'Contenu dynamique';
+ * placeholder.set(div);
+ * ```
+ *
+ * @example Réinitialisation complète
+ * ```typescript
+ * placeholder.clear();
+ * console.log(placeholder.isEmpty); // true
+ * ```
+ */
+export declare class HTMLBnumPlaceholder extends BnumElementInternal {
+	#private;
+	/**
+	 * Indique si le composant est actuellement vide.
+	 *
+	 * @returns `true` si aucun nœud n'est assigné, `false` sinon.
+	 */
+	get isEmpty(): boolean;
+	constructor();
+	/**
+	 * Appelé automatiquement lors de l'insertion du composant dans le DOM.
+	 *
+	 * @remarks
+	 * Priorité d'initialisation :
+	 * 1. Si le shadow DOM contient déjà un nœud, il est enregistré tel quel.
+	 * 2. Sinon, si le DOM léger contient un nœud enfant, il est déplacé dans
+	 *    le shadow DOM via {@link set}.
+	 *
+	 * @override
+	 */
+	connectedCallback(): void;
+	/**
+	 * Appelé par le `disconnectedCallback` de la classe parente lors du retrait
+	 * du composant du DOM.
+	 *
+	 * @remarks
+	 * Réinitialise la référence interne et l'état du composant, mais
+	 * **préserve le contenu du shadow DOM** pour permettre une restauration
+	 * transparente lors d'une reconnexion ultérieure.
+	 *
+	 * Comportement comparé à {@link clear} :
+	 * | Opération        | `_p_detach` | `clear` |
+	 * |------------------|:-----------:|:-------:|
+	 * | Référence interne | ✅ reset   | ✅ reset |
+	 * | État `not-empty`  | ✅ reset   | ✅ reset |
+	 * | Shadow DOM        | ❌ préservé | ✅ vidé  |
+	 *
+	 * @override
+	 */
+	protected _p_detach(): void;
+	/**
+	 * Retourne le nœud DOM actuellement stocké dans le composant.
+	 *
+	 * @returns Le nœud assigné, ou `null`/`undefined` si le composant est vide.
+	 */
+	get(): MayBe<Node>;
+	/**
+	 * Assigne un nœud au composant et l'insère dans le shadow DOM.
+	 *
+	 * @remarks
+	 * L'opération est sans effet si le composant contient déjà un nœud.
+	 * Pour remplacer le contenu existant, appeler {@link clear} au préalable.
+	 *
+	 * @param element - Nœud DOM à insérer dans le composant.
+	 * @returns `true` si le nœud a été inséré, `false` si le composant était
+	 *          déjà occupé.
+	 */
+	set(element: Node): boolean;
+	/**
+	 * Réinitialise complètement le composant : efface la référence interne,
+	 * vide le shadow DOM et retire l'état `not-empty`.
+	 *
+	 * @remarks
+	 * Voir {@link _p_detach} pour la différence de comportement lors d'une
+	 * déconnexion du DOM.
+	 *
+	 * @returns L'instance courante pour permettre le chaînage.
+	 */
+	clear(): this;
+	/**
+	 * Crée et retourne une nouvelle instance de {@link HTMLBnumPlaceholder}
+	 * via `document.createElement`.
+	 *
+	 * @remarks
+	 * Méthode de fabrique statique à privilégier sur l'instanciation directe.
+	 * Si `node` est fourni, il est injecté dans le DOM léger avant la connexion
+	 * au document — {@link connectedCallback} se chargera de le transférer
+	 * automatiquement dans le shadow DOM.
+	 *
+	 * @param node - Nœud DOM initial à insérer dans le composant. Ignoré si
+	 *               `null` ou `undefined`.
+	 * @returns Une nouvelle instance de {@link HTMLBnumPlaceholder}, prête à
+	 *          être insérée dans le DOM.
+	 *
+	 * @example Création sans contenu
+	 * ```typescript
+	 * const placeholder = HTMLBnumPlaceholder.Create();
+	 * document.body.appendChild(placeholder);
+	 * ```
+	 *
+	 * @example Création avec un nœud initial
+	 * ```typescript
+	 * const div = document.createElement('div');
+	 * div.textContent = 'Contenu initial';
+	 *
+	 * const placeholder = HTMLBnumPlaceholder.Create(div);
+	 * document.body.appendChild(placeholder);
+	 * ```
+	 */
+	static Create(node?: MayBe<Node>): HTMLBnumPlaceholder;
+}
+/**
  * Bouton Bnum de type "Primary".
  *
  * @category Buttons

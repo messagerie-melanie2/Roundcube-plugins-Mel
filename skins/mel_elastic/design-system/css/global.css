@@ -54,16 +54,17 @@
   --bnum-color-input-active: #c1c1c1;
   --bnum-color-input-border: #3a3a3a;
   /* Bordure des champs input */
-  --bnum-color-left-column: #f6f6f6;
   --bnum-color-middle-column: #ffffff;
+  --bnum-color-left-column: #f6f6f6;
   /* Les items d'une liste ont forcément un fond transparent, 
      donc on se base sur le classique pour le selected,
      sur le hover pour le hover
      et le selected pour le drag and drop*/
   --bnum-color-list-idle: transparent;
-  --bnum-color-list: #e3e3fd;
-  --bnum-color-list-hover: #c1c1fb;
-  --bnum-color-list-drag: #adadf9;
+  --bnum-color-list: #f5f5fe;
+  --bnum-color-list-hover: #dcdcfc;
+  --bnum-color-list-active: #cbcbfa;
+  --bnum-color-list-drag: #cbcbfa;
   --bnum-color-list-alt: #f6f6f6;
   --bnum-color-list-alt-hover: #dfdfdf;
   --bnum-color-list-alt-active: #cfcfcf;
@@ -71,6 +72,7 @@
   --bnum-main-nav-color-hover: #474747;
   --bnum-main-nav-color-active: #5b5b5b;
   --bnum-header-color: #ffffff;
+  --bnum-subheader-color: #f6f6f6;
   --bnum-scrollbar-handler-color: #a7a7a7;
   --bnum-scrollbar-background-color: #f6f6f6;
   --bnum-scrollbar-width: thin;
@@ -95,6 +97,7 @@
   /* Texte sur fond danger */
   --bnum-text-on-danger-hover: var(--bnum-text-on-danger);
   --bnum-text-on-danger-active: var(--bnum-text-on-danger);
+  --bnum-text-navbar: #ffffff;
   /* Sémantique de Feedback (vu sur les avatars) */
   --bnum-semantic-danger: #de350b;
   /* Rouge "DEV" */
@@ -239,7 +242,8 @@ html.dark-mode-custom:root {
   --bnum-color-surface: #1e1e1e;
   --bnum-color-surface-hover: #3f3f3f;
   --bnum-color-surface-active: #525252;
-  --bnum-header-color: #161616;
+  --bnum-header-color: #242424;
+  --bnum-subheader-color: #474747;
   /* Le fond des surfaces */
   --bnum-color-border: #353535;
   /* Bordure des surfaces */
@@ -253,23 +257,25 @@ html.dark-mode-custom:root {
   --bnum-color-input-border: #cecece;
   /* Bordure des champs input */
   --bnum-color-left-column: #161616;
-  --bnum-color-middle-column: #3a3a3a;
+  --bnum-color-middle-column: #242424;
+  --bnum-color-left-column: #1e1e1e;
   /* Les items d'une liste ont forcément un fond transparent, 
      donc on se base sur le classique pour le selected,
      sur le hover pour le hover
      et le selected pour le drag and drop*/
-  --bnum-color-list-idle: #161616;
+  --bnum-color-list-idle: #242424;
   --bnum-color-list: #474747;
   --bnum-color-list-hover: #343434;
+  --bnum-color-list-active: #474747;
   --bnum-color-list-drag: #343434;
   --bnum-main-nav-color: #161616;
   --bnum-main-nav-color-hover: #343434;
   --bnum-main-nav-color-active: #474747;
-  --bnum-scrollbar-handler-color: #bababa;
-  --bnum-scrollbar-background-color: #717171;
+  --bnum-scrollbar-handler-color: #5b5b5b;
+  --bnum-scrollbar-background-color: #1e1e1e;
   --bnum-scrollbar-width: thin;
   /* Texte */
-  --bnum-text-primary: #cecece;
+  --bnum-text-primary: #ffffff;
   /* Texte principal */
   --bnum-text-title-primary: #ffffff;
   /* Titres principaux */
@@ -289,12 +295,14 @@ html.dark-mode-custom:root {
   /* Texte sur fond danger */
   --bnum-text-on-danger-hover: var(--bnum-text-on-danger);
   --bnum-text-on-danger-active: var(--bnum-text-on-danger);
+  --bnum-text-navbar: #ffffff;
   /* Sémantique de Feedback (vu sur les avatars) */
   --bnum-semantic-danger: #de350b;
   /* Rouge "DEV" */
   --bnum-semantic-success: #36b37e;
   /* Vert "TES" */
   --_border: var(--bnum-border-style-default) var(--bnum-border-width-s) var(--bnum-color-border);
+  --bnum-border-column: var(--bnum-border-style-default) var(--bnum-border-width-s) var(--bnum-color-border);
   --bnum-button-secondary-background-color: var(--bnum-color-background);
   --_image-url: var(--_image-dark);
 }
@@ -1172,7 +1180,7 @@ bnum-hide {
   --_bdsli-alt-bg: var(--bnum-color-list-alt);
   --_bdsli-idle-bg: var(--bnum-list-item-bg-color, var(--bnum-color-list-idle, transparent));
   --_bdsli-hover-bg: var(--bnum-list-item-bg-color-hover, var(--bnum-color-list-hover, transparent));
-  --_bdsli-active-bg: var(--bnum-list-item-bg-color-active, var(--bnum-color-list, transparent));
+  --_bdsli-active-bg: var(--bnum-list-item-bg-color-active, var(--bnum-color-list-active, transparent));
   background-color: var(--_bdsli-background-color, var(--_bdsli-idle-bg));
   color: var(--_bdsli-color, var(--_bdsli-idle));
 }
@@ -1212,7 +1220,8 @@ bnum-hide {
   --mail-icon-hover-color: var(--_bdsli-hover);
 }
 .bds-list-item.--no-rc.selected,
-.bds-list-table.--no-rc tr.selected {
+.bds-list-table.--no-rc tr.selected,
+.bds-list-table.--no-rc tr:hover.selected {
   --message-list-content-selected-mail-subject-color: var(--_no-rc-color);
   --secondary-bckg-color: var(--_bdsli-active-bg);
   --secondary-text-color: var(--_bdsli-active, red);
@@ -1222,11 +1231,6 @@ bnum-hide {
   --message-list-content-selected-mail-button-hover-color: var(--_bdsli-active, red);
   --mail-icon-hover-color: var(--_bdsli-active, red);
   --message-list-content-selected-mail-subject-color: var(--_bdsli-active, red);
-}
-.bds-list-item.--no-rc.selected span,
-.bds-list-item.--no-rc.selected td,
-.bds-list-table.--no-rc tr.selected span,
-.bds-list-table.--no-rc tr.selected td {
   background-color: var(--_bdsli-active-bg);
   color: var(--_bdsli-active, red);
 }
@@ -1238,8 +1242,8 @@ bnum-hide {
 }
 .bds-list-item.--no-rc:hover,
 .bds-list-table.--no-rc tr:hover {
-  --_bdsli-active-bg: var(--_bdsli-hover-bg);
-  --_bdsli-alt-bg: var(--_bdsli-hover-bg);
+  --_bdsli-background-color: var(--_bdsli-hover-bg);
+  --_bdsli-color: var(--_bdsli-hover);
 }
 .popover {
   --_idle-background: var(--nav-button-background, transparent);
@@ -1296,9 +1300,9 @@ bnum-hide {
 /* Règle de base commune */
 ul.treelist {
   --_trl-idle-background-color: var(--treelist-idle-bg-color, var(--bnum-color-list-idle, transparent));
-  --_trl-idle-background-color-hover: var(--bnum-color-list-hover, #c1c1fb);
+  --_trl-idle-background-color-hover: var(--bnum-color-list-hover, #dcdcfc);
   --_trl-idle-background-color-active: var(--bnum-color-list-alt-active, #cfcfcf);
-  --_trl-idle-background-color-selected: var(--bnum-color-list, #e3e3fd);
+  --_trl-idle-background-color-selected: var(--bnum-color-list-active, #cbcbfa);
 }
 ul.treelist li[aria-level='1'] {
   border-bottom: var(--bnum-border-in-column);

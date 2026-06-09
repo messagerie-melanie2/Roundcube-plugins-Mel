@@ -853,7 +853,7 @@ $(document).ready(function () {
 			}
 
 			#messagelist tr.label_${id} td{
-				background-color:${val}20;
+				
 				/*--message-list-content-selected-mail-address-color: ${textcolor};*/
 				--message-list-content-selected-row-background-color: ${val};
 				--message-list-content-selected-mail-subject-color: var(--message-list-content-selected-mail-address-color);

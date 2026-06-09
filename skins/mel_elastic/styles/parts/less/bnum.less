@@ -1,18 +1,16 @@
   #user-dropdown {
-    // filter: drop-shadow(0 2px 6px rgba(0, 0, 18, .16));
     border-radius: 0;
-    // border: none;
     border-color: var(--bnum-color-border);
     background-color: var(--bnum-color-background);
     color: var(--bnum-text-primary);
-    min-width: 250px;
+    min-width: 220px;
     --bnum-title-text-color: var(--bnum-text-title-primary);
     border-bottom: var(--bnum-border-on-surface-bottom);
 
     .user-menu-items {
       width: fit-content;
       white-space: nowrap;
-      padding: 0px 20px 10px 20px;
+      padding: 0px 10px;
       display: flex;
       flex-direction: column;
 
@@ -42,6 +40,10 @@
       .user-menu-items-group {
         border-top: var(--bnum-border-in-surface);
         border-bottom: var(--bnum-border-in-surface);
+      }
+
+      .user-menu-button {
+        margin: 3px 0;
       }
     }
 
@@ -152,15 +154,29 @@
           right: 10px;
           width: 45.5%;
         }
-      }      
+      }
     }
 
     .option-menu-title {
       color: var(--bnum-text-primary);
       font-weight: bold;
     }
+
     .options-custom-title {
-        font-size: 16px;
-        font-weight: bold;
+      font-size: 16px;
+      font-weight: bold;
+    }
+  }
+
+  //Correction couleur des flags pour mail avec label
+  #messagelist-content table.messagelist {
+    tr.label__-s-_label1,
+    tr.label__-s-_label2,
+    tr.label__-s-_label3,
+    tr.label__-s-_label4,
+    tr.label__-s-_label5 {
+      td.flags {
+        color: var(--main-text-color);
       }
+    }
   }

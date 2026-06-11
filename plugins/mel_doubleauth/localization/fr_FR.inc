@@ -72,6 +72,7 @@ $labels['check_code_to_activate'] = 'Pour sauvegarder vous devez valider un code
 $labels['logout_2fa_needed'] = "L'authentification à deux facteurs est obligatoire pour votre compte.";
 $labels['logout_2fa_needed_not_secure'] = "L'authentification à deux facteurs est obligatoire pour vous connecter depuis internet !";
 $labels['logout_2fa_needed_unknown'] = "Utilisateur incconnu !";
+$labels['logout_2fa_code_error'] = "Le code saisie est erroné.";
 
 // Messages used for the different portions of the plugin
 $messages = array();

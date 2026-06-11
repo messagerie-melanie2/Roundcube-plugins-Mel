@@ -211,7 +211,9 @@ class mel_workspace extends bnum_plugin
 
         if ($plugin !== null && $plugin['enabled'] === false) $this->set_env('wsp_usr_can_create', false);
         
-        $this->set_env('visu-mode', $this->get_config('wsp-visu-mode', 'cards'));
+        $visu_mode = $this->get_config('wsp-visu-mode', 'cards');
+        $this->set_env('visu-mode', $visu_mode);
+        $this->set_env('_template_visu_mode', $visu_mode);
 
         $this->send_and_exit('mel_workspace.index');
 

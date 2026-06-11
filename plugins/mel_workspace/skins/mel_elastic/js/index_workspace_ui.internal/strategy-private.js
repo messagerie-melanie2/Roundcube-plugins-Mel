@@ -87,6 +87,7 @@ export class IndexWorkspacePrivateSearchStrategy extends AIndexWorkspaceSearchSt
     dest.append(...enumerable.select((x) => x.cloneNode(true)));
 
     this.#_removeKeep(dest);
+    this.#_removeDuplicateIcons(dest);
   }
 
   /**
@@ -168,6 +169,26 @@ export class IndexWorkspacePrivateSearchStrategy extends AIndexWorkspaceSearchSt
 
     for (const icon of icons) {
       if (icon.textContent.includes('keep')) icon.remove();
+    }
+  }
+
+  /**
+   *
+   * @param {HTMLElement} dest
+   */
+  #_removeDuplicateIcons(dest) {
+    const ELEMENTS_TO_CHECK = 'bnum-favorite-button';
+    const ICONS_TO_CHECK = 'old-bnum-icon';
+
+    const elements = dest.querySelectorAll(ELEMENTS_TO_CHECK);
+
+    for (const element of elements) {
+      let alreadyExist = false;
+
+      for (const icon of element.querySelectorAll(ICONS_TO_CHECK)) {
+        if (alreadyExist) icon?.remove?.();
+        else alreadyExist = true;
+      }
     }
   }
 }

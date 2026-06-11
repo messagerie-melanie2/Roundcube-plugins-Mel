@@ -23,7 +23,7 @@
         
         <bnum-segmented-control id="control-view">
           Vue des espaces
-          <roundcube:if condition="env:visu-mode == 'list'">
+          <roundcube:if condition="_template_visu_mode == 'list'">
             <bnum-segmented-item slot="items"  value="cards" data-icon="grid_view">Grille</bnum-segmented-item>
             <bnum-segmented-item slot="items" selected value="list" data-icon="splitscreen">Liste</bnum-segmented-item>
           <roundcube:else>
@@ -72,7 +72,7 @@
   <!-- Corps principal avec les onglets des espaces -->
   <div class="body">
     <!-- Composant onglets pour naviguer entre les différents types d'espaces -->
-    <roundcube:if condition="env:visu-mode == 'list'">
+    <roundcube:if condition="env:_template_visu_mode == 'list'">
       <bnum-tabs id="main-pannel" class="mode-list" data-navs="subscribed, publics, archived" data-ex-label="mel_workspace"
         data-description="Liste des différents espaces auquel on a souscris" data-shadow="false">
     <roundcube:else>

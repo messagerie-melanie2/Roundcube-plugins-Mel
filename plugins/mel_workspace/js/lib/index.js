@@ -111,7 +111,6 @@ export class IndexWorkspace extends MelObject {
     this.#_ui.addListeners({
       connectors: {
         set_visu_mode: connectors.set_visu_mode,
-        publics_search_count: connectors.publics_search_count,
       },
     });
   }

@@ -193,6 +193,7 @@ class mel_workspace extends bnum_plugin
         $this->add_texts('localization/index', true);
         $this->include_css('workspace_list.css');
         $this->include_css('index.css');
+        $this->load_script_module('index_workspace_ui.js', '/'.$this->local_skin_path().'/js/');
         $this->load_script_module('index');
         self::IncludeWorkspaceBlockComponent();
 

@@ -713,7 +713,7 @@ function m_mp_NotificationsAppendToPanel(notifications) {
   let content = notificationspanel.querySelector('.content');
 
   // Nettoie le notifications panel pour le refresh
-  content.innerHTML = notifications.length > 0 ? '' : "<span class='d-flex justify-content-center'>Aucune notification</span>";
+  content.innerHTML = Object.keys(notifications).length > 0 ? '' : "<span class='d-flex justify-content-center'>Aucune notification</span>";
 
   for (const uid in notifications) {
     if (Object.hasOwnProperty.call(notifications, uid)) {
@@ -1039,7 +1039,7 @@ class html_notification extends mel_html2 {
     super('a', {
       attribs: {
         id: 'notif' + notification.uid.replace(/\W/g, '_'),
-        class: `dropdown-item p-2 mb-2 rounded ${notification.isread ? '' : 'unread'}`,
+        class: `dropdown-item p-2 rounded ${notification.isread ? '' : 'unread'}`,
       },
     });
 

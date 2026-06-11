@@ -21,10 +21,15 @@
 
         <bnum-input-search id="wsp-search-input" class="mel-max-width-500" style="--bnum-input-gap:0" data-no-legend placeholder="Rechercher..."><bnum-screen-reader>Rechercher un espace de travail</bnum-screen-reader></bnum-input-search>
         
-        <bnum-segmented-control>
+        <bnum-segmented-control id="control-view">
           Vue des espaces
-          <bnum-segmented-item slot="items"  value="block" data-icon="grid_view">Grille</bnum-segmented-item>
-          <bnum-segmented-item slot="items"  value="list" data-icon="splitscreen">Liste</bnum-segmented-item>
+          <roundcube:if condition="env:visu-mode == 'list'">
+            <bnum-segmented-item slot="items"  value="cards" data-icon="grid_view">Grille</bnum-segmented-item>
+            <bnum-segmented-item slot="items" selected value="list" data-icon="splitscreen">Liste</bnum-segmented-item>
+          <roundcube:else>
+            <bnum-segmented-item slot="items" selected value="cards" data-icon="grid_view">Grille</bnum-segmented-item>
+            <bnum-segmented-item slot="items" value="list" data-icon="splitscreen">Liste</bnum-segmented-item>
+          <roundcube:endif />
         </bnum-segmented-control>
         
         <!-- Boutons pour changer le mode d'affichage (liste ou grille) -->
@@ -67,8 +72,13 @@
   <!-- Corps principal avec les onglets des espaces -->
   <div class="body">
     <!-- Composant onglets pour naviguer entre les différents types d'espaces -->
-    <bnum-tabs id="main-pannel" data-navs="subscribed, publics, archived" data-ex-label="mel_workspace"
-      data-description="Liste des différents espaces auquel on a souscris" data-shadow="false">
+    <roundcube:if condition="env:visu-mode == 'list'">
+      <bnum-tabs id="main-pannel" class="mode-list" data-navs="subscribed, publics, archived" data-ex-label="mel_workspace"
+        data-description="Liste des différents espaces auquel on a souscris" data-shadow="false">
+    <roundcube:else>
+      <bnum-tabs id="main-pannel" data-navs="subscribed, publics, archived" data-ex-label="mel_workspace"
+        data-description="Liste des différents espaces auquel on a souscris" data-shadow="false">
+    <roundcube:endif>
       <bnum-tab-container class="row my-3 align-items-center justify-content-center">
         <bnum-tab-receiver class="col-12 col-md-10"></bnum-tab-receiver>
 

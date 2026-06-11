@@ -2301,10 +2301,28 @@ export declare class HTMLBnumInputNumber extends HTMLBnumInput {
 	static get AdditionnalStylesheet(): CSSStyleSheet;
 }
 export type BnumInputSearchCreateOptions = Omit<BnumInputNumericCreateOptions, "button" | "button-icon" | "step" | "min" | "max">;
+/**
+ * Paramètres transmis lors du déclenchement de l'événement {@link HTMLBnumInputSearch.onclear}.
+ *
+ * @remarks
+ * Permet aux abonnés d'intercepter et de modifier le comportement de vidage par défaut du composant.
+ * En positionnant `ignoreOriginal` à `true`, l'abonné prend entièrement la main sur l'action de vidage.
+ * La propriété `after` permet d'exécuter une fonction de rappel à l'issue du traitement par défaut,
+ * sans nécessiter de le remplacer.
+ *
+ * @see {@link HTMLBnumInputSearch.onclear}
+ */
 export type OnClearEventArgs = {
+	/** Instance du composant ayant déclenché l'événement. */
 	caller: HTMLBnumInputSearch;
+	/**
+	 * Si `true`, le comportement de vidage d'origine est ignoré.
+	 * L'abonné est alors responsable de l'intégralité de l'action.
+	 */
 	ignoreOriginal: boolean;
+	/** Référence en lecture seule à la fonction de rappel de changement de valeur de l'input. */
 	inputValueChangedFunction: Readonly<(e: Event) => ATresult<void>>;
+	/** Fonction optionnelle exécutée après le comportement de vidage par défaut. */
 	after?: Nullable<() => void>;
 };
 /**
@@ -2356,18 +2374,50 @@ export declare class HTMLBnumInputSearch extends HTMLBnumInput {
 	 * Constructeur du composant de recherche.
 	 */
 	constructor();
+	/**
+	 * Retourne les feuilles de style appliquées au composant,
+	 * en ajoutant {@link SHEET} à celles héritées du composant parent.
+	 *
+	 * @returns Tableau de feuilles de style CSS à appliquer au shadow DOM.
+	 * @internal
+	 */
 	protected _p_getStylesheets(): CSSStyleSheet[];
 	/**
 	 * Précharge les attributs spécifiques à l'input de recherche.
 	 * Définit le placeholder et l'icône du bouton si non présents.
 	 */
 	protected _p_preload(): void;
+	/**
+	 * Construit le DOM du composant et attache le comportement du bouton de vidage.
+	 *
+	 * @remarks
+	 * Si des abonnés sont enregistrés sur {@link HTMLBnumInputSearch.onclear}, ils sont invoqués
+	 * en premier. Un abonné peut annuler le comportement par défaut via `ignoreOriginal`,
+	 * ou planifier une action complémentaire via la propriété `after`.
+	 *
+	 * En l'absence d'interception, le comportement par défaut vide la valeur de l'input,
+	 * déclenche le recalcul de l'état et émet l'événement `bnum-input-search:clear`.
+	 *
+	 * @internal
+	 */
 	protected _p_buildDOM(): void;
 	/**
 	 * Attache les événements nécessaires au composant.
 	 * Supprime les attributs inutiles et gère les événements de recherche.
 	 */
 	protected _p_attach(): void;
+	/**
+	 * Gère le changement de valeur de l'input.
+	 *
+	 * @remarks
+	 * Supprime temporairement puis restaure les attributs liés au bouton afin de
+	 * préserver la configuration propre à l'input de recherche, quelle que soit
+	 * la logique appliquée par la classe parente.
+	 *
+	 * @param e - Événement ayant déclenché le changement de valeur.
+	 * @returns Résultat de l'opération de mise à jour.
+	 * @internal
+	 */
 	protected _p_inputValueChangedCallback(e: Event): ATresult<void>;
 	/**
 	 * Nettoie les attributs après le rendu du composant.
@@ -2381,6 +2431,38 @@ export declare class HTMLBnumInputSearch extends HTMLBnumInput {
 	 * Active le bouton de recherche.
 	 */
 	enableSearchButton(): this;
+	/**
+	 * Active l'état de chargement sur le composant.
+	 *
+	 * @remarks
+	 * Désactive l'input et affiche l'indicateur de chargement sur le bouton de recherche.
+	 * Appeler {@link HTMLBnumInputSearch.stopLoading} pour revenir à l'état initial.
+	 *
+	 * @returns L'instance courante pour le chaînage.
+	 *
+	 * @example
+	 * const search = document.querySelector('bnum-input-search');
+	 * search.setLoading();
+	 * await fetchResults();
+	 * search.stopLoading();
+	 */
+	setLoading(): this;
+	/**
+	 * Désactive l'état de chargement sur le composant.
+	 *
+	 * @remarks
+	 * Réactive l'input et masque l'indicateur de chargement du bouton de recherche.
+	 * À utiliser après {@link HTMLBnumInputSearch.setLoading}.
+	 *
+	 * @returns L'instance courante pour le chaînage.
+	 *
+	 * @example
+	 * const search = document.querySelector('bnum-input-search');
+	 * search.setLoading();
+	 * await fetchResults();
+	 * search.stopLoading();
+	 */
+	stopLoading(): this;
 	/**
 	 * Déclenche l'événement de recherche avec la valeur actuelle de l'input.
 	 * @private
@@ -4933,6 +5015,57 @@ export declare class HTMLBnumSegmentedControl extends BnumElementInternal {
 	 * @decorator `@SetAttr('role', 'radiogroup')`
 	 */
 	protected _p_buildDOM(): void;
+	/**
+	 * Traite la sélection d'un item du contrôle segmenté.
+	 *
+	 * @description
+	 * Désélectionne tous les items existants et sélectionne le nouvel item.
+	 * Émet l'événement `bnum-segmented-control:change` avec les détails.
+	 *
+	 * @remarks
+	 * - Valide que la cible de l'événement existe
+	 * - Lève une erreur si la cible est manquante
+	 * - Garantit qu'un seul item est sélectionné à la fois
+	 *
+	 * @private
+	 * @decorator `@Fire('bnum-segmented-control:change')`
+	 * @param e - Événement de sélection d'item depuis `HTMLBnumSegmentedItem`.
+	 * @returns Détails de l'événement émis : `{value: string, item: HTMLBnumSegmentedItem, caller: HTMLBnumSegmentedControl}`
+	 *
+	 * @fires bnum-segmented-control:change
+	 *
+	 * @example
+	 * ```typescript
+	 * control.addEventListener('bnum-segmented-control:change', (e) => {
+	 *   console.log('Item sélectionné:', e.detail.item);
+	 *   console.log('Valeur:', e.detail.value);
+	 * });
+	 * ```
+	 */
+	private _onItemSelectedAction;
+	/**
+	 * Traite les erreurs internes du composant.
+	 *
+	 * @remarks
+	 * - Enregistre l'erreur dans les logs
+	 * - Émet l'événement `bnum-segmented-control:error`
+	 * - Peut être déclenché lors de la sélection d'items invalides
+	 *
+	 * @private
+	 * @decorator `@Fire('bnum-segmented-control:error')`
+	 * @param error - L'erreur survenue.
+	 * @returns Détails de l'événement d'erreur : `{error: Error, caller: HTMLBnumSegmentedControl}`
+	 *
+	 * @fires bnum-segmented-control:error
+	 *
+	 * @example
+	 * ```typescript
+	 * control.addEventListener('bnum-segmented-control:error', (e) => {
+	 *   console.error('Erreur dans le contrôle:', e.detail.error);
+	 * });
+	 * ```
+	 */
+	private _onError;
 	/**
 	 * Crée un nouveau contrôle segmenté avec une légende.
 	 *

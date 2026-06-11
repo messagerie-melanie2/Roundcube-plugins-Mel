@@ -1,7 +1,14 @@
 import ABaseMelObject from '../../../mel_metapage/js/lib/base_mel_object.js';
 import { BnumConnector } from '../../../mel_metapage/js/lib/helpers/bnum_connections/bnum_connections.js';
+import { BnumEvent } from '../../../mel_metapage/js/lib/mel_events.js';
 
 export class AIndexWorkspaceUI extends ABaseMelObject {
+  #_onAfterSearchCache;
+
+  get onAfterSearch() {
+    return (this.#_onAfterSearchCache ??= new BnumEvent());
+  }
+
   constructor() {
     super();
 
@@ -17,6 +24,8 @@ export class AIndexWorkspaceUI extends ABaseMelObject {
 
   addListeners(params) {
     this._p_listenModeChanged(this.#_getConnectorSetVisuMode(params));
+    this._p_listenSearch();
+    this._p_listenSearchReset();
   }
 
   #_getConnectorSetVisuMode(params) {
@@ -29,9 +38,9 @@ export class AIndexWorkspaceUI extends ABaseMelObject {
 
   _p_listenModeChanged(connector) {}
 
-  _p_listenSearch(connector) {}
+  _p_listenSearch() {}
 
-  _p_listenSearchReset(connector) {}
+  _p_listenSearchReset() {}
 
   async _p_startConnector(connector, params) {
     await BnumConnector.connect(connector, { params });

@@ -23,6 +23,8 @@ class mel_suspects_urls extends bnum_plugin
     $this->setup_plugin()->setup_task()->setup_settings();
     $this->register_ajax_actions();
 
+    $this->add_urls_to_env();
+
     $this->add_hook('mel_urls_suspects_get_all', [$this, 'hook_get_all_urls']);
   }
 
@@ -435,6 +437,25 @@ class mel_suspects_urls extends bnum_plugin
     
     $args['urls'] = $urls;
     return $args;
+  }
+
+  /**
+   * Récupère toutes les URLs suspectes enregistrées en base de données pour les ajouter aux variables d'environnement pour la pop-up 
+   *
+   */
+  public function add_urls_to_env()
+  {
+    $rc = rcmail::get_instance();
+    $sql = "SELECT * FROM mel_suspects_urls";
+    $result = $this->db()->query($sql);
+
+    $urls = [];
+    while ($row = $this->db()->fetch_assoc($result)) {
+      $urls[] = $row['url'];
+    }
+    
+    //On ajoute en env pour la popup d'url suspecte
+    $rc->output->set_env("mel_suspect_url", $urls);
   }
 
   /**

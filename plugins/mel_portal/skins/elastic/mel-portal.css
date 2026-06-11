@@ -311,8 +311,8 @@ html.layout-phone .--row {
 
 bnum-card-email,
 bnum-card-agenda {
-  height: 285px;
-  --bnum-card-height: 285px;
+  height: 286px;
+  --bnum-card-height: 286px;
 }
 
 bnum-card-item-agenda,
@@ -321,5 +321,5 @@ bnum-card-item-mail {
 }
 
 bnum-card {
-  height: 319px;
+  height: 320px;
 }

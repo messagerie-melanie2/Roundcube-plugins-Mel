@@ -349,7 +349,6 @@ html.dark-mode #notificationstack article span.category {
 .notification-category {
   font-weight: bold;
   margin-bottom: 3px;
-  color: #272E58;
 }
 
 html.dark-mode .notification-category {
@@ -376,7 +375,6 @@ html.dark-mode .notification-icon {
   line-height: normal;
   white-space: normal;
   margin-bottom: 0;
-  color: #272E58;
 }
 
 html.dark-mode .notification-title {

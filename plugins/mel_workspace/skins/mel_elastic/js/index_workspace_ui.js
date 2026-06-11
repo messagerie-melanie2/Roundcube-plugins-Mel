@@ -1,16 +1,16 @@
-import { HTMLBnumInputSearch } from '../../../../../skins/mel_elastic/design-system/ds-module-bnum';
-import { HTMLBnumSegmentedControl } from '../../../../../skins/mel_elastic/design-system/ds-module-bnum';
-import ABaseMelObject from '../../../../mel_metapage/js/lib/base_mel_object';
-import { BnumPromise } from '../../../../mel_metapage/js/lib/BnumPromise';
-import { BnumLog } from '../../../../mel_metapage/js/lib/classes/bnum_log';
-import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants';
-import { HTMLTabsElement } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/tabs/HTMLTabElement';
-import { BnumEvent } from '../../../../mel_metapage/js/lib/mel_events';
-import { MelObject } from '../../../../mel_metapage/js/lib/mel_object';
-import { AIndexWorkspaceUI } from '../../../js/lib/abstract_index_workspace_ui';
-import { EMode } from './index_workspace_ui.internal/EMode';
-import { IndexWorkspacePrivateSearchStrategy } from './index_workspace_ui.internal/IndexWorkspacePrivateSearchStrategy';
-import { IndexWorkspacePublicSearchStrategy } from './index_workspace_ui.internal/IndexWorkspacePublicSearchStrategy';
+import { HTMLBnumInputSearch } from '../../../../../skins/mel_elastic/design-system/ds-module-bnum.js';
+import { HTMLBnumSegmentedControl } from '../../../../../skins/mel_elastic/design-system/ds-module-bnum.js';
+import ABaseMelObject from '../../../../mel_metapage/js/lib/base_mel_object.js';
+import { BnumPromise } from '../../../../mel_metapage/js/lib/BnumPromise.js';
+import { BnumLog } from '../../../../mel_metapage/js/lib/classes/bnum_log.js';
+import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
+import { HTMLTabsElement } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/tabs/HTMLTabElement.js';
+import { BnumEvent } from '../../../../mel_metapage/js/lib/mel_events.js';
+import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';
+import { AIndexWorkspaceUI } from '../../../js/lib/abstract_index_workspace_ui.js';
+import { EMode } from './index_workspace_ui.internal/EMode.js';
+import { IndexWorkspacePrivateSearchStrategy } from './index_workspace_ui.internal/strategy-private.js';
+import { IndexWorkspacePublicSearchStrategy } from './index_workspace_ui.internal/strategy-public.js';
 /**
  * Liste des modes de visualisations
  * @enum {string}
@@ -154,18 +154,19 @@ class Search extends MelObject {
   async search() {
     this.setBusy();
 
-    if (this.value === EMPTY_STRING) return this.resetSearch();
+    try {
+      if (this.value === EMPTY_STRING) return this.resetSearch();
 
-    this.#_hideMainPanel();
-    const mainTabs = this.#_switchTabIfIsArchived();
-    this.#_reinitSearchPanel(mainTabs);
-    this.#_focusSearchPanelContent();
+      this.#_hideMainPanel();
+      const mainTabs = this.#_switchTabIfIsArchived();
+      this.#_reinitSearchPanel(mainTabs);
+      this.#_focusSearchPanelContent();
 
-    const strategy = mainTabs.currentTabText();
-    await this.#_strategies[strategy].search(mainTabs, this.value);
-
-    //note : resize déplacer dans l'index
-    this.setBusy({ busy: false });
+      const strategy = mainTabs.currentTabText();
+      await this.#_strategies[strategy].search(mainTabs, this.value);
+    } finally {
+      this.setBusy({ busy: false });
+    }
   }
 
   #_removeSearchPanel() {
@@ -337,7 +338,17 @@ class IndexWorkspaceUI extends AIndexWorkspaceUI {
     this.onAfterSearch.call();
   }
 
-  _p_listenSearchReset() {}
+  #_resetSearch() {
+    this.#_searchObject.resetSearch();
+    this.onAfterSearch.call();
+  }
+
+  _p_listenSearchReset() {
+    this.#_searchObject.searchInput.addEventListener(
+      'bnum-input-search:clear',
+      () => this.#_resetSearch(),
+    );
+  }
 
   _p_listenModeChanged(connector) {
     if (this.#_segmentedControl)

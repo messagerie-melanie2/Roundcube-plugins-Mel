@@ -75,7 +75,9 @@ export class IndexWorkspacePublicSearchStrategy extends AIndexWorkspaceSearchStr
    * await strategy.search(mainTabs, 'mon espace');
    */
   async search(_, value) {
-    const dest = this.#_searchPanel;
+    const dest = this.#_searchPanel?.querySelector(
+      '.pannels-contents bnum-infinite-scroll-container',
+    );
 
     if (!dest) {
       BnumLog.error(

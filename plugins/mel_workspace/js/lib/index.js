@@ -1,9 +1,6 @@
 import { BnumPromise } from '../../../mel_metapage/js/lib/BnumPromise.js';
 import { BnumLog } from '../../../mel_metapage/js/lib/classes/bnum_log.js';
 import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager.js';
-import { BnumConnector } from '../../../mel_metapage/js/lib/helpers/bnum_connections/bnum_connections.js';
-import { pipe } from '../../../mel_metapage/js/lib/helpers/pipe.js';
-import { HTMLTabsElement } from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/tab_web_element.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { AIndexWorkspaceUI } from './abstract_index_workspace_ui.js';
 import { connectors } from './connectors.js';

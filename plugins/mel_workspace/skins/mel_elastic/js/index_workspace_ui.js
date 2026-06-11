@@ -8,6 +8,9 @@ import { HTMLTabsElement } from '../../../../mel_metapage/js/lib/html/JsHtml/Cus
 import { BnumEvent } from '../../../../mel_metapage/js/lib/mel_events';
 import { MelObject } from '../../../../mel_metapage/js/lib/mel_object';
 import { AIndexWorkspaceUI } from '../../../js/lib/abstract_index_workspace_ui';
+import { EMode } from './index_workspace_ui.internal/EMode';
+import { IndexWorkspacePrivateSearchStrategy } from './index_workspace_ui.internal/IndexWorkspacePrivateSearchStrategy';
+import { IndexWorkspacePublicSearchStrategy } from './index_workspace_ui.internal/IndexWorkspacePublicSearchStrategy';
 /**
  * Liste des modes de visualisations
  * @enum {string}
@@ -28,35 +31,6 @@ const EVisuMode = {
    * @default 'list'
    */
   list: 'list',
-};
-
-/**
- * Liste des différents type de d'onglets
- * @enum {string}
- * @package
- */
-const EMode = {
-  /**
-   * Onglet qui contient les espaces de l'utilisateur
-   * @type {string}
-   * @constant
-   * @default 'subscribed'
-   */
-  subscribed: 'subscribed',
-  /**
-   * Onglet qui contient les espaces archivés de l'utilisateur
-   * @type {string}
-   * @constant
-   * @default 'archived'
-   */
-  archived: 'archived',
-  /**
-   * Onglet qui contient les espaces publics
-   * @type {string}
-   * @constant
-   * @default 'publics'
-   */
-  publics: 'publics',
 };
 
 //#region Importants constants
@@ -100,8 +74,25 @@ const { subscribed, archived, publics } = getTextsFromModes();
  */
 class Search extends MelObject {
   #_lastBusyState = null;
+  #_strategiesCache;
   onSearch = new BnumEvent();
   afterOnSearch = new BnumEvent();
+
+  /**
+   * @type {{[subscribed]: IndexWorkspacePrivateSearchStrategy, [archived]: IndexWorkspacePrivateSearchStrategy, [publics]: IndexWorkspacePublicSearchStrategy}}
+   */
+  get #_strategies() {
+    if (!this.#_strategiesCache) {
+      const strat = {
+        [subscribed]: new IndexWorkspacePrivateSearchStrategy(),
+        [publics]: new IndexWorkspacePublicSearchStrategy(this),
+      };
+      strat[archived] = strat[subscribed];
+      this.#_strategiesCache = strat;
+    }
+
+    return this.#_strategiesCache;
+  }
 
   constructor() {
     super();
@@ -112,7 +103,7 @@ class Search extends MelObject {
   /**
    * @type {?HTMLBnumInputSearch}
    */
-  get #_searchInput() {
+  get searchInput() {
     return document.querySelector(
       `${HTMLBnumInputSearch.TAG}#wsp-search-input`,
     );
@@ -131,7 +122,7 @@ class Search extends MelObject {
   }
 
   get value() {
-    return this.#_searchInput?.value ?? EMPTY_STRING;
+    return this.searchInput?.value ?? EMPTY_STRING;
   }
 
   setBusy({ busy = true } = {}) {
@@ -143,16 +134,24 @@ class Search extends MelObject {
   }
 
   #_setSearchLoading() {
-    this.#_searchInput?.setLoading?.();
+    this.searchInput?.setLoading?.();
   }
 
   #_stopSearchLoading() {
-    this.#_searchInput?.stopLoading?.();
+    this.searchInput?.stopLoading?.();
   }
 
-  resetSearch() {}
+  resetSearch() {
+    this.#_removeSearchPanel();
+    this.#_showMainPanel();
 
-  search() {
+    if (this.searchInput) {
+      this.searchInput.value = EMPTY_STRING;
+      this.searchInput.focus();
+    }
+  }
+
+  async search() {
     this.setBusy();
 
     if (this.value === EMPTY_STRING) return this.resetSearch();
@@ -162,16 +161,11 @@ class Search extends MelObject {
     this.#_reinitSearchPanel(mainTabs);
     this.#_focusSearchPanelContent();
 
-    switch (mainTabs.currentTabText()) {
-      case subscribed:
-      case archived:
-        this._mine_search(mainTabs, searchValue);
-        break;
+    const strategy = mainTabs.currentTabText();
+    await this.#_strategies[strategy].search(mainTabs, this.value);
 
-      default:
-        this._public_search(searchValue);
-        break;
-    }
+    //note : resize déplacer dans l'index
+    this.setBusy({ busy: false });
   }
 
   #_removeSearchPanel() {
@@ -317,6 +311,8 @@ class Search extends MelObject {
 }
 
 class IndexWorkspaceUI extends AIndexWorkspaceUI {
+  #_searchObject = new Search();
+
   /**
    * @type {HTMLBnumSegmentedControl}
    */
@@ -329,6 +325,19 @@ class IndexWorkspaceUI extends AIndexWorkspaceUI {
   async _p_initVueMode() {
     await BnumPromise.Resolved();
   }
+
+  _p_listenSearch() {
+    this.#_searchObject.searchInput.addEventListener('change', () =>
+      this.#_search(),
+    );
+  }
+
+  #_search() {
+    this.#_searchObject.search();
+    this.onAfterSearch.call();
+  }
+
+  _p_listenSearchReset() {}
 
   _p_listenModeChanged(connector) {
     if (this.#_segmentedControl)

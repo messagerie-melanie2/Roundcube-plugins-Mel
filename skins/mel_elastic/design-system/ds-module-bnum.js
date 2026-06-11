@@ -6697,8 +6697,18 @@ function Listen(eventName, { selector = null } = {}) {
     };
 }
 
+/** Feuille de style CSS compilée spécifique au composant `bnum-input-search`. */
 const SHEET$2 = HTMLBnumInput.ConstructCSSStyleSheet(style$j);
 //#region Template
+/**
+ * Fragment HTML du conteneur d'actions injecté dans le slot du composant parent.
+ *
+ * @remarks
+ * Contient le bouton de vidage ({@link HTMLBnumButtonIcon}) et un slot nommé
+ * `actions` permettant d'y injecter des contrôles personnalisés.
+ *
+ * @internal
+ */
 const TEMPLATE$e = (h("div", { id: ID_ACTIONS_CONTAINER, part: ID_ACTIONS_CONTAINER, children: [h(HTMLBnumButtonIcon, { id: ID_CLEAR_BUTTON, children: "close" }), h("slot", { name: SLOT_ACTIONS })] }));
 //#endregion Template
 /**
@@ -6752,6 +6762,10 @@ let HTMLBnumInputSearch = (() => {
     let _private__ui_initializers = [];
     let _private__ui_extraInitializers = [];
     let _private__ui_descriptor;
+    let _private__lightUi_decorators;
+    let _private__lightUi_initializers = [];
+    let _private__lightUi_extraInitializers = [];
+    let _private__lightUi_descriptor;
     let _onclear_decorators;
     let _onclear_initializers = [];
     let _onclear_extraInitializers = [];
@@ -6766,13 +6780,16 @@ let HTMLBnumInputSearch = (() => {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _private__ui_decorators = [UI({
                     emptyButton: `#${ID_ACTIONS_CONTAINER} ${HTMLBnumButtonIcon.TAG}`,
+                    searchButton: `#${ID_INPUT_BUTTON}`,
                 })];
+            _private__lightUi_decorators = [UI({ searchButton: `#${ID_INPUT_BUTTON}` }, { shadowRoot: false })];
             _onclear_decorators = [Listener()];
             __p_preload_decorators = [SetAttr(ATTRIBUTE_BUTTON_ICON, 'search'), InitAttr(ATTRIBUTE_PLACEHOLDER, BnumConfig.Get('local_keys')?.search_field || 'Rechercher')];
             __p_inputValueChangedCallback_decorators = [Autobind, Risky()];
             __triggerEventSearch_decorators = [Autobind, Fire(EVENT_SEARCH)];
             _private__onKeyDown_decorators = [Listen('keydown')];
             __esDecorate(this, _private__ui_descriptor = { get: __setFunctionName(function () { return this.#_ui_accessor_storage; }, "#_ui", "get"), set: __setFunctionName(function (value) { this.#_ui_accessor_storage = value; }, "#_ui", "set") }, _private__ui_decorators, { kind: "accessor", name: "#_ui", static: false, private: true, access: { has: obj => #_ui in obj, get: obj => obj.#_ui, set: (obj, value) => { obj.#_ui = value; } }, metadata: _metadata }, _private__ui_initializers, _private__ui_extraInitializers);
+            __esDecorate(this, _private__lightUi_descriptor = { get: __setFunctionName(function () { return this.#_lightUi_accessor_storage; }, "#_lightUi", "get"), set: __setFunctionName(function (value) { this.#_lightUi_accessor_storage = value; }, "#_lightUi", "set") }, _private__lightUi_decorators, { kind: "accessor", name: "#_lightUi", static: false, private: true, access: { has: obj => #_lightUi in obj, get: obj => obj.#_lightUi, set: (obj, value) => { obj.#_lightUi = value; } }, metadata: _metadata }, _private__lightUi_initializers, _private__lightUi_extraInitializers);
             __esDecorate(this, null, _onclear_decorators, { kind: "accessor", name: "onclear", static: false, private: false, access: { has: obj => "onclear" in obj, get: obj => obj.onclear, set: (obj, value) => { obj.onclear = value; } }, metadata: _metadata }, _onclear_initializers, _onclear_extraInitializers);
             __esDecorate(this, null, __p_preload_decorators, { kind: "method", name: "_p_preload", static: false, private: false, access: { has: obj => "_p_preload" in obj, get: obj => obj._p_preload }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, __p_inputValueChangedCallback_decorators, { kind: "method", name: "_p_inputValueChangedCallback", static: false, private: false, access: { has: obj => "_p_inputValueChangedCallback" in obj, get: obj => obj._p_inputValueChangedCallback }, metadata: _metadata }, null, _instanceExtraInitializers);
@@ -6794,9 +6811,46 @@ let HTMLBnumInputSearch = (() => {
         }
         #_ui_accessor_storage = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _private__ui_initializers, void 0));
         //#region Private fields
+        /**
+         * Références aux éléments du shadow DOM du composant.
+         *
+         * @remarks
+         * Contient le bouton de vidage (`emptyButton`) et le bouton de recherche (`searchButton`).
+         * Utilisé lorsque le composant est rendu en mode shadow DOM.
+         *
+         * @see {@link HTMLBnumInputSearch.#_lightUi}
+         * @internal
+         */
         get #_ui() { return _private__ui_descriptor.get.call(this); }
         set #_ui(value) { return _private__ui_descriptor.set.call(this, value); }
-        #onclear_accessor_storage = (__runInitializers(this, _private__ui_extraInitializers), __runInitializers(this, _onclear_initializers, void 0));
+        #_lightUi_accessor_storage = (__runInitializers(this, _private__ui_extraInitializers), __runInitializers(this, _private__lightUi_initializers, void 0));
+        /**
+         * Références aux éléments du DOM léger (hors shadow root) du composant.
+         *
+         * @remarks
+         * Utilisé uniquement lorsque le composant n'est pas rendu comme un élément shadow.
+         *
+         * @see {@link HTMLBnumInputSearch.#_ui}
+         * @internal
+         */
+        get #_lightUi() { return _private__lightUi_descriptor.get.call(this); }
+        set #_lightUi(value) { return _private__lightUi_descriptor.set.call(this, value); }
+        /**
+         * Retourne le bouton de recherche actif selon le mode de rendu du composant.
+         *
+         * @remarks
+         * Délègue vers {@link HTMLBnumInputSearch.#_ui} en mode shadow DOM,
+         * ou vers {@link HTMLBnumInputSearch.#_lightUi} en mode light DOM.
+         *
+         * @returns Le bouton de recherche courant.
+         * @internal
+         */
+        get #_searchButton() {
+            return this._p_isShadowElement()
+                ? this.#_ui.searchButton
+                : this.#_lightUi.searchButton;
+        }
+        #onclear_accessor_storage = (__runInitializers(this, _private__lightUi_extraInitializers), __runInitializers(this, _onclear_initializers, void 0));
         //#endregion Private fields
         /**
          * Événement déclenché lors du clic sur le bouton de vidage du champ de recherche.
@@ -6811,6 +6865,13 @@ let HTMLBnumInputSearch = (() => {
             super();
             __runInitializers(this, _onclear_extraInitializers);
         }
+        /**
+         * Retourne les feuilles de style appliquées au composant,
+         * en ajoutant {@link SHEET} à celles héritées du composant parent.
+         *
+         * @returns Tableau de feuilles de style CSS à appliquer au shadow DOM.
+         * @internal
+         */
         _p_getStylesheets() {
             return [...super._p_getStylesheets(), SHEET$2];
         }
@@ -6819,6 +6880,19 @@ let HTMLBnumInputSearch = (() => {
          * Définit le placeholder et l'icône du bouton si non présents.
          */
         _p_preload() { }
+        /**
+         * Construit le DOM du composant et attache le comportement du bouton de vidage.
+         *
+         * @remarks
+         * Si des abonnés sont enregistrés sur {@link HTMLBnumInputSearch.onclear}, ils sont invoqués
+         * en premier. Un abonné peut annuler le comportement par défaut via `ignoreOriginal`,
+         * ou planifier une action complémentaire via la propriété `after`.
+         *
+         * En l'absence d'interception, le comportement par défaut vide la valeur de l'input,
+         * déclenche le recalcul de l'état et émet l'événement `bnum-input-search:clear`.
+         *
+         * @internal
+         */
         _p_buildDOM() {
             super._p_buildDOM();
             this.#_ui.emptyButton.addEventListener('click', () => {
@@ -6857,6 +6931,18 @@ let HTMLBnumInputSearch = (() => {
             this.onButtonClicked.add(EVENT_DEFAULT, this._triggerEventSearch);
             this.#_onKeyDown();
         }
+        /**
+         * Gère le changement de valeur de l'input.
+         *
+         * @remarks
+         * Supprime temporairement puis restaure les attributs liés au bouton afin de
+         * préserver la configuration propre à l'input de recherche, quelle que soit
+         * la logique appliquée par la classe parente.
+         *
+         * @param e - Événement ayant déclenché le changement de valeur.
+         * @returns Résultat de l'opération de mise à jour.
+         * @internal
+         */
         _p_inputValueChangedCallback(e) {
             this.removeAttribute(ATTRIBUTE_BUTTON);
             this.setAttribute(ATTRIBUTE_BUTTON_ICON, BUTTON_ICON);
@@ -6879,22 +6965,93 @@ let HTMLBnumInputSearch = (() => {
          * Désactive le bouton de recherche.
          */
         disableSearchButton() {
-            (this._p_isShadowElement() === false ? this : this.shadowRoot)
-                .querySelector(`#${ID_INPUT_BUTTON}`)
-                ?.setAttribute(ATTRIBUTE_DISABLED$1, ATTRIBUTE_DISABLED$1);
+            this.#_searchButton?.setAttribute?.(ATTRIBUTE_DISABLED$1, ATTRIBUTE_DISABLED$1);
             return this;
         }
         /**
          * Active le bouton de recherche.
          */
         enableSearchButton() {
-            (this._p_isShadowElement() === false ? this : this.shadowRoot)
-                .querySelector(`#${ID_INPUT_BUTTON}`)
-                ?.removeAttribute(ATTRIBUTE_DISABLED$1);
+            this.#_searchButton?.removeAttribute?.(ATTRIBUTE_DISABLED$1);
             return this;
+        }
+        /**
+         * Active l'état de chargement sur le composant.
+         *
+         * @remarks
+         * Désactive l'input et affiche l'indicateur de chargement sur le bouton de recherche.
+         * Appeler {@link HTMLBnumInputSearch.stopLoading} pour revenir à l'état initial.
+         *
+         * @returns L'instance courante pour le chaînage.
+         *
+         * @example
+         * const search = document.querySelector('bnum-input-search');
+         * search.setLoading();
+         * await fetchResults();
+         * search.stopLoading();
+         */
+        setLoading() {
+            return this.#_disable().#_setSearchButtonLoading();
+        }
+        /**
+         * Désactive l'état de chargement sur le composant.
+         *
+         * @remarks
+         * Réactive l'input et masque l'indicateur de chargement du bouton de recherche.
+         * À utiliser après {@link HTMLBnumInputSearch.setLoading}.
+         *
+         * @returns L'instance courante pour le chaînage.
+         *
+         * @example
+         * const search = document.querySelector('bnum-input-search');
+         * search.setLoading();
+         * await fetchResults();
+         * search.stopLoading();
+         */
+        stopLoading() {
+            return this.#_enable().#_unsetSearchButtonLoading();
         }
         //#endregion Public Methods
         //#region Private Methods
+        /**
+         * Désactive le composant en posant l'attribut `disabled`.
+         *
+         * @returns L'instance courante pour le chaînage.
+         * @internal
+         */
+        #_disable() {
+            return this.attr('disabled', 'disabled');
+        }
+        /**
+         * Active l'indicateur de chargement sur le bouton de recherche.
+         *
+         * @returns L'instance courante pour le chaînage.
+         * @internal
+         */
+        #_setSearchButtonLoading() {
+            this.#_searchButton?.setLoading?.();
+            return this;
+        }
+        /**
+         * Réactive le composant en retirant l'attribut `disabled`.
+         *
+         * @returns L'instance courante pour le chaînage.
+         * @internal
+         */
+        #_enable() {
+            this.removeAttribute('disabled');
+            return this;
+        }
+        /**
+         * Désactive l'indicateur de chargement sur le bouton de recherche.
+         *
+         * @returns L'instance courante pour le chaînage.
+         * @internal
+         */
+        #_unsetSearchButtonLoading() {
+            this.#_searchButton?.stopLoading?.();
+            return this;
+        }
         /**
          * Déclenche l'événement de recherche avec la valeur actuelle de l'input.
          * @private
@@ -6906,6 +7063,17 @@ let HTMLBnumInputSearch = (() => {
                 caller: this,
             };
         }
+        /**
+         * Gestionnaire de l'événement `keydown` sur l'input.
+         *
+         * @remarks
+         * Bloque la propagation des frappes simples (sans modificateur `Ctrl`, `Alt` ou `Meta`)
+         * afin d'éviter les conflits avec les raccourcis clavier de l'application hôte.
+         * Déclenche la recherche à l'appui de la touche `Entrée`.
+         *
+         * @returns Fonction de rappel pour l'événement `keydown`.
+         * @internal
+         */
         get #_onKeyDown() { return _private__onKeyDown_descriptor.value; }
         //#endregion Private Methods
         //#region Static Methods
@@ -14099,10 +14267,8 @@ let HTMLBnumSegmentedControl = (() => {
     let _private__handleKeyboardNavigation_descriptor;
     let _private__onItemSelected_decorators;
     let _private__onItemSelected_descriptor;
-    let _private__onItemSelectedAction_decorators;
-    let _private__onItemSelectedAction_descriptor;
-    let _private__onError_decorators;
-    let _private__onError_descriptor;
+    let __onItemSelectedAction_decorators;
+    let __onError_decorators;
     (class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -14113,8 +14279,8 @@ let HTMLBnumSegmentedControl = (() => {
             _private__onItemSelected_decorators = [Listen(HTMLBnumSegmentedItem.Events.SELECTED, {
                     selector: TAG_SEGMENTED_ITEM,
                 })];
-            _private__onItemSelectedAction_decorators = [Fire(EVENT_CHANGE)];
-            _private__onError_decorators = [Fire(EVENT_ERROR)];
+            __onItemSelectedAction_decorators = [Fire(EVENT_CHANGE)];
+            __onError_decorators = [Fire(EVENT_ERROR)];
             __esDecorate(this, _private__legend_descriptor = { get: __setFunctionName(function () { return this.#_legend_accessor_storage; }, "#_legend", "get"), set: __setFunctionName(function (value) { this.#_legend_accessor_storage = value; }, "#_legend", "set") }, _private__legend_decorators, { kind: "accessor", name: "#_legend", static: false, private: true, access: { has: obj => #_legend in obj, get: obj => obj.#_legend, set: (obj, value) => { obj.#_legend = value; } }, metadata: _metadata }, _private__legend_initializers, _private__legend_extraInitializers);
             __esDecorate(this, null, __p_buildDOM_decorators, { kind: "method", name: "_p_buildDOM", static: false, private: false, access: { has: obj => "_p_buildDOM" in obj, get: obj => obj._p_buildDOM }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, _private__handleKeyboardNavigation_descriptor = { value: __setFunctionName(function () {
@@ -14149,22 +14315,10 @@ let HTMLBnumSegmentedControl = (() => {
                     };
                 }, "#_handleKeyboardNavigation") }, _private__handleKeyboardNavigation_decorators, { kind: "method", name: "#_handleKeyboardNavigation", static: false, private: true, access: { has: obj => #_handleKeyboardNavigation in obj, get: obj => obj.#_handleKeyboardNavigation }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, _private__onItemSelected_descriptor = { value: __setFunctionName(function () {
-                    return this.#_onItemSelectedAction;
+                    return this._onItemSelectedAction;
                 }, "#_onItemSelected") }, _private__onItemSelected_decorators, { kind: "method", name: "#_onItemSelected", static: false, private: true, access: { has: obj => #_onItemSelected in obj, get: obj => obj.#_onItemSelected }, metadata: _metadata }, null, _instanceExtraInitializers);
-            __esDecorate(this, _private__onItemSelectedAction_descriptor = { value: __setFunctionName(function (e) {
-                    const { target } = e.detail;
-                    if (!target) {
-                        this.#_onError(new Error("Élément cible manquant dans l'événement sélectionné."));
-                        return;
-                    }
-                    this.#_unselectAllItems();
-                    this.#_selectItem(target);
-                    return { value: target?.value, item: target, caller: this };
-                }, "#_onItemSelectedAction") }, _private__onItemSelectedAction_decorators, { kind: "method", name: "#_onItemSelectedAction", static: false, private: true, access: { has: obj => #_onItemSelectedAction in obj, get: obj => obj.#_onItemSelectedAction }, metadata: _metadata }, null, _instanceExtraInitializers);
-            __esDecorate(this, _private__onError_descriptor = { value: __setFunctionName(function (error) {
-                    Log.error('HTMLBnumSegmentedControl', 'Une erreur est survenue', error);
-                    return { error, caller: this };
-                }, "#_onError") }, _private__onError_decorators, { kind: "method", name: "#_onError", static: false, private: true, access: { has: obj => #_onError in obj, get: obj => obj.#_onError }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, __onItemSelectedAction_decorators, { kind: "method", name: "_onItemSelectedAction", static: false, private: false, access: { has: obj => "_onItemSelectedAction" in obj, get: obj => obj._onItemSelectedAction }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, __onError_decorators, { kind: "method", name: "_onError", static: false, private: false, access: { has: obj => "_onError" in obj, get: obj => obj._onError }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -14348,7 +14502,16 @@ let HTMLBnumSegmentedControl = (() => {
          * });
          * ```
          */
-        get #_onItemSelectedAction() { return _private__onItemSelectedAction_descriptor.value; }
+        _onItemSelectedAction(e) {
+            const { target } = e.detail;
+            if (!target) {
+                this._onError(new Error("Élément cible manquant dans l'événement sélectionné."));
+                return;
+            }
+            this.#_unselectAllItems();
+            this.#_selectItem(target);
+            return { value: target?.value, item: target, caller: this };
+        }
         /**
          * Traite les erreurs internes du composant.
          *
@@ -14371,7 +14534,10 @@ let HTMLBnumSegmentedControl = (() => {
          * });
          * ```
          */
-        get #_onError() { return _private__onError_descriptor.value; }
+        _onError(error) {
+            Log.error('HTMLBnumSegmentedControl', 'Une erreur est survenue', error);
+            return { error, caller: this };
+        }
         /**
          * Désélectionne tous les items du contrôle segmenté.
          *

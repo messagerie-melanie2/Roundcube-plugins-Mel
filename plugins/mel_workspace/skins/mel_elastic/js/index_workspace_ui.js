@@ -4,6 +4,7 @@ import ABaseMelObject from '../../../../mel_metapage/js/lib/base_mel_object.js';
 import { BnumPromise } from '../../../../mel_metapage/js/lib/BnumPromise.js';
 import { BnumLog } from '../../../../mel_metapage/js/lib/classes/bnum_log.js';
 import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
+import { pipe } from '../../../../mel_metapage/js/lib/helpers/pipe.js';
 import { HTMLTabsElement } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/tabs/HTMLTabElement.js';
 import { BnumEvent } from '../../../../mel_metapage/js/lib/mel_events.js';
 import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';
@@ -60,6 +61,15 @@ function getTextsFromModes() {
 
 //#region constants
 const { subscribed, archived, publics } = getTextsFromModes();
+/**
+ * Si le système d'overflow est actif ou non pour les paneaux
+ * @default true
+ * @type {boolean}
+ * @constant
+ * @package
+ */
+const OVERFLOW_ENABLED = true;
+const OVERFLOW_CSS_PROP = 'var(--workspace-panel-overflow-system, auto)';
 //#endregion
 
 /**
@@ -323,6 +333,11 @@ class IndexWorkspaceUI extends AIndexWorkspaceUI {
     );
   }
 
+  get #_workspaceLists() {
+    return document.querySelectorAll('.workspace-list');
+  }
+
+  //#region Actions
   async _p_initVueMode() {
     await BnumPromise.Resolved();
   }
@@ -331,16 +346,6 @@ class IndexWorkspaceUI extends AIndexWorkspaceUI {
     this.#_searchObject.searchInput.addEventListener('change', () =>
       this.#_search(),
     );
-  }
-
-  #_search() {
-    this.#_searchObject.search();
-    this.onAfterSearch.call();
-  }
-
-  #_resetSearch() {
-    this.#_searchObject.resetSearch();
-    this.onAfterSearch.call();
   }
 
   _p_listenSearchReset() {
@@ -364,6 +369,174 @@ class IndexWorkspaceUI extends AIndexWorkspaceUI {
         connector,
         this,
       );
+  }
+
+  _p_afterStart() {
+    this.#_setOverflowIfEnabled();
+
+    window.addEventListener('resize', () => this.#_onResize());
+
+    this.#_onResize();
+  }
+  //#endregion Actions
+
+  #_search() {
+    this.#_searchObject.search();
+    this.onAfterSearch.call();
+    this.#_onResize();
+  }
+
+  #_resetSearch() {
+    this.#_searchObject.resetSearch();
+    this.onAfterSearch.call();
+    this.#_onResize();
+  }
+
+  /**
+   *
+   * @param {HTMLElement} element
+   */
+  #_setOverflow(element) {
+    element.parentElement.style.overflow = OVERFLOW_CSS_PROP;
+  }
+
+  #_setOverflowIfEnabled() {
+    if (OVERFLOW_ENABLED) {
+      for (const list of this.#_workspaceLists) {
+        this.#_setOverflow(list);
+      }
+    }
+  }
+
+  /**
+   * @param {NodeListOf<HTMLElement> | HTMLElement} listOfElements
+   */
+  #_getHeight(listOrNode) {
+    if (!listOrNode) {
+      BnumLog.warning(
+        '#_getHeight',
+        "La node n'éxiste pas ! La hauteur sera donc 0 !",
+      );
+      return 0;
+    }
+
+    if (listOrNode instanceof HTMLElement)
+      return this.#_getElementHeight(listOrNode);
+    else return this.#_getListOfElementsHeight(listOrNode);
+  }
+
+  /**
+   *
+   * @param {HTMLElement} element
+   */
+  #_getElementHeight(element) {
+    return element.getBoundingClientRect().height;
+  }
+
+  /**
+   *
+   * @param {NodeListOf<HTMLElement>} elements
+   */
+  #_getListOfElementsHeight(elements) {
+    let numbers = 0;
+
+    for (const element of elements) {
+      numbers += this.#_getElementHeight(element);
+    }
+
+    return numbers;
+  }
+
+  #_onResize() {
+    this.#_bodiesResize();
+    this.#_containerResize();
+  }
+
+  #_calulateHeight() {
+    const CORRECTION = 0;
+    const height = this.#_getHeight(document.getElementById('layout-content')); //$('#layout-content').height();
+    const headerHeight = this.#_getHeight(
+      document.querySelectorAll('.wsp-header'),
+    );
+    return height - (headerHeight + CORRECTION);
+  }
+
+  #_updateBodiesSize(newSize) {
+    const bodies = document.querySelectorAll('.body');
+
+    for (const body of bodies) {
+      body.style.height = `${newSize}px`;
+    }
+  }
+
+  #_bodiesResize() {
+    const h = this.#_calulateHeight();
+    this.#_updateBodiesSize(h);
+  }
+
+  #_containerResize() {
+    for (const tab of document.querySelectorAll('bnum-tabs')) {
+      const h = this.#_calculateTabHeigth(tab);
+
+      if (this.#_hasContainer(tab)) this.#_updateContainerHeight(tab, h);
+      else this.#_updateNotContainerHeight(tab, h);
+    }
+  }
+
+  /**
+   *
+   * @param {HTMLElement} tab
+   */
+  #_hasContainer(tab) {
+    return tab.firstElementChild?.nodeName === 'DIV';
+  }
+
+  /**
+   *
+   * @param {HTMLElement} tab
+   */
+  #_updateContainerHeight(tab, h) {
+    pipe(tab, (x) => {
+      this.#_updateHeight(x, EMPTY_STRING);
+      return x;
+    })
+      .pipe((x) => x.querySelectorAll('.workspace-list'))
+      .pipe((lst) => this.#_updateHeight(lst, h));
+  }
+
+  #_updateNotContainerHeight(tab, h) {
+    const lst = tab.querySelectorAll('.workspace-list');
+    this.#_updateHeight(lst, h);
+  }
+
+  /**
+   *
+   * @param {NodeListOf<HTMLElement>} elements
+   */
+  #_updateHeight(elements, h) {
+    for (const element of elements) {
+      element.style.height = h;
+    }
+  }
+
+  #_calculateTabHeigth(tab) {
+    const tabsH = pipe(tab, this.#_findtabLists.bind(this))
+      .pipe(this.#_getHeight.bind(this))
+      .unpipe();
+    const panelH = pipe(tab, this.#_findHeaderPanel.bind(this))
+      .pipe(this.#_getHeight.bind(this))
+      .unpipe();
+    const tabH = this.#_getHeight(tab);
+
+    return tabH - tabsH - panelH;
+  }
+
+  #_findtabLists(tab) {
+    return tab.querySelectorAll('[role="tablist"]');
+  }
+
+  #_findHeaderPanel(tab) {
+    return tab.querySelectorAll('.header-pannel');
   }
 
   #_getModeFromEvent(e) {

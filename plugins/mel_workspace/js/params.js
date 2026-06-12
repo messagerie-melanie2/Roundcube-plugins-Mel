@@ -729,39 +729,62 @@
       }
     }
 
-    delete_user(user) {
-      this.busy();
-      return this.ajax(
-        this.url('PARAMS_delete_user'),
-        {
-          _uid: this.uid,
-          _user_to_delete: user,
-        },
-        (datas) => {
-          switch (datas) {
-            case 'denied':
-              this.busy(false);
-              rcmail.display_message(
-                'Vous devez être administrateur pour pouvoir faire cette action !',
-                'error',
-              );
-              break;
-            case 'you are the alone':
-              this.busy(false);
-              rcmail.display_message(
-                "Vous êtes le seul administrateur, nommez un autre administrateur ou supprimez l'espace.",
-                'error',
-              );
-              break;
-
-            default:
-              return this.update_user_table();
-          }
-        },
+    async delete_user(user) {
+      console.log('delete user', user);
+      const loadJsModule =
+        window.loadJsModule ?? parent.loadJsModule ?? top.loadJsModule;
+      const { MelDialog } = await loadJsModule(
+        'mel_metapage',
+        'modal.js',
+        '/js/lib/classes/',
       );
-      // ).always(() => {
-      //     return this.update_user_table();
-      // })
+      
+      this.busy();
+      
+      if (
+        await MelDialog.Confirm(
+          `Souhaitez-vous supprimer l'invité ${user} de votre espace ?`,
+          {
+            waiting_button_enabled: 5,
+            title: 'Confirmation',
+            button_confirm: "Confirmer",
+            options: { height: 105 },
+          },
+        )
+      ) {
+        return this.ajax(
+          this.url('PARAMS_delete_user'),
+         {
+            _uid: this.uid,
+            _user_to_delete: user,
+          },
+          (datas) => {
+            switch (datas) {
+              case 'denied':
+                this.busy(false);
+                rcmail.display_message(
+                  'Vous devez être administrateur pour pouvoir faire cette action !',
+                  'error',
+                );
+                break;
+              case 'you are the alone':
+                this.busy(false);
+                rcmail.display_message(
+                  "Vous êtes le seul administrateur, nommez un autre administrateur ou supprimez l'espace.",
+                  'error',
+                );
+                break;
+
+              default:
+                return this.update_user_table();
+            }
+          },
+        );
+        // ).always(() => {
+        //     return this.update_user_table();
+        // })
+      
+      } else return this.busyAsync(false);
     }
 
     set_body_loading() {

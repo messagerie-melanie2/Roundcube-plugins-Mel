@@ -42,6 +42,8 @@ export class AIndexWorkspaceUI extends ABaseMelObject {
 
   _p_listenSearchReset() {}
 
+  _p_afterStart() {}
+
   async _p_startConnector(connector, params) {
     await BnumConnector.connect(connector, { params });
   }

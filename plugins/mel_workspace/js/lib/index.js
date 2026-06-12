@@ -98,6 +98,7 @@ export class IndexWorkspace extends MelObject {
     this.#_loadDocumentsInBackground();
     this.#_setListeners();
     this.#_initMode();
+    this.#_afterStart();
   }
 
   #_initMode() {
@@ -130,5 +131,9 @@ export class IndexWorkspace extends MelObject {
 
   #_hasFrame(page) {
     return FramesManager.Instance.has_frame(page);
+  }
+
+  #_afterStart() {
+    this.#_ui._p_afterStart();
   }
 }

@@ -340,16 +340,14 @@ class mel_suspects_urls extends bnum_plugin
         $this->gettext('mel_suspects_urls.url_date_added'),
       ], ';');
 
-      $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
-
       while ($row = $this->db()->fetch_assoc($stmt)) {
 
         $timestamp = strtotime($row['created_at']);
-        $date_formatted = $formatter->format($timestamp);
+        $date_formatted = date('d/m/Y', $timestamp);
 
         fputcsv($output, [
           $row['url'],
-          ((int) $row['statut'] === 1 ? $this->gettext('mel_suspects_urls.blocked') : $this->gettext('mel_suspects_urls.suspect')), '="' . $date_formatted . '"',], ';');
+          ((int) $row['statut'] === 1 ? $this->gettext('mel_suspects_urls.blocked') : $this->gettext('mel_suspects_urls.suspect')), $date_formatted,], ';');
       }
 
       fclose($output);

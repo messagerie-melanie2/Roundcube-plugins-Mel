@@ -581,6 +581,10 @@ class IndexWorkspaceUI extends AIndexWorkspaceUI {
     return document.querySelectorAll('.workspace-list');
   }
 
+  get #_btnCreate() {
+    return document.getElementById('create-edt');
+  }
+
   //#region Actions
 
   /**
@@ -650,6 +654,25 @@ class IndexWorkspaceUI extends AIndexWorkspaceUI {
   }
 
   /**
+   * Abonne le bouton, si il existe.
+   *
+   * @override
+   * @protected
+   */
+  _p_listenCreateButton() {
+    const btn = this.#_btnCreate;
+
+    if (btn) btn.addEventListener('click', () => this.#_handleClick());
+    else
+      BnumLog.error(
+        'IndexWorkspaceUI/_p_listenCreateButton',
+        'Impossible de trouver le bouton !',
+        btn,
+        this,
+      );
+  }
+
+  /**
    * Finalise le démarrage de l'UI : active le système d'overflow,
    * abonne le redimensionnement de fenêtre et applique un premier calcul de hauteur.
    *
@@ -713,6 +736,25 @@ class IndexWorkspaceUI extends AIndexWorkspaceUI {
         this.#_setOverflow(list);
       }
     }
+  }
+
+  /**
+   * Action au click du bouton créer un espace
+   *
+   * @private
+   */
+  #_handleClick() {
+    this.#_startCreateWorkspace();
+  }
+
+  /**
+   * Démarre la modale de création d'un edt
+   *
+   * @private
+   */
+  #_startCreateWorkspace() {
+    top?.m_mp_Create?.();
+    top?.m_mp_createworkspace?.();
   }
 
   /**

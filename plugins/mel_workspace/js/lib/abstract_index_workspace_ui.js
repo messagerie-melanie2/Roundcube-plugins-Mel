@@ -120,6 +120,7 @@ export class AIndexWorkspaceUI extends ABaseMelObject {
     this._p_listenModeChanged(this.#_getConnectorSetVisuMode(params));
     this._p_listenSearch();
     this._p_listenSearchReset();
+    this._p_listenCreateButton();
   }
 
   /**
@@ -172,6 +173,17 @@ export class AIndexWorkspaceUI extends ABaseMelObject {
    * @throws {Error} Si non surchargée par la classe concrète.
    */
   _p_listenSearchReset() {
+    throw new Error("Can't implement abstract class !");
+  }
+
+  /**
+   * Implémentation abstraite de l'écoute du bouton créer.
+   *
+   * @abstract
+   * @protected
+   * @throws {Error} Si non surchargée par la classe concrète.
+   */
+  _p_listenCreateButton() {
     throw new Error("Can't implement abstract class !");
   }
 

@@ -738,23 +738,23 @@
         'modal.js',
         '/js/lib/classes/',
       );
-      
+
       this.busy();
-      
+
       if (
         await MelDialog.Confirm(
           `Souhaitez-vous supprimer l'invité ${user} de votre espace ?`,
           {
             waiting_button_enabled: 5,
             title: 'Confirmation',
-            button_confirm: "Confirmer",
+            button_confirm: 'Confirmer',
             options: { height: 105 },
           },
         )
       ) {
         return this.ajax(
           this.url('PARAMS_delete_user'),
-         {
+          {
             _uid: this.uid,
             _user_to_delete: user,
           },
@@ -770,7 +770,7 @@
               case 'you are the alone':
                 this.busy(false);
                 rcmail.display_message(
-                  "Vous êtes le seul administrateur, nommez un autre administrateur ou supprimez l'espace.",
+                  'Vous êtes le seul administrateur, nommez un autre administrateur ou supprimez l\'espace.',
                   'error',
                 );
                 break;
@@ -783,7 +783,6 @@
         // ).always(() => {
         //     return this.update_user_table();
         // })
-      
       } else return this.busyAsync(false);
     }
 

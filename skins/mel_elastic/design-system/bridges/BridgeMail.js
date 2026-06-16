@@ -498,7 +498,36 @@ export default class BridgeMail extends ABridge {
     row.prepend(avatarContainer, rowActions);
     row.setAttribute('decorated', true);
 
+    this.#setThreadingDecorations(row);
+
     return row;
+  }
+
+  #isThreading() {
+    return this.get_env('threading');
+  }
+
+  #setThreadingDecorations(row) {
+    if (!this.#isThreading()) return row;
+
+    this.#process(row);
+  }
+
+  /**
+   *
+   * @param {HTMLElement} row
+   * @param {number} level
+   */
+  #process(row) {
+    const subject = row.querySelector('.subject');
+
+    if (!subject) return;
+
+    const padding = ~~(parseFloat(subject.style.paddingLeft) * 10);
+    const level = padding / 15;
+
+    row.style.setProperty('--row-level', level);
+    row.classList.add('threading-level');
   }
 
   /**

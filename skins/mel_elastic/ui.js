@@ -596,9 +596,9 @@ $(document).ready(() => {
       this.css_rules = new Mel_CSS_Style_Sheet();
       // const tabs = this.init_theme_tabs({});
       return this.init_const()
-        .init_theme($(`#theme-panel .null`))
+        .init_theme($('#theme-panel .null'))
         .init_theme_pictures({
-          picturePannel: `#theme-panel`,
+          picturePannel: '#theme-panel',
         })
         .init_footer();
     }
@@ -894,6 +894,8 @@ $(document).ready(() => {
       let html = new mel_html2(CONST_HTML_DIV, {
         attribs: { class: CONST_CLASS_ROW, style: STYLE_MAIN_DIV_THEME },
       });
+
+      rcmail.env.current_theme = DEFAULT_THEME;
       this.theme = rcmail.env.current_theme || DEFAULT_THEME;
 
       if (
@@ -4266,7 +4268,9 @@ $(document).ready(() => {
     }
 
     get_current_theme() {
-      return this.theme || 'default';
+      const DEFAULT = 'default';
+      this.theme = DEFAULT;
+      return this.theme || DEFAULT;
     }
 
     get_current_theme_picture() {

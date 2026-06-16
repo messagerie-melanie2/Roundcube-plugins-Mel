@@ -365,7 +365,12 @@ export default class BridgeMail extends ABridge {
         bridge,
         this.#setupMessageListHooks.bind(this),
       ),
-    ).listen('responseaftersearch', this.#setupMessageListHooks.bind(this));
+    )
+      .listen('responseaftersearch', this.#setupMessageListHooks.bind(this))
+      .listen(
+        'responseaftercheck-recent',
+        this.#setupMessageListHooks.bind(this),
+      );
 
     this.listen('init', () => {
       if (!this.rcmail().message_list) return;
@@ -503,7 +508,11 @@ export default class BridgeMail extends ABridge {
    * @returns {void}
    */
   #addUtilityClass(row) {
-    if (row.querySelector('.subject span.priority :is(.prio, .prio1, .prio2, .prio4, .prio5)')) {
+    if (
+      row.querySelector(
+        '.subject span.priority :is(.prio, .prio1, .prio2, .prio4, .prio5)',
+      )
+    ) {
       row.classList.add('priority');
     }
     if (row.querySelector('.msgicon:is(.forwarded, .replied)')) {

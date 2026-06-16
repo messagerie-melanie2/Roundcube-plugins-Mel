@@ -102,6 +102,9 @@ table.messagelist tr .mail-avatar .mail-avatar--action {
 table.messagelist tr.has-label .mail-avatar {
   top: 56px;
 }
+table.messagelist tr.has-label td.labels {
+  margin-left: 51px;
+}
 table.messagelist tr.has-label:hover td {
   background-color: transparent !important;
 }

@@ -377,10 +377,11 @@ export default class BridgeEvents extends MelObject {
    * @throws {Error} Si la méthode select n'est pas disponible sur message_list
    * @private
    */
-  #_messageListSelect(uid) {
-    if (this.rcmail()?.message_list?.select)
-      this.rcmail().message_list.select(uid);
-    else throw new Error('Impossible de "select" un message !');
+  #_messageListSelect(uid, e) {
+    if (this.rcmail()?.message_list?.select) {
+      const mod_key = rcube_event.get_modifier(e);
+      this.rcmail().message_list.select_row(uid, mod_key, true);
+    } else throw new Error('Impossible de "select" un message !');
   }
 
   /**

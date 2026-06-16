@@ -734,18 +734,25 @@ class mel_moncompte extends rcube_plugin {
     $type = rcube_utils::get_input_value('_type', rcube_utils::INPUT_POST);
 
     if (isset($mbox) && isset($type)) {
-       // Impossible de masquer l'agenda utilisé pour les invitations
+      // Impossible de masquer l'agenda utilisé pour les invitations, UNIQUEMENT si l'utilisateur a les droits d'écriture sur cet agenda
       if ($type === 'calendar') {
-        $no_invitation = $this->rc->user->get_prefs()['no_invitation_calendars'] ?? [];
+        $user = driver_mel::gi()->getUser($this->get_user_bal());
+        $calendar = driver_mel::gi()->calendar([$user]);
+        $calendar->id = driver_mel::gi()->rcToMceId($mbox);
 
-        $is_invitation_active = !isset($no_invitation[$mbox]);
+        $can_manage_invitation = $calendar->load()
+          && $calendar->asRight(\LibMelanie\Config\ConfigMelanie::WRITE)
+          && !M2calendar::is_external($calendar->id);
 
-        if ($is_invitation_active) {
-          $this->rc->output->show_message('mel_moncompte.hide_calendar_invitation_forbidden', 'error');
+        if ($can_manage_invitation) {
+          $no_invitation = $this->rc->user->get_prefs()['no_invitation_calendars'] ?? [];
+          $is_invitation_active = !isset($no_invitation[$mbox]);
 
-          $this->rc->output->command('mel_force_checkbox_on', $mbox);
-
-          return;
+          if ($is_invitation_active) {
+            $this->rc->output->show_message('mel_moncompte.hide_calendar_invitation_forbidden', 'error');
+            $this->rc->output->command('mel_force_checkbox_on', $mbox);
+              return;
+          }
         }
       }
       $conf_name = 'hidden_' . $type . 's';

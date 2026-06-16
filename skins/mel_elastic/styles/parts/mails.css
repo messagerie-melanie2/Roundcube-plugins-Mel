@@ -181,12 +181,6 @@ table.messagelist tr.message.thread.priority td.subject span.priority span.prio4
 table.messagelist tr.message.thread.priority td.subject span.priority span.prio5 {
   margin-left: 69px;
 }
-html.mail-small table.messagelist tr.message.priority td.subject span.priority span.prio1,
-html.mail-small table.messagelist tr.message.priority td.subject span.priority span.prio2,
-html.mail-small table.messagelist tr.message.priority td.subject span.priority span.prio4,
-html.mail-small table.messagelist tr.message.priority td.subject span.priority span.prio5 {
-  margin-top: -44px;
-}
 table.messagelist tr.message:hover {
   --_flag: '\e958';
   --_flag-hover: '\e957';

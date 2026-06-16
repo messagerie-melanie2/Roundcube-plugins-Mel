@@ -169,6 +169,9 @@ table.messagelist tr.message.thread td.subject span.fromto,
 table.messagelist tr.message.thread td.subject span.subject {
   margin-left: 45px;
 }
+table.messagelist tr.message.thread.expanded .mail-avatar {
+  margin-left: calc(1.5rem * var(--row-level, 0px));
+}
 table.messagelist tr.message.thread.handled td.subject span.fromto {
   margin-left: 65px;
 }

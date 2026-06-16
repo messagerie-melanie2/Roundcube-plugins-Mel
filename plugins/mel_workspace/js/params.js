@@ -730,7 +730,10 @@
     }
 
     async delete_user(user) {
-      console.log('delete user', user);
+      const workspaceUser = Object.values(
+        rcmail.env.current_workspace_users
+      ).find(u => u.email.split('@')[0] === user);
+      
       const loadJsModule =
         window.loadJsModule ?? parent.loadJsModule ?? top.loadJsModule;
       const { MelDialog } = await loadJsModule(
@@ -741,9 +744,11 @@
 
       this.busy();
 
+      const displayName = workspaceUser?.name ?? user;
+
       if (
         await MelDialog.Confirm(
-          `Souhaitez-vous supprimer l'invité ${user} de votre espace ?`,
+          `Souhaitez-vous supprimer l'invité ${displayName} de votre espace ?`,
           {
             waiting_button_enabled: 5,
             title: 'Confirmation',

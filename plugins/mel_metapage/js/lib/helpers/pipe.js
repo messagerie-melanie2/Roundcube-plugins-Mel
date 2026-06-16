@@ -53,3 +53,14 @@ class PipeObject {
 export function pipe(obj, fn) {
   return new PipeObject(obj).pipe(fn);
 }
+
+export const Pipe = Object.freeze({
+  /**
+   *
+   * @param {T} obj
+   * @template T
+   */
+  Start(obj) {
+    return new PipeObject(obj);
+  },
+});

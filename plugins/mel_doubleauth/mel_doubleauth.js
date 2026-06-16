@@ -272,15 +272,39 @@ if (window.rcmail) {
       // rcmail.http_request('plugin.mel_doubleauth-adduser', lock);
     });
 
-    $('#2FA_desactivate_button').click(function () {
-      $('#p2FA_secret').get(0).value = '';
-      $("[name^='2FA_recovery_codes']").each(function () {
-        $(this).get(0).value = '';
-      });
-      $('#2FA_qr_code').parent().parent().remove();
-      rcmail.http_request('plugin.mel_doubleauth-removeuser');
-      window.double_fact_saved = true;
-      rcmail.gui_objects.mel_doubleauthform.submit();
+    $('#2FA_desactivate_button').click(async function () {
+      const loadJsModule =
+        window.loadJsModule ?? parent.loadJsModule ?? top.loadJsModule;
+
+      const { MelDialog } = await loadJsModule(
+        'mel_metapage',
+        'modal.js',
+        '/js/lib/classes/',
+      );
+
+      if (
+        await MelDialog.Confirm(
+          'Confirmez-vous demander la désactivation de l\'authentification à deux facteurs ?',
+          {
+            waiting_button_enabled: 5,
+            title: 'Confirmation',
+            button_confirm: 'Confirmer',
+            options: { height: 105 },
+          },
+        )
+      ) {
+        $('#p2FA_secret').get(0).value = '';
+
+        $('[name^="2FA_recovery_codes"]').each(function () {
+          $(this).get(0).value = '';
+        });
+
+        $('#2FA_qr_code').parent().parent().remove();
+
+        rcmail.http_request('plugin.mel_doubleauth-removeuser');
+        window.double_fact_saved = true;
+        rcmail.gui_objects.mel_doubleauthform.submit();
+      }
     });
 
     function b32_encode(s) {

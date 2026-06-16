@@ -1,6 +1,8 @@
+import { HTMLBnumCardElement } from '../../../../../../skins/mel_elastic/design-system/ds-module-bnum.js';
 import { HTMLBnumIcon } from '../../../../../../skins/mel_elastic/design-system/ds-module-bnum.js';
 import { BnumLog } from '../../../../../mel_metapage/js/lib/classes/bnum_log.js';
 import { MelEnumerable } from '../../../../../mel_metapage/js/lib/classes/enum.js';
+import { Pipe, pipe } from '../../../../../mel_metapage/js/lib/helpers/pipe.js';
 import { HTMLTabsElement } from '../../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/tab_web_element.js';
 import { AIndexWorkspaceSearchStrategy } from './AIndexWorkspaceSearchStrategy.js';
 import { EMode } from './EMode.js';
@@ -84,10 +86,22 @@ export class IndexWorkspacePrivateSearchStrategy extends AIndexWorkspaceSearchSt
       return;
     }
 
-    dest.append(...enumerable.select((x) => x.cloneNode(true)));
+    Pipe.Start(dest)
+      .pipe((x) => this.#_append(x, enumerable))
+      .pipe(this.#_addListeners.bind(this))
+      .pipe(this.#_removeKeep.bind(this))
+      .pipe(this.#_removeDuplicateIcons.bind(this));
+  }
 
-    this.#_removeKeep(dest);
-    this.#_removeDuplicateIcons(dest);
+  /**
+   * Ajoute un tableau d'élément html à un enfant
+   * @param {HTMLElement} dest
+   * @param {HTMLElement[]} arr
+   * @private
+   */
+  #_append(dest, arr) {
+    dest.append(...arr);
+    return dest;
   }
 
   /**
@@ -170,6 +184,8 @@ export class IndexWorkspacePrivateSearchStrategy extends AIndexWorkspaceSearchSt
     for (const icon of icons) {
       if (icon.textContent.includes('keep')) icon.remove();
     }
+
+    return dest;
   }
 
   /**
@@ -190,5 +206,56 @@ export class IndexWorkspacePrivateSearchStrategy extends AIndexWorkspaceSearchSt
         else alreadyExist = true;
       }
     }
+  }
+
+  /**
+   * Ajoute le listener perdu à la copie.
+   * @param {HTMLElement} dest
+   * @private
+   */
+  #_addListeners(dest) {
+    /**
+     * @type {NodeListOf<HTMLBnumCardElement>}
+     */
+    const cards = dest.querySelectorAll(HTMLBnumCardElement.TAG);
+    for (const card of cards) {
+      if (!card.hasAttribute('clickable')) continue;
+
+      const id = this.#_getWspId(card);
+
+      if (!id) continue;
+
+      card.addEventListener(
+        'bnum-card:click',
+        this.#_handleWorkspaceClick.bind(this, id),
+      );
+    }
+
+    return dest;
+  }
+
+  /**
+   *
+   * @param {HTMLBnumCardElement} card
+   * @returns
+   */
+  #_getWspId(card) {
+    return card?.parentElement?.getAttribute?.('data-id');
+  }
+
+  #_handleWorkspaceClick(id) {
+    const original = this.#_getOriginalWorkspace(id);
+
+    if (original) original.click();
+    else {
+      const textError = `Impossible de trouver l'edt original lié à l'id ${id}`;
+      BnumLog.error('public/#_handleWorkspaceClick', textError);
+    }
+  }
+
+  #_getOriginalWorkspace(id) {
+    const workspace = document.querySelector(`#main-pannel [data-id="${id}"]`);
+
+    return workspace?.querySelector?.(HTMLBnumCardElement.TAG);
   }
 }

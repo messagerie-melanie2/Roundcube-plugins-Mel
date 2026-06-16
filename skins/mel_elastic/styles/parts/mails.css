@@ -52,8 +52,8 @@ html.layout-small body.task-mail .header a.selection {
 }
 table.messagelist tr.message td.threads {
   position: absolute;
-  top: 4px;
-  left: 40px;
+  top: 10px;
+  left: 49px;
   border: none;
 }
 table.messagelist tr.message td.threads + .subject span.subject,
@@ -161,6 +161,22 @@ table.messagelist tr.message.handled td.subject span.msgicon.replied.forwarded::
 table.messagelist tr.message.handled td.subject span.msgicon.replied.forwarded::before {
   content: '' !important;
   margin-left: 3px;
+}
+table.messagelist tr.message.thread td.subject span.fromto,
+table.messagelist tr.message.thread td.subject span.subject {
+  margin-left: 45px;
+}
+table.messagelist tr.message.thread.handled td.subject span.fromto {
+  margin-left: 65px;
+}
+table.messagelist tr.message.thread.priority td.subject span.subject {
+  margin-left: 65px;
+}
+table.messagelist tr.message.thread.priority td.subject span.priority span.prio1,
+table.messagelist tr.message.thread.priority td.subject span.priority span.prio2,
+table.messagelist tr.message.thread.priority td.subject span.priority span.prio4,
+table.messagelist tr.message.thread.priority td.subject span.priority span.prio5 {
+  margin-left: 69px;
 }
 html.mail-small table.messagelist tr.message.priority td.subject span.priority span.prio1,
 html.mail-small table.messagelist tr.message.priority td.subject span.priority span.prio2,

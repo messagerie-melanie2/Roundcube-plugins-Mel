@@ -379,7 +379,7 @@ table.messagelist .contextRow.context-source span.threads > div {
 table.messagelist .flags {
   color: var(--main-text-color);
 }
-table.messagelist:not(.withselection) tr.unread > td.selection + td {
+table.messagelist:not(.withselection) tr.unread > td.subject {
   border-left: 5px solid var(--message-list-unread-border-left) !important;
 }
 #mailsearchlist {

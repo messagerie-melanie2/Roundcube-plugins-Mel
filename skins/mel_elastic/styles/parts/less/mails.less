@@ -77,8 +77,8 @@ table {
       td {
         &.threads {
           position: absolute;
-          top: 4px;
-          left: 40px;
+          top: 10px;
+          left: 49px;
           border: none;
 
           &+.subject {
@@ -274,6 +274,39 @@ table.messagelist {
           &.replied.forwarded::before {
             content: '' !important;
             margin-left: 3px;
+          }
+        }
+      }
+    }
+
+    &.message.thread {
+      td.subject {
+        span.fromto,
+        span.subject {
+          margin-left: 45px;
+        }
+      }
+    }
+
+    &.message.thread.handled {
+      td.subject {
+        span.fromto {
+          margin-left: 65px;
+        }
+      }
+    }
+
+    &.message.thread.priority {
+      td.subject {
+        span.subject {
+          margin-left: 65px;
+        }
+          span.priority span {
+              &.prio1,
+              &.prio2,
+              &.prio4,
+              &.prio5 {
+              margin-left: 69px;
           }
         }
       }

@@ -572,7 +572,7 @@ rcube_webmail.prototype.mel_label_show_tooltip = async function ($parent) {
     let tooltips = Object.keys(rcmail.env.labels_translate);
     $tooltip = $('<div id="mel-label-tooltip-dropdown" class=""></div>');
 
-    $ul = $('<div class="ignore-bullet btn-group-vertical"></div>');
+    $ul = $('<div class="ignore-bullet btn-group-vertical label-menu"></div>');
 
     for (
       let index = 0, len = tooltips.length, key = null, element = null;
@@ -584,7 +584,7 @@ rcube_webmail.prototype.mel_label_show_tooltip = async function ($parent) {
 
       $ul.append(
         $(
-          '<button type="button" class="btn mel-button no-button-margin no-margin-button bckg true"></button>',
+          '<button type="button" class="btn true"></button>',
         )
           .data(
             'value',
@@ -880,7 +880,7 @@ $(document).ready(function () {
 			}
 
 			.label_${id}.txt.important {
-				color:${val}!important;
+				color:${textcolor}!important;
 			}
 			
 			#messagelist tr.label_${id} td.labels::before

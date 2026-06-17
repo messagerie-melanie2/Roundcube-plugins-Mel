@@ -423,10 +423,14 @@ les propriétés « nom » et « valeur ».
             $label.click();
           })
           .on('mouseover', (e) => {
-            $(e.currentTarget).removeClass(`label_${$label.data('mel-label')}`);
+            $(e.currentTarget).addClass('label-hover');
+
+            // $(e.currentTarget).removeClass(`label_${$label.data('mel-label')}`);
           })
           .on('mouseout', (e) => {
-            $(e.currentTarget).addClass(`label_${$label.data('mel-label')}`);
+            $(e.currentTarget).removeClass('label-hover');
+
+            // $(e.currentTarget).addClass(`label_${$label.data('mel-label')}`);
           });
       }
 

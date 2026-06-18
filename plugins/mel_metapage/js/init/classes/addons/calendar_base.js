@@ -449,11 +449,14 @@ $(document).ready(() => {
           $('#mel-have-something-minified-main-create').length === 0 &&
           $('#globallist').length === 0
         ) {
-          let $qu = $('#button-create').append(`
-                    <span id="mel-have-something-minified-main-create" class="badge badge-pill badge-primary" style="position: absolute;
-                    top: -5px;
-                    right: -5px;">•</span>
-                    `);
+                  const $badge = $(`
+          <bnum-badge id="mel-have-something-minified-main-create"  data-value="•" circle
+          style="position: absolute;
+                top: -5px;
+                pointer-events:none;
+                right: -5px;"
+          ></bnum-badge>`);
+          let $qu = $('#create-button').append($badge);
 
           if ($qu.css('position') !== 'relative')
             $qu.css('position', 'relative');
@@ -469,7 +472,7 @@ $(document).ready(() => {
           window.event_reduced = true;
           window.kolab_event_dialog_element.close();
           func_minifier();
-          if (isFromGlobalModal) $('#button-create').focus();
+          if (isFromGlobalModal) $('#create-button').focus();
         };
       window.kolab_event_dialog_element.on_click_exit = () => {
         window.kolab_event_dialog_element.close();
@@ -479,7 +482,7 @@ $(document).ready(() => {
         window.event_reduced = false;
         window.kolab_event_dialog_element = null;
 
-        if (isFromGlobalModal) $('#button-create').focus();
+        if (isFromGlobalModal) $('#create-button').focus();
       };
       window.kolab_event_dialog_element.onClose(() => {
         if (window.event_reduced === false) {
@@ -493,7 +496,7 @@ $(document).ready(() => {
           func_minifier();
         }
 
-        if (isFromGlobalModal) $('#button-create').focus();
+        if (isFromGlobalModal) $('#create-button').focus();
       });
     } else
       window.kolab_event_dialog_element.onClose(() => {

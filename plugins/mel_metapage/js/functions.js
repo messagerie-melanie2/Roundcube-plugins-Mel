@@ -304,12 +304,14 @@ function m_mp_Create() {
         $('#mel-have-something-minified-main-create').length === 0 &&
         $('#globallist').length === 0
       ) {
-        let $qu = $('#button-create').append(`
-                <span id="mel-have-something-minified-main-create" class="badge badge-pill badge-primary" style="position: absolute;
+        const $badge = $(`
+          <bnum-badge id="mel-have-something-minified-main-create"  data-value="•" circle
+          style="position: absolute;
                 top: -5px;
                 pointer-events:none;
-                right: -5px;">•</span>
-                `);
+                right: -5px;"
+          ></bnum-badge>`);
+        let $qu = $('#create-button').append($badge);
 
         if ($qu.css('position') !== 'relative') $qu.css('position', 'relative');
       }
@@ -322,13 +324,13 @@ function m_mp_Create() {
         let $have_minified = $('#mel-have-something-minified-main-create');
         if ($have_minified.length > 0) $have_minified.length.remove();
 
-        $('#button-create').focus();
+        $('#create-button').focus();
       }
     };
     create_popUp.on_click_minified = () => {
       window.create_popUp.close();
       func_minifier();
-      $('#button-create').focus();
+      $('#create-button').focus();
     };
     create_popUp.onClose(() => {
       if (window.create_popUp) func_minifier();

@@ -284,3 +284,19 @@ table.messagelist tr.flagged:hover .unflag-action {
 .listing tbody tr.context-source:not(.selected) > td {
   background-color: var(--_bdsli-active-bg) !important;
 }
+html.layout-phone .task-mail #layout-content > div.header,
+html.layout-small .task-mail #layout-content > div.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  line-height: 20px;
+  padding: 0px 10px;
+}
+html.layout-phone .task-mail #layout-content > div.footer,
+html.layout-small .task-mail #layout-content > div.footer {
+  color: var(--bnum-text-primary);
+  background-color: var(--layout-content-header-background-color) !important;
+  border-top: var(--bnum-border-in-surface);
+  bottom: 0;
+}

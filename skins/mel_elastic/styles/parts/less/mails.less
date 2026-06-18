@@ -243,14 +243,16 @@ table.messagelist {
         span.subject {
           margin-left: 45px;
         }
-          span.priority span {
-              &.prio1,
-              &.prio2,
-              &.prio4,
-              &.prio5 {
-              line-height: 1em;
-              margin-top: -25px;
-              margin-left: 49px;
+
+        span.priority span {
+
+          &.prio1,
+          &.prio2,
+          &.prio4,
+          &.prio5 {
+            line-height: 1em;
+            margin-top: -25px;
+            margin-left: 49px;
           }
         }
       }
@@ -285,6 +287,7 @@ table.messagelist {
 
     &.message.thread {
       td.subject {
+
         span.fromto,
         span.subject {
           margin-left: 45px;
@@ -294,7 +297,7 @@ table.messagelist {
 
     &.message.thread.expanded {
       .mail-avatar {
-         margin-left: calc(1.5rem * var(--row-level, 0px));
+        margin-left: calc(1.5rem * var(--row-level, 0px));
       }
     }
 
@@ -311,12 +314,14 @@ table.messagelist {
         span.subject {
           margin-left: 65px;
         }
-          span.priority span {
-              &.prio1,
-              &.prio2,
-              &.prio4,
-              &.prio5 {
-              margin-left: 69px;
+
+        span.priority span {
+
+          &.prio1,
+          &.prio2,
+          &.prio4,
+          &.prio5 {
+            margin-left: 69px;
           }
         }
       }
@@ -490,3 +495,27 @@ table.messagelist {
     }
   }
 }
+
+html.layout-phone,
+html.layout-small {
+  .task-mail #layout-content {
+    &>div.header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      line-height: 20px;
+      padding: 0px 10px;
+    }
+
+    &>div.footer {
+      color: var(--bnum-text-primary);
+      background-color: var(--layout-content-header-background-color) !important;
+      border-top: var(--bnum-border-in-surface);
+      bottom: 0;
+    }
+  }
+}
+
+
+

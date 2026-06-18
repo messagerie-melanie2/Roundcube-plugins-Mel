@@ -90,6 +90,11 @@
   margin-bottom: 38px;
 }
 
+html.layout-small .module_parent,
+html.layout-phone .module_parent {
+  margin-bottom:50px;
+}
+
 .module_parent .melv2-card-pre > h2 {
   margin-bottom: 0;
 }

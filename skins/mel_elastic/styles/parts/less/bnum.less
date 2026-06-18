@@ -205,15 +205,21 @@
   .popover .label-menu button.btn {
     border: none;
     background-color: var(--bnum-color-background);
-    // color: var(--bnum-text-primary);
     &:hover {
       background-color: var(--bnum-color-secondary-hover);
-      // color: var(--bnum-text-primary);
     }
   }
 
   #message-list-filters-extra .labels-list button.btn {
     &.label-hover:hover {
       opacity: 80%;
+    }
+  }
+
+  .task-mail .message-list-filter-container .mel-filter-more .mel-button {
+    color: var(--bnum-text-primary) !important;
+
+    &:hover {
+      background-color: var(--bnum-color-secondary-hover) !important;
     }
   }

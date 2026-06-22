@@ -861,13 +861,13 @@ les propriétés « nom » et « valeur ».
 
       if (
         moment(start, DATE_FORMAT) >
-          moment($('#s_interval_end').val(), DATE_FORMAT) ||
+        moment($('#s_interval_end').val(), DATE_FORMAT) ||
         ($('#s_interval_end').val() || '') === ''
       )
         $('#s_interval_end')
           .val(moment(start, DATE_FORMAT).add(1, 'd').format(DATE_FORMAT))
           .change();
-    }
+    };
 
     rcmail.addEventListener('init', () => {
       rcmail.message_list.addEventListener('select', () => {

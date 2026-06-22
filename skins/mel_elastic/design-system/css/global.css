@@ -103,6 +103,9 @@
   /* Rouge "DEV" */
   --bnum-semantic-success: #36b37e;
   /* Vert "TES" */
+  /* Couleur du calendrier */
+  --bnum-calendar-background-color: #ffffff;
+  --bnum-calendar-today-background-color: #f5f5fe;
   /* =================================
      2. Typographie
      ================================= */
@@ -301,6 +304,9 @@ html.dark-mode-custom:root {
   /* Rouge "DEV" */
   --bnum-semantic-success: #36b37e;
   /* Vert "TES" */
+  /* Couleur du calendrier */
+  --bnum-calendar-background-color: #242424;
+  --bnum-calendar-today-background-color: #2f2f2f;
   --_border: var(--bnum-border-style-default) var(--bnum-border-width-s) var(--bnum-color-border);
   --bnum-border-column: var(--bnum-border-style-default) var(--bnum-border-width-s) var(--bnum-color-border);
   --bnum-button-secondary-background-color: var(--bnum-color-background);

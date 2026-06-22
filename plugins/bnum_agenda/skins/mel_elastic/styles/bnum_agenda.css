@@ -114,6 +114,9 @@ ul#calendarslist li > div a.quickview:hover::before {
 ul#calendarslist li > div.focusview a.quickview::before {
   opacity: var(--_opacity-active);
 }
+ul#calendarslist .virtual .calendar {
+  padding-left: 15px;
+}
 ul#calendarslist li[aria-level='1'] div.calendar > a {
   padding-left: 0em !important;
 }

@@ -827,11 +827,12 @@ les propriétés « nom » et « valeur ».
 
     $('#toolbar-list-menu .select').parent().remove();
 
-    function interval_on_change(start, end) {
+    const interval_on_change = (start, end) => {
       const DATE_FORMAT = 'DD/MM/YYYY';
       const SERVER_FORMAT = 'DD-MMM-YYYY';
-      const server_start = moment(start, DATE_FORMAT).format(SERVER_FORMAT);
+      const server_start = moment(start, DATE_FORMAT).locale('en').format(SERVER_FORMAT);
       const server_end = moment(end, DATE_FORMAT)
+        .locale('en')
         .add(1, 'd')
         .format(SERVER_FORMAT);
       const val = `SINCE ${server_start} BEFORE ${server_end}`;
@@ -860,13 +861,13 @@ les propriétés « nom » et « valeur ».
 
       if (
         moment(start, DATE_FORMAT) >
-          moment($('#s_interval_end').val(), DATE_FORMAT) ||
+        moment($('#s_interval_end').val(), DATE_FORMAT) ||
         ($('#s_interval_end').val() || '') === ''
       )
         $('#s_interval_end')
           .val(moment(start, DATE_FORMAT).add(1, 'd').format(DATE_FORMAT))
           .change();
-    }
+    };
 
     rcmail.addEventListener('init', () => {
       rcmail.message_list.addEventListener('select', () => {

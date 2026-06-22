@@ -77,6 +77,7 @@ class mel_elastic extends bnum_plugin
         "design-system/css/parts/page-columns.css" => ['calendar', 'mail', 'addressbook', 'tasks', 'settings'],
         "styles/parts/bnum.css" => "bnum",
         "styles/parts/mails.css" => "mail",
+        "styles/parts/calendar.css" => "calendar",
     ] ;
 
     /**

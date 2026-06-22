@@ -50,7 +50,7 @@ class mel_elastic extends bnum_plugin
      *
      * @var array
      */
-    private $css = ["icofont.css", "jquery.datetimepicker.min.css", "mel-icons.css", "material-symbols.css", "design-system/css/global.css", "design-system/css/parts/page-columns.css", "styles/parts/mails.css", "styles/parts/bnum.css", "styles/parts/bridge.css"];
+    private $css = ["icofont.css", "jquery.datetimepicker.min.css", "mel-icons.css", "material-symbols.css", "design-system/css/global.css", "styles/parts/bridge.css"];
 
     /**
      * Thème actuellement chargé.
@@ -72,6 +72,12 @@ class mel_elastic extends bnum_plugin
      * @var DefaultTheme
      */
     private static $default_theme;
+
+    private static $cssTask = [
+        "design-system/css/parts/page-columns.css" => ['calendar', 'mail', 'addressbook', 'tasks', 'settings'],
+        "styles/parts/bnum.css" => "bnum",
+        "styles/parts/mails.css" => "mail",
+    ] ;
 
     /**
      * Initialise le plugin.
@@ -308,6 +314,16 @@ class mel_elastic extends bnum_plugin
         $size = count($this->css);
         for ($i=0; $i < $size; ++$i) { 
             $this->include_stylesheet('/'.$this->css[$i]);
+        }
+
+        $this->load_task_css();
+    }
+
+    function load_task_css() {
+        foreach (self::$cssTask as $file => $tasks) {
+            if (is_array($tasks) && in_array($this->get_current_task(), $tasks) 
+                || $this->get_current_task() === $tasks) 
+            $this->include_stylesheet('/'.$file);
         }
     }
 

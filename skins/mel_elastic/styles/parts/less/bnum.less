@@ -1,49 +1,125 @@
-  #user-dropdown {
+#user-dropdown {
+  border-radius: 0;
+  border-color: var(--bnum-color-border);
+  background-color: var(--bnum-color-background);
+  color: var(--bnum-text-primary);
+  min-width: 220px;
+  --bnum-title-text-color: var(--bnum-text-title-primary);
+  border-bottom: var(--bnum-border-on-surface-bottom);
+
+  .user-menu-items {
+    width: fit-content;
+    white-space: nowrap;
+    padding: 0px 10px;
+    display: flex;
+    flex-direction: column;
+
+    .user-menu-items-avatar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 10px 0;
+      gap: 10px;
+
+      #user-menu-picture {
+        width: 60px;
+        height: 60px;
+      }
+
+      .user-menu-informations {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .user-menu-fullname {
+          font-weight: bold;
+        }
+      }
+    }
+
+    .user-menu-items-group {
+      border-top: var(--bnum-border-in-surface);
+      border-bottom: var(--bnum-border-in-surface);
+    }
+
+    .user-menu-button {
+      margin: 3px 0;
+    }
+  }
+
+  &::after {
+    border-bottom: 8px solid var(--bnum-color-background);
+    border-left: 9px solid rgba(0, 0, 0, 0);
+    border-right: 9px solid rgba(0, 0, 0, 0);
+    content: '';
+    display: inline-block;
+    right: 11px;
+    position: absolute;
+    top: -7px;
+  }
+}
+
+#button-user {
+  &:focus {
+    box-shadow: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #0969da;
+  }
+
+  .user-child {
+    height: 57px;
+  }
+}
+
+.notification-icon-menu {
+  margin-top: 3px;
+}
+
+#notification-dropdown {
+  .notification-dropdown-menu {
     border-radius: 0;
     border-color: var(--bnum-color-border);
     background-color: var(--bnum-color-background);
     color: var(--bnum-text-primary);
-    min-width: 220px;
+    width: 400px;
     --bnum-title-text-color: var(--bnum-text-title-primary);
     border-bottom: var(--bnum-border-on-surface-bottom);
+    //Margin pour aligner proprement le dropdown au bouton
+    margin-top: 15px;
+    left: 9px !important;
 
-    .user-menu-items {
-      width: fit-content;
-      white-space: nowrap;
-      padding: 0px 10px;
-      display: flex;
-      flex-direction: column;
+    .notifications-header {
+      border-bottom: var(--bnum-border-in-surface);
 
-      .user-menu-items-avatar {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin: 10px 0;
-        gap: 10px;
+      a span.material-symbols-outlined {
+        color: var(--bnum-text-primary);
 
-        #user-menu-picture {
-          width: 60px;
-          height: 60px;
+        &:hover {
+          font-variation-settings: 'FILL' 1;
+        }
+      }
+    }
+
+    .dropdown-menu-scroll {
+      max-height: 240px;
+      overflow: auto;
+
+      .dropdown-item {
+        &:last-child {
+          margin-bottom: 0 !important;
         }
 
-        .user-menu-informations {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
+        .notification-category {
+          font-size: 1rem;
 
-          .user-menu-fullname {
-            font-weight: bold;
+          .notification-date {
+            font-size: 11px;
+            color: #858585;
+            font-weight: 400;
           }
         }
-      }
-
-      .user-menu-items-group {
-        border-top: var(--bnum-border-in-surface);
-        border-bottom: var(--bnum-border-in-surface);
-      }
-
-      .user-menu-button {
-        margin: 3px 0;
       }
     }
 
@@ -51,175 +127,108 @@
       border-bottom: 8px solid var(--bnum-color-background);
       border-left: 9px solid rgba(0, 0, 0, 0);
       border-right: 9px solid rgba(0, 0, 0, 0);
-      content: "";
+      content: '';
       display: inline-block;
       right: 11px;
       position: absolute;
       top: -7px;
     }
   }
+}
 
+#groupoptions-user {
+  #theme-panel {
+    margin: 50px 20px 0px 20px;
 
-  #button-user {
-    &:focus {
-      box-shadow: none;
+    .title {
+      border-bottom: var(--bnum-border-in-surface);
+      padding-bottom: 10px;
     }
 
-    &:focus-visible {
-      outline: 2px solid #0969da;
-    }
+    .div-custom-picture {
+      padding-left: 0 !important;
+      padding-right: 10px !important;
 
-    .user-child {
-      height: 57px;
-    }
-  }
-
-  .notification-icon-menu {
-    margin-top: 3px;
-  }
-
-  #notification-dropdown {
-    .notification-dropdown-menu {
-      border-radius: 0;
-      border-color: var(--bnum-color-border);
-      background-color: var(--bnum-color-background);
-      color: var(--bnum-text-primary);
-      width: 400px;
-      --bnum-title-text-color: var(--bnum-text-title-primary);
-      border-bottom: var(--bnum-border-on-surface-bottom);
-      //Margin pour aligner proprement le dropdown au bouton
-      margin-top: 15px;
-      left: 9px !important;
-
-      .notifications-header {
-        border-bottom: var(--bnum-border-in-surface);
-
-        a span.material-symbols-outlined {
-          color: var(--bnum-text-primary);
-
-          &:hover {
-            font-variation-settings: 'FILL' 1;
-          }
-        }
-      }
-
-      .dropdown-menu-scroll {
-        max-height: 240px;
-        overflow: auto;
-
-        .dropdown-item {
-          &:last-child {
-            margin-bottom: 0 !important;
-          }
-
-          .notification-category {
-            font-size: 1rem;
-
-            .notification-date {
-              font-size: 11px;
-              color: #858585;
-              font-weight: 400;
-            }
-          }
-        }
-      }
-
-      &::after {
-        border-bottom: 8px solid var(--bnum-color-background);
-        border-left: 9px solid rgba(0, 0, 0, 0);
-        border-right: 9px solid rgba(0, 0, 0, 0);
-        content: "";
-        display: inline-block;
-        right: 11px;
-        position: absolute;
-        top: -7px;
+      .green-badge {
+        right: 10px;
+        width: 45.5%;
       }
     }
   }
 
-  #groupoptions-user {
-    #theme-panel {
-      margin: 50px 20px 0px 20px;
-
-      .title {
-        border-bottom: var(--bnum-border-in-surface);
-        padding-bottom: 10px;
-      }
-
-      .div-custom-picture {
-        padding-left: 0 !important;
-        padding-right: 10px !important;
-
-        .green-badge {
-          right: 10px;
-          width: 45.5%;
-        }
-      }
-    }
-
-    .option-menu-title {
-      color: var(--bnum-text-primary);
-      font-weight: bold;
-    }
-
-    .options-custom-title {
-      font-size: 16px;
-      font-weight: bold;
-    }
+  .option-menu-title {
+    color: var(--bnum-text-primary);
+    font-weight: bold;
   }
 
-  //Correction couleur des flags pour mail avec label
-  #messagelist-content table.messagelist {
+  .options-custom-title {
+    font-size: 16px;
+    font-weight: bold;
+  }
+}
 
-    tr.label__-s-_label1,
-    tr.label__-s-_label2,
-    tr.label__-s-_label3,
-    tr.label__-s-_label4,
-    tr.label__-s-_label5 {
-      td.flags {
-        color: var(--main-text-color);
-      }
+//Correction couleur des flags pour mail avec label
+#messagelist-content table.messagelist {
+  tr.label__-s-_label1,
+  tr.label__-s-_label2,
+  tr.label__-s-_label3,
+  tr.label__-s-_label4,
+  tr.label__-s-_label5 {
+    td.flags {
+      color: var(--main-text-color);
     }
   }
+}
 
-  #layout-menu #taskmenu.menu {
-
-    a,
-    a.selected,
-    a:hover {
-      color: var(--bnum-text-navbar) !important;
-
-    }
+#layout-menu #taskmenu.menu {
+  a,
+  a.selected,
+  a:hover {
+    color: var(--bnum-text-navbar) !important;
   }
+}
 
-  .task-calendar .listing li>div>a {
+.task-calendar .listing li > div > a {
+  border-left: none;
+  display: flex;
+  align-items: center;
+
+  &:focus {
     border-left: none;
-    display: flex;
-    align-items: center;
-
-    &:focus {
-      border-left: none;
-    }
   }
+}
 
-  .popover .label-menu button.btn {
-    border: none;
-    background-color: var(--bnum-color-background);
-    &:hover {
-      background-color: var(--bnum-color-secondary-hover);
-    }
+.popover .label-menu button.btn {
+  border: none;
+  background-color: var(--bnum-color-background);
+  &:hover {
+    background-color: var(--bnum-color-secondary-hover);
   }
+}
 
-  #message-list-filters-extra .labels-list button.btn {
-    &.label-hover:hover {
-      opacity: 80%;
-    }
+#message-list-filters-extra .labels-list button.btn {
+  &.label-hover:hover {
+    opacity: 80%;
   }
+}
 
-  .task-mail .message-list-filter-container .mel-filter-more .mel-button {
-    color: var(--bnum-text-primary) !important;
+.task-mail .message-list-filter-container .mel-filter-more .mel-button {
+  color: var(--bnum-text-primary) !important;
 
-    &:hover {
-      background-color: var(--bnum-color-secondary-hover) !important;
-    }
+  &:hover {
+    background-color: var(--bnum-color-secondary-hover) !important;
   }
+}
+
+.barup {
+  --bnum-font-size-h1: var(
+    --barup-title-font-size,
+    var(--bnum-font-size-xl, 1rem)
+  );
+  --bnum-space-xl: var(--barup-title-margin-bottom, 0);
+
+  html.touch & {
+    left: 0;
+    width: 100%;
+  }
+}

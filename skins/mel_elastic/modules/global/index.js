@@ -1,3 +1,4 @@
+import { EMPTY_STRING } from '../../../../plugins/mel_metapage/js/lib/constants/constants';
 import { HTMLBnumHeader } from '../../design-system/ds-module-bnum';
 import { ABaseModule } from '../core/ABaseModule';
 
@@ -60,31 +61,64 @@ export class Global extends ABaseModule {
   #_onSwitchChange() {
     return this.listen('switch_frame', (args) => {
       const { task } = args;
-      /**
-       * @type {HTMLElement}
-       */
-      const element = document.querySelector(
-        `#taskmenu li a[data-task="${task}"]`,
-      );
+
+      const element = this.#_getCurrentTaskButton(task);
 
       if (element) {
-        /**
-         * @type {HTMLBnumHeader}
-         */
-        const header = document.querySelector(`${HTMLBnumHeader.TAG}.barup`);
+        const header = this.#_getHeaderTopBar();
 
         if (header) {
-          const currentTask =
-            element.innerText?.split?.('\n')?.slice?.(0, -1)?.join?.('') ||
-            element.innerText;
+          const currentTask = this.#_getCurrentTaskName(element);
 
-          const h1 = header.querySelector('h1');
-
-          if (h1) h1.innerText = currentTask;
-          else header.setPageTitle(currentTask);
+          this.#_setPageHeader(header, currentTask);
         }
       }
     });
+  }
+
+  /**
+   *
+   * @param {HTMLBnumHeader} header
+   * @param {string} currentTask
+   */
+  #_setPageHeader(header, currentTask) {
+    const h1 = header.querySelector('h1');
+
+    if (h1) h1.innerText = currentTask;
+    else header.setPageTitle(currentTask);
+  }
+
+  /**
+   *
+   * @param {HTMLElement} element
+   * @returns {string}
+   */
+  #_getCurrentTaskName(element) {
+    const currentTask =
+      element.innerText?.split?.('\n')?.slice?.(0, -1)?.join?.('') ||
+      element.innerText;
+
+    if (currentTask === EMPTY_STRING && element.querySelector('.inner'))
+      return this.#_getCurrentTaskName(element.querySelector('.inner'));
+
+    return currentTask;
+  }
+
+  /**
+   *
+   * @param {Readonly<string>} task
+   * @returns {?HTMLElement}
+   */
+  #_getCurrentTaskButton(task) {
+    return document.querySelector(`#taskmenu li a[data-task="${task}"]`);
+  }
+
+  /**
+   *
+   * @returns {?HTMLBnumHeader}
+   */
+  #_getHeaderTopBar() {
+    return document.querySelector(`${HTMLBnumHeader.TAG}.barup`);
   }
 
   /**

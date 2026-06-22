@@ -3530,6 +3530,10 @@ let HTMLBnumBadge = (() => {
             this._p_addState(`${STATE_VARIATION_PREFIX}${this.variation}`);
         }
         //#endregion Private Methods
+        forceValue(value) {
+            this.#_value = value;
+            this.#_update(true);
+        }
         //#region Static Methods
         /**
          * Attributs observés pour ce composant.
@@ -12780,6 +12784,7 @@ let HTMLBnumFolder = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = BnumElementInternal;
+    let _instanceExtraInitializers = [];
     let ___decorators;
     let ___initializers = [];
     let ___extraInitializers = [];
@@ -12787,6 +12792,7 @@ let HTMLBnumFolder = (() => {
     let _private__ui_initializers = [];
     let _private__ui_extraInitializers = [];
     let _private__ui_descriptor;
+    let _setUnreadValue_decorators;
     var HTMLBnumFolder = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -12799,7 +12805,9 @@ let HTMLBnumFolder = (() => {
                     badge: `.${CLASS_LEFT_BADGE}`,
                     container: `.${CLASS_CONTAINER}`,
                 })];
+            _setUnreadValue_decorators = [Schedule()];
             __esDecorate(this, _private__ui_descriptor = { get: __setFunctionName(function () { return this.#_ui_accessor_storage; }, "#_ui", "get"), set: __setFunctionName(function (value) { this.#_ui_accessor_storage = value; }, "#_ui", "set") }, _private__ui_decorators, { kind: "accessor", name: "#_ui", static: false, private: true, access: { has: obj => #_ui in obj, get: obj => obj.#_ui, set: (obj, value) => { obj.#_ui = value; } }, metadata: _metadata }, _private__ui_initializers, _private__ui_extraInitializers);
+            __esDecorate(this, null, _setUnreadValue_decorators, { kind: "method", name: "setUnreadValue", static: false, private: false, access: { has: obj => "setUnreadValue" in obj, get: obj => obj.setUnreadValue }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, null, ___decorators, { kind: "field", name: "_", static: false, private: false, access: { has: obj => "_" in obj, get: obj => obj._, set: (obj, value) => { obj._ = value; } }, metadata: _metadata }, ___initializers, ___extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             HTMLBnumFolder = _classThis = _classDescriptor.value;
@@ -12812,7 +12820,7 @@ let HTMLBnumFolder = (() => {
          * @private
          * @type {number}
          */
-        #_selfUnread = 0;
+        #_selfUnread = (__runInitializers(this, _instanceExtraInitializers), 0);
         //#endregion Private fields
         //#region Getters/Setters
         /** Référence à la classe HTMLBnumFolder */
@@ -13016,8 +13024,13 @@ let HTMLBnumFolder = (() => {
                 text = value.toString();
                 state = value > 9 ? STATE_DOUBLE_DIGIT : STATE_SINGLE_DIGIT;
             }
-            if (badge.value !== text)
-                badge.value = text;
+            badge.forceValue(text);
+            this._p_removeStates([
+                STATE_NO_UNREAD,
+                STATE_TRIPLE_DIGIT,
+                STATE_DOUBLE_DIGIT,
+                STATE_SINGLE_DIGIT,
+            ]);
             this._p_addState(state);
             const isCumulative = value !== this.#_selfUnread && isCollapsed;
             if (badge.classList.contains(CLASS_IS_CUMULATIVE) !== isCumulative) {
@@ -13134,6 +13147,15 @@ let HTMLBnumFolder = (() => {
                 caller: this,
             });
             return this;
+        }
+        /**
+         * Force la maj des non-lus.
+         *
+         * La maj sera effectivement uniquement au prochain redraw.
+         * @param value Nouveau non-lus
+         */
+        setUnreadValue(value) {
+            this.#_updateUnread(value);
         }
         //#endregion Public methods
         //#region Static methods
@@ -16873,6 +16895,12 @@ let HTMLBnumColumn = (() => {
         }
         //#endregion Getters/Setters
         //#region LifeCycle
+        /**
+         * Logique de rendu Light DOM
+         * On récupère les enfants existants et on les réorganise.
+         * @param container Le conteneur dans lequel injecter le DOM reconstruit
+         * @protected
+         */
         _p_buildDOM(container) {
             if (this.childNodes.length === 0) {
                 retry(async () => {
@@ -16896,7 +16924,7 @@ let HTMLBnumColumn = (() => {
          * Logique de rendu Light DOM
          * On récupère les enfants existants et on les réorganise.
          * @param container Le conteneur dans lequel injecter le DOM reconstruit
-         * @protected
+         * @private
          */
         #_buildDOM(container) {
             // Sauvegarde des enfants actuels

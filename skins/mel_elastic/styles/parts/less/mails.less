@@ -1,16 +1,5 @@
 //compress:false
 
-.barup {
-  --bnum-font-size-h1: var(--barup-title-font-size,
-      var(--bnum-font-size-xl, 1rem));
-  --bnum-space-xl: var(--barup-title-margin-bottom, 0);
-
-  html.touch & {
-    left: 0;
-    width: 100%;
-  }
-}
-
 #input-search-mail {
   position: relative;
   --bnum-input-container-margin-bottom: 0;
@@ -81,8 +70,7 @@ table {
           left: 49px;
           border: none;
 
-          &+.subject {
-
+          & + .subject {
             span.subject,
             .fromto {
               margin-left: calc(var(--bnum-space-xl) + var(--bnum-space-xs));
@@ -116,7 +104,6 @@ table.messagelist {
 
   td.subject {
     span {
-
       &.fromto,
       &.subject {
         margin-left: var(--bnum-space-xl);
@@ -138,7 +125,6 @@ table.messagelist {
   }
 
   tr {
-
     //Normal
     .mail-avatar {
       --avatar-size: 40px;
@@ -245,7 +231,6 @@ table.messagelist {
         }
 
         span.priority span {
-
           &.prio1,
           &.prio2,
           &.prio4,
@@ -287,7 +272,6 @@ table.messagelist {
 
     &.message.thread {
       td.subject {
-
         span.fromto,
         span.subject {
           margin-left: 45px;
@@ -316,7 +300,6 @@ table.messagelist {
         }
 
         span.priority span {
-
           &.prio1,
           &.prio2,
           &.prio4,
@@ -326,7 +309,6 @@ table.messagelist {
         }
       }
     }
-
 
     &.message:hover {
       --_flag: '\e958';
@@ -376,7 +358,6 @@ table.messagelist {
     align-items: center;
     color: var(--bnum-color-primary);
 
-
     .sub-action {
       font-variation-settings: 'wght' 300 !important;
 
@@ -394,7 +375,6 @@ table.messagelist {
     }
 
     &.message {
-
       .flags,
       .size,
       .date {
@@ -445,16 +425,22 @@ table.messagelist {
 }
 
 #layout-list {
-  --message-list-quick-filter-background-color: var(--layout-list-header-background,
-      var(--bnum-header-color, var(--bnum-color-background, #fff)));
-  --input-button-text-color: var(--layout-list-header-color,
-      var(--bnum-body-text-color, var(--bnum-text-primary)));
+  --message-list-quick-filter-background-color: var(
+    --layout-list-header-background,
+    var(--bnum-header-color, var(--bnum-color-background, #fff))
+  );
+  --input-button-text-color: var(
+    --layout-list-header-color,
+    var(--bnum-body-text-color, var(--bnum-text-primary))
+  );
 
   .menu a.search:before {
     content: '\e8b6' !important;
     font-family: 'Material Symbols Outlined' !important;
     font-weight: normal !important;
-    font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+    font-variation-settings:
+      'wght' 300,
+      'opsz' 48 !important;
     font-size: 17px !important;
     transform: scale(1.5) !important;
   }
@@ -468,8 +454,10 @@ table.messagelist {
 }
 
 .messagelist.__no-rc td.subject span.size {
-  color: var(--_no-rc-color,
-      var(--bnum-body-text-color, var(--bnum-text-primary)));
+  color: var(
+    --_no-rc-color,
+    var(--bnum-body-text-color, var(--bnum-text-primary))
+  );
 }
 
 #folderlist-content {
@@ -488,7 +476,7 @@ table.messagelist {
   tbody {
     tr {
       &.context-source:not(.selected) {
-        &>td {
+        & > td {
           background-color: var(--_bdsli-active-bg) !important;
         }
       }
@@ -499,7 +487,7 @@ table.messagelist {
 html.layout-phone,
 html.layout-small {
   .task-mail #layout-content {
-    &>div.header {
+    & > div.header {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -508,14 +496,13 @@ html.layout-small {
       padding: 0px 10px;
     }
 
-    &>div.footer {
+    & > div.footer {
       color: var(--bnum-text-primary);
-      background-color: var(--layout-content-header-background-color) !important;
+      background-color: var(
+        --layout-content-header-background-color
+      ) !important;
       border-top: var(--bnum-border-in-surface);
       bottom: 0;
     }
   }
 }
-
-
-

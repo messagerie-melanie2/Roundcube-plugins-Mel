@@ -1203,6 +1203,7 @@ export declare class HTMLBnumBadge extends BnumElementInternal {
 	 * Met à jour le composant lors d'un changement d'attribut.
 	 */
 	protected _p_update(): void | Nullable<"break">;
+	forceValue(value: string): void;
 	/**
 	 * Attributs observés pour ce composant.
 	 */
@@ -4562,6 +4563,13 @@ export declare class HTMLBnumFolder extends BnumElementInternal {
 	 */
 	select(innerEvent?: Event): this;
 	/**
+	 * Force la maj des non-lus.
+	 *
+	 * La maj sera effectivement uniquement au prochain redraw.
+	 * @param value Nouveau non-lus
+	 */
+	setUnreadValue(value: number): void;
+	/**
 	 * Génère la chaîne HTML statique pour ce composant (SSR / Helper).
 	 * @static
 	 * @param {Object} props - Propriétés de construction.
@@ -5750,6 +5758,12 @@ export declare class HTMLBnumColumn extends BnumElement {
 	 * Utile pour le CSS qui va définir la largeur
 	 */
 	get type(): string;
+	/**
+	 * Logique de rendu Light DOM
+	 * On récupère les enfants existants et on les réorganise.
+	 * @param container Le conteneur dans lequel injecter le DOM reconstruit
+	 * @protected
+	 */
 	protected _p_buildDOM(container: CustomDom): void;
 	/**
 	 * Reactivity for Type attribute change

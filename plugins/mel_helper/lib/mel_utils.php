@@ -872,5 +872,37 @@ class mel_utils
     }
   }
 
+  /*
+  * Suppression d'une catégorie
+  */
+  public static function cal_remove_category($username, $name)
+  {
+      try {
+          $user = driver_mel::gi()->getUser($username);
+
+          if ($user === null || $user->is_external)
+              return false;
+
+          $categories = $user->getDefaultPreference("categories");
+          if (isset($categories)) {
+              $arr = array_filter(explode('|', $categories), function($c) use ($name) {
+                  return $c !== $name;
+              });
+              $user->saveDefaultPreference("categories", implode('|', $arr));
+          }
+
+          $colors = $user->getDefaultPreference("category_colors");
+          if (isset($colors)) {
+              $arr = array_filter(explode('|', $colors), function($c) use ($name) {
+                  return strpos($c, $name . ':') !== 0;
+              });
+              $user->saveDefaultPreference("category_colors", implode('|', $arr));
+          }
+
+          return true;
+      } catch (\Throwable $th) {
+          return false;
+      }
+  }
 
 }

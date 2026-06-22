@@ -524,25 +524,7 @@ const IntegratedVisio_prototype_afterGenerated =
 
 IntegratedVisio.prototype._p_afterGenerated = function ($element) {
   var buttonText = EMPTY_STRING;
-  const locations = EventView.INSTANCE.parts.location.locations;
   let alreadyExists = false;
-
-  if (
-    MelEnumerable.from(locations)
-      .where((x) => x.value.option_value() === OPTION_KEY)
-      .any()
-  ) {
-    buttonText = MelObject.Empty().gettext(
-      'existing_vroom',
-      'mel_cal_resources',
-    );
-    alreadyExists = true;
-  } else {
-    buttonText = MelObject.Empty().gettext(
-      'no_existing_vroom',
-      'mel_cal_resources',
-    );
-  }
 
   let button = HTMLBnumButton.StartCreate.setContent(buttonText)
     .setSecondaryVariation()
@@ -551,19 +533,6 @@ IntegratedVisio.prototype._p_afterGenerated = function ($element) {
 
   if (alreadyExists) button = button.setDisabled();
 
-  button = button.generate();
-
-  button.addEventListener('click', () => {
-    $('#location-' + this.id)
-      .val(OPTION_KEY)
-      .change();
-  });
-
-  button.addClass('btn-location');
-  button.setAttribute(
-    'style',
-    `--input-mel-text-color: hiner;margin-top: 5px;${alreadyExists && HIDE_ON_EXISTING ? 'display:none;' : EMPTY_STRING}`,
-  );
   $element = IntegratedVisio_prototype_afterGenerated.call(this, $element);
   $element.find('.btn-location').remove();
   $('.mt-2.row', $element)

@@ -554,6 +554,59 @@ const EMPTY_STRING = '';
  * Cela permet d'améliorer la visualisation du code, dans le même esprit que {@link EMPTY_STRING}
  */
 const SPACE = ' ';
+// ============================================================
+// NOMBRES NON SIGNÉS (UINT)
+// ============================================================
+/**
+ * Zéro non signé — {@link uint} `0`.
+ * @group Uint
+ */
+const UI_ZERO = 0;
+
+/**
+ * Convertit un nombre en entier typé.
+ * @param n Nombre à convertir
+ * @returns La valeur convertie en `int`
+ * @throws Erreur si la valeur n'est pas un entier
+ */
+function toInt(n) {
+    if (!Number.isInteger(n))
+        throw new Error(`${n} is not an integer`);
+    return n;
+}
+/**
+ * Convertit un nombre en entier non signé typé.
+ * @param n Nombre à convertir
+ * @returns La valeur convertie en `uint`
+ * @throws Erreur si la valeur n'est pas un entier positif
+ */
+function toUint(n) {
+    if (!Number.isInteger(n) || n < 0)
+        throw new Error(`${n} is not a positive integer`);
+    return n;
+}
+/**
+ * Convertit un nombre en nombre flottant typé.
+ * @param n Nombre à convertir
+ * @returns La valeur convertie en `float`
+ * @throws Erreur si la valeur n'est pas un nombre fini
+ */
+function toFloat(n) {
+    if (!isFinite(n))
+        throw new Error(`${n} is not a float`);
+    return n;
+}
+/**
+ * Convertit un nombre en nombre flottant non signé typé.
+ * @param n Nombre à convertir
+ * @returns La valeur convertie en `ufloat`
+ * @throws Erreur si la valeur n'est pas un nombre fini positif
+ */
+function toUfloat(n) {
+    if (!isFinite(n) || n < 0)
+        throw new Error(`${n} is not a positive float`);
+    return n;
+}
 
 /**
  * Vérifie si une valeur inconnue est une chaîne de caractères non vide.
@@ -645,6 +698,174 @@ function CapitalizeLine(line) {
  */
 function capitalizeLine(line) {
     return line.split(SPACE).map(capitalize).join(SPACE);
+}
+
+/**
+ * Usine générique pour créer des proxies de nombres typés avec système de cache intégré.
+ *
+ * Chaque accès à une propriété numérique sur le proxy retourné (ex. `proxy[42]`) :
+ * 1. Consulte d'abord le cache interne pour un accès en O(1) ;
+ * 2. Ignore silencieusement les propriétés non numériques (ex. `toString`, `Symbol`) ;
+ * 3. Valide et convertit la valeur via `validator`, puis la mémorise dans le cache.
+ *
+ * @template T - Le type brandé produit par le validateur (ex. `uint`, `float`).
+ *
+ * @param validator    - Fonction de conversion et de validation d'un nombre brut vers `T`.
+ *                       Doit lever une erreur si la valeur est hors domaine.
+ * @param prefillCache - Dictionnaire optionnel de valeurs pré-calculées pour les cas les
+ *                       plus fréquents, afin d'éviter tout appel à `validator` sur ces
+ *                       entrées. Par défaut : objet vide.
+ *
+ * @returns Un `Record<number, T>` implémenté par un `Proxy` qui valide à la demande
+ *          et met en cache chaque résultat.
+ *
+ * @example
+ * ```typescript
+ * const MyUint = createBrandedProxy<uint>(toUint, { 0: 0 as uint });
+ * const zero = MyUint[0];  // servi depuis le cache pré-rempli
+ * const cent = MyUint[100]; // validé par toUint puis mis en cache
+ * ```
+ */
+function createBrandedProxy(validator, prefillCache = {}) {
+    return new Proxy(prefillCache, {
+        get: (target, prop) => {
+            // 1. Lecture ultra-rapide depuis le cache
+            if (prop in target)
+                return target[prop];
+            // 2. Sécurité : on ignore les appels de propriétés non numériques (ex: toString)
+            const val = Number(prop);
+            if (isNaN(val))
+                return undefined;
+            // 3. Validation et mise en cache
+            const brandedValue = validator(val);
+            target[val] = brandedValue;
+            return brandedValue;
+        }
+    });
+}
+// ============================================================
+// INSTANCIATION DES PROXYS
+// ============================================================
+/**
+ * Proxy de conversion vers le type {@link uint} (entier non signé).
+ *
+ * Intercepte tout accès numérique et retourne la valeur correspondante
+ * validée par {@link toUint}. Les valeurs `0`, `1` et `2` sont pré-cachées.
+ *
+ * @example
+ * ```typescript
+ * const n = Uint[255]; // uint
+ * ```
+ */
+const Uint = createBrandedProxy(toUint, { 0: 0, 1: 1, 2: 2 });
+/**
+ * Proxy de conversion vers le type {@link int} (entier signé).
+ *
+ * Intercepte tout accès numérique et retourne la valeur correspondante
+ * validée par {@link toInt}. Les valeurs `-1`, `0` et `1` sont pré-cachées.
+ *
+ * @example
+ * ```typescript
+ * const n = Int[-42]; // int
+ * ```
+ */
+createBrandedProxy(toInt, { 0: 0, 1: 1, '-1': -1 });
+/**
+ * Proxy de conversion vers le type {@link float} (flottant signé).
+ *
+ * Intercepte tout accès numérique et retourne la valeur correspondante
+ * validée par {@link toFloat}. Les valeurs `0` et `1` sont pré-cachées.
+ *
+ * @example
+ * ```typescript
+ * const n = Float[3.14]; // float
+ * ```
+ */
+createBrandedProxy(toFloat, { 0: 0, 1: 1 });
+/**
+ * Proxy de conversion vers le type {@link ufloat} (flottant non signé).
+ *
+ * Intercepte tout accès numérique et retourne la valeur correspondante
+ * validée par {@link toUfloat}. Les valeurs `0` et `1` sont pré-cachées.
+ *
+ * @example
+ * ```typescript
+ * const n = Ufloat[0.75]; // ufloat
+ * ```
+ */
+createBrandedProxy(toUfloat, { 0: 0, 1: 1 });
+
+/**
+ * Suspend l'exécution d'une fonction `async` pendant la durée spécifiée.
+ *
+ * @param ms - Durée de la pause en millisecondes.
+ * @returns Une `Promise` qui se résout après `ms` millisecondes.
+ *
+ * @example
+ * ```ts
+ * await sleep(toUint(500)); // attend 500ms
+ * ```
+ *
+ */
+function sleep(ms) {
+    return new Promise((ok) => setTimeout(ok, ms));
+}
+/**
+ * Tente d'exécuter `fn` jusqu'à `attempts` fois en cas d'échec.
+ *
+ * Entre chaque tentative, attend `delay` millisecondes. Si toutes les
+ * tentatives échouent, l'erreur de la dernière tentative est propagée.
+ * L'exécution peut être annulée à tout moment via un `AbortSignal`.
+ *
+ * @typeParam T - Type de la valeur retournée par `fn` en cas de succès.
+ * @param fn - Fonction asynchrone à exécuter, pouvant être réessayée.
+ * @param attempts - Nombre maximum de tentatives (entier non signé).
+ * @param delay - Délai en millisecondes entre chaque tentative (entier non signé).
+ * @param signal - Signal d'annulation optionnel. Si déclenché avant une tentative,
+ *                 lève immédiatement une `Error('retry aborted')`.
+ * @returns Une `Promise` résolvant avec la valeur de `fn` dès qu'une tentative réussit.
+ * @throws L'erreur de la dernière tentative si toutes ont échoué.
+ * @throws `Error('retry aborted')` si le signal est annulé avant une tentative.
+ *
+ * @example
+ * ```ts
+ * const data = await retry(
+ *   () => fetch('/api/data').then(r => r.json()),
+ *   toUint(3),    // 3 tentatives maximum
+ *   toUint(500),  // 500ms entre chaque tentative
+ * );
+ * ```
+ *
+ * @example
+ * ```ts
+ * // Avec annulation
+ * const controller = new AbortController();
+ * setTimeout(() => controller.abort(), 2000);
+ *
+ * const data = await retry(
+ *   () => fetchSomething(),
+ *   toUint(5),
+ *   toUint(300),
+ *   controller.signal,
+ * );
+ * ```
+ *
+ */
+async function retry(fn, attempts, delay, signal) {
+    let trys = UI_ZERO;
+    while (true) {
+        if (signal?.aborted)
+            throw new Error("retry aborted");
+        try {
+            return await fn();
+        }
+        catch (error) {
+            ++trys;
+            if (trys >= attempts)
+                throw error;
+        }
+        await sleep(delay);
+    }
 }
 
 var css_248z$t = ":host([block]){display:block;flex:1;width:100%}:host(.flex){display:flex}:host(.center){align-items:center;justify-content:center;text-align:center}";
@@ -16652,11 +16873,24 @@ let HTMLBnumColumn = (() => {
         }
         //#endregion Getters/Setters
         //#region LifeCycle
-        /**
-         * Constructeur de la colonne Bnum.
-         */
-        constructor() {
-            super();
+        _p_buildDOM(container) {
+            if (this.childNodes.length === 0) {
+                retry(async () => {
+                    if (this.childNodes.length === 0)
+                        throw new Error('No children yet');
+                    this.#_buildDOM(container);
+                }, Uint[5], Uint[100]).catch(() => {
+                    if (!this.data('tempted')) {
+                        this.data('tempted', 'ok');
+                        setTimeout(() => this._p_buildDOM(container), 500);
+                    }
+                    else {
+                        console.error('### Impossible de mettre en place le composant !', this, container);
+                    }
+                });
+                return;
+            }
+            this.#_buildDOM(container);
         }
         /**
          * Logique de rendu Light DOM
@@ -16664,7 +16898,7 @@ let HTMLBnumColumn = (() => {
          * @param container Le conteneur dans lequel injecter le DOM reconstruit
          * @protected
          */
-        _p_buildDOM(container) {
+        #_buildDOM(container) {
             // Sauvegarde des enfants actuels
             const originalChildren = Array.from(this.childNodes);
             // Fragment temporaire pour construire le DOM avant injection
@@ -16746,7 +16980,7 @@ let HTMLBnumColumn = (() => {
         //#region Méthodes privées
         /**
          * Traite un élément enfant : supprime l'attribut slot, ajoute les classes CSS nécessaires,
-         * et gère la rétrocompatibilité des classes "header".
+         * et gère la rétrocompati<zbilité des classes "header".
          * @param {HTMLElement} element L'élément à traiter
          * @param {string} specificClass Classe CSS spécifique à ajouter
          * @private

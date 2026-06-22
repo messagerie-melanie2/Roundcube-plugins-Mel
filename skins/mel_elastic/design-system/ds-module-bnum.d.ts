@@ -5750,16 +5750,6 @@ export declare class HTMLBnumColumn extends BnumElement {
 	 * Utile pour le CSS qui va définir la largeur
 	 */
 	get type(): string;
-	/**
-	 * Constructeur de la colonne Bnum.
-	 */
-	constructor();
-	/**
-	 * Logique de rendu Light DOM
-	 * On récupère les enfants existants et on les réorganise.
-	 * @param container Le conteneur dans lequel injecter le DOM reconstruit
-	 * @protected
-	 */
 	protected _p_buildDOM(container: CustomDom): void;
 	/**
 	 * Reactivity for Type attribute change

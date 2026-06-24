@@ -1488,6 +1488,10 @@ class mel_workspace extends bnum_plugin
         include_once __DIR__ . '/lib/WorkspacePage.php';
         return $this;
     }
+
+    public function getUser($uid = null) {
+        return $this->get_user($uid);
+    }
     #endregion
 
     #region private_functions

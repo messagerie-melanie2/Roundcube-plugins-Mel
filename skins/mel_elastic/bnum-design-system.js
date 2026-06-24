@@ -67,31 +67,31 @@ class DsBridge extends MelObject {
  */
 DsBridge.Instance.TryStart();
 
-function checkUndefinedComponents() {
-  const undefined_elements = document.querySelectorAll(':not(:defined)');
+// function checkUndefinedComponents() {
+//   const undefined_elements = document.querySelectorAll(':not(:defined)');
 
-  if (undefined_elements.length > 0) {
-    BnumLog.warning(
-      'windows/load',
-      `${undefined_elements.length} composants non upgradés, correction...`,
-    );
-    customElements.upgrade(document.body);
+//   if (undefined_elements.length > 0) {
+//     BnumLog.warning(
+//       'windows/load',
+//       `${undefined_elements.length} composants non upgradés, correction...`,
+//     );
+//     customElements.upgrade(document.body);
 
-    document.querySelectorAll(':not(:defined)').forEach((el) => {
-      BnumLog.error(
-        'windows/load',
-        `Composant non enregistré : <${el.localName}>`,
-      );
-    });
-  } else {
-    BnumLog.info('windows/load', 'Tous les composants sont définis.');
-  }
-}
+//     document.querySelectorAll(':not(:defined)').forEach((el) => {
+//       BnumLog.error(
+//         'windows/load',
+//         `Composant non enregistré : <${el.localName}>`,
+//       );
+//     });
+//   } else {
+//     BnumLog.info('windows/load', 'Tous les composants sont définis.');
+//   }
+// }
 
-// Si load est déjà passé quand le module s'exécute → appel direct
-if (document.readyState === 'complete') {
-  BnumLog.warning('windows/load', 'load déjà passé, appel direct');
-  checkUndefinedComponents();
-} else {
-  window.addEventListener('load', checkUndefinedComponents, { once: true });
-}
+// // Si load est déjà passé quand le module s'exécute → appel direct
+// if (document.readyState === 'complete') {
+//   BnumLog.warning('windows/load', 'load déjà passé, appel direct');
+//   checkUndefinedComponents();
+// } else {
+//   window.addEventListener('load', checkUndefinedComponents, { once: true });
+// }

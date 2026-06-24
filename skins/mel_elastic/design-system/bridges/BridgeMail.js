@@ -510,7 +510,7 @@ export default class BridgeMail extends ABridge {
   #setThreadingDecorations(row) {
     if (!this.#isThreading()) return row;
 
-    this.#process(row);
+    this.#setIgnoreThreadCaptures(row).#process(row);
   }
 
   /**
@@ -528,6 +528,14 @@ export default class BridgeMail extends ABridge {
 
     row.style.setProperty('--row-level', level);
     row.classList.add('threading-level');
+  }
+
+  #setIgnoreThreadCaptures(row) {
+    const thread = row.querySelector('.threads div');
+
+    if (thread) this.#ignoreCapture(thread);
+
+    return this;
   }
 
   /**

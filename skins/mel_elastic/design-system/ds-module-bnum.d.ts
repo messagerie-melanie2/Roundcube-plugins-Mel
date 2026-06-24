@@ -745,6 +745,22 @@ export declare abstract class BnumElement extends HTMLElement {
 	 */
 	protected _p_attach(): void;
 	/**
+	 * Hook appelé après le rendu des composants.
+	 *
+	 * Initialise les slots qui on besoins d'éléments enfants pour fonctionner correctement.
+	 * @param slot Slot qui est initialisé
+	 */
+	protected _p_slotInit(slot: HTMLSlotElement): void;
+	/**
+	 * Hook appelé après le rendu des composants.
+	 *
+	 * Lorsque le slot est chargé en composant.
+	 *
+	 * /!\ Si le slot était vide au départ, puis modifié, cette fonction sera appelé.
+	 * @param slot Slot qui est corrigé
+	 */
+	protected _p_slotConnected(slot: HTMLSlotElement): void;
+	/**
 	 * Hook appelé avant le déchargement du composant.
 	 * À surcharger dans les classes dérivées.
 	 */
@@ -4537,6 +4553,14 @@ export declare class HTMLBnumFolder extends BnumElementInternal {
 	 * @protected
 	 */
 	protected _p_attach(): void;
+	/**
+	 * @inheritdoc
+	 */
+	protected _p_slotInit(slot: HTMLSlotElement): void;
+	/**
+	 * @inheritdoc
+	 */
+	protected _p_slotConnected(slot: HTMLSlotElement): void;
 	/**
 	 * Gère la mise à jour des attributs observés.
 	 * @protected

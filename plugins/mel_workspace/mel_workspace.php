@@ -944,6 +944,15 @@ class mel_workspace extends bnum_plugin
         $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
         $workspace = self::Workspace($uid);
         if ($workspace->isAdmin()) {
+
+            // Suppression de la catégorie pour chaque utilisateur
+            if ($workspace->hasService(self::KEY_AGENDA)) {
+                mel_helper::load_helper()->include_utilities();
+                foreach ($workspace->users() as $s) {
+                    mel_utils::cal_remove_category($s->user, 'ws#' .$uid);
+                }
+            }
+
             $shares = $workspace->users();
             foreach ($shares as $key => $value) {
                 $this->delete_user($uid, $value->user, false, true);

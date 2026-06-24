@@ -6,13 +6,6 @@ if (window.rcmail) {
       rcmail.env.task == 'settings' &&
       rcmail.env.action == 'plugin.mel_doubleauth'
     ) {
-      window.onbeforeunload = function (e) {
-        if (!window.double_fact_saved) {
-          rcmail.http_request('plugin.mel_doubleauth-removeuser');
-          return "Attention! La configuration n'est pas terminée et l'authentification double facteur n'est pas encore activée, vous pouvez rester sur la page pour terminer la configuration ou quitter et laisse la double authentification désactivée.";
-        }
-      };
-
       rcmail.addEventListener(
         'responseafterplugin.mel_doubleauth-removeuser',
         function (evt) {

@@ -1,0 +1,34 @@
+<?php
+// PAMELA - 0009194 : détection pièce jointe manquante
+// Liste non exhaustive des mots-clés déclenchant l'alerte si aucune PJ n'est jointe au message
+$config['missing_attachment_keywords'] = [
+    // Français
+    'cf pj',
+    'cf. pj',
+    'ci-joint',
+    'ci joint',
+    'cijoint',
+    'document ci-joint',
+    'document joint',
+    'en pièce jointe',
+    'en piece jointe',
+    'en pj',
+    'fichier ci-joint',
+    'fichier joint',
+    'je joins',
+    'je vous joins',
+    'pièce jointe',
+    'piece jointe',
+    'pièces jointes',
+    'pieces jointes',
+    'tu trouveras ci-joint',
+    'veuillez trouver',
+    'voir pj',
+    'vous trouverez ci-joint',
+];
+
+// Rechercher aussi dans l'objet du message (true = oui, false = corps uniquement)
+$config['missing_attachment_check_subject'] = true;
+
+// Recherche des mots-clés sensible à la casse (false = insensible, recommandé)
+$config['missing_attachment_case_sensitive'] = false;

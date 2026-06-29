@@ -633,7 +633,6 @@ abstract class bnum_plugin extends rcube_plugin
             }
         }
     }
-
     /**
      * Génère l'URL de la ressource à partir du plugin.
      *

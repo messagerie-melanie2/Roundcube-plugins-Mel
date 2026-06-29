@@ -840,13 +840,14 @@ class mel_useful_link extends bnum_plugin
   }
 
   public function show_in_workspace($args) {
-    $SIZE = 12;
-    $layout = $args['layout'];
-    $html = $layout->htmlSmallModuleBlock(['id' => 'module-ul', 'data-title' => 'Liens utiles']);
-    $layout->thirdRow()->append($SIZE, $html);
-    // $layout->setNavBarSetting('useful_links', true, 5);
-    $args['layout'] = $layout;
-    unset($layout);
+    // $SIZE = 12;
+    // $layout = $args['layout'];
+    // $html = $layout->htmlSmallModuleBlock(['id' => 'module-ul', 'data-title' => 'Liens utiles']);
+    // $layout->thirdRow()->append($SIZE, $html);
+    // // $layout->setNavBarSetting('useful_links', true, 5);
+    // $args['layout'] = $layout;
+    // unset($layout);
+    $args['layout'] = $args['plugin']->get_renderer($this);
 
     $workspace = $args['workspace'];
     $links = $this->get_workspace_link($workspace);

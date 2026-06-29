@@ -219,6 +219,62 @@ class mel_workspace extends bnum_plugin
 
     }
 
+/**
+ * Charge et retourne le layout de l'espace de travail configuré par la skin du plugin donné.
+ *
+ * Le fichier de skin doit retourner une instance anonyme étendant {@see AWorkspaceLayout}.
+ * Si aucun fichier de skin n'est trouvé pour le plugin donné, le fichier par défaut
+ * de mel_workspace est utilisé en fallback.
+ *
+ * @param bnum_plugin|null $plugin Plugin dont la skin fournit le renderer.
+ *                                 Si null, utilise la skin de mel_workspace.
+ *
+ * @return WorkspacePageLayout Layout peuplé par la skin
+ *
+ * @throws Exception Si aucun fichier de renderer n'est trouvé ou si le fichier
+ *                   ne retourne pas une instance de {@see AWorkspaceLayout}
+ */
+public function get_renderer(bnum_plugin $plugin = null): WorkspacePageLayout
+{
+    $plugin ??= $this;
+    $path = false;
+
+    $skin_path    = __DIR__ . '/'.$plugin->local_skin_path() . '/php/workspace_layout.php';
+    $default_path = __DIR__ . '/skins/php/workspace_layout.php';
+
+    if (is_file($default_path) && is_readable($default_path)) {
+        include_once $default_path;
+    } 
+    else         throw new Exception(
+            'Impossible de trouver le renderer pour le plugin ' . get_class($plugin)
+        );
+
+    if (is_file($skin_path) && is_readable($skin_path)) {
+        $path = $skin_path;
+    } 
+    
+    if (!$path) {
+        throw new Exception(
+            'Impossible de trouver le renderer pour le plugin ' . get_class($plugin)
+        );
+    }
+
+    // Les variables $layout, $plugin, $workspace sont accessibles dans le fichier inclus
+    $layout    = $this->workspacePageLayout;
+    $workspace = $this->workspace;
+
+    $func = include $path;
+    $instance = $func($layout, $this, $workspace);
+
+    if (!($instance instanceof AWorkspaceLayout)) {
+        throw new Exception(
+            'Le renderer de ' . get_class($plugin) . ' doit retourner une instance de AWorkspaceLayout'
+        );
+    }
+
+    return $instance->render();
+}
+
     public function show_workspace()
     {
         include_once __DIR__ . '/lib/WorkspacePage.php';
@@ -233,6 +289,7 @@ class mel_workspace extends bnum_plugin
         }
 
         $workspace = new Workspace($uid, true);
+        $this->workspace = $workspace;
 
         if ($workspace->title() === null) {
             $this->redirect('workspace');
@@ -240,25 +297,21 @@ class mel_workspace extends bnum_plugin
         }
 
         if ($workspace->hasUser($this->get_user()->uid)) {
-            $plugin = $this->exec_hook('wsp.show', [
-                'workspace' => $workspace,
-                'layout' => new WorkspacePageLayout(),
-                'plugin' => $this
-            ]);
+            // $plugin = $this->exec_hook('wsp.show', [
+            //     'workspace' => $workspace,
+            //     'layout' => new WorkspacePageLayout(),
+            //     'plugin' => $this
+            // ]);
 
             $plugin ??= [];
 
             $this->workspacePageLayout = $plugin['layout'] ?? new WorkspacePageLayout();
 
+            $this->workspacePageLayout = $this->get_renderer();
+
             if (!$this->get_user()->is_external) {
-                $this->workspacePageLayout->fourthRow()->append(4, $this->workspacePageLayout->htmlModuleBlock(['id' => 'module-agenda', 'data-title' => 'Agenda de l\'espace', 'data-button' => 'calendar', 'data-button-text' => 'Créer', 'data-button-icon' => 'add_circle', 'data-button-ignore' => 'default-actions', 'data-button-type' => 'primary']));
-                $this->workspacePageLayout->setNavBarSetting('mel_metapage.calendar', 'calendar_month', true, 1);
                 $this->include_module_program('agenda.js', 'Parts');
             }
-
-            $this->workspacePageLayout->fourthRow()->append(8, $this->workspacePageLayout->htmlModuleBlock(['id' => 'module-planning', 'data-title' => 'Planning des membres']));
-            $this->workspacePageLayout->setNavBarSetting('home', 'home', false, 0);
-            $this->workspacePageLayout->setNavBarSetting('mel_workspace.planning', 'calendar_view_week', true, 1);
 
             if ($workspace->objects()->has(self::KEY_TASK)) $this->workspacePageLayout->setNavBarSetting('tasks', 'check_box', false, 6);
 

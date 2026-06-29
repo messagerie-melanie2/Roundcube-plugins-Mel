@@ -433,9 +433,10 @@ export class Planning extends HtmlCustomDataTag {
       loader.style.zIndex = 1;
       // loader.style.opacity = '0.6';
 
-      const nodes = this.parentContainer
-        .querySelector('.module-block-header')
-        .querySelectorAll('button,input');
+      const nodes =
+        this.parentContainer
+          ?.querySelector?.('.module-block-header')
+          ?.querySelectorAll?.('button,input') ?? [];
 
       for (const node of nodes) {
         node.classList.add('disabled');
@@ -447,9 +448,10 @@ export class Planning extends HtmlCustomDataTag {
   }
 
   _unload() {
-    const nodes = this.parentContainer
-      .querySelector('.module-block-header')
-      .querySelectorAll('button,input');
+    const nodes =
+      this.parentContainer
+        ?.querySelector?.('.module-block-header')
+        ?.querySelectorAll?.('button,input') ?? [];
 
     for (const node of nodes) {
       node.classList.remove('disabled');

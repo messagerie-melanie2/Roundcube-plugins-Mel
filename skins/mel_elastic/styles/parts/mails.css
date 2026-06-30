@@ -44,7 +44,8 @@ html.layout-small body.task-mail .header a.selection {
 }
 table.messagelist tr.message td.threads {
   position: absolute;
-  top: 10px;
+  top: 50%;
+  transform: translateY(-50%);
   left: 49px;
   border: none;
 }

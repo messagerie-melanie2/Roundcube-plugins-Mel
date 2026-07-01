@@ -44,8 +44,7 @@ html.layout-small body.task-mail .header a.selection {
 }
 table.messagelist tr.message td.threads {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 10px;
   left: 49px;
   border: none;
 }
@@ -292,4 +291,7 @@ html.layout-small .task-mail #layout-content > div.footer {
   background-color: var(--layout-content-header-background-color) !important;
   border-top: var(--bnum-border-in-surface);
   bottom: 0;
+}
+#searchmenu .formcontent {
+  color: var(--bnum-text-primary);
 }

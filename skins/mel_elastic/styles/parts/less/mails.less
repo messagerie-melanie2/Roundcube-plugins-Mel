@@ -66,7 +66,8 @@ table {
       td {
         &.threads {
           position: absolute;
-          top: 10px;
+          top: 50%;
+          transform: translateY(-50%);
           left: 49px;
           border: none;
 
@@ -509,4 +510,8 @@ html.layout-small {
 
 #searchmenu .formcontent {
   color: var(--bnum-text-primary);
+}
+
+#layout-sidebar .header {
+  --layout-sidebar-header-padding: 12px 10px 12px 16px;
 }

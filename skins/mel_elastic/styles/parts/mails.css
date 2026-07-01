@@ -44,7 +44,8 @@ html.layout-small body.task-mail .header a.selection {
 }
 table.messagelist tr.message td.threads {
   position: absolute;
-  top: 10px;
+  top: 50%;
+  transform: translateY(-50%);
   left: 49px;
   border: none;
 }
@@ -294,4 +295,7 @@ html.layout-small .task-mail #layout-content > div.footer {
 }
 #searchmenu .formcontent {
   color: var(--bnum-text-primary);
+}
+#layout-sidebar .header {
+  --layout-sidebar-header-padding: 12px 10px 12px 16px;
 }

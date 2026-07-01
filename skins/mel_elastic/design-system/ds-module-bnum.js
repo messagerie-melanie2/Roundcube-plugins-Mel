@@ -994,7 +994,6 @@ class BnumElement extends HTMLElement {
     #_updateScheduled = false;
     /** Indique si le composant a déjà été chargé une première fois. */
     #firstLoad = false;
-    #_slotsLoaded = null;
     _p_styleElement = null;
     /**
      * Retourne la liste des attributs observés par le composant.
@@ -1017,9 +1016,6 @@ class BnumElement extends HTMLElement {
      */
     get alreadyLoaded() {
         return this.#firstLoad;
-    }
-    get #_slots() {
-        return (this.#_slotsLoaded ??= {});
     }
     /**
      * Constructeur du composant.
@@ -1122,7 +1118,6 @@ class BnumElement extends HTMLElement {
             this._p_buildDOM(BnumDOM.from(container));
         }
         this._p_attach();
-        this.#_loadSlots();
         this.#firstLoad = true;
     }
     // ======================
@@ -1373,48 +1368,6 @@ class BnumElement extends HTMLElement {
     // === Private helpers ==
     // ======================
     //#region private
-    /**
-     * Lock un slot après utilisation, pour éviter qu'il soit déclanché après coups.
-     * @param slot Slot à lock
-     */
-    #_lockSlot(slot) {
-        const lock = () => {
-            const name = slot.getAttribute('name') || 'null';
-            if (this.#_slots[name] !== true) {
-                this.#_slots[name] = true;
-            }
-        };
-        if (navigator.userAgent.includes('Firefox')) {
-            requestAnimationFrame(lock);
-        }
-        else {
-            queueMicrotask(() => requestAnimationFrame(() => requestAnimationFrame(lock)));
-        }
-    }
-    /**
-     * Charge les slots.
-     *
-     * Utile si on doit attendre un comptage des enfants ou non.
-     * @private
-     */
-    #_loadSlots() {
-        if (!this._p_isShadowElement())
-            return;
-        const slots = this.shadowRoot?.querySelectorAll?.('slot');
-        if (!slots)
-            return;
-        for (const slot of slots) {
-            this._p_slotInit(slot);
-            slot.addEventListener('slotchange', function (currentSlot) {
-                const name = currentSlot.getAttribute('name') || 'null';
-                if (this.#_slots[name] !== true) {
-                    this._p_slotConnected(currentSlot);
-                    this.#_slots[name] = true;
-                }
-            }.bind(this, slot));
-            this.#_lockSlot(slot);
-        }
-    }
     /**
      * Récupère une donnée interne ou depuis un attribut data-*.
      * @param name Nom de la donnée.
@@ -1737,24 +1690,6 @@ class BnumElement extends HTMLElement {
      * À surcharger dans les classes dérivées.
      */
     _p_attach() { }
-    /**
-     * Hook appelé après le rendu des composants.
-     *
-     * Initialise les slots qui on besoins d'éléments enfants pour fonctionner correctement.
-     * @param slot Slot qui est initialisé
-     */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _p_slotInit(slot) { }
-    /**
-     * Hook appelé après le rendu des composants.
-     *
-     * Lorsque le slot est chargé en composant.
-     *
-     * /!\ Si le slot était vide au départ, puis modifié, cette fonction sera appelé.
-     * @param slot Slot qui est corrigé
-     */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _p_slotConnected(slot) { }
     /**
      * Hook appelé avant le déchargement du composant.
      * À surcharger dans les classes dérivées.
@@ -12931,6 +12866,12 @@ let HTMLBnumFolder = (() => {
          */
         _p_attach() {
             super._p_attach();
+            if (this.childElementCount === 0) {
+                this._p_addState(STATE_NO_SUBFOLDERS);
+            }
+            else {
+                this.addEventListener(EVENT_UNREAD_CHANGED, this.#_onChildUnreadChanged.bind(this));
+            }
             if (this.hasAttribute(ATTR_IS_COLLAPSED) === false) {
                 this.setAttribute(ATTR_IS_COLLAPSED, VAL_TRUE);
             }
@@ -12945,28 +12886,6 @@ let HTMLBnumFolder = (() => {
                 .#_updateUnread(this.attr(ATTR_UNREAD)
                 ? +this.attr(ATTR_UNREAD)
                 : VAL_MIN_UNREAD);
-        }
-        /**
-         * @inheritdoc
-         */
-        _p_slotInit(slot) {
-            switch (slot.getAttribute('name')) {
-                case 'folders':
-                    this._p_addState(STATE_NO_SUBFOLDERS);
-                    break;
-            }
-        }
-        /**
-         * @inheritdoc
-         */
-        _p_slotConnected(slot) {
-            switch (slot.getAttribute('name')) {
-                case 'folders':
-                    if (slot.assignedElements().length > 0) {
-                        this._p_removeState(STATE_NO_SUBFOLDERS).addEventListener(EVENT_UNREAD_CHANGED, this.#_onChildUnreadChanged.bind(this));
-                    }
-                    break;
-            }
         }
         /**
          * Gère la mise à jour des attributs observés.

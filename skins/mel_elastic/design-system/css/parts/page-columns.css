@@ -29,6 +29,7 @@
   --header-heights: 60px;
 }
 #layout-sidebar {
+  background-color: var(--layout-sidebar-background-color) !important;
   --layout-sidebar-background-color: var(--bnum-layout-sidebar-bg, var(--bnum-color-left-column, #f6f6f6));
   --layout-sidebar-text-color: var(--bnum-layout-sidebar-color, var(--bnum-text-primary, #3a3a3a));
   --mail-header-layout-list-background-color: var(--bnum-layout-sidebar-bg, var(--bnum-color-left-column, #f6f6f6));
@@ -36,6 +37,10 @@
   color: var(--layout-sidebar-text-color, var(--bnum-layout-sidebar-color, var(--bnum-text-primary, #3a3a3a)));
   --rc-header-color: var(--layout-sidebar-text-color, var(--bnum-layout-sidebar-color, var(--bnum-text-primary, #3a3a3a)));
   --rc-header-background-color: var(--layout-sidebar-background-color, var(--bnum-layout-sidebar-bg, var(--bnum-color-left-column, #f6f6f6)));
+  --layout-sidebar-background-selected-color: var(--bnum-color-list-active, #cbcbfa);
+  --primary-layout-sidebar-background-selected-color: var(--bnum-color-list-active, #cbcbfa);
+  --layout-sidebar-text-selected-color: var(--layout-sidebar-text-color);
+  --list-hover-background-color: var(--bnum-color-list-hover, #dcdcfc);
   border-right: var(--bnum-border-column);
 }
 #layout-sidebar .header {
@@ -46,7 +51,11 @@
   color: var(--layout-sidebar-text-color, var(--bnum-layout-sidebar-color, var(--bnum-text-primary, #3a3a3a)));
   --rc-header-color: var(--layout-sidebar-text-color, var(--bnum-layout-sidebar-color, var(--bnum-text-primary, #3a3a3a)));
   --rc-header-background-color: var(--layout-sidebar-background-color, var(--bnum-layout-sidebar-bg, var(--bnum-color-left-column, #f6f6f6)));
-  padding: var(--layout-sidebar-header-padding, 12px 10px 12px 16px) !important;
+  --layout-sidebar-background-selected-color: var(--bnum-color-list-active, #cbcbfa);
+  --primary-layout-sidebar-background-selected-color: var(--bnum-color-list-active, #cbcbfa);
+  --layout-sidebar-text-selected-color: var(--layout-sidebar-text-color);
+  --list-hover-background-color: var(--bnum-color-list-hover, #dcdcfc);
+  padding: var(--layout-sidebar-header-padding, 0 15px) !important;
   margin: 0;
   display: flex;
   align-items: center;
@@ -88,6 +97,9 @@ html.layout-large .task-calendar #layout-sidebar > .header {
 }
 .task-mail #layout-sidebar {
   border-right: var(--bnum-border-column) !important;
+}
+.task-mail #layout-content > .header {
+  border-left: var(--bnum-border-column);
 }
 .nav-button a,
 .bds-nav-button {
@@ -156,6 +168,7 @@ html.layout-large .task-calendar #layout-sidebar > .header {
   --message-list-unread-border-left: var(--_message-list-border-color);
   --_color: var(--layout-list-header-color, var(--bnum-body-text-color, var(--bnum-text-primary)));
   --_background: var(--layout-list-header-background, var(--bnum-header-color, var(--bnum-color-background, #ffffff)));
+  --layout-sidebar-text-color: var(--bnum-layout-sidebar-color, var(--bnum-text-primary, #3a3a3a));
   color: var(--_color);
   background-color: var(--_background);
   --rc-header-color: var(--_color);
@@ -166,6 +179,13 @@ html.layout-large .task-calendar #layout-sidebar > .header {
   --layout-list-header-background-color: var(--_background);
   --layout-content-header-background-color: var(--_background);
   --addressbook-list-pagenav-background-color: var(--layout-sidebar-text-color, var(--bnum-layout-sidebar-color, var(--bnum-text-primary, #3a3a3a)));
+  --layout-sidebar-text-selected-color: var(--layout-sidebar-text-color);
+  --layout-sidebar-background-selected-color: var(--bnum-color-list-active, #cbcbfa);
+  --alternative-layout-list-background-color: var(--_background);
+  --alternative-layout-list-hover-background-color: var(--bnum-color-list-hover, #dcdcfc);
+  --layout-menu-background-selected-color: var(--bnum-color-list-hover, #dcdcfc);
+  --alternative-layout-list-text-color: var(--_color);
+  --layout-list-header-background-hover-color: var(--bnum-color-list-active, #cbcbfa);
 }
 #layout-list > .header,
 #layout-content > .header {
@@ -215,9 +235,6 @@ html.layout-large .task-calendar #layout-sidebar > .header {
   --layout-content-header-text-hover-color: var(--_focus-color);
 }
 #layout-content {
-  border-left: var(--bnum-border-column);
-}
-#layout-content > .header {
   border-left: var(--bnum-border-column);
 }
 #layout-content > .header a {

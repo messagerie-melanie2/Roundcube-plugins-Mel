@@ -1,34 +1,39 @@
-
 //Couleur agenda
-.task-calendar #layout #layout-content #calendar {
-  .fc-unthemed {
+.task-calendar {
+  #layout #layout-content #calendar {
+    .fc-unthemed {
 
-    td,
-    th {
-      border-color: var(--bnum-color-border) !important
+      td,
+      th {
+        border-color: var(--bnum-color-border) !important
+      }
+    }
+
+    .fc-day-header,
+    .fc-axis.fc-widget-header,
+    .fc-resource-cell,
+    .fc-day {
+      background-color: var(--bnum-calendar-background-color) !important;
+      color: var(--bnum-text-primary) !important;
+    }
+
+    // Heures latérales du calendrier
+    .fc-axis.fc-time,
+    .fc-axis.fc-widget-content {
+      background-color: var(--bnum-calendar-background-color) !important;
+      color: var(--bnum-text-primary) !important;
+
+    }
+
+    // Journée en cours
+    .fc-day.fc-today {
+      background-color: var(--bnum-calendar-today-background-color) !important;
+      color: var(--bnum-text-primary) !important;
+
     }
   }
 
-  .fc-day-header,
-  .fc-axis.fc-widget-header,
-  .fc-resource-cell,
-  .fc-day {
-    background-color: var(--bnum-calendar-background-color) !important;
-    color: var(--bnum-text-primary) !important;
-  }
-
-  // Heures latérales du calendrier
-  .fc-axis.fc-time,
-  .fc-axis.fc-widget-content {
-    background-color: var(--bnum-calendar-background-color) !important;
-    color: var(--bnum-text-primary) !important;
-
-  }
-
-  // Journée en cours
-  .fc-day.fc-today {
-    background-color: var(--bnum-calendar-today-background-color) !important;
-    color: var(--bnum-text-primary) !important;
-
+  #layout-sidebar .header {
+    --layout-sidebar-header-padding: 12px 10px 12px 16px;
   }
 }

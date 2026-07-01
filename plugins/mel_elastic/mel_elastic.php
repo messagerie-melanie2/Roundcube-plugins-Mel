@@ -78,6 +78,8 @@ class mel_elastic extends bnum_plugin
         "styles/parts/bnum.css" => "bnum",
         "styles/parts/mails.css" => "mail",
         "styles/parts/calendar.css" => "calendar",
+        "styles/parts/addressbook.css" => "addressbook",
+        "styles/parts/settings.css" => "settings",
     ] ;
 
     /**

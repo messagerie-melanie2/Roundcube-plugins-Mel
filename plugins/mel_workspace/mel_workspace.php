@@ -309,9 +309,9 @@ public function get_renderer(bnum_plugin $plugin = null): WorkspacePageLayout
 
             $this->workspacePageLayout = $this->get_renderer();
 
-            if (!$this->get_user()->is_external) {
-                $this->include_module_program('agenda.js', 'Parts');
-            }
+            // if (!$this->get_user()->is_external) {
+            //     $this->include_module_program('agenda.js', 'Parts');
+            // }
 
             if ($workspace->objects()->has(self::KEY_TASK)) $this->workspacePageLayout->setNavBarSetting('tasks', 'check_box', false, 6);
 
@@ -1534,6 +1534,10 @@ public function get_renderer(bnum_plugin $plugin = null): WorkspacePageLayout
     public function include_workspace_module($plugin, $name = 'module', $path = 'js/lib')
     {
         $this->include_script_from_plugin($plugin, "$path/$name/scriptType:module", 'head');
+    }
+
+    public function include_workspace_skin_module(string $name) {
+        $this->load_script_module($name, '/'.$this->local_skin_path().'/js/');
     }
 
     public function include_workspace_object()

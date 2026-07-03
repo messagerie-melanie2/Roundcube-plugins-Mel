@@ -10,8 +10,9 @@ return new class($layout, $plugin, $workspace) extends AWorkspaceLayout {
         $plugin = $this->getPlugin(); 
 
         if (!$plugin->getUser()->is_external) {
-            $layout->fourthRow()->append(4, $this->_htmlModuleBlock('calendar_month', 'Agenda de l\'espace', $NO_BUTTON, ['id' => 'module-agenda']));//['id' => 'module-agenda', 'data-title' => 'Agenda de l\'espace', 'data-button' => 'calendar', 'data-button-text' => 'Créer', 'data-button-icon' => 'add_circle', 'data-button-ignore' => 'default-actions', 'data-button-type' => 'primary']));
+            $layout->fourthRow()->append(4, $this->_htmlModuleBlock('calendar_month', 'Agenda de l\'espace', $NO_BUTTON, ['id' => 'module-agenda', 'tag' => 'bnum-card-agenda']));//['id' => 'module-agenda', 'data-title' => 'Agenda de l\'espace', 'data-button' => 'calendar', 'data-button-text' => 'Créer', 'data-button-icon' => 'add_circle', 'data-button-ignore' => 'default-actions', 'data-button-type' => 'primary']));
             $layout->setNavBarSetting('mel_metapage.calendar', 'calendar_month', true, 1);
+            $plugin->include_workspace_skin_module('agenda.js');
         }
 
             $layout->setNavBarSetting('home', 'home', false, 0);
@@ -45,7 +46,9 @@ return new class($layout, $plugin, $workspace) extends AWorkspaceLayout {
             html::div(['class' => 'action'], $button)
         .'</div>';
 
-        return html::tag('bnum-card', $attribs, $slot.html::div(['class' => 'module-block-content'], $content));
+        $tag = $attribs['tag'] ? $attribs['tag'] : 'bnum-card';
+
+        return html::tag($tag, $attribs, $slot.html::div(['class' => 'module-block-content'], $content));
     }
 
     private function _htmlModuleBlockSmall(string $icon, string $title, string $button, array $attribs = [], string $content = EMPTY_STRING): string {

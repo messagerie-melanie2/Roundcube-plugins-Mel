@@ -122,14 +122,50 @@ function getRelativePos(elm) {
     cPos = elm.getBoundingClientRect(), // target pos
     pos = {};
 
-  (pos.top = cPos.top - pPos.top + elm.parentNode.scrollTop),
+  ((pos.top = cPos.top - pPos.top + elm.parentNode.scrollTop),
     (pos.right = cPos.right - pPos.right),
     (pos.bottom = cPos.bottom - pPos.bottom),
-    (pos.left = cPos.left - pPos.left);
+    (pos.left = cPos.left - pPos.left));
 
   return pos;
 }
 
 function isAsync(func) {
   return func.constructor.name === 'AsyncFunction';
+}
+
+/**
+ * Retourne une version de `fn` qui ne s'exécute qu'une seule fois.
+ *
+ * Le résultat du premier appel est mis en cache et retourné directement
+ * pour tous les appels suivants, sans réexécuter `fn`. La référence à `fn`
+ * est libérée après le premier appel pour éviter les fuites mémoire.
+ *
+ * @param {T} fn - La fonction à n'exécuter qu'une seule fois.
+ * @returns {T} Une nouvelle fonction qui délègue à `fn` uniquement au premier appel.
+ *
+ * @template {Function} T Type de la fonction à restreindre, doit être une {@link Function}.
+ *
+ * @example
+ * ```ts
+ * const initApp = once(() => {
+ *   console.log('Initialisation...');
+ *   return createApp();
+ * });
+ *
+ * initApp(); // exécute fn, retourne l'app
+ * initApp(); // retourne le même résultat, fn n'est pas réexécutée
+ * ```
+ */
+export function once(fn) {
+  let called = false;
+  let result;
+  let _fn = fn;
+  return (...args) => {
+    if (called) return result;
+    called = true;
+    result = _fn(...args);
+    _fn = null;
+    return result;
+  };
 }

@@ -1,7 +1,10 @@
 /* eslint-disable no-shadow */
 /**
- * Met en pause une fonction asynchrone.
- * @param {number} ms
+ * Met en pause une fonction asynchrone pendant un temps donné.
+ *
+ * @param {number} ms Durée de la pause, en millisecondes.
+ *
+ * @returns {Promise<void>} Promesse résolue une fois le délai écoulé.
  */
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
@@ -16,6 +19,8 @@ const isAsync = (myFunction) => myFunction.constructor.name === 'AsyncFunction';
  * Attend que la fonction soit vrai
  * @param {Function} func
  * @param {number} waitTime ms
+ *
+ * @returns {Promise<void>} Promesse résolue dès que la fonction <c>func</c> retourne une valeur fausse.
  */
 const wait = async function (func, waitTime = 500) {
   while (isAsync(func) ? await func() : func()) {
@@ -23,6 +28,14 @@ const wait = async function (func, waitTime = 500) {
   }
 };
 
+/**
+ * Vérifie si une URL (HTTP ou HTTPS) répond, en effectuant une requête GET sur celle-ci.
+ *
+ * @param {string} url Adresse à tester. Si le protocole n'est pas précisé, il est ajouté automatiquement.
+ * @param {boolean} [useSSL=true] Si vrai et qu'aucun protocole n'est précisé dans <c>url</c>, utilise "https", sinon "http".
+ *
+ * @returns {Promise<boolean>} Vrai si la requête a réussi, faux sinon.
+ */
 const ping = async function (url, useSSL = true) {
   // //let ip = url;
 
@@ -63,6 +76,14 @@ const ping = async function (url, useSSL = true) {
   return ok;
 };
 
+/**
+ * Convertit un identifiant de type adresse mail (contenant des points, des "@" et des "%")
+ * en un identifiant compatible avec Roundcube, en remplaçant ces caractères par des jetons spéciaux.
+ *
+ * @param {string} [txt=''] Texte à convertir (généralement une adresse mail).
+ *
+ * @returns {string} Texte converti, utilisable comme identifiant Roundcube.
+ */
 const mceToRcId = function (txt = '') {
   return txt
     .replaceAll('.', '_-P-_')
@@ -71,6 +92,14 @@ const mceToRcId = function (txt = '') {
 };
 
 (() => {
+  /**
+   * Fonction de remplacement utilisée par <c>decode_imap_utf7</c> pour décoder un segment encodé
+   * selon la norme IMAP UTF-7 (basé sur du Base64 modifié) en une chaîne UTF-16 lisible.
+   *
+   * @param {string} pmatch Segment encodé trouvé par l'expression régulière (incluant les délimiteurs "&" et "-").
+   *
+   * @returns {string} Chaîne décodée, ou chaîne vide en cas d'erreur de décodage.
+   */
   function ureplacer(pmatch) {
     var ret = '';
     pmatch = pmatch.replace(/\,/g, '/');
@@ -95,6 +124,14 @@ const mceToRcId = function (txt = '') {
     return ret;
   }
 
+  /**
+   * Fonction de remplacement utilisée par <c>encode_imap_utf7</c> pour encoder un segment de texte
+   * (contenant des caractères hors plage ASCII imprimable) selon la norme IMAP UTF-7.
+   *
+   * @param {string} umatch Segment de texte à encoder, trouvé par l'expression régulière.
+   *
+   * @returns {string} Segment encodé (entouré des délimiteurs "&" et "-"), ou chaîne vide en cas d'erreur.
+   */
   function breplacer(umatch) {
     var bst = '';
     for (var i = 0; i < umatch.length; i++) {
@@ -114,17 +151,39 @@ const mceToRcId = function (txt = '') {
     return bst;
   }
 
+  /**
+   * Décode une chaîne encodée selon la norme IMAP UTF-7 (utilisée notamment pour les noms de dossiers IMAP)
+   * vers une chaîne UTF-16 standard.
+   *
+   * @param {string} mstring Chaîne encodée en IMAP UTF-7.
+   *
+   * @returns {string} Chaîne décodée en UTF-16.
+   */
   function decode_imap_utf7(mstring) {
     var stm = new RegExp(/(\&[A-Za-z0-9\+\,]+\-)/, 'g');
     return mstring.replace(stm, ureplacer).replace('&-', '&');
   }
 
+  /**
+   * Encode une chaîne UTF-16 standard vers la norme IMAP UTF-7 (utilisée notamment pour les noms de dossiers IMAP).
+   *
+   * @param {string} ustring Chaîne à encoder.
+   *
+   * @returns {string} Chaîne encodée en IMAP UTF-7.
+   */
   function encode_imap_utf7(ustring) {
     ustring = ustring.replace(/\/|\~|\\/g, '');
     var vgm = new RegExp(/([^\x20-\x7e]+)/, 'g');
     return ustring.replace('&', '&-').replace(vgm, breplacer);
   }
 
+  /**
+   * Crée ou met à jour un cookie navigateur avec une date d'expiration donnée.
+   *
+   * @param {string} cname Nom du cookie.
+   * @param {string} cvalue Valeur du cookie.
+   * @param {number} exdays Nombre de jours avant expiration du cookie.
+   */
   function setCookie(cname, cvalue, exdays) {
     const d = new Date();
     d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
@@ -132,14 +191,36 @@ const mceToRcId = function (txt = '') {
     document.cookie = cname + '=' + cvalue + ';' + expires + ';path=/';
   }
 
+  /**
+   * Fonction globale de décodage IMAP UTF-7.
+   * @see decode_imap_utf7
+   * @type {function(string): string}
+   */
   window.decode_imap_utf7 = decode_imap_utf7;
 
+  /**
+   * Fonction globale de création/mise à jour d'un cookie navigateur.
+   * @see setCookie
+   * @type {function(string, string, number): void}
+   */
   window.melSetCookie = setCookie;
 
+  /**
+   * Récupère la valeur d'un cookie via Roundcube.
+   *
+   * @param {string} name Nom du cookie à récupérer.
+   *
+   * @returns {string|null} Valeur du cookie, ou null si celui-ci n'existe pas.
+   */
   window.getCookie = (name) => {
     return rcmail.get_cookie(name);
   };
 
+  /**
+   * Supprime un cookie navigateur en le faisant expirer immédiatement.
+   *
+   * @param {string} name Nom du cookie à supprimer.
+   */
   window.removeCookie = (name) => {
     setCookie(name, '', -5);
   };
@@ -181,7 +262,19 @@ const mel_metapage = {
    * Différents clés de stockage local.
    */
   Storage: {
+    /**
+     * Symbole représentant une valeur "inexistante" dans le stockage local
+     * (utilisé pour différencier une valeur absente d'une valeur "null" volontaire).
+     */
     unexist: Symbol('unexist'),
+    /**
+     * Vérifie si une valeur issue du stockage local existe réellement
+     * (c'est-à-dire qu'elle est différente du symbole <c>unexist</c>).
+     *
+     * @param {*} val Valeur à tester.
+     *
+     * @returns {boolean} Vrai si la valeur existe, faux si elle est égale à <c>unexist</c>.
+     */
     exists(val) {
       return (val ?? this.unexist) !== this.unexist;
     },
@@ -244,6 +337,13 @@ const mel_metapage = {
       this._getDataStore().remove(key);
       this.setStoreChange(key, undefined);
     },
+    /**
+     * Notifie la fenêtre courante ainsi que toutes les frames "mm-frame" qu'une donnée
+     * du stockage local a changé, via l'évènement Roundcube "storage.change".
+     *
+     * @param {string} key Clé de la donnée modifiée.
+     * @param {*} item Nouvelle valeur de la donnée (ou <c>undefined</c> en cas de suppression).
+     */
     setStoreChange(key, item) {
       if ((top ?? window).rcmail !== undefined)
         (top ?? window).rcmail.triggerEvent('storage.change', { key, item });
@@ -254,9 +354,24 @@ const mel_metapage = {
         } catch (error) {}
       });
     },
+    /**
+     * Récupère la taille (en octets) des données actuellement présentes dans le stockage local de l'application.
+     *
+     * @returns {number} Taille du stockage utilisé.
+     */
     getAppStorageSize() {
       return this._getDataStore().getSize();
     },
+    /**
+     * Vérifie si une ou plusieurs données de stockage doivent être rafraîchies (calendrier, tâches, ...),
+     * et déclenche si besoin leur mise à jour auprès de la fenêtre parente.
+     *
+     * @param {Symbol|null} [storage=null] Clé de stockage à vérifier. Si <c>null</c>, vérifie l'ensemble des clés du stockage.
+     *
+     * @returns {{items: Array, wait: function(): Promise<void>}|Object} Lorsque <c>storage</c> est <c>null</c>,
+     * retourne un objet contenant la liste des éléments vérifiés ainsi qu'une fonction <c>wait</c> permettant d'attendre
+     * la fin de toutes les mises à jour en cours. Sinon, retourne l'élément correspondant à la clé demandée.
+     */
     check(storage = null) {
       if (storage === null) {
         let items = [];
@@ -369,13 +484,23 @@ const mel_metapage = {
        */
       tasks: Symbol('tasks'),
     },
+    /**
+     * Symboles liés au plugin "Nextcloud", utilisés pour différencier un dossier d'un fichier.
+     */
     nextcloud: {
       folder: Symbol('folder'),
       file: Symbol('file'),
     },
+    /**
+     * Symboles liés à la détection du navigateur.
+     */
     navigator: {
       firefox: Symbol('firefox'),
     },
+    /**
+     * Symbole générique représentant l'absence de valeur (utilisé notamment comme valeur par défaut
+     * pour différencier "pas de paramètre" de "paramètre valant explicitement null").
+     */
     null: Symbol('null'),
   },
   /**
@@ -396,6 +521,9 @@ const mel_metapage = {
         ariane: 'menu-badge-ariane',
       },
     },
+    /**
+     * Ids des différents champs utilisés lors de la création de documents.
+     */
     create: {
       doc_input: 'generated-document-input-mel-metapage',
       doc_input_ext: 'generated-document-input-mel-metapage-ext',
@@ -403,6 +531,9 @@ const mel_metapage = {
       doc_input_path: 'generated-document-select-mel-metapage-path',
     },
   },
+  /**
+   * Gestion des popups de l'application (notamment la popup de chat "Ariane").
+   */
   PopUp: {
     /**
      * Ouvre la popup de chat
@@ -426,14 +557,32 @@ const mel_metapage = {
         mel_metapage.PopUp.ariane.hide();
       else mel_metapage.PopUp.ariane.show();
     },
+    /**
+     * Instance courante de la popup "Ariane", ou <c>null</c> si elle n'a pas encore été créée.
+     */
     ariane: null,
   },
+  /**
+   * Diverses constantes annexes.
+   */
   Other: {
+    /**
+     * URL relatives liées à la visioconférence.
+     */
     webconf: {
       private: '/group',
     },
   },
+  /**
+   * Actions exécutées au démarrage de Roundcube.
+   */
   RCMAIL_Start: {
+    /**
+     * Vérifie si le serveur Nextcloud configuré est joignable, et stocke le résultat
+     * dans <c>rcmail.env.nextcloud_pinged</c>. Réessaye en HTTPS si la première tentative échoue.
+     *
+     * @returns {Promise<void>}
+     */
     async ping_nextcloud() {
       if (
         rcmail.env.nextcloud_url !== undefined &&
@@ -449,9 +598,26 @@ const mel_metapage = {
       }
     },
   },
+  /**
+   * Gestion de l'historique des frames récemment affichées (pile à taille limitée).
+   */
   Frames: {
+    /**
+     * Nombre maximum de frames mémorisées.
+     */
     max: 10,
+    /**
+     * Pile des dernières frames affichées.
+     */
     lastFrames: [],
+    /**
+     * Ajoute une frame à l'historique. Si l'appel n'est pas fait depuis la fenêtre "TOP",
+     * délègue l'appel à la fenêtre parente. Les frames de type "webconf" sont ignorées.
+     *
+     * @param {{task: string}} frame Frame à ajouter à l'historique.
+     *
+     * @returns {Object} L'objet <c>Frames</c> (chaînage), sauf en cas de délégation à la fenêtre parente.
+     */
     add(frame) {
       if (parent !== window) return parent.mel_metapage.Frames.add(frame);
 
@@ -462,12 +628,24 @@ const mel_metapage = {
       this.lastFrames.push(frame);
       return this;
     },
+    /**
+     * Réinitialise l'historique des frames. Si l'appel n'est pas fait depuis la fenêtre "TOP",
+     * délègue l'appel à la fenêtre parente.
+     *
+     * @returns {Object} L'objet <c>Frames</c> (chaînage), sauf en cas de délégation à la fenêtre parente.
+     */
     reset() {
       if (parent !== window) return parent.mel_metapage.Frames.reset();
 
       this.lastFrames = [];
       return this;
     },
+    /**
+     * Retire et retourne la dernière frame de l'historique. Si l'appel n'est pas fait depuis
+     * la fenêtre "TOP", délègue l'appel à la fenêtre parente.
+     *
+     * @returns {Object|null} La dernière frame de l'historique, ou <c>null</c> si celui-ci est vide.
+     */
     pop() {
       if (parent !== window) return parent.mel_metapage.Frames.pop();
 
@@ -475,6 +653,14 @@ const mel_metapage = {
 
       return this.lastFrames.pop();
     },
+    /**
+     * Récupère (sans le retirer) un élément de l'historique des frames, en partant de la fin.
+     * Si l'appel n'est pas fait depuis la fenêtre "TOP", délègue l'appel à la fenêtre parente.
+     *
+     * @param {number} [it=0] Décalage depuis la dernière frame (0 = la dernière frame ajoutée).
+     *
+     * @returns {Object|null} La frame demandée, ou <c>null</c> si l'historique est vide.
+     */
     last(it = 0) {
       if (parent !== window) return parent.mel_metapage.Frames.last(it);
 
@@ -482,6 +668,15 @@ const mel_metapage = {
 
       return this.lastFrames[this.lastFrames.length - 1 - it];
     },
+    /**
+     * Revient à la dernière frame de l'historique (ou à une frame par défaut si l'historique est vide),
+     * et met à jour l'état du bouton "frame précédente" si nécessaire.
+     * Si l'appel n'est pas fait depuis la fenêtre "TOP", délègue l'appel à la fenêtre parente.
+     *
+     * @param {string} [_default='home'] Frame à afficher si l'historique est vide.
+     *
+     * @returns {Promise<Object>} Promesse résolue une fois le changement de frame terminé.
+     */
     back(_default = 'home') {
       if (parent !== window) return parent.mel_metapage.Frames.back(_default);
 
@@ -496,6 +691,15 @@ const mel_metapage = {
         }
       });
     },
+    /**
+     * Construit un objet représentant une frame, utilisé pour l'historique des frames.
+     *
+     * @param {string} name Nom affiché de la frame.
+     * @param {string} task Tâche Roundcube associée à la frame.
+     * @param {string} icon Icône associée à la frame.
+     *
+     * @returns {{name: string, task: string, icon: string}} Objet "frame" prêt à être ajouté à l'historique.
+     */
     create_frame(name, task, icon) {
       return {
         name,
@@ -504,6 +708,9 @@ const mel_metapage = {
       };
     },
   },
+  /**
+   * Fonctions utilitaires diverses du plugin "mel_metapage".
+   */
   Functions: {
     /**
      * Copie un texte dans le press-papier
@@ -639,6 +846,13 @@ const mel_metapage = {
       else return false;
     },
 
+    /**
+     * Extrait les paramètres d'une URL (sous la forme "/?clé=valeur&clé2=valeur2") en un objet JSON.
+     *
+     * @param {string} url URL contenant les paramètres à extraire.
+     *
+     * @returns {Object<string, string>} Objet associant chaque clé de paramètre à sa valeur.
+     */
     get_from_url(url) {
       const URL_VARIABLE = '/?';
       const URL_SEPARATOR = '&';
@@ -694,6 +908,14 @@ const mel_metapage = {
       );
     },
 
+    /**
+     * Construit une URL pointant vers le dossier "public" de l'application.
+     *
+     * @param {string} path Chemin relatif (à partir du dossier "public") du fichier ou de la ressource ciblée.
+     * @param {JSON|null} [args=null] Paramètres additionnels à ajouter à l'URL (sous forme clé/valeur).
+     *
+     * @returns {string} URL complète construite.
+     */
     public_url(path, args = null) {
       let url =
         window.location.origin +
@@ -902,6 +1124,15 @@ const mel_metapage = {
       return tmp;
     },
 
+    /**
+     * Récupère le titre courant de la page ou de la frame active, selon la tâche en cours.
+     * Si l'appel n'est pas fait depuis la fenêtre "TOP", délègue l'appel à la fenêtre parente.
+     *
+     * @param {string|null} [current_task=null] Tâche dont on veut récupérer le titre. Si <c>null</c>, utilise la tâche courante.
+     * @param {string} [_default=document.title] Titre par défaut à retourner si aucun titre n'est trouvé.
+     *
+     * @returns {string} Titre correspondant à la tâche demandée.
+     */
     get_current_title(current_task = null, _default = document.title) {
       if (parent !== window)
         return parent.mel_metapage.Function.get_current_title(
@@ -1049,14 +1280,37 @@ const mel_metapage = {
       return props;
     },
 
+    /**
+     * Échappe les chevrons d'une chaîne HTML afin de l'afficher tel quel dans un éditeur de texte riche
+     * (évite que le texte soit interprété comme des balises HTML).
+     *
+     * @param {string} html Texte HTML à échapper.
+     *
+     * @returns {string} Texte avec les caractères "<" remplacés par leur entité HTML.
+     */
     updateRichText(html) {
       return html.replace(/</g, '&lt;');
     },
 
+    /**
+     * Retire les accents d'une chaîne de caractères.
+     *
+     * @param {string} string Chaîne à traiter.
+     *
+     * @returns {string} Chaîne sans accents.
+     */
     remove_accents(string) {
       return string.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     },
 
+    /**
+     * Retire les déterminants français (articles, possessifs, démonstratifs, ...) d'une chaîne de caractères.
+     *
+     * @param {string} [string=''] Chaîne à traiter.
+     * @param {string} [rep=''] Texte de remplacement pour chaque déterminant trouvé.
+     *
+     * @returns {string} Chaîne sans déterminants, et sans le caractère de remplacement en début de chaîne.
+     */
     replace_dets(string = '', rep = '') {
       const dets = [
         ' le ',
@@ -1100,6 +1354,15 @@ const mel_metapage = {
       return string;
     },
 
+    /**
+     * Retire tous les caractères spéciaux d'une chaîne (ne conservant que les lettres, chiffres,
+     * espaces et tirets), et retire le caractère de remplacement en début de chaîne.
+     *
+     * @param {string} string Chaîne à traiter.
+     * @param {string} [rep=''] Texte de remplacement pour chaque caractère spécial trouvé.
+     *
+     * @returns {string} Chaîne nettoyée.
+     */
     replace_special_char(string, rep = '') {
       const regexp = /[^a-zA-Z0-9_ -]/g;
       string = string.replace(regexp, rep);
@@ -1147,6 +1410,13 @@ const mel_metapage = {
       return val || null;
     },
 
+    /**
+     * Mélange aléatoirement les éléments d'un tableau, sur place (algorithme de Fisher-Yates).
+     *
+     * @param {Array} array Tableau à mélanger.
+     *
+     * @returns {Array} Le tableau mélangé (référence identique au tableau passé en paramètre).
+     */
     _shuffle(array) {
       var currentIndex = array.length,
         temporaryValue,
@@ -1165,6 +1435,11 @@ const mel_metapage = {
       return array;
     },
 
+    /**
+     * Génère un nom de salle de visioconférence aléatoire, composé de 3 chiffres et de 7 lettres mélangés.
+     *
+     * @returns {string} Nom de salle généré.
+     */
     generateWebconfRoomName() {
       var charArray = [
         'A',
@@ -1328,9 +1603,19 @@ const mel_metapage = {
 
         return mel_metapage.Functions.call(init + go + then);
       },
+      /**
+       * Vérifie si le quota de stockage Nextcloud de l'utilisateur est à 0.
+       *
+       * @returns {boolean} Vrai si le quota est à 0, faux sinon (ou si la donnée est absente).
+       */
       have_0_quota() {
         return rcmail.env.have_0_quota ?? false;
       },
+      /**
+       * Vérifie si le stockage Nextcloud est actif pour l'utilisateur courant.
+       *
+       * @returns {boolean} Vrai si le stockage est actif, faux sinon.
+       */
       is_stockage_active() {
         const DEFAULT = false;
         return rcmail?.env?.why_is_not_active?.value
@@ -1338,6 +1623,12 @@ const mel_metapage = {
               rcmail.env.why_is_not_active.consts.ST_ACTIVE
           : DEFAULT;
       },
+      /**
+       * Vérifie si les actions liées au "Drive" (Nextcloud) sont autorisées,
+       * c'est-à-dire que le stockage est actif et que le quota n'est pas à 0.
+       *
+       * @returns {boolean} Vrai si les actions sont autorisées, faux sinon.
+       */
       canDriveActions() {
         return !this.have_0_quota() && this.is_stockage_active();
       },
@@ -1370,6 +1661,18 @@ const mel_metapage = {
       return this;
     },
 
+    /**
+     * Exécute une action sur une frame donnée, en tenant compte de son état (fermée, ouverte en iframe,
+     * ou ouverte en page complète). Si l'appel n'est pas fait depuis la fenêtre "TOP", délègue l'appel
+     * à la fenêtre parente via <c>call</c>.
+     *
+     * @param {string} frame Nom (classe) de la frame concernée.
+     * @param {function|string} doAction Fonction à exécuter, recevant en premier argument l'état de la frame
+     * (0 = fermée, 1 = ouverte en iframe, 2 = ouverte en page), suivi des <c>functionArgs</c>.
+     * @param {...*} functionArgs Arguments additionnels transmis à <c>doAction</c>.
+     *
+     * @returns {Object} L'objet <c>Functions</c> (chaînage).
+     */
     doActionFrame(frame, doAction, ...functionArgs) {
       //console.log("[doActionFrame]",frame, doAction, parent !== window);
       if (parent !== window) {
@@ -1395,6 +1698,12 @@ const mel_metapage = {
       return this;
     },
 
+    /**
+     * Met à jour l'état (activé/désactivé) du bouton "rafraîchir la frame courante",
+     * selon que l'on soit actuellement en webconférence ou non.
+     *
+     * @returns {Object} L'objet <c>Functions</c> (chaînage).
+     */
     update_refresh_thing() {
       let current = (top ?? window).$('.refresh-current-thing');
       let action =
@@ -1408,6 +1717,15 @@ const mel_metapage = {
       return this;
     },
 
+    /**
+     * Détecte si le navigateur courant correspond au symbole de navigateur donné.
+     *
+     * @param {Symbol} symbol Symbole de navigateur à tester (voir <c>mel_metapage.Symbols.navigator</c>).
+     *
+     * @throws {string} "Unknown navigator" si le symbole fourni n'est pas géré.
+     *
+     * @returns {boolean} Vrai si le navigateur courant correspond au symbole donné.
+     */
     isNavigator(symbol) {
       switch (symbol) {
         case mel_metapage.Symbols.navigator.firefox:
@@ -1455,6 +1773,17 @@ const mel_metapage = {
       return this;
     },
 
+    /**
+     * Ajoute un commentaire sur un mail via un appel ajax POST.
+     *
+     * @param {string} uid Identifiant unique du mail.
+     * @param {string} comment Contenu du commentaire à ajouter.
+     * @param {{folder?: string, subject?: string|null}} [options] Options additionnelles.
+     * @param {string} [options.folder='INBOX'] Dossier IMAP contenant le mail.
+     * @param {string|null} [options.subject=null] Sujet du mail (optionnel).
+     *
+     * @returns {Promise<*>} Réponse du serveur (ou <c>false</c> en cas d'erreur applicative).
+     */
     async comment_mail(
       uid,
       comment,
@@ -1486,6 +1815,13 @@ const mel_metapage = {
       return data;
     },
 
+    /**
+     * Calcule la taille approximative (en mégaoctets) qu'occuperait un objet sérialisé en JSON.
+     *
+     * @param {*} obj Objet dont on veut estimer la taille.
+     *
+     * @returns {number} Taille estimée, en mégaoctets.
+     */
     calculateObjectSizeInMo(obj) {
       const jsonString = JSON.stringify(obj);
       const blob = new Blob([jsonString]);
@@ -1494,7 +1830,17 @@ const mel_metapage = {
       return sizeInMb;
     },
 
+    /**
+     * Fonctions utilitaires liées au calcul de luminance et de contraste des couleurs (norme WCAG).
+     */
     colors: {
+      /**
+       * Calcule la luminance relative d'une couleur RVB, selon la formule du W3C (WCAG).
+       *
+       * @param {Array<number>} rgb Composantes rouge, vert, bleu de la couleur (valeurs de 0 à 255).
+       *
+       * @returns {number} Luminance relative de la couleur (entre 0 et 1).
+       */
       kMel_Luminance(rgb) {
         let R = rgb[0] / 255;
         let G = rgb[1] / 255;
@@ -1521,6 +1867,14 @@ const mel_metapage = {
         return L;
       },
 
+      /**
+       * Calcule le ratio de contraste entre deux couleurs RVB, selon la formule du W3C (WCAG).
+       *
+       * @param {Array<number>} rgb1 Première couleur (composantes rouge, vert, bleu).
+       * @param {Array<number>} rgb2 Seconde couleur (composantes rouge, vert, bleu).
+       *
+       * @returns {number} Ratio de contraste entre les deux couleurs (toujours supérieur ou égal à 1).
+       */
       kMel_CompareLuminance(rgb1, rgb2) {
         const l1 = this.kMel_Luminance(rgb1);
         const l2 = this.kMel_Luminance(rgb2);
@@ -1535,11 +1889,28 @@ const mel_metapage = {
         return ratio;
       },
 
+      /**
+       * Vérifie si le contraste entre deux couleurs RVB respecte le niveau AAA des normes WCAG (ratio > 4.5).
+       *
+       * @param {Array<number>} rgb1 Première couleur (composantes rouge, vert, bleu).
+       * @param {Array<number>} rgb2 Seconde couleur (composantes rouge, vert, bleu).
+       *
+       * @returns {boolean} Vrai si le contraste respecte le niveau AAA, faux sinon.
+       */
       kMel_LuminanceRatioAAA(rgb1, rgb2) {
         const isAAA = this.kMel_CompareLuminance(rgb1, rgb2) > 4.5;
         return isAAA;
       },
 
+      /**
+       * Extrait les composantes RVB d'une couleur exprimée en hexadécimal (sur 6 ou 3 caractères)
+       * ou directement sous forme de nombres (ex: "rgb(255, 0, 0)").
+       *
+       * @param {string} color Couleur à analyser.
+       *
+       * @returns {Array<number>|undefined} Tableau des composantes [R, G, B] (et éventuellement alpha),
+       * ou <c>undefined</c> si la couleur n'a pas pu être analysée.
+       */
       kMel_extractRGB(color) {
         let regexp = /#[a-fA-F\d]{6}/g;
         let rgbArray = color.match(regexp);

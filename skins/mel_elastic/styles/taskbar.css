@@ -646,11 +646,6 @@ html.touch #taskmenu a{
     border:none!important;
 }
 
-li#menu-small-li
-{
-    display: block!important;
-}
-
 /* #taskmenu a.selected {
 	pointer-events: none;
 } */

@@ -370,20 +370,29 @@ export default class BridgeMail extends ABridge {
       .listen(
         'responseaftercheck-recent',
         this.#setupMessageListHooks.bind(this),
-      );
+      )
+      .listen('responseafterrefresh', (...args) => {
+        const [responseContainer] = args;
+        const containerExist = !!responseContainer;
+        const responseExist = !!responseContainer.response;
+        const rowUpdated =
+          !!responseContainer.response?.exec?.includes?.('add_message_row');
+        const needRedecorate = containerExist && responseExist && rowUpdated;
 
-    this.listen('init', () => {
-      if (!this.rcmail().message_list) return;
-      this.rcmail().message_list.addEventListener(
-        'select',
-        bridge.onMessagesSelected.bind(
-          bridge,
-          this.#getSelectionIcon.bind(this),
-          HTMLBnumAvatarAction,
-          HTMLBnumButtonIcon,
-        ),
-      );
-    });
+        if (needRedecorate) this.#setupMessageListHooks();
+      })
+      .listen('init', () => {
+        if (!this.rcmail().message_list) return;
+        this.rcmail().message_list.addEventListener(
+          'select',
+          bridge.onMessagesSelected.bind(
+            bridge,
+            this.#getSelectionIcon.bind(this),
+            HTMLBnumAvatarAction,
+            HTMLBnumButtonIcon,
+          ),
+        );
+      });
 
     return this;
   }

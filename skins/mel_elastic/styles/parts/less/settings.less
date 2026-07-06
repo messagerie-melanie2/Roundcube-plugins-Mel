@@ -69,3 +69,7 @@
   display: flex;
   align-items: center;
 }
+
+html:not(.touch) .listing li>a:focus, html:not(.touch) .listing.focus tbody tr.focused>td:first-child, html:not(.touch) .listing.focus:not(.withselection) tbody tr.focused>td.selection+td {
+  border-left-color: transparent !important;
+}

@@ -2591,7 +2591,7 @@ class mel_driver extends calendar_driver {
           $recurrence['UNTIL']->setTime(23, 59);
         }
         //0008897 - L'affichage BYDAY=-1LD fait crash le calendrier de prise de rendez-vous
-        if ($recurrence['FREQ'] == 'MONTHLY' && isset($recurrence['BYMONTHDAY'])) {
+        if (isset($recurrence['FREQ']) && $recurrence['FREQ'] == 'MONTHLY' && isset($recurrence['BYMONTHDAY'])) {
           $recurrence['BYDAY'] = $recurrence['BYMONTHDAY'] . 'LD';
           unset($recurrence['BYMONTHDAY']);
         }

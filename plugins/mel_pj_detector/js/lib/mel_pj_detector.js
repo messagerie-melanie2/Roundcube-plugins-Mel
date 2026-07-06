@@ -17,7 +17,7 @@ window.addEventListener('load', function() {
   };
 
   // Interception de l'envoi
-  rcmail.addEventListener('beforesend', function(props) {
+  rcmail.addEventListener('beforesend', function() {
     const attachments = rcmail.env.attachments || {},
       has_attachments = Object.keys(attachments).length > 0;
 
@@ -33,7 +33,7 @@ window.addEventListener('load', function() {
       }
 
       if (rcmail.env.missing_attachment_check_subject) {
-        const subj = $("[name='_subject']").val() || '';
+        const subj = $('[name=\'_subject\']').val() || '';
         body_text += ' ' + subj;
       }
 

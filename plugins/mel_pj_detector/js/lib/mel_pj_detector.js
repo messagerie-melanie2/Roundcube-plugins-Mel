@@ -3,12 +3,12 @@ window.addEventListener('load', function() {
 
   // Helper détection PJ manquante
   rcmail._mentions_attachment = function(text) {
-    var keywords = this.env.missing_attachment_keywords || [],
+    const keywords = this.env.missing_attachment_keywords || [],
       case_sensitive = this.env.missing_attachment_case_sensitive || false,
       haystack = case_sensitive ? text : text.toLowerCase();
 
-    for (var i = 0; i < keywords.length; i++) {
-      var needle = case_sensitive ? keywords[i] : keywords[i].toLowerCase();
+    for (let i = 0; i < keywords.length; i++) {
+      const needle = case_sensitive ? keywords[i] : keywords[i].toLowerCase();
       if (needle && haystack.indexOf(needle) !== -1) {
         return true;
       }
@@ -18,22 +18,22 @@ window.addEventListener('load', function() {
 
   // Interception de l'envoi
   rcmail.addEventListener('beforesend', function(props) {
-    var attachments = rcmail.env.attachments || {},
+    const attachments = rcmail.env.attachments || {},
       has_attachments = Object.keys(attachments).length > 0;
 
     if (!has_attachments) {
-      var body_text = '';
+      let body_text = '';
 
       if (window.tinyMCE && tinyMCE.get(rcmail.env.composebody)) {
         body_text = tinyMCE.get(rcmail.env.composebody).getContent({ format: 'text' });
       }
       else {
-        var ta = document.getElementById(rcmail.env.composebody);
+        const ta = document.getElementById(rcmail.env.composebody);
           if (ta) body_text = ta.value || '';
       }
 
       if (rcmail.env.missing_attachment_check_subject) {
-        var subj = $("[name='_subject']").val() || '';
+        const subj = $("[name='_subject']").val() || '';
         body_text += ' ' + subj;
       }
 

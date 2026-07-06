@@ -7,14 +7,36 @@ import { MelMetapage } from '../../../../../mel_metapage/js/lib/helpers/mel_meta
 import { handleEventClick } from '../../../../../mel_portal/modules/my_day/js/module_my_day.internal/callbacks.js';
 import { getLocationAction } from './locations.js';
 
+/**
+ * Applique la mise en forme "rich text" au titre de l'événement.
+ *
+ * @param {object} event Événement du calendrier.
+ * @returns {string} Titre de l'événement mis en forme.
+ */
 function _updateRichText(event) {
   return MelMetapage.Instance.Functions.updateRichText(event.title);
 }
 
+/**
+ * Récupère l'adresse e-mail de l'utilisateur courant depuis
+ * l'environnement Roundcube.
+ *
+ * @returns {?string} L'adresse e-mail de l'utilisateur, ou `null`/`undefined`
+ * si elle n'est pas définie.
+ */
 function _getUserEmail() {
   return ABaseMelObject.Empty().get_env('mel_metapage_user_emails')?.[0];
 }
 
+/**
+ * Recherche, parmi les participants de l'événement, celui correspondant
+ * à l'utilisateur courant.
+ *
+ * @param {object} event Événement du calendrier.
+ * @returns {?object} Le participant correspondant à l'utilisateur courant,
+ * ou `null` si l'adresse e-mail est inconnue ou si aucun participant
+ * ne correspond.
+ */
 function _getUserAttendee(event) {
   const email = _getUserEmail();
 
@@ -25,6 +47,15 @@ function _getUserAttendee(event) {
     .firstOrDefault(null);
 }
 
+/**
+ * Construit le titre affiché de l'événement, en y ajoutant :
+ * - la mention "(libre)" si l'événement est en disponibilité libre ;
+ * - le statut de participation de l'utilisateur courant, le cas échéant
+ * (en attente, accepté, peut-être, annulé).
+ *
+ * @param {object} event Événement du calendrier.
+ * @returns {string} Titre formaté de l'événement.
+ */
 function _getTitleFormated(event) {
   let title = _updateRichText(event);
 
@@ -63,6 +94,13 @@ function _getTitleFormated(event) {
   return title;
 }
 
+/**
+ * Détermine les modes secondaires à afficher sur l'élément d'agenda,
+ * en fonction du statut de participation de l'utilisateur courant.
+ *
+ * @param {object} event Événement du calendrier.
+ * @returns {string[]} Liste des modes secondaires à afficher (peut être vide).
+ */
 function _addSecondaryModes(event) {
   var modes = [];
 
@@ -90,6 +128,19 @@ function _addSecondaryModes(event) {
   return modes;
 }
 
+/**
+ * Crée un élément d'agenda (`HTMLBnumCardItemAgenda`) à partir d'un
+ * événement de calendrier.
+ *
+ * Construit le nœud avec ses dates, son titre formaté, ses modes
+ * secondaires (statut de participation) et son éventuelle action de
+ * localisation (visio, audio, etc.), puis y attache le gestionnaire
+ * de clic permettant d'ouvrir l'événement.
+ *
+ * @param {object} event Événement du calendrier à représenter.
+ * @returns {HTMLBnumCardItemAgenda} Élément d'agenda prêt à être inséré
+ * dans le DOM.
+ */
 export function createAgendaItemFromEvent(event) {
   const startDate = moment(event.start).toDate();
   const endDate = moment(event.end).toDate();

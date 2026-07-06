@@ -410,7 +410,7 @@ export class WspNavigationButton extends NavBarComponent {
    * @readonly
    */
   get icon() {
-    return this.visibilityButton.querySelector('bnum-icon');
+    return this.visibilityButton.querySelector('old-bnum-icon');
   }
 
   /**

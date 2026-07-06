@@ -10,7 +10,7 @@ return new class($layout, $plugin, $workspace) extends AWorkspaceLayout {
         $plugin = $this->getPlugin(); 
 
         if (!$plugin->getUser()->is_external) {
-            $layout->fourthRow()->append(4, $this->_htmlModuleBlock('calendar_month', 'Agenda de l\'espace', $NO_BUTTON, ['id' => 'module-agenda', 'tag' => 'bnum-card-agenda']));//['id' => 'module-agenda', 'data-title' => 'Agenda de l\'espace', 'data-button' => 'calendar', 'data-button-text' => 'Créer', 'data-button-icon' => 'add_circle', 'data-button-ignore' => 'default-actions', 'data-button-type' => 'primary']));
+            $layout->fourthRow()->append(4, $this->_htmlModuleBlock('calendar_month', 'Agenda de l\'espace', $NO_BUTTON, ['id' => 'module-agenda', 'tag' => 'bnum-card-agenda', 'loading' => 'loading', 'class' => 'workspace-card-module']));//['id' => 'module-agenda', 'data-title' => 'Agenda de l\'espace', 'data-button' => 'calendar', 'data-button-text' => 'Créer', 'data-button-icon' => 'add_circle', 'data-button-ignore' => 'default-actions', 'data-button-type' => 'primary']));
             $layout->setNavBarSetting('mel_metapage.calendar', 'calendar_month', true, 1);
             $plugin->include_workspace_skin_module('agenda.js');
         }

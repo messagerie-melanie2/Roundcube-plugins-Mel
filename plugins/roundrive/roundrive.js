@@ -312,6 +312,9 @@ function roundrive_directory_selector_dialog(id) {
     var button;
     var icon;
 
+    // le bouton de création de dossier
+    var createFolderBtn = context.document.querySelector('#folderlist-footer secondary-button');
+
     // Appelle la fonction de rappel précédente, si elle existe
     old_fn();
 
@@ -343,6 +346,12 @@ function roundrive_directory_selector_dialog(id) {
     context.document.querySelector(
       '.ui-dialog-buttonset',
     ).style.justifyContent = 'center';
+
+    if (createFolderBtn) {
+      createFolderBtn.addEventListener('click', function () {
+        roundrive_folder_create_dialog();
+      });
+    }
 
     icon = null;
     button = null;

@@ -283,9 +283,6 @@ html.layout-large .task-calendar #layout-sidebar > .header {
 #toolbar-list-menu {
   display: flex;
 }
-.header {
-  --layout-list-header-text-color: var(--bnum-color-border);
-}
 html.layout-small div.header {
   display: flex;
   align-items: center;

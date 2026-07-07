@@ -234,12 +234,13 @@ class mel_workspace extends bnum_plugin
  * @throws Exception Si aucun fichier de renderer n'est trouvé ou si le fichier
  *                   ne retourne pas une instance de {@see AWorkspaceLayout}
  */
-public function get_renderer(bnum_plugin $plugin = null): WorkspacePageLayout
+public function get_renderer(bnum_plugin $plugin = null, string $baseDir = null): WorkspacePageLayout
 {
     $plugin ??= $this;
+    $baseDir ??= __DIR__;
     $path = false;
 
-    $skin_path    = __DIR__ . '/'.$plugin->local_skin_path() . '/php/workspace_layout.php';
+    $skin_path    = $baseDir . '/'.$plugin->local_skin_path() . '/php/workspace_layout.php';
     $default_path = __DIR__ . '/skins/php/workspace_layout.php';
 
     if (is_file($default_path) && is_readable($default_path)) {
@@ -264,7 +265,12 @@ public function get_renderer(bnum_plugin $plugin = null): WorkspacePageLayout
     $workspace = $this->workspace;
 
     $func = include $path;
-    $instance = $func($layout, $this, $workspace);
+    
+    try {
+        $instance = $func($layout, $this, $workspace);
+    } catch (\Throwable $th) {
+        throw $th;
+    }
 
     if (!($instance instanceof AWorkspaceLayout)) {
         throw new Exception(
@@ -297,15 +303,15 @@ public function get_renderer(bnum_plugin $plugin = null): WorkspacePageLayout
         }
 
         if ($workspace->hasUser($this->get_user()->uid)) {
-            // $plugin = $this->exec_hook('wsp.show', [
-            //     'workspace' => $workspace,
-            //     'layout' => new WorkspacePageLayout(),
-            //     'plugin' => $this
-            // ]);
+            $this->workspacePageLayout = $plugin['layout'] ?? new WorkspacePageLayout();
+
+            $plugin = $this->exec_hook('wsp.show', [
+                'workspace' => $workspace,
+                'layout' => new WorkspacePageLayout(),
+                'plugin' => $this
+            ]);
 
             $plugin ??= [];
-
-            $this->workspacePageLayout = $plugin['layout'] ?? new WorkspacePageLayout();
 
             $this->workspacePageLayout = $this->get_renderer();
 

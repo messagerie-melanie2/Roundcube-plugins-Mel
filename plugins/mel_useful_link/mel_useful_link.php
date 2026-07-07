@@ -847,7 +847,7 @@ class mel_useful_link extends bnum_plugin
     // // $layout->setNavBarSetting('useful_links', true, 5);
     // $args['layout'] = $layout;
     // unset($layout);
-    $args['layout'] = $args['plugin']->get_renderer($this);
+    $args['layout'] = $args['plugin']->get_renderer($this, __DIR__);
 
     $workspace = $args['workspace'];
     $links = $this->get_workspace_link($workspace);

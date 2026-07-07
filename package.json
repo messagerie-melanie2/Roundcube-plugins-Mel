@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "postinstall": "python3 ~/devconfiguration/bnum/install_claude.py"
+  },
   "dependencies": {
     "eslint": "^8.57.1",
     "prettier": "^3.5.3",

@@ -1237,6 +1237,10 @@ $("#rcmfd_new_category").keypress(function(event) {
             }
             else if ($success = $this->driver->edit_event($event)) {
                 $this->cleanup_event($event);
+                // MANTIS 0009294: pas de notification lors d'un changement d'agenda
+                if (!empty($event['_fromcalendar']) && $event['_fromcalendar'] !== $event['calendar']) {
+                    unset($event['_notify']);
+                }
                 $this->event_save_success($event, $old, $action, $success);
             }
 

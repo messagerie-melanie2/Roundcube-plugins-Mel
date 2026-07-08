@@ -343,64 +343,25 @@ class WspNavBar extends HtmlCustomTag {
     }).attr('id', 'wsp-nav-minify-expand');
 
     button.onpressedchange.push((pressed) => {
-      const caller = button;
-
       if (pressed) {
         this.addClass('minified');
-        caller.icon = 'keyboard_double_arrow_right';
-        caller.setAttribute(
+        button.icon = 'keyboard_double_arrow_right';
+        button.setAttribute(
           'title',
           "Maximiser la barre de navigation de l'espace.",
         );
       } else {
         this.removeClass('minified');
-        caller.icon = 'keyboard_double_arrow_left';
-        caller.setAttribute(
+        button.icon = 'keyboard_double_arrow_left';
+        button.setAttribute(
           'title',
           "Minimiser la barre de navigation de l'espace.",
         );
       }
     });
-    // let button = PressedButton.Create();
-    // button.setAttribute('id', 'wsp-nav-minify-expand');
-    // button.classList.add('transparent-bckg');
-
-    // button.ontoggle.push((args, caller_any) => {
-    //   const { newState } = args;
-    //   /**
-    //    * @type {PressedButton}
-    //    */
-    //   let caller = caller_any;
-
-    //   //Si on minifie
-    //   if (newState) {
-    //     this.addClass('minified');
-    //     caller.querySelector(BnumHtmlIcon.TAG).icon =
-    //       'keyboard_double_arrow_right';
-    //     caller.setAttribute(
-    //       'title',
-    //       "Maximiser la barre de navigation de l'espace.",
-    //     );
-    //   } else {
-    //     this.removeClass('minified');
-    //     caller.querySelector(BnumHtmlIcon.TAG).icon =
-    //       'keyboard_double_arrow_left';
-    //     caller.setAttribute(
-    //       'title',
-    //       "Minimiser la barre de navigation de l'espace.",
-    //     );
-    //   }
-
-    //   caller = null;
-    // });
-
-    // let icon = BnumHtmlIcon.Create({ icon: 'keyboard_double_arrow_left' });
-    // button.appendChild(icon);
 
     this.style.position = 'relative';
     this.mainDiv.appendChild(button);
-    // icon = null;
-    // button = null;
     return this;
   }
 

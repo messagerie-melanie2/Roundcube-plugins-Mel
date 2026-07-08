@@ -3580,10 +3580,13 @@ export declare class HTMLBnumTertiaryButton extends HTMLBnumButton {
  */
 export type PressedChangedEvent = JsEvent<(pressed: boolean, oldPressed: boolean) => void>;
 /**
- * Options de création d'un bouton à bascule Bnum.
+ * Options de création d'un {@link HTMLBnumToggleButton}.
+ * Étend {@link BnumButtonCreateOptions} avec l'état initial "pressed".
  */
 export type BnumToggleButtonCreateOptions = BnumButtonCreateOptions & {
-	/** État "enfoncé" initial du bouton. */
+	/**
+	 * État "enfoncé" initial du bouton.
+	 */
 	pressed?: boolean;
 };
 /**

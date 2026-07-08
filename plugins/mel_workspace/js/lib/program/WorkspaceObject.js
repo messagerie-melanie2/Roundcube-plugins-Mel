@@ -41,6 +41,12 @@ export { WorkspaceObject, CurrentWorkspaceData };
  */
 
 /**
+ * @callback OnExecActionCallback
+ * @param {*} props Paramètre passé à `rcmail.command('wsp-exec-action', props)`
+ * @returns {void}
+ */
+
+/**
  * @class
  * @classdesc Contient les données et fonctions utiles pour les classes/modules qui implémentent les espaces de travail
  * @extends MelObject
@@ -48,8 +54,28 @@ export { WorkspaceObject, CurrentWorkspaceData };
  * @hideconstructor
  */
 class WorkspaceObject extends MelObject {
+  /**
+   * Cache interne de l'instance {@link BnumEvent} pour l'événement {@link WorkspaceObject#onExecAction}.
+   * @type {BnumEvent|undefined}
+   * @private
+   */
+  #_onExecAction;
+
   constructor() {
     super();
+  }
+
+  /**
+   * Événement déclenché lorsque la commande `wsp-exec-action` est exécutée.
+   *
+   * L'instance de {@link BnumEvent} est créée lors du premier accès (initialisation paresseuse).
+   * @type {BnumEvent<OnExecActionCallback>}
+   * @readonly
+   * @event
+   * @frommodule Workspace/Object {@linkto OnExecActionCallback}
+   */
+  get onExecAction() {
+    return (this.#_onExecAction ??= new BnumEvent());
   }
 
   /**
@@ -70,6 +96,10 @@ class WorkspaceObject extends MelObject {
 
     this.rcmail().addEventListener('workspace.object.call', (obj) => {
       this.onactionreceived.call(obj);
+    });
+
+    this.registerCommandOnce('wsp-exec-action', (props, obj, event) => {
+      this.onExecAction.call(props, obj, event);
     });
   }
 
@@ -933,6 +963,7 @@ const workspaceData = new WrapperObject(CurrentWorkspaceData);
  * @package
  */
 const window_prop_data = 'wspobjlsn';
+
 if (!window[window_prop_data]) {
   window.addEventListener(
     'message',

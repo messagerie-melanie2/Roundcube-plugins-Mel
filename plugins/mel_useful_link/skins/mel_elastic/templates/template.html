@@ -1,0 +1,20 @@
+<div id="link-block-<id/>" title="<title/>" class="link-block <hidden\>" <datas/>>
+  <div id="context-menu-<id/>" class="link-context-menu">
+    <button class="link-context-menu-button copy-link" title="Copier le lien dans le presse-papier" data-url='<link/>'>
+      <span class="material-symbols-outlined">content_copy</span>
+    </button>
+    <button class="link-context-menu-button modify-link" title="Modifier le lien" data-id="<id/>" data-title="<title/>" data-url="<link/>">
+      <span class="material-symbols-outlined">edit</span>
+    </button>
+    <button class="link-context-menu-button delete-link" title="Supprimer le lien" data-id="<id/>">
+      <span class="material-symbols-outlined">delete</span>
+    </button>
+  </div>
+  <a id="link-id-<id/>" class='link-icon-container' href="<link/>" target="_blank">
+    <img id='link-block-icon-image-<id/>' class='link-icon-image' src="<image_link/>" onerror="imgError(this.id, 'no-image-<id/>', '<title/>')">
+    <span id="no-image-<id/>" class="link-icon-no-image"></span>
+  </a>
+  <span class="link-icon-title">
+    <title/>
+  </span>
+</div>

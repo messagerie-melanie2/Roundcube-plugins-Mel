@@ -21,7 +21,6 @@ class ModuleLinks extends WorkspaceObject {
 
   main() {
     super.main();
-
     this.contents.classList.add('links-items');
 
     if (!this.loaded && this.workspace.app_loaded('useful-links')) {
@@ -51,15 +50,5 @@ class ModuleLinks extends WorkspaceObject {
     return new ModuleLinks();
   }
 }
-
-// top.rcmail.add_event_listener_ex(
-//   'wsp.navbar.navigation',
-//   'module_link',
-//   (args) => {
-//     args.apps = MelEnumerable.from(args.apps).where((x) => x !== 'useful_link');
-
-//     return args;
-//   },
-// );
 
 ModuleLinks.Start();

@@ -1,6 +1,7 @@
 import { BnumPromise } from './BnumPromise.js';
 import { Cookie } from './classes/cookies.js';
 import { EMPTY_STRING } from './constants/constants.js';
+import { MelMetapage } from './helpers/mel_metapage.js';
 import { isNullOrUndefined } from './mel.js';
 import { Top } from './top.js';
 
@@ -372,6 +373,48 @@ export default class ABaseMelObject {
   }
 
   /**
+   * Exécute une fonction une seule fois au niveau global (`window`), quel que soit le nombre d'instances créées.
+   * Utile par exemple pour enregistrer une commande roundcube (`register_command`) ou ajouter un listener qui ne doit être fait qu'une seule fois, même si plusieurs instances de la classe sont créées.
+   * @param {string} key Clé unique stockée sur `window` pour retenir que l'action a déjà été exécutée
+   * @param {() => void} action Fonction exécutée uniquement si elle ne l'a jamais été pour cette clé
+   * @returns {boolean} `true` si l'action vient d'être exécutée, `false` si elle l'était déjà
+   * @protected
+   */
+  execOnce(key, action) {
+    if (window[key]) return false;
+
+    action();
+    window[key] = true;
+
+    return true;
+  }
+
+  /**
+   * Enregistre une commande roundcube (`register_command`) une seule fois au niveau global (`window`), quel que soit le nombre d'instances créées.
+   * Si le flag global indique que la commande a déjà été enregistrée mais qu'elle est absente de `rcmail` (ex. changement de realm/frame ayant réinitialisé `rcmail`), l'état est incohérent : une erreur est levée plutôt que d'échouer silencieusement.
+   * @param {string} commandName Nom de la commande roundcube à enregistrer
+   * @param {(props: *, obj: *, event: (Event|undefined)) => *} command Fonction exécutée lors de l'appel de la commande
+   * @param {Object} [param2={}] Options supplémentaires
+   * @param {boolean} [param2.enable=true] Si la commande doit être active dès son enregistrement
+   * @returns {boolean} `true` si la commande vient d'être enregistrée, `false` si elle l'était déjà
+   * @throws {Error} Si le flag global existe déjà alors que la commande est absente de `rcmail` (état incohérent)
+   * @protected
+   */
+  registerCommandOnce(commandName, command, { enable = true } = {}) {
+    const flagKey = `_COMMAND_REGISTERED_${commandName}`;
+
+    if (window[flagKey] && !this.rcmail().command_handlers?.[commandName]) {
+      throw new Error(
+        `[registerCommandOnce] La commande "${commandName}" est marquée comme déjà enregistrée sur "window" mais est absente de rcmail.`,
+      );
+    }
+
+    return this.execOnce(flagKey, () => {
+      this.rcmail().register_command(commandName, command, enable);
+    });
+  }
+
+  /**
    * Sauvegarde des données dans le stockage local
    * @param {string} key Clé qui permettra de retrouver les données sauvegarder
    * @param {*} contents Données qui seront sauvegarder
@@ -379,7 +422,7 @@ export default class ABaseMelObject {
    * @protected
    */
   save(key, contents) {
-    mel_metapage.Storage.set(key, JSON.stringify(contents));
+    MelMetapage.Instance.Storage.set(key, JSON.stringify(contents));
     return this;
   }
 
@@ -392,14 +435,14 @@ export default class ABaseMelObject {
    */
   load(key, default_value = null) {
     try {
-      return JSON.parse(mel_metapage.Storage.get(key)) ?? default_value;
+      return JSON.parse(MelMetapage.Instance.Storage.get(key)) ?? default_value;
     } catch (error) {
       return default_value;
     }
   }
 
   load_without_parsing(key, default_value = null) {
-    return mel_metapage.Storage.get(key) ?? default_value;
+    return MelMetapage.Instance.Storage.get(key) ?? default_value;
   }
 
   /**
@@ -408,7 +451,7 @@ export default class ABaseMelObject {
    * @protected
    */
   unload(key) {
-    mel_metapage.Storage.remove(key);
+    MelMetapage.Instance.Storage.remove(key);
   }
 
   /**

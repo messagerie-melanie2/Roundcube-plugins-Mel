@@ -10,8 +10,8 @@ return static function (WorkspacePageLayout $layout, mel_workspace $plugin, Work
             // $plugin = $this->getPlugin(); 
             $SIZE = 12;
 
-            $button = $this->_htmlButtonAction('mulba', 'add', 'Ajouter', 'primary');
-            $html = $this->_htmlModuleBlock('link', 'Liens utiles', $button, ['id' => 'module-ul']);//(['id' => 'module-ul', 'data-title' => 'Liens utiles']);
+            // $button = $this->_htmlButtonAction('mulba', 'add', 'Ajouter', 'primary');
+            $html = $this->_htmlModuleBlock('link', 'Liens utiles', EMPTY_STRING, ['id' => 'module-ul']);//(['id' => 'module-ul', 'data-title' => 'Liens utiles']);
             $layout->thirdRow()->append($SIZE, $html);
 
             return $layout;
@@ -28,14 +28,14 @@ return static function (WorkspacePageLayout $layout, mel_workspace $plugin, Work
             'data-title-text' => $title,
         ]);
 
-        $slot =  '<div slot="title" class="bds-flex bds-flex-justify-between">'. //html::div(['slot' => 'title', 'class' => 'bds-flex'],
+        $slot =  '<div slot="title" class="bds-flex bds-flex-justify-between module-block-header">'. //html::div(['slot' => 'title', 'class' => 'bds-flex'],
             html::div(['class' => 'bds-flex'],
                 html::tag('bnum-card-title', ['data-icon' => $icon], $title)
                 ).
             html::div(['class' => 'action'], $button)
         .'</div>';
 
-        return html::tag('bnum-card', $attribs, $slot.html::div(['class', 'module-block-content'], $content));
+        return html::tag('bnum-card', $attribs, $slot.html::div(['class' => 'module-block-content'], $content));
     }
     };
 };

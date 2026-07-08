@@ -25,16 +25,21 @@
 /* Nuances de gris */
 /* Danger */
 /* Warnings */
-#layout-menu {
+#layout-menu,
+#otherapps {
   --_layout-menu-background-color: var(--bnum-main-nav-color, #242424);
   background-color: var(--_layout-menu-background-color);
   --layout-menu-background-color: var(--_layout-menu-background-color);
   --layout-menu-border-top: 0;
 }
-#layout-menu:hover {
+#layout-menu:hover,
+#otherapps:hover,
+#layout-menu a.selected,
+#otherapps a.selected {
   --layout-menu-background-hover-color: var(--_layout-menu-background-color);
 }
-#layout-menu a {
+#layout-menu a,
+#otherapps a {
   --_layout-menu-action-background-color: transparent;
   --_layout-menu-action-background-alt: var(--bnum-main-nav-color-hover, #474747);
   --_layout-menu-action-border: solid 4px var(--_layout-menu-action-border-color, var(--_layout-menu-action-background-color));
@@ -42,22 +47,27 @@
   background-color: var(--_layout-menu-action-background-color);
   box-shadow: var(--_layout-menu-action-box-shadow) !important;
 }
-#layout-menu a:hover {
+#layout-menu a:hover,
+#otherapps a:hover {
   --_layout-menu-action-background-color: var(--_layout-menu-action-background-alt);
   --layout-menu-background-hover-color: var(--_layout-menu-action-background-color);
 }
-#layout-menu a:active {
+#layout-menu a:active,
+#otherapps a:active {
   --_layout-menu-action-background-color: var(--bnum-main-nav-color-active, #5b5b5b);
   --layout-menu-background-hover-color: var(--_layout-menu-action-background-color);
 }
-#layout-menu a:focus {
+#layout-menu a:focus,
+#otherapps a:focus {
   --_layout-menu-action-background-color: var(--_layout-menu-action-background-alt);
   --layout-menu-background-selected-color: var(--_layout-menu-action-background-color);
 }
-#layout-menu a.selected {
+#layout-menu a.selected,
+#otherapps a.selected {
   --layout-menu-background-selected-color: var(--_layout-menu-action-background-color);
   --_layout-menu-action-border-color: white;
 }
-#layout-menu a.selected::before {
+#layout-menu a.selected::before,
+#otherapps a.selected::before {
   font-variation-settings: 'FILL' 1;
 }

@@ -348,9 +348,26 @@
 
   #wsp-nav-minify-expand {
     position: absolute;
-    bottom: 77px;
+    top: 18px;
     right: 15px;
     display: var(--wsp-nav-me-display, block);
+  }
+
+  .wsp-action-button {
+    &:first-child {
+      margin-top: var(--bnum-space-xs);
+    }
+    margin-top: var(--bnum-space-s);
+  }
+
+  #wsp-quit-button {
+    position: absolute;
+    bottom: 77px;
+    left: 30px;
+
+    &:state(hide-text-on-touch) {
+      left: 26px;
+    }
   }
 
   .maximised-hidden {
@@ -430,6 +447,19 @@
 :host(.minified) {
   --wsp-nav-button-justify-content: center;
   max-width: 90px;
+
+  .picture-container {
+    margin-top: 45px;
+  }
+
+  .wsp-action-button {
+    --size-display-state: none;
+  }
+
+  #wsp-quit-button {
+    --size-display-state: none;
+    left: 26px;
+  }
 
   .quit-wsp-button {
     //justify-content: //center !important;

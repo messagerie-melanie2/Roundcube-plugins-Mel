@@ -42,7 +42,7 @@ abstract class AMelElasticWorkspaceLayout extends AWorkspaceLayout {
      * @return string Balise du bloc de module générée
      */
     protected function melHtmlModuleBlock(string $icon, string $title, string $button, array $attribs = [], string $content = EMPTY_STRING): string {
-        $slot =  '<div slot="title" class="bds-flex">'.
+        $slot =  '<div slot="title" class="bds-flex bds-flex-justify-between module-block-header">'.
             html::div(['class' => 'bds-flex'],
                 html::tag('bnum-card-title', ['data-icon' => $icon], $title)
                 ).

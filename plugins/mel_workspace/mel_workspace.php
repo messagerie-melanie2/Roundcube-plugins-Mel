@@ -242,9 +242,18 @@ public function get_renderer(bnum_plugin $plugin = null, string $baseDir = null)
 
     $skin_path    = $baseDir . '/'.$plugin->local_skin_path() . '/php/workspace_layout.php';
     $default_path = __DIR__ . '/skins/php/workspace_layout.php';
+    $default_local_path = __DIR__ . '/'.$plugin->local_skin_path().'/php/mel_elastic_workspace_layout.php';
+
 
     if (is_file($default_path) && is_readable($default_path)) {
         include_once $default_path;
+    } 
+    else         throw new Exception(
+            'Impossible de trouver le renderer pour le plugin ' . get_class($plugin)
+        );
+
+        if (is_file($default_local_path) && is_readable($default_local_path)) {
+        include_once $default_local_path;
     } 
     else         throw new Exception(
             'Impossible de trouver le renderer pour le plugin ' . get_class($plugin)

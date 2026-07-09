@@ -213,7 +213,11 @@ export class NavBarManager {
     { event = null, workspace = null, manualConfig = null } = {},
   ) {
     // Réinitialise la taille des modules pour éviter les conflits d'affichage.
-    for (const element of document.querySelectorAll(WorkspaceModuleBlock.Tag)) {
+    for (const element of document.querySelectorAll(
+      'bnum-card, bnum-card-agenda',
+    )) {
+      if (element.classList.contains('hidden-because-other-in-fullscreen-mode'))
+        element.parentElement.style.display = EMPTY_STRING;
       element.classList.remove('hidden-because-other-in-fullscreen-mode');
     }
 

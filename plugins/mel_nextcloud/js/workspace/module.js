@@ -108,7 +108,7 @@ class NextcloudModule extends WorkspaceObject {
    */
   main() {
     super.main();
-
+    return;
     BnumPromise.Start(async () => {
       await NavBarManager.WaitLoading();
       // Ajouter le listener pour le plein écran

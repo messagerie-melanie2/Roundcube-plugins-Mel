@@ -166,9 +166,10 @@ class WorkspaceObject extends MelObject {
     if (task === askedTask) {
       //On cache tout les autres modules
       for (const element of document.querySelectorAll(
-        WorkspaceModuleBlock.Tag,
+        'bnum-card, bnum-card-agenda',
       )) {
         element.classList.add('hidden-because-other-in-fullscreen-mode');
+        element.parentElement.style.display = 'none';
       }
 
       await NavBarManager.GoToHome({}, this.workspace);
@@ -212,6 +213,8 @@ class WorkspaceObject extends MelObject {
 
       if (this.isDisabled(askedTask)) {
         this.hideBlock(module);
+      } else {
+        this.showBlock(module);
       }
     }
   }

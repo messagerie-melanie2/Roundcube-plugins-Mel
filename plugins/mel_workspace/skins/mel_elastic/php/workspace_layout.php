@@ -56,8 +56,6 @@ return new class($layout, $plugin, $workspace) extends AMelElasticWorkspaceLayou
 
             if ($workspace->objects()->has(mel_workspace::KEY_TASK)) $layout->setNavBarSetting('tasks', 'check_box', false, 6);
 
-            if ($workspace->isAdmin()) $layout->setNavBarSetting('workspace_params', 'settings', false, 999);
-            else $layout->setNavBarSetting('workspace_user', 'group', false, 999);
 
         return $layout;
     }

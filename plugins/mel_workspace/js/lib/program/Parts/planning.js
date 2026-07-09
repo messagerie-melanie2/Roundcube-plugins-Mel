@@ -45,9 +45,9 @@ class WorkspacePlanning extends WorkspaceObject {
   }
 
   /**
-    * Retourne le top de la grille FullCalendar dans la fenêtre.
-    * Cherche le premier sélecteur FC qui matche, sinon fallback.
-    */
+   * Retourne le top de la grille FullCalendar dans la fenêtre.
+   * Cherche le premier sélecteur FC qui matche, sinon fallback.
+   */
   static getGridTop(planningEl) {
     const FC_GRID_SELECTORS = [
       '.fc-view-harness',
@@ -57,17 +57,17 @@ class WorkspacePlanning extends WorkspaceObject {
     ];
 
     for (const selector of FC_GRID_SELECTORS) {
-       const el = planningEl.querySelector(selector);
-       if (el) return el.getBoundingClientRect().top;
-      }
+      const el = planningEl.querySelector(selector);
+      if (el) return el.getBoundingClientRect().top;
+    }
 
     // Fallback : position du composant + hauteur estimée du header interne
     return planningEl.getBoundingClientRect().top + 160;
   }
 
   /**
-    * Calcule et applique la hauteur disponible à FullCalendar.
-    */
+   * Calcule et applique la hauteur disponible à FullCalendar.
+   */
   static updateHeight(planningEl) {
     const gridTop = WorkspacePlanning.getGridTop(planningEl);
     const availableHeight = window.innerHeight - gridTop - 20;
@@ -75,9 +75,9 @@ class WorkspacePlanning extends WorkspaceObject {
   }
 
   /**
-    * Singleton : initialise le listener resize UNE SEULE FOIS sur l'élément.
-    * Si le handler existe déjà → on garde l'existant, on n'en crée pas un nouveau.
-    */
+   * Singleton : initialise le listener resize UNE SEULE FOIS sur l'élément.
+   * Si le handler existe déjà → on garde l'existant, on n'en crée pas un nouveau.
+   */
   static tryInitResize(planningEl) {
     if (planningEl._resizeHandler) return; // déjà initialisé, on sort
 
@@ -127,6 +127,16 @@ class WorkspacePlanning extends WorkspaceObject {
             requestAnimationFrame(() => {
               WorkspacePlanning.updateHeight(planningEl);
             });
+
+            const module = document
+              .getElementById(`module-${MODULE_NAME}`)
+              ?.querySelector?.('.module-block-content');
+
+            if (!module) return;
+
+            module.style.minHeight = 'unset';
+            module.style.maxHeight = 'unset';
+            module.style.height = 'unset';
           },
           /**
            * Callback pour rétablir la hauteur par défaut du calendrier.

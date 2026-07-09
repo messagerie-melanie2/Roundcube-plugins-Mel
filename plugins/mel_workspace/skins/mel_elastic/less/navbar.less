@@ -48,6 +48,17 @@
 }
 
 :host {
+  --wsp-nav-apps-button-hover-background-color: var(--bnum-color-list-hover);
+  --wsp-nav-button-background-color-invisible-active: var(
+    --bnum-color-list-active
+  );
+  --navigation-border-radius-base: 0 !important;
+  --wsp-nav-button-border: none;
+  --wsp-nav-apps-button-hover-border: none;
+  --wsp-nav-color-invisible-active: var(--bnum-text-primary);
+  --wsp-nav-apps-button-hover-text-color: var(--bnum-text-primary);
+  --wsp-nav-button-border-color-invisible-active: none;
+  --wsp-nav-button-invisible-background-color: transparent;
   max-width: var(--wsp-navbar-max-width, 100%);
 
   .nav {
@@ -59,16 +70,23 @@
 
   .melv2-card-shadow {
     // box-shadow: var(--bureau-card-box-shadow);
-    box-shadow: 0 1px 7px rgba(0, 0, 0, 0.2);
+    // box-shadow: 0 1px 7px rgba(0, 0, 0, 0.2);
   }
 
   .melv2-card {
-    border-radius: var(--bureau-card-border-radius);
+    border-radius: 0;
     // box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
-    .melv2-card-shadow();
+    // .melv2-card-shadow();
     padding: 10px;
-    background-color: var(--bureau-card-background-color);
-    color: var(--bureau-card-text-color);
+    background-color: var(
+      --bnum-card-background-color,
+      var(--bnum-color-surface, #f6f6f6)
+    );
+    color: var(--bnum-text-primary);
+    // border-bottom: var(
+    //   --bnum-card-border-bottom,
+    //   var(--bnum-border-on-surface-bottom, solid 4px #000091)
+    // );
   }
 
   .quit-wsp-button {

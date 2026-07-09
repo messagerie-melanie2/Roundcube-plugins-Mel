@@ -1,6 +1,6 @@
+import { HTMLBnumButton } from '../../../../../../skins/mel_elastic/design-system/ds-module-bnum.js';
 import { MelDialog } from '../../../../../mel_metapage/js/lib/classes/modal.js';
 import { EMPTY_STRING } from '../../../../../mel_metapage/js/lib/constants/constants.js';
-import HTMLBnumButton from '../../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/button/HTMLBnumButton.js';
 import { EWebComponentMode } from '../../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/js_html_base_web_elements.js';
 import { isNullOrUndefined } from '../../../../../mel_metapage/js/lib/mel.js';
 import { MelObject } from '../../../../../mel_metapage/js/lib/mel_object.js';
@@ -71,13 +71,43 @@ class WspNavBarDescription extends NavBarComponent {
     description.classList.add('description', 'threelines');
     description.appendChild(this.createText(this.description));
 
-    let descriptionContainer = HTMLBnumButton.StartCreate.setContent(
-      description,
-    )
-      .setNoBackgroundVariation()
-      .setSquare()
-      .generate()
-      .addClass('description-container', 'shadow-mel-button');
+    // let descriptionContainer = HTMLBnumButton.StartCreate.setContent(
+    //   description,
+    // )
+    //   .setNoBackgroundVariation()
+    //   .setSquare()
+    //   .generate()
+    //   .addClass('description-container', 'shadow-mel-button');
+    const descriptionContainer = HTMLBnumButton.Create({
+      variation: 'secondary',
+    })
+      .append(description)
+      .addClass('description-container', 'block')
+      .attr('block', 'true')
+      .css({
+        width: 'calc(100% - 25px)',
+      });
+
+    descriptionContainer.style.setProperty(
+      '--bnum-button-secondary-background-color',
+      'transparent',
+    );
+    descriptionContainer.style.setProperty(
+      '--bnum-button-secondary-border',
+      'solid thin transparent',
+    );
+    descriptionContainer.style.setProperty(
+      '--bnum-button-secondary-text-color',
+      'var(--bnum-text-primary)',
+    );
+    descriptionContainer.style.setProperty(
+      '--bnum-button-secondary-hover-background-color',
+      'var(--bnum-color-secondary)',
+    );
+    descriptionContainer.style.setProperty(
+      '--bnum-button-secondary-hover-border',
+      'solid thin transparent',
+    );
 
     // Ne pas pouvoir cliquer sur le bouton si il n'y a pas de descriptions
     if (!this.description || this.description.length === 0) {
@@ -95,7 +125,7 @@ class WspNavBarDescription extends NavBarComponent {
     element = null;
     mainDiv = null;
     description = null;
-    descriptionContainer = null;
+    // descriptionContainer = null;
   }
 
   /**

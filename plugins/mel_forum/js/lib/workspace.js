@@ -8,6 +8,7 @@ import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.j
 import { BootstrapLoader } from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/bootstrap-loader.js';
 import { WorkspaceObject } from '../../../mel_workspace/js/lib/program/WorkspaceObject.js';
 import { NavBarManager } from '../../../mel_workspace/js/lib/program/navbar.generator.js';
+import { BnumLog } from '../../../mel_metapage/js/lib/classes/bnum_log.js';
 
 export class ModuleForum extends WorkspaceObject {
   constructor() {
@@ -36,7 +37,7 @@ export class ModuleForum extends WorkspaceObject {
 
   /**
    * Block qui affiche le module
-   * @type {WorkspaceModuleBlock}
+   * @type {HTMLBnumCardElement}
    * @readonly
    */
   get block() {
@@ -61,6 +62,7 @@ export class ModuleForum extends WorkspaceObject {
   }
 
   main() {
+    // debugger;
     super.main();
 
     // Vérifiez si le module est chargé ou désactivé
@@ -94,15 +96,17 @@ export class ModuleForum extends WorkspaceObject {
         return { _workspace_uid: this.workspace.uid, askedTask: args.task };
       }
     };
-    console.log(
-      '[BUILD]Adding event listener for workspace.nav.beforeswitch for forum',
+    BnumLog.info(
+      'ModuleForum/Main',
+      'Adding event listener for workspace.nav.beforeswitch for forum',
     );
-    rcmail.add_event_listener_ex(
+    this.rcmail().add_event_listener_ex(
       'workspace.nav.beforeswitch',
       'forum',
       callback,
     );
-    top.rcmail.add_event_listener_ex(
+    const TOP = true;
+    this.rcmail(TOP).add_event_listener_ex(
       'workspace.nav.beforeswitch',
       'forum',
       callback,
@@ -213,7 +217,9 @@ export class ModuleForum extends WorkspaceObject {
 
       loader.setAttribute('id', this.loaderId);
 
-      this.block.appendContent(loader);
+      if (this.block.appendContent) this.block.appendContent(loader);
+      else if (this.block.appendChild) this.block.appendChild(loader);
+      else BnumLog.error('_show_loader', "Impossible d'ajouter le loader !");
     } else loader.style.display = EMPTY_STRING;
 
     return loader;
@@ -250,15 +256,32 @@ export class ModuleForum extends WorkspaceObject {
     if (!this.loader) this._show_loader();
 
     this.block.style.display = EMPTY_STRING;
-    this.block.content.style.overflow = 'hidden';
-    this.block.content.style.position = 'relative';
+    // this.block.content.style.overflow = 'hidden';
+    // this.block.content.style.position = 'relative';
 
-    this.block.appendIframeFromTask('forum', {
-      action: 'new_posts',
-      args: {
-        _workspace_uid: this.workspace.uid,
-      },
-    }).style.borderRadius = '8px';
+    // this.block.appendIframeFromTask('forum', {
+    //   action: 'new_posts',
+    //   args: {
+    //     _workspace_uid: this.workspace.uid,
+    //   },
+    // }).style.borderRadius = '8px';
+
+    const iframe = document.createElement('iframe');
+    iframe.setAttribute(
+      'src',
+      this.url('forum', {
+        action: 'new_posts',
+        params: { _workspace_uid: this.workspace.uid },
+      }),
+    );
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+
+    iframe.addEventListener('load', () => {
+      this.block.querySelector(`#${this.loaderId}`)?.remove?.();
+    });
+
+    this.block.querySelector('.module-block-content')?.appendChild?.(iframe);
 
     this.loadModule();
   }

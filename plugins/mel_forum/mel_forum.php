@@ -3058,8 +3058,10 @@ class mel_forum extends bnum_plugin
      * Affiche le module de forum dans la vue de l'espace de travail si le service est activé.
      *
      * - Vérifie si l'espace de travail dispose du service "forum".
-     * - Si le service est présent, configure la barre de navigation et ajoute le bloc de module "Derniers articles" à la mise en page.
-     * - Inclut le fichier JavaScript nécessaire pour le module de l'espace de travail.
+     * - Si le service est présent, délègue la mise en page au layout de la skin
+     *   ({@see AWorkspaceLayout}) via `get_renderer()`, nouvelle version du rendu
+     *   des espaces de travail.
+     * - Inclut les fichiers JavaScript nécessaires au module de l'espace de travail.
      *
      * @param array $args - Les arguments contenant l'espace de travail et la mise en page.
      * @return array - Les arguments modifiés avec la mise en page mise à jour.
@@ -3067,9 +3069,7 @@ class mel_forum extends bnum_plugin
     public function wsp_show($args)
     {
         if ($args['workspace']->objects()->get('forum') !== null) {
-            $args['layout']->setNavBarSetting('forum', 'newspaper', true, 4);
-            $args['layout']->firstRow()->append(12, $args['layout']->htmlSmallModuleBlock(['id' => 'module-forum-news', 'data-title' => $this->gettext("front_page", "mel_forum"),]));
-            $args['layout']->secondRow()->prepend(8, $args['layout']->htmlModuleBlock(['id' => 'module-forum-last', 'data-title' => $this->gettext("workspace_news", "mel_forum"), 'data-button' => 'forum']), 6, 6);
+            $args['layout'] = $args['plugin']->get_renderer($this, __DIR__);
 
             $this->include_module('workspace_pin.js');
             $this->include_module('workspace.js');

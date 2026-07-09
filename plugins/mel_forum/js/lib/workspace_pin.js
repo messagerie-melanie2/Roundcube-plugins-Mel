@@ -1,3 +1,5 @@
+import { HTMLBnumCardElement } from '../../../../skins/mel_elastic/design-system/ds-module-bnum.js';
+import { BnumLog } from '../../../mel_metapage/js/lib/classes/bnum_log.js';
 import { BnumMessage } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { BootstrapLoader } from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/bootstrap-loader.js';
@@ -31,7 +33,7 @@ export class ModuleForumPin extends WorkspaceObject {
 
   /**
    * Block qui affiche le module
-   * @type {WorkspaceModuleBlock}
+   * @type {HTMLBnumCardElement}
    * @readonly
    */
   get block() {
@@ -137,7 +139,9 @@ export class ModuleForumPin extends WorkspaceObject {
 
       loader.setAttribute('id', this.loaderId);
 
-      this.block.appendContent(loader);
+      if (this.block.appendContent) this.block.appendContent(loader);
+      else if (this.block.appendChild) this.block.appendChild(loader);
+      else BnumLog.error('_show_loader', "Impossible d'ajouter le loader !");
     } else loader.style.display = EMPTY_STRING;
 
     return loader;
@@ -174,15 +178,31 @@ export class ModuleForumPin extends WorkspaceObject {
     if (!this.loader) this._show_loader();
 
     this.block.style.display = EMPTY_STRING;
-    this.block.content.style.overflow = 'hidden';
-    this.block.content.style.position = 'relative';
+    // this.block.content.style.overflow = 'hidden';
+    // this.block.content.style.position = 'relative';
 
-    this.block.appendIframeFromTask('forum', {
-      action: 'front_page_post',
-      args: {
-        _workspace_uid: this.workspace.uid,
-      },
-    }).style.borderRadius = '8px';
+    // this.block.appendIframeFromTask('forum', {
+    //   action: 'front_page_post',
+    //   args: {
+    //     _workspace_uid: this.workspace.uid,
+    //   },
+    // }).style.borderRadius = '8px';
+    const iframe = document.createElement('iframe');
+    iframe.setAttribute(
+      'src',
+      this.url('forum', {
+        action: 'front_page_post',
+        params: { _workspace_uid: this.workspace.uid },
+      }),
+    );
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+
+    iframe.addEventListener('load', () => {
+      this.block.querySelector(`#${this.loaderId}`)?.remove?.();
+    });
+
+    this.block.querySelector('.module-block-content')?.appendChild?.(iframe);
 
     this.loadModule();
   }

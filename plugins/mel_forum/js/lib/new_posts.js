@@ -58,6 +58,15 @@ export class New_posts extends MelObject {
         },
       });
     });
+
+    const body = document.querySelector('body');
+
+    if (!body) return;
+
+    body.style.setProperty(
+      '--layout-content-background-color',
+      'var(--bnum-card-background-color,var(--bnum-color-surface,#f6f6f6))',
+    );
   }
 
   /**

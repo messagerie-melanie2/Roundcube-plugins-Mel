@@ -1093,28 +1093,88 @@ class mel_driver extends calendar_driver {
   }
 
   /**
+   * Déplace un événement d'un calendrier à un autre sans envoyer de notification
+   * Utilise la méthode move() native de l'ORM
+   * 
+   * @param array $event Hash array avec 'id', 'calendar' et '_fromcalendar'
+   * @return boolean
+   */
+  protected function _move_event_calendar($event) {
+    if (mel_logs::is(mel_logs::DEBUG))
+      mel_logs::get_instance()->log(mel_logs::DEBUG,
+        "[calendar] mel_driver::_move_event_calendar()");
+
+    $from_id = $event['_fromcalendar'];
+    $to_id   = $event['calendar'];
+
+    if ($from_id === $to_id) {
+      return true;
+    }
+
+    if (!isset($this->calendars[$from_id]) || !isset($this->calendars[$to_id])) {
+      mel_logs::get_instance()->log(mel_logs::ERROR,
+        "[calendar] mel_driver::_move_event_calendar() calendar not found: $from_id or $to_id");
+      return false;
+    }
+    if (!$this->calendars[$from_id]->asRight(LibMelanie\Config\ConfigMelanie::WRITE)
+        || !$this->calendars[$to_id]->asRight(LibMelanie\Config\ConfigMelanie::WRITE)) {
+      mel_logs::get_instance()->log(mel_logs::ERROR,
+        "[calendar] mel_driver::_move_event_calendar() no write right");
+      return false;
+    }
+
+    // Créer l'événement dans le nouveau calendrier
+    $_event = driver_mel::gi()->event([$this->user, $this->calendars[$to_id]]);
+    $_event->uid = $this->get_uid_from_id($event['id']);
+
+    // Utilise la méthode move() de l'ORM
+    // Elle gère la copie, l'organisateur et la suppression de l'ancien événement
+    $_event->move($from_id);
+
+    // Invalider les ctags
+    $this->calendars[$from_id]->getCTag(false);
+    $this->calendars[$to_id]->getCTag(false);
+
+    mel_logs::get_instance()->log(mel_logs::DEBUG,
+      "[calendar] mel_driver::_move_event_calendar() success: {$_event->uid} $from_id → $to_id");
+    return true;
+  }
+
+  /**
    * Update an event entry with the given data
    *
    * @param array Hash array with event properties
    * @see calendar_driver::edit_event()
    */
   public function edit_event($event) {
-    // Charge les données seulement si on est dans la tâche calendrier
     if ($this->rc->task != 'calendar' && !bnum::IsCalendarDriverForced()) {
       return false;
     }
-
     if (mel_logs::is(mel_logs::DEBUG))
-      mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::edit_event()");
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::edit_event()");
     if (mel_logs::is(mel_logs::TRACE))
-      mel_logs::get_instance()->log(mel_logs::TRACE, "[calendar] mel_driver::edit_event() : " . var_export($event, true));
+      mel_logs::get_instance()->log(mel_logs::TRACE,
+        "[calendar] mel_driver::edit_event() : " . var_export($event, true));
 
-    if ($result = $this->new_event($event, false)) {
-      if (isset($event['_fromcalendar'])) {
-        $deleted_event = $event;
-        $deleted_event['calendar'] = $event['_fromcalendar'];
-        return $this->remove_event($deleted_event);
+    // Chargement des calendriers si besoin
+    if (!isset($this->calendars)) {
+      $this->_read_calendars();
+    }
+
+    // Cas de changement d'agenda
+    if (!empty($event['_fromcalendar'])
+        && $event['_fromcalendar'] !== $event['calendar']) {
+      $from_mce = driver_mel::gi()->rcToMceId($event['_fromcalendar']);
+      $to_mce   = driver_mel::gi()->rcToMceId($event['calendar']);
+      if ($from_mce !== $to_mce) {
+        $event['_fromcalendar'] = $from_mce;
+        $event['calendar']      = $to_mce;
+        return $this->_move_event_calendar($event);
       }
+    }
+
+    // Cas classique
+    if ($result = $this->new_event($event, false)) {
       return $result;
     }
     return false;

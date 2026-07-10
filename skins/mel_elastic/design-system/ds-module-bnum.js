@@ -3385,6 +3385,7 @@ const TAG_PRIMARY = `${TAG_PREFIX}-primary-button`;
 const TAG_SECONDARY = `${TAG_PREFIX}-secondary-button`;
 const TAG_TERTIARY = `${TAG_PREFIX}-tertiary-button`;
 const TAG_DANGER = `${TAG_PREFIX}-danger-button`;
+const TAG_TOGGLE_BUTTON = `${TAG_PREFIX}-toggle-button`;
 const TAG_CARD_TITLE = `${TAG_PREFIX}-card-title`;
 const TAG_CARD = `${TAG_PREFIX}-card`;
 const TAG_CARD_EMAIL = `${TAG_PREFIX}-card-email`;
@@ -10430,6 +10431,202 @@ let HTMLBnumTertiaryButton = (() => {
     return _classThis;
 })();
 
+// --- Attributes ---
+const ATTR_PRESSED = 'pressed';
+// --- States (Internal/CSS) ---
+const STATE_PRESSED = 'pressed';
+// --- Events ---
+const EVENT_PRESSED = 'pressed'; // Suffix, voir ElementChangedEvent
+
+function OnPressedChangeInitializer(event, instance) {
+    event.push((newValue, oldValue) => {
+        instance.dispatchEvent(new ElementChangedEvent(EVENT_PRESSED, newValue, oldValue, instance));
+    });
+}
+
+/**
+ * Bouton Bnum à bascule (pressed / unpressed), utilisé pour représenter un état
+ * binaire actionnable au clic (ex : favori, filtre actif, option activée).
+ *
+ * Hérite de {@link HTMLBnumButton} : variation, icône, état de chargement,
+ * arrondi et désactivation se gèrent exactement comme sur un bouton standard.
+ * L'aspect visuel de l'état "pressed" (icône, classe, couleur, etc.) est laissé
+ * aux composants consommateurs, via l'état CSS `pressed` ou l'événement
+ * `onpressedchange`.
+ *
+ * @category Buttons
+ *
+ * @structure Cas standard
+ * <bnum-toggle-button>Suivre</bnum-toggle-button>
+ *
+ * @structure Bouton initialement enfoncé
+ * <bnum-toggle-button pressed>Suivre</bnum-toggle-button>
+ *
+ * @structure Bouton à bascule avec variation
+ * <bnum-toggle-button data-variation="secondary">Suivre</bnum-toggle-button>
+ *
+ * @structure Bouton à bascule avec icône
+ * <bnum-toggle-button data-icon="star">Favori</bnum-toggle-button>
+ *
+ * @state pressed - Actif lorsque le bouton est dans l'état "enfoncé"
+ *
+ * @attr {boolean | undefined} (optional) pressed - État "enfoncé" du bouton
+ *
+ * @event {ElementChangedEvent<boolean, boolean, HTMLBnumToggleButton>} custom:element-changed.pressed - Déclenché lors du changement de l'état "pressed".
+ */
+let HTMLBnumToggleButton = (() => {
+    let _classDecorators = [Define({
+            tag: TAG_TOGGLE_BUTTON,
+        })];
+    let _classDescriptor;
+    let _classExtraInitializers = [];
+    let _classThis;
+    let _classSuper = HTMLBnumButton;
+    let _instanceExtraInitializers = [];
+    let _pressed_decorators;
+    let _pressed_initializers = [];
+    let _pressed_extraInitializers = [];
+    let _onpressedchange_decorators;
+    let _onpressedchange_initializers = [];
+    let _onpressedchange_extraInitializers = [];
+    let __onClick_decorators;
+    (class extends _classSuper {
+        static { _classThis = this; }
+        static {
+            const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
+            _pressed_decorators = [Attr(ATTR_PRESSED)];
+            _onpressedchange_decorators = [Listener(OnPressedChangeInitializer, { lazy: false })];
+            __onClick_decorators = [Autobind];
+            __esDecorate(this, null, _pressed_decorators, { kind: "accessor", name: "pressed", static: false, private: false, access: { has: obj => "pressed" in obj, get: obj => obj.pressed, set: (obj, value) => { obj.pressed = value; } }, metadata: _metadata }, _pressed_initializers, _pressed_extraInitializers);
+            __esDecorate(this, null, _onpressedchange_decorators, { kind: "accessor", name: "onpressedchange", static: false, private: false, access: { has: obj => "onpressedchange" in obj, get: obj => obj.onpressedchange, set: (obj, value) => { obj.onpressedchange = value; } }, metadata: _metadata }, _onpressedchange_initializers, _onpressedchange_extraInitializers);
+            __esDecorate(this, null, __onClick_decorators, { kind: "method", name: "_onClick", static: false, private: false, access: { has: obj => "_onClick" in obj, get: obj => obj._onClick }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+            _classThis = _classDescriptor.value;
+            if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+            __runInitializers(_classThis, _classExtraInitializers);
+        }
+        //#region Private fields
+        #_lastPressed = (__runInitializers(this, _instanceExtraInitializers), false);
+        #pressed_accessor_storage = __runInitializers(this, _pressed_initializers, void 0);
+        //#endregion Private fields
+        //#region Getter/setter
+        /**
+         * État "enfoncé" du bouton.
+         */
+        get pressed() { return this.#pressed_accessor_storage; }
+        set pressed(value) { this.#pressed_accessor_storage = value; }
+        #onpressedchange_accessor_storage = (__runInitializers(this, _pressed_extraInitializers), __runInitializers(this, _onpressedchange_initializers, void 0));
+        /**
+         * Événement déclenché lors du changement de l'état "pressed".
+         */
+        get onpressedchange() { return this.#onpressedchange_accessor_storage; }
+        set onpressedchange(value) { this.#onpressedchange_accessor_storage = value; }
+        //#endregion Getter/setter
+        //#region Lifecycle
+        constructor() {
+            super();
+            __runInitializers(this, _onpressedchange_extraInitializers);
+        }
+        _p_buildDOM() {
+            super._p_buildDOM();
+            this.addEventListener('click', this._onClick);
+            this.#_lastPressed = this.pressed;
+            this.#_syncPressedState();
+        }
+        _p_update() {
+            super._p_update();
+            this.#_syncPressedState();
+            const newPressed = this.pressed;
+            if (newPressed !== this.#_lastPressed) {
+                const oldPressed = this.#_lastPressed;
+                this.#_lastPressed = newPressed;
+                this.onpressedchange.call(newPressed, oldPressed);
+            }
+        }
+        //#endregion Lifecycle
+        //#region Private methods
+        /**
+         * Synchronise l'état CSS (`:state(pressed)`) et l'accessibilité (`aria-pressed`)
+         * avec l'attribut `pressed`.
+         */
+        #_syncPressedState() {
+            if (this.pressed)
+                this._p_addState(STATE_PRESSED);
+            else
+                this._p_removeState(STATE_PRESSED);
+            this._p_internal.ariaPressed = String(this.pressed);
+        }
+        /**
+         * Bascule l'état "pressed" au clic, sauf si le bouton est désactivé ou en chargement.
+         */
+        _onClick() {
+            if (this.#_isInteractionBlocked())
+                return;
+            this.togglePressed();
+        }
+        /**
+         * Indique si le bouton ne doit pas réagir au clic (désactivé ou en chargement).
+         */
+        #_isInteractionBlocked() {
+            return (this.#_toBool(this.getAttribute(ATTR_DISABLED$1)) ||
+                this.#_toBool(this.getAttribute(ATTR_LOADING)));
+        }
+        /**
+         * Normalise une valeur d'attribut en booléen (présent et différent de `"false"`).
+         */
+        #_toBool(value) {
+            return value !== null && value !== 'false';
+        }
+        //#endregion Private methods
+        //#region Public methods
+        /**
+         * Met le bouton dans l'état "enfoncé".
+         * @returns L'instance du bouton
+         */
+        press() {
+            this.pressed = true;
+            return this;
+        }
+        /**
+         * Retire l'état "enfoncé" du bouton.
+         * @returns L'instance du bouton
+         */
+        unpress() {
+            this.pressed = false;
+            return this;
+        }
+        /**
+         * Bascule l'état "enfoncé" du bouton.
+         * @returns L'instance du bouton
+         */
+        togglePressed() {
+            this.pressed = !this.pressed;
+            return this;
+        }
+        //#endregion Public methods
+        //#region Static methods
+        /**
+         * Retourne la liste des attributs observés par le composant.
+         */
+        static _p_observedAttributes() {
+            return [...super._p_observedAttributes(), ATTR_PRESSED];
+        }
+        /**
+         * Crée un bouton à bascule Bnum avec les options spécifiées.
+         * @static
+         * @param options Options de configuration du bouton (dont l'état initial `pressed`)
+         * @returns Instance du bouton créé
+         */
+        static Create(options) {
+            const node = super.Create(options);
+            if (options?.pressed)
+                node.pressed = true;
+            return node;
+        }
+    });
+    return _classThis;
+})();
+
 var css_248z$e = ":host #action{display:none}:host(:state(action)) #action,:host(:state(forced)) #action{display:block}:host(:state(action)) #avatar,:host(:state(forced)) #avatar{display:none}";
 var style$e = css_248z$e;
 
@@ -12405,8 +12602,7 @@ let HTMLBnumCardTitle = (() => {
     let _url_decorators;
     let _url_initializers = [];
     let _url_extraInitializers = [];
-    let _private__updateDOM_decorators;
-    let _private__updateDOM_descriptor;
+    let __updateDOM_decorators;
     var HTMLBnumCardTitle = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -12420,41 +12616,11 @@ let HTMLBnumCardTitle = (() => {
                 })];
             _onurlclick_decorators = [Listener()];
             _url_decorators = [Attr()];
-            _private__updateDOM_decorators = [Schedule()];
+            __updateDOM_decorators = [Schedule()];
             __esDecorate(this, _private__ui_descriptor = { get: __setFunctionName(function () { return this.#_ui_accessor_storage; }, "#_ui", "get"), set: __setFunctionName(function (value) { this.#_ui_accessor_storage = value; }, "#_ui", "set") }, _private__ui_decorators, { kind: "accessor", name: "#_ui", static: false, private: true, access: { has: obj => #_ui in obj, get: obj => obj.#_ui, set: (obj, value) => { obj.#_ui = value; } }, metadata: _metadata }, _private__ui_initializers, _private__ui_extraInitializers);
             __esDecorate(this, null, _onurlclick_decorators, { kind: "accessor", name: "onurlclick", static: false, private: false, access: { has: obj => "onurlclick" in obj, get: obj => obj.onurlclick, set: (obj, value) => { obj.onurlclick = value; } }, metadata: _metadata }, _onurlclick_initializers, _onurlclick_extraInitializers);
             __esDecorate(this, null, _url_decorators, { kind: "accessor", name: "url", static: false, private: false, access: { has: obj => "url" in obj, get: obj => obj.url, set: (obj, value) => { obj.url = value; } }, metadata: _metadata }, _url_initializers, _url_extraInitializers);
-            __esDecorate(this, _private__updateDOM_descriptor = { value: __setFunctionName(function () {
-                    const url = this.url;
-                    const icon = this.icon;
-                    this._p_clearStates();
-                    if (icon) {
-                        this.#_ui.icon.icon = icon;
-                        this.#_ui.icon.hidden = false;
-                        this.#_ui.slotIcon.hidden = true;
-                    }
-                    else
-                        this.#_ui.icon.hidden = true;
-                    if (url) {
-                        this.#_ui.link.href = url;
-                        this._p_addState(STATE_URL);
-                        this.#_ui.link.removeAttribute('role');
-                        this.#_ui.link.removeAttribute('aria-disabled');
-                        if (!this.#_initUrlListener) {
-                            this.#_ui.link.addEventListener('click', (e) => {
-                                this.trigger('bnum-card-title:url.click', { inner: e }, { bubbles: e.bubbles, cancelable: e.cancelable });
-                            });
-                            this.addEventListener('bnum-card-title:url.click', (e) => {
-                                this.onurlclick.call(e);
-                            });
-                            this.#_initUrlListener = true;
-                        }
-                    }
-                    else {
-                        this.#_ui.link.removeAttribute('href');
-                        this._p_addState(STATE_WITHOUT_URL);
-                    }
-                }, "#_updateDOM") }, _private__updateDOM_decorators, { kind: "method", name: "#_updateDOM", static: false, private: true, access: { has: obj => #_updateDOM in obj, get: obj => obj.#_updateDOM }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, __updateDOM_decorators, { kind: "method", name: "_updateDOM", static: false, private: false, access: { has: obj => "_updateDOM" in obj, get: obj => obj._updateDOM }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             HTMLBnumCardTitle = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -12492,7 +12658,7 @@ let HTMLBnumCardTitle = (() => {
          */
         set icon(v) {
             if (this.alreadyLoaded) {
-                this._p_setData(ATTRIBUTE_DATA_ICON, v).#_updateDOM();
+                this._p_setData(ATTRIBUTE_DATA_ICON, v)._updateDOM();
             }
             else {
                 const fromAttribute = true;
@@ -12515,7 +12681,7 @@ let HTMLBnumCardTitle = (() => {
          * Ajoute l'icône, le texte et le lien selon les propriétés définies.
          */
         _p_buildDOM() {
-            this.#_updateDOM();
+            this._updateDOM();
             if (this.#_initBody) {
                 this.#_updateBody(this.#_initBody);
                 this.#_initBody = null;
@@ -12527,7 +12693,7 @@ let HTMLBnumCardTitle = (() => {
          */
         _p_update() {
             if (this.alreadyLoaded)
-                this.#_updateDOM();
+                this._updateDOM();
         }
         //#endregion Lifecycle
         //#region Private methods
@@ -12536,7 +12702,37 @@ let HTMLBnumCardTitle = (() => {
          * Affiche ou masque l'icône et met à jour le lien si nécessaire.
          * @private
          */
-        get #_updateDOM() { return _private__updateDOM_descriptor.value; }
+        _updateDOM() {
+            const url = this.url;
+            const icon = this.icon;
+            this._p_clearStates();
+            if (icon) {
+                this.#_ui.icon.icon = icon;
+                this.#_ui.icon.hidden = false;
+                this.#_ui.slotIcon.hidden = true;
+            }
+            else
+                this.#_ui.icon.hidden = true;
+            if (url) {
+                this.#_ui.link.href = url;
+                this._p_addState(STATE_URL);
+                this.#_ui.link.removeAttribute('role');
+                this.#_ui.link.removeAttribute('aria-disabled');
+                if (!this.#_initUrlListener) {
+                    this.#_ui.link.addEventListener('click', e => {
+                        this.trigger('bnum-card-title:url.click', { inner: e }, { bubbles: e.bubbles, cancelable: e.cancelable });
+                    });
+                    this.addEventListener('bnum-card-title:url.click', e => {
+                        this.onurlclick.call(e);
+                    });
+                    this.#_initUrlListener = true;
+                }
+            }
+            else {
+                this.#_ui.link.removeAttribute('href');
+                this._p_addState(STATE_WITHOUT_URL);
+            }
+        }
         /**
          * Met à jour le corps du titre de la carte.
          * @param element Elément HTML, texte ou nœud Text à insérer dans le titre
@@ -17101,5 +17297,5 @@ if (typeof window !== 'undefined' && window.DsBnumConfig) {
     });
 }
 
-export { BREAKPOINTS, BnumElement, BnumRadioCheckedChangeEvent, ButtonVariation, ColumnSlot, BnumConfig as Config, RotomecaCssProperty as DsCssProperty, RotomecaCssRule as DsCssRule, RotomecaDocument as DsDocument, HTMLBnumAvatarAction, HTMLBnumBadge, HTMLBnumButton, HTMLBnumButtonIcon, HTMLBnumCardAgenda, HTMLBnumCardElement, HTMLBnumCardEmail, HTMLBnumCardItem, HTMLBnumCardItemAgenda, HTMLBnumCardItemMail, HTMLBnumCardList, HTMLBnumCardTitle, HTMLBnumColumn, HTMLBnumDangerButton, HTMLBnumDate, HTMLBnumFolder, HTMLBnumFolderList, HTMLBnumFragment, HTMLBnumHeader, HTMLBnumHide, HTMLBnumIcon, HTMLBnumInput, HTMLBnumInputDate, HTMLBnumInputNumber, HTMLBnumInputSearch, HTMLBnumInputText, HTMLBnumInputTime, HTMLBnumPlaceholder, HTMLBnumPrimaryButton, HTMLBnumRadio, HTMLBnumRadioGroup, HTMLBnumSecondaryButton, HTMLBnumSegmentedControl, HTMLBnumSegmentedItem, HTMLBnumSelect, HTMLBnumSwitch, HTMLBnumTertiaryButton, HTMLBnumTree, HideTextOnLayoutSize, INPUT_BASE_STYLE, INPUT_STYLE_STATES, IconPosition, MODES };
+export { BREAKPOINTS, BnumElement, BnumRadioCheckedChangeEvent, ButtonVariation, ColumnSlot, BnumConfig as Config, RotomecaCssProperty as DsCssProperty, RotomecaCssRule as DsCssRule, RotomecaDocument as DsDocument, HTMLBnumAvatarAction, HTMLBnumBadge, HTMLBnumButton, HTMLBnumButtonIcon, HTMLBnumCardAgenda, HTMLBnumCardElement, HTMLBnumCardEmail, HTMLBnumCardItem, HTMLBnumCardItemAgenda, HTMLBnumCardItemMail, HTMLBnumCardList, HTMLBnumCardTitle, HTMLBnumColumn, HTMLBnumDangerButton, HTMLBnumDate, HTMLBnumFolder, HTMLBnumFolderList, HTMLBnumFragment, HTMLBnumHeader, HTMLBnumHide, HTMLBnumIcon, HTMLBnumInput, HTMLBnumInputDate, HTMLBnumInputNumber, HTMLBnumInputSearch, HTMLBnumInputText, HTMLBnumInputTime, HTMLBnumPlaceholder, HTMLBnumPrimaryButton, HTMLBnumRadio, HTMLBnumRadioGroup, HTMLBnumSecondaryButton, HTMLBnumSegmentedControl, HTMLBnumSegmentedItem, HTMLBnumSelect, HTMLBnumSwitch, HTMLBnumTertiaryButton, HTMLBnumToggleButton, HTMLBnumTree, HideTextOnLayoutSize, INPUT_BASE_STYLE, INPUT_STYLE_STATES, IconPosition, MODES };
 //# sourceMappingURL=ds-module-bnum.js.map

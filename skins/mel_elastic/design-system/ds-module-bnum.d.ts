@@ -3576,6 +3576,94 @@ export declare class HTMLBnumTertiaryButton extends HTMLBnumButton {
 	constructor();
 }
 /**
+ * Événement déclenché lors du changement de l'état "pressed" du bouton.
+ */
+export type PressedChangedEvent = JsEvent<(pressed: boolean, oldPressed: boolean) => void>;
+/**
+ * Options de création d'un {@link HTMLBnumToggleButton}.
+ * Étend {@link BnumButtonCreateOptions} avec l'état initial "pressed".
+ */
+export type BnumToggleButtonCreateOptions = BnumButtonCreateOptions & {
+	/**
+	 * État "enfoncé" initial du bouton.
+	 */
+	pressed?: boolean;
+};
+/**
+ * Bouton Bnum à bascule (pressed / unpressed), utilisé pour représenter un état
+ * binaire actionnable au clic (ex : favori, filtre actif, option activée).
+ *
+ * Hérite de {@link HTMLBnumButton} : variation, icône, état de chargement,
+ * arrondi et désactivation se gèrent exactement comme sur un bouton standard.
+ * L'aspect visuel de l'état "pressed" (icône, classe, couleur, etc.) est laissé
+ * aux composants consommateurs, via l'état CSS `pressed` ou l'événement
+ * `onpressedchange`.
+ *
+ * @category Buttons
+ *
+ * @structure Cas standard
+ * <bnum-toggle-button>Suivre</bnum-toggle-button>
+ *
+ * @structure Bouton initialement enfoncé
+ * <bnum-toggle-button pressed>Suivre</bnum-toggle-button>
+ *
+ * @structure Bouton à bascule avec variation
+ * <bnum-toggle-button data-variation="secondary">Suivre</bnum-toggle-button>
+ *
+ * @structure Bouton à bascule avec icône
+ * <bnum-toggle-button data-icon="star">Favori</bnum-toggle-button>
+ *
+ * @state pressed - Actif lorsque le bouton est dans l'état "enfoncé"
+ *
+ * @attr {boolean | undefined} (optional) pressed - État "enfoncé" du bouton
+ *
+ * @event {ElementChangedEvent<boolean, boolean, HTMLBnumToggleButton>} custom:element-changed.pressed - Déclenché lors du changement de l'état "pressed".
+ */
+export declare class HTMLBnumToggleButton extends HTMLBnumButton {
+	#private;
+	/**
+	 * État "enfoncé" du bouton.
+	 */
+	accessor pressed: boolean;
+	/**
+	 * Événement déclenché lors du changement de l'état "pressed".
+	 */
+	accessor onpressedchange: PressedChangedEvent;
+	constructor();
+	protected _p_buildDOM(): void;
+	protected _p_update(): void;
+	/**
+	 * Bascule l'état "pressed" au clic, sauf si le bouton est désactivé ou en chargement.
+	 */
+	private _onClick;
+	/**
+	 * Met le bouton dans l'état "enfoncé".
+	 * @returns L'instance du bouton
+	 */
+	press(): this;
+	/**
+	 * Retire l'état "enfoncé" du bouton.
+	 * @returns L'instance du bouton
+	 */
+	unpress(): this;
+	/**
+	 * Bascule l'état "enfoncé" du bouton.
+	 * @returns L'instance du bouton
+	 */
+	togglePressed(): this;
+	/**
+	 * Retourne la liste des attributs observés par le composant.
+	 */
+	static _p_observedAttributes(): string[];
+	/**
+	 * Crée un bouton à bascule Bnum avec les options spécifiées.
+	 * @static
+	 * @param options Options de configuration du bouton (dont l'état initial `pressed`)
+	 * @returns Instance du bouton créé
+	 */
+	static Create(options?: Optional<BnumToggleButtonCreateOptions>): HTMLBnumToggleButton;
+}
+/**
  * Type de marque (*branded type*) garantissant qu'un `symbol` représente bien un état de {@link HTMLBnumAvatarAction}.
  * @see {@link STATES}
  */
@@ -4377,6 +4465,12 @@ export declare class HTMLBnumCardTitle extends BnumElementInternal {
 	 * Met à jour le DOM du composant.
 	 */
 	protected _p_update(): void;
+	/**
+	 * Met à jour le DOM du composant selon les propriétés actuelles.
+	 * Affiche ou masque l'icône et met à jour le lien si nécessaire.
+	 * @private
+	 */
+	private _updateDOM;
 	/**
 	 * Met à jour le contenu du titre de la carte.
 	 * Remplace le texte ou ajoute un élément HTML comme corps du titre.

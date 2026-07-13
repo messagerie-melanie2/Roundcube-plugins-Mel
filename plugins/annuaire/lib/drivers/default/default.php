@@ -70,20 +70,37 @@ class default_driver_annuaire extends driver_annuaire {
             
           }
           if (isset($searchFilter)) {
-            $filter = $searchFilter . $filter;
+            if (strpos($searchFilter, '%%filter%%') === false) {
+              $this->filter = "(|$searchFilter$filter)";
+            }
+            else {
+              $this->filter = str_replace('%%filter%%', "(|$filter)", $searchFilter);
+            }
           }
-          $this->filter = "(|$filter)";
+          else {
+            $this->filter = "(|$filter)";
+          }
         }
         else if (in_array($searchFields, $searchEqualFields)) {
           $this->filter = "$searchFields=$search";
           if (isset($searchFilter)) {
-            $this->filter = "(|$searchFilter(".$this->filter."))";
+            if (strpos($searchFilter, '%%filter%%') === false) {
+              $this->filter = "(|$searchFilter(".$this->filter."))";
+            }
+            else {
+              $this->filter = str_replace('%%filter%%', '('.$this->filter.')', $searchFilter);
+            }
           }
         }
         else {
           $this->filter = "$searchFields=$search*";
           if (isset($searchFilter)) {
-            $this->filter = "(|$searchFilter(".$this->filter."))";
+            if (strpos($searchFilter, '%%filter%%') === false) {
+              $this->filter = "(|$searchFilter(".$this->filter."))";
+            }
+            else {
+              $this->filter = str_replace('%%filter%%', '('.$this->filter.')', $searchFilter);
+            }
           }
         }
       }

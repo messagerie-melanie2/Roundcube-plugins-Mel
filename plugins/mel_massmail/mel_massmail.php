@@ -130,13 +130,10 @@ class mel_massmail extends rcube_plugin
           // Si le nombre de mail envoyé dans le lapse de temps est supérieur au nombre autorisé, on envoie un mail et on bloque le compte (grillage de mot de passe)
           if (intval($mail_count) >= intval($s)) {
             // MANTIS 0009344: Même ligne que le log de blocage, sans le terme "bloqué", avec le contexte et l'état de la 2FA
-            $log_contexte = $is_internal ? 'intranet' : 'internet';
-            $log_2fa = $has_2fa ? 'activée' : 'désactivée';
-            mel_logs::get_instance()->log(mel_logs::WARN, "[mel_massmail] '$uid' émission massive détectée ($mail_count courriels en $k minutes, limite à $s) 
-            - contexte : $log_contexte, 2FA : $log_2fa. Dernière IP : $ip_address.");
-            // MANTIS 0009344: Hors du contexte Internet sans 2FA, on logue seulement, sans grillage ni mail d'alerte
+            // // MANTIS 0009344: Hors du contexte Internet sans 2FA, on logue seulement, sans grillage ni mail d'alerte
             if (!$can_block) {
-              break;
+              mel_logs::get_instance()->log(mel_logs::WARN, "[mel_massmail] '$uid' émission massive détectée ($mail_count courriels en $k minutes, limite à $s).");
+              return $args;
             }
 
             $ldap_error = false;

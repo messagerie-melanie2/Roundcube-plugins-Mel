@@ -64,10 +64,13 @@ class mel_massmail extends rcube_plugin
   {
     if (mel_logs::is(mel_logs::TRACE))
       mel_logs::get_instance()->log(mel_logs::TRACE, "mel::message_sent(" . var_export($args, true) . ")");
+    // MANTIS 0009344: On ne sort plus immédiatement pour les envois internes ou avec 2FA :
+    // le comptage et le log de détection s'appliquent à toutes les situations,
+    // seul le grillage de compte reste limité au contexte Internet sans 2FA.
+    $is_internal = mel::is_internal();
     // MANTIS 0004388: Ne pas faire de blocage sur envois massifs depuis Internet si l'auth s'est faite avec la double auth
-    if (mel::is_internal() || isset($_SESSION['mel_doubleauth_2FA_login'])) {
-      return $args;
-    }
+    $has_2fa = isset($_SESSION['mel_doubleauth_2FA_login']);
+    $can_block = !$is_internal && !$has_2fa;
     // Configuration des intervals d'envois maximum autorisé
     $send_conf = $this->rc->config->get('max_emitted_messages_configuration', array(
       // <temps_minute> => <nombre_denvois_max>,
@@ -126,6 +129,16 @@ class mel_massmail extends rcube_plugin
           $mail_count = $arr['sum'];
           // Si le nombre de mail envoyé dans le lapse de temps est supérieur au nombre autorisé, on envoie un mail et on bloque le compte (grillage de mot de passe)
           if (intval($mail_count) >= intval($s)) {
+            // MANTIS 0009344: Même ligne que le log de blocage, sans le terme "bloqué", avec le contexte et l'état de la 2FA
+            $log_contexte = $is_internal ? 'intranet' : 'internet';
+            $log_2fa = $has_2fa ? 'activée' : 'désactivée';
+            mel_logs::get_instance()->log(mel_logs::WARN, "[mel_massmail] '$uid' émission massive détectée ($mail_count courriels en $k minutes, limite à $s) 
+            - contexte : $log_contexte, 2FA : $log_2fa. Dernière IP : $ip_address.");
+            // MANTIS 0009344: Hors du contexte Internet sans 2FA, on logue seulement, sans grillage ni mail d'alerte
+            if (!$can_block) {
+              break;
+            }
+
             $ldap_error = false;
             if (LibMelanie\Ldap\Ldap::Authentification($uid, $this->rc->get_user_password(), LibMelanie\Config\Ldap::$MASTER_LDAP)) {
               $user = LibMelanie\Ldap\Ldap::GetUserInfos($uid, null, array(

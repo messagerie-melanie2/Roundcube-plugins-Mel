@@ -276,12 +276,24 @@ if (rcmail) {
       () => {
         const event = ui_cal.selected_event;
         const title = `${event.title} - ${moment(event.start).format('DD/MM/YYYY HH:mm')}`;
+        const currentUserEmails = [rcmail.env.current_user?.email]
+          .concat(rcmail.env.mel_metapage_user_emails || [])
+          .filter((email) => !!email)
+          .map((email) => email.toLowerCase());
+        const attendees = Enumerable.from(event.attendees)
+          .where((attendee) => {
+            const email = attendee.email?.toLowerCase();
+
+            return email && currentUserEmails.indexOf(email) < 0;
+          })
+          .select((attendee) => attendee.email)
+          .distinct((email) => email.toLowerCase())
+          .toArray()
+          .join(',');
+
         window.current_event_modal.close();
         parent.rcmail.open_compose_step({
-          to: Enumerable.from(event.attendees)
-            .select((x) => x.email)
-            .toArray()
-            .join(','),
+          to: attendees,
           subject: title,
         });
       },

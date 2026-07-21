@@ -276,19 +276,26 @@ if (rcmail) {
       () => {
         const event = ui_cal.selected_event;
         const title = `${event.title} - ${moment(event.start).format('DD/MM/YYYY HH:mm')}`;
-        const currentUserEmails = [rcmail.env.current_user?.email]
-          .concat(rcmail.env.mel_metapage_user_emails || [])
-          .filter((email) => !!email)
-          .map((email) => email.toLowerCase());
-        const attendees = Enumerable.from(event.attendees)
-          .where((attendee) => {
-            const email = attendee.email?.toLowerCase();
 
-            return email && currentUserEmails.indexOf(email) < 0;
+        const currentUserEmails = new Set(
+          [
+            rcmail.env.current_user?.email,
+            ...(rcmail.env.mel_metapage_user_emails || []),
+          ]
+            .filter((email) => !!email)
+            .map((email) => email.toLowerCase()),
+        );
+
+        const seen = new Set();
+        const attendees = event.attendees
+          .filter((attendee) => {
+            const email = attendee.email?.toLowerCase();
+            if (!email || currentUserEmails.has(email)) return false;
+            if (seen.has(email)) return false;
+            seen.add(email);
+            return true;
           })
-          .select((attendee) => attendee.email)
-          .distinct((email) => email.toLowerCase())
-          .toArray()
+          .map((attendee) => attendee.email)
           .join(',');
 
         window.current_event_modal.close();

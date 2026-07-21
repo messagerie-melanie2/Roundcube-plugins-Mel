@@ -119,6 +119,8 @@ class annuaire extends bnum_plugin
             $this->rc->output->set_env('annuaire_source', $this->rc->config->get('annuaire_source'));
 
             $this->include_script('directorylist.js');
+            $this->include_stylesheet($this->local_skin_path() . '/annuaire.css');
+            $this->include_stylesheet($this->local_skin_path() . '/annuaire_dsfr.css');
         } else if (($this->rc->task == 'mail' && $this->rc->action == 'compose') || $this->rc->task == "custom_page") {
             // Chargement de la conf
             $this->load_config();
@@ -128,6 +130,7 @@ class annuaire extends bnum_plugin
             $this->include_script('directorylist.js');
             $this->include_script('annuaire.js');
             $this->include_stylesheet($this->local_skin_path() . '/annuaire.css');
+            $this->include_stylesheet($this->local_skin_path() . '/annuaire_dsfr.css');
 
             // register UI objects
             $this->rc->output->add_handlers(array(
@@ -147,6 +150,7 @@ class annuaire extends bnum_plugin
                 $this->include_script('directorylist.js');
                 $this->include_script('annuaire.js');
                 $this->include_stylesheet($this->local_skin_path() . '/annuaire.css');
+                $this->include_stylesheet($this->local_skin_path() . '/annuaire_dsfr.css');
 
                 // register UI objects
                 $this->rc->output->add_handlers(array(
@@ -165,6 +169,7 @@ class annuaire extends bnum_plugin
             $this->include_script('directorylist.js');
             $this->include_script('annuaire.js');
             $this->include_stylesheet($this->local_skin_path() . '/annuaire.css');
+            $this->include_stylesheet($this->local_skin_path() . '/annuaire_dsfr.css');
 
             // register UI objects
             $this->rc->output->add_handlers(array(

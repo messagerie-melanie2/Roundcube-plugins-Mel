@@ -1,4 +1,5 @@
 import ABaseMelObject from '../../../../plugins/mel_metapage/js/lib/base_mel_object.js';
+import { BnumLog } from '../../../../plugins/mel_metapage/js/lib/classes/bnum_log.js';
 import { MelEnumerable } from '../../../../plugins/mel_metapage/js/lib/classes/enum.js';
 import { EMPTY_STRING } from '../../../../plugins/mel_metapage/js/lib/constants/constants.js';
 import { AvatarElement } from '../../../../plugins/mel_metapage/js/lib/html/JsHtml/CustomAttributes/avatar.js';
@@ -382,8 +383,17 @@ export default class BridgeMail extends ABridge {
         if (needRedecorate) this.#setupMessageListHooks();
       })
       .listen('init', () => {
-        if (!this.rcmail().message_list) return;
-        this.rcmail().message_list.addEventListener(
+        const msgList = this.rcmail().message_list;
+
+        if (!msgList) {
+          BnumLog.error(
+            'BridgeMail/initListeners',
+            'Impossible de trouver "message_list" !',
+          );
+          return;
+        }
+
+        msgList.addEventListener(
           'select',
           bridge.onMessagesSelected.bind(
             bridge,
@@ -392,6 +402,10 @@ export default class BridgeMail extends ABridge {
             HTMLBnumButtonIcon,
           ),
         );
+
+        msgList.addEventListener('initrow', (row) => {
+          this.#prepareRow(row.obj);
+        });
       });
 
     return this;
@@ -429,15 +443,6 @@ export default class BridgeMail extends ABridge {
       BridgeMail.#SELECTORS.MESSAGES_CONTAINER,
     );
     if (!tbody) return this;
-
-    // Nettoie les anciens listeners jQuery si jQuery est disponible.
-    if (typeof $ !== 'undefined') {
-      $(BridgeMail.#SELECTORS.MESSAGES_ROWS).off('mouseup mousedown');
-    }
-
-    for (const row of tbody.querySelectorAll('tr')) {
-      this.#decorateRow(row).setAttribute('draggable', 'true');
-    }
 
     if (!tbody.dataset.hasBridgeListeners) {
       this.#attachTbodyListeners(tbody);
@@ -494,9 +499,26 @@ export default class BridgeMail extends ABridge {
    * @param {HTMLElement} row
    * @returns {HTMLElement} La même ligne, modifiée.
    */
-  #decorateRow(row) {
+  #prepareRow(row) {
     if (row.hasAttribute('decorated')) return row;
 
+    // Nettoie les anciens listeners jQuery si jQuery est disponible.
+    if (typeof $ !== 'undefined') {
+      $(row).off('mouseup mousedown');
+    }
+
+    row = this.#decorateRow(row);
+    row.setAttribute('draggable', 'true');
+
+    return row;
+  }
+
+  /**
+   * Enrichit une ligne `<tr>` avec un avatar cliquable et les boutons d'action.
+   * @param {HTMLElement} row
+   * @returns {HTMLElement} La même ligne, modifiée.
+   */
+  #decorateRow(row) {
     this.#hideMsgIcon(row);
     this.#addUtilityClass(row);
 

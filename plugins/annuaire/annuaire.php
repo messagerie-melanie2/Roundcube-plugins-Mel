@@ -99,15 +99,15 @@ class annuaire extends bnum_plugin
             if ($this->rc->action == 'plugin.annuaire') {
                 // register UI objects
                 $this->rc->output->add_handler('annuairesavedsearchlist', [$this, 'annuaire_savedsearch_list']);
-                $this->load_script_module('ui.js', '/'.$this->local_skin_path().'/js/');
+                // $this->load_script_module('ui.js', '/'.$this->local_skin_path().'/js/'); // For the future
 
                 // Recherche par email depuis le preview d'un mail
                 if (rcube_utils::get_input_value('_open', rcube_utils::INPUT_GET) === 'true') {
                     $this->annuaire_search_from_mail();
                 }
             }
-            else if ($this->is_index_action()) 
-                $this->load_script_module('ui_addressbook.js', '/'.$this->local_skin_path().'/js/');
+            // else if ($this->is_index_action()) // For the future
+            //     $this->load_script_module('ui_addressbook.js', '/'.$this->local_skin_path().'/js/'); // For the future
 
             // csv export
             if ($this->rc->config->get('annuaire_export', false)) {

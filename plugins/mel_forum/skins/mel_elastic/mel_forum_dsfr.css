@@ -22,7 +22,7 @@
 }
 
 .task-forum .post:hover {
-  background-color: var(--bnum-color-surface, #F6F6F7);
+  background-color: #D3D3D3;
   border-radius: var(--bnum-radius-s, 0);
   border-bottom: 4px solid var(--bnum-color-primary-hover, #1212FF);
 }
@@ -35,6 +35,12 @@ html.dark-mode-custom .task-forum .post .post-footer .post-reaction .dislike:hov
 html.dark-mode .task-forum .post .post-footer .post-reaction .comment:hover i,
 html.dark-mode-custom .task-forum .post .post-footer .post-reaction .comment:hover i {
   color: #B1B1F9 !important;
+}
+
+/* Hover des cards en dark mode - liste principale des articles (même couleur que new_posts / front_page_post) */
+html.dark-mode .task-forum .post:hover,
+html.dark-mode-custom .task-forum .post:hover {
+  background-color: var(--bnum-color-list-hover) !important;
 }
 
 .task-forum .post .post-header .post-creator .post-creator-name {

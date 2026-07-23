@@ -1089,9 +1089,9 @@ $(document).ready(() => {
         parent.MEL_ELASTIC_UI.color_mode() !== this.color_mode()
       ) {
         if (parent.MEL_ELASTIC_UI.color_mode() === 'dark') {
-          if (this.themes[this.theme]?.custom_dark_mode)
+          if (true || this.themes[this.theme]?.custom_dark_mode)
             $('html').addClass('dark-mode-custom');
-          else $('html').addClass('dark-mode');
+          else $('html').addClass('dark-mode-custom');
         } else
           $('html').removeClass('dark-mode-custom').removeClass('dark-mode');
       }
@@ -3248,12 +3248,12 @@ $(document).ready(() => {
       let $html = $('html');
 
       if (this.color_mode() === 'dark') {
-        if (this.themes[this.theme]?.custom_dark_mode) {
+        if (true || this.themes[this.theme]?.custom_dark_mode) {
           if ($html.hasClass('dark-mode')) $html.removeClass('dark-mode');
           if (!$html.hasClass('dark-mode-custom'))
             $html.addClass('dark-mode-custom');
         } else {
-          if (!$html.hasClass('dark-mode')) $html.addClass('dark-mode');
+          if (!$html.hasClass('dark-mode')) $html.addClass('dark-mode-custom');
           if ($html.hasClass('dark-mode-custom'))
             $html.removeClass('dark-mode-custom');
         }
@@ -3261,8 +3261,8 @@ $(document).ready(() => {
         $html.removeClass('dark-mode-custom');
 
       if (
-        this.color_mode() === 'dark' &&
-        !this.themes[this.theme]?.custom_dark_mode
+        this.color_mode() === 'dark' /*&&
+        !this.themes[this.theme]?.custom_dark_mode*/
       ) {
         let current = this.themes[this.get_current_theme()];
         do {

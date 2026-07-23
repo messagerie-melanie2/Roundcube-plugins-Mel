@@ -326,7 +326,8 @@ html.touch {
   --size-margin-right-state: 0;
   --size-margin-left-state: 0;
 }
-body {
+body,
+html.dark-mode body {
   font-size: var(--bnum-body-font-size, var(--bnum-font-size-m, 1rem));
   font-family: var(--bnum-font-family-primary);
   --_color: var(--bnum-body-text-color, var(--bnum-text-primary));

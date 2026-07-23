@@ -2,20 +2,43 @@ import { EMPTY_STRING } from '../../../../plugins/mel_metapage/js/lib/constants/
 import { HTMLBnumHeader } from '../../design-system/ds-module-bnum';
 import { ABaseModule } from '../core/ABaseModule';
 
+/**
+ * Module UI transverse regroupant les ajustements globaux de la skin
+ * `mel_elastic` : nettoyage de boutons Roundcube devenus inutiles, mise à
+ * jour du titre du header au changement de frame, et réajustement des
+ * marges du titre de header au redimensionnement de la fenêtre.
+ *
+ * @extends ABaseModule
+ */
 export class Global extends ABaseModule {
+  /**
+   * Verrou anti-rebond pour le gestionnaire de redimensionnement, afin de
+   * ne recalculer les headers qu'une fois par frame d'animation.
+   *
+   * @type {boolean}
+   */
   #_isResize = false;
 
   constructor() {
     super();
   }
 
+  /**
+   * Étape d'initialisation du cycle de vie : met en place les écouteurs puis
+   * supprime les boutons Roundcube devenus inutiles.
+   *
+   * @override
+   * @protected
+   */
   _p_init() {
     this.#_addListeners().#_removeUselessRcButtons();
   }
 
   /**
-   * Supprime les bouttons que l'on utilise plus dans roundcube.
-   * @returns Chaîne
+   * Supprime les boutons que l'on n'utilise plus dans Roundcube.
+   *
+   * @returns {this} L'instance courante, pour chaînage.
+   * @private
    */
   #_removeUselessRcButtons() {
     /**
@@ -47,16 +70,21 @@ export class Global extends ABaseModule {
   }
 
   /**
-   * Ajoute des écouteurs
-   * @returns Chaîne
+   * Ajoute les écouteurs globaux du module.
+   *
+   * @returns {this} L'instance courante, pour chaînage.
+   * @private
    */
   #_addListeners() {
     return this.#_onResize().#_onSwitchChange();
   }
 
   /**
-   * Change le titre du header en fonction de la frame en cours
-   * @returns
+   * Met à jour le titre du header en fonction de la frame (tâche) courante,
+   * à chaque changement de frame.
+   *
+   * @returns {this} L'instance courante, pour chaînage.
+   * @private
    */
   #_onSwitchChange() {
     return this.listen('switch_frame', (args) => {
@@ -77,9 +105,12 @@ export class Global extends ABaseModule {
   }
 
   /**
+   * Positionne le titre de page sur le header : utilise le `<h1>` existant
+   * s'il y en a un, sinon délègue à `setPageTitle` du composant.
    *
-   * @param {HTMLBnumHeader} header
-   * @param {string} currentTask
+   * @param {HTMLBnumHeader} header  Composant header sur lequel positionner le titre.
+   * @param {string}         currentTask Nom de la tâche courante à afficher comme titre.
+   * @private
    */
   #_setPageHeader(header, currentTask) {
     const h1 = header.querySelector('h1');
@@ -89,9 +120,13 @@ export class Global extends ABaseModule {
   }
 
   /**
+   * Extrait le nom lisible de la tâche à partir du bouton du menu de tâches,
+   * en ignorant la dernière ligne de texte (icône/retour à la ligne). Si le
+   * texte extrait est vide, retente sur un éventuel élément interne `.inner`.
    *
-   * @param {HTMLElement} element
-   * @returns {string}
+   * @param {HTMLElement} element Élément du bouton de tâche dans le menu.
+   * @returns {string} Le nom de la tâche courante.
+   * @private
    */
   #_getCurrentTaskName(element) {
     const currentTask =
@@ -105,25 +140,33 @@ export class Global extends ABaseModule {
   }
 
   /**
+   * Récupère le bouton du menu de tâches correspondant à une tâche donnée.
    *
-   * @param {Readonly<string>} task
-   * @returns {?HTMLElement}
+   * @param {Readonly<string>} task Nom de la tâche recherchée.
+   * @returns {?HTMLElement} Le bouton correspondant, ou `null` si introuvable.
+   * @private
    */
   #_getCurrentTaskButton(task) {
     return document.querySelector(`#taskmenu li a[data-task="${task}"]`);
   }
 
   /**
+   * Récupère le composant header de la barre supérieure (`bnum-header.barup`).
    *
-   * @returns {?HTMLBnumHeader}
+   * @returns {?HTMLBnumHeader} Le composant header, ou `null` si absent du DOM.
+   * @private
    */
   #_getHeaderTopBar() {
     return document.querySelector(`${HTMLBnumHeader.TAG}.barup`);
   }
 
   /**
-   * Ecouteurs sur l'évènement "onresize" de "window";
-   * @returns
+   * Écoute l'évènement `resize` de `window` et déclenche le recalcul des
+   * headers au prochain `requestAnimationFrame`, en ignorant les
+   * déclenchements successifs tant qu'un recalcul est déjà planifié.
+   *
+   * @returns {this} L'instance courante, pour chaînage.
+   * @private
    */
   #_onResize() {
     window.addEventListener('resize', () => {
@@ -138,6 +181,13 @@ export class Global extends ABaseModule {
     return this;
   }
 
+  /**
+   * Recalcule et applique les marges du titre de chaque header de layout
+   * (`.header`), afin que celui-ci reste correctement centré compte tenu du
+   * nombre et de la largeur des boutons présents de part et d'autre.
+   *
+   * @private
+   */
   #_resizeHeaders() {
     const SELECTOR =
       '#layout > main > div > .header, #layout > main > bnum-column > .header';
@@ -175,6 +225,14 @@ export class Global extends ABaseModule {
     });
   }
 
+  /**
+   * Ce module n'a pas de logique à exécuter pour les étapes `main` et
+   * `after` du cycle de vie — toute l'initialisation se fait dans `_p_init`.
+   *
+   * @override
+   * @returns {import('../core/ABaseModule').LifeCycle[]} Les cycles de vie à ignorer.
+   * @protected
+   */
   static _p_ignoreLifeCycles() {
     return ['main', 'after'];
   }

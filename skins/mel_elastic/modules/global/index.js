@@ -1,4 +1,3 @@
-import { EMPTY_STRING } from '../../../../plugins/mel_metapage/js/lib/constants/constants';
 import { HTMLBnumHeader } from '../../design-system/ds-module-bnum';
 import { ABaseModule } from '../core/ABaseModule';
 
@@ -89,7 +88,6 @@ export class Global extends ABaseModule {
   #_onSwitchChange() {
     return this.listen('switch_frame', (args) => {
       const { task } = args;
-
       const element = this.#_getCurrentTaskButton(task);
 
       if (element) {
@@ -129,14 +127,28 @@ export class Global extends ABaseModule {
    * @private
    */
   #_getCurrentTaskName(element) {
-    const currentTask =
-      element.innerText?.split?.('\n')?.slice?.(0, -1)?.join?.('') ||
-      element.innerText;
+    {
+      const innerElement = this.#_getInnerElement(element);
 
-    if (currentTask === EMPTY_STRING && element.querySelector('.inner'))
-      return this.#_getCurrentTaskName(element.querySelector('.inner'));
+      if (innerElement) return this.#_getCurrentTaskName(innerElement);
+    }
+
+    const currentTask =
+      element.textContent?.split?.('\n')?.slice?.(0, -1)?.join?.('') ||
+      element.textContent;
 
     return currentTask;
+  }
+
+  /**
+   * Récupère l'un élément enfant si il existe.
+   *
+   * Il doit posséder la classe `inner` ou `button-inner`.
+   * @param {HTMLElement} element
+   * @returns {?HTMLElement}
+   */
+  #_getInnerElement(element) {
+    return element.querySelector('.inner, .button-inner');
   }
 
   /**
@@ -147,7 +159,9 @@ export class Global extends ABaseModule {
    * @private
    */
   #_getCurrentTaskButton(task) {
-    return document.querySelector(`#taskmenu li a[data-task="${task}"]`);
+    return document.querySelector(
+      `#taskmenu li a[data-task="${task}"], #otherapps li a[data-task="${task}"]`,
+    );
   }
 
   /**

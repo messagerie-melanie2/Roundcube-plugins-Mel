@@ -532,7 +532,10 @@ class Workspace {
    * @return array
    */
   private function _add_users($users) {
-    $return_data = [            
+    $this->_created_external_users = [];                                    // BNUM 0009189
+    $this->_failed_external_users  = [];                                    // BNUM 0009189
+
+    $return_data = [
       "errored_user" => [],
       "existing_users" => []
     ];
@@ -547,10 +550,27 @@ class Workspace {
 
       $share = driver_mel::gi()->workspace_share([$this->_workspace]);
       $tmp_user = null;
-      if (strpos($id, '@')) {
+
+      // BNUM 0009189 : strpos() renvoyait 0 (falsy) si l'adresse commence par '@'
+      $is_email = strpos($id, '@') !== false;
+
+      if ($is_email) {
         $tmp_user = driver_mel::gi()->getUser(null, true, false, null, $id);
-      }else {
+      }
+      else {
         $tmp_user = driver_mel::gi()->getUser($id);
+
+        // BNUM 0009189 : une liste a un RDN mineqRDN et non uid, la recherche par
+        // uid ne la trouve jamais. On retente par email si l'entrée en est une.
+        if (($tmp_user === null || $tmp_user->uid === null) && filter_var($id, FILTER_VALIDATE_EMAIL)) {
+          $tmp_user = driver_mel::gi()->getUser(null, true, false, null, $id);
+          $is_email = true;
+        }
+      }
+
+      if ($tmp_user === null) {                                             // BNUM 0009189
+        $return_data["errored_user"][] = $id;
+        continue;
       }
 
       if ($shares[$tmp_user->uid] !== null) continue;
@@ -559,6 +579,12 @@ class Workspace {
       $just_created = false;
 
       if ($tmp_user->uid === null && !$tmp_user->is_list) {
+        // BNUM 0009189 : pas de tentative de création sur autre chose qu'une adresse
+        if (!$is_email || !filter_var($id, FILTER_VALIDATE_EMAIL)) {
+          $return_data["errored_user"][] = $id;
+          continue;
+        }
+
         if (rcmail::get_instance()->config->get('enable_external_users', false)) {
             $user_exists = driver_mel::gi()->create_external_user($id, $this->_workspace);
             $just_created = true;
@@ -566,7 +592,7 @@ class Workspace {
         else {
             $user_exists = false;
         }
-        
+
         if ($user_exists) {
             $tmp_user = driver_mel::gi()->getUser(null, true, false, null, $id);
         }
@@ -580,14 +606,26 @@ class Workspace {
             if ($added_user !== null) {
               if ($shares[$added_user] !== null) continue;
 
-                $return_data["existing_users"][] = ['just_created' => $just_created, 'user' => $added_user];
+                $return_data["existing_users"][] = [
+                  // BNUM 0009189 : un externe créé depuis une liste est aussi "just_created"
+                  'just_created' => $just_created || isset($this->_created_external_users[$added_user]),
+                  'user' => $added_user
+                ];
                 $share = driver_mel::gi()->workspace_share([$this->_workspace]);
                 $share->user = $added_user;
                 $share->rights = $right;
-                $shares[] = $share;             
+                $shares[] = $share;
             }
         }
       }
+    }
+
+    // BNUM 0009189 : remonter les externes de liste non créés à l'appelant
+    if (count($this->_failed_external_users) > 0) {
+      $return_data["errored_user"] = array_merge(
+        $return_data["errored_user"],
+        $this->_failed_external_users
+      );
     }
 
     if (isset($return_data['existing_users']) && count($return_data['existing_users']) > 0) $this->_workspace->shares = $shares;
@@ -597,6 +635,15 @@ class Workspace {
 
     return $return_data;
   }
+  /**
+   * @var array Uids des comptes externes créés lors du dernier _add_users(). // BNUM 0009189
+   */
+  private $_created_external_users = [];
+
+  /**
+   * @var array Adresses dont la création de compte externe a échoué. // BNUM 0009189
+   */
+  private $_failed_external_users = [];
 
   /**
    * Ajoute un utilisateur interne à l'espace de travail.
@@ -608,30 +655,141 @@ class Workspace {
     if ($user->is_list) {
         $list = [];
 
-        foreach ($user->list->members as $value) {
-          if ($value->uid === null) continue;
+        // BNUM 0009189 : membres lus depuis MineqMelMembres (internes + externes)
+        foreach (self::GetListMembersEmails($user) as $email) {
+          $member_uid = $this->_resolve_member_uid($email);
 
-          $currentUser = driver_mel::gi()->getUser($value->uid);
+          if ($member_uid === null) continue;
 
-          if ($currentUser === null || $currentUser->email === null) continue;
-          unset($currentUser);
-
-          $value = $value->uid;
-          $list[] = $value;
-          yield $value;
+          $list[] = $member_uid;
+          yield $member_uid;
         }
 
-        $lists = $this->settings()->get('lists') ?? [];//$this->get_setting($workspace, 'lists') ?? [];
+        $lists = $this->settings()->get('lists') ?? [];
 
         if (is_array($lists)) $lists[$user->mail[0]] = $list;
         else {
-            $user = $user->mail[0];
-            $lists->$user = $list;
+            // BNUM 0009189 : $user était écrasé avant d'être réutilisé
+            $key = $user->mail[0];
+            $lists->$key = $list;
         }
 
-        $this->settings()->set('lists', $lists);//$this->add_setting($workspace, 'lists', $lists);
-    } 
+        $this->settings()->set('lists', $lists);
+    }
     else yield $user->uid;
+  }
+  /**
+   * Recherche un utilisateur à partir de son adresse mail. // BNUM 0009189
+   *
+   * @param string $email
+   * @return mixed|null
+   */
+  public static function FindUser($email) {
+    return driver_mel::gi()->getUser(null, true, false, null, $email);
+  }
+
+  /**
+   * Récupère les adresses des membres d'une liste serveur, internes ET externes.
+   *
+   * MANTIS 0009189 : on se base sur MineqMelMembres (members_email) et non sur
+   * MemberUid (members), qui ne contient que les comptes de l'annuaire.
+   *
+   * @param mixed $list_user Utilisateur de type liste.
+   * @return array Adresses mail normalisées, sans doublon.
+   */
+  public static function GetListMembersEmails($list_user) {
+    if ($list_user === null || !$list_user->is_list) return [];
+
+    $group = $list_user->list;
+
+    if ($group === null) return [];
+
+    $emails = self::_NormalizeEmails($group->members_email);
+
+    // Repli sur MemberUid si MineqMelMembres n'est pas renseigné sur la liste
+    if (count($emails) === 0) {
+      mel_logs::gi()->log(mel_logs::ERROR, '###[0009189] MineqMelMembres vide pour '
+        . $group->dn . ' => repli sur MemberUid');
+
+      foreach ($group->members as $member) {
+        if ($member->uid === null) continue;
+
+        $member_user = driver_mel::gi()->getUser($member->uid);
+
+        if ($member_user === null || $member_user->email === null) continue;
+
+        $email = self::_NormalizeEmail($member_user->email);
+
+        if ($email !== null) $emails[$email] = $email;
+      }
+    }
+
+    return array_values($emails);
+  }
+
+  private static function _NormalizeEmails($raw_emails) {
+    $emails = [];
+
+    if (!is_array($raw_emails)) return $emails;
+
+    foreach ($raw_emails as $raw_email) {
+      $email = self::_NormalizeEmail($raw_email);
+
+      if ($email !== null) $emails[$email] = $email;
+    }
+
+    return $emails;
+  }
+
+  private static function _NormalizeEmail($raw_email) {
+    if (!is_string($raw_email)) return null;
+
+    $email = trim($raw_email);
+
+    // Certaines entrées peuvent être au format "Nom <adresse>"
+    if (preg_match('/<([^>]+)>/', $email, $matches)) $email = trim($matches[1]);
+
+    $email = strtolower($email);
+
+    return strpos($email, '@') === false ? null : $email;
+  }
+
+  /**
+   * Résout une adresse en uid, en créant le compte externe si besoin. // BNUM 0009189
+   *
+   * @param string $email
+   * @return string|null uid, ou null si le membre ne peut pas être ajouté.
+   */
+  private function _resolve_member_uid($email) {
+    $member = self::FindUser($email);
+
+    if ($member !== null && $member->uid !== null) return $member->uid;
+
+    // Liste imbriquée : on ne crée pas de compte externe pour une liste
+    if ($member !== null && $member->is_list) return null;
+
+    if (!rcmail::get_instance()->config->get('enable_external_users', false)) {
+      $this->_failed_external_users[] = $email;
+      return null;
+    }
+
+    if (!driver_mel::gi()->create_external_user($email, $this->_workspace)) {
+      mel_logs::gi()->log(mel_logs::ERROR,
+        "###[0009189] echec de creation du compte externe pour $email");
+      $this->_failed_external_users[] = $email;
+      return null;
+    }
+
+    $member = self::FindUser($email);
+
+    if ($member === null || $member->uid === null) {
+      $this->_failed_external_users[] = $email;
+      return null;
+    }
+
+    $this->_created_external_users[$member->uid] = true;
+
+    return $member->uid;
   }
 
   /**

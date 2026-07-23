@@ -1392,62 +1392,72 @@ class mel_workspace extends bnum_plugin
 
     public function synchronize_list()
     {
-        $echo = null;
         $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
         $wsp = self::Workspace($uid);
 
-        if ($wsp->isAdmin()) {
-            $list = rcube_utils::get_input_value("_list", rcube_utils::INPUT_POST);
+        if (!$wsp->isAdmin()) $this->sendExit('denied');
 
-            $loaded_list = driver_mel::gi()->getUser(null, true, false, null, $list);
-            $list_members = $loaded_list->list->members;
-            $all_saved_list_data = $wsp->settings()->get('lists');
-            $current_saved_list_data = $all_saved_list_data->$list;
-            $shared = $wsp->users();
+        $list = rcube_utils::get_input_value("_list", rcube_utils::INPUT_POST);
+        $loaded_list = driver_mel::gi()->getUser(null, true, false, null, $list);
 
-            $_POST['_users'] = [];
+        $all_saved_list_data = $wsp->settings()->get('lists');
+        $current_saved_list_data = $all_saved_list_data->$list ?? [];
+        $shared = $wsp->users();
 
-            $has_new = false;
-            foreach ($list_members as $value) {
-                if (!in_array($value->uid, $current_saved_list_data) || !isset($shared[$value->uid])) {
-                    $value->load();
+        // BNUM 0009189 : membres de la liste = MineqMelMembres (internes + externes)
+        $list_emails = Workspace::GetListMembersEmails($loaded_list);
 
-                    if (!in_array($value->uid, $current_saved_list_data)) $current_saved_list_data[] = $value->uid;
+        $_POST['_users'] = [];
 
-                    $_POST['_users'][] = $value->email;
+        foreach ($list_emails as $email) {
+            $member = Workspace::FindUser($email);
+            $member_uid = $member !== null ? $member->uid : null;
 
-                    if (!$has_new) $has_new = true;
-                }
+            if ($member_uid === null
+                || !isset($shared[$member_uid])
+                || !in_array($member_uid, $current_saved_list_data, true)) {
+                $_POST['_users'][] = $email;
             }
+        }
 
-            if (count($_POST['_users']) > 0) {
-                $_POST['_not_exist'] = true;
-                $this->add_users();
-                unset($_POST['_not_exist']);
-            }
+        $has_new = count($_POST['_users']) > 0;
 
-            $has_deleted = false;
-            $valid = [];
-            foreach ($current_saved_list_data as $value) {
-                if (isset($list_members[$value])) $valid[] = $value;
-                else {
-                    $this->delete_user($uid, $value, false);
+        if ($has_new) {
+            $_POST['_not_exist'] = true;
+            ob_start();
+            $this->add_users();
+            ob_end_clean();          // add_users() echo son retour json
+            unset($_POST['_not_exist']);
 
-                    if (!$has_deleted) $has_deleted = true;
-                }
-            }
+            $wsp->load();
+        }
 
-            if ($has_deleted || $has_new) {
-                $all_saved_list_data->$list = $valid;
-                $wsp->settings()->set('lists', $all_saved_list_data);
-                $wsp->save();
-            }
+        $members_uids = [];
 
-            $echo = 'ok';
-        } else $echo = 'denied';
+        foreach ($list_emails as $email) {
+            $member = Workspace::FindUser($email);
 
-        echo $echo;
-        exit;
+            if ($member !== null && $member->uid !== null) $members_uids[$member->uid] = $member->uid;
+        }
+
+        $has_deleted = false;
+
+        foreach ($current_saved_list_data as $member_uid) {
+            if (isset($members_uids[$member_uid])) continue;
+
+            $this->delete_user($uid, $member_uid, false);
+            $has_deleted = true;
+        }
+
+        $valid = array_values($members_uids);
+
+        if ($has_new || $has_deleted || $valid != $current_saved_list_data) {
+            $all_saved_list_data->$list = $valid;
+            $wsp->settings()->set('lists', $all_saved_list_data);
+            $wsp->save();
+        }
+
+        $this->sendExit('ok');
     }
 
     public function delete_list()

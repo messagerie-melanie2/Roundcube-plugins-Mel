@@ -282,3 +282,32 @@ html.dark-mode-custom .task-addressbook #layout-list .searchbar.menu {
   border-left: none !important;
   border-right: none !important;
 }
+
+/* Masque le titre "Annuaire" dupliqué au-dessus du menu des dossiers (redondant avec le titre déjà affiché en haut de page) */
+.task-addressbook .colored-header-title {
+  display: none !important;
+}
+
+/* Masque l'icône "Annuaire" du header (redondante avec l'icône déjà affichée dans le menu de gauche) */
+.task-addressbook .header .colored-header-icon.addressbook_app {
+  display: none !important;
+}
+
+/* Centre la barre de recherche dans l'espace restant du header (à côté du bouton "Groupes") en mobile */
+.task-addressbook .header .searchgroup {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Centre la barre de recherche sur toute la largeur du header (indépendamment du bouton "Groupes" à gauche) en mobile */
+.task-addressbook .header {
+  position: relative;
+}
+
+.task-addressbook .header .searchgroup {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-left: 0;
+  margin-right: 0;
+}

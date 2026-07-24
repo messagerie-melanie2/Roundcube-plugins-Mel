@@ -286,17 +286,12 @@ if (rcmail) {
             .map((email) => email.toLowerCase()),
         );
 
-        const seen = new Set();
-        const attendees = event.attendees
-          .filter((attendee) => {
-            const email = attendee.email?.toLowerCase();
-            if (!email || currentUserEmails.has(email)) return false;
-            if (seen.has(email)) return false;
-            seen.add(email);
-            return true;
-          })
-          .map((attendee) => attendee.email)
-          .join(',');
+        const attendees = [
+          ...new Set(
+            event.attendees
+              .map(a => a.email?.toLowerCase())
+              .filter(email => email && !currentUserEmails.has(email)),
+          )].join(',');
 
         window.current_event_modal.close();
         parent.rcmail.open_compose_step({

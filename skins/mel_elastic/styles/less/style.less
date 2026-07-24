@@ -1743,12 +1743,24 @@ framed_item {
 #button-back-adressbook {
   #_button-back-adressbook();
 
+  position: absolute;
+  top: 57px;
+
+  .action-plugin-annuaire & {
+    top: 30px;
+  }
+
   &:hover {
     color: var(--main-text-color) !important;
+    background-color: transparent;
   }
 }
 #button-back-adressbook2 {
-  #_button-back-adressbook();
+  // #_button-back-adressbook();
+  margin-top: -8px;
+  .action-plugin-annuaire & {
+    margin-top: -37px;
+  }
 
   &:hover {
     color: var(--tierciary-text-color) !important;

@@ -1,170 +1,170 @@
 #annuaire-list ul {
-    margin: 0;
-    padding: 0;
-    margin-top: 6px;
+  margin: 0;
+  padding: 0;
+  margin-top: 6px;
 }
 
 #annuaire-list li {
-	padding: 5px 0px 5px 15px;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	cursor: pointer;
+  padding: 5px 0px 5px 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
 }
 
 #annuaire-list li.addressbook,
 #annuaire-list li.annuaire {
-	padding: 10px 0px 8px 20px;
+  padding: 10px 0px 8px 20px;
 }
 
 #annuaire-list li.selected {
-	background-color: #dee9f6;
-	background-color: var(--sublistitem-selected-bg-color);
+  background-color: #dee9f6;
+  background-color: var(--sublistitem-selected-bg-color);
 }
 
 #annuaire-list li.folder div.treetoggle {
-    top: 5px;
-    left: 2px;
+  top: 5px;
+  left: 2px;
 }
 
 #annuaire-list li.folder ul div.treetoggle {
-	top: 0;
+  top: 0;
 }
 
 #annuaire-list li > .name {
-	display: block;
-	font-size: 12px;
-	font-weight: normal;
-	color: #000;
-	color: var(--listbox-text-color);
-	line-height: 25px;
-	padding: 0 70px 0 18px;
-	overflow: hidden;
-	text-overflow: ellipsis;
+  display: block;
+  font-size: 12px;
+  font-weight: normal;
+  color: #000;
+  color: var(--listbox-text-color);
+  line-height: 25px;
+  padding: 0 70px 0 18px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 #annuaire-list li > .description {
-	color: var(--listbox-text-color);
+  color: var(--listbox-text-color);
 }
 
 #annuaire-list li.selected > .name {
-	font-weight: bold;
+  font-weight: bold;
 }
 
 #annuaire-list li > .icon {
-	position: absolute;
-	height: 18px;
-	width: 18px;
+  position: absolute;
+  height: 18px;
+  width: 18px;
 }
 
 #annuaire-list li > .gototree {
-	position: absolute;
-	cursor: pointer;
-	background: url(images/goto.png?v=e784.5000) center center no-repeat #fff;
-	background-image: var(--image-gototree);
-	background-color: var(--sublistitem-bg-color);
-	right: 27px;
-	top: 0;
-	height: 33px;
-	width: 33px;
-	font-size: 12px;
+  position: absolute;
+  cursor: pointer;
+  background: url(images/goto.png?v=e784.5000) center center no-repeat #fff;
+  background-image: var(--image-gototree);
+  background-color: var(--sublistitem-bg-color);
+  right: 27px;
+  top: 0;
+  height: 33px;
+  width: 33px;
+  font-size: 12px;
 }
 
 html.touch #annuaire-list li > .gototree {
-	top: -7px;
+  top: -7px;
 }
 
 #annuaire-list li.selected > .gototree {
-	background-color: #dee9f6;
-	background-color: var(--sublistitem-selected-bg-color);
+  background-color: #dee9f6;
+  background-color: var(--sublistitem-selected-bg-color);
 }
 
 #annuaire-list li:hover > .gototree {
-	display: inline-block;
+  display: inline-block;
 }
 
 #annuaire-list .added > .name,
 #annuaire-list .folder > .name {
-	font-weight: bold;
+  font-weight: bold;
 }
 
 #annuaire-list .folder > .description {
-	display: block;
-  	font-size: 12px;
-  	font-weight: normal;
-	color: #fff;
-	line-height: 20px;
-	padding-left: 18px;
+  display: block;
+  font-size: 12px;
+  font-weight: normal;
+  color: #fff;
+  line-height: 20px;
+  padding-left: 18px;
 }
 
 #annuaire-list .folder.annuaire {
-	background: url(images/annuaire.png?v=e784.5000) 17px 11px no-repeat;
+  background: url(images/annuaire.png?v=e784.5000) 17px 11px no-repeat;
 }
 
 #annuaire-list .folder.addressbook {
-	background: url(images/carnet.png?v=e784.5000) 17px 14px no-repeat;
+  background: url(images/carnet.png?v=e784.5000) 17px 14px no-repeat;
 }
 
 html.dark-mode #annuaire-list .folder.addressbook,
 html.dark-mode-custom #annuaire-list .folder.addressbook {
-	background: url(images/carnet-dark.png) 17px 14px no-repeat;
+  background: url(images/carnet-dark.png) 17px 14px no-repeat;
 }
 
 #annuaire-list .list {
-	background: url(images/list.png?v=e784.5000) 10px 11px no-repeat;
+  background: url(images/list.png?v=e784.5000) 10px 11px no-repeat;
 }
 
 #annuaire-list .person {
-	background: url(images/person.png?v=e784.5000) 10px 11px no-repeat;
+  background: url(images/person.png?v=e784.5000) 10px 11px no-repeat;
 }
 
 #annuaire-list .nophoto {
-	background: url(images/nophoto.png?v=e784.5000) 10px 11px no-repeat;
+  background: url(images/nophoto.png?v=e784.5000) 10px 11px no-repeat;
 }
 
 #annuaire-list .service {
-	background: url(images/service.png?v=e784.5000) 14px 12px no-repeat;
+  background: url(images/service.png?v=e784.5000) 14px 12px no-repeat;
 }
 
 #annuaire-list .function {
-	background: url(images/function.png?v=e784.5000) 14px 9px no-repeat;
+  background: url(images/function.png?v=e784.5000) 14px 9px no-repeat;
 }
 
 #annuaire-list .unit {
-	background: url(images/unit.png?v=e784.5000) 14px 10px no-repeat;
+  background: url(images/unit.png?v=e784.5000) 14px 10px no-repeat;
 }
 
 #annuaire-list .resource {
-	background: url(images/resource.png?v=e784.5000) 14px 10px no-repeat;
+  background: url(images/resource.png?v=e784.5000) 14px 10px no-repeat;
 }
 
 #annuaire-list .application {
-	background: url(images/application.png?v=e784.5000) 14px 10px no-repeat;
+  background: url(images/application.png?v=e784.5000) 14px 10px no-repeat;
 }
 
 #annuaire-list .added {
-	background: url(images/ajoute.png?v=e784.5000) 12px 13px no-repeat;
-	font-weight: bold;
+  background: url(images/ajoute.png?v=e784.5000) 12px 13px no-repeat;
+  font-weight: bold;
 }
 
 #annuaire-list .folder.legend {
-	background: none;
-	border-top: 1px solid #d8d8d8;
-	border-color: var(--annuaire-border-color);
-	padding-left: 10px;
-	display: none;
+  background: none;
+  border-top: 1px solid #d8d8d8;
+  border-color: var(--annuaire-border-color);
+  padding-left: 10px;
+  display: none;
 }
 
 #annuaire-list .folder.legend > .name {
-	padding-left: 10px;
+  padding-left: 10px;
 }
 
 #annuaire-list .folder.legend > div.treetoggle {
-	display: none;
+  display: none;
 }
 
 #annuaireselector {
-    /* margin: 0;
+  /* margin: 0;
     padding: 0;
     position: absolute;
     top: 8px;
@@ -172,242 +172,241 @@ html.dark-mode-custom #annuaire-list .folder.addressbook {
 }
 
 #annuaireselector ul {
-	border-radius: 4px;
-  	border: solid 1px #d5d5d5;
-  	border-color: var(--inputs-border-color);
-  	background-color: #eaeaea;
-  	background-color: var(--input-selector-bg-color);
-  	height: 30px;
-  	padding: 0;
-  	margin: 0;
+  border-radius: 4px;
+  border: solid 1px #d5d5d5;
+  border-color: var(--inputs-border-color);
+  background-color: #eaeaea;
+  background-color: var(--input-selector-bg-color);
+  height: 30px;
+  padding: 0;
+  margin: 0;
 }
 
 #annuaireselector ul li {
-	font-size: 11px;
-	padding: 0;
-	height: 30px;
-	line-height: 30px;
-	display: inline-block;
-	position: relative;
+  font-size: 11px;
+  padding: 0;
+  height: 30px;
+  line-height: 30px;
+  display: inline-block;
+  position: relative;
 }
 
 #annuaireselector li a {
-    color: #464646;
-    color: var(--input-selector-text-color);
-    padding: 0 15px;
-    border: none;
-    display: inline-block;
-	text-align: center;
-	text-decoration: none;
-	overflow: hidden;
+  color: #464646;
+  color: var(--input-selector-text-color);
+  padding: 0 15px;
+  border: none;
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  overflow: hidden;
 }
 
 #annuaireselector li a .inner {
-    overflow: hidden;
-    display: block;
+  overflow: hidden;
+  display: block;
 }
 
 @media screen and (max-width: 1480px) {
   #annuaireselector ul li a {
-	max-width: 45px;
+    max-width: 45px;
   }
 }
 
 @media screen and (max-width: 1410px) {
   #annuaireselector ul li a {
-	max-width: 28px;
+    max-width: 28px;
   }
 }
 
 @media screen and (max-width: 1300px) {
   #annuaireselector ul li a {
-	max-width: 7px;
-	text-overflow: clip;
+    max-width: 7px;
+    text-overflow: clip;
   }
-  
+
   #annuaireselector {
-  	left: 260px;
+    left: 260px;
   }
 }
 
 #annuaireselector li.inactive a {
-    color: #464646;
-    color: var(--input-selector-text-color);
-	opacity: 0.5;
+  color: #464646;
+  color: var(--input-selector-text-color);
+  opacity: 0.5;
 }
 
 #annuaireselector ul li.selected a {
-    color: #464646;
-    color: var(--input-selector-text-color);
-    font-weight: bold;
-    background: #fff;
-    background-color: var(--input-selector-selected-bg-color);
-    text-shadow: none;
-    border-radius: 4px;
-	box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.1);
+  color: #464646;
+  color: var(--input-selector-text-color);
+  font-weight: bold;
+  background: #fff;
+  background-color: var(--input-selector-selected-bg-color);
+  text-shadow: none;
+  border-radius: 4px;
+  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.1);
 }
 
 #listview-float-right {
-	display: none;
-	position: absolute;
-	top: 34px;
-	right: 0;
-	width: 386px;
-	bottom: 4px;
-	box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
-	border: solid 1px #979797;
-	background-color: var(--primary-layout-sidebar-background-color);
-	color: var(--primary-layout-sidebar-text-color);
-	z-index: 1000;
+  display: none;
+  position: absolute;
+  top: 34px;
+  right: 0;
+  width: 386px;
+  bottom: 4px;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+  border: solid 1px #979797;
+  background-color: var(--primary-layout-sidebar-background-color);
+  color: var(--primary-layout-sidebar-text-color);
+  z-index: 1000;
 }
 
 #listview-float-right #list-contacts .boxtitle2 {
-	margin: 8px 0;
-	text-align: center;
+  margin: 8px 0;
+  text-align: center;
 }
 
 #listview-float-right #list-contacts .close {
-	position: absolute;
-	top: 5px;
-	right: 5px;
-	cursor: pointer;
-	opacity: 1;
-	color: var(--primary-layout-sidebar-text-color);
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  cursor: pointer;
+  opacity: 1;
+  color: var(--primary-layout-sidebar-text-color);
 }
 
 #listview-float-right #list-contacts .listsearchbox {
-	display: flex;
-	justify-content: center;
+  display: flex;
+  justify-content: center;
 }
 
 #listview-float-right #list-contacts .listsearchbox .iconbutton.reset {
-	display: none;
+  display: none;
 }
 
 #listview-float-right #list-contacts .listsearchbox input {
-	height: 32px;
-	padding-left: 30px;
-	background-color: var(--searchbar-background-color);
-	border: solid thin var(--searchbar-border-color);
-	color: var(--searchbar-text-color);
+  height: 32px;
+  padding-left: 30px;
+  background-color: var(--searchbar-background-color);
+  border: solid thin var(--searchbar-border-color);
+  color: var(--searchbar-text-color);
 }
 
 #listview-float-right #list-contacts .listsearchbox #searchmenulink {
-	top: 7px;
+  top: 7px;
 }
 
 #listview-float-right #list-contacts .scroller {
-	background: #fff;
-	background-color: var(--main-content-bg-color);
-	bottom: 0px;
-    top: 100px;
+  background: #fff;
+  background-color: var(--main-content-bg-color);
+  bottom: 0px;
+  top: 100px;
 }
 
 #listview-float-right #list-contacts .scroller.nosearch {
-    top: 32px;
+  top: 32px;
 }
-
 
 /**********add********/
-li.folder{
-    font-family: inherit !important;
+li.folder {
+  font-family: inherit !important;
 }
 
-li.folder:before
-{
-    font-family: 'IcoFont' !important;
-    margin-left: 5px;
+li.folder:before {
+  font-family: 'IcoFont' !important;
+  margin-left: 5px;
 }
 
-#annuaire-list [aria-expanded="true"]
-{
-	background-color: #2C3054;
+#annuaire-list [aria-expanded='true'] {
+  background-color: #2c3054;
 }
 
 li.folder {
-	-webkit-touch-callout: none; /* iOS Safari */
-	-webkit-user-select: none; /* Safari */
-	-khtml-user-select: none; /* Konqueror HTML */
-	-moz-user-select: none; /* Old versions of Firefox */
-	-ms-user-select: none; /* Internet Explorer/Edge */
-	user-select: none; /* Non-prefixed version, currently
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
 									supported by Chrome, Edge, Opera and Firefox */
 }
 
 .folder > ul {
-	border-top:none !important;
+  border-top: none !important;
 }
 
-li.object[aria-selected="true"]
-{
-	background-color: #484D7A !important;
+li.object[aria-selected='true'] {
+  background-color: #484d7a !important;
 }
 
-.task-addressbook>#layout>div>.header {
-	height: 120px;
+.task-addressbook > #layout > div > .header {
+  height: 120px;
 }
 
-.task-addressbook .searchbar
-{
-	border-radius: 60px;
+.task-addressbook .searchbar {
+  border-radius: 60px;
 }
 
 .searchgroup > center > span,
-.filtergroup > center > span
-{
-    font-size: larger;
+.filtergroup > center > span {
+  font-size: larger;
 }
 
 .searchbar form:before {
-    content: none;;
+  content: none;
 }
-
 
 .searchbar form:after {
-    content: "\f002";
-    height: 36px;
-    color: #363A5B;
-	margin: 0 .75rem 0 0;
-	
-	font-size: 1.25em;
-    display: block;
-    float: left;
-    width: 1.18em;
-    font-family: 'Icons';
-    font-style: normal;
-    font-weight: 900;
-    text-decoration: inherit;
-    text-align: center;
-    speak: none;
-    font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
+  content: '\f002';
+  height: 36px;
+  color: #363a5b;
+  margin: 0 0.75rem 0 0;
+
+  font-size: 1.25em;
+  display: block;
+  float: left;
+  width: 1.18em;
+  font-family: 'Icons';
+  font-style: normal;
+  font-weight: 900;
+  text-decoration: inherit;
+  text-align: center;
+  speak: none;
+  font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
 }
 
-.button.reset
-{
-	display:none!important;
+.button.reset {
+  display: none !important;
 }
 
-.filtergroup
-{
-	width: 100%;
+.filtergroup {
+  width: 100%;
 }
 
-.filtergroup > .row{
-	margin-top: -11px;
+.filtergroup > .row {
+  margin-top: -11px;
 }
 
-.filtergroup > .row > div > select{
-	border-radius: 60px;
+.filtergroup > .row > div > select {
+  border-radius: 60px;
 }
 
 .from-annuaire {
-	height: unset!important;
-	display: none!important;
+  height: unset !important;
+  display: none !important;
 }
 
 html.layout-small .from-annuaire,
-html.layout-phone .from-annuaire{
-	display: block!important;;
+html.layout-phone .from-annuaire {
+  display: block !important;
+}
+
+#toolbar-menu .create {
+  display: none;
+}
+
+.toolbar-list-button {
+  display: none;
 }

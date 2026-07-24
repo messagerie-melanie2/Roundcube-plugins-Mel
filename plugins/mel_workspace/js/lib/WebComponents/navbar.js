@@ -3,6 +3,7 @@ import { HTMLBnumButton } from '../../../../../skins/mel_elastic/design-system/d
 import { HTMLBnumPrimaryButton } from '../../../../../skins/mel_elastic/design-system/ds-module-bnum.js';
 import { HTMLBnumToggleButton } from '../../../../../skins/mel_elastic/design-system/ds-module-bnum.js';
 import { HTMLBnumDangerButton } from '../../../../../skins/mel_elastic/design-system/ds-module-bnum.js';
+import { HTMLBnumButtonIcon } from '../../../../../skins/mel_elastic/design-system/ds-module-bnum.js';
 import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
 import { BnumModules } from '../../../../mel_metapage/js/lib/helpers/dynamic_load_modules.js';
 import {
@@ -329,34 +330,28 @@ class WspNavBar extends HtmlCustomTag {
     return this;
   }
 
-  /**
-   * Génère le bouton permettant de réduire/étendre la barre de navigation
-   * et bascule la classe `minified` sur le composant selon son état.
-   * @returns {WspNavBar} L'instance courante, pour chaînage.
-   */
+  // /**
+  //  * Génère le bouton permettant de réduire/étendre la barre de navigation
+  //  * et bascule la classe `minified` sur le composant selon son état.
+  //  * @returns {WspNavBar} L'instance courante, pour chaînage.
+  //  */
   _generate_minify_button() {
-    const button = HTMLBnumToggleButton.Create({
-      variation: 'secondary',
-      iconMargin: '0',
-      icon: 'keyboard_double_arrow_left',
-      rounded: true,
-    }).attr('id', 'wsp-nav-minify-expand');
+    const button = HTMLBnumButtonIcon.Create('left_panel_close');
+    button.id = 'wsp-nav-minify-expand';
+    button.setAttribute('slot', 'actions');
+    button.title = rcmail.get_label('mel_workspace.minify_nav');
 
-    button.onpressedchange.push((pressed) => {
-      if (pressed) {
+    button.addEventListener('click', () => {
+      const minified = this.classList.contains('minified');
+
+      if (!minified) {
         this.addClass('minified');
-        button.icon = 'keyboard_double_arrow_right';
-        button.setAttribute(
-          'title',
-          "Maximiser la barre de navigation de l'espace.",
-        );
+        button.icon = 'left_panel_open';
+        button.title = rcmail.get_label('mel_workspace.expand_nav');
       } else {
         this.removeClass('minified');
-        button.icon = 'keyboard_double_arrow_left';
-        button.setAttribute(
-          'title',
-          "Minimiser la barre de navigation de l'espace.",
-        );
+        button.icon = 'left_panel_close';
+        button.title = rcmail.get_label('mel_workspace.minify_nav');
       }
     });
 

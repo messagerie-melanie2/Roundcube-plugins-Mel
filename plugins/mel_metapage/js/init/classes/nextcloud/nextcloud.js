@@ -381,5 +381,5 @@ Nextcloud.origin =
  * Récupère l'index, ex : /nextcloud/index.php
  */
 Nextcloud.getIndex = function () {
-  return this.index_url.replace(Nextcloud.origin, '');
+  return this.index_url?.replace(Nextcloud.origin, '');
 };

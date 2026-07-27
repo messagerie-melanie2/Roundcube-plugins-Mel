@@ -6,6 +6,19 @@ include_once __DIR__.'/../bnum/bnum_plugin.php';
  *
  * Ce plugin applique les fichiers CSS spécifiques au skin "mel_elastic" et gère les thèmes, animations, et autres fonctionnalités liées à l'interface utilisateur.
  *
+ * Hooks utilisés :
+ * - ready               : définit le thème courant
+ * - send_page           : injection des web components dans la page
+ * - render_mailboxlist  : ⚠️ permet à un plugin tiers de modifier la liste des dossiers
+ *                         (name, class, icon...) avant rendu HTML dans my_folder_list_handler().
+ *                         Tout plugin qui s'y branche est responsable de l'échappement
+ *                         de ses propres valeurs (rcube::Q()) — le renderer par défaut
+ *                         échappe déjà ses sorties, mais ne filtre pas les données entrantes.
+ * - folder_list_render  : ⚠️ permet à un plugin tiers de remplacer intégralement le
+ *                         renderer HTML de l'arbre de dossiers. Un renderer personnalisé
+ *                         contourne l'échappement fourni par défaut et doit garantir
+ *                         lui-même l'échappement HTML de ses sorties.
+ *
  * @package Roundcube-plugins-Mel
  */
 class mel_elastic extends bnum_plugin
@@ -190,8 +203,8 @@ class mel_elastic extends bnum_plugin
                 $d['is_selected'] ? 'is-selected="true"' : 'is-selected="false"',
                 $d['is_virtual'] ? 'is-virtual="true"' : 'is-virtual="false"',
                 $d['is_collapsed'] ? 'is-collapsed="true"' : 'is-collapsed="false"',
-                $d['slot'] ? 'slot="'.$d['slot'].'"' : '',
-                'class="'.implode(' ', $d['class']).'"',
+                $d['slot'] ? 'slot="'.rcube::Q($d['slot']).'"' : '',
+                'class="'.rcube::Q(implode(' ', $d['class'])).'"',
                 rcube::Q($d['id']),
             );
         };

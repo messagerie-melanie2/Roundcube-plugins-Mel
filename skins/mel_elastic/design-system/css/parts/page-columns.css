@@ -237,6 +237,10 @@ html.layout-large .task-calendar #layout-sidebar > .header {
 #layout-content {
   border-left: var(--bnum-border-column);
 }
+#layout-content > .header {
+  line-height: normal !important;
+  /* Annule le line-heigth qui pose problème de la skin elastic */
+}
 #layout-content > .header a {
   --_idle-background: var(--nav-button-background, transparent);
   --_idle-color: var(--nav-button-color, var(--bnum-body-text-color, var(--bnum-text-primary)));

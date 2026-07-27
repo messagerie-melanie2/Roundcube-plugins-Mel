@@ -6923,7 +6923,7 @@ let HTMLBnumInputDate = (() => {
     return _classThis;
 })();
 
-var css_248z$j = ":host .container{position:relative}:host #input-search-actions-container{display:flex;position:absolute;right:50px;top:5px}:host #input-search-actions-container #input-clear-button{display:none}:host(:state(value)) #input-search-actions-container #input-clear-button{display:inline-block}";
+var css_248z$j = ":host .container{position:relative}:host #input-search-actions-container{display:flex;position:absolute;right:50px;top:5px}:host #input-search-actions-container #input-clear-button{display:none}:host(:state(value)) #input-search-actions-container #input-clear-button{display:inline-block}:host(.corrected) #input-search-actions-container{right:56px;top:7px}";
 var style$j = css_248z$j;
 
 const ID_ACTIONS_CONTAINER = 'input-search-actions-container';

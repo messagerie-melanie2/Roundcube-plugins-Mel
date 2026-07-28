@@ -161,6 +161,8 @@ $(document).ready(function () {
 });
 
 function CalendarPageInit(init_date_picker = true) {
+  if (rcmail.env.task !== 'calendar') return;
+
   (init_date_picker ? DatePickerInit() : Promise.resolve()).then(() => {
     if (init_date_picker) {
       $(

@@ -2,6 +2,8 @@
  * @module Log
  */
 
+import { EMPTY_STRING } from '../constants/constants.js';
+
 /**
  * Class qui gère les log javascript du bnum.
  * @static
@@ -22,10 +24,11 @@ export class BnumLog {
    */
   static _log(log_level, log_func, prepend_text, function_name, ...args) {
     if (log_level >= BnumLog.log_level) {
-      log_func(
-        `${moment().format('DD/MM/YYYY HH:mm:ss.SSS')} ${prepend_text}[${function_name}]`,
-        ...args,
-      );
+      const date =
+        typeof moment === 'undefined'
+          ? EMPTY_STRING
+          : `${moment().format('DD/MM/YYYY HH:mm:ss.SSS')} `;
+      log_func(`${date}${prepend_text}[${function_name}]`, ...args);
     }
   }
 

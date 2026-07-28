@@ -13,10 +13,18 @@
       <span class="colored-header-title">
         <roundcube:label name="tasklist.lists" />
       </span>-->
-	       <bnum-hide breakpoint="touch" mode="down">
-    <bnum-primary-button id="create-event-button" style="--bnum-button-padding:6px 10px;" data-hide="touch" block data-icon="add_task">Nouvelle tâche</bnum-primary-button>
-     </bnum-hide>
-	     <!-- Bouton + d'actions -->
+	<bnum-hide breakpoint="touch" mode="down">
+    	<bnum-primary-button 
+			id="create-event-button" 
+			style="--bnum-button-padding:6px 10px;" 
+			data-hide="touch"
+			data-icon="add_task" 
+			onclick="return rcmail.command('newtask','',this,event)"
+			block>
+				Nouvelle tâche
+		</bnum-primary-button>
+    </bnum-hide>
+	<!-- Bouton + d'actions -->
     <bnum-icon-button 
       name="tasklistactionsmenu" 
       id="bnum-tasklistoptionsmenulink" 

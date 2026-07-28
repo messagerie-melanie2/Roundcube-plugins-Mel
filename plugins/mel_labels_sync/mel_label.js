@@ -117,7 +117,9 @@ function rcm_tb_label_insert(uid, row) {
     var html = '';
     var rowobj = $(row.obj);
     for (idx in message.flags.tb_labels) {
-      rowobj.addClass('label_' + message.flags.tb_labels[idx].replace('~', ''));
+      rowobj
+        .addClass('label_' + message.flags.tb_labels[idx].replace('~', ''))
+        .addClass('has-label');
       html += `<span class="text_${'label_' + message.flags.tb_labels[idx].replace('~', '')}">${rcmail.env.labels_translate[message.flags.tb_labels[idx].replace('~', '')]}</span>`;
     }
     if (html !== '')
@@ -170,7 +172,9 @@ function rcm_tb_label_flag_toggle(flag_uids, toggle_label, onoff) {
   if (headers_table.length && flag_uids.length) {
     if (onoff == true) {
       // adcolor
-      headers_table.addClass('label_' + toggle_label.replace('~', ''));
+      headers_table
+        .addClass('label_' + toggle_label.replace('~', ''))
+        .addClass('has-label');
       // add to flag list
       tb_labels_for_message.push(toggle_label);
 
@@ -200,7 +204,9 @@ function rcm_tb_label_flag_toggle(flag_uids, toggle_label, onoff) {
       }
     } else {
       // remove color
-      headers_table.removeClass('label_' + toggle_label);
+      headers_table
+        .removeClass('label_' + toggle_label)
+        .removeClass('has-label');
       var pos = jQuery.inArray(toggle_label, tb_labels_for_message);
       if (pos > -1) tb_labels_for_message.splice(pos, 1);
 
@@ -253,7 +259,9 @@ function rcm_tb_label_flag_toggle(flag_uids, toggle_label, onoff) {
     if (onoff == true) {
       // add colors
       var rowobj = $(row.obj);
-      rowobj.addClass('label_' + toggle_label.replace('~', ''));
+      rowobj
+        .addClass('label_' + toggle_label.replace('~', ''))
+        .addClass('has-label');
       // add to flag list
       message.flags.tb_labels.push(toggle_label);
 
@@ -289,7 +297,9 @@ function rcm_tb_label_flag_toggle(flag_uids, toggle_label, onoff) {
     } else {
       // remove colors
       var rowobj = $(row.obj);
-      rowobj.removeClass('label_' + toggle_label.replace('~', ''));
+      rowobj
+        .removeClass('label_' + toggle_label.replace('~', ''))
+        .removeClass('has-label');
       // remove from flag list
       var pos = jQuery.inArray(toggle_label, message.flags.tb_labels);
       if (pos > -1) message.flags.tb_labels.splice(pos, 1);
@@ -562,7 +572,7 @@ rcube_webmail.prototype.mel_label_show_tooltip = async function ($parent) {
     let tooltips = Object.keys(rcmail.env.labels_translate);
     $tooltip = $('<div id="mel-label-tooltip-dropdown" class=""></div>');
 
-    $ul = $('<div class="ignore-bullet btn-group-vertical"></div>');
+    $ul = $('<div class="ignore-bullet btn-group-vertical label-menu"></div>');
 
     for (
       let index = 0, len = tooltips.length, key = null, element = null;
@@ -574,7 +584,7 @@ rcube_webmail.prototype.mel_label_show_tooltip = async function ($parent) {
 
       $ul.append(
         $(
-          '<button type="button" class="btn mel-button no-button-margin no-margin-button bckg true"></button>',
+          '<button type="button" class="btn true"></button>',
         )
           .data(
             'value',
@@ -638,6 +648,132 @@ rcube_webmail.prototype.mel_label_show_tooltip = async function ($parent) {
 //kMel_LuminanceRatioAAA(kMel_extractRGB('#1A2F34'), kMel_extractRGB('rgb(230, 199, 66)'))
 
 $(document).ready(function () {
+  /**
+   * Converts a hex color to its RGB components.
+   */
+  function hexToRgb(hex) {
+    const sanitized = hex.replace('#', '');
+    const full =
+      sanitized.length === 3
+        ? sanitized
+            .split('')
+            .map((c) => c + c)
+            .join('')
+        : sanitized;
+
+    const int = parseInt(full, 16);
+    return {
+      r: (int >> 16) & 255,
+      g: (int >> 8) & 255,
+      b: int & 255,
+    };
+  }
+
+  /**
+   * Converts RGB to HSL (h: 0-360, s: 0-100, l: 0-100).
+   */
+  function rgbToHsl(r, g, b) {
+    r /= 255;
+    g /= 255;
+    b /= 255;
+    const max = Math.max(r, g, b),
+      min = Math.min(r, g, b);
+    const l = (max + min) / 2;
+    let h = 0,
+      s = 0;
+
+    if (max !== min) {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r:
+          h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+          break;
+        case g:
+          h = ((b - r) / d + 2) / 6;
+          break;
+        case b:
+          h = ((r - g) / d + 4) / 6;
+          break;
+      }
+    }
+
+    return { h: h * 360, s: s * 100, l: l * 100 };
+  }
+
+  /**
+   * Converts HSL back to a hex color string.
+   */
+  function hslToHex(h, s, l) {
+    h /= 360;
+    s /= 100;
+    l /= 100;
+
+    const hue2rgb = (p, q, t) => {
+      if (t < 0) t += 1;
+      if (t > 1) t -= 1;
+      if (t < 1 / 6) return p + (q - p) * 6 * t;
+      if (t < 1 / 2) return q;
+      if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+      return p;
+    };
+
+    let r, g, b;
+    if (s === 0) {
+      r = g = b = l;
+    } else {
+      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      const p = 2 * l - q;
+      r = hue2rgb(p, q, h + 1 / 3);
+      g = hue2rgb(p, q, h);
+      b = hue2rgb(p, q, h - 1 / 3);
+    }
+
+    return (
+      '#' +
+      [r, g, b]
+        .map((v) =>
+          Math.round(v * 255)
+            .toString(16)
+            .padStart(2, '0'),
+        )
+        .join('')
+    );
+  }
+
+  /**
+   * Generates an ultra-light background color from a base hex color.
+   *
+   * "Wheel mode": if the base color is already very light (high L),
+   * we slightly darken the lightness target to avoid white-on-white.
+   * The hue and a trace of saturation are always preserved.
+   *
+   * @param {string} hex        - Base color (e.g. "#E84A2E")
+   * @param {number} [targetL=93] - Default lightness target (0-100)
+   * @param {number} [minContrast=8] - Min L-distance from base to avoid clash
+   * @returns {{ background: string, color: string }}
+   */
+  function getLightVariant(hex, targetL = 93, minContrast = 8) {
+    const { r, g, b } = hexToRgb(hex);
+    const { h, s, l } = rgbToHsl(r, g, b);
+
+    // If base is already very light, push background slightly darker
+    // to maintain readability — "wheel" behavior
+    let bgL =
+      l > targetL - minContrast ? Math.max(l - minContrast - 5, 60) : targetL;
+
+    // Preserve a hint of saturation so the bg feels tinted, not grey
+    const bgS = Math.min(s, 40);
+
+    const background = hslToHex(h, bgS, bgL);
+
+    // Text color = original color but slightly darkened for contrast
+    const textL = Math.min(l, 45);
+    const color = hslToHex(h, s, textL);
+
+    return { background, color };
+  }
+
   rcm_tb_label_init_onclick();
 
   // add keyboard shortcuts for normal keyboard and keypad
@@ -685,7 +821,7 @@ $(document).ready(function () {
       if (val === null) val = '#737373';
 
       const default_h = '#FFFFFF';
-      let textcolor = default_h;
+      var textcolor = default_h;
 
       try {
         if (
@@ -696,6 +832,10 @@ $(document).ready(function () {
         )
           textcolor = 'black';
       } catch (error) {}
+
+      var { background: val, color: textcolor } = getLightVariant(val);
+      // textcolor = val;
+      // val = `${val}20`;
 
       id = id.replace('~', '').replace(/\./g, '\\.');
       css += '#messagelist tr.label_' + id + ' td,\n';
@@ -713,8 +853,8 @@ $(document).ready(function () {
 			}
 
 			#messagelist tr.label_${id} td{
-				background-color:${val}20;
-				--message-list-content-selected-mail-address-color: ${textcolor};
+				
+				/*--message-list-content-selected-mail-address-color: ${textcolor};*/
 				--message-list-content-selected-row-background-color: ${val};
 				--message-list-content-selected-mail-subject-color: var(--message-list-content-selected-mail-address-color);
 			}
@@ -740,7 +880,7 @@ $(document).ready(function () {
 			}
 
 			.label_${id}.txt.important {
-				color:${val}!important;
+				color:${textcolor}!important;
 			}
 			
 			#messagelist tr.label_${id} td.labels::before

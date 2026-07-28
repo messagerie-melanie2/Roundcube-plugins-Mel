@@ -247,7 +247,7 @@ ul.treelist li.selected > div > a,
 }
 
 #layout-sidebar {
-  border-right-color: var(--layout-sidebar-border-color) !important;
+  // border-right-color: var(--layout-sidebar-border-color) !important;
 }
 
 .task-mail #layout-sidebar,
@@ -428,13 +428,6 @@ ul.treelist li.selected > div > a,
 
   > .header {
     background-color: var(--layout-list-header-background-color) !important;
-
-    a.button,
-    a.options,
-    a.select,
-    a.threads {
-      color: var(--layout-list-header-text-color) !important;
-    }
 
     .menu a:not(.disabled):focus,
     .menu a:not(.disabled):hover,
@@ -698,14 +691,6 @@ button.btn.mel-tab {
   }
 }
 
-p,
-span,
-div {
-  scrollbar-width: var(--scrollbar-width-moz) !important;
-  scrollbar-color: var(--scrollbar-handler-color)
-    var(--scrollbar-background-color) !important;
-}
-
 .input-group-text {
   background-color: var(--secondary-mel-button-background-color);
   border-color: var(--input-border-color);
@@ -739,29 +724,24 @@ optgroup {
 .task-tasks #layout-sidebar,
 .task-addressbook #layout-sidebar,
 .task-settings #layout-sidebar {
-  background-color: var(--primary-layout-sidebar-background-color) !important;
-  color: var(--primary-layout-sidebar-text-color) !important;
+  // background-color: var(--primary-layout-sidebar-background-color) !important;
+  // color: var(--primary-layout-sidebar-text-color) !important;
 
-  .scroller > .listing li {
-    &.selected {
-      background-color: var(
-        --primary-layout-sidebar-background-selected-color
-      ) !important;
-    }
+  // .scroller > .listing li {
+  //   &.selected {
+  //     background-color: var(
+  //       --primary-layout-sidebar-background-selected-color
+  //     ) !important;
+  //   }
 
-    a {
-      color: var(--primary-layout-sidebar-text-color) !important;
-    }
-  }
+  //   a {
+  //     color: var(--primary-layout-sidebar-text-color) !important;
+  //   }
+  // }
 
-  > .header {
-    &:extend(.task-tasks #layout-sidebar);
-  }
-}
-
-#layout > div > .header {
-  background-color: var(--layout-content-header-background-color);
-  color: var(--layout-content-text-color);
+  // > .header {
+  //   &:extend(.task-tasks #layout-sidebar);
+  // }
 }
 
 .custom-select:disabled {
@@ -859,11 +839,22 @@ input.input-mel,
   color: var(--option-menu-title-color);
 }
 
-.menu.toolbar li,
+.force-height-60px {
+  height: 60px !important;
+}
+
 #taskmenu a,
 #otherapps a,
 #layout-menu:hover a > span.inner {
-  height: 60px !important;
+  &:extend(.force-height-60px);
+}
+
+.menu.toolbar li {
+  &:extend(.force-height-60px);
+
+  .popover & {
+    height: auto !important;
+  }
 }
 
 .html-editor .editor-toolbar {

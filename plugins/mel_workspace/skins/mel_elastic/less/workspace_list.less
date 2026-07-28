@@ -101,10 +101,10 @@
   }
 
   .workspace-block-item {
-    box-shadow: var(--bureau-card-box-shadow);
-    border-radius: var(--bureau-card-border-radius);
-    background-color: var(--bureau-card-background-color);
-    padding: 22px;
+    // box-shadow: var(--bureau-card-box-shadow);
+    // border-radius: var(--bureau-card-border-radius);
+    // background-color: var(--bureau-card-background-color);
+    // padding: 22px;
     // margin-right: 50px;
     margin-top: 5px;
     margin-bottom: 20px;
@@ -116,7 +116,7 @@
     flex-direction: column;
     justify-content: space-between;
 
-    cursor: pointer;
+    // cursor: pointer;
 
     position: relative;
 
@@ -237,7 +237,8 @@
   }
 
   bnum-favorite-button {
-    bnum-icon {
+    pointer-events: all;
+    old-bnum-icon {
       color: var(
         --workspace-favorite-button-text-color,
         var(--secondary-mel-button-text-color, var(--main-text-color, black))
@@ -245,7 +246,7 @@
     }
 
     &:hover {
-      bnum-icon {
+      old-bnum-icon {
         color: var(
           --workspace-favorite-button-hover-text-color,
           var(
@@ -260,7 +261,7 @@
     }
 
     &[aria-pressed='true'] {
-      bnum-icon {
+      old-bnum-icon {
         color: var(
           --workspace-favorite-button-pressed-text-color,
           var(

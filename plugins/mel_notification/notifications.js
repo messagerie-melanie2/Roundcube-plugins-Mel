@@ -38,11 +38,15 @@ if (window.rcmail) {
 
       // Ajout du nombre de notification non lues
       if (!notificationunread) {
-        notificationunread = document.createElement('div');
-        notificationunread.id = 'notificationunread';
-        document
-          .querySelector('#notifications-icon')
-          .append(notificationunread);
+        const notificationButton = document.getElementById(
+          '#notifications-icon',
+        );
+
+        if (notificationButton) {
+          notificationunread = document.createElement('div');
+          notificationunread.id = 'notificationunread';
+          notificationButton.appendChild(notificationunread);
+        }
       }
 
       // Initialisation de la current
@@ -99,7 +103,7 @@ if (window.rcmail) {
         // Récupération des notifications du storage
         let notifications = m_mp_NotificationsGet(),
           newNotifications = {};
-          displayedNotifications = false;
+        displayedNotifications = false;
 
         // Initialisation de la current
         current_desktop_notification = 0;
@@ -107,9 +111,12 @@ if (window.rcmail) {
         for (const notification of evt.response.notifications) {
           if (!notifications[notification.uid] && !notification.isread) {
             // On ne fait poper que les nouvelles notifications
-            if (current_desktop_notification < (rcmail.env.notifications_limit - 1)) {
-                m_mp_ShowNotification(notification);
-                displayedNotifications = true;
+            if (
+              current_desktop_notification <
+              rcmail.env.notifications_limit - 1
+            ) {
+              m_mp_ShowNotification(notification);
+              displayedNotifications = true;
             }
             // Ajoute la notification à la liste des nouvelles notifications
             newNotifications[notification.uid] = notification;
@@ -125,8 +132,11 @@ if (window.rcmail) {
         }
 
         if (newNotifications && displayedNotifications) {
-          if (Object.keys(newNotifications).length >= rcmail.env.notifications_limit) {
-            m_mp_ShowNotification(displayLastNotification(newNotifications))
+          if (
+            Object.keys(newNotifications).length >=
+            rcmail.env.notifications_limit
+          ) {
+            m_mp_ShowNotification(displayLastNotification(newNotifications));
           }
         }
 
@@ -394,7 +404,7 @@ function m_mp_NotificationSettings(key, notification) {
 function m_mp_ShowNotification(notification) {
   // Gérer les notifications multiples
   setTimeout(() => {
-    if (m_mp_NotificationSettings('inside_notification', notification)) { 
+    if (m_mp_NotificationSettings('inside_notification', notification)) {
       let notificationstack = document.getElementById('notificationstack'),
         article = m_mp_NotificationGetElement(notification, false);
 
@@ -422,12 +432,15 @@ function m_mp_ShowNotification(notification) {
 }
 
 function displayLastNotification(newNotifications) {
-  let countNotifications = Object.keys(newNotifications).length - (rcmail.env.notifications_limit - 1);
-  return {    
-    'title' : rcmail.gettext('number_unread_notifications', 'mel_notification', {'nb' :countNotifications}),
-    'category' : "notifications",
-    'uid': "unread_notification_counter"
-  }
+  let countNotifications =
+    Object.keys(newNotifications).length - (rcmail.env.notifications_limit - 1);
+  return {
+    title: rcmail.gettext('number_unread_notifications', 'mel_notification', {
+      nb: countNotifications,
+    }),
+    category: 'notifications',
+    uid: 'unread_notification_counter',
+  };
 }
 
 function PlaySound(sound = 'sound', ext = 'mp3') {
@@ -687,8 +700,10 @@ function m_mp_NotificationsAppendToPanel(notifications) {
     unreadCat = [],
     notificationspanel = document.getElementById('notifications-panel');
 
+  if (!notificationspanel) return;
+
   // Création initiale
-  if (notificationspanel.innerHTML == '') {
+  if (notificationspanel.innerHTML === '') {
     notificationspanel.append(
       m_mp_NotificationsAppendFilters(),
       e('dropdown-menu-scroll', e('content')),
@@ -698,7 +713,7 @@ function m_mp_NotificationsAppendToPanel(notifications) {
   let content = notificationspanel.querySelector('.content');
 
   // Nettoie le notifications panel pour le refresh
-  content.innerHTML = '';
+  content.innerHTML = Object.keys(notifications).length > 0 ? '' : "<span class='d-flex justify-content-center'>Aucune notification</span>";
 
   for (const uid in notifications) {
     if (Object.hasOwnProperty.call(notifications, uid)) {
@@ -767,7 +782,7 @@ function m_mp_NotificationsAppendFilters() {
     let elem = document.createElement('h6'),
       span = document.createElement('span');
     elem.className = className;
-    span.className = 'font-weight-bold blue-color text-center';
+    span.className = 'font-weight-bold text-center';
     span.textContent = textContent;
     elem.append(span);
     return elem;
@@ -799,7 +814,7 @@ function m_mp_NotificationsAppendFilters() {
     }
     span.className = 'filters_button';
     if (iconContent) {
-      icon.className = 'material-symbols-outlined blue-color';
+      icon.className = 'material-symbols-outlined';
       icon.textContent = iconContent;
       button.append(icon);
     }
@@ -812,10 +827,10 @@ function m_mp_NotificationsAppendFilters() {
     delete_all = document.createElement('span');
 
   settings.className =
-    'material-symbols-outlined fw-300 blue-color text-center';
+    'material-symbols-outlined fw-300 text-center';
   settings.innerText = 'settings';
 
-  delete_all.className = 'material-symbols-outlined fw-300 blue-color';
+  delete_all.className = 'material-symbols-outlined fw-300';
   delete_all.innerText = 'delete';
 
   // Select
@@ -1024,7 +1039,7 @@ class html_notification extends mel_html2 {
     super('a', {
       attribs: {
         id: 'notif' + notification.uid.replace(/\W/g, '_'),
-        class: `dropdown-item p-2 mb-2 rounded ${notification.isread ? '' : 'unread'}`,
+        class: `dropdown-item p-2 rounded ${notification.isread ? '' : 'unread'}`,
       },
     });
 

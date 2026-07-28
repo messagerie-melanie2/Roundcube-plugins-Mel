@@ -1,0 +1,25 @@
+﻿<roundcube:include file="includes/layout.html" />
+<roundcube:include file="includes/navigations.html" />
+
+<main>
+
+<div id="layout-content" class="sondage" role="main">
+  <div class="body" id="sdcontents" style="height: 100%">
+    <div id="mainscreen" class="box tchap-box" style="height: 100%">
+      <div class="iframebox" style="height: 100%">
+        <roundcube:object name="tchap_frame" id="tchap_frame" />
+      </div>
+      <div id="wait_box"><div id="img_wait_box"></div></div>
+      <div id="tchap_mobile">
+        <span><roundcube:label name="tchap.mobile_disclaimer" /></span>
+        <a href="https://aide.tchap.beta.gouv.fr/fr/">
+          <roundcube:label name="tchap.tchap_help" />
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<roundcube:include file="includes/footer.html" />

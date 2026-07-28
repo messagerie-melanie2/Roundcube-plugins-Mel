@@ -1,5 +1,5 @@
 <roundcube:include file="includes/layout.html" />
-<roundcube:include file="includes/menu.html" />
+<roundcube:include file="includes/navigations.html" />
 
 <h1 class="voice">
   <roundcube:label name="calendar.calendar" />
@@ -8,19 +8,38 @@
 <!-- calendars list -->
 <div id="layout-sidebar" class="listbox" role="navigation" aria-labelledby="arial-label-calendars">
   <div class="header">
-    <a class="button icon back-content-button" href="#back" data-hidden="big"><span class="inner">
+    <!-- Bouton retour (mobile) -->
+     
+    <a id="old-back-button" class="button icon back-content-button hidden" style="display:none!important;" href="#back" >
+      <span class="inner">
         <roundcube:label name="back" />
-      </span></a>
-      <span class="material-symbols-outlined colored-header-icon calendar_app only-current no-hover only-background">
-        calendar_month
-        </span>
-        <span class="colored-header-title">
-          <roundcube:label name="calendar.calendar" />
-        </span>
-    </span>
-    <roundcube:button name="calendaractionsmenu" id="calendaroptionsmenulink" type="link"
-      title="calendar.calendaractions" class="button icon sidebar-menu" data-popup="calendaractions-menu"
-      innerClass="inner" label="actions" />
+      </span>
+    </a>
+    <bnum-hide breakpoint="touch" mode="up">
+        <bnum-primary-button click="old-back-button" data-icon="chevron_left" style="--bnum-button-icon-gap:0;" >
+          <span class="sr-only"><roundcube:label name="back" /></span>
+        </bnum-primary-button>
+        <span><roundcube:label name="calendar.calendars" /></span>
+    </bnum-hide>
+    <!-- Bouton d'action -->
+     <bnum-hide breakpoint="touch" mode="down">
+    <bnum-primary-button id="create-event-button" style="--bnum-button-padding:6px 10px;" data-hide="touch" block data-icon="calendar_add_on">Nouvel évènement</bnum-primary-button>
+     </bnum-hide>
+    <!-- Bouton + d'actions -->
+    <bnum-icon-button 
+      name="calendaractionsmenu" 
+      id="bnum-calendaroptionsmenulink" 
+      type="link"
+      title="calendar.calendaractions" 
+      class="sidebar-menu" 
+      data-popup="calendaractions-menu"
+      innerClass="inner" 
+      label="actions" 
+      style="display: flex!important;" >
+        more_vert
+      </bnum-icon-button>
+
+
   </div>
   <roundcube:object name="libkolab.folder_search_form" id="calendarlistsearch" wrapper="searchbar menu" ariatag="h2"
     label="calsearchform" label-domain="calendar" buttontitle="findcalendars" />
@@ -34,7 +53,7 @@
     <roundcube:label name="calendar.arialabelminical" />
   </h2>
   <div id="datepicker" class="calendar-datepicker" role="presentation"></div>
-</div>
+</div> 
 
 <!-- calendar -->
 <div id="layout-content" class="selected no-navbar" role="main">
@@ -45,18 +64,19 @@
     <a class="button icon task-menu-button" href="#menu"><span class="inner">
         <roundcube:label name="menu" />
       </span></a>
-    <a class="button icon back-sidebar-button calendars mel-circle-icon-button" href="#sidebar" data-hidden="big"><span class="inner">
+    <a id="sidebar-back" class="button icon back-sidebar-button calendars mel-circle-icon-button" style="display:none!important"  href="#sidebar" data-hidden="big">
+      <span class="inner">
         <roundcube:label name="calendar.calendars" />
       </span></a>
     <span class="header-title"></span>
     <!-- toolbar -->
-    <button title="Rechercher des évènements" id=mel-button-small-search style="font-size: 1.35rem;margin-right:5px"
+    <button title="Rechercher des évènements" id="mel-button-small-search" style="font-size: 1.35rem;margin-right:5px;display:none!important;"
       class="transparent-icon-button small-toolbar-calendar"><span
         class="sr-only">Rechercher</span><span class="icon-mel-search"></span></button>
-    <button title="Plus d'options" style="font-size: 1.35rem;" data-popup="toolbar-menu-mel" aria-haspopup="true"
+    <!-- <button title="Plus d'options" style="font-size: 1.35rem;" data-popup="toolbar-menu-mel" aria-haspopup="true"
       aria-expanded="false" aria-owns="toolbar-menu-mel"
       class="transparent-icon-button small-toolbar-calendar"><span class="sr-only">Plus
-        d'options</span><span class="icon-mel-dots"></span></button>
+        d'options</span><span class="icon-mel-dots"></span></button> -->
     <div class="row toolbar-calendar">
       <div class="col-8">
         <div id="calendartoolbar" class="toolbar menu">
@@ -77,8 +97,11 @@
         </div>
       </div>
       <div class="col-4">
-        <roundcube:object name="plugin.searchform" id="searchform" wrapper="searchbar menu" label="searchform"
+        <bnum-input-search id="bnum-calendar-search" data-mirror="searchform"><span class="sr-only">Rechercher un évènement</span></bnum-input-search>
+        <div class="hidden" data-used-to="mirror">
+          <roundcube:object name="plugin.searchform" id="searchform" wrapper="searchbar menu" label="searchform"
           buttontitle="calendar.findevents" label-domain="calendar" ariatag="h2" />
+        </div>
       </div>
     </div>
   </div>
@@ -90,6 +113,24 @@
           class="icon-mel-close"></span></button>
     </div>
   </div>
+
+    <bnum-hide id="bnumelasticback" breakpoint="touch" mode="up" slot="header"> 
+        <bnum-primary-button click="sidebar-back" data-icon="calendar_month" style="--bnum-button-icon-gap:0;display:none!important;" >
+          <span class="sr-only"><roundcube:label name="calendar.calendars" /></span>
+        </bnum-primary-button>
+      </bnum-hide>
+    <bnum-hide id="bnumelasticother" breakpoint="touch" mode="up" slot="header">
+      <div class="toolbar-left">
+                <bnum-secondary-button style="--bnum-button-icon-gap:0;display:none!important;" click="mel-button-small-search" data-icon="search">
+          <span class="sr-only">Rechercher</span>
+        </bnum-secondary-button>
+        <bnum-secondary-button style="--bnum-button-icon-gap:0;display:none!important;" data-block-after-init="block" data-popup="toolbar-menu-mel" aria-haspopup="true"
+      aria-expanded="false" aria-owns="toolbar-menu-mel"
+      data-icon="more_vert"
+      ><span class="sr-only">Plus
+        d'options</span></bnum-secondary-button>
+      </div>
+    </bnum-hide>
 
   <h2 id="aria-label-calendarview" class="voice">
     <roundcube:label name="calendar.arialabelcalendarview" />

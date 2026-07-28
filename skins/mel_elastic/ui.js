@@ -594,11 +594,11 @@ $(document).ready(() => {
        * @type {Mel_CSS_Style_Sheet}
        */
       this.css_rules = new Mel_CSS_Style_Sheet();
-      const tabs = this.init_theme_tabs({});
+      // const tabs = this.init_theme_tabs({});
       return this.init_const()
-        .init_theme($(`#theme-panel .${tabs[ID_THEME_CONTENT].id}`))
+        .init_theme($('#theme-panel .null'))
         .init_theme_pictures({
-          picturePannel: `#theme-panel .${tabs[ID_PICTURES_CONTENT].id}`,
+          picturePannel: '#theme-panel',
         })
         .init_footer();
     }
@@ -894,6 +894,8 @@ $(document).ready(() => {
       let html = new mel_html2(CONST_HTML_DIV, {
         attribs: { class: CONST_CLASS_ROW, style: STYLE_MAIN_DIV_THEME },
       });
+
+      rcmail.env.current_theme = DEFAULT_THEME;
       this.theme = rcmail.env.current_theme || DEFAULT_THEME;
 
       if (
@@ -1087,9 +1089,9 @@ $(document).ready(() => {
         parent.MEL_ELASTIC_UI.color_mode() !== this.color_mode()
       ) {
         if (parent.MEL_ELASTIC_UI.color_mode() === 'dark') {
-          if (this.themes[this.theme]?.custom_dark_mode)
+          if (true || this.themes[this.theme]?.custom_dark_mode)
             $('html').addClass('dark-mode-custom');
-          else $('html').addClass('dark-mode');
+          else $('html').addClass('dark-mode-custom');
         } else
           $('html').removeClass('dark-mode-custom').removeClass('dark-mode');
       }
@@ -1413,7 +1415,7 @@ $(document).ready(() => {
           const isCustom = e.data(THEME_ATTRIB_DATA_IS_CUSTOM);
 
           try {
-            this.css_rules.remove(RULE_KEY);
+            document.querySelector('bnum-header')?.clearBackground?.();
           } catch (error) {}
 
           if (data) {
@@ -1444,6 +1446,7 @@ $(document).ready(() => {
           ) {
             this.theme_selected_picture = iterator.key;
             this.css_rules.remove(RULE_KEY);
+            document.querySelector('bnum-header')?.clearBackground?.();
           } else {
             this._add_background(iterator.value.background, isCustom);
             $(CONST_HTML_HTML).addClass(CONST_CLASS_HTML_HAS_PICTURE);
@@ -1469,13 +1472,27 @@ $(document).ready(() => {
     }
 
     _add_background(path, isRule) {
-      this.css_rules.addAdvanced(
-        'barup-background',
-        '.barup',
-        `background-image:url(${isRule ? path : (window.location.origin + window.location.pathname + path.replace('./', '/')).replaceAll('://', '¤').replaceAll('//', '/').replaceAll('¤', '://')})!important`,
-        'background-size: cover !important',
-        'background-position: center !important',
-      );
+      document
+        .querySelector('bnum-header')
+        ?.updateBackground?.(
+          isRule
+            ? path
+            : (
+                window.location.origin +
+                window.location.pathname +
+                path.replace('./', '/')
+              )
+                .replaceAll('://', '¤')
+                .replaceAll('//', '/')
+                .replaceAll('¤', '://'),
+        );
+      // this.css_rules.addAdvanced(
+      //   'barup-background',
+      //   '.barup',
+      //   `background-image:url(${isRule ? path : (window.location.origin + window.location.pathname + path.replace('./', '/')).replaceAll('://', '¤').replaceAll('//', '/').replaceAll('¤', '://')})!important`,
+      //   'background-size: cover !important',
+      //   'background-position: center !important',
+      // );
       return this;
     }
 
@@ -1771,36 +1788,41 @@ $(document).ready(() => {
               .removeClass('hidden layout-hidden');
             $('#layout-list').removeClass('initial');
 
-            //On réduit la recherche au besoin
-            $('#mailsearchlist')
-              .addClass('hoverable')
-              .on('mouseover focusin', () => {
-                if (
-                  $('#mailsearchlist').hasClass('hoverable') &&
-                  !$('#layout-list').hasClass('full')
-                )
-                  $('#mailsearchlist').removeClass('hoverable');
-              })
-              .on('mouseleave focusout', () => {
-                if (document.activeElement === $('#mailsearchform')[0]) return;
+            const MAILSEARCH = false;
 
-                if (
-                  !$('#mailsearchlist').hasClass('hoverable') &&
-                  !$('#layout-list').hasClass('full')
-                )
-                  $('#mailsearchlist').addClass('hoverable');
-              })
-              .find('#mailsearchform')
-              .on('focusout', (e) => {
-                if (e.relatedTarget === $('#mailsearchlist .reset')[0]) return;
+            if (MAILSEARCH) {
+              //On réduit la recherche au besoin
+              $('#mailsearchlist')
+                .addClass('hoverable')
+                .on('mouseover focusin', () => {
+                  if (
+                    $('#mailsearchlist').hasClass('hoverable') &&
+                    !$('#layout-list').hasClass('full')
+                  )
+                    $('#mailsearchlist').removeClass('hoverable');
+                })
+                .on('mouseleave focusout', () => {
+                  if (document.activeElement === $('#mailsearchform')[0])
+                    return;
 
-                if (
-                  !$('#mailsearchlist').hasClass('hoverable') &&
-                  !$('#layout-list').hasClass('full')
-                )
-                  $('#mailsearchlist').addClass('hoverable');
-              });
+                  if (
+                    !$('#mailsearchlist').hasClass('hoverable') &&
+                    !$('#layout-list').hasClass('full')
+                  )
+                    $('#mailsearchlist').addClass('hoverable');
+                })
+                .find('#mailsearchform')
+                .on('focusout', (e) => {
+                  if (e.relatedTarget === $('#mailsearchlist .reset')[0])
+                    return;
 
+                  if (
+                    !$('#mailsearchlist').hasClass('hoverable') &&
+                    !$('#layout-list').hasClass('full')
+                  )
+                    $('#mailsearchlist').addClass('hoverable');
+                });
+            }
             let $back = `<li role="menuitem" class="parent-close-visu">
                             <a  onclick="return rcmail.command('close-mail-visu','',this,event)"  class="close-visu"  role="button" href="#" ><span class="inner">Fermer</span></a>
                         </li>`;
@@ -1932,115 +1954,13 @@ $(document).ready(() => {
             .prependTo($('#toolbar-list-menu .compose').parent().parent());
 
           //Ajout de "plus"
-          $('#toolbar-list-menu').append(
-            $(`
-                        <li id="limelmailplusmenu" class="marked" style="display:none" role="menuitem">
-                        
-                        </li>
-                    `).append($('#melplusmails').css('display', '')),
-          );
+          // $('#toolbar-list-menu').append(
+          //   $(`
+          //               <li id="limelmailplusmenu" class="marked" style="display:none" role="menuitem">
 
-          let test = new ResizeObserver(() => {
-            let value = 0;
-            {
-              let iterator;
-              for (iterator of $('#toolbar-list-menu li')) {
-                iterator = $(iterator);
-                if (!iterator.hasClass('marked')) {
-                  value += iterator.width();
-                }
-              }
-              iterator = null;
-              const additional_width = $(
-                '.header .toolbar-button.refresh',
-              ).width();
-              value += additional_width + additional_width / 2.0;
-            }
-            const max =
-              $('#layout-list').width() - $('#mail-search-border').width(); //mailConfig === null || mailConfig["mel-icon-size"] === rcmail.gettext("normal", "mel_metapage") ? 370 : 347; //370;
-
-            if (value > max) {
-              $('#toolbar-list-menu li')
-                .css('display', 'none')
-                .find('.compose')
-                .parent()
-                .css('display', '');
-              $('#limelmailplusmenu').css('display', '');
-            } else {
-              $('#toolbar-list-menu li').css('display', '');
-              $('#limelmailplusmenu').css('display', 'none');
-            }
-
-            if (
-              !$('html').hasClass('touch') &&
-              $('#toolbar-list-menu').hasClass('hidden')
-            ) {
-              $('#toolbar-list-menu')
-                .removeClass('hidden')
-                .removeAttr('aria-hidden');
-            }
-
-            if (
-              rcmail.env.search_initialized !== true &&
-              window.innerWidth < 410 &&
-              window.innerWidth > 0
-            ) {
-              console.log(
-                'hoverable observer',
-                rcmail.env.search_initialized,
-                window.innerWidth,
-              );
-              rcmail.env.search_initialized = true;
-              $('#mailsearchlist')
-                .addClass('hoverable')
-                .click((e) => {
-                  //console.log("e", $("#mailsearchlist").hasClass("stopclick"));
-                  if ($('#mailsearchlist').hasClass('stopclick')) {
-                    $('#mailsearchlist').removeClass('stopclick');
-
-                    if (!$('#mailsearchlist').hasClass('hoverable')) {
-                      $('#mailsearchlist').addClass('hoverable');
-                      return;
-                    }
-                  }
-
-                  if (window.innerWidth < 410) {
-                    $('#mailsearchlist').removeClass('hoverable');
-                    $('#mailsearchlist input').focus();
-                  }
-                })
-                .find('input')
-                .on('focusout', (e) => {
-                  if (window.innerWidth < 410) {
-                    console.log('hoverable observer', e, window.innerWidth);
-                    let parent =
-                      e.relatedTarget === null ? null : $(e.relatedTarget); //e.originalEvent === null || e.originalEvent.explicitOriginalTarget === null ? null : $(e.originalEvent.explicitOriginalTarget);
-                    while (
-                      parent !== null &&
-                      parent.attr('id') != 'mailsearchlist' &&
-                      parent[0].nodeName != 'BODY' &&
-                      !parent.hasClass('icon-mel-search')
-                    ) {
-                      parent = parent.parent();
-                    }
-
-                    if (
-                      parent === null ||
-                      parent.hasClass('icon-mel-search') ||
-                      parent[0].nodeName === 'BODY'
-                    ) {
-                      if (!!parent && parent.hasClass('icon-mel-search'))
-                        $('#mailsearchlist').addClass('stopclick');
-                      else {
-                        $('#mailsearchlist').addClass('hoverable');
-                      }
-                      document.activeElement.blur();
-                    }
-                  }
-                });
-            }
-          });
-          test.observe($('#layout-list')[0]);
+          //               </li>
+          //           `).append($('#melplusmails').css('display', '')),
+          // );
 
           this.update_mail_css({});
 
@@ -3005,6 +2925,23 @@ $(document).ready(() => {
         if (this.css_rules.ruleExist(mel_message_space))
           this.css_rules.remove(mel_message_space);
 
+        {
+          const message_space_keys = {
+            [rcmail.gettext('larger', 'mel_metapage')]: 'mail-large',
+            [rcmail.gettext('smaller', 'mel_metapage')]: 'mail-small',
+          };
+          const html = document.querySelector('html');
+
+          for (const key of Object.keys(message_space_keys)) {
+            html.classList.remove(message_space_keys[key]);
+          }
+
+          const html_class_to_add =
+            message_space_keys[mailConfig[mel_message_space]];
+
+          if (html_class_to_add) html.classList.add(html_class_to_add);
+        }
+
         //Espacement des messages
         if (
           mailConfig[mel_message_space] ===
@@ -3311,12 +3248,12 @@ $(document).ready(() => {
       let $html = $('html');
 
       if (this.color_mode() === 'dark') {
-        if (this.themes[this.theme]?.custom_dark_mode) {
+        if (true || this.themes[this.theme]?.custom_dark_mode) {
           if ($html.hasClass('dark-mode')) $html.removeClass('dark-mode');
           if (!$html.hasClass('dark-mode-custom'))
             $html.addClass('dark-mode-custom');
         } else {
-          if (!$html.hasClass('dark-mode')) $html.addClass('dark-mode');
+          if (!$html.hasClass('dark-mode')) $html.addClass('dark-mode-custom');
           if ($html.hasClass('dark-mode-custom'))
             $html.removeClass('dark-mode-custom');
         }
@@ -3324,8 +3261,8 @@ $(document).ready(() => {
         $html.removeClass('dark-mode-custom');
 
       if (
-        this.color_mode() === 'dark' &&
-        !this.themes[this.theme]?.custom_dark_mode
+        this.color_mode() === 'dark' /*&&
+        !this.themes[this.theme]?.custom_dark_mode*/
       ) {
         let current = this.themes[this.get_current_theme()];
         do {
@@ -4331,7 +4268,9 @@ $(document).ready(() => {
     }
 
     get_current_theme() {
-      return this.theme || 'default';
+      const DEFAULT = 'default';
+      this.theme = DEFAULT;
+      return this.theme || DEFAULT;
     }
 
     get_current_theme_picture() {

@@ -1,6 +1,7 @@
 <roundcube:include file="includes/layout.html" />
 <roundcube:include file="includes/menu.html" />
 <link rel="stylesheet" type="text/css" href="/this/annuaire.css" />
+<link rel="stylesheet" type="text/css" href="/this/annuaire_dsfr.css" />
 <h1 class="voice"><roundcube:label name="addressbook" /></h1>
 
 <!-- sources/groups list -->
@@ -20,7 +21,6 @@
       <roundcube:label name="annuaire.annuaires" />
     </span>
 	</div>
-	<separate></separate>
 	<div class="scroller">
 		<roundcube:object name="directorylist" id="directorylist" class="treelist listing iconized" />
 		<h3 class="voice"><roundcube:label name="savedsearches" /></h3>
@@ -35,6 +35,10 @@
 		<a id="button-back-adressbook" class="button icon back-sidebar-button folders" href="#sidebar"><span class="inner"><roundcube:label name="groups" /></span></a>
 		<div class="searchgroup" id="mainscreen-annuaire">
 			<center><span>Rechercher un contact</span></center>
+			<!-- FOR THE FUTURE ! =) <bnum-input-search id="quicksearchbarfront" placeholder="Recherchez ici...">
+				<center>Rechercher un contact</center>
+				<bnum-icon-button id="quicksearchbarfront-options" slot="actions">keyboard_arrow_down</bnum-icon-button>
+			</bnum-input-search> -->
 			<div id="quicksearchbar" class="searchbox" role="search" aria-labelledby="aria-label-searchform">
 				<roundcube:object name="searchform" id="quicksearchbox" wrapper="searchbar menu"
 				label="contactsearchform" buttontitle="findcontacts" ariatag="h2" />
@@ -69,7 +73,6 @@
 		</div>
 		<a class="button icon toolbar-menu-button" href="#list-menu"><span class="inner"><roundcube:label name="menu" /></span></a> -->
 	</div>
-	<separate></separate>
 	<!-- <roundcube:object name="searchform" id="searchform" wrapper="searchbar menu"
 		label="contactsearchform" buttontitle="findcontacts" options="searchmenu" ariatag="h2" /> -->
 	<div id="searchmenu" class="hidden searchoptions scroller propform formcontainer" aria-labelledby="aria-label-search-menu">

@@ -122,8 +122,7 @@ export class LinkManager extends MelObject {
         .end()
         .end('button')
         .end('row')
-        .end('div')
-        .generate();
+        .end('div');
 
       this.newLinkModal = new RcmailDialog(html, {
         title: id

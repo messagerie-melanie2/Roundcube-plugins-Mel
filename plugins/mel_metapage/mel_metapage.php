@@ -467,7 +467,11 @@ class mel_metapage extends bnum_plugin
             $this->include_script('js/init/commands.js');
             $this->include_script('js/init/classes/addons/array.js');
             $this->add_hook("startup", array($this, "send_spied_urls"));
+            $this->set_env('bnum_frame', true);
             return;
+        }
+        else if (rcube_utils::get_input_value('_is_from', rcube_utils::INPUT_GET) === 'iframe') {
+            $this->set_env('bnum_frame', true);
         }
 
         if ($this->rc->task !== "login" && $this->rc->task !== "logout")
@@ -641,6 +645,12 @@ class mel_metapage extends bnum_plugin
                 'dn' => $user->dn
             ]);
 
+            $this->set_envs([
+                '_template_current_user_name' => $user->name,
+                '_template_current_user_full' => $user->fullname,
+                '_template_current_user_email' => $user->email
+            ]);
+
             //            $this->include_script('js/actions/startup.js');
             if (rcube_utils::get_input_value(self::FROM_KEY, rcube_utils::INPUT_GET) !== self::FROM_VALUE) {
                 $this->include_script('js/actions/startup.js');
@@ -654,7 +664,7 @@ class mel_metapage extends bnum_plugin
                 }
             }
 
-            $this->add_hook(class_exists('mel_elastic') ? 'before_send_page' :  'send_page', array($this, "generate_html")); //$this->rc->output->add_header($this->rc->output->parse("mel_metapage.barup", false, false));
+            //$this->add_hook(class_exists('mel_elastic') ? 'before_send_page' :  'send_page', array($this, "generate_html")); //$this->rc->output->add_header($this->rc->output->parse("mel_metapage.barup", false, false));
         } else if (
             $this->rc->task == 'logout'
             || $this->rc->task == 'login'
@@ -989,16 +999,16 @@ class mel_metapage extends bnum_plugin
 
 
 
-        $this->add_button(array(
-            'command' => "mel-compose",
-            'href' => './?_task=mail&_action=compose',
-            'class'    => 'compose options',
-            'classsel' => 'compose options',
-            'innerclass' => 'inner',
-            'label'    => 'compose',
-            'title' => 'mel_metapage.compose-mail',
-            'type'       => 'link',
-        ), "listcontrols");
+        // $this->add_button(array(
+        //     'command' => "mel-compose",
+        //     'href' => './?_task=mail&_action=compose',
+        //     'class'    => 'compose options',
+        //     'classsel' => 'compose options',
+        //     'innerclass' => 'inner',
+        //     'label'    => 'compose',
+        //     'title' => 'mel_metapage.compose-mail',
+        //     'type'       => 'link',
+        // ), "listcontrols");
 
         $this->add_button(array(
             'command' => "event-compose",
@@ -1069,7 +1079,7 @@ class mel_metapage extends bnum_plugin
             ), "toolbar");
 
             $this->add_button(array(
-                'command'       => 'set-favorite-folder',
+                'command'       => 'toggle-favorite-folder',
                 'class'            => 'favorite folder-to disabled',
                 'classact'      => 'favorite folder-to active',
                 'classsel'      => 'favorite folder-to active',
@@ -1147,6 +1157,7 @@ class mel_metapage extends bnum_plugin
      */
     function generate_html($args)
     {
+        return $args;
         if ($this->get_current_task() === 'logout' || $this->get_current_task() === 'login') return $args;
 
         if (strpos($args["content"], '<html lang="fr" class="iframe') !== false) {
@@ -4974,8 +4985,15 @@ class mel_metapage extends bnum_plugin
         // Set the text color of image 
         $text_color = imagecolorallocate($image, $colors['text'][0], $colors['text'][1], $colors['text'][2]);
 
-        $tmp = imagefttext($image, 120, 0, 50, 160, $text_color, __DIR__ . '/skins/mel_elastic/roboto.ttf', strtoupper(substr($email, 0, 1)));
-        //imagestring($image, 2, 20, 20, substr($email, 0, 1), $text_color);
+        $font = __DIR__ . '/skins/mel_elastic/roboto.ttf';
+        $letter = strtoupper(substr($email, 0, 1));
+        $font_size = 120;
+
+        $bbox = imagettfbbox($font_size, 0, $font, $letter);
+        $x = (200 - ($bbox[2] - $bbox[0])) / 2 - $bbox[0];
+        $y = (200 - ($bbox[1] + $bbox[7])) / 2;
+
+        $tmp = imagefttext($image, $font_size, 0, $x, $y, $text_color, $font, $letter);
 
         return $image;
     }

@@ -1,0 +1,301 @@
+#input-search-mail {
+  position: relative;
+  --bnum-input-container-margin-bottom: 0;
+  --bnum-input-gap: 0;
+  margin-right: var(--bnum-space-m);
+  display: block;
+}
+#input-search-mail::part(state-container) {
+  display: none;
+}
+#toolbar-list-menu.popupmenu {
+  min-width: 0;
+}
+#mailsearchlist {
+  margin-right: 0 !important;
+  position: relative;
+}
+#mailsearchlist.hoverable {
+  right: 0 !important;
+}
+html.touch #mailsearchlist {
+  position: relative !important;
+}
+#searchmenu {
+  --searchmenu-text-color: var(--body-text-color, black);
+  background-color: var(--bnum-color-background, white);
+  z-index: 1;
+  top: 60px;
+  right: 15px;
+  max-width: 300px;
+  box-shadow: 0px 0px 6px 4px #00000033 !important;
+  border-radius: 5px !important;
+  position: absolute;
+}
+html body.task-mail .header a.toolbar-list-button,
+html.layout-phone body.task-mail .header a.toolbar-list-button,
+html.layout-small body.task-mail .header a.toolbar-list-button {
+  display: none !important;
+}
+html body.task-mail .header a.selection,
+html.layout-phone body.task-mail .header a.selection,
+html.layout-small body.task-mail .header a.selection {
+  display: none !important;
+}
+table.messagelist tr.message td.threads {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 49px;
+  border: none;
+}
+table.messagelist tr.message td.threads + .subject span.subject,
+table.messagelist tr.message td.threads + .subject .fromto {
+  margin-left: calc(var(--bnum-space-xl) + var(--bnum-space-xs));
+}
+table.messagelist td.subject:hover span.msgicon::before {
+  content: '\e94d';
+}
+table.messagelist {
+  --_idle: '\e94e';
+  --_idle-hover: '\e94d';
+  --_unread: var(--_idle-hover);
+  --_unread-hover: var(--_idle);
+}
+table.messagelist td.subject span.fromto,
+table.messagelist td.subject span.subject {
+  margin-left: var(--bnum-space-xl);
+}
+table.messagelist td.subject span.msgicon.status::before {
+  height: 2.04rem;
+  content: var(--message-state-icon, var(--_idle)) !important;
+}
+table.messagelist td.subject span.msgicon.status:hover::before {
+  content: var(--message-state-icon, var(--_idle-hover)) !important;
+}
+table.messagelist tr .mail-avatar {
+  --avatar-size: 40px;
+  height: var(--avatar-size);
+  width: var(--avatar-size);
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+table.messagelist tr .mail-avatar .mail-avatar--action,
+table.messagelist tr .mail-avatar .mail-avatar--avatar {
+  height: var(--avatar-size);
+  width: var(--avatar-size);
+}
+table.messagelist tr .mail-avatar .mail-avatar--action {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+table.messagelist tr.has-label .mail-avatar {
+  top: 56px;
+}
+table.messagelist tr.has-label td.labels {
+  margin-left: 51px;
+}
+table.messagelist tr.has-label:hover td {
+  background-color: transparent !important;
+}
+html.mail-small table.messagelist tr .mail-avatar {
+  --avatar-size: 30px;
+}
+html.mail-small table.messagelist tr.has-label .mail-avatar {
+  top: 46px;
+}
+html.mail-large table.messagelist tr.has-label .mail-avatar {
+  top: 64px;
+}
+table.messagelist tr td.labels {
+  margin: var(--bnum-space-xs, 5px) 0;
+}
+table.messagelist tr td.labels::before {
+  content: none !important;
+}
+table.messagelist tr td.labels span {
+  padding: 2px 6px;
+  margin-left: -7px;
+}
+table.messagelist tr.unread td.subject span.msgicon.status::before {
+  content: var(--message-state-icon, var(--_unread)) !important;
+}
+table.messagelist tr.unread td.subject span.msgicon.status:hover::before {
+  content: var(--message-state-icon, var(--_unread-hover)) !important;
+}
+table.messagelist tr.flagged td.flags {
+  color: var(--main-text-color);
+}
+table.messagelist tr.message.priority td.subject span.subject {
+  margin-left: 45px;
+}
+table.messagelist tr.message.priority td.subject span.priority span.prio1,
+table.messagelist tr.message.priority td.subject span.priority span.prio2,
+table.messagelist tr.message.priority td.subject span.priority span.prio4,
+table.messagelist tr.message.priority td.subject span.priority span.prio5 {
+  line-height: 1em;
+  margin-top: -25px;
+  margin-left: 49px;
+}
+table.messagelist tr.message.handled td.subject span.fromto {
+  margin-left: 45px;
+}
+table.messagelist tr.message.handled td.subject span.msgicon {
+  pointer-events: none;
+}
+table.messagelist tr.message.handled td.subject span.msgicon.replied::before,
+table.messagelist tr.message.handled td.subject span.msgicon.forwarded::before {
+  margin-left: 8px;
+  margin-right: 7px !important;
+}
+table.messagelist tr.message.handled td.subject span.msgicon.replied.forwarded::after {
+  margin-right: 6px !important;
+}
+table.messagelist tr.message.handled td.subject span.msgicon.replied.forwarded::before {
+  content: '' !important;
+  margin-left: 3px;
+}
+table.messagelist tr.message.thread td.subject span.fromto,
+table.messagelist tr.message.thread td.subject span.subject {
+  margin-left: 45px;
+}
+table.messagelist tr.message.thread.expanded .mail-avatar {
+  margin-left: calc(1.5rem * var(--row-level, 0px));
+}
+table.messagelist tr.message.thread.handled td.subject span.fromto {
+  margin-left: 65px;
+}
+table.messagelist tr.message.thread.priority td.subject span.subject {
+  margin-left: 65px;
+}
+table.messagelist tr.message.thread.priority td.subject span.priority span.prio1,
+table.messagelist tr.message.thread.priority td.subject span.priority span.prio2,
+table.messagelist tr.message.thread.priority td.subject span.priority span.prio4,
+table.messagelist tr.message.thread.priority td.subject span.priority span.prio5 {
+  margin-left: 69px;
+}
+table.messagelist tr.message:hover {
+  --_flag: '\e958';
+  --_flag-hover: '\e957';
+  --_flagged: var(--_flag-hover);
+  --_flagged-hover: var(--_flag);
+}
+table.messagelist tr.message:hover td.flags span.unflagged::before {
+  content: var(--_flag) !important;
+}
+table.messagelist tr.message:hover td.flags span.unflagged:hover::before {
+  content: var(--_flag-hover) !important;
+}
+table.messagelist tr.message:hover td.flags span.flagged::before {
+  content: var(--_flagged) !important;
+}
+table.messagelist tr.message:hover td.flags span.flagged:hover::before {
+  content: var(--_flagged-hover) !important;
+}
+table.messagelist tr .row-actions {
+  display: none;
+  position: absolute;
+  top: 0px;
+  right: 10px;
+  height: calc(100% - 2px);
+  z-index: 1;
+  align-items: center;
+  color: var(--bnum-color-primary);
+}
+table.messagelist tr .row-actions .sub-action {
+  font-variation-settings: 'wght' 300 !important;
+  margin-top: 8px;
+}
+table.messagelist tr .row-actions .delete-action {
+  color: red;
+}
+table.messagelist tr:hover .row-actions {
+  display: flex;
+}
+table.messagelist tr:hover.message .flags,
+table.messagelist tr:hover.message .size,
+table.messagelist tr:hover.message .date {
+  opacity: 0;
+}
+table.messagelist tr:hover .unread-action {
+  display: none;
+}
+table.messagelist tr:hover .read-action {
+  display: block;
+}
+table.messagelist tr:hover .flag-action {
+  display: none;
+}
+table.messagelist tr:hover .unflag-action {
+  display: block;
+}
+table.messagelist tr.unread:hover .unread-action {
+  display: block;
+}
+table.messagelist tr.unread:hover .read-action {
+  display: none;
+}
+table.messagelist tr.flagged:hover .flag-action {
+  display: block;
+}
+table.messagelist tr.flagged:hover .unflag-action {
+  display: none;
+}
+#list-toggle-button {
+  display: none;
+}
+#layout-list {
+  --message-list-quick-filter-background-color: var(--layout-list-header-background, var(--bnum-header-color, var(--bnum-color-background, #fff)));
+  --input-button-text-color: var(--layout-list-header-color, var(--bnum-body-text-color, var(--bnum-text-primary)));
+}
+#layout-list .menu a.search:before {
+  content: '\e8b6' !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
+}
+#list-select-mail-choices.hidden {
+  display: flex !important;
+}
+.messagelist.__no-rc td.subject span.size {
+  color: var(--_no-rc-color, var(--bnum-body-text-color, var(--bnum-text-primary)));
+}
+#folderlist-content {
+  max-height: calc(100% - 120px);
+}
+.footer {
+  position: absolute;
+  bottom: 5px;
+  left: 0;
+  right: 0;
+}
+.listing tbody tr.context-source:not(.selected) > td {
+  background-color: var(--_bdsli-active-bg) !important;
+}
+html.layout-phone .task-mail #layout-content > div.header,
+html.layout-small .task-mail #layout-content > div.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  line-height: 20px;
+  padding: 0px 10px;
+}
+html.layout-phone .task-mail #layout-content > div.footer,
+html.layout-small .task-mail #layout-content > div.footer {
+  color: var(--bnum-text-primary);
+  background-color: var(--layout-content-header-background-color) !important;
+  border-top: var(--bnum-border-in-surface);
+  bottom: 0;
+}
+#searchmenu .formcontent {
+  color: var(--bnum-text-primary);
+}
+#layout-sidebar .header {
+  --layout-sidebar-header-padding: 12px 10px 12px 16px;
+}

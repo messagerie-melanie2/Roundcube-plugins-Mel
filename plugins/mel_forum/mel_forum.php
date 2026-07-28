@@ -45,7 +45,7 @@ class mel_forum extends bnum_plugin
 
         // Ajout du css
         $this->include_stylesheet($this->local_skin_path() . '/mel_forum.css');
-
+        $this->include_stylesheet($this->local_skin_path() . '/mel_forum_dsfr.css');
 
         // ajout de la tache
         $this->register_task('forum');

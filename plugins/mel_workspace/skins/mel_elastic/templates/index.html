@@ -1,28 +1,51 @@
 <!-- Inclusion du layout principal -->
-<roundcube:include file="includes/layout.html" />
-<!-- Inclusion du menu de navigation -->
-<roundcube:include file="includes/menu.html" />
+<roundcube:include file="includes/navigations.html" />
 
 <!-- Titre principal de la page -->
-<h1 class="voice">
+<h1 class="voice sr-only">
   <roundcube:label name="workspaces" />
 </h1>
 
 <!-- Contenu principal de la page Workspaces -->
-<div id="layout-content" class="wsp-content wsp-index only-content" role="main">
+<div id="layout-content" class="wsp-content wsp-index only-content" style="height:100%" role="main">
   <!-- En-tête de la section workspaces -->
+
   <div class="wsp-header">
-    <div class="row">
+    <div class="bds-flex bds-flex-justify-between bds-flex-align-center">
       <!-- Colonne : icône et titre "Mes espaces" -->
-      <div class="col-12 col-md-4 mb-3 mb-md-0 d-flex align-items-center justify-content-center justify-content-md-start">
-        <span class="material-symbols-outlined colored-wsp-icon calendar_app only-current no-hover only-background">
-          workspaces
-          </span>
-        <h2 class="font-weight-bold mb-0">
-          <roundcube:label name="mel_workspace.my_workspaces" />
-        </h2>
-      </div>
-      <!-- Colonne : barre de recherche des espaces -->
+        <roundcube:if condition="env:wsp_usr_can_create !== false" />
+          <bnum-primary-button id="create-edt" class="left-item" data-icon="add">Créer un espace</bnum-primary-button>
+        <roundcube:else>
+          <bnum-placeholder class="left-item"></bnum-placeholder>
+        <roundcube:endif />
+
+        <bnum-input-search id="wsp-search-input" class="mel-max-width-500 corrected" style="--bnum-input-gap:0" data-no-legend placeholder="Rechercher..."><bnum-screen-reader>Rechercher un espace de travail</bnum-screen-reader></bnum-input-search>
+        
+        <bnum-segmented-control id="control-view">
+          Vue des espaces
+          <roundcube:if condition="_template_visu_mode == 'list'">
+            <bnum-segmented-item slot="items"  value="cards" data-icon="grid_view">Grille</bnum-segmented-item>
+            <bnum-segmented-item slot="items" selected value="list" data-icon="splitscreen">Liste</bnum-segmented-item>
+          <roundcube:else>
+            <bnum-segmented-item slot="items" selected value="cards" data-icon="grid_view">Grille</bnum-segmented-item>
+            <bnum-segmented-item slot="items" value="list" data-icon="splitscreen">Liste</bnum-segmented-item>
+          <roundcube:endif />
+        </bnum-segmented-control>
+        
+        <!-- Boutons pour changer le mode d'affichage (liste ou grille) -->
+<!--        <div class="col-12 col-md-2 mt-3 mt-md-0 d-flex justify-content-md-end">
+          <div class="btn-group pressed-list" role="group" aria-label="Mode d'affichage">
+            <bnum-pressed-button id="mode-list"
+              class="btn btn-secondary mel-button no-margin-button no-button-margin cannot-unpress">
+              <bnum-icon>splitscreen</bnum-icon>
+            </bnum-pressed-button>
+            <bnum-pressed-button data-start-pressed="true" id="mode-block"
+              class="btn btn-secondary mel-button no-margin-button no-button-margin cannot-unpress">
+              <bnum-icon>grid_view</bnum-icon>
+            </bnum-pressed-button>
+          </div>
+        </div> -->
+      <!-- Colonne : barre de recherche des espaces --
       <div class="col-12 col-md-4 d-flex align-items-center justify-content-center">
         <div class="wsp-search-wsp">
           <div class="input-group mel-search-group mel-centered">
@@ -37,35 +60,28 @@
         </div>
       </div>
       <roundcube:if condition="env:wsp_usr_can_create !== false" />
-      <!-- Colonne : bouton pour créer un nouvel espace -->
+      <!-- Colonne : bouton pour créer un nouvel espace 
       <div class="col-12 col-md-4 d-flex align-items-center justify-content-center justify-content-md-end mt-3 mt-md-0">
         <button class="mel-button no-margin-button no-button-margin create-wsp-button">Créer un espace<bnum-icon
             class="plus" data-icon="add_circle"></bnum-icon></button>
       </div>
-      <roundcube:endif />
+      <roundcube:endif />-->
     </div>
   </div>
 
   <!-- Corps principal avec les onglets des espaces -->
   <div class="body">
     <!-- Composant onglets pour naviguer entre les différents types d'espaces -->
-    <bnum-tabs id="main-pannel" data-navs="subscribed, publics, archived" data-ex-label="mel_workspace"
-      data-description="Liste des différents espaces auquel on a souscris" data-shadow="false">
+    <roundcube:if condition="env:_template_visu_mode == 'list'">
+      <bnum-tabs id="main-pannel" class="mode-list" data-navs="subscribed, publics, archived" data-ex-label="mel_workspace"
+        data-description="Liste des différents espaces auquel on a souscris" data-shadow="false">
+    <roundcube:else>
+      <bnum-tabs id="main-pannel" data-navs="subscribed, publics, archived" data-ex-label="mel_workspace"
+        data-description="Liste des différents espaces auquel on a souscris" data-shadow="false">
+    <roundcube:endif>
       <bnum-tab-container class="row my-3 align-items-center justify-content-center">
         <bnum-tab-receiver class="col-12 col-md-10"></bnum-tab-receiver>
-        <!-- Boutons pour changer le mode d'affichage (liste ou grille) -->
-        <div class="col-12 col-md-2 mt-3 mt-md-0 d-flex justify-content-md-end">
-          <div class="btn-group pressed-list" role="group" aria-label="Mode d'affichage">
-            <bnum-pressed-button id="mode-list"
-              class="btn btn-secondary mel-button no-margin-button no-button-margin cannot-unpress">
-              <bnum-icon>splitscreen</bnum-icon>
-            </bnum-pressed-button>
-            <bnum-pressed-button data-start-pressed="true" id="mode-block"
-              class="btn btn-secondary mel-button no-margin-button no-button-margin cannot-unpress">
-              <bnum-icon>grid_view</bnum-icon>
-            </bnum-pressed-button>
-          </div>
-        </div>
+
       </bnum-tab-container>
       <!-- Onglet : espaces auxquels l'utilisateur est abonné -->
       <div data-linked-to="subscribed">

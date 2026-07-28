@@ -1,7 +1,7 @@
 import { Color } from '../../classes/color.js';
 import { MelEnumerable } from '../../classes/enum.js';
+import { EMPTY_STRING } from '../../constants/constants.js';
 import { BnumConnector } from '../../helpers/bnum_connections/bnum_connections.js';
-import { MelForLoopObject } from '../../helpers/loops.js';
 import { MelJsHtml as JsHtml } from '../../html/JsHtml/JsMelHtml.js';
 
 import { AFolderModifier } from './afolder_modifier.js';
@@ -17,12 +17,12 @@ export class FolderColor extends AFolderModifier {
     await super.generate_context_menu();
     this.rcmail().register_command(
       'update-color-folder',
-      (args) => {
+      () => {
         const $link = $('.popover .color-folder');
         const folder = $link.attr('rel');
         const color =
           this.data?.[folder] ||
-          Color.fromRGB($(`a[rel="${folder}"]`).css('color'))?.toHexa?.();
+          Color.fromRGB($(`[rel="${folder}"]`).css('color'))?.toHexa?.();
 
         $('#color-folder-changer').remove();
         this._input_color = JsHtml.start
@@ -76,34 +76,27 @@ export class FolderColor extends AFolderModifier {
   update_visuel() {
     const colors = this.get_env('folders_colors');
 
-    {
-      const keys_to_remove = MelEnumerable.from(
-        this.get_skin().css_rules.getKeys(),
-      ).where(
-        (key) =>
-          key.startsWith('color-folder-') ||
-          key.startsWith('color-favorite-folder-'),
-      );
-      keys_to_remove.any() &&
-        this.get_skin().css_rules.removeRules(...keys_to_remove);
-    }
-
-    let css_key;
-    let favorite_css_key;
-    MelForLoopObject.Start(colors, (color, key) => {
-      css_key = `color-folder-${key}`;
-      favorite_css_key = `color-favorite-folder-${key}`;
-      this.get_skin().css_rules.addAdvanced(
-        css_key,
-        `a[rel="${key}"]::before`,
-        `color:${color} !important;`,
-      );
-      this.get_skin().css_rules.addAdvanced(
-        favorite_css_key,
-        `li[mailid="${this._get_true_key(key)}"] > a::before`,
-        `color:${color} !important;`,
-      );
+    document.querySelectorAll('.colored-folder').forEach((selector) => {
+      selector.style.removeProperty('--bnum-folder-icon-color');
     });
+
+    for (const { key: bal, value: color } of MelEnumerable.from(colors).select(
+      (i) => {
+        let key = i.key;
+        if (key === EMPTY_STRING) key = 'Ind&AOk-sirables';
+        return { key, value: i.value };
+      },
+    )) {
+      /**
+       * @type {HTMLElement}
+       */
+      const selectors = document.querySelectorAll(`[folder-id="${bal}"]`);
+
+      selectors.forEach((selector) => {
+        selector.style.setProperty('--bnum-folder-icon-color', color);
+        selector.classList.add('colored-folder');
+      });
+    }
   }
 
   async set_to_server(
@@ -160,18 +153,11 @@ export class FolderColor extends AFolderModifier {
 
   _preview(folder, event) {
     const color = $(event.target).val();
-    this.get_skin().css_rules.remove('preview_folder_color');
-    this.get_skin().css_rules.remove('preview_favorite_folder_color');
-    this.get_skin().css_rules.addAdvanced(
-      'preview_folder_color',
-      `a[rel="${folder}"]::before`,
-      `color:${color} !important;`,
-    );
-    this.get_skin().css_rules.addAdvanced(
-      'preview_favorite_folder_color',
-      `li[mailid="${this._get_true_key(folder)}"] > a::before`,
-      `color:${color} !important;`,
-    );
+    const selectors = document.querySelectorAll(`[folder-id="${folder}"]`);
+
+    selectors.forEach((selector) => {
+      selector.style.setProperty('--bnum-folder-icon-color', color);
+    });
   }
 
   static is_default_color(color) {

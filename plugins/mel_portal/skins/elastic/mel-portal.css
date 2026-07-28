@@ -90,6 +90,15 @@
   margin-bottom: 38px;
 }
 
+html.layout-small .module_parent,
+html.layout-phone .module_parent {
+  margin-bottom:50px;
+}
+
+.module_parent .melv2-card-pre > h2 {
+  margin-bottom: 0;
+}
+
 #layout-content {
   overflow-y: auto;
   overflow-x: hidden;
@@ -304,3 +313,18 @@ html.layout-phone .--row {
 /* html.dark-mode-custom .bottom-right div {
   background-image: url('https://jedonnemonavis.numerique.gouv.fr/static/bouton-blanc.svg');
 } */
+
+bnum-card-email,
+bnum-card-agenda {
+  height: 286px;
+  --bnum-card-height: 286px;
+}
+
+bnum-card-item-agenda,
+bnum-card-item-mail {
+  height: 85px;
+}
+
+bnum-card {
+  height: 320px;
+}

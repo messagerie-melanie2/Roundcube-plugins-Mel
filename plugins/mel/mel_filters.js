@@ -423,10 +423,14 @@ les propriétés « nom » et « valeur ».
             $label.click();
           })
           .on('mouseover', (e) => {
-            $(e.currentTarget).removeClass(`label_${$label.data('mel-label')}`);
+            $(e.currentTarget).addClass('label-hover');
+
+            // $(e.currentTarget).removeClass(`label_${$label.data('mel-label')}`);
           })
           .on('mouseout', (e) => {
-            $(e.currentTarget).addClass(`label_${$label.data('mel-label')}`);
+            $(e.currentTarget).removeClass('label-hover');
+
+            // $(e.currentTarget).addClass(`label_${$label.data('mel-label')}`);
           });
       }
 
@@ -503,6 +507,7 @@ les propriétés « nom » et « valeur ».
         this.reset_extra_states();
         $('#mailsearchlist .searchbar').removeClass('active');
         rcmail.command('reset-search');
+        rcmail.triggerEvent('quick-filter.reset');
 
         if (on_reset) on_reset(filter, event);
       }
@@ -564,7 +569,9 @@ les propriétés « nom » et « valeur ».
                 .val(search);
             }
 
-            $(rcmail.gui_objects.search_filter).val(search);
+            $(rcmail.gui_objects.search_filter)
+              .val(search)[0]
+              .dispatchEvent(new Event('change'));
 
             if (filter.action === 'ALL') {
               this._base_callback_reset_action(filter, event, on_reset);

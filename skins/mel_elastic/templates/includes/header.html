@@ -145,6 +145,17 @@
 <!-- Menu utilisateur  -->
 <roundcube:include file="includes/user.html" />
 
+<!-- Autres -->
+<a style=display:none; data-spied="false" data-popup="groupoptions-wsp" role="button" href="#" aria-haspopup="true" aria-expanded="false" aria-owns="groupoptions-wsp" data-original-title="" style="text-decoration: none;" id=worspace-avatar-a class="dwp-round mel-focus focus-bordered"  title="<roundcube:label name='mel_metapage.image_title' />" >
+    <span class="sr-only"><roundcube:label name='mel_metapage.choose_avatar' /></span>
+</a>
+<div id="groupoptions-wsp" class="popupmenu">
+	<h3 id="aria-label-groupoptions-wsp" class="voice"><roundcube:label name='mel_metapage.avatars' /></h3>
+	<ul id=ul-wsp class="menu listing" role="menu" aria-labelledby="aria-label-groupoptions-wsp">
+		<roundcube:container name="groupoptions" id="groupoptionsmenu2" />
+	</ul>
+</div>
+
 <!-- Script utilitaires -->
 <!-- TODO: Le placer dans un fichier js -->
 <script>

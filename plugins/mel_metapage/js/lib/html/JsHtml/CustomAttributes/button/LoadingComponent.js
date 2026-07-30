@@ -146,6 +146,7 @@ export default class LoadingComponent extends AHTMLComponent {
         const icon = this.#_getParentIcon();
 
         if (icon) icon.classList.add(CLASS_SPIN);
+        // eslint-disable-next-line quotes
         else BnumLog.error('setLoadingMode', "Impossible de trouve l'icône !");
         //Spin est une classe qui fait tourner l'élément
       } else {
@@ -196,6 +197,7 @@ export default class LoadingComponent extends AHTMLComponent {
         const icon = this.#_getParentIcon();
 
         if (icon) icon.classList.remove(CLASS_SPIN);
+        // eslint-disable-next-line quotes
         else BnumLog.error('setLoadingMode', "Impossible de trouve l'icône !");
       } else {
         this.#_parent.style.width = null;

@@ -532,7 +532,7 @@ class Workspace {
    * @return array
    */
   private function _add_users($users) {
-    $return_data = [            
+    $return_data = [
       "errored_user" => [],
       "existing_users" => []
     ];
@@ -545,49 +545,48 @@ class Workspace {
 
       if (is_array($id)) $id = $id[0];
 
-      $share = driver_mel::gi()->workspace_share([$this->_workspace]);
-      $tmp_user = null;
-      if (strpos($id, '@')) {
-        $tmp_user = driver_mel::gi()->getUser(null, true, false, null, $id);
-      }else {
-        $tmp_user = driver_mel::gi()->getUser($id);
-      }
+      $tmp_user = strpos($id, '@') ? self::FindUser($id) : driver_mel::gi()->getUser($id);
 
       if ($shares[$tmp_user->uid] !== null) continue;
 
-      $user_exists = true;
-      $just_created = false;
+      $list_uids = [];
 
-      if ($tmp_user->uid === null && !$tmp_user->is_list) {
-        if (rcmail::get_instance()->config->get('enable_external_users', false)) {
-            $user_exists = driver_mel::gi()->create_external_user($id, $this->_workspace);
-            $just_created = true;
+      // BNUM 0009189 : la résolution (et la création si besoin) se fait membre par
+      // membre, ce qui couvre les externes contenus dans une liste serveur.
+      foreach ($this->_add_internal_user($tmp_user) as $member_id) {
+        if ($member_id === null) continue;
+
+        $member = strpos($member_id, '@') ? self::FindUser($member_id) : driver_mel::gi()->getUser($member_id);
+        $just_created = false;
+
+        if ($member === null || $member->uid === null) {
+          if (!rcmail::get_instance()->config->get('enable_external_users', false)
+              || !driver_mel::gi()->create_external_user($member_id, $this->_workspace)) {
+            $return_data["errored_user"][] = $member_id;
+            continue;
+          }
+
+          $member = self::FindUser($member_id);
+          $just_created = true;
+
+          if ($member === null || $member->uid === null) {
+            $return_data["errored_user"][] = $member_id;
+            continue;
+          }
         }
-        else {
-            $user_exists = false;
-        }
-        
-        if ($user_exists) {
-            $tmp_user = driver_mel::gi()->getUser(null, true, false, null, $id);
-        }
-        else {
-            $return_data["errored_user"][] = $id;
-        }
+
+        $list_uids[] = $member->uid;
+
+        if ($shares[$member->uid] !== null) continue;
+
+        $return_data["existing_users"][] = ['just_created' => $just_created, 'user' => $member->uid];
+        $share = driver_mel::gi()->workspace_share([$this->_workspace]);
+        $share->user = $member->uid;
+        $share->rights = $right;
+        $shares[] = $share;
       }
 
-      if ($user_exists) {
-        foreach ($this->_add_internal_user($tmp_user) as $added_user) {
-            if ($added_user !== null) {
-              if ($shares[$added_user] !== null) continue;
-
-                $return_data["existing_users"][] = ['just_created' => $just_created, 'user' => $added_user];
-                $share = driver_mel::gi()->workspace_share([$this->_workspace]);
-                $share->user = $added_user;
-                $share->rights = $right;
-                $shares[] = $share;             
-            }
-        }
-      }
+      if ($tmp_user->is_list) $this->_save_list($tmp_user, $list_uids);
     }
 
     if (isset($return_data['existing_users']) && count($return_data['existing_users']) > 0) $this->_workspace->shares = $shares;
@@ -599,6 +598,21 @@ class Workspace {
   }
 
   /**
+   * Enregistre les uids des membres d'une liste dans les paramètres de l'espace.
+   */
+  private function _save_list($list_user, $uids) {
+    $lists = $this->settings()->get('lists') ?? [];
+
+    if (is_array($lists)) $lists[$list_user->mail[0]] = $uids;
+    else {
+      $key = $list_user->mail[0];
+      $lists->$key = $uids;
+    }
+
+    $this->settings()->set('lists', $lists);
+  }
+  
+  /**
    * Ajoute un utilisateur interne à l'espace de travail.
    *
    * @param object $user Utilisateur à ajouter.
@@ -608,32 +622,37 @@ class Workspace {
     if ($user->is_list) {
         $list = [];
 
-        foreach ($user->list->members as $value) {
-          if ($value->uid === null) continue;
-
-          $currentUser = driver_mel::gi()->getUser($value->uid);
-
-          if ($currentUser === null || $currentUser->email === null) continue;
-          unset($currentUser);
-
-          $value = $value->uid;
-          $list[] = $value;
-          yield $value;
+        // BNUM 0009189 : MineqMelMembres contient les membres internes ET externes,
+        // contrairement à MemberUid qui se limite aux comptes de l'annuaire.
+        foreach ($user->list->members_email as $email) {
+          $list[] = $email;
+          yield $email;
         }
 
-        $lists = $this->settings()->get('lists') ?? [];//$this->get_setting($workspace, 'lists') ?? [];
+        $lists = $this->settings()->get('lists') ?? [];
 
         if (is_array($lists)) $lists[$user->mail[0]] = $list;
         else {
-            $user = $user->mail[0];
-            $lists->$user = $list;
+            $key = $user->mail[0];
+            $lists->$key = $list;
         }
 
-        $this->settings()->set('lists', $lists);//$this->add_setting($workspace, 'lists', $lists);
-    } 
+        $this->settings()->set('lists', $lists);
+    }
     else yield $user->uid;
   }
+  
+  /**
+   * Recherche un utilisateur à partir de son adresse mail. // BNUM 0009189
+   *
+   * @param string $email
+   * @return mixed|null
+   */
+  public static function FindUser($email) {
+    return driver_mel::gi()->getUser(null, true, false, null, $email);
+  }
 
+  
   /**
    * Récupère une instance de Workspace chargée.
    *

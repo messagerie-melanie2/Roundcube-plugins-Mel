@@ -288,8 +288,54 @@ export default class BridgeMail extends ABridge {
     });
 
     this.#fixLegacyJunkFolder();
-
+    this.#updateMarkAsUnread();
     return this.#updateContextMenuFolder();
+  }
+
+  /**
+   * Modifie comme "mark_all_read_state" fonctionne.
+   */
+  #updateMarkAsUnread() {
+    const rcmail = this.rcmail();
+
+    if (rcmail.mark_all_read_state) {
+      const rcmail_mark_all_read_state = rcmail.mark_all_read_state;
+
+      rcmail.mark_all_read_state = function (mbox) {
+        let state = rcmail_mark_all_read_state.call(this, mbox);
+
+        if (state) return state;
+        else {
+          if (!mbox) mbox = this.env.mailbox;
+          if (!mbox) return state;
+          const getUnreads = (element) => {
+            return +(element?.getAttribute?.('unread') || 0);
+          };
+          /**
+           * @type {HTMLBnumFolder?}
+           */
+          const li = this.treelist.container[0].querySelector(
+              `[folder-id="${mbox}"]`,
+            ), //.get_item(mbox || this.env.mailbox),
+            folder_item = li && getUnreads(li) > 0 ? 1 : 0,
+            subfolder_items = [
+              ...(li?.querySelectorAll?.('[unread]') ?? []),
+            ].filter((x) => getUnreads(x)).length,
+            all_items = [
+              ...this.treelist.container[0].querySelectorAll('[unread]'),
+            ].filter((x) => getUnreads(x)).length;
+          //$('li.unread', ref.gui_objects.folderlist).length;
+
+          state += folder_item;
+          state += subfolder_items ? 2 : 0;
+          state += all_items > folder_item + subfolder_items ? 4 : 0;
+
+          this.enable_command('mark-all-read', state > 0);
+
+          return state;
+        }
+      };
+    }
   }
 
   /**

@@ -1129,7 +1129,7 @@ class mel_driver extends calendar_driver {
 
     // Utilise la méthode move() de l'ORM
     // Elle gère la copie, l'organisateur et la suppression de l'ancien événement
-    $_event->move($from_id);
+    $_event->move($from_id, $this->user);
 
     // Invalider les ctags
     $this->calendars[$from_id]->getCTag(false);

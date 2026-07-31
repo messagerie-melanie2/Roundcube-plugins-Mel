@@ -1932,7 +1932,8 @@ class mel_forum extends bnum_plugin
                     $usedImageUids[] = $imageUid;
 
                     // Remplacer la balise <img> par celle avec l'URL
-                    $content = str_replace($img[0], '<img src="' . $imageUrl . '" />', $content);
+                    $newTag = str_replace('src="' . $src . '"', 'src="' . $imageUrl . '"', $img[0]);
+                    $content = str_replace($img[0], $newTag, $content);
                 }
             }
         }

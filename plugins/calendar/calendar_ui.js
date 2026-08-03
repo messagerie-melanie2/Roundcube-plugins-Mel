@@ -1528,8 +1528,6 @@ function rcube_calendar_ui(settings) {
       rcmail.triggerEvent('calendar-event-dialog', { dialog: $dialog });
     }
 
-    // $('#edit-attachments').html('');
-
     // init other tabs asynchronously
     window.setTimeout(function () {
       me.set_recurrence_edit(event);

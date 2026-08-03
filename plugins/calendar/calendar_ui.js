@@ -1249,6 +1249,14 @@ function rcube_calendar_ui(settings) {
       rcmail.env.attachments = [];
       rcmail.env.compose_id = event.id; // for rcmail.async_upload_form()
 
+      // appeler la fonction d'affichage, pour qu'elle gère un nettoyage propre du conteneur
+      event_show_attachments(
+        $.isArray(event.attachments) ? event.attachments : [],
+        $('#edit-attachments'),
+        event,
+        true,
+      );
+
       if ($.isArray(event.attachments)) {
         event_show_attachments(
           event.attachments,
@@ -1482,7 +1490,7 @@ function rcube_calendar_ui(settings) {
 
     var editform = $('#eventedit');
 
-    if (rcmail.env.action != 'dialog-ui') {
+    if (rcmail.env.action !== 'dialog-ui') {
       // open jquery UI dialog
       $dialog
         .dialog({
@@ -1519,6 +1527,8 @@ function rcube_calendar_ui(settings) {
 
       rcmail.triggerEvent('calendar-event-dialog', { dialog: $dialog });
     }
+
+    // $('#edit-attachments').html('');
 
     // init other tabs asynchronously
     window.setTimeout(function () {

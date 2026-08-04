@@ -143,6 +143,7 @@ class mel_forum extends bnum_plugin
             'workspace_uid' => $workspace_uid,
             'user_fullname' => driver_mel::gi()->getUser()->name,
             'is_admin' => driver_mel::gi()->getUser()->isWorkspaceOwner($workspace_uid),
+            'can_write_article' => $this->_can_write_article($workspace_uid),
             'wsp_tags' => $this->_get_all_tags_by_workspace($workspace_uid),
         ]);
 
@@ -386,10 +387,17 @@ class mel_forum extends bnum_plugin
         $uid = $this->get_input('_uid', rcube_utils::INPUT_GET);
         // Récupérer l'utilisateur
         $user = driver_mel::gi()->getUser();
+        $workspace_uid = $this->get_input('_workspace_uid');
 
         //vérification des droits d'accès
-        if ($user->isWorkspaceMember($this->get_input('_workspace_uid'))) {
-            $this->rc()->output->set_env('wsp_tags', $this->_get_all_tags_by_workspace($this->get_input('_workspace_uid')));
+        if ($user->isWorkspaceMember($workspace_uid)) {
+            // Dans un espace public, seul les admins de l'espace peuvent rédiger un nouvel article
+            if (!$uid && !$this->_can_write_article($workspace_uid)) {
+                $this->_display_error_page();
+                exit;
+            }
+
+            $this->rc()->output->set_env('wsp_tags', $this->_get_all_tags_by_workspace($workspace_uid));
             $this->rc()->html_editor();
             $this->load_script_module('create_or_edit_post');
 
@@ -958,7 +966,12 @@ class mel_forum extends bnum_plugin
         //charge l'article en bdd
         $post = new LibMelanie\Api\Defaut\Posts\Post();
         $post->uid = $uid;
-        $post->load();
+        $post_exists = $post->load();
+
+        // Dans un espace public, seuls les admin de l'espace peuvent créer un nouvel article
+        if (!$post_exists && !$this->_can_write_article($workspace_uid)) {
+            return null;
+        }
 
         // Section miniature
         $settings = json_decode($settings);
@@ -3323,6 +3336,22 @@ class mel_forum extends bnum_plugin
             $return = true;
 
         return $return;
+    }
+
+    /**
+     * Seuls les admins d'un espace de travail public peuvent rédiger des articles.
+     *
+     * @param string $workspace_uid Workspace
+     *
+     * @return boolean
+     */
+    protected function _can_write_article($workspace_uid)
+    {
+        if (mel_workspace::Workspace($workspace_uid)->isPublic()) {
+            return driver_mel::gi()->getUser()->isWorkspaceOwner($workspace_uid);
+        }
+
+        return true;
     }
 
     /**

@@ -793,7 +793,7 @@ export class Forum extends MelObject {
       },
       processData: false,
       contentType: false,
-      on_success: (response) => {
+      on_success: () => {
         let like_div = $('#add_like-' + post_uid);
         let dislike_div = $('#add_dislike-' + post_uid);
         let like_counter = like_div.find('span.ml-2');
@@ -830,7 +830,7 @@ export class Forum extends MelObject {
         }
         this.rcmail().triggerEvent('forum.new_post.updated');
       },
-      on_error: (err) => {
+      on_error: () => {
         BnumMessage.DisplayMessage(
           rcmail.gettext('mel_forum.error_editing'),
           eMessageType.Error,

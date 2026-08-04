@@ -46,6 +46,13 @@ export class Forum extends MelObject {
   initButtons() {
     //bouton d'ajout d'article
     $('#forum-button-add').click(() => {
+      if (!this.get_env('can_write_article')) {
+        BnumMessage.DisplayMessage(
+          rcmail.gettext('mel_forum.admin_only_publish'),
+          eMessageType.Error,
+        );
+        return;
+      }
       window.location.href = this.url('forum', {
         action: 'create_or_edit_post',
         params: { _workspace_uid: this.workspace },

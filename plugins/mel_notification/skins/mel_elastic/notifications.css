@@ -98,7 +98,9 @@ html.layout-phone #notificationstack {
   padding: 5px 10px;
   background-color: #fff;
   cursor: pointer;
-  box-shadow: 0 24px 54px rgba(0, 0, 0, .15), 0 4.5px 13.5px rgba(0, 0, 0, .08);
+  box-shadow:
+    0 24px 54px rgba(0, 0, 0, 0.15),
+    0 4.5px 13.5px rgba(0, 0, 0, 0.08);
 }
 
 /* #notifications-panel a.dropdown-item.unread {
@@ -335,8 +337,8 @@ html.dark-mode #notificationstack article span.category {
   background-color: rgb(170, 51, 51);
   border-radius: 100%;
   /* border: 1px solid #7c7c85; */
-  top: 14px;
-  left: 22px;
+  top: -2px;
+  left: -2px;
   position: absolute;
   color: #fff;
   font-size: 11px;
@@ -344,7 +346,6 @@ html.dark-mode #notificationstack article span.category {
   line-height: initial;
   font-family: Arial;
 }
-
 
 .notification-category {
   font-weight: bold;
@@ -356,7 +357,7 @@ html.dark-mode .notification-category {
 }
 
 .notification-icon {
-  background: #272E58;
+  background: #272e58;
   border-radius: 9px;
   padding: 7px;
   color: white;
@@ -382,7 +383,7 @@ html.dark-mode .notification-title {
 }
 
 .notification-button-icon {
-  color: #272E58;
+  color: #272e58;
   font-variation-settings: 'wght' 300;
   margin-top: auto;
   margin-bottom: auto;

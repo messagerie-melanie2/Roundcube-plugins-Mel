@@ -65,7 +65,7 @@
   <!-- Notifications -->
   <roundcube:if condition="env:plugin_list_notifications===true" />
   <div id="notification-dropdown" class="dropdown notification-icon-menu" slot="actions" style="position: relative;">
-    <bnum-icon-button slot="actions" data-toggle="dropdown">notifications</bnum-icon-button>
+    <bnum-icon-button slot="actions" id="notifications-icon" data-toggle="dropdown">notifications</bnum-icon-button>
     <div class="dropdown-menu notification-dropdown-menu dropdown-menu-right p-2"
       aria-labelledby="button-notifications">
       <div id="notifications-panel"></div>

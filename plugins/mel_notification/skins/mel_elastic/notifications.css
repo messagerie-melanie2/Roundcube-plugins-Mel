@@ -117,20 +117,20 @@ html.dark-mode #notificationstack a.dropdown-item {
 
 
 #notifications-panel .content a.dropdown-item {
-    color: var(--bnum-text-primary);
-    background-color: var(--bnum-color-background);
+  color: var(--bnum-text-primary);
+  background-color: var(--bnum-color-background);
+}
 
-    .notification-button-icon {
-        color: var(--bnum-text-primary);
+#notifications-panel .content a.dropdown-item:hover {
+  background-color: var(--bnum-color-list-hover);
+}
 
-        &:hover {
-            color: red;
-        }
-    }
+#notifications-panel .content a.dropdown-item .notification-button-icon {
+  color: var(--bnum-text-primary);
+}
 
-    &:hover {
-        background-color: var(--bnum-color-list-hover);
-    }
+#notifications-panel .content a.dropdown-item .notification-button-icon:hover {
+  color: red;
 }
 /*
 #notifications-panel article.hidden {

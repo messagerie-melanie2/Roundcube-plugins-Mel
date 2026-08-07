@@ -115,6 +115,23 @@ html.dark-mode #notificationstack a.dropdown-item {
   background-color: #25323e;
 }
 
+
+#notifications-panel .content a.dropdown-item {
+    color: var(--bnum-text-primary);
+    background-color: var(--bnum-color-background);
+
+    .notification-button-icon {
+        color: var(--bnum-text-primary);
+
+        &:hover {
+            color: red;
+        }
+    }
+
+    &:hover {
+        background-color: var(--bnum-color-list-hover);
+    }
+}
 /*
 #notifications-panel article.hidden {
     display: none;

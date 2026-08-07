@@ -96,7 +96,8 @@ html.layout-phone #notificationstack {
   width: 100%;
   margin-top: 10px;
   padding: 5px 10px;
-  background-color: #fff;
+  background-color:var(--bnum-color-surface);
+  color: var(--bnum-text-primary);
   cursor: pointer;
   box-shadow:
     0 24px 54px rgba(0, 0, 0, 0.15),
@@ -130,7 +131,7 @@ html.dark-mode #notificationstack a.dropdown-item {
 }
 
 #notifications-panel .content a.dropdown-item .notification-button-icon:hover {
-  color: red;
+  color: var(--bnum-color-input-hover);
 }
 /*
 #notifications-panel article.hidden {
@@ -400,18 +401,14 @@ html.dark-mode .notification-title {
 }
 
 .notification-button-icon {
-  color: #272e58;
+  color: var(--bnum-text-primary);
   font-variation-settings: 'wght' 300;
   margin-top: auto;
   margin-bottom: auto;
   margin-left: auto;
 }
 
-html.dark-mode .notification-button-icon {
-  color: #96b9e7;
-}
-
 .notification-button-icon:hover,
 html.dark-mode .notification-button-icon:hover {
-  color: red;
+  color: var(--bnum-color-primary-hover);
 }

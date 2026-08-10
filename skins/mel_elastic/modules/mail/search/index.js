@@ -415,7 +415,7 @@ export class Search extends ABaseSubModule {
   this.#_ui.search.removeAttribute('state');
   if (!this.rcmail().env.search_request) {
     this.#_ui.search.value = '';
-    this.#_ui.search._p_inputValueChangedCallback(new Event('input'));
+    this.#_ui.search.dispatchEvent(new Event('input'));
   }
 }
   //#endregion

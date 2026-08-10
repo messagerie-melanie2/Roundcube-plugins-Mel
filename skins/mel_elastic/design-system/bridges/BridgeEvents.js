@@ -17,6 +17,9 @@ export default class BridgeEvents extends MelObject {
     return (this.#_instance ??= new BridgeEvents());
   }
 
+  /**
+   * Construit l'instance. Ne pas appeler directement : utiliser {@link BridgeEvents.Instance}.
+   */
   constructor() {
     super();
   }
@@ -137,12 +140,26 @@ export default class BridgeEvents extends MelObject {
     else this.#_onFolderCallerFallback(e);
   }
 
+  /**
+   * Reconstruit les données manquantes de l'événement de toggle dossier
+   * (via {@link BridgeEvents#_getToggleEventDetail}) et relance le traitement.
+   * @param {CustomEvent} e - Événement de toggle incomplet (sans `caller`/`collapsed` directs)
+   * @private
+   */
   #_onFolderCallerFallback(e) {
     const detail = this.#_getToggleEventDetail(e);
 
     this.onFolderToggle({ detail });
   }
 
+  /**
+   * Recherche récursivement le détail contenant les informations de toggle (`collapsed`)
+   * en remontant la chaîne des événements imbriqués (`innerEvent`).
+   * @param {CustomEvent} e - Événement de départ
+   * @returns {Object} Détail de l'événement contenant les données du dossier
+   * @throws {Error} Si aucune donnée de dossier valide n'est trouvée
+   * @private
+   */
   #_getToggleEventDetail(e) {
     let currentEvent = e;
 
@@ -487,6 +504,11 @@ export default class BridgeEvents extends MelObject {
     this.#_clearDragClasses();
   }
 
+  /**
+   * Arrête le minuteur d'ouverture automatique d'un dossier lors d'un survol de drag.
+   * Annule le signal en cours, ou nettoie le timeout si celui-ci est déjà annulé.
+   * @private
+   */
   #_stopTimeoutToggle() {
     if (this.signal) {
       if (!this.signal.signal.aborted) this.signal.abort();
@@ -498,6 +520,11 @@ export default class BridgeEvents extends MelObject {
     }
   }
 
+  /**
+   * Démarre un minuteur qui ouvre automatiquement un dossier replié survolé pendant un drag.
+   * @param {Object} target - Élément dossier ciblé (doit exposer une méthode `toggle`)
+   * @private
+   */
   #_initiateTimeOutToggle(target) {
     this.signal = new AbortController();
     this.signal.signal.addEventListener('abort', () => {
@@ -560,6 +587,13 @@ export default class BridgeEvents extends MelObject {
     this.rcmail().move_messages(folder, null, data);
   }
 
+  /**
+   * Met à jour l'état visuel des actions et icônes de sélection des lignes du tableau de messages.
+   * @param {Function} getSelectionIcon - Fonction retournant l'icône à afficher pour une ligne sélectionnée
+   * @param {typeof HTMLElement} HTMLBnumAvatarAction - Composant action d'avatar (fournit `TAG`)
+   * @param {typeof HTMLElement} HTMLBnumButtonIcon - Composant bouton icône (fournit `TAG`)
+   * @param {Object} messageList - Liste de messages Roundcube (`rows`, `selection`)
+   */
   onMessagesSelected(
     getSelectionIcon,
     HTMLBnumAvatarAction,

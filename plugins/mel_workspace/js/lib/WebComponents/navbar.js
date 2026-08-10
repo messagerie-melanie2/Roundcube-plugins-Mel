@@ -326,7 +326,11 @@ class WspNavBar extends HtmlCustomTag {
       this.onquitbuttonclick.call.bind(this.onquitbuttonclick),
     );
 
-    this.mainDiv.appendChild(button);
+    let div = document.createElement('div');
+    div.classList.add('wsp-quit-zone');
+    div.append(button)
+
+    this.mainDiv.appendChild(div);
     return this;
   }
 

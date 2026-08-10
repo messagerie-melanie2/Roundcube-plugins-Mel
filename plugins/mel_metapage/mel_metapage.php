@@ -404,7 +404,6 @@ class mel_metapage extends bnum_plugin
         $this->rc->output->set_env("main_nav_can_deploy", $this->rc->config->get('main_nav_can_deploy', true));
         $this->rc->output->set_env("avatar_background_color", $this->rc->config->get('avatar_error_color', null));
 
-
         $this->rc->output->set_env('mel_metapage_const', [
             "key" => self::FROM_KEY,
             "value" => self::FROM_VALUE

@@ -1,3 +1,4 @@
+import { BnumLog } from '../../../../../mel_metapage/js/lib/classes/bnum_log.js';
 import { FramesManager } from '../../../../../mel_metapage/js/lib/classes/frame_manager.js';
 import {
   MelDialog,
@@ -34,14 +35,38 @@ class ToolbarFunctions {
     throw new Error('Cannot be initialized !');
   }
 
+  static get #_backButton() {
+    return top.$('#visio-back-button');
+  }
+
+  static get #_iconBackButton() {
+    return this.#_backButton.find('bnum-icon, old-bnum-icon').first();
+  }
+
   /**
    * Arrête la visioconférence
    * @param {Visio} visio
    * @static
    */
   static Hangup(visio) {
-    if (top.$('#visio-back-button bnum-icon').text() === 'fullscreen')
-      top.$('#visio-back-button bnum-icon').click();
+    const backButton = this.#_backButton;
+    const backButtonIcon = this.#_iconBackButton;
+
+    if (!backButton || backButton.length === 0)
+      BnumLog.error(
+        'Hangup',
+        'Impossible de trouver le bouton de retour !',
+        backButton,
+      );
+
+    if (!backButtonIcon || backButtonIcon.length === 0)
+      BnumLog.error(
+        'Hangup',
+        'Impossible de trouver l\'icône du "bouton de retour" !',
+        backButton,
+      );
+
+    if (backButtonIcon.text() === 'fullscreen') backButton.click();
 
     MelObject.Empty()
       .rcmail(true)
@@ -62,10 +87,8 @@ class ToolbarFunctions {
     //visio.jitsii.
     //visio.toolbar.destroy();
 
-    top
-      .$('#visio-back-button bnum-icon')
-      .text('undo')
-      .parent()
+    backButtonIcon.text('undo');
+    backButton
       .attr('title', 'Quitter la visio')
       .off('click')
       .on('click', () => {

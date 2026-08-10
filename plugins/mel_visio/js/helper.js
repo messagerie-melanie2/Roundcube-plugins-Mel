@@ -187,11 +187,6 @@ class BnumVisio extends MelObject {
     if (pass) config._pass = pass;
     if (extra) config._need_config = extra === 'need_config';
 
-    // FramesManager.Instance.start_mode(
-    //   'visio',
-    //   !key || config._need_config ? null : 'visio',
-    //   config,
-    // );
     this.startVisioMode({
       page: !key || config._need_config ? null : 'visio',
       params: config,
@@ -210,15 +205,17 @@ class BnumVisio extends MelObject {
       if (window.current_visio) {
         const _window = top ?? parent ?? window;
         const $html = _window.$('html');
-  
+
         if (!$html.hasClass('fullscreen-visio')) {
           // Visio minimisée → on la remet en plein écran
           FramesManager.Instance.switch_frame('webconf', {});
           $html.addClass('fullscreen-visio').removeClass('visio-minimised');
-          
-          _window.$('#visio-back-button')
+
+          _window
+            .$('#visio-back-button')
             .attr('title', 'Minimiser la visioconférence')
-            .find('bnum-icon').text('fullscreen_exit');
+            .find('bnum-icon')
+            .text('fullscreen_exit');
         }
         // déjà en plein écran : on ne fait rien
         return;
@@ -243,6 +240,9 @@ class BnumVisio extends MelObject {
 
   stopVisio() {
     FramesManager.Instance.enable_manual_multiframe().stop_custom_multi_frame();
+    window.current_visio = null;
+
+    if (top) top.current_visio = null;
     return this;
   }
 

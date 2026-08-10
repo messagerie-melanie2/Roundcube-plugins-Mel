@@ -145,6 +145,17 @@
 <!-- Menu utilisateur  -->
 <roundcube:include file="includes/user.html" />
 
+<!-- Menu créer mobile -->
+<a style="opacity: 0;position: absolute;" data-popup="groupoptions-createthings" role="button" href="#" aria-haspopup="true" aria-expanded="false" aria-owns="groupoptions-createthings" data-original-title="" style="text-decoration: none;" id=open-created-popup class="dwp-round mel-focus focus-bordered">
+    <span class="sr-only"><roundcube:label name='mel_metapage.open_create_popup' /></span>
+</a>
+<div id="groupoptions-createthings" class="popupmenu">
+	<h3 id="aria-label-groupoptions-createthings" class="voice"><roundcube:label name='mel_metapage.create_things' /></h3>
+	<ul id=ul-createthings class="menu listing" role="menu" aria-labelledby="aria-label-groupoptions-createthings">
+		<roundcube:container name="groupoptionscreatethings" id="groupoptionscreatethings" />
+	</ul>
+</div>
+
 <!-- Autres -->
 <a style=display:none; data-spied="false" data-popup="groupoptions-wsp" role="button" href="#" aria-haspopup="true" aria-expanded="false" aria-owns="groupoptions-wsp" data-original-title="" style="text-decoration: none;" id=worspace-avatar-a class="dwp-round mel-focus focus-bordered"  title="<roundcube:label name='mel_metapage.image_title' />" >
     <span class="sr-only"><roundcube:label name='mel_metapage.choose_avatar' /></span>

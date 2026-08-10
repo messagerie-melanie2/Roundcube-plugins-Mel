@@ -568,13 +568,7 @@ export default class BridgeEvents extends MelObject {
     innerEvent.preventDefault();
     let data = innerEvent.dataTransfer.getData('text/plain');
 
-    if (this.signal) {
-      if (!this.signal.signal.aborted) this.signal.abort();
-      else {
-        this.signal = null;
-        this.timeout = null;
-      }
-    }
+    this.#_stopTimeoutToggle();
 
     if (!(data || false)) return;
 

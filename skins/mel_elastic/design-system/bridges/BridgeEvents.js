@@ -487,6 +487,30 @@ export default class BridgeEvents extends MelObject {
     this.#_clearDragClasses();
   }
 
+  #_stopTimeoutToggle() {
+    if (this.signal) {
+      if (!this.signal.signal.aborted) this.signal.abort();
+      else {
+        if (this.timeout) clearTimeout(this.timeout);
+        this.signal = null;
+        this.timeout = null;
+      }
+    }
+  }
+
+  #_initiateTimeOutToggle(target) {
+    this.signal = new AbortController();
+    this.signal.signal.addEventListener('abort', () => {
+      this.#_stopTimeoutToggle();
+    });
+    this.timeout = setTimeout(() => {
+      if (!this.signal || this.signal.signal.aborted) return;
+
+      target.toggle();
+      this.signal.abort();
+    }, 1000);
+  }
+
   /**
    * Gère le dragover sur un dossier (pour le drop de mails).
    * @param {CustomEvent} ev
@@ -500,8 +524,11 @@ export default class BridgeEvents extends MelObject {
     if (innerEvent.dataTransfer) innerEvent.dataTransfer.dropEffect = 'move';
 
     this.#_clearDragClasses();
+    this.#_stopTimeoutToggle();
 
     target.classList.add('dragover');
+
+    if (target.collapsed) this.#_initiateTimeOutToggle(target);
   }
 
   /**
@@ -513,6 +540,14 @@ export default class BridgeEvents extends MelObject {
     ev.preventDefault();
     innerEvent.preventDefault();
     let data = innerEvent.dataTransfer.getData('text/plain');
+
+    if (this.signal) {
+      if (!this.signal.signal.aborted) this.signal.abort();
+      else {
+        this.signal = null;
+        this.timeout = null;
+      }
+    }
 
     if (!(data || false)) return;
 

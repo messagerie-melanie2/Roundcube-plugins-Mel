@@ -583,15 +583,15 @@ rcube_webmail.prototype.mel_label_show_tooltip = async function ($parent) {
       element = rcmail.env.labels_translate[key];
 
       $ul.append(
-        $(
-          '<button type="button" class="btn true"></button>',
-        )
+        $('<button type="button" class="btn true"></button>')
           .data(
             'value',
-            key.replace('_-s-_', '$')
-                .replace('_-t-_', '~')
-                .replace('_-p-_', '.')
-                .replace('_-e-_', '&').toUpperCase(),
+            key
+              .replace('_-s-_', '$')
+              .replace('_-t-_', '~')
+              .replace('_-p-_', '.')
+              .replace('_-e-_', '&')
+              .toUpperCase(),
           )
           .text(element)
           .click((e) => {
@@ -844,7 +844,7 @@ $(document).ready(function () {
       css += '.toolbarmenu li.label_' + id + ' a.active,\n';
       css += 'table span.label_' + id + '\n';
       css += '{\n';
-      css += '  color: ' + val + ';\n';
+      css += '  color: ' + textcolor + ';\n';
       css += '}\n';
       css += `#messagelist tr.label_${id} td.labels span.text_label_${id} {
 				color:${textcolor};

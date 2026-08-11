@@ -412,8 +412,12 @@ export class Search extends ABaseSubModule {
    * @returns {void}
    */
   #_afterList() {
-    this.#_ui.search.removeAttribute('state');
+  this.#_ui.search.removeAttribute('state');
+  if (!this.rcmail().env.search_request) {
+    this.#_ui.search.value = '';
+    this.#_ui.search.dispatchEvent(new Event('input'));
   }
+}
   //#endregion
   // ─── Cycle de vie statique ─────────────────────────────────────────────────
   //#region Search/Cycle de vie statique

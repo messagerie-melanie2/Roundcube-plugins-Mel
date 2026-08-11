@@ -217,6 +217,23 @@ export default class BridgeMail extends ABridge {
   _p_onInit() {
     if (!this.rcmail()) return this;
     if (!window.bridgeMail) this.export('bridgeMail', this);
+    
+    // Sur mobile, éviter l'ouverture automatique du mail sélectionné.
+    if (
+      $('html').hasClass('layout-phone') ||
+      $('html').hasClass('layout-small')
+    ) {
+      const original_preview = this.rcmail().msglist_get_preview;
+      this.rcmail().msglist_get_preview = function () {
+        if (
+          $('html').hasClass('layout-phone') ||
+          $('html').hasClass('layout-small')
+        ) {
+          return;
+        }
+        return original_preview.apply(this, arguments);
+      };
+    }
 
     return this.#initMail();
   }
@@ -566,6 +583,9 @@ export default class BridgeMail extends ABridge {
   #decorateRow(row) {
     this.#hideMsgIcon(row);
     this.#addUtilityClass(row);
+    // La case à cocher native n'était jamais exclue de l'interception de clic
+    // de la ligne : la cocher ouvrait le mail en plus de le sélectionner.
+    this.#ignoreCapture(row.querySelector('.selection input'));
 
     const avatarContainer = this.#buildAvatarContainer(row);
     const rowActions = this.#buildRowActions(row);
@@ -664,26 +684,32 @@ export default class BridgeMail extends ABridge {
       ?.attr?.('id', `action-of-${row.id}`)
       ?.addClass?.('mail-avatar--action');
 
-    action.addEventListener(
-      'click',
-      (e) => {
-        e.stopImmediatePropagation();
-        e.stopPropagation();
-        e.preventDefault();
+    /**
+     * Sélectionne/désélectionne la ligne. Rattaché à `action` (bouton révélé
+     * au survol sur desktop) et à `avatarContainer` (seule zone atteignable
+     * au doigt sur mobile, où le survol ne se déclenche jamais).
+     */
+    const selectRow = (e) => {
+       e.stopImmediatePropagation();
+       e.stopPropagation();
+       e.preventDefault();
+ 
+       const selectionBtn = document.querySelector(`#${row.id} .selection`);
+       if (!selectionBtn) {
+         console.error(
+           `[BridgeMail] Bouton .selection introuvable dans #${row.id}`,
+         );
+         return;
+       }
+ 
+      action.icon = this.#getSelectionIcon(row.id, { inverted: true });
+       this.rcmail().dummy_select = true;
+       this.#ignoreCapture(selectionBtn).click();
+       this.rcmail().dummy_select = null;
+      clearTimeout(this.rcmail().preview_timer);
+     };
 
-        const selectionBtn = document.querySelector(`#${row.id} .selection`);
-        if (!selectionBtn) {
-          console.error(
-            `[BridgeMail] Bouton .selection introuvable dans #${row.id}`,
-          );
-          return;
-        }
-
-        action.icon = this.#getSelectionIcon(row.id, { inverted: true });
-        this.#ignoreCapture(selectionBtn).click();
-      },
-      true,
-    );
+    action.addEventListener('click', selectRow, true);
 
     const avatarContainer = HTMLBnumAvatarAction.Create({ avatar, action });
     avatarContainer
@@ -698,6 +724,10 @@ export default class BridgeMail extends ABridge {
           console.error(`[BridgeMail] Élément action-of-${rowId} introuvable.`);
         }
       });
+
+    avatarContainer.addEventListener('click', selectRow, true);
+    this.#ignoreCapture(avatarContainer);
+    this.#ignoreCapture(avatar);
 
     return avatarContainer;
   }

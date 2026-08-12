@@ -10,7 +10,7 @@
  */
 import { InternetNavigator } from '../../../../../plugins/mel_metapage/js/lib/helpers/InternetNavigator.js';
 import { Firefox } from './Firefox.js';
-import { OtherNavigators } from './Others';
+import { OtherNavigators } from './Others.js';
 
 /** @type {import('./ANavigators.js').ANavigators} */
 var navigator = null;

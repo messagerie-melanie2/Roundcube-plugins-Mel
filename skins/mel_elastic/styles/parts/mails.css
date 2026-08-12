@@ -293,6 +293,10 @@ html.layout-small .task-mail #layout-content > div.footer {
   border-top: var(--bnum-border-in-surface);
   bottom: 0;
 }
+html.layout-phone .popover:not(.select-menu),
+html.layout-small .popover:not(.select-menu) {
+  transform: unset !important;
+}
 #searchmenu .formcontent {
   color: var(--bnum-text-primary);
 }

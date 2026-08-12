@@ -165,6 +165,17 @@ export default class BridgeRc extends MelObject {
   }
 
   /**
+   * Retourne l'élément racine dans lequel rechercher les dossiers.
+   * Il s'agit du conteneur du treelist de Roundcube, ou, à défaut, du `document`
+   * si le treelist n'est pas (encore) initialisé.
+   * @returns {HTMLElement|Document} Conteneur du treelist ou `document` en repli
+   * @private
+   */
+  #_findTreelistContainer() {
+    return this.rcmail()?.treelist?.container?.[0] ?? document;
+  }
+
+  /**
    * Construit et retourne l'instance du menu contextuel de dossiers.
    * @param {Object} props - Propriétés transmises à contextmenu.init (menu_source, etc.)
    * @param {Object} [events] - Gestionnaires d'événements supplémentaires à fusionner
@@ -192,6 +203,27 @@ export default class BridgeRc extends MelObject {
               return { abort: true, result: true };
             } else if (p.command === 'mark-all-read') {
               this.rcmail().mark_all_read(sourceId);
+              return { abort: true, result: true };
+            } else if (['plugin.contextmenu.collapseall','plugin.contextmenu.expandall'].includes(p.command)) {
+              // Équivalent DS de treelist.collapse_all()/expand_all() : les dossiers
+              // sont des <bnum-folder>, ils ne sont donc plus indexés par le treelist.
+              const collapsed = p.command === 'plugin.contextmenu.collapseall';
+              const container = this.#_findTreelistContainer();
+
+              for (const folder of container.querySelectorAll(
+                HTMLBnumFolder.TAG,
+              )) {
+                // Un dossier sans sous-dossier n'est ni pliable ni dépliable
+                if (!folder.querySelector(HTMLBnumFolder.TAG)) continue;
+
+                // toggle() émet `bnum-folder:toggle`, ce qui répercute l'état sur le
+                // treelist de Roundcube et sauvegarde la préférence `collapsed_folders`.
+                if (
+                  (folder.getAttribute('is-collapsed') === 'true') !== collapsed
+                )
+                  folder.toggle?.();
+              }
+
               return { abort: true, result: true };
             }
           }

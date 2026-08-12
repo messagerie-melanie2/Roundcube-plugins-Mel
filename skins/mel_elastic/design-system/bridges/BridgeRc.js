@@ -235,4 +235,66 @@ export default class BridgeRc extends MelObject {
 
     this.#_attachFolderListeners(el, folderMenu);
   }
+
+  /**
+   * Patch : conserve le comportement natif du sélecteur de dossier (bouton
+   * "Déplacer" de la liste des messages), puis corrige un décalage visuel du
+   * popover qui s'affiche à côté. Roundcube laisse une `transform` CSS sur ce
+   * popover après son ouverture initiale ; on attend qu'il soit référencé par
+   * le bouton (`aria-describedby`) puis on retire cette transformation une
+   * fois le rendu stabilisé. Ignoré sur écran normal ou plus grand, où ce popover
+   * fonctionne correctement.
+   *
+   * @param {Object} target - Instance Roundcube sur laquelle la méthode d'origine est appelée
+   * @param {AnyFunction} oldFn - Méthode `folder_selector` d'origine de Roundcube
+   * @param {...any} args - Arguments transmis à la méthode d'origine
+   * @returns {Promise<void>}
+   */
+  async patch_folder_selector(target, oldFn, ...args) {
+    oldFn.call(target, ...args);
+
+    if (!this.isLayoutSmallOfPhone()) return;
+
+    /**
+     * Reporte `callback` après le microtask courant, en visant le prochain
+     * repaint via `requestAnimationFrame`.
+     *
+     * @param {Function} callback
+     */
+    const addInQueue = (callback) => {
+      queueMicrotask(() => {
+        requestAnimationFrame(callback);
+      });
+    };
+
+    /**
+     * Exécute `callback` après un délai, pour laisser le popover se stabiliser
+     * avant de lui retirer sa `transform`.
+     *
+     * @param {Function} callback
+     * @param {number} [timeout=200] - Délai en millisecondes avant exécution
+     */
+    const fire = (callback, timeout = 200) => {
+      setTimeout(callback, timeout);
+    };
+
+    const element = document.querySelector('#messagelist-header a.move');
+
+    await this.wait_something(() => element.hasAttribute('aria-describedby'));
+
+    addInQueue(() => {
+      if (element.hasAttribute('aria-describedby')) {
+        const popover = document.getElementById(
+          element.getAttribute('aria-describedby'),
+        );
+
+        fire(async () => {
+          if (popover) {
+            await this.wait_something(() => popover.style.transform !== null);
+            popover.style.transform = null;
+          }
+        });
+      }
+    });
+  }
 }

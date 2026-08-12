@@ -2,6 +2,7 @@ import { BnumLog } from '../../../../plugins/mel_metapage/js/lib/classes/bnum_lo
 import { EMPTY_STRING } from '../../../../plugins/mel_metapage/js/lib/constants/constants.js';
 import { pipe } from '../../../../plugins/mel_metapage/js/lib/helpers/pipe.js';
 import { MelObject } from '../../../../plugins/mel_metapage/js/lib/mel_object.js';
+import { BridgeNavigator } from './navigators/BridgeNavigator.js';
 
 /**
  * Singleton gérant les événements de pont entre l'UI et la logique métier.
@@ -502,40 +503,7 @@ export default class BridgeEvents extends MelObject {
    */
   onMailDragEnd() {
     this.#_clearDragClasses();
-  }
-
-  /**
-   * Arrête le minuteur d'ouverture automatique d'un dossier lors d'un survol de drag.
-   * Annule le signal en cours, ou nettoie le timeout si celui-ci est déjà annulé.
-   * @private
-   */
-  #_stopTimeoutToggle() {
-    if (this.signal) {
-      if (!this.signal.signal.aborted) this.signal.abort();
-      else {
-        if (this.timeout) clearTimeout(this.timeout);
-        this.signal = null;
-        this.timeout = null;
-      }
-    }
-  }
-
-  /**
-   * Démarre un minuteur qui ouvre automatiquement un dossier replié survolé pendant un drag.
-   * @param {Object} target - Élément dossier ciblé (doit exposer une méthode `toggle`)
-   * @private
-   */
-  #_initiateTimeOutToggle(target) {
-    this.signal = new AbortController();
-    this.signal.signal.addEventListener('abort', () => {
-      this.#_stopTimeoutToggle();
-    });
-    this.timeout = setTimeout(() => {
-      if (!this.signal || this.signal.signal.aborted) return;
-
-      target.toggle();
-      this.signal.abort();
-    }, 1000);
+    BridgeNavigator.stopDragTimeout();
   }
 
   /**
@@ -551,11 +519,11 @@ export default class BridgeEvents extends MelObject {
     if (innerEvent.dataTransfer) innerEvent.dataTransfer.dropEffect = 'move';
 
     this.#_clearDragClasses();
-    this.#_stopTimeoutToggle();
+    BridgeNavigator.stopDragTimeout(target);
 
     target.classList.add('dragover');
 
-    if (target.collapsed) this.#_initiateTimeOutToggle(target);
+    if (target.collapsed) BridgeNavigator.initiateDragTimeout(target);
   }
 
   /**
@@ -568,7 +536,7 @@ export default class BridgeEvents extends MelObject {
     innerEvent.preventDefault();
     let data = innerEvent.dataTransfer.getData('text/plain');
 
-    this.#_stopTimeoutToggle();
+    BridgeNavigator.stopDragTimeout();
 
     if (!(data || false)) return;
 

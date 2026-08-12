@@ -289,9 +289,10 @@ if (rcmail) {
         const attendees = [
           ...new Set(
             event.attendees
-              .map(a => a.email?.toLowerCase())
-              .filter(email => email && !currentUserEmails.has(email)),
-          )].join(',');
+              .map((a) => a.email?.toLowerCase())
+              .filter((email) => email && !currentUserEmails.has(email)),
+          ),
+        ].join(',');
 
         window.current_event_modal.close();
         parent.rcmail.open_compose_step({
@@ -1035,6 +1036,20 @@ if (rcmail) {
       rcmail.register_command(
         'mel-comment-mail',
         async () => {
+          /**
+           * Essaye de récupérer la mailbox en cours
+           * @returns {?string | undefined}
+           */
+          const getMailBox = () => {
+            let mbox = $('.mailbox.selected a').first().attr('rel');
+
+            if (!mbox) {
+              mbox = rcmail.env.mailbox;
+            }
+
+            return mbox;
+          };
+
           const uid = rcmail.get_single_uid();
 
           if (!(uid || false))
@@ -1043,7 +1058,14 @@ if (rcmail) {
               'error',
             );
 
-          const current_mail_box = $('.mailbox.selected a').first().attr('rel');
+          const current_mail_box = getMailBox();
+
+          if (!current_mail_box)
+            console.error(
+              '### [comment]Impossible de toruver la bal/dossier courante',
+              current_mail_box,
+            );
+
           const current_subject = $(rcmail.message_list.rows[uid].obj)
             .children()
             .find('.subject a span')

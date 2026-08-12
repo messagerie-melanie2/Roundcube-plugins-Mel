@@ -533,11 +533,11 @@ class NextcloudModule extends WorkspaceObject {
 
     switch (element.data.type) {
       case Roundrive.EItemType.directory:
-        node = document.createElement('bnum-folder');
+        node = document.createElement(FolderTag.TAG);
         break;
 
       default:
-        node = document.createElement('bnum-file');
+        node = document.createElement(FileTag.TAG);
         break;
     }
 
@@ -573,6 +573,26 @@ class NextcloudModule extends WorkspaceObject {
   static Start() {
     return new NextcloudModule();
   }
+}
+
+/**
+ * Enregistre un tag Nextcloud en tant qu'élément HTML personnalisé.
+ *
+ * Si le tag est déjà pris par une autre classe (conflit de nom avec un autre
+ * composant), on le signale au lieu d'ignorer silencieusement
+ * l'enregistrement : sinon `document.createElement` renverrait un élément
+ * d'un autre type, sans les méthodes attendues.
+ * @param {typeof ABaseNextcloudTag} classe Classe à enregistrer, avec son champ statique `TAG`.
+ * @private
+ */
+function _p_define_nextcloud_tag(classe) {
+  const registered = customElements.get(classe.TAG);
+
+  if (!registered) customElements.define(classe.TAG, classe);
+  else if (registered !== classe)
+    console.error(
+      `[mel_nextcloud] Le tag "${classe.TAG}" est déjà enregistré par un autre composant, "${classe.name}" ne sera pas utilisable.`,
+    );
 }
 
 /**
@@ -1021,11 +1041,11 @@ class FolderTag extends ABaseNextcloudTag {
       ) {
         switch (loaded.data.type) {
           case Roundrive.EItemType.directory:
-            element = document.createElement('bnum-folder');
+            element = document.createElement(FolderTag.TAG);
             break;
 
           default:
-            element = document.createElement('bnum-file');
+            element = document.createElement(FileTag.TAG);
             break;
         }
 
@@ -1081,10 +1101,17 @@ FolderTag.EState = {
   close: Symbol(),
 };
 
-{
-  const TAG = 'bnum-folder';
-  if (!customElements.get(TAG)) customElements.define(TAG, FolderTag);
-}
+/**
+ * Nom de la balise personnalisée.
+ *
+ * Préfixé par "nextcloud" pour ne pas entrer en conflit avec le composant
+ * "bnum-folder" du design system (arborescence des dossiers de courriel).
+ * @type {string}
+ * @static
+ */
+FolderTag.TAG = 'bnum-nextcloud-folder';
+
+_p_define_nextcloud_tag(FolderTag);
 
 /**
  * Classe représentant un fichier dans Nextcloud.
@@ -1226,10 +1253,16 @@ class FileTag extends AActionNextcloudTag {
   }
 }
 
-{
-  const TAG = 'bnum-file';
-  if (!customElements.get(TAG)) customElements.define(TAG, FileTag);
-}
+/**
+ * Nom de la balise personnalisée.
+ *
+ * Préfixé par "nextcloud" pour rester cohérent avec {@link FolderTag.TAG}.
+ * @type {string}
+ * @static
+ */
+FileTag.TAG = 'bnum-nextcloud-file';
+
+_p_define_nextcloud_tag(FileTag);
 //https://mel.din.developpement-durable.gouv.fr/recette/?_task=stockage&_action=index&_params=dossiers-dev-du-bnum-1/Comment%20utiliser%20build_mel.sh%20%3f.txt&_is_from=iframe
 
 NextcloudModule.Start();

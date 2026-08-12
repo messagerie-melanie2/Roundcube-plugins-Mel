@@ -290,7 +290,7 @@ export default class BridgeRc extends MelObject {
 
         fire(async () => {
           if (popover) {
-            await this.wait_something(() => popover.style.transform !== null);
+            await this.wait_something(() => !!popover.style.transform);
             popover.style.transform = null;
           }
         });

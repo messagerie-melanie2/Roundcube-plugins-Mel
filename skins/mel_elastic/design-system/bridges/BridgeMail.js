@@ -3,6 +3,7 @@ import { BnumLog } from '../../../../plugins/mel_metapage/js/lib/classes/bnum_lo
 import { MelEnumerable } from '../../../../plugins/mel_metapage/js/lib/classes/enum.js';
 import { EMPTY_STRING } from '../../../../plugins/mel_metapage/js/lib/constants/constants.js';
 import { AvatarElement } from '../../../../plugins/mel_metapage/js/lib/html/JsHtml/CustomAttributes/avatar.js';
+import { MelObject } from '../../../../plugins/mel_metapage/js/lib/mel_object.js';
 import {
   DsCssProperty,
   DsCssRule,
@@ -217,18 +218,12 @@ export default class BridgeMail extends ABridge {
   _p_onInit() {
     if (!this.rcmail()) return this;
     if (!window.bridgeMail) this.export('bridgeMail', this);
-    
+
     // Sur mobile, éviter l'ouverture automatique du mail sélectionné.
-    if (
-      $('html').hasClass('layout-phone') ||
-      $('html').hasClass('layout-small')
-    ) {
+    if (this.isLayoutSmallOfPhone()) {
       const original_preview = this.rcmail().msglist_get_preview;
       this.rcmail().msglist_get_preview = function () {
-        if (
-          $('html').hasClass('layout-phone') ||
-          $('html').hasClass('layout-small')
-        ) {
+        if (MelObject.Empty().isLayoutSmallOfPhone()) {
           return;
         }
         return original_preview.apply(this, arguments);
@@ -690,24 +685,24 @@ export default class BridgeMail extends ABridge {
      * au doigt sur mobile, où le survol ne se déclenche jamais).
      */
     const selectRow = (e) => {
-       e.stopImmediatePropagation();
-       e.stopPropagation();
-       e.preventDefault();
- 
-       const selectionBtn = document.querySelector(`#${row.id} .selection`);
-       if (!selectionBtn) {
-         console.error(
-           `[BridgeMail] Bouton .selection introuvable dans #${row.id}`,
-         );
-         return;
-       }
- 
+      e.stopImmediatePropagation();
+      e.stopPropagation();
+      e.preventDefault();
+
+      const selectionBtn = document.querySelector(`#${row.id} .selection`);
+      if (!selectionBtn) {
+        console.error(
+          `[BridgeMail] Bouton .selection introuvable dans #${row.id}`,
+        );
+        return;
+      }
+
       action.icon = this.#getSelectionIcon(row.id, { inverted: true });
-       this.rcmail().dummy_select = true;
-       this.#ignoreCapture(selectionBtn).click();
-       this.rcmail().dummy_select = null;
+      this.rcmail().dummy_select = true;
+      this.#ignoreCapture(selectionBtn).click();
+      this.rcmail().dummy_select = null;
       clearTimeout(this.rcmail().preview_timer);
-     };
+    };
 
     action.addEventListener('click', selectRow, true);
 

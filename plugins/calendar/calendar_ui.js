@@ -1260,7 +1260,7 @@ function rcube_calendar_ui(settings) {
         //PAMELLA 	0006976: Persistance Message jaune
         $('#edit-internallocalchanges-warning').hide();
         $('#edit-localchanges-warning')[
-          action != 'new' &&
+          action !== 'new' &&
           me.has_attendees(event) &&
           !(
             allow_invitations ||
@@ -1270,6 +1270,9 @@ function rcube_calendar_ui(settings) {
             : 'hide'
         ]();
       }
+
+      // permet à event_copy() de savoir exactement quand il peut lancer la copie des PJ
+      rcmail.triggerEvent('calendar.attachments_tab_ready');
     };
 
     // init dialog buttons
@@ -3964,7 +3967,91 @@ function rcube_calendar_ui(settings) {
       }
 
       return event_attendees;
+  };
+
+  // PAMELA - Ticket 0009544: télécharge chaque PJ de l'événement source et la ré-uploade (séquentiel)
+  var copy_event_attachments = function (source_event, attachments) {
+    var lock = rcmail.set_busy(true, 'calendar.copyingattachments');
+    var queue = attachments.slice(); // copie du tableau pour ne pas le modifier
+
+    // désactive le bouton Sauvegarder
+    var $save_btn = $('.ui-dialog-buttonpane button.save, .ui-dialog-buttonpane button.mainaction');
+    $save_btn.prop('disabled', true).addClass('disabled');
+
+    // fonction récursive pour traiter la prochaine PJ
+    var process_next = function () {
+      if (!queue.length) {
+        rcmail.set_busy(false, null, lock);
+        $save_btn.prop('disabled', false).removeClass('disabled');
+        return;
+      }
+
+      var attachment = queue.shift();
+
+      // construction de l'URL pour récupérer la PJ
+      var query = {
+        _id: attachment.id,
+        _event: source_event.recurrence_id || source_event.id,
+        _cal: source_event.calendar,
+        _download: 1,
+      };
+      if (source_event.rev) query._rev = source_event.rev;
+
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', rcmail.url('get-attachment', query), true);
+      xhr.responseType = 'blob';
+
+      xhr.onload = function () {
+        if (xhr.status !== 200) {
+          rcmail.display_message(
+            'Échec de la copie de la pièce jointe : ' +
+              (attachment.name || ''),
+            'error',
+          );
+          process_next(); // on continue malgré l'échec
+          return;
+        }
+
+        // creation d'un nouveau File object à partir du blob
+        var file = new File([xhr.response], attachment.name || 'attachment', {
+          type: attachment.mimetype || xhr.response.type,
+        });
+
+        var dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+
+        // création d'un formulaire invisible pour l'upload
+        var $form = $('<form>')
+          .attr({ method: 'POST', enctype: 'multipart/form-data' })
+          .css('display', 'none')
+          .appendTo(document.body);
+
+        var $input = $('<input>')
+          .attr({ type: 'file', name: '_attachments[]' })
+          .appendTo($form);
+        $input[0].files = dataTransfer.files;
+
+        rcmail.async_upload_form($form[0], 'upload', function () {
+          $form.remove();
+          process_next(); // passe à la PJ suivante
+        });
+      };
+
+      // gestion des erreurs de téléchargement
+      xhr.onerror = function () {
+        rcmail.display_message(
+          'Échec du téléchargement de la pièce jointe source : ' +
+            (attachment.name || ''),
+          'error',
+        );
+        process_next();
+      };
+
+      xhr.send();
     };
+
+    process_next();
+  };
 
   //PAMELLA
   this.edit_clear_attendees = function edit_clear_attendees() {
@@ -4634,6 +4721,19 @@ function rcube_calendar_ui(settings) {
           role: 'ORGANIZER',
           internal: true,
         });
+      }
+
+      var source_attachments = $.isArray(event.attachments)
+        ? event.attachments
+        : [];
+
+      if (source_attachments.length) {
+
+        var on_ready = function () {
+          rcmail.removeEventListener('calendar.attachments_tab_ready', on_ready);
+          copy_event_attachments(event, source_attachments);
+        };
+        rcmail.addEventListener('calendar.attachments_tab_ready', on_ready);
       }
 
       setTimeout(function () {

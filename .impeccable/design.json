@@ -1,0 +1,395 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-12T00:00:00.000Z",
+  "title": "Design System: Bnum",
+  "extensions": {
+    "colorMeta": {
+      "bleu-france": {
+        "role": "primary",
+        "displayName": "Bleu France",
+        "canonical": "#000091",
+        "tonalRamp": [
+          "oklch(14% 0.11 272)",
+          "oklch(22% 0.17 272)",
+          "oklch(31% 0.23 272)",
+          "oklch(43% 0.25 272)",
+          "oklch(56% 0.22 272)",
+          "oklch(70% 0.16 272)",
+          "oklch(85% 0.08 272)",
+          "oklch(95% 0.03 272)"
+        ]
+      },
+      "voile-bleu": {
+        "role": "secondary",
+        "displayName": "Voile bleu",
+        "canonical": "#f5f5fe",
+        "tonalRamp": [
+          "oklch(15% 0.03 272)",
+          "oklch(28% 0.04 272)",
+          "oklch(42% 0.05 272)",
+          "oklch(56% 0.06 272)",
+          "oklch(70% 0.06 272)",
+          "oklch(82% 0.05 272)",
+          "oklch(91% 0.03 272)",
+          "oklch(97% 0.01 272)"
+        ]
+      },
+      "encre": {
+        "role": "neutral",
+        "displayName": "Encre",
+        "canonical": "#161616",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(25% 0 0)",
+          "oklch(35% 0 0)",
+          "oklch(48% 0 0)",
+          "oklch(62% 0 0)",
+          "oklch(76% 0 0)",
+          "oklch(88% 0 0)",
+          "oklch(96% 0 0)"
+        ]
+      },
+      "gris-surface": {
+        "role": "neutral",
+        "displayName": "Gris surface",
+        "canonical": "#f6f6f6",
+        "tonalRamp": [
+          "oklch(18% 0 0)",
+          "oklch(28% 0 0)",
+          "oklch(40% 0 0)",
+          "oklch(53% 0 0)",
+          "oklch(67% 0 0)",
+          "oklch(80% 0 0)",
+          "oklch(90% 0 0)",
+          "oklch(97% 0 0)"
+        ]
+      },
+      "filet": {
+        "role": "neutral",
+        "displayName": "Filet",
+        "canonical": "#dddddd",
+        "tonalRamp": [
+          "oklch(16% 0 0)",
+          "oklch(27% 0 0)",
+          "oklch(39% 0 0)",
+          "oklch(52% 0 0)",
+          "oklch(65% 0 0)",
+          "oklch(78% 0 0)",
+          "oklch(89% 0 0)",
+          "oklch(96% 0 0)"
+        ]
+      },
+      "ardoise-nav": {
+        "role": "neutral",
+        "displayName": "Ardoise nav",
+        "canonical": "#242424",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(24% 0 0)",
+          "oklch(34% 0 0)",
+          "oklch(46% 0 0)",
+          "oklch(59% 0 0)",
+          "oklch(73% 0 0)",
+          "oklch(86% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "champ": {
+        "role": "neutral",
+        "displayName": "Champ",
+        "canonical": "#eeeeee",
+        "tonalRamp": [
+          "oklch(17% 0 0)",
+          "oklch(28% 0 0)",
+          "oklch(40% 0 0)",
+          "oklch(53% 0 0)",
+          "oklch(66% 0 0)",
+          "oklch(79% 0 0)",
+          "oklch(90% 0 0)",
+          "oklch(97% 0 0)"
+        ]
+      },
+      "rouge-marianne": {
+        "role": "tertiary",
+        "displayName": "Rouge Marianne",
+        "canonical": "#ce0500",
+        "tonalRamp": [
+          "oklch(20% 0.10 28)",
+          "oklch(30% 0.15 28)",
+          "oklch(40% 0.19 28)",
+          "oklch(51% 0.22 28)",
+          "oklch(63% 0.20 28)",
+          "oklch(75% 0.15 28)",
+          "oklch(87% 0.08 28)",
+          "oklch(95% 0.03 28)"
+        ]
+      },
+      "app-mail": {
+        "role": "tertiary",
+        "displayName": "Vert Messagerie",
+        "canonical": "#00a95f",
+        "note": "Couleur d'enseigne de l'application Messagerie. Icônes et pastilles uniquement."
+      },
+      "app-agenda": {
+        "role": "tertiary",
+        "displayName": "Menthe Agenda",
+        "canonical": "#009081",
+        "note": "Couleur d'enseigne de l'application Agenda. Icônes et pastilles uniquement."
+      },
+      "app-annuaire": {
+        "role": "tertiary",
+        "displayName": "Bleu Annuaire",
+        "canonical": "#465f9d",
+        "note": "Couleur d'enseigne de l'application Annuaire/Contacts."
+      },
+      "app-espace": {
+        "role": "tertiary",
+        "displayName": "Terre Espaces de travail",
+        "canonical": "#ce614a",
+        "note": "Couleur d'enseigne des Espaces de travail."
+      },
+      "sombre-bleu-france": {
+        "role": "primary",
+        "displayName": "Bleu France clair (mode sombre)",
+        "canonical": "#8585f6",
+        "note": "Remplace le bleu France sous html.dark-mode et html.dark-mode-custom. Le texte posé dessus devient #313178."
+      },
+      "sombre-fond": {
+        "role": "neutral",
+        "displayName": "Fond nuit",
+        "canonical": "#242424",
+        "note": "Fond de page en mode sombre. Surface associée #1e1e1e, filet #353535, champ #2f2f2f, texte #ffffff."
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Surfaces d'accueil uniquement — connexion, onboarding, page d'accueil du bureau. Jamais dans le chrome applicatif."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Titre unique d'une page. Hauteur de ligne 40px en mobile."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Titres de section et de panneau."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Texte courant, lignes de liste, libellés de bouton. Taille par défaut du corps."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Métadonnées, mentions d'aide, en-têtes de colonne. Plancher absolu du système à 0.75rem / 20px."
+      }
+    },
+    "shadows": [
+      {
+        "name": "ombre-courte",
+        "value": "0 1px 2px rgba(0, 0, 0, 0.05)",
+        "purpose": "Élément détaché d'un seul cran — menu contextuel, infobulle. Jamais au repos."
+      },
+      {
+        "name": "ombre-portee",
+        "value": "0 4px 8px rgba(0, 0, 0, 0.05)",
+        "purpose": "Couche modale et panneaux surgissants."
+      }
+    ],
+    "motion": [
+      {
+        "name": "transition-etat",
+        "value": "background-color .2s ease, color .2s ease",
+        "purpose": "Seule transition du système sur un changement d'état. La couleur change, la géométrie non."
+      },
+      {
+        "name": "rotate360",
+        "value": "rotate360 .75s linear infinite",
+        "purpose": "Rotor d'un bouton en état de chargement."
+      },
+      {
+        "name": "transition-heritage",
+        "value": "all 0.1s ease-in",
+        "purpose": "Transition de l'ancien monde Mél, encore présente dans styles/less. Ne pas reprendre dans du neuf."
+      }
+    ],
+    "breakpoints": [
+      { "name": "layout-phone", "value": "≤ 480px", "purpose": "Classe posée sur <html>. Une seule colonne visible." },
+      { "name": "layout-small", "value": "≤ 768px", "purpose": "Classe posée sur <html>. Deux colonnes au plus." },
+      { "name": "layout-normal", "value": "769–1200px", "purpose": "Classe posée sur <html>. Trois colonnes, gauche repliable." },
+      { "name": "layout-large", "value": "> 1200px", "purpose": "Classe posée sur <html>. Disposition complète." },
+      { "name": "touch", "value": "≤ 1024px", "purpose": "Classe posée sur <html>. Cibles agrandies." }
+    ],
+    "zIndex": [
+      { "name": "dropdown", "value": 10 },
+      { "name": "modal", "value": 100 },
+      { "name": "tooltip", "value": 1000 }
+    ]
+  },
+  "components": [
+    {
+      "name": "Bouton primaire",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "L'action principale d'un écran. Une seule par écran — règle du Signal rare.",
+      "html": "<button class=\"ds-btn ds-btn-primary\" type=\"button\">Envoyer</button>",
+      "css": ".ds-btn { font-family: -apple-system, system-ui, BlinkMacSystemFont, Arial, 'Segoe UI', Roboto, sans-serif; font-size: 1rem; font-weight: 600; line-height: 1.5rem; padding: 0.5rem 1rem; border-radius: 0; cursor: pointer; user-select: none; transition: background-color .2s ease, color .2s ease; } .ds-btn:focus-visible { outline: 2px solid #0969da; outline-offset: 2px; } .ds-btn-primary { background: var(--bnum-color-primary, #000091); color: var(--bnum-text-on-primary, #f5f5fe); border: none; } .ds-btn-primary:hover { background: var(--bnum-color-primary-hover, #1212ff); } .ds-btn-primary:active { background: var(--bnum-color-primary-active, #2e2eff); }"
+    },
+    {
+      "name": "Bouton secondaire",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Action de rang deux : annuler, revenir, ouvrir un réglage. Fond blanc, contour et texte bleu France.",
+      "html": "<button class=\"ds-btn ds-btn-secondary\" type=\"button\">Annuler</button>",
+      "css": ".ds-btn-secondary { font-family: -apple-system, system-ui, BlinkMacSystemFont, Arial, 'Segoe UI', Roboto, sans-serif; font-size: 1rem; font-weight: 600; line-height: 1.5rem; padding: 0.5rem 1rem; border-radius: 0; cursor: pointer; user-select: none; transition: background-color .2s ease, color .2s ease; background: var(--bnum-color-secondary, #ffffff); color: var(--bnum-text-on-secondary, #000091); border: 1px solid var(--bnum-color-primary, #000091); } .ds-btn-secondary:hover { background: var(--bnum-color-secondary-hover, #f6f6f6); } .ds-btn-secondary:active { background: var(--bnum-color-secondary-active, #ededed); } .ds-btn-secondary:focus-visible { outline: 2px solid #0969da; outline-offset: 2px; }"
+    },
+    {
+      "name": "Bouton danger",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Action destructrice et irréversible uniquement — supprimer définitivement, quitter un espace.",
+      "html": "<button class=\"ds-btn ds-btn-danger\" type=\"button\">Supprimer définitivement</button>",
+      "css": ".ds-btn-danger { font-family: -apple-system, system-ui, BlinkMacSystemFont, Arial, 'Segoe UI', Roboto, sans-serif; font-size: 1rem; font-weight: 600; line-height: 1.5rem; padding: 0.5rem 1rem; border-radius: 0; border: none; cursor: pointer; user-select: none; transition: background-color .2s ease, color .2s ease; background: var(--bnum-color-danger, #ce0500); color: var(--bnum-text-on-danger, #f5f5fe); } .ds-btn-danger:hover { background: var(--bnum-color-danger-hover, #ff2725); } .ds-btn-danger:active { background: var(--bnum-color-danger-active, #ff4140); } .ds-btn-danger:focus-visible { outline: 2px solid #0969da; outline-offset: 2px; }"
+    },
+    {
+      "name": "Champ de saisie",
+      "kind": "input",
+      "refersTo": "input-text",
+      "description": "Silhouette signature du système : bloc plein, coins hauts arrondis, soulignement 2px qui vire au bleu France au focus.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Objet du message</span><input class=\"ds-input\" type=\"text\" value=\"Réunion de service du 3 septembre\" /></label>",
+      "css": ".ds-field { display: block; font-family: -apple-system, system-ui, BlinkMacSystemFont, Arial, 'Segoe UI', Roboto, sans-serif; } .ds-field-label { display: block; font-size: .875rem; font-weight: 500; line-height: 24px; color: var(--bnum-text-hint, #666); margin-bottom: 5px; } .ds-input { background: var(--bnum-color-input, #eee); border: none; border-radius: 4px 4px 0 0; box-shadow: inset 0 -2px 0 0 var(--bnum-color-input-border, #3a3a3a); color: var(--bnum-text-primary, #161616); display: block; font-family: inherit; font-size: 1rem; line-height: 1.5rem; padding: .5rem 1rem; width: 100%; transition: box-shadow .2s ease; } .ds-input:hover { background: var(--bnum-color-input-hover, #d2d2d2); } .ds-input:focus { outline: none; box-shadow: inset 0 -2px 0 0 var(--bnum-color-primary, #000091); } .ds-input:focus-visible { outline: 2px solid #0969da; outline-offset: 2px; }"
+    },
+    {
+      "name": "Champ de recherche",
+      "kind": "input",
+      "refersTo": "input-text",
+      "description": "Même silhouette que le champ texte, avec l'icône de recherche posée à droite dans la zone de saisie.",
+      "html": "<div class=\"ds-search\"><input class=\"ds-search-input\" type=\"search\" placeholder=\"Rechercher un message, un contact, un événement\" /><svg class=\"ds-search-icon\" viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5Zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14Z\"/></svg></div>",
+      "css": ".ds-search { position: relative; display: block; font-family: -apple-system, system-ui, BlinkMacSystemFont, Arial, 'Segoe UI', Roboto, sans-serif; } .ds-search-input { background: var(--bnum-color-input, #eee); border: none; border-radius: 4px 4px 0 0; box-shadow: inset 0 -2px 0 0 var(--bnum-color-input-border, #3a3a3a); color: var(--bnum-text-primary, #161616); display: block; font-family: inherit; font-size: 1rem; line-height: 1.5rem; padding: .5rem 2.5rem .5rem 1rem; width: 100%; } .ds-search-input::placeholder { color: var(--bnum-text-hint, #666); } .ds-search-input:focus { outline: none; box-shadow: inset 0 -2px 0 0 var(--bnum-color-primary, #000091); } .ds-search-input:focus-visible { outline: 2px solid #0969da; outline-offset: 2px; } .ds-search-icon { position: absolute; right: .75rem; top: 50%; transform: translateY(-50%); color: var(--bnum-text-hint, #666); pointer-events: none; }"
+    },
+    {
+      "name": "Rail de navigation",
+      "kind": "nav",
+      "refersTo": "nav-rail-item",
+      "description": "Colonne fixe de 60px à gauche de tout le produit. Icône seule ; le libellé est masqué visuellement mais lu par les lecteurs d'écran.",
+      "html": "<nav class=\"ds-rail\" aria-label=\"Applications\"><a class=\"ds-rail-item ds-rail-item-selected\" href=\"#\" aria-current=\"page\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4-8 5-8-5V6l8 5 8-5v2Z\"/></svg><span class=\"ds-sr\">Messagerie</span></a><a class=\"ds-rail-item\" href=\"#\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 16H5V10h14v10Z\"/></svg><span class=\"ds-sr\">Agenda</span></a><a class=\"ds-rail-item\" href=\"#\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M16 11a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm-8 0a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm0 2c-2.67 0-8 1.34-8 4v3h10v-3c0-1.02.4-1.87 1.05-2.55A13.6 13.6 0 0 0 8 13Zm8 0c-.32 0-.68.02-1.06.05A4.2 4.2 0 0 1 16 16v4h8v-3c0-2.66-5.33-4-8-4Z\"/></svg><span class=\"ds-sr\">Annuaire</span></a></nav>",
+      "css": ".ds-rail { display: flex; flex-direction: column; width: 60px; background: var(--bnum-main-nav-color, #242424); padding: 0; } .ds-rail-item { display: flex; align-items: center; justify-content: center; width: 60px; height: 58px; color: var(--bnum-text-navbar, #ffffff); text-decoration: none; transition: background-color .2s ease, color .2s ease; } .ds-rail-item:hover { background: var(--bnum-main-nav-color-hover, #474747); } .ds-rail-item:active { background: var(--bnum-main-nav-color-active, #5b5b5b); } .ds-rail-item-selected { background: var(--bnum-main-nav-color-hover, #474747); } .ds-rail-item:focus-visible { outline: 2px solid #ffffff; outline-offset: -2px; } .ds-sr { border: 0; clip: rect(0, 0, 0, 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }"
+    },
+    {
+      "name": "Ligne de liste",
+      "kind": "custom",
+      "refersTo": "list-row",
+      "description": "Le composant le plus vu du produit. États rendus par les voiles bleus ; le non-lu se marque par la graisse et un filet gauche, jamais par un fond.",
+      "html": "<ul class=\"ds-list\"><li class=\"ds-row ds-row-unread\"><span class=\"ds-row-from\">Direction des systèmes d'information</span><span class=\"ds-row-subject\">Maintenance planifiée du service de visioconférence</span><span class=\"ds-row-date\">09:14</span></li><li class=\"ds-row\"><span class=\"ds-row-from\">Camille Rousset</span><span class=\"ds-row-subject\">Compte rendu de la réunion de service</span><span class=\"ds-row-date\">Hier</span></li><li class=\"ds-row ds-row-selected\"><span class=\"ds-row-from\">Espace de travail — Schéma directeur</span><span class=\"ds-row-subject\">Vous avez été ajouté à l'espace</span><span class=\"ds-row-date\">10 août</span></li></ul>",
+      "css": ".ds-list { list-style: none; margin: 0; padding: 0; background: var(--bnum-color-middle-column, #ffffff); font-family: -apple-system, system-ui, BlinkMacSystemFont, Arial, 'Segoe UI', Roboto, sans-serif; } .ds-row { display: grid; grid-template-columns: 1fr 2fr auto; gap: 15px; align-items: baseline; padding: 10px 15px; border-bottom: 1px solid var(--bnum-color-border, #ddd); border-left: 4px solid transparent; color: var(--bnum-text-primary, #161616); font-size: 1rem; line-height: 24px; cursor: pointer; transition: background-color .2s ease; } .ds-row:hover { background: var(--bnum-color-list-hover, #dcdcfc); } .ds-row-selected { background: var(--bnum-color-list-active, #cbcbfa); } .ds-row-unread { font-weight: 600; border-left-color: var(--bnum-color-primary, #000091); } .ds-row-from { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .ds-row-subject { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .ds-row-date { font-size: .875rem; font-weight: 400; color: var(--bnum-text-hint, #666); white-space: nowrap; }"
+    },
+    {
+      "name": "Badge",
+      "kind": "chip",
+      "refersTo": "badge",
+      "description": "Pilule de valeur : compteur, état, étiquette. Sa forme arrondie dit qu'il ne s'agit pas d'une action.",
+      "html": "<span class=\"ds-badge ds-badge-primary\">12</span> <span class=\"ds-badge ds-badge-secondary\">Brouillon</span> <span class=\"ds-badge ds-badge-danger\">Échec d'envoi</span>",
+      "css": ".ds-badge { display: inline-block; border-radius: 100px; padding: 5px 10px; font-family: -apple-system, system-ui, BlinkMacSystemFont, Arial, 'Segoe UI', Roboto, sans-serif; font-size: .75rem; font-weight: 500; line-height: 20px; } .ds-badge-primary { background: var(--bnum-color-primary, #000091); color: var(--bnum-text-on-primary, #f5f5fe); } .ds-badge-secondary { background: var(--bnum-color-secondary, #ffffff); color: var(--bnum-text-on-secondary, #000091); border: 1px solid var(--bnum-text-on-secondary, #000091); } .ds-badge-danger { background: var(--bnum-color-danger, #ce0500); color: var(--bnum-text-on-danger, #f5f5fe); }"
+    },
+    {
+      "name": "Carte de surface",
+      "kind": "card",
+      "refersTo": "card-item",
+      "description": "Bloc d'information posé dans le flux. Angle droit, fond gris surface, filet, aucune ombre.",
+      "html": "<article class=\"ds-card\"><h3 class=\"ds-card-title\">Prochains événements</h3><p class=\"ds-card-body\">Trois créneaux sont positionnés cette semaine sur l'espace de travail Schéma directeur.</p><button class=\"ds-card-action\" type=\"button\">Ouvrir l'agenda</button></article>",
+      "css": ".ds-card { background: var(--bnum-color-surface, #f6f6f6); border: 1px solid var(--bnum-color-border, #ddd); border-radius: 0; padding: 15px; font-family: -apple-system, system-ui, BlinkMacSystemFont, Arial, 'Segoe UI', Roboto, sans-serif; color: var(--bnum-text-primary, #161616); } .ds-card-title { font-size: 1.5rem; line-height: 32px; font-weight: 700; margin: 0 0 15px; } .ds-card-body { font-size: 1rem; line-height: 24px; margin: 0 0 20px; } .ds-card-action { background: transparent; color: var(--bnum-text-on-secondary, #000091); border: 1px solid var(--bnum-color-primary, #000091); border-radius: 0; padding: .5rem 1rem; font-family: inherit; font-size: 1rem; font-weight: 600; line-height: 1.5rem; cursor: pointer; transition: background-color .2s ease, color .2s ease; } .ds-card-action:hover { background: var(--bnum-color-primary, #000091); color: var(--bnum-text-on-primary, #f5f5fe); } .ds-card-action:focus-visible { outline: 2px solid #0969da; outline-offset: 2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Le Bureau République",
+    "overview": "Bnum ressemble à ce qu'il est : un service de l'État. La sobriété n'est pas une timidité de designer, c'est la matière du produit. Le fond est blanc, les surfaces sont gris clair, le texte est presque noir, les angles sont droits et le seul accent est le bleu France. Ce qui reste à l'écran, une fois cette enveloppe retirée, c'est le travail de l'agent : des messages, des créneaux, des documents, des personnes. Le système est conçu pour disparaître derrière eux.\n\nC'est un système dense. Les agents passent la journée dedans, avec plusieurs applications ouvertes ; on optimise le nombre de lignes lisibles à l'écran, pas la quantité de blanc. Mais dense ne veut pas dire serré ni deviné : les contrastes sont nets, les libellés explicites, les cibles cliquables franches. La densité se gagne sur l'espacement et la hiérarchie, jamais en rétrécissant le texte ni en supprimant un libellé.\n\nLa neutralité n'est pas de la grisaille. Elle est là pour laisser respirer deux sources de couleur légitimes : la couleur d'application, qui dit en un coup d'œil dans quelle brique on se trouve, et les thèmes (mode sombre, thèmes saisonniers) que l'utilisateur choisit. Le système ne dispute jamais ces couleurs ; il leur fait de la place. Anti-référence confirmée : l'ancien monde Mél — grands aplats indigo #363A5B, accent menthe #80D5C6, boutons en gélule et panneaux colorés bord à bord — n'est plus la cible. Il reste en place dans une partie du code et se retire écran par écran.",
+    "keyCharacteristics": [
+      "Bleu France en signal rare (≤ 10 % de la surface), pas en aplat de marque.",
+      "Angle droit par défaut : rounded.none est le rayon normal, pas l'exception.",
+      "Profondeur par filet 1px et écart de fond, pas par ombre.",
+      "Densité assumée, sur une grille de 5/10/15/20/25 px.",
+      "Une couleur par application, portée par l'icône et l'accent local, jamais par le fond de page.",
+      "Deux modes (clair, sombre) et une échelle de taille de texte réglable par l'utilisateur : tout composant doit survivre aux deux.",
+      "Composants livrés en éléments natifs <bnum-*> à Shadow DOM, pilotés par variables CSS."
+    ],
+    "rules": [
+      {
+        "name": "La règle du Signal rare",
+        "body": "Le bleu France ne dépasse jamais 10 % de la surface d'un écran. Un écran qui a besoin de deux boutons bleus a en réalité une seule action principale et une action secondaire mal identifiée.",
+        "section": "colors"
+      },
+      {
+        "name": "La règle du Voile",
+        "body": "Les états d'une ligne de liste (survol, sélection, dépôt) se rendent avec les voiles #dcdcfc / #cbcbfa, jamais avec le bleu France lui-même. Une liste sélectionnée ne doit pas peser plus lourd à l'œil qu'un bouton d'action.",
+        "section": "colors"
+      },
+      {
+        "name": "La règle de l'enseigne",
+        "body": "La couleur d'application ne teinte que des objets de petite taille : icône, pastille, puce, filet d'accent. Dès qu'elle remplit un fond de page ou un bouton, elle entre en concurrence avec l'accent du système et la règle du Signal rare est violée.",
+        "section": "colors"
+      },
+      {
+        "name": "La règle du plancher",
+        "body": "Rien ne descend sous 0.75rem. Si un bloc ne tient pas, c'est l'espacement ou la quantité d'information qu'on réduit, pas le corps du texte.",
+        "section": "typography"
+      },
+      {
+        "name": "La règle de l'échelle utilisateur",
+        "body": "L'utilisateur peut basculer toute l'interface en petit ou grand texte (html.sm-text / html.lg-text). Toute taille écrite en dur en pixels casse ce réglage : les tailles passent par les variables --bnum-font-size-*.",
+        "section": "typography"
+      },
+      {
+        "name": "La règle de la graisse unique",
+        "body": "Trois graisses seulement : 400 pour le texte, 500 pour les libellés, 600–700 pour les boutons et les titres. Pas de 300, pas d'italique décoratif.",
+        "section": "typography"
+      },
+      {
+        "name": "La règle des 60",
+        "body": "Le rail fait 60px de large, l'en-tête 60px de haut, l'item de rail 58px. Ces trois nombres tiennent l'alignement de toute la coquille ; on ne les ajuste pas localement.",
+        "section": "layout"
+      },
+      {
+        "name": "La règle de la classe de layout",
+        "body": "La réactivité s'écrit avec html.layout-phone, html.layout-small, html.touch — jamais avec @media (max-width: …) seul.",
+        "section": "layout"
+      },
+      {
+        "name": "La règle du filet",
+        "body": "Deux zones voisines se distinguent par un filet et un écart de fond. Si on est tenté d'ajouter une ombre pour les séparer, c'est le contraste de fond qui est insuffisant.",
+        "section": "elevation"
+      },
+      {
+        "name": "La règle du flottant",
+        "body": "Une ombre signifie « cet élément est au-dessus du document et se ferme ». Un élément qui ne se ferme pas n'a pas d'ombre.",
+        "section": "elevation"
+      },
+      {
+        "name": "La règle de l'angle droit",
+        "body": "Ajouter un rayon est une décision, pas un réflexe. En dehors des badges, avatars et boutons rounded, un rayon dans une nouvelle interface est une régression.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "Do partir des tokens --bnum-* et des éléments <bnum-*> pour toute nouvelle interface. Ils sont chargés globalement (design-system/css/global.css + ds-module-bnum.js) sur toutes les tâches.",
+      "Do personnaliser un composant par ses variables CSS exposées (--bnum-button-padding, --bnum-input-background-color…) plutôt qu'en surchargeant ses sélecteurs internes.",
+      "Do tenir la règle du Signal rare : une seule action bleue par écran.",
+      "Do rendre chaque état de liste avec les voiles #dcdcfc / #cbcbfa.",
+      "Do vérifier tout écran dans les deux modes — html.dark-mode et html.dark-mode-custom — avant de le considérer terminé.",
+      "Do vérifier tout écran aux trois échelles de texte (sm-text, défaut, lg-text) et sur .layout-phone, .layout-small, .touch.",
+      "Do garder l'en-tête de colonne à 60px et le rail à 60px.",
+      "Do doubler toute information portée par la couleur d'un libellé, d'une icône ou d'un texte d'état — exigence RGAA, et seule façon de rester lisible en thème sombre et en thème saisonnier.",
+      "Do masquer un libellé visuellement (clip, <bnum-screen-reader>) plutôt que le supprimer, quand la place manque."
+    ],
+    "donts": [
+      "Don't introduire les couleurs de l'ancien monde Mél dans une nouvelle interface : indigo #363A5B, #2C3054, #484D7A, menthe #80D5C6. Elles sont documentées ici uniquement pour être reconnues et retirées.",
+      "Don't reprendre les boutons en gélule de l'héritage (border-radius: 50px, margin-top: 15px). Le bouton du système est carré et sans marge implicite.",
+      "Don't écrire une couleur en dur là où un token existe. Le rail de navigation contient encore #2c3054 codé en dur dans styles/taskbar.css alors que le système définit --bnum-main-nav-color: #242424 : c'est une dérive à corriger, pas un précédent à suivre.",
+      "Don't ajouter un rayon en dehors des badges, avatars et boutons rounded.",
+      "Don't poser une ombre sur un élément qui ne flotte pas au-dessus du document.",
+      "Don't utiliser une couleur d'application comme fond de page, de bouton ou de bandeau.",
+      "Don't écrire de taille de police en pixels en dur : cela casse le réglage sm-text / lg-text.",
+      "Don't produire un espacement hors de la grille 5 / 10 / 15 / 20 / 25.",
+      "Don't s'appuyer uniquement sur @media (max-width: …) : la réactivité du produit passe par les classes de layout posées sur <html>.",
+      "Don't animer autre chose que la couleur sur un changement d'état. Les transitions font 0,2s ; les déplacements et agrandissements au survol ne font pas partie du système."
+    ]
+  }
+}

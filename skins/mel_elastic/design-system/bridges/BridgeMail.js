@@ -219,17 +219,6 @@ export default class BridgeMail extends ABridge {
     if (!this.rcmail()) return this;
     if (!window.bridgeMail) this.export('bridgeMail', this);
 
-    // Sur mobile, éviter l'ouverture automatique du mail sélectionné.
-    if (this.isLayoutSmallOfPhone()) {
-      const original_preview = this.rcmail().msglist_get_preview;
-      this.rcmail().msglist_get_preview = function () {
-        if (MelObject.Empty().isLayoutSmallOfPhone()) {
-          return;
-        }
-        return original_preview.apply(this, arguments);
-      };
-    }
-
     return this.#initMail();
   }
 

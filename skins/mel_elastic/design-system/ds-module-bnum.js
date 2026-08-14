@@ -3962,10 +3962,24 @@ var style$o = css_248z$q;
  */
 const ICON_CLASS = 'material-symbols-outlined';
 /**
+ * Source de la police, extraite du même CSS que celui utilisé pour le rendu
+ * (source unique) plutôt que dupliquée en dur ici.
+ */
+const FONT_SRC = symbols.match(/url\(([^)]+)\)/)?.[1] ??
+    './skins/mel_elastic/fonts/material-symbol-v2.woff2';
+/**
  * Feuille de style CSS pour les icônes Material Symbols.
  */
-const SYMBOLS = BnumElement.ConstructCSSStyleSheet(symbols.replaceAll(`.${ICON_CLASS}`, ':host'));
+const SYMBOLS = BnumElement.ConstructCSSStyleSheet(symbols
+    .replaceAll(`.${ICON_CLASS}`, ':host')
+    .replaceAll('fonts/material-symbol-v2.woff2', FONT_SRC));
 const STYLE = BnumElement.ConstructCSSStyleSheet(style$o);
+/** Nom de famille de la police Material Symbols. */
+const FONT_FAMILY = 'Material Symbols Outlined';
+/** Spécification utilisée pour interroger `document.fonts`. */
+const FONT_SPEC = `24px "${FONT_FAMILY}"`;
+/** Délai maximum d'attente du chargement de la police avant d'abandonner. */
+const FONT_LOAD_TIMEOUT_MS = 3000;
 /**
  * Composant personnalisé "bnum-icon" pour afficher une icône Material Symbol.
  *
@@ -3981,7 +3995,7 @@ const STYLE = BnumElement.ConstructCSSStyleSheet(style$o);
  * @event {unknown} custom:element-changed:icon - Déclenché lors du changement d'icône.
  */
 let HTMLBnumIcon = (() => {
-    var _HTMLBnumIcon__fontPromise;
+    var _HTMLBnumIcon__fontPromise, _HTMLBnumIcon__loadFont;
     let _classDecorators = [Define({ tag: TAG_ICON })];
     let _classDescriptor;
     let _classExtraInitializers = [];
@@ -3996,6 +4010,20 @@ let HTMLBnumIcon = (() => {
     var HTMLBnumIcon = class extends _classSuper {
         static { _classThis = this; }
         static { __setFunctionName(this, "HTMLBnumIcon"); }
+        static { _HTMLBnumIcon__loadFont = function _HTMLBnumIcon__loadFont() {
+            // Optimisation : on ne lance le chargement qu'une fois globalement
+            __classPrivateFieldSet(this, _classThis, __classPrivateFieldGet(this, _classThis, "f", _HTMLBnumIcon__fontPromise) ?? (async () => {
+                const fontFace = new FontFace(FONT_FAMILY, `url(${FONT_SRC})`, {
+                    weight: '200',
+                });
+                document.fonts.add(fontFace);
+                await Promise.race([
+                    fontFace.load().then(() => undefined, () => undefined),
+                    new Promise(resolve => setTimeout(resolve, FONT_LOAD_TIMEOUT_MS)),
+                ]);
+            })(), "f", _HTMLBnumIcon__fontPromise);
+            return __classPrivateFieldGet(this, _classThis, "f", _HTMLBnumIcon__fontPromise);
+        }; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             ___decorators = [Self];
@@ -4022,8 +4050,11 @@ let HTMLBnumIcon = (() => {
         get oniconchanged() { return this.#oniconchanged_accessor_storage; }
         set oniconchanged(value) { this.#oniconchanged_accessor_storage = value; }
         /**
-         * Obtient le nom de l'icône actuellement affichée.
-         * @returns {string} Le nom de l'icône.
+         * Nom de l'icône affichée. En lecture : contenu texte de l'élément, sinon
+         * l'attribut `data-icon`, sinon une chaîne vide. En écriture : met à jour
+         * l'affichage et déclenche `oniconchanged` si la valeur change ; une
+         * valeur `null` est ignorée, une chaîne ne respectant pas le format
+         * `[\w-]+` lève une erreur.
          */
         get icon() {
             const icon = this.textContent?.trim?.() ||
@@ -4031,12 +4062,6 @@ let HTMLBnumIcon = (() => {
                 EMPTY_STRING;
             return icon;
         }
-        /**
-         * Définit le nom de l'icône à afficher.
-         * Déclenche l'événement oniconchanged si la valeur change.
-         * @param {string | null} value - Le nouveau nom de l'icône.
-         * @throws {Error} Si la valeur n'est pas une chaîne valide.
-         */
         set icon(value) {
             if (value !== null) {
                 if (typeof value === 'string' && /^[\w-]+$/.test(value)) {
@@ -4052,24 +4077,21 @@ let HTMLBnumIcon = (() => {
         }
         //#endregion Getter/setter
         //#region Lifecycle
-        /**
-         * Constructeur du composant HTMLBnumIcon.
-         * Initialise les écouteurs d'attributs et l'événement oniconchanged.
-         */
         constructor() {
             super();
             __runInitializers(this, _oniconchanged_extraInitializers);
         }
         /**
-         * Retourne les feuilles de style à appliquer dans le Shadow DOM.
-         * @returns {CSSStyleSheet[]} Les feuilles de style.
+         * Ajoute les feuilles de style de la police Material Symbols aux feuilles héritées.
          */
         _p_getStylesheets() {
             return [...super._p_getStylesheets(), SYMBOLS, STYLE];
         }
         /**
-         * Construit le DOM interne du composant.
-         * @param {ShadowRoot} container - Le conteneur du Shadow DOM.
+         * Construit le slot par défaut, affiche l'icône initiale si `data-icon` en
+         * fournit une, puis masque le composant aux technologies d'assistance
+         * (`aria-hidden`) et lance le suivi du chargement de la police tant
+         * qu'aucun `aria-hidden`/`aria-label` explicite n'est déjà présent.
          */
         _p_buildDOM(container) {
             container.appendChild(this._p_createSlot());
@@ -4084,34 +4106,27 @@ let HTMLBnumIcon = (() => {
         //#endregion Lifecycle
         //#region Private methods
         async #_checkAndLoadFont() {
-            const FONT_SPEC = '24px "Material Symbols Outlined"';
-            // Optimisation : On ne lance le chargement qu'une fois globalement
-            if (!document.fonts.check(FONT_SPEC)) {
-                this._p_addState('loading');
-                if (!__classPrivateFieldGet(this._, _classThis, "f", _HTMLBnumIcon__fontPromise)) {
-                    __classPrivateFieldSet(this._, _classThis, document.fonts.load(FONT_SPEC).then(() => { }), "f", _HTMLBnumIcon__fontPromise);
-                }
-                await __classPrivateFieldGet(this._, _classThis, "f", _HTMLBnumIcon__fontPromise);
-                this._p_removeState('loading');
-            }
+            var _a;
+            if (document.fonts.check(FONT_SPEC))
+                return;
+            this._p_addState('loading');
+            await __classPrivateFieldGet((_a = this._), _classThis, "m", _HTMLBnumIcon__loadFont).call(_a);
+            this._p_removeState('loading');
         }
         /**
-         * Demande une mise à jour du DOM pour l'icône.
-         * @param {string} icon - Nom de l'icône.
-         * @returns {this}
-         * @private
+         * Planifie une mise à jour différée de l'affichage avec le nom d'icône fourni.
          */
         #_requestUpdateDOM(icon) {
-            this.#_updateScheduler ??= new Scheduler((icon) => {
+            this.#_updateScheduler ??= new Scheduler(
+            // eslint-disable-next-line no-shadow
+            (icon) => {
                 this.#_updateIcon(icon);
             });
             this.#_updateScheduler.schedule(icon);
             return this;
         }
         /**
-         * Met à jour l'affichage de l'icône.
-         * @param {string} icon - Nom de l'icône.
-         * @private
+         * Remplace le contenu texte de l'élément par le nom de l'icône.
          */
         #_updateIcon(icon) {
             this.textContent = icon;
@@ -4120,8 +4135,6 @@ let HTMLBnumIcon = (() => {
         //#region Static methods
         /**
          * Crée une nouvelle instance de HTMLBnumIcon avec l'icône spécifiée.
-         * @param {string} icon - Le nom de l'icône à utiliser.
-         * @returns {HTMLBnumIcon} L'élément créé.
          */
         static Create(icon) {
             const element = this.EMPTY;
@@ -4133,91 +4146,78 @@ let HTMLBnumIcon = (() => {
         }
         /**
          * Retourne un élément HTMLBnumIcon vide.
-         * @returns {HTMLBnumIcon}
          */
         static get EMPTY() {
             return document.createElement(this.TAG);
         }
         /**
-         * Retourne la classe CSS utilisée pour les icônes Material Symbols.
-         * @returns {string}
+         * Classe CSS utilisée en interne pour les icônes Material Symbols.
          */
         static get HTML_CLASS() {
             return ICON_CLASS;
         }
         /**
          * Retourne une instance de HTMLBnumIcon avec l'icône 'home'.
-         * @returns {HTMLBnumIcon}
          */
         static get HOME() {
             return this.Create('home');
         }
         /**
          * Retourne une instance de HTMLBnumIcon avec l'icône 'search'.
-         * @returns {HTMLBnumIcon}
          */
         static get SEARCH() {
             return this.Create('search');
         }
         /**
          * Retourne une instance de HTMLBnumIcon avec l'icône 'settings'.
-         * @returns {HTMLBnumIcon}
          */
         static get SETTINGS() {
             return this.Create('settings');
         }
         /**
          * Retourne une instance de HTMLBnumIcon avec l'icône 'person'.
-         * @returns {HTMLBnumIcon}
          */
         static get USER() {
             return this.Create('person');
         }
         /**
          * Retourne une instance de HTMLBnumIcon avec l'icône 'mail'.
-         * @returns {HTMLBnumIcon}
          */
         static get MAIL() {
             return this.Create('mail');
         }
         /**
          * Retourne une instance de HTMLBnumIcon avec l'icône 'close'.
-         * @returns {HTMLBnumIcon}
          */
         static get CLOSE() {
             return this.Create('close');
         }
         /**
          * Retourne une instance de HTMLBnumIcon avec l'icône 'check'.
-         * @returns {HTMLBnumIcon}
          */
         static get CHECK() {
             return this.Create('check');
         }
         /**
          * Retourne une instance de HTMLBnumIcon avec l'icône 'warning'.
-         * @returns {HTMLBnumIcon}
          */
         static get WARNING() {
             return this.Create('warning');
         }
         /**
          * Retourne une instance de HTMLBnumIcon avec l'icône 'info'.
-         * @returns {HTMLBnumIcon}
          */
         static get INFO() {
             return this.Create('info');
         }
         /**
          * Retourne une instance de HTMLBnumIcon avec l'icône 'delete'.
-         * @returns {HTMLBnumIcon}
          */
         static get DELETE() {
             return this.Create('delete');
         }
         /**
          * Retourne une instance de HTMLBnumIcon avec l'icône 'add'.
-         * @returns {HTMLBnumIcon}
          */
         static get ADD() {
             return this.Create('add');

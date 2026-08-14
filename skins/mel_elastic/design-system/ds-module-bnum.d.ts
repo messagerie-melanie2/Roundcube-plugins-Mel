@@ -1263,102 +1263,81 @@ export declare class HTMLBnumIcon extends BnumElementInternal {
 	 */
 	accessor oniconchanged: JsEvent<(newIcon: string, oldIcon: string) => void>;
 	/**
-	 * Obtient le nom de l'icône actuellement affichée.
-	 * @returns {string} Le nom de l'icône.
+	 * Nom de l'icône affichée. En lecture : contenu texte de l'élément, sinon
+	 * l'attribut `data-icon`, sinon une chaîne vide. En écriture : met à jour
+	 * l'affichage et déclenche `oniconchanged` si la valeur change ; une
+	 * valeur `null` est ignorée, une chaîne ne respectant pas le format
+	 * `[\w-]+` lève une erreur.
 	 */
 	get icon(): string;
-	/**
-	 * Définit le nom de l'icône à afficher.
-	 * Déclenche l'événement oniconchanged si la valeur change.
-	 * @param {string | null} value - Le nouveau nom de l'icône.
-	 * @throws {Error} Si la valeur n'est pas une chaîne valide.
-	 */
 	set icon(value: string | null);
-	/**
-	 * Constructeur du composant HTMLBnumIcon.
-	 * Initialise les écouteurs d'attributs et l'événement oniconchanged.
-	 */
 	constructor();
 	/**
-	 * Retourne les feuilles de style à appliquer dans le Shadow DOM.
-	 * @returns {CSSStyleSheet[]} Les feuilles de style.
+	 * Ajoute les feuilles de style de la police Material Symbols aux feuilles héritées.
 	 */
 	protected _p_getStylesheets(): CSSStyleSheet[];
 	/**
-	 * Construit le DOM interne du composant.
-	 * @param {ShadowRoot} container - Le conteneur du Shadow DOM.
+	 * Construit le slot par défaut, affiche l'icône initiale si `data-icon` en
+	 * fournit une, puis masque le composant aux technologies d'assistance
+	 * (`aria-hidden`) et lance le suivi du chargement de la police tant
+	 * qu'aucun `aria-hidden`/`aria-label` explicite n'est déjà présent.
 	 */
 	protected _p_buildDOM(container: CustomDom): void;
 	/**
 	 * Crée une nouvelle instance de HTMLBnumIcon avec l'icône spécifiée.
-	 * @param {string} icon - Le nom de l'icône à utiliser.
-	 * @returns {HTMLBnumIcon} L'élément créé.
 	 */
 	static Create(icon: string): HTMLBnumIcon;
 	static Write(icon: string, attribs?: Record<string, string>): string;
 	/**
 	 * Retourne un élément HTMLBnumIcon vide.
-	 * @returns {HTMLBnumIcon}
 	 */
 	static get EMPTY(): HTMLBnumIcon;
 	/**
-	 * Retourne la classe CSS utilisée pour les icônes Material Symbols.
-	 * @returns {string}
+	 * Classe CSS utilisée en interne pour les icônes Material Symbols.
 	 */
 	static get HTML_CLASS(): string;
 	/**
 	 * Retourne une instance de HTMLBnumIcon avec l'icône 'home'.
-	 * @returns {HTMLBnumIcon}
 	 */
 	static get HOME(): HTMLBnumIcon;
 	/**
 	 * Retourne une instance de HTMLBnumIcon avec l'icône 'search'.
-	 * @returns {HTMLBnumIcon}
 	 */
 	static get SEARCH(): HTMLBnumIcon;
 	/**
 	 * Retourne une instance de HTMLBnumIcon avec l'icône 'settings'.
-	 * @returns {HTMLBnumIcon}
 	 */
 	static get SETTINGS(): HTMLBnumIcon;
 	/**
 	 * Retourne une instance de HTMLBnumIcon avec l'icône 'person'.
-	 * @returns {HTMLBnumIcon}
 	 */
 	static get USER(): HTMLBnumIcon;
 	/**
 	 * Retourne une instance de HTMLBnumIcon avec l'icône 'mail'.
-	 * @returns {HTMLBnumIcon}
 	 */
 	static get MAIL(): HTMLBnumIcon;
 	/**
 	 * Retourne une instance de HTMLBnumIcon avec l'icône 'close'.
-	 * @returns {HTMLBnumIcon}
 	 */
 	static get CLOSE(): HTMLBnumIcon;
 	/**
 	 * Retourne une instance de HTMLBnumIcon avec l'icône 'check'.
-	 * @returns {HTMLBnumIcon}
 	 */
 	static get CHECK(): HTMLBnumIcon;
 	/**
 	 * Retourne une instance de HTMLBnumIcon avec l'icône 'warning'.
-	 * @returns {HTMLBnumIcon}
 	 */
 	static get WARNING(): HTMLBnumIcon;
 	/**
 	 * Retourne une instance de HTMLBnumIcon avec l'icône 'info'.
-	 * @returns {HTMLBnumIcon}
 	 */
 	static get INFO(): HTMLBnumIcon;
 	/**
 	 * Retourne une instance de HTMLBnumIcon avec l'icône 'delete'.
-	 * @returns {HTMLBnumIcon}
 	 */
 	static get DELETE(): HTMLBnumIcon;
 	/**
 	 * Retourne une instance de HTMLBnumIcon avec l'icône 'add'.
-	 * @returns {HTMLBnumIcon}
 	 */
 	static get ADD(): HTMLBnumIcon;
 }

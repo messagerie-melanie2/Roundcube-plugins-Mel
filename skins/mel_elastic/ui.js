@@ -3291,6 +3291,32 @@ $(document).ready(() => {
           iframe.contentWindow.MEL_ELASTIC_UI._update_theme_color();
       }
 
+      if (
+        rcmail.env.task === 'mail' &&
+        rcmail.env.action === 'preview' &&
+        parent
+      ) {
+        const updateColorFunc = () => {
+          const ismodeNOk =
+            parent.MEL_ELASTIC_UI.color_mode() !== this.color_mode();
+
+          if (ismodeNOk) {
+            console.info('(i) [COLOR] Ratrappage de la couleur en cours....');
+            const $html = $('html').removeClass('dark-mode');
+
+            if (this.color_mode() === 'dark')
+              $html.removeClass('dark-mode').removeClass('dark-mode-custom');
+            else $html.addClass('dark-mode-custom');
+          }
+        };
+
+        updateColorFunc();
+        setTimeout(() => updateColorFunc(), 500);
+        setTimeout(() => {
+          $('html').removeClass('dark-mode');
+        }, 1000);
+      }
+
       return this;
     }
 

@@ -238,9 +238,18 @@ export default class BridgeMail extends ABridge {
   #initMail() {
     if (this.get_env(BridgeMail.#ENVS.TASK) !== 'mail') return this;
 
+    this.#updateMailMoveFolder();
+
     return this.#updateMailboxSelector()
       .#updateFolder()
       .#updateStyleFromParameters();
+  }
+
+  /**
+   * Patche la sélection du menu en mobile
+   */
+  #updateMailMoveFolder() {
+    BridgeRc.Instance.patch(BridgeRc.Instance.patch_folder_selector);
   }
 
   /**

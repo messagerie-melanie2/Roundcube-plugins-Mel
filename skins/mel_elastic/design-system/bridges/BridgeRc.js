@@ -204,7 +204,12 @@ export default class BridgeRc extends MelObject {
             } else if (p.command === 'mark-all-read') {
               this.rcmail().mark_all_read(sourceId);
               return { abort: true, result: true };
-            } else if (['plugin.contextmenu.collapseall','plugin.contextmenu.expandall'].includes(p.command)) {
+            } else if (
+              [
+                'plugin.contextmenu.collapseall',
+                'plugin.contextmenu.expandall',
+              ].includes(p.command)
+            ) {
               // Équivalent DS de treelist.collapse_all()/expand_all() : les dossiers
               // sont des <bnum-folder>, ils ne sont donc plus indexés par le treelist.
               const collapsed = p.command === 'plugin.contextmenu.collapseall';
@@ -219,7 +224,8 @@ export default class BridgeRc extends MelObject {
                 // toggle() émet `bnum-folder:toggle`, ce qui répercute l'état sur le
                 // treelist de Roundcube et sauvegarde la préférence `collapsed_folders`.
                 if (
-                  (folder.getAttribute('is-collapsed') === 'true') !== collapsed
+                  (folder.getAttribute('is-collapsed') === 'true') !==
+                  collapsed
                 )
                   folder.toggle?.();
               }

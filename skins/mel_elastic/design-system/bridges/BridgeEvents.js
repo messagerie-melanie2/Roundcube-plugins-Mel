@@ -620,4 +620,47 @@ export default class BridgeEvents extends MelObject {
       callback();
     });
   }
+
+  /**
+   * Sauvegarde l'UID du message courant avant l'exécution d'une commande de téléchargement.
+   * Écoutée sur le hook Roundcube `actionbefore` (déclenché pour chaque commande exécutée).
+   * Certaines actions de téléchargement font perdre le contexte du message courant
+   * (ex: ouverture d'une nouvelle fenêtre/onglet) ; l'UID est donc mis de côté ici pour
+   * être réutilisé en repli par {@link BridgeEvents#onGetSingleUid}.
+   *
+   * @param {Object} args - Détail de l'événement `actionbefore`
+   * @param {string} args.action - Nom de la commande exécutée
+   * @param {Object} [args.props] - Arguments associés à la commande
+   * @param {Event} [args.originalEvent] - Événement DOM d'origine, le cas échéant
+   */
+  onActionBeforeDownload(args) {
+    const { action } = args;
+
+    if (action !== 'download') return;
+
+    this.rcmail().env._last_uid = this.rcmail().get_single_uid();
+  }
+
+  /**
+   * Repli pour `get_single_uid()` lorsque Roundcube ne parvient pas à résoudre l'UID
+   * du message courant (ex: après une action de téléchargement ayant fait perdre ce
+   * contexte). Écoutée sur le hook Roundcube `get_single_uid`. Renvoie l'UID sauvegardé
+   * par {@link BridgeEvents#onActionBeforeDownload}, puis le supprime immédiatement
+   * (usage à usage unique).
+   *
+   * @param {Object} obj - Détail de l'événement `get_single_uid`
+   * @param {string | number | null | undefined} obj.uid - UID déjà résolu par Roundcube (env.uid ou sélection unique), s'il existe
+   * @returns {string | number | null | undefined} UID du message courant à utiliser
+   */
+  onGetSingleUid(obj) {
+    const { uid } = obj;
+
+    if (!this.isNullOrUndefined(uid)) return uid;
+
+    const _uid = this.get_env('_last_uid');
+
+    if (_uid) this.rcmail().env._last_uid = null;
+
+    return _uid;
+  }
 }

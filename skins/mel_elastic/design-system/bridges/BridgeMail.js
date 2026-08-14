@@ -223,6 +223,8 @@ export default class BridgeMail extends ABridge {
 
   /** @returns {BridgeMail} */
   _p_onReady() {
+    if (this.get_env(BridgeMail.#ENVS.TASK) !== 'mail') return this;
+
     return this.#initListeners().#registerCommands();
   }
 
@@ -380,6 +382,8 @@ export default class BridgeMail extends ABridge {
     });
 
     this.listen('menu-open', (...args) => void bridge.onMenuOpen(...args));
+    this.listen('actionbefore', (args) => bridge.onActionBeforeDownload(args));
+    this.listen('get_single_uid', (obj) => bridge.onGetSingleUid(obj));
 
     this.rcmail().contextmenu.init_folder(MAILBOXES_FOLDERS, {
       menu_source: MENU_SOURCES,

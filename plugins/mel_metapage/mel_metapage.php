@@ -630,7 +630,7 @@ class mel_metapage extends bnum_plugin
             $this->register_action('save_user_pref_domain', array($this, 'save_user_pref_domain'));
             $this->add_hook('refresh', array($this, 'refresh'));
             $this->add_hook("startup", array($this, "send_spied_urls"));
-            $this->add_hook('contacts_autocomplete_after', [$this, 'contacts_autocomplete_after']);//nantis 0009521
+            $this->add_hook('contacts_autocomplete_after', [$this, 'contacts_autocomplete_after']);//Mantis 0009521
             if ($this->rc->task === 'settings' && rcube_utils::get_input_value('_open_section', rcube_utils::INPUT_GET) !== null) $this->add_hook('ready', array($this, 'open_section'));
 
             $this->rc->output->set_env("webconf.base_url", $this->rc->config->get("web_conf"));

@@ -1444,6 +1444,20 @@ class ____JsHtml {
   }
 
   /**
+   * Termine une balise si ce n'est pas la balise de départ
+   * @param {string?} debug Commentaire à afficher pour pouvoir s'y retrouver plus facilement
+   * @returns {this}
+   *
+   * @example JsHtml.start.div().tryEnd()
+   */
+  tryEnd(debug = null) {
+    if (this.#_parent.balise !== 'start') {
+      return this.end(debug);
+    }
+    return this;
+  }
+
+  /**
    * Permet d'ajouter des éléments en jshtml qui nécéssitent d'être bouclés.
    * @param {EachCallback} callback Action
    * @param  {...*} items Objets
@@ -1535,7 +1549,7 @@ class ____JsHtml {
               x.find('[data-rotomeca-framework-observer]'),
             );
 
-            if (!!x.attr('data-rotomeca-framework-observer')) array.push(x);
+            if (x.attr('data-rotomeca-framework-observer')) array.push(x);
 
             return array;
           })

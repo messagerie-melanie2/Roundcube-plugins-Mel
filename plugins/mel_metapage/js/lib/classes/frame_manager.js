@@ -435,26 +435,21 @@ class HistoryManager {
 
       //Changement du css
       const css_key = 'm_mp_CreateOrUpdateIcon';
+      const selector = `#taskmenu [data-task="${last_task}"], #otherapps li a[data-task="${last_task}"]`;
 
       let font;
       let content;
 
       try {
         content = window
-          .getComputedStyle(
-            document.querySelector(`#taskmenu [data-task="${last_task}"]`),
-            ':before',
-          )
+          .getComputedStyle(document.querySelector(selector), ':before')
           .getPropertyValue('content')
-          .replace(/"/g, '')
+          .replace(/"/g, EMPTY_STRING)
           .charCodeAt(0)
           .toString(16);
 
         font = window
-          .getComputedStyle(
-            document.querySelector(`#taskmenu [data-task="${last_task}"]`),
-            ':before',
-          )
+          .getComputedStyle(document.querySelector(selector), ':before')
           .getPropertyValue('font-family');
       } catch (error) {
         content = EMPTY_STRING;
@@ -476,9 +471,7 @@ class HistoryManager {
 
       //Changement du text
       const text = rcmail.gettext('last_frame_opened', 'mel_metapage');
-      const down = $(`#layout-menu a[data-task="${last_task}"]`)
-        .find('.inner')
-        .html();
+      const down = $(selector).find('.inner, .button-inner').html();
 
       $back = $back.find('.inner');
 

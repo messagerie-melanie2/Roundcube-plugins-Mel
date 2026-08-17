@@ -1,3 +1,7 @@
+/************* TODO **************/
+/** SUPPRIMER QUAND DSBNUM FINI **/
+/*********************************/
+
 html.dark-mode-custom .theme-mode-switch.btn.btn-primary.btn-block,
 html.dark-mode .theme-mode-switch.btn.btn-primary.btn-block {
   border-color: #e1c58f;
@@ -307,14 +311,14 @@ html.dark-mode .btn.btn-block.wsp-toolbar-melw-wsp-hider:hover {
 
 /******** Pages **************/
 
-html.dark-mode body,
+/* html.dark-mode body,
 html.dark-mode #layout-content,
 html.dark-mode option,
 html.dark-mode .frame-header,
 html.dark-mode .watermark::before {
   background-color: #1f2933;
   color: #96b9e7;
-}
+} */
 
 html.dark-mode .message-htmlpart blockquote {
   color: #c7dfff;

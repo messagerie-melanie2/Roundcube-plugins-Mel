@@ -1,0 +1,338 @@
+import { EMPTY_STRING } from '../../../../plugins/mel_metapage/js/lib/constants/constants.js';
+import { MelObject } from '../../../../plugins/mel_metapage/js/lib/mel_object.js';
+import { HTMLBnumFolder } from '../ds-module-bnum';
+import BridgeEvents from './BridgeEvents.js';
+
+/**
+ * Classe utilitaire pour patcher ou remplacer des méthodes de Roundcube.
+ * Permet d'injecter des comportements personnalisés sans modifier le code source.
+ */
+export default class BridgeRc extends MelObject {
+  static #_instance = null;
+  /**
+   * Accès à l'instance unique de BridgeRc.
+   * @returns {BridgeRc}
+   */
+  static get Instance() {
+    return (this.#_instance ??= new BridgeRc());
+  }
+
+  constructor() {
+    super();
+  }
+
+  /**
+   * Accès au treelist de Roundcube.
+   * @returns {rcube_tree}
+   */
+  get treelist() {
+    return BridgeEvents.Instance.treelist;
+  }
+
+  /**
+   * Applique un patch automatique en utilisant le nom de la fonction fournie.
+   * @param {Function} replacementFunc Fonction de remplacement
+   * @param {Object} [param1={}]
+   * @param {typeof rcube_webmail} [param1.target=this.rcmail()] Cible du patch
+   * @returns {this}
+   */
+  patch(replacementFunc, { target = this.rcmail() } = {}) {
+    const methodName = replacementFunc.name.replace(/^patch_/, EMPTY_STRING); // Récupère "set_unread_count_display"
+
+    if (!target || typeof target[methodName] !== 'function') {
+      console.error(
+        `Impossible de patcher : la méthode "${methodName}" n'existe pas sur la cible.`,
+      );
+      return this;
+    }
+
+    // Protection : si la méthode a déjà un marqueur "isPatched", on ne fait rien
+    if (target[methodName].__isPatched) {
+      return this;
+    }
+
+    const oldMethod = target[methodName];
+
+    target[methodName] = this.bind(target, oldMethod, replacementFunc);
+
+    // On marque la fonction comme étant déjà patchée
+    target[methodName].__isPatched = true;
+    return this;
+  }
+
+  /**
+   * Remplace complètement une méthode par une nouvelle.
+   * @param {Function} replacementFunc Fonction de remplacement
+   * @param {Object} [param1={}]
+   * @param {typeof rcube_webmail} [param1.target=this.rcmail()] Cible du remplacement
+   * @returns {this}
+   */
+  replace(replacementFunc, { target = this.rcmail() } = {}) {
+    const methodName = replacementFunc.name.replace(/^patch_/, EMPTY_STRING); // Récupère "set_unread_count_display"
+
+    if (!target || typeof target[methodName] !== 'function') {
+      console.error(
+        `Impossible de remplacer : la méthode "${methodName}" n'existe pas sur la cible.`,
+      );
+      return this;
+    }
+
+    // Protection : si la méthode a déjà un marqueur "isPatched", on ne fait rien
+    if (target[methodName].__isReplaced) {
+      return this;
+    }
+
+    target[methodName] = this.bind(target, () => {}, replacementFunc);
+
+    // On marque la fonction comme étant déjà patchée
+    target[methodName].__isReplaced = true;
+    return this;
+  }
+
+  /**
+   * Lie une ancienne et une nouvelle fonction pour permettre le fallback.
+   * @param {Object} target
+   * @param {AnyFunction} oldFn
+   * @param {AnyFunction} newFn
+   * @returns {AnyFunction}
+   */
+  bind(target, oldFn, newFn) {
+    const boundNew = newFn.bind(this);
+    return function (...args) {
+      return boundNew(target, oldFn, ...args);
+    };
+  }
+
+  /**
+   * Patch : met à jour l'affichage du nombre de non-lus sur les dossiers personnalisés.
+   */
+  patch_set_unread_count_display(rcmailRef, old, folder, set_title) {
+    try {
+      old.call(rcmailRef, folder, set_title);
+    } catch (error) {
+      console.error(
+        "Erreur lors de l'appel original set_unread_count_display",
+        error,
+      );
+    }
+
+    const mycount = this.get_env('unread_counts')[folder] || 0;
+    document.querySelectorAll(`[folder-id="${folder}"]`).forEach((el) => {
+      el.setAttribute('unread', mycount.toString());
+    });
+  }
+
+  /**
+   * Patch : retourne le noeud DOM d'un dossier, même pour les dossiers personnalisés.
+   */
+  patch_get_node(treeRef, oldFunction, folder) {
+    return (
+      oldFunction.call(treeRef, folder) ??
+      document.querySelector(`${HTMLBnumFolder.TAG}[folder-id="${folder}"]`)
+    );
+  }
+
+  /**
+   * Réinitialise l'entrée `folderlist` dans l'environnement des menus contextuels Roundcube.
+   * @private
+   */
+  #_clearFolderlistMenu() {
+    const contextMenus = this.get_env('contextmenus');
+    if (!contextMenus) return;
+
+    const folderListKey = 'folderlist';
+    if (contextMenus?.[folderListKey]) contextMenus[folderListKey] = undefined;
+  }
+
+  /**
+   * Délègue l'activation des commandes du menu contextuel de dossiers à Roundcube.
+   * @param {Object} p - Paramètres d'activation transmis par le gestionnaire de menu
+   * @returns {*} Résultat de contextmenu.activate_folder_commands
+   * @private
+   */
+  #_activateFolderCommands(p) {
+    return this.rcmail()?.contextmenu?.activate_folder_commands?.(p);
+  }
+
+  /**
+   * Supprime le nœud DOM du menu contextuel de dossiers et réinitialise son entrée en mémoire.
+   * Prépare une réinstanciation propre du menu via {@link #_buildFolderMenu}.
+   * @private
+   */
+  #_resetFolderListMenu() {
+    document.getElementById('rcm_folderlist')?.remove?.();
+    this.#_clearFolderlistMenu();
+  }
+
+  /**
+   * Retourne l'élément racine dans lequel rechercher les dossiers.
+   * Il s'agit du conteneur du treelist de Roundcube, ou, à défaut, du `document`
+   * si le treelist n'est pas (encore) initialisé.
+   * @returns {HTMLElement|Document} Conteneur du treelist ou `document` en repli
+   * @private
+   */
+  #_findTreelistContainer() {
+    return this.rcmail()?.treelist?.container?.[0] ?? document;
+  }
+
+  /**
+   * Construit et retourne l'instance du menu contextuel de dossiers.
+   * @param {Object} props - Propriétés transmises à contextmenu.init (menu_source, etc.)
+   * @param {Object} [events] - Gestionnaires d'événements supplémentaires à fusionner
+   *   (beforeactivate, activate, beforecommand, etc.)
+   * @returns {Object} Instance du menu contextuel initialisé
+   * @throws {Error} Si l'initialisation du menu contextuel échoue
+   * @private
+   */
+  #_buildFolderMenu(props, events) {
+    const finalEvents = events || {};
+
+    const foldermenu = this.rcmail()?.contextmenu?.init?.(
+      { menu_name: 'folderlist', list_object: null, ...props },
+      {
+        beforeactivate: () => {
+          this.get_env('contextmenu_messagecount_request')?.abort?.();
+          this.update_env('contextmenu_messagecount_request', null);
+        },
+        activate: (p) => this.#_activateFolderCommands(p),
+        beforecommand: (p) => {
+          const sourceId = this.get_env('context_menu_source_id');
+          if (sourceId !== this.get_env('mailbox')) {
+            if (['expunge', 'purge'].includes(p.command)) {
+              this.rcmail()[p.command + '_mailbox'](sourceId);
+              return { abort: true, result: true };
+            } else if (p.command === 'mark-all-read') {
+              this.rcmail().mark_all_read(sourceId);
+              return { abort: true, result: true };
+            } else if (
+              [
+                'plugin.contextmenu.collapseall',
+                'plugin.contextmenu.expandall',
+              ].includes(p.command)
+            ) {
+              // Équivalent DS de treelist.collapse_all()/expand_all() : les dossiers
+              // sont des <bnum-folder>, ils ne sont donc plus indexés par le treelist.
+              const collapsed = p.command === 'plugin.contextmenu.collapseall';
+              const container = this.#_findTreelistContainer();
+
+              for (const folder of container.querySelectorAll(
+                HTMLBnumFolder.TAG,
+              )) {
+                // Un dossier sans sous-dossier n'est ni pliable ni dépliable
+                if (!folder.querySelector(HTMLBnumFolder.TAG)) continue;
+
+                // toggle() émet `bnum-folder:toggle`, ce qui répercute l'état sur le
+                // treelist de Roundcube et sauvegarde la préférence `collapsed_folders`.
+                if (
+                  (folder.getAttribute('is-collapsed') === 'true') !==
+                  collapsed
+                )
+                  folder.toggle?.();
+              }
+
+              return { abort: true, result: true };
+            }
+          }
+        },
+        ...finalEvents,
+      },
+    );
+
+    if (!foldermenu)
+      throw new Error("Impossible d'initialiser le contextmenu !");
+
+    return foldermenu;
+  }
+
+  /**
+   * Attache les listeners de clic et de menu contextuel sur chaque dossier
+   * correspondant au sélecteur CSS fourni.
+   * @param {string} el - Sélecteur CSS ciblant les éléments dossiers
+   * @param {Object} menu - Instance du menu contextuel à afficher au clic droit
+   * @private
+   */
+  #_attachFolderListeners(el, menu) {
+    for (const element of document.querySelectorAll(el)) {
+      element.addEventListener('click', (e) => {
+        BridgeEvents.Instance.onFolderClick(e);
+      });
+
+      element.addEventListener('contextmenu', (e) => {
+        BridgeEvents.Instance.onFolderContextMenu2(menu, e);
+      });
+    }
+  }
+
+  /**
+   * Patch : initialise le menu contextuel des dossiers personnalisés.
+   */
+  patch_init_folder(_, __, el, props, events) {
+    this.#_resetFolderListMenu();
+
+    const folderMenu = this.#_buildFolderMenu(props, events);
+
+    this.#_attachFolderListeners(el, folderMenu);
+  }
+
+  /**
+   * Patch : conserve le comportement natif du sélecteur de dossier (bouton
+   * "Déplacer" de la liste des messages), puis corrige un décalage visuel du
+   * popover qui s'affiche à côté. Roundcube laisse une `transform` CSS sur ce
+   * popover après son ouverture initiale ; on attend qu'il soit référencé par
+   * le bouton (`aria-describedby`) puis on retire cette transformation une
+   * fois le rendu stabilisé. Ignoré sur écran normal ou plus grand, où ce popover
+   * fonctionne correctement.
+   *
+   * @param {Object} target - Instance Roundcube sur laquelle la méthode d'origine est appelée
+   * @param {AnyFunction} oldFn - Méthode `folder_selector` d'origine de Roundcube
+   * @param {...any} args - Arguments transmis à la méthode d'origine
+   * @returns {Promise<void>}
+   */
+  async patch_folder_selector(target, oldFn, ...args) {
+    oldFn.call(target, ...args);
+
+    if (!this.isLayoutSmallOfPhone()) return;
+
+    /**
+     * Reporte `callback` après le microtask courant, en visant le prochain
+     * repaint via `requestAnimationFrame`.
+     *
+     * @param {Function} callback
+     */
+    const addInQueue = (callback) => {
+      queueMicrotask(() => {
+        requestAnimationFrame(callback);
+      });
+    };
+
+    /**
+     * Exécute `callback` après un délai, pour laisser le popover se stabiliser
+     * avant de lui retirer sa `transform`.
+     *
+     * @param {Function} callback
+     * @param {number} [timeout=200] - Délai en millisecondes avant exécution
+     */
+    const fire = (callback, timeout = 200) => {
+      setTimeout(callback, timeout);
+    };
+
+    const element = document.querySelector('#messagelist-header a.move');
+
+    await this.wait_something(() => element.hasAttribute('aria-describedby'));
+
+    addInQueue(() => {
+      if (element.hasAttribute('aria-describedby')) {
+        const popover = document.getElementById(
+          element.getAttribute('aria-describedby'),
+        );
+
+        fire(async () => {
+          if (popover) {
+            await this.wait_something(() => !!popover.style.transform);
+            popover.style.transform = null;
+          }
+        });
+      }
+    });
+  }
+}

@@ -1,0 +1,313 @@
+/* ===== Barre de recherche - Annuaire (surcouche DSFR temporaire) ===== */
+
+/* Masque le lien "recherche avancée" natif de Roundcube (élément <center>) */
+.searchgroup center {
+  display: none;
+}
+
+/* --- Conteneur principal de la barre de recherche --- */
+.searchgroup .searchbar.menu {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background-color: var(--bnum-color-input, #eee);
+  border: none !important;
+  border-bottom: 2px solid var(--bnum-color-primary, #000091) !important;
+  border-top-left-radius: var(--bnum-radius-m, 5px) !important;
+  border-top-right-radius: var(--bnum-radius-m, 5px) !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  overflow: visible;
+  position: relative;
+  height: 40px;
+}
+
+.searchgroup .searchbar.menu:hover {
+  border-bottom: 2px solid var(--bnum-color-primary-hover, #1212ff) !important;
+}
+
+/* Supprime le pseudo-élément décoratif natif du skin Elastic */
+.searchgroup .searchbar.menu::after {
+  display: none !important;
+}
+
+/* --- Ordre des éléments dans la barre (input > filtre > loupe) --- */
+.searchgroup form[name="rcmqsearchform"] {
+  order: 1;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+/* --- Champ de saisie --- */
+/* Couvre les deux IDs possibles : #quicksearchbox (plugin annuaire) et #searchform (natif) */
+/* padding-right permanent pour laisser la place à la croix, qu'elle soit visible ou non */
+.searchgroup #quicksearchbox,
+.searchgroup #searchform {
+  background-color: transparent;
+  border: none;
+  border-top-left-radius: var(--bnum-radius-m, 5px) !important;
+  border-bottom-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  padding: 0 32px 0 12px !important;
+  height: 100%;
+  width: 100%;
+}
+
+.searchgroup #quicksearchbox::placeholder,
+.searchgroup #searchform::placeholder {
+  color: var(--bnum-text-on-input, #666);
+}
+
+/* Neutralise le halo de focus natif du navigateur/skin sur l'input et le conteneur */
+.searchgroup #quicksearchbox:focus,
+.searchgroup #searchform:focus,
+.searchgroup .searchbar.menu:focus-within {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Supprime l'icône loupe native injectée en ::after sur le <form> */
+.searchgroup form[name="rcmqsearchform"]::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* --- Bouton filtre --- */
+/* [title="Filtre"] : onglet "Contacts ministériels" (plugin annuaire) */
+/* [title="Options"] : onglets natifs Roundcube (Tous les contacts, Carnet personnel, etc.) */
+.searchgroup a.button.options[title="Filtre"],
+.searchgroup a.button.options[title="Options"] {
+  order: 2;
+  background-color: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  width: 40px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0;
+}
+
+.searchgroup a.button.options[title="Filtre"]::before,
+.searchgroup a.button.options[title="Options"]::before {
+  content: "filter_list" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-size: 24px;
+  font-weight: normal;
+  font-variation-settings: 'wght' 300;
+  color: var(--bnum-text-primary, #161616);
+}
+
+.searchgroup a.button.options[title="Filtre"]:hover,
+.searchgroup a.button.options[title="Options"]:hover {
+  background-color: transparent !important;
+  color: var(--bnum-text-primary, #161616) !important;
+}
+
+.searchgroup a.button.options[title="Filtre"]:hover::before,
+.searchgroup a.button.options[title="Options"]:hover::before {
+  color: var(--bnum-text-primary, #161616) !important;
+}
+
+/* Neutralise le halo de focus natif (clic) sur le bouton filtre */
+.searchgroup a.button.options[title="Filtre"]:focus,
+.searchgroup a.button.options[title="Options"]:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
+}
+
+/* Neutralise le halo natif Elastic quand le panneau de filtre est ouvert (classe .open sur le conteneur, pas un :hover) */
+.searchgroup .searchbar.menu.open a.button.options[title="Filtre"],
+.searchgroup .searchbar.menu.open a.button.options[title="Options"] {
+  background-color: transparent !important;
+  color: var(--bnum-text-primary, #161616) !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.searchgroup .searchbar.menu.open a.button.options[title="Filtre"]::before,
+.searchgroup .searchbar.menu.open a.button.options[title="Options"]::before {
+  color: var(--bnum-text-primary, #161616) !important;
+}
+
+/* --- Bouton loupe (lancer la recherche) --- */
+.searchgroup a.button.search[title="Trouver des contacts"] {
+  order: 3;
+  background-color: var(--bnum-color-primary, #000091) !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-top-right-radius: var(--bnum-radius-m, 5px) !important;
+  border-bottom-right-radius: 0 !important;
+  width: 40px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-left: 0;
+}
+
+.searchgroup a.button.search[title="Trouver des contacts"]:hover {
+  background-color: var(--bnum-color-primary-hover, #1212ff) !important;
+}
+
+/* Supprime l'icône native avant d'appliquer notre icône Material (::before défini juste après) */
+.searchgroup a.button.search[title="Trouver des contacts"]::after,
+.searchgroup a.button.search[title="Trouver des contacts"] .inner::before {
+  content: none !important;
+}
+
+.searchgroup a.button.search[title="Trouver des contacts"] .inner {
+  font-size: 0;
+}
+
+.searchgroup a.button.search[title="Trouver des contacts"]::before {
+  content: "search" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-size: 22px;
+  font-weight: normal;
+  font-variation-settings: 'wght' 300;
+  color: var(--bnum-text-on-primary, #ffffff);
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* --- Bouton croix (réinitialiser la recherche) --- */
+/* Positionné en absolu, à l'intérieur de l'input, avant le filtre et la loupe */
+.searchgroup a.button.reset[title="Réinitialiser la recherche"] {
+  display: none !important;
+  position: absolute;
+  right: 84px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+}
+
+/* Visible uniquement si l'input contient du texte */
+.searchgroup .searchbar.menu:has(#quicksearchbox:not(:placeholder-shown)) a.button.reset[title="Réinitialiser la recherche"],
+.searchgroup .searchbar.menu:has(#searchform:not(:placeholder-shown)) a.button.reset[title="Réinitialiser la recherche"] {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Masque le texte d'accessibilité natif et applique notre icône "croix" */
+.searchgroup a.button.reset[title="Réinitialiser la recherche"] .inner {
+  font-size: 0;
+}
+
+.searchgroup a.button.reset[title="Réinitialiser la recherche"]::before {
+  content: "close" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-size: 20px;
+  font-weight: normal;
+  font-variation-settings: 'wght' 300;
+  color: var(--bnum-text-on-input, #666);
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* =====================================================================
+   Surcharges renforcées pour la vue liste (#layout-list)
+   ===================================================================== */
+
+.task-addressbook #layout-list .searchgroup .searchbar.menu {
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-bottom: 2px solid var(--bnum-color-primary, #000091) !important;
+}
+
+.task-addressbook #layout-list .searchgroup .searchbar.menu:hover {
+  border-bottom: 2px solid var(--bnum-color-primary-hover, #1212ff) !important;
+}
+
+.task-addressbook #layout-list .searchgroup a.button.options[title="Filtre"]:hover,
+.task-addressbook #layout-list .searchgroup a.button.options[title="Options"]:hover {
+  background-color: transparent !important;
+  color: var(--bnum-text-primary, #161616) !important;
+}
+
+.task-addressbook #layout-list .searchgroup a.button.options[title="Filtre"]:hover::before,
+.task-addressbook #layout-list .searchgroup a.button.options[title="Options"]:hover::before {
+  color: var(--bnum-text-primary, #161616) !important;
+}
+
+.task-addressbook #layout-list .searchgroup a.button.search[title="Trouver des contacts"]:hover {
+  background-color: var(--bnum-color-primary-hover, #1212ff) !important;
+}
+
+.task-addressbook #layout-list .searchgroup #quicksearchbox,
+.task-addressbook #layout-list .searchgroup #searchform {
+  color: var(--bnum-text-on-input, #666) !important;
+}
+
+.task-addressbook #layout-list .searchgroup a.button.reset[title="Réinitialiser la recherche"]::before,
+.task-addressbook #layout-list .searchgroup a.button.reset[title="Réinitialiser la recherche"] .inner {
+  color: var(--bnum-text-on-input, #666) !important;
+}
+
+/* Neutralise le halo de focus natif du bouton filtre (persiste après clic tant que le focus n'est pas perdu) */
+.task-addressbook #layout-list .searchgroup a.button.options[title="Filtre"]:focus,
+.task-addressbook #layout-list .searchgroup a.button.options[title="Options"]:focus {
+  background-color: transparent !important;
+  color: var(--bnum-text-primary, #161616) !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* ===== Dark mode (vrai dark mode, scopé par html.dark-mode) ===== */
+
+html.dark-mode .task-addressbook #layout-list > .header,
+html.dark-mode-custom .task-addressbook #layout-list > .header {
+  background-color: var(--bnum-color-background, #242424) !important;
+}
+
+html.dark-mode .task-addressbook #layout-list .searchbar.menu,
+html.dark-mode-custom .task-addressbook #layout-list .searchbar.menu {
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+}
+
+/* Masque le titre "Annuaire" dupliqué au-dessus du menu des dossiers (redondant avec le titre déjà affiché en haut de page) */
+.task-addressbook .colored-header-title {
+  display: none !important;
+}
+
+/* Masque l'icône "Annuaire" du header (redondante avec l'icône déjà affichée dans le menu de gauche) */
+.task-addressbook .header .colored-header-icon.addressbook_app {
+  display: none !important;
+}
+
+/* Centre la barre de recherche dans l'espace restant du header (à côté du bouton "Groupes") en mobile */
+.task-addressbook .header .searchgroup {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Centre la barre de recherche sur toute la largeur du header (indépendamment du bouton "Groupes" à gauche) en mobile */
+.task-addressbook .header {
+  position: relative;
+}
+
+.task-addressbook .header .searchgroup {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-left: 0;
+  margin-right: 0;
+}

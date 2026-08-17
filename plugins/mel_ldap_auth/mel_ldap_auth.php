@@ -265,6 +265,10 @@ class mel_ldap_auth extends rcube_plugin {
         $this->rc->output->send($this->rc->task);
       }
     }
+    if ($_POST['_keeplogin'] === "keeplogin") {
+      $lifetime = $this->rc->config->get('session_lifetime', 0) * 60;
+      rcube_utils::setcookie('keep_login', true, $lifetime ? time() + $lifetime * 100 : 0);
+    }
     return $args;
   }
   /**

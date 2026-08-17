@@ -1,14 +1,36 @@
 @import '../../../../../skins/mel_elastic/styles/less/variables/screen_size.less';
 
+#module-agenda {
+  .module-block-header {
+    bnum-button {
+      display: none;
+    }
+  }
+}
+
 bnum-workspace-module {
   padding: 20px;
   margin: 10px;
 
   &.melv2-card {
     &:extend(bnum-workspace-module);
+    border-bottom: var(
+      --bnum-card-border-bottom,
+      var(--bnum-border-on-surface-bottom, solid 4px #000091)
+    );
+    // box-shadow: 0 2px 7px rgba(0, 0, 0, 0.2);
+    --bureau-card-box-shadow: none;
+    --bureau-card-border-radius: 0;
+    --bureau-card-background-color: var(
+      --bnum-card-background-color,
+      var(--bnum-color-surface, #f6f6f6)
+    );
 
-    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.2);
-    background-color: var(--bureau-card-background-color);
+    background-color: var(
+      --bnum-card-background-color,
+      var(--bnum-color-surface, #f6f6f6)
+    );
+    color: var(--bnum-text-primary);
   }
 
   .module-block-header {
@@ -134,6 +156,13 @@ bnum-separate {
     .material-symbols-outlined {
       display: none;
     }
+  }
+}
+
+#module-planning {
+  .module-block-content {
+    max-height: unset;
+    min-height: unset;
   }
 }
 

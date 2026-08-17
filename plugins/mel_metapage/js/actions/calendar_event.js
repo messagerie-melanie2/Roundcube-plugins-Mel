@@ -161,6 +161,8 @@ $(document).ready(function () {
 });
 
 function CalendarPageInit(init_date_picker = true) {
+  if (rcmail.env.task !== 'calendar') return;
+
   (init_date_picker ? DatePickerInit() : Promise.resolve()).then(() => {
     if (init_date_picker) {
       $(
@@ -236,16 +238,62 @@ function CalendarPageInit(init_date_picker = true) {
     select += selectGroupMonth;
     select += selectGroupList;
     select += '</select>';
-    $(select)
-      .on('change', () => {
-        const val = $('#calendarOptionSelect').val();
 
-        $(
-          'body.task-calendar .fc-toolbar.fc-header-toolbar .fc-left .fc-button-group .' +
-            val,
-        ).click();
-      })
-      .appendTo($('body.task-calendar .fc-toolbar.fc-header-toolbar .fc-left'));
+    const plugin = rcmail.triggerEvent(
+      'mel_metapage.calendar.init.generateSelect',
+      {
+        select,
+        optgroups: {
+          selectGroupDay,
+          selectGroupWeek,
+          selectGroupMonth,
+          selectGroupList,
+        },
+      },
+    ) || { select };
+
+    if (plugin && plugin.select) select = plugin.select;
+
+    if (typeof select === 'string') {
+      const doc = new DOMParser().parseFromString(select, 'text/html');
+      select = doc.body.firstChild;
+    }
+
+    /**
+     * @type {HTMLInputElement}
+     */
+    const node = select;
+    select = null;
+    node.addEventListener('change', () => {
+      /**
+       * @type {HTMLInputElement}
+       */
+      const element = document.getElementById('calendarOptionSelect');
+
+      if (!element)
+        throw new Error('Impossible de trouver #calendarOptionSelect !');
+
+      const val = element.value;
+      /**
+       * @type {HTMLElement}
+       */
+      const elementToClick = document.querySelector(
+        `body.task-calendar .fc-toolbar.fc-header-toolbar .fc-left .fc-button-group .${val}`,
+      );
+
+      if (elementToClick) elementToClick.click();
+    });
+
+    const elementToAppend = document.querySelector(
+      'body.task-calendar .fc-toolbar.fc-header-toolbar .fc-left',
+    );
+
+    if (!elementToAppend)
+      throw new Error(
+        "(body.task-calendar .fc-toolbar.fc-header-toolbar .fc-left) n'éxiste pas !",
+      );
+
+    elementToAppend.appendChild(node);
   });
 
   switch (rcmail.env.mel_metapage_calendar_configs['mel-calendar-space']) {

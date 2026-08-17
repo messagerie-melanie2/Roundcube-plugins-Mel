@@ -45,6 +45,50 @@ class WorkspacePlanning extends WorkspaceObject {
   }
 
   /**
+    * Retourne le top de la grille FullCalendar dans la fenêtre.
+    * Cherche le premier sélecteur FC qui matche, sinon fallback.
+    */
+  static getGridTop(planningEl) {
+    const FC_GRID_SELECTORS = [
+      '.fc-view-harness',
+      '.fc-resourcetimeline-view',
+      '.fc-view',
+      '[class*="view-harness"]',
+    ];
+
+    for (const selector of FC_GRID_SELECTORS) {
+       const el = planningEl.querySelector(selector);
+       if (el) return el.getBoundingClientRect().top;
+      }
+
+    // Fallback : position du composant + hauteur estimée du header interne
+    return planningEl.getBoundingClientRect().top + 160;
+  }
+
+  /**
+    * Calcule et applique la hauteur disponible à FullCalendar.
+    */
+  static updateHeight(planningEl) {
+    const gridTop = WorkspacePlanning.getGridTop(planningEl);
+    const availableHeight = window.innerHeight - gridTop - 20;
+    planningEl.fullcalendar.option('height', availableHeight);
+  }
+
+  /**
+    * Singleton : initialise le listener resize UNE SEULE FOIS sur l'élément.
+    * Si le handler existe déjà → on garde l'existant, on n'en crée pas un nouveau.
+    */
+  static tryInitResize(planningEl) {
+    if (planningEl._resizeHandler) return; // déjà initialisé, on sort
+
+    planningEl._resizeHandler = () => {
+      WorkspacePlanning.updateHeight(planningEl);
+    };
+
+    window.addEventListener('resize', planningEl._resizeHandler);
+  }
+
+  /**
    * Méthode principale appelée pour initialiser le module.
    */
   main() {
@@ -74,9 +118,15 @@ class WorkspacePlanning extends WorkspaceObject {
            * @param {Object} obj - Objet contenant des informations sur le module.
            */
           onSetFullScreen(obj) {
-            obj.module
-              .querySelector('bnum-planning')
-              .fullcalendar.option('height', 'auto');
+            const planningEl = obj.module.querySelector('bnum-planning');
+
+            //  s'assurer qu'un seul listener existe
+            WorkspacePlanning.tryInitResize(planningEl);
+
+            //  requestAnimationFrame : attend le bon moment pour mesurer le DOM
+            requestAnimationFrame(() => {
+              WorkspacePlanning.updateHeight(planningEl);
+            });
           },
           /**
            * Callback pour rétablir la hauteur par défaut du calendrier.

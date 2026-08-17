@@ -4,12 +4,42 @@ import { EMPTY_STRING } from './constants/constants.js';
 import { isNullOrUndefined } from './mel.js';
 import { Top } from './top.js';
 
+const _proxyCache = new WeakMap();
+
 /**
  * Classe abstraite qui contient des méthodes utiles pour les objets Mel
  * @abstract
  * @class
  */
 export default class ABaseMelObject {
+  /**
+   * Proxy qui permet de faire this.$('id') au lieu de document.getElementById('id') et qui cache les éléments déjà récupérés pour éviter les appels redondants à getElementById, ce qui améliore les performances.
+   * @returns {Record<string, HTMLElement | null> | null | ((id: string) => HTMLElement | null)} Un élément du DOM correspondant à l'id donné, ou une fonction qui fait la même chose si l'id n'est pas une propriété valide.
+   * @readonly
+   */
+  get $() {
+    if (_proxyCache.has(this)) return _proxyCache.get(this).proxy;
+
+    const entry = { proxy: null, _cache: {} };
+    _proxyCache.set(this, entry);
+
+    const resolveId = (id) => {
+      const { _cache } = _proxyCache.get(this);
+      return (_cache[id] ??= document.getElementById(id));
+    };
+
+    const resolveProp = (prop) => resolveId(prop.replaceAll('_', '-'));
+
+    entry.proxy = new Proxy((id) => resolveId(id), {
+      get: (target, prop) => {
+        if (typeof prop !== 'string') return Reflect.get(target, prop);
+        return resolveProp(prop);
+      },
+    });
+
+    return entry.proxy;
+  }
+
   constructor() {
     if (this.constructor.name === 'ABaseMelObject') {
       throw new Error("Can't instantiate abstract class!");
@@ -20,7 +50,6 @@ export default class ABaseMelObject {
    * Récupère "rcmail" | les fonctions utiles à roundcube
    * @param {boolean} top Si on doit récupérer rcmail sur frame principale ou non
    * @returns {rcube_webmail}
-   * @protected
    */
   rcmail(top = false) {
     return top && !!Top.top()?.rcmail ? Top.top().rcmail : window.rcmail;
@@ -71,7 +100,19 @@ export default class ABaseMelObject {
     if (to) config.to = to;
     if (subject) config.subject = subject;
 
-    this.rcmail().open_compose_step(config);
+    return this.rcmail().open_compose_step(config);
+  }
+
+  /**
+   * Ouvre la fenre de composition à partir d'un brouillon
+   * @param {string | number} uid Id du message
+   * @param {string | undefined} [mbox=this.get_env('drafts_mailbox')] Mbox des brouillons
+   */
+  open_compose_draft(uid, mbox = this.get_env('drafts_mailbox')) {
+    return this.rcmail().open_compose_step({
+      _draft_uid: uid,
+      _mbox: mbox,
+    });
   }
 
   /**
@@ -114,6 +155,20 @@ export default class ABaseMelObject {
    */
   get_env(key) {
     return rcmail.env[key] ?? top?.rcmail?.env?.[key];
+  }
+
+  /**
+   * Met à jour une variable d'environnement de roundcube.
+   * @param {string} key Nom de la variable à modifier
+   * @param {*} newValue Nouvelle valeur à affecter
+   * @param {Object} [param2={}] Options supplémentaires
+   * @param {boolean} [param2.top=false] Si true, modifie la variable dans la frame principale
+   * @returns {*} Ancienne valeur de la variable
+   */
+  update_env(key, newValue, { top = false } = {}) {
+    const old = this.get_env(key);
+    this.rcmail(top).env[key] = newValue;
+    return old;
   }
 
   /**
@@ -292,6 +347,28 @@ export default class ABaseMelObject {
       params,
       type: 'GET',
     });
+  }
+
+  /**
+   * Execute une commande roundcube
+   * @param {string} command Commande à appeler
+   * @param {Object} [param1={}] Options supplémentaires pour la commande
+   * @param {*} [param1.props=undefined] Propriétés à passer à la commande
+   * @param {*} [param1.obj=undefined] Objet à passer à la commande
+   * @param {Event | null | undefined} [param1.event=undefined] Evènement à passer à la commande
+   * @param {boolean | undefined} [param1.allow_disabled=undefined] Autoriser la commande même si désactivée
+   * @returns {boolean} Retourne true si la commande a été exécutée, sinon false
+   */
+  execCommand(
+    command,
+    {
+      props = undefined,
+      obj = undefined,
+      event = undefined,
+      allow_disabled = undefined,
+    } = {},
+  ) {
+    return this.rcmail().command(command, props, obj, event, allow_disabled);
   }
 
   /**

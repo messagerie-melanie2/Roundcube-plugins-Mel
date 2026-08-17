@@ -243,9 +243,12 @@ class mel_doubleauth extends bnum_plugin
     public function logout_after($args)
     {
         $message = rcube_utils::get_input_value('_logout_msg', rcube_utils::INPUT_GET);
+        $da_logout_message = rcube_utils::get_input_value('_da_logout_message', rcube_utils::INPUT_GET);
 
         if (isset($message)) {
             $this->rc->output->show_message($message);
+        }
+        if ($da_logout_message == true) {
             $this->rc->output->set_env('da_logout_message', $message);
         }
 
@@ -295,7 +298,7 @@ class mel_doubleauth extends bnum_plugin
                     if (isset($url) && $url !== '') $this->__goingToUrl($url);
                     else $this->__goingRoundcubeTask($this->rc->config->get('default_task', 'mail'));
                 } else {
-                    $this->__exitSession();
+                   $this->__exitSession($this->gettext('logout_2fa_code_error'), false);
                 }
             }
             // we're into some task but marked with login...
@@ -410,23 +413,31 @@ class mel_doubleauth extends bnum_plugin
         $this->register_handler('plugin.body', array($this, 'mel_doubleauth_form'));
         $this->rc->output->set_pagetitle($this->gettext('mel_doubleauth'));
 
-        // POST variables
-        $activate = rcube_utils::get_input_value('p2FA_activate', rcube_utils::INPUT_POST);
-        $recovery_codes = (array)rcube_utils::get_input_value('2FA_recovery_codes', rcube_utils::INPUT_POST);
+        $this->exec_hook('plugin.mel_doubleauth.init', [
+            'rcmail' => $this->rc,
+            'plugin' => $this
+        ]);
 
-        // remove recovery codes without value
-        $recovery_codes = array_values(array_diff($recovery_codes, array('')));
+        // MANTIS 0009536: Désactiver la 2FA puis la réactiver dans la foulée pose problème
+        if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+            // POST variables
+            $activate = rcube_utils::get_input_value('p2FA_activate', rcube_utils::INPUT_POST);
+            $recovery_codes = (array)rcube_utils::get_input_value('2FA_recovery_codes', rcube_utils::INPUT_POST);
 
-        $data = $this->__get2FAconfig();
-        $data['secret'] = null;
-        $data['activate'] = $activate ? true : false;
-        $data['recovery_codes'] = $recovery_codes;
-        $this->__set2FAconfig($data);
+            // remove recovery codes without value
+            $recovery_codes = array_values(array_diff($recovery_codes, array('')));
 
-        // if we can't save time into SESSION, the plugin logouts
-        $_SESSION['mel_doubleauth_2FA_login'] = time();
+            $data = $this->__get2FAconfig();
+            $data['secret'] = null;
+            $data['activate'] = $activate ? true : false;
+            $data['recovery_codes'] = $recovery_codes;
+            $this->__set2FAconfig($data);
 
-        $this->rc->output->show_message($this->gettext('successfully_saved'), 'confirmation');
+            // if we can't save time into SESSION, the plugin logouts
+            $_SESSION['mel_doubleauth_2FA_login'] = time();
+
+            $this->rc->output->show_message($this->gettext('successfully_saved'), 'confirmation');
+        }
 
         $this->rc->overwrite_action('plugin.mel_doubleauth');
         $this->rc->output->send('plugin');
@@ -794,13 +805,13 @@ class mel_doubleauth extends bnum_plugin
      * 
      * @param string $message
      */
-    private function __exitSession($message = null)
+    private function __exitSession($message = null, $da_logout_message = true)
     {
         unset($_SESSION['mel_doubleauth_login']);
         unset($_SESSION['mel_doubleauth_2FA_login']);
 
         if (isset($message)) {
-            header('Location: ?_task=logout&_logout_msg=' . $message . '&_token=' . $this->rc->get_request_token());
+            header('Location: ?_task=logout&_logout_msg=' . $message . '&_da_logout_message='.$da_logout_message.'&_token=' . $this->rc->get_request_token());
         } else {
             header('Location: ?_task=logout&_token=' . $this->rc->get_request_token());
         }

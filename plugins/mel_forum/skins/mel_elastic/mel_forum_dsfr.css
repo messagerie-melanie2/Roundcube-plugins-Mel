@@ -1,0 +1,525 @@
+.task-forum .post {
+  margin: 0;
+  padding: var(--bnum-space-m, 15px) var(--bnum-space-m, 15px);
+  background-color: var(--bnum-color-surface, #F6F6F7);
+  box-shadow: none;
+  border-radius: var(--bnum-radius-s, 0);
+  border: none;
+  border-top: 15px solid var(--bnum-color-background, #FFFFFF);
+  border-bottom: 4px solid var(--bnum-color-primary, #000091);
+}
+
+.task-forum .post:first-child {
+  border-top: none;
+}
+
+.task-forum .post.post_pinned {
+  border-top: 8px solid var(--bnum-color-background, #FFFFFF);
+  border-right: none;
+  border-bottom: 4px solid var(--bnum-color-primary, #000091);
+  border-left: none;
+  padding-left: var(--bnum-space-m, 15px);
+}
+
+.task-forum .post:hover {
+  background-color: #D3D3D3;
+  border-radius: var(--bnum-radius-s, 0);
+  border-bottom: 4px solid var(--bnum-color-primary-hover, #1212FF);
+}
+
+/* Hover des icônes de réaction en dark mode */
+html.dark-mode .task-forum .post .post-footer .post-reaction .like:hover i,
+html.dark-mode-custom .task-forum .post .post-footer .post-reaction .like:hover i,
+html.dark-mode .task-forum .post .post-footer .post-reaction .dislike:hover i,
+html.dark-mode-custom .task-forum .post .post-footer .post-reaction .dislike:hover i,
+html.dark-mode .task-forum .post .post-footer .post-reaction .comment:hover i,
+html.dark-mode-custom .task-forum .post .post-footer .post-reaction .comment:hover i {
+  color: #B1B1F9 !important;
+}
+
+/* Hover des cards en dark mode - liste principale des articles (même couleur que new_posts / front_page_post) */
+html.dark-mode .task-forum .post:hover,
+html.dark-mode-custom .task-forum .post:hover {
+  background-color: var(--bnum-color-list-hover) !important;
+}
+
+.task-forum .post .post-header .post-creator .post-creator-name {
+  color: var(--bnum-text-primary, #000000);
+  font-weight: 600;
+}
+
+.task-forum .post .post-header .post-creator .post-date {
+  color: var(--bnum-color-input-border, #3A3A3A);
+  font-size: 13px;
+}
+
+.task-forum .post .post-content .post-title {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--bnum-text-title-primary, #000000);
+}
+
+.task-forum .post .post-content .post-tags .tag {
+  background-color: var(--bnum-color-input, #EEEEEE);
+  border: none;
+  color: var(--bnum-text-primary, #000000);
+  border-radius: 3px;
+  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  margin-right: var(--bnum-space-xs, 6px);
+}
+
+.task-forum .post .post-content .post-tags .tag:hover,
+.task-forum .post .post-content .post-tags .tag:focus {
+  background-color: var(--bnum-color-input-hover, #E0E0E0);
+}
+
+.task-forum .post .post-content .post-summary {
+  color: var(--bnum-text-primary, #000000);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.task-forum .post .post-image {
+  border-radius: var(--bnum-radius-s, 0);
+}
+
+.task-forum .post .post-footer .post-reaction .reaction,
+.task-forum .post .post-footer .post-reaction .like,
+.task-forum .post .post-footer .post-reaction .dislike,
+.task-forum .post .post-footer .post-reaction .comment {
+  background-color: transparent;
+  border: none;
+  border-radius: var(--bnum-radius-s, 0);
+  padding: 0 var(--bnum-space-s, 12px) 0 0;
+  height: auto;
+  margin-right: 0;
+  color: var(--bnum-text-primary, #000000);
+}
+
+.task-forum .post .post-footer .post-reaction .reaction i,
+.task-forum .post .post-footer .post-reaction .like i,
+.task-forum .post .post-footer .post-reaction .dislike i,
+.task-forum .post .post-footer .post-reaction .comment i {
+  font-size: 18px;
+  color: var(--bnum-text-primary, #000000);
+}
+
+.task-forum .post .post-footer .post-reaction .like:hover i,
+.task-forum .post .post-footer .post-reaction .dislike:hover i,
+.task-forum .post .post-footer .post-reaction .comment:hover i {
+  color: #1212FF;
+}
+
+/* Bouton Rédiger */
+.task-forum #forum-button-add {
+  background-color: var(--bnum-color-primary, #000091);
+  color: var(--bnum-text-on-primary, #ffffff);
+  border: none;
+  border-radius: var(--bnum-radius-s, 0);
+  font-weight: 700;
+}
+
+.task-forum #forum-button-add:hover {
+  background-color: var(--bnum-color-primary-hover, #1212ff);
+}
+
+/* ===== Barre de recherche ===== */
+
+.task-forum .mel-search-group {
+  border-bottom: 2px solid var(--bnum-color-primary, #000091);
+}
+
+.task-forum .mel-search-group:hover {
+  border-bottom: 2px solid var(--bnum-color-primary-hover, #1212ff);
+}
+
+.task-forum .mel-search-group > input,
+.task-forum .mel-search-group input.form-control,
+.task-forum .forum-search-group {
+  background-color: var(--bnum-color-input, #eee);
+  border: none;
+  border-top-left-radius: 6px !important;
+  border-bottom-left-radius: var(--bnum-radius-s, 0) !important;
+  border-top-right-radius: var(--bnum-radius-s, 0);
+  border-bottom-right-radius: var(--bnum-radius-s, 0);
+}
+
+.task-forum .mel-search-group > input::placeholder {
+  font-style: italic;
+}
+
+.task-forum .mel-search-group .input-group-text,
+.task-forum .mel-search-group .icon-mel-search {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-top-right-radius: 6px !important;
+  border-bottom-right-radius: 0 !important;
+  border: none !important;
+  background-color: var(--bnum-color-primary, #000091) !important;
+  color: var(--bnum-text-on-primary, #ffffff) !important;
+}
+
+.task-forum .mel-search-group .icon-mel-search::before {
+  color: var(--bnum-text-on-primary, #ffffff) !important;
+}
+
+.task-forum .mel-search-group .icon-mel-search:hover {
+  background-color: var(--bnum-color-primary-hover, #1212ff) !important;
+}
+
+/* Dropdown plus récent*/
+.task-forum #forum-sort-select {
+  background-color: var(--bnum-color-input, #eee) !important;
+  border: none !important;
+  border-bottom: 2px solid var(--bnum-text-primary, #000000) !important;
+  border-radius: var(--bnum-radius-s, 0) !important;
+  color: var(--bnum-text-primary, #000000);
+}
+
+/* Dropdown Afficher les articles*/
+.task-forum #forum-display-select {
+  background-color: var(--bnum-color-input, #eee) !important;
+  border: none !important;
+  border-bottom: 2px solid var(--bnum-text-primary, #000000) !important;
+  border-radius: var(--bnum-radius-s, 0) !important;
+  color: var(--bnum-text-primary, #000000);
+}
+
+/* Alignement des éléments */
+.task-forum .forum-sort {
+  padding-left: 0;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.task-forum .forum-sort .col-6:first-child {
+  padding-left: 0;
+}
+
+.task-forum .forum-sort .col-6:has(#forum-display-select) {
+  padding-right: 0;
+}
+
+.task-forum .forum-sort .mr-2 {
+  margin-right: 0 !important;
+}
+
+.task-forum #forum-display-select {
+  margin-right: 0 !important;
+}
+
+.task-forum .title {
+  margin-left: 0;
+}
+
+.task-forum .posts {
+  padding-right: 20px;
+}
+
+.task-forum .post {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.task-forum #forum-button-add {
+  margin-right: 0;
+}
+
+.task-forum .post.post_pinned {
+  border-top: none !important;
+}
+
+/* Bouton Annuler */
+.task-forum #cancel-post {
+  background-color: transparent;
+  border: 1px solid var(--bnum-color-danger, #ce0500);
+  color: var(--bnum-color-danger, #ce0500);
+  border-radius: var(--bnum-radius-s, 0);
+}
+
+.task-forum #cancel-post:hover {
+  background-color: var(--bnum-color-danger, #ce0500);
+  color: var(--bnum-text-on-danger, #ffffff);
+}
+
+/* Bouton Sauvegarder */
+.task-forum #submit-post {
+  background-color: transparent;
+  border: 1px solid var(--bnum-color-primary, #000091);
+  color: var(--bnum-color-primary, #000091);
+  border-radius: var(--bnum-radius-s, 0);
+}
+
+.task-forum #submit-post:hover {
+  background-color: var(--bnum-color-secondary-hover, #f6f6f6);
+}
+
+/* Bouton Publier */
+.task-forum #publish-post {
+  background-color: var(--bnum-color-primary, #000091);
+  color: var(--bnum-text-on-primary, #ffffff);
+  border: none;
+  border-radius: var(--bnum-radius-s, 0);
+}
+
+.task-forum #publish-post:hover {
+  background-color: var(--bnum-color-primary-hover, #1212ff);
+}
+
+/* Bouton Switch */
+.task-forum .custom-switch .custom-control-input:checked ~ .option-switch::before {
+  background-color: var(--bnum-color-primary, #000091) !important;
+  border-color: var(--bnum-color-primary, #000091) !important;
+}
+
+.task-forum .custom-switch .custom-control-input:checked ~ .option-switch::after {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Material Symbols Outlined';
+  content: "check";
+  font-size: 12px;
+  color: var(--bnum-color-primary, #000091);
+  line-height: 1;
+}
+
+/* Bouton Retour aux articles */
+.task-forum .return-header .return {
+  display: inline-flex;
+  align-items: center;
+  background-color: transparent;
+  border: 1px solid var(--bnum-color-primary, #000091);
+  border-radius: var(--bnum-radius-s, 0) !important;
+  color: var(--bnum-color-primary, #000091);
+  padding: 6px 12px;
+  width: fit-content;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.task-forum .return-header .return span {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.task-forum .return-header .return .icon,
+.task-forum .return-header .return i {
+  color: var(--bnum-color-primary, #000091);
+  font-size: 18px;
+  font-variation-settings: 'wght' 700;
+}
+
+.task-forum .return-header .return:hover {
+  background-color: var(--bnum-color-secondary-hover, #f6f6f6);
+}
+
+html.dark-mode .task-forum .return-header .return span,
+html.dark-mode-custom .task-forum .return-header .return span {
+  color: var(--bnum-color-primary, #8585f6) !important;
+}
+
+.task-forum #cancel-post bnum-wrapper,
+.task-forum #submit-post bnum-wrapper,
+.task-forum #publish-post bnum-wrapper {
+  font-weight: 700 !important;
+}
+
+/* Supprime le halo de focus par défaut du navigateur */
+.task-forum .mel-search-group > input:focus,
+.task-forum .mel-search-group input.form-control:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Reprend le style du border-bottom hover quand l'input a le focus */
+.task-forum .mel-search-group:focus-within {
+  border-bottom: 2px solid var(--bnum-color-primary-hover, #1212ff) !important;
+}
+
+/* ===== Correctifs widget "Derniers articles" (new_posts) ===== */
+
+/* Neutralise le border-top blanc de séparation (hérité de .task-forum .post) */
+.new_posts .post {
+  border-top: none !important;
+}
+
+/* Fond identique à la section "Derniers articles" (pas de surface distincte) */
+.new_posts .post,
+.new_posts .post:hover {
+  background-color: transparent !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+}
+
+/* Remplace la bordure DSFR bleue par un simple séparateur gris fin */
+.new_posts .post,
+.new_posts .post:hover {
+  border-bottom: 1px solid var(--bnum-color-border) !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+/* Pas de séparateur après la dernière card */
+.new_posts .post:last-child {
+  border-bottom: none !important;
+}
+
+/* Tags : même couleur que le texte de la card, fond conservé */
+.new_posts .post .post-content .post-tags .tag,
+.new_posts .tag {
+  background-color: var(--bnum-color-border) !important;
+  color: var(--bnum-text-primary, #000000) !important;
+}
+
+/* Style des boutons de réaction (.post-reaction-info au lieu de .like/.dislike/.comment) */
+.new_posts .post .post-footer .post-reaction .post-reaction-info {
+  background-color: transparent;
+  border: none;
+  border-radius: var(--bnum-radius-s, 0);
+  padding: 0 var(--bnum-space-s, 12px) 0 0;
+  height: auto;
+  margin: 0;
+  color: var(--bnum-text-primary, #000000);
+}
+
+.new_posts .post .post-footer .post-reaction .post-reaction-info i {
+  font-size: 18px;
+  color: var(--bnum-text-primary, #000000);
+}
+
+.new_posts .post .post-footer .post-reaction .post-reaction-info:hover i {
+  color: #1212FF;
+}
+
+/* Sécurité anti marge blanche résiduelle */
+.new_posts .row.post {
+  margin-bottom: 0 !important;
+}
+
+/* Corrige le fond réel, en égalant la spécificité de la règle du thème (#layout-content .content) */
+html.dark-mode #layout-content.new_posts .content,
+html.dark-mode-custom #layout-content.new_posts .content {
+  background-color: rgb(30, 30, 30) !important;
+}
+
+/* Hover des cards en dark mode uniquement */
+html.dark-mode .new_posts .post:hover,
+html.dark-mode-custom .new_posts .post:hover {
+  background-color: var(--bnum-color-list-hover) !important;
+}
+
+/* Hover des icônes de réaction en dark mode - widget new_posts */
+html.dark-mode .new_posts .post .post-footer .post-reaction .post-reaction-info:hover i,
+html.dark-mode-custom .new_posts .post .post-footer .post-reaction .post-reaction-info:hover i {
+  color: #B1B1F9 !important;
+}
+
+/* ===== Correctifs widget "À la une" (front_page_post) ===== */
+
+/* Neutralise le border-top blanc de séparation (hérité de .task-forum .post) */
+.front_page_post .post {
+  border-top: none !important;
+}
+
+/* Supprime l'arrondi des coins supérieurs de la card */
+.front_page_post .post,
+.front_page_post .post:hover {
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+}
+
+/* Remplace la bordure DSFR bleue par un simple séparateur */
+.front_page_post .post,
+.front_page_post .post:hover {
+  border-bottom: 1px solid var(--bnum-color-border) !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+/* Pas de séparateur après la dernière card */
+.front_page_post .post:last-child {
+  border-bottom: none !important;
+}
+
+/* Fond transparent par défaut (le vrai fond est géré par .content ci-dessous) */
+.front_page_post .post,
+.front_page_post .post:hover {
+  background-color: transparent !important;
+}
+
+/* Tags : couleur de texte alignée, fond conservé */
+.front_page_post .post .post-content .post-tags .tag,
+.front_page_post .tag {
+  color: var(--bnum-text-primary, #000000) !important;
+}
+
+/* Sécurité anti marge blanche résiduelle */
+.front_page_post .row.post {
+  margin-bottom: 0 !important;
+}
+
+/* Fond réel en dark mode, en égalant la spécificité de #layout-content .content */
+html.dark-mode #layout-content.front_page_post .content,
+html.dark-mode-custom #layout-content.front_page_post .content {
+  background-color: rgb(30, 30, 30) !important;
+}
+
+/* Hover des cards en dark mode */
+html.dark-mode .front_page_post .post:hover,
+html.dark-mode-custom .front_page_post .post:hover {
+  background-color: var(--bnum-color-list-hover) !important;
+}
+
+/* Hover des cards en thème clair - widget "Derniers articles" */
+.new_posts .post:hover {
+  background-color: #D3D3D3 !important;
+}
+
+/* Hover des cards en thème clair - widget "À la une" */
+.front_page_post .post:hover {
+  background-color: #D3D3D3 !important;
+}
+
+/* Fond de la section "Articles" (liste principale du forum) en dark mode */
+html.dark-mode body.task-forum #layout-content .content,
+html.dark-mode-custom body.task-forum #layout-content .content {
+  background-color: #242424 !important;
+}
+
+/* Fond des cards identique aux dropdowns "Plus récent" / "Afficher les articles" - dark mode */
+html.dark-mode .task-forum .post,
+html.dark-mode-custom .task-forum .post {
+  background-color: var(--bnum-color-input, #eee) !important;
+}
+
+html.dark-mode #layout-content.new_posts .post,
+html.dark-mode-custom #layout-content.new_posts .post,
+html.dark-mode #layout-content.front_page_post .post,
+html.dark-mode-custom #layout-content.front_page_post .post {
+  background-color: #1e1e1e !important;
+}
+
+html.dark-mode body.task-forum #layout-content .content,
+html.dark-mode-custom body.task-forum #layout-content .content {
+  background-color: #1e1e1e !important;
+}
+
+/* Hover des cards en dark mode - avec la même spécificité que la règle de fond (ID inclus) */
+html.dark-mode #layout-content.new_posts .post:hover,
+html.dark-mode-custom #layout-content.new_posts .post:hover,
+html.dark-mode #layout-content.front_page_post .post:hover,
+html.dark-mode-custom #layout-content.front_page_post .post:hover {
+  background-color: var(--bnum-color-list-hover) !important;
+}
+
+/* Bordure du post épinglé en dark mode - remplace le blanc par le fond sombre */
+html.dark-mode .task-forum .post.post_pinned,
+html.dark-mode-custom .task-forum .post.post_pinned {
+  border-top-color: #242424 !important;
+}

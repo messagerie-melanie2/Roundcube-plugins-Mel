@@ -276,12 +276,27 @@ if (rcmail) {
       () => {
         const event = ui_cal.selected_event;
         const title = `${event.title} - ${moment(event.start).format('DD/MM/YYYY HH:mm')}`;
+
+        const currentUserEmails = new Set(
+          [
+            rcmail.env.current_user?.email,
+            ...(rcmail.env.mel_metapage_user_emails || []),
+          ]
+            .filter((email) => !!email)
+            .map((email) => email.toLowerCase()),
+        );
+
+        const attendees = [
+          ...new Set(
+            event.attendees
+              .map((a) => a.email?.toLowerCase())
+              .filter((email) => email && !currentUserEmails.has(email)),
+          ),
+        ].join(',');
+
         window.current_event_modal.close();
         parent.rcmail.open_compose_step({
-          to: Enumerable.from(event.attendees)
-            .select((x) => x.email)
-            .toArray()
-            .join(','),
+          to: attendees,
           subject: title,
         });
       },
@@ -846,10 +861,9 @@ if (rcmail) {
      * @param {Object} args - Les arguments contenant la clé et la valeur du style.
      */
     rcmail.register_command(
-      'update_mail_css',
+      'update_mail_css_old',
       (args) => {
         const { key, value } = args;
-
         MEL_ELASTIC_UI.update_mail_css_async({ key, value });
 
         for (const iterator of top.$('iframe.mm-frame')) {
@@ -1022,6 +1036,20 @@ if (rcmail) {
       rcmail.register_command(
         'mel-comment-mail',
         async () => {
+          /**
+           * Essaye de récupérer la mailbox en cours
+           * @returns {?string | undefined}
+           */
+          const getMailBox = () => {
+            let mbox = $('.mailbox.selected a').first().attr('rel');
+
+            if (!mbox) {
+              mbox = rcmail.env.mailbox;
+            }
+
+            return mbox;
+          };
+
           const uid = rcmail.get_single_uid();
 
           if (!(uid || false))
@@ -1030,7 +1058,14 @@ if (rcmail) {
               'error',
             );
 
-          const current_mail_box = $('.mailbox.selected a').first().attr('rel');
+          const current_mail_box = getMailBox();
+
+          if (!current_mail_box)
+            console.error(
+              '### [comment]Impossible de toruver la bal/dossier courante',
+              current_mail_box,
+            );
+
           const current_subject = $(rcmail.message_list.rows[uid].obj)
             .children()
             .find('.subject a span')

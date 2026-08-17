@@ -1,8 +1,7 @@
+import { HTMLBnumButton as DsHtmlBnumButton } from '../../../../../skins/mel_elastic/design-system/ds-module-bnum.js';
 import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
 import { EButtonType } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/button/FormComponent.js';
-import HTMLBnumButton, {
-  HTMLBnumButtonSecondary,
-} from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/button/HTMLBnumButton.js';
+import HTMLBnumButton from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/button/HTMLBnumButton.js';
 import { HTMLIconMelButton } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/HTMLMelButton.js';
 import {
   BnumHtmlIcon,
@@ -221,11 +220,17 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
     }
 
     if (this.hasRefresh) {
-      let buttonRefresh = HTMLBnumButtonSecondary.StartCreate.setContent(
-        BnumHtmlIcon.Refresh,
-      )
-        .setIconMargin(0)
-        .generate();
+      // let buttonRefresh = HTMLBnumButtonSecondary.StartCreate.setContent(
+      //   BnumHtmlIcon.Refresh,
+      // )
+      //   .setIconMargin(0)
+      //   .generate();
+      const buttonRefresh = DsHtmlBnumButton.Create({
+        icon: 'refresh',
+        variation: 'secondary',
+        rounded: true,
+        iconMargin: '3px',
+      });
 
       buttonRefresh.classList.add('refresh-button');
 
@@ -254,7 +259,7 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
         header
       ).appendChild(buttonRefresh);
 
-      buttonRefresh = null;
+      // buttonRefresh = null;
     }
 
     if (this.buttonTask !== false) {

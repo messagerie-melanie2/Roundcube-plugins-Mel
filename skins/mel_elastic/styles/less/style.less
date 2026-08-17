@@ -112,14 +112,6 @@ main {
 /** LAYOUT **/
 
 #layout-sidebar {
-  .mel-no-border();
-  .mel-layout-sidebar-colors() !important;
-
-  & > .header {
-    /** HEADER **/
-    .mel-layout-sidebar-colors() !important;
-  }
-
   .ui-datepicker {
     &.ui-widget-content {
       .ui-state-default {
@@ -150,7 +142,7 @@ main {
 
   & > div {
     & > .header {
-      .mel-no-border();
+      // .mel-no-border();
 
       a.button {
         color: var(--secondary-text-color);
@@ -237,7 +229,7 @@ html {
   &.pagenav {
     &.pagenav-list {
       & + .navlist {
-        background-color: var(--main-bckg-color);
+        // background-color: var(--main-bckg-color);
       }
 
       body.task-tasks & {
@@ -581,14 +573,6 @@ ul.treelist {
   }
 
   tbody {
-    tr {
-      &.context-source:not(.selected) {
-        & > td {
-          background-color: var(--secondary-bckg-color) !important;
-        }
-      }
-    }
-
     td {
       color: var(--secondary-text-color);
       border: none;
@@ -741,7 +725,6 @@ a.button.icon:not(.disabled):focus {
 
         &.date {
           font-size: 85%;
-          padding-top: 2px;
         }
       }
     }
@@ -1760,12 +1743,24 @@ framed_item {
 #button-back-adressbook {
   #_button-back-adressbook();
 
+  position: absolute;
+  top: 57px;
+
+  .action-plugin-annuaire & {
+    top: 30px;
+  }
+
   &:hover {
     color: var(--main-text-color) !important;
+    background-color: transparent;
   }
 }
 #button-back-adressbook2 {
-  #_button-back-adressbook();
+  // #_button-back-adressbook();
+  margin-top: -8px;
+  .action-plugin-annuaire & {
+    margin-top: -37px;
+  }
 
   &:hover {
     color: var(--tierciary-text-color) !important;
@@ -2922,16 +2917,16 @@ html:not(.touch)
   border-left: 2px solid var(--button-background-color) !important;
 }
 
-html:not(.touch) .listing.focus tbody tr.focused.unread > td:first-child,
-html:not(.touch)
-  .listing.focus:not(.withselection)
-  tbody
-  tr.focused.unread
-  > td.selection
-  + td {
-  border-left: 2px solid var(--message-list-unread-border-left) !important;
-  border-radius: 0;
-}
+// html:not(.touch) .listing.focus tbody tr.focused.unread > td:first-child,
+// html:not(.touch)
+//   .listing.focus:not(.withselection)
+//   tbody
+//   tr.focused.unread
+//   > td.selection
+//   + td {
+//   border-left: 5px solid var(--message-list-unread-border-left) !important;
+//   border-radius: 0;
+// }
 
 td.mel-fit-content {
   max-width: min-content;
@@ -4341,7 +4336,7 @@ button {
     &:extend(#theme-panel .picture);
     &:extend(#theme-panel .picture.barup-background-color);
 
-    border-right: none;
+    border: none;
     border-bottom-right-radius: 0;
     border-top-right-radius: 0;
     width: 50%;
@@ -4395,7 +4390,7 @@ button {
 .green-badge {
   position: absolute;
   top: 0;
-  right: 9px;
+  right: 14px;
   background-color: #484d7ac7;
   border-radius: 5px;
   width: calc(100% - 19px);
@@ -5141,20 +5136,17 @@ button.melv2-sec-nav-correction {
     box-shadow: none;
 
     html.dark-mode & {
-      // &{
       background-color: transparent;
-      // }
     }
   }
 
   .melv2-card-pre {
-    border-bottom: solid thin #e0e0e0;
+    border-bottom: solid thin var(--bnum-color-border);
     margin-bottom: 15px;
   }
 
   .melv2-card-contents {
     display: flex;
-    // padding: 0 308px;
     flex-wrap: wrap;
     height: auto;
     max-height: none;
@@ -5436,7 +5428,7 @@ html.dark-mode .external_url {
   align-items: center;
 
   &.warning-suspect {
-    background-color: #F85755;
+    background-color: #f85755;
     font-weight: bold;
     border-radius: 10px;
 
@@ -5445,12 +5437,11 @@ html.dark-mode .external_url {
       text-transform: uppercase;
     }
   }
-  
 }
 
 .warning-icon-large {
   font-size: 46px;
-  &.warning-suspect{
+  &.warning-suspect {
     color: white;
   }
 }
@@ -5662,6 +5653,20 @@ html:not(.touch)
 .menu a:not(.disabled):focus {
   border-top-left-radius: 0 !important;
   border-bottom-left-radius: 0 !important;
+}
+
+//On supprime la barre de gauche pour le focus des mails
+html:not(.touch) .listing li > a:focus,
+html:not(.touch) .listing.focus tbody tr.focused > td:first-child,
+html:not(.touch)
+  body.task-mail
+  .listing.focus:not(.withselection)
+  tbody
+  tr.focused
+  > td.selection
+  + td,
+.menu a:not(.disabled):focus {
+  border-left: 2px solid transparent;
 }
 
 bnum-separate {
@@ -6704,8 +6709,13 @@ a.mel-button.survey-button {
   min-width: 175px;
   max-height: 50px;
 
-  &:hover { background: darken(#fdcf42, 6%); }
-  &:focus { outline: none; box-shadow: 0 0 0 3px fade(#fdcf42, 45%); }
+  &:hover {
+    background: darken(#fdcf42, 6%);
+  }
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px fade(#fdcf42, 45%);
+  }
 }
 
 /* Conteneur interne (image + texte) centré en colonne */
@@ -6713,7 +6723,7 @@ a.mel-button.survey-button .survey-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: .25rem; /* petit espace entre les lignes / image */
+  gap: 0.25rem; /* petit espace entre les lignes / image */
 }
 
 /* Texte sur 2 lignes, centré */
@@ -6743,19 +6753,24 @@ a.mel-button.survey-button.show-icon .survey-content {
   flex-direction: row; /* texte + image sur une ligne */
   align-items: center;
   justify-content: center; /* toujours centré dans le bouton */
-  gap: .5rem;
+  gap: 0.5rem;
 }
 
 /* Ordre : texte puis image */
-a.mel-button.survey-button.show-icon .survey-text  { order: 1; text-align: center; }
-a.mel-button.survey-button.show-icon .survey-icon  { order: 2; }
+a.mel-button.survey-button.show-icon .survey-text {
+  order: 1;
+  text-align: center;
+}
+a.mel-button.survey-button.show-icon .survey-icon {
+  order: 2;
+}
 
 /* Affichage et taille de l’image à droite */
 a.mel-button.survey-button.show-icon .survey-icon {
-  display: inline-block !important;  /* supprime le display:none de base */
+  display: inline-block !important; /* supprime le display:none de base */
   height: 28px;
   width: auto;
-  margin-left: .25rem;
+  margin-left: 0.25rem;
 }
 
 /* Ajustement pour les petits écrans */
@@ -6765,4 +6780,9 @@ a.mel-button.survey-button.show-icon .survey-icon {
   }
 }
 
-
+html.dark-mode-custom .message-htmlpart {
+  background-color: #fff;
+  color: #2c363a;
+  padding: 0;
+  margin-top: 0.5rem;
+}

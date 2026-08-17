@@ -1238,7 +1238,7 @@ function rcube_calendar_ui(settings) {
     };
 
     // attachments
-    var load_attachments_tab = function () {
+    const load_attachments_tab = function () {
       rcmail.enable_command(
         'remove-attachment',
         'upload-file',
@@ -3967,29 +3967,32 @@ function rcube_calendar_ui(settings) {
       }
 
       return event_attendees;
-  };
+    };
 
   // PAMELA - Ticket 0009544: télécharge chaque PJ de l'événement source et la ré-uploade (séquentiel)
-  var copy_event_attachments = function (source_event, attachments) {
-    var lock = rcmail.set_busy(true, 'calendar.copyingattachments');
-    var queue = attachments.slice(); // copie du tableau pour ne pas le modifier
+  const copy_event_attachments = function (source_event, attachments) {
+    const lock = rcmail.set_busy(true, 'calendar.copyingattachments');
+
+    const queue = attachments.slice(); // copie du tableau pour ne pas le modifier
 
     // désactive le bouton Sauvegarder
-    var $save_btn = $('.ui-dialog-buttonpane button.save, .ui-dialog-buttonpane button.mainaction');
+    const $save_btn = $(
+      '.ui-dialog-buttonpane button.save, .ui-dialog-buttonpane button.mainaction',
+    );
     $save_btn.prop('disabled', true).addClass('disabled');
 
     // fonction récursive pour traiter la prochaine PJ
-    var process_next = function () {
+    const process_next = function () {
       if (!queue.length) {
         rcmail.set_busy(false, null, lock);
         $save_btn.prop('disabled', false).removeClass('disabled');
         return;
       }
 
-      var attachment = queue.shift();
+      const attachment = queue.shift();
 
       // construction de l'URL pour récupérer la PJ
-      var query = {
+      const query = {
         _id: attachment.id,
         _event: source_event.recurrence_id || source_event.id,
         _cal: source_event.calendar,
@@ -3997,15 +4000,14 @@ function rcube_calendar_ui(settings) {
       };
       if (source_event.rev) query._rev = source_event.rev;
 
-      var xhr = new XMLHttpRequest();
+      const xhr = new XMLHttpRequest();
       xhr.open('GET', rcmail.url('get-attachment', query), true);
       xhr.responseType = 'blob';
 
       xhr.onload = function () {
         if (xhr.status !== 200) {
           rcmail.display_message(
-            'Échec de la copie de la pièce jointe : ' +
-              (attachment.name || ''),
+            'Échec de la copie de la pièce jointe : ' + (attachment.name || ''),
             'error',
           );
           process_next(); // on continue malgré l'échec
@@ -4013,20 +4015,20 @@ function rcube_calendar_ui(settings) {
         }
 
         // creation d'un nouveau File object à partir du blob
-        var file = new File([xhr.response], attachment.name || 'attachment', {
+        const file = new File([xhr.response], attachment.name || 'attachment', {
           type: attachment.mimetype || xhr.response.type,
         });
 
-        var dataTransfer = new DataTransfer();
+        const dataTransfer = new DataTransfer();
         dataTransfer.items.add(file);
 
         // création d'un formulaire invisible pour l'upload
-        var $form = $('<form>')
+        const $form = $('<form>')
           .attr({ method: 'POST', enctype: 'multipart/form-data' })
           .css('display', 'none')
           .appendTo(document.body);
 
-        var $input = $('<input>')
+        const $input = $('<input>')
           .attr({ type: 'file', name: '_attachments[]' })
           .appendTo($form);
         $input[0].files = dataTransfer.files;
@@ -4686,7 +4688,7 @@ function rcube_calendar_ui(settings) {
   // display the edit dialog, request 'new' action and pass the selected event
   this.event_copy = function (event) {
     if (event && event.id) {
-      var copy = $.extend(true, {}, event);
+      const copy = $.extend(true, {}, event);
       // PAMELA L'utilisateur qui duplique devient l'organisateur de la copie
       let hasUser = false;
 
@@ -4723,14 +4725,16 @@ function rcube_calendar_ui(settings) {
         });
       }
 
-      var source_attachments = $.isArray(event.attachments)
+      const source_attachments = $.isArray(event.attachments)
         ? event.attachments
         : [];
 
       if (source_attachments.length) {
-
-        var on_ready = function () {
-          rcmail.removeEventListener('calendar.attachments_tab_ready', on_ready);
+        const on_ready = function () {
+          rcmail.removeEventListener(
+            'calendar.attachments_tab_ready',
+            on_ready,
+          );
           copy_event_attachments(event, source_attachments);
         };
         rcmail.addEventListener('calendar.attachments_tab_ready', on_ready);

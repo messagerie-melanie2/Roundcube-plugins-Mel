@@ -4449,17 +4449,42 @@ if (PATCH_ENABLED) {
    * On resynchronise donc l'état via l'API publique `show-list` du cœur, juste
    * après que celui-ci ait fini de traiter l'événement `load` de l'iframe.
    */
-  $(document).ready(() => {
+  $(document).ready(async () => {
     if (rcmail.env.task !== 'mail') return;
+
     const content_frame = document.getElementById(rcmail.env.contentframe);
 
-    if (!content_frame) {
-      return;
-    }
+    if (!content_frame) return;
 
-    $(content_frame).on('load', async (e) => {
-      const helper = await module_helper_mel.load_mel_object();
-      if (!helper.Empty().isLayoutSmallOfPhone()) return;
+    const helper = (await module_helper_mel.load_mel_object()).Empty();
+
+    helper.listen('actionbefore', (args) => {
+      const { action } = args;
+
+      if (!helper.isLayoutSmallOfPhone()) return;
+
+      switch (action) {
+        case 'delete':
+          rcmail.env._last_mail_action = action;
+          break;
+
+        default:
+          break;
+      }
+    });
+
+    $(content_frame).on('load', (e) => {
+      if (!helper.isLayoutSmallOfPhone()) return;
+
+      switch (rcmail.env._last_mail_action) {
+        case 'delete':
+          rcmail.env._last_mail_action = null;
+          rcmail.triggerEvent('show-content', { force: true });
+          return;
+
+        default:
+          break;
+      }
 
       let win;
 

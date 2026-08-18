@@ -40,7 +40,7 @@ class ToolbarFunctions {
    * @static
    */
   static Hangup(visio) {
-    if (top.$('#visio-back-button bnum-icon').text() === 'fullscreen')
+        if (top.$('#visio-back-button bnum-icon').text() === 'fullscreen')
       top.$('#visio-back-button bnum-icon').click();
 
     MelObject.Empty()
@@ -63,7 +63,7 @@ class ToolbarFunctions {
     //visio.toolbar.destroy();
 
     top
-      .$('#visio-back-button bnum-icon')
+      .$('#visio-back-button bnum-icon, #visio-back-button old-bnum-icon')
       .text('undo')
       .parent()
       .attr('title', 'Quitter la visio')

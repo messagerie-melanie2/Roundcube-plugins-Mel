@@ -218,11 +218,26 @@ class BnumVisio extends MelObject {
           
           _window.$('#visio-back-button')
             .attr('title', 'Minimiser la visioconférence')
-            .find('bnum-icon').text('fullscreen_exit');
+            .find('bnum-icon, old-bnum-icon').text('fullscreen_exit');
         }
         // déjà en plein écran : on ne fait rien
         return;
       }
+      /*
+        Le gestionnaire de frames refuse d'ouvrir une fenêtre tant que `rcmail.busy`
+        est vrai (cf. FrameManager.switch_frame). C'est le cas lorsque la visio est
+        démarrée depuis le chargement de la frame `webconf` elle même - rechargement
+        de la page alors que `_key` est dans l'url, cf. `js/caller.js` - car cette
+        frame est encore en cours d'ouverture pour le gestionnaire.
+        On attend donc qu'il soit libre, sinon la visio ne se lancerait jamais.
+      */
+      {
+        const _top = top ?? window;
+
+        if (_top.rcmail?.busy)
+          await this.wait_something(() => !_top.rcmail.busy, { timeout: 30 });
+      }
+
       params._page = page || 'init';
       FramesManager.Instance.close_except_selected()
         .disable_manual_multiframe()

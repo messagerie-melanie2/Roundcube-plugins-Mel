@@ -168,3 +168,5 @@ $labels['filter-data-action-attachment'] = 'OR OR OR HEADER Content-Type applica
 $labels['filter-data-action-noresponses'] = 'UNANSWERED';
 
 $labels['from_to'] = 'Du %0 au %1';
+
+$labels['show_hide_password'] = 'Changer la visibilité du mot de passe';

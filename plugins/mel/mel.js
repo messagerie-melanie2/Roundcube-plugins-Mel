@@ -398,3 +398,11 @@ if (
     this.triggerEvent('clear');
   };
 }
+
+// Affichage / masquage du mot de passe sur la page de login
+$(document).on('click', '#toggle_password_view', function () {
+  const $field = $('#rcmloginpwd');
+  const show = $field.attr('type') === 'password';
+  $field.attr('type', show ? 'text' : 'password');
+  $(this).toggleClass('text-visible', show).attr('aria-pressed', show);
+});

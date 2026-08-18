@@ -932,6 +932,9 @@ body.quickview-active .fc .fc-scroller {
 .fc .fc-list-item.cal-event-status-tentative {
   opacity: 0.6;
 }
+.fc .fc-list-item.cal-event-status-tentative .fc-widget-content {
+  font-style: italic;
+}
 .fc .fc-list-item.cal-event-status-cancelled .fc-widget-content {
   text-decoration: line-through;
 }

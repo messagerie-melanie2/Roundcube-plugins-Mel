@@ -91,6 +91,13 @@
 }
 
 #toggle_password_view {
+  &:focus {
+    box-shadow: none;
+  }
+
+  &:focus-visible {
+    outline: 1px solid var(--main-text-color);;
+  }
   &::before {
     content: '\e8f5';
     font-family: 'Material Symbols Outlined' !important;

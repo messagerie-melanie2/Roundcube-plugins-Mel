@@ -98,7 +98,7 @@ class Visio extends MelObject {
         top
           .$('#visio-back-button')
           .attr('title', 'Minimiser la visioconférence')
-          .find('bnum-icon')
+          .find('bnum-icon, old-bnum-icon')
           .text('fullscreen_exit');
         FramesManager.Instance.get_window()._history.add(
           FramesManager.Instance.get_window()._current_frame.task,
@@ -120,7 +120,7 @@ class Visio extends MelObject {
         top
           .$('#visio-back-button')
           .attr('title', 'Maximiser la visioconférence')
-          .find('bnum-icon')
+          .find('bnum-icon, old-bnum-icon')
           .text('fullscreen');
 
       (top ?? parent ?? window)
@@ -642,15 +642,16 @@ class Visio extends MelObject {
       MelHtml.start
         .button( { id:'visio-back-button', class:'visio-back-button not-busy-only', title:'Minimiser la visioconférence' } )
         .attr('onclick', () => {
-          if (top.$('#visio-back-button').find('bnum-icon').text() === 'fullscreen_exit') {
+          //L'état est porté par la classe `fullscreen-visio` de la balise html et non par l'icône du bouton.
+          if ((top ?? parent ?? window).$('html').hasClass('fullscreen-visio')) {
             if (FramesManager.Instance.get_window()._history._history.length) FramesManager.Instance.get_window()._history.back();
             else FramesManager.Instance.switch_frame('bureau', {});
 
-            top.$('#visio-back-button').attr('title', 'Maximiser la visioconférence').find('bnum-icon').text('fullscreen');
+            top.$('#visio-back-button').attr('title', 'Maximiser la visioconférence').find('bnum-icon, old-bnum-icon').text('fullscreen');
           }
-          else { 
+          else {
             FramesManager.Instance.switch_frame('webconf', {});
-            top.$('#visio-back-button').attr('title', 'Minimiser la visioconférence').find('bnum-icon').text('fullscreen_exit');
+            top.$('#visio-back-button').attr('title', 'Minimiser la visioconférence').find('bnum-icon, old-bnum-icon').text('fullscreen_exit');
           }
         })
           .icon('fullscreen_exit').end()

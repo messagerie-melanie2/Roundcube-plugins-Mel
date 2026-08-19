@@ -1,0 +1,7 @@
+<?php
+// Identifiant de l'application, fourni par la plateforme de visioconférence
+$rcmail_config['client_id'] = '';
+// Secret de l'application — ne jamais commiter la vraie valeur (config.inc.php est gitignore)
+$rcmail_config['client_secret'] = '';
+// Url de base de l'API (sans slash final), ex. https://visio-sandbox.beta.numerique.gouv.fr/external-api/v1.0
+$rcmail_config['visio_gouv_url'] = '';

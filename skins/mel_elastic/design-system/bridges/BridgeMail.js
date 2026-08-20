@@ -3,6 +3,7 @@ import { BnumLog } from '../../../../plugins/mel_metapage/js/lib/classes/bnum_lo
 import { MelEnumerable } from '../../../../plugins/mel_metapage/js/lib/classes/enum.js';
 import { EMPTY_STRING } from '../../../../plugins/mel_metapage/js/lib/constants/constants.js';
 import { AvatarElement } from '../../../../plugins/mel_metapage/js/lib/html/JsHtml/CustomAttributes/avatar.js';
+import { MelObject } from '../../../../plugins/mel_metapage/js/lib/mel_object.js';
 import {
   DsCssProperty,
   DsCssRule,
@@ -223,6 +224,8 @@ export default class BridgeMail extends ABridge {
 
   /** @returns {BridgeMail} */
   _p_onReady() {
+    if (this.get_env(BridgeMail.#ENVS.TASK) !== 'mail') return this;
+
     return this.#initListeners().#registerCommands();
   }
 
@@ -235,9 +238,18 @@ export default class BridgeMail extends ABridge {
   #initMail() {
     if (this.get_env(BridgeMail.#ENVS.TASK) !== 'mail') return this;
 
+    this.#updateMailMoveFolder();
+
     return this.#updateMailboxSelector()
       .#updateFolder()
       .#updateStyleFromParameters();
+  }
+
+  /**
+   * Patche la sélection du menu en mobile
+   */
+  #updateMailMoveFolder() {
+    BridgeRc.Instance.patch(BridgeRc.Instance.patch_folder_selector);
   }
 
   /**
@@ -288,8 +300,54 @@ export default class BridgeMail extends ABridge {
     });
 
     this.#fixLegacyJunkFolder();
-
+    this.#updateMarkAsUnread();
     return this.#updateContextMenuFolder();
+  }
+
+  /**
+   * Modifie comme "mark_all_read_state" fonctionne.
+   */
+  #updateMarkAsUnread() {
+    const rcmail = this.rcmail();
+
+    if (rcmail.mark_all_read_state) {
+      const rcmail_mark_all_read_state = rcmail.mark_all_read_state;
+
+      rcmail.mark_all_read_state = function (mbox) {
+        let state = rcmail_mark_all_read_state.call(this, mbox);
+
+        if (state) return state;
+        else {
+          if (!mbox) mbox = this.env.mailbox;
+          if (!mbox) return state;
+          const getUnreads = (element) => {
+            return +(element?.getAttribute?.('unread') || 0);
+          };
+          /**
+           * @type {HTMLBnumFolder?}
+           */
+          const li = this.treelist.container[0].querySelector(
+              `[folder-id="${mbox}"]`,
+            ), //.get_item(mbox || this.env.mailbox),
+            folder_item = li && getUnreads(li) > 0 ? 1 : 0,
+            subfolder_items = [
+              ...(li?.querySelectorAll?.('[unread]') ?? []),
+            ].filter((x) => getUnreads(x)).length,
+            all_items = [
+              ...this.treelist.container[0].querySelectorAll('[unread]'),
+            ].filter((x) => getUnreads(x)).length;
+          //$('li.unread', ref.gui_objects.folderlist).length;
+
+          state += folder_item;
+          state += subfolder_items ? 2 : 0;
+          state += all_items > folder_item + subfolder_items ? 4 : 0;
+
+          this.enable_command('mark-all-read', state > 0);
+
+          return state;
+        }
+      };
+    }
   }
 
   /**
@@ -334,6 +392,8 @@ export default class BridgeMail extends ABridge {
     });
 
     this.listen('menu-open', (...args) => void bridge.onMenuOpen(...args));
+    this.listen('actionbefore', (args) => bridge.onActionBeforeDownload(args));
+    this.listen('get_single_uid', (obj) => bridge.onGetSingleUid(obj));
 
     this.rcmail().contextmenu.init_folder(MAILBOXES_FOLDERS, {
       menu_source: MENU_SOURCES,
@@ -520,6 +580,9 @@ export default class BridgeMail extends ABridge {
   #decorateRow(row) {
     this.#hideMsgIcon(row);
     this.#addUtilityClass(row);
+    // La case à cocher native n'était jamais exclue de l'interception de clic
+    // de la ligne : la cocher ouvrait le mail en plus de le sélectionner.
+    this.#ignoreCapture(row.querySelector('.selection input'));
 
     const avatarContainer = this.#buildAvatarContainer(row);
     const rowActions = this.#buildRowActions(row);
@@ -618,26 +681,32 @@ export default class BridgeMail extends ABridge {
       ?.attr?.('id', `action-of-${row.id}`)
       ?.addClass?.('mail-avatar--action');
 
-    action.addEventListener(
-      'click',
-      (e) => {
-        e.stopImmediatePropagation();
-        e.stopPropagation();
-        e.preventDefault();
+    /**
+     * Sélectionne/désélectionne la ligne. Rattaché à `action` (bouton révélé
+     * au survol sur desktop) et à `avatarContainer` (seule zone atteignable
+     * au doigt sur mobile, où le survol ne se déclenche jamais).
+     */
+    const selectRow = (e) => {
+      e.stopImmediatePropagation();
+      e.stopPropagation();
+      e.preventDefault();
 
-        const selectionBtn = document.querySelector(`#${row.id} .selection`);
-        if (!selectionBtn) {
-          console.error(
-            `[BridgeMail] Bouton .selection introuvable dans #${row.id}`,
-          );
-          return;
-        }
+      const selectionBtn = document.querySelector(`#${row.id} .selection`);
+      if (!selectionBtn) {
+        console.error(
+          `[BridgeMail] Bouton .selection introuvable dans #${row.id}`,
+        );
+        return;
+      }
 
-        action.icon = this.#getSelectionIcon(row.id, { inverted: true });
-        this.#ignoreCapture(selectionBtn).click();
-      },
-      true,
-    );
+      action.icon = this.#getSelectionIcon(row.id, { inverted: true });
+      this.rcmail().dummy_select = true;
+      this.#ignoreCapture(selectionBtn).click();
+      this.rcmail().dummy_select = null;
+      clearTimeout(this.rcmail().preview_timer);
+    };
+
+    action.addEventListener('click', selectRow, true);
 
     const avatarContainer = HTMLBnumAvatarAction.Create({ avatar, action });
     avatarContainer
@@ -652,6 +721,10 @@ export default class BridgeMail extends ABridge {
           console.error(`[BridgeMail] Élément action-of-${rowId} introuvable.`);
         }
       });
+
+    avatarContainer.addEventListener('click', selectRow, true);
+    this.#ignoreCapture(avatarContainer);
+    this.#ignoreCapture(avatar);
 
     return avatarContainer;
   }

@@ -3291,6 +3291,32 @@ $(document).ready(() => {
           iframe.contentWindow.MEL_ELASTIC_UI._update_theme_color();
       }
 
+      if (
+        rcmail.env.task === 'mail' &&
+        rcmail.env.action === 'preview' &&
+        parent
+      ) {
+        const updateColorFunc = () => {
+          const ismodeNOk =
+            parent.MEL_ELASTIC_UI.color_mode() !== this.color_mode();
+
+          if (ismodeNOk) {
+            console.info('(i) [COLOR] Ratrappage de la couleur en cours....');
+            const $html = $('html').removeClass('dark-mode');
+
+            if (this.color_mode() === 'dark')
+              $html.removeClass('dark-mode').removeClass('dark-mode-custom');
+            else $html.addClass('dark-mode-custom');
+          }
+        };
+
+        updateColorFunc();
+        setTimeout(() => updateColorFunc(), 500);
+        setTimeout(() => {
+          $('html').removeClass('dark-mode');
+        }, 1000);
+      }
+
       return this;
     }
 
@@ -4399,3 +4425,82 @@ $(document).ready(() => {
     console.error('### [BNUM]MEL_ELASTIC_UI : ', error);
   }
 });
+
+const PATCH_ENABLED = true;
+
+if (PATCH_ENABLED) {
+  /**
+   * Corrige un défaut du cœur Roundcube (skins/elastic/ui.js, non modifiable) :
+   * au chargement de la page, `layout_init()` cherche le panneau initialement
+   * sélectionné avec le sélecteur `#layout > div.selected`, restreint au tag
+   * `<div>`. Dans ce skin, `#layout-sidebar` et `#layout-list` sont des
+   * `<bnum-column>` : ce sélecteur ne matche donc jamais rien, et le cœur
+   * retombe sur son fallback, qui prend le premier panneau existant dans
+   * l'ordre ['sidebar', 'list', 'content'] — toujours la sidebar, même quand
+   * c'est la liste des mails qui est réellement affichée à l'écran.
+   *
+   * Cette valeur figée est capturée une seule fois par `content_frame_init()`
+   * puis réappliquée par le cœur après chaque navigation de l'iframe de
+   * contenu vers la page blanche (ex. retour depuis un mail affiché sur
+   * mobile), ce qui écrase la bonne valeur posée juste avant par
+   * `hide_content()` et affiche la liste des dossiers au lieu de la liste des
+   * mails.
+   *
+   * On resynchronise donc l'état via l'API publique `show-list` du cœur, juste
+   * après que celui-ci ait fini de traiter l'événement `load` de l'iframe.
+   */
+  $(document).ready(async () => {
+    if (rcmail.env.task !== 'mail') return;
+
+    const content_frame = document.getElementById(rcmail.env.contentframe);
+
+    if (!content_frame) return;
+
+    const helper = (await module_helper_mel.load_mel_object()).Empty();
+
+    helper.listen('actionbefore', (args) => {
+      const { action } = args;
+
+      if (!helper.isLayoutSmallOfPhone()) return;
+
+      switch (action) {
+        case 'delete':
+          rcmail.env._last_mail_action = action;
+          break;
+
+        default:
+          break;
+      }
+    });
+
+    $(content_frame).on('load', (e) => {
+      if (!helper.isLayoutSmallOfPhone()) return;
+
+      switch (rcmail.env._last_mail_action) {
+        case 'delete':
+          rcmail.env._last_mail_action = null;
+          rcmail.triggerEvent('show-content', { force: true });
+          return;
+
+        default:
+          break;
+      }
+
+      let win;
+
+      try {
+        win = e.target.contentWindow;
+      } catch (error) {
+        return;
+      }
+
+      const is_blank = win && win.location.href.endsWith(rcmail.env.blankpage);
+
+      if (!is_blank) {
+        return;
+      }
+
+      rcmail.triggerEvent('show-list', { force: true });
+    });
+  });
+}

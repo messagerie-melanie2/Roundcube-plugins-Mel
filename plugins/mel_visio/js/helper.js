@@ -187,11 +187,6 @@ class BnumVisio extends MelObject {
     if (pass) config._pass = pass;
     if (extra) config._need_config = extra === 'need_config';
 
-    // FramesManager.Instance.start_mode(
-    //   'visio',
-    //   !key || config._need_config ? null : 'visio',
-    //   config,
-    // );
     this.startVisioMode({
       page: !key || config._need_config ? null : 'visio',
       params: config,
@@ -210,19 +205,36 @@ class BnumVisio extends MelObject {
       if (window.current_visio) {
         const _window = top ?? parent ?? window;
         const $html = _window.$('html');
-  
+
         if (!$html.hasClass('fullscreen-visio')) {
           // Visio minimisée → on la remet en plein écran
           FramesManager.Instance.switch_frame('webconf', {});
           $html.addClass('fullscreen-visio').removeClass('visio-minimised');
-          
-          _window.$('#visio-back-button')
+
+          _window
+            .$('#visio-back-button')
             .attr('title', 'Minimiser la visioconférence')
-            .find('bnum-icon').text('fullscreen_exit');
+            .find('bnum-icon, old-bnum-icon')
+            .text('fullscreen_exit');
         }
         // déjà en plein écran : on ne fait rien
         return;
       }
+      /*
+        Le gestionnaire de frames refuse d'ouvrir une fenêtre tant que `rcmail.busy`
+        est vrai (cf. FrameManager.switch_frame). C'est le cas lorsque la visio est
+        démarrée depuis le chargement de la frame `webconf` elle même - rechargement
+        de la page alors que `_key` est dans l'url, cf. `js/caller.js` - car cette
+        frame est encore en cours d'ouverture pour le gestionnaire.
+        On attend donc qu'il soit libre, sinon la visio ne se lancerait jamais.
+      */
+      {
+        const _top = top ?? window;
+
+        if (_top.rcmail?.busy)
+          await this.wait_something(() => !_top.rcmail.busy, { timeout: 30 });
+      }
+
       params._page = page || 'init';
       FramesManager.Instance.close_except_selected()
         .disable_manual_multiframe()
@@ -243,6 +255,9 @@ class BnumVisio extends MelObject {
 
   stopVisio() {
     FramesManager.Instance.enable_manual_multiframe().stop_custom_multi_frame();
+    window.current_visio = null;
+
+    if (top) top.current_visio = null;
     return this;
   }
 

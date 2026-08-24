@@ -1,20 +1,30 @@
+import { VisioManager } from '../../../mel_metapage/js/lib/calendar/event/parts/location_part.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
-import { VisioRooms } from './program/visio_rooms.js';
+import { VisioByDinumLocation } from './program/VisioByDinumLocation.js';
 
 export class VisioByDinum extends MelObject {
-  #_rooms;
-
   constructor() {
     super();
-    this.#_rooms = new VisioRooms();
+    this.#_init();
   }
 
-  /**
-   * Accès à la classe de gestion des salles de visioconférence.
-   * @returns {VisioRooms}
-   */
-  get rooms() {
-    return this.#_rooms;
+  #_init() {
+    if (!this.#_can()) return;
+    VisioManager.PrependVisioType(VisioByDinumLocation);
+  }
+
+  #_can() {
+    return this.#_isCalendar() || this.#_isFromCreateButton();
+  }
+
+  #_isCalendar() {
+    return this.get_env('task') === 'calendar';
+  }
+  #_isFromCreateButton() {
+    return (
+      this.get_env('task') === 'mel_metapage' &&
+      this.get_env('action') === 'dialog-ui'
+    );
   }
 }
 

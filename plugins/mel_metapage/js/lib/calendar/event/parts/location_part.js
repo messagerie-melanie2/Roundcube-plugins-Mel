@@ -2,8 +2,6 @@
  * @module EventView/Parts/Location
  * @local IDestroyable
  * @local ALocationPart
- * @local VisioManager
- * @local AVisio
  * @local IntegratedVisio
  * @local AExternalLocationPart
  */
@@ -39,7 +37,13 @@ import {
   TAG_WSP_CATEGORY,
 } from './parts.constants.js';
 
-export { ALocationPart, AExternalLocationPart, IntegratedVisio };
+export {
+  ALocationPart,
+  AExternalLocationPart,
+  IntegratedVisio,
+  AVisio,
+  VisioManager,
+};
 
 MelHtml.start.constructor.prototype.foreach = function () {
   return MelHtml.start;
@@ -325,17 +329,34 @@ class VisioManager extends ALocationPart {
   constructor(location, index, categoryPart) {
     super(location, index);
 
-    if (
-      (EMPTY_STRING === location || IntegratedVisio.Has(location)) &&
-      IntegratedVisio.VisioEnabled()
-    )
-      this._current = new IntegratedVisio(location, index, categoryPart);
-    else this._current = new ExternalVisio(location, index);
+    const Type = VisioManager._resolveType(location);
+    this._current = new Type(location, index, categoryPart);
 
     this._current.onchange.push(this._on_change_action.bind(this));
     this._on_change_action();
 
     this.categoryPart = categoryPart;
+  }
+
+  /**
+   * Détermine le type de visio à utiliser pour une localisation donnée.
+   *
+   * Parcourt {@link VisioManager.TYPES} dans l'ordre et retourne le premier
+   * type actif (`Enabled()`) qui correspond (`Has(location)`), ou dont la
+   * localisation est vide (nouvel évènement). `ExternalVisio` sert de
+   * solution de repli si aucun type ne correspond.
+   * @private
+   * @static
+   * @param {string} location Localisation de l'évènement
+   * @returns {typeof AVisio}
+   */
+  static _resolveType(location) {
+    for (const Type of this.TYPES) {
+      if (!Type.Enabled()) continue;
+      if (EMPTY_STRING === location || Type.Has(location)) return Type;
+    }
+
+    return ExternalVisio;
   }
 
   /**
@@ -409,7 +430,7 @@ class VisioManager extends ALocationPart {
 
       element = null;
     } else {
-      this._current = new ([IntegratedVisio, ExternalVisio].find(
+      this._current = new (VisioManager.TYPES.find(
         (x) => x.OptionValue() === val,
       ))('', this.id, this.categoryPart).generate(
         $(`#visio-${this.id}-container`),
@@ -443,24 +464,20 @@ class VisioManager extends ALocationPart {
         id: `visio-${this.id}`,
         onchange: this._on_select_change.bind(this),
       })
-      .option({ value: IntegratedVisio.OptionValue() })
-      .attr(
-        IntegratedVisio.OptionValue() === this._current.option_value()
-          ? 'selected'
-          : 'not-selected',
-        'selected',
+      .foreach(
+        (parent_html, Type) =>
+          parent_html
+            .option({ value: Type.OptionValue() })
+            .attr(
+              Type.OptionValue() === this._current.option_value()
+                ? 'selected'
+                : 'not-selected',
+              'selected',
+            )
+            .text(`event-${Type.OptionValue()}`, Type.PluginName())
+            .end(),
+        ...VisioManager.TYPES,
       )
-      .text(`event-${IntegratedVisio.OptionValue()}`)
-      .end()
-      .option({ value: ExternalVisio.OptionValue() })
-      .attr(
-        ExternalVisio.OptionValue() === this._current.option_value()
-          ? 'selected'
-          : 'not-selected',
-        'selected',
-      )
-      .text(`event-${ExternalVisio.OptionValue()}`)
-      .end()
       .end()
       .div({ id: `visio-${this.id}-container`, class: 'visio-container mt-2' })
       .end()
@@ -472,7 +489,10 @@ class VisioManager extends ALocationPart {
     $tmp.find('select').val(this._current.option_value())[0].value =
       currentValue;
 
-    if (!IntegratedVisio.VisioEnabled()) $tmp.find('select').hide();
+    const nbEnabled = VisioManager.TYPES.filter((Type) =>
+      Type.Enabled(),
+    ).length;
+    if (nbEnabled <= 1) $tmp.find('select').hide();
 
     this._current.generate($tmp.find('.visio-container'));
 
@@ -529,7 +549,7 @@ class VisioManager extends ALocationPart {
    * @static
    */
   static Has(location) {
-    return IntegratedVisio.Has(location) || ExternalVisio.Has(location);
+    return this.TYPES.some((Type) => Type.Has(location));
   }
 
   /**
@@ -552,6 +572,27 @@ class VisioManager extends ALocationPart {
    */
   static Max() {
     return 1;
+  }
+
+  /**
+   * Ajoute un type de visioconférence, utilisable par un autre plugin.
+   *
+   * Le nouveau type est inséré juste avant `ExternalVisio`, qui doit rester
+   * la solution de repli générique testée en dernier dans {@link VisioManager.TYPES}.
+   * @param {typeof AVisio} VisioType Classe qui hérite de {@link AVisio}
+   */
+  static AddVisioType(VisioType) {
+    this.TYPES.splice(this.TYPES.length - 1, 0, VisioType);
+  }
+
+  /**
+   * Ajoute un type de visioconférence, utilisable par un autre plugin.
+   *
+   * Le nouveau type est inséré juste avant tout les autres types de visio.
+   * @param {typeof AVisio} VisioType Classe qui hérite de {@link AVisio}
+   */
+  static PrependVisioType(VisioType) {
+    this.TYPES = [VisioType, ...this.TYPES];
   }
 }
 
@@ -578,6 +619,35 @@ class AVisio extends ALocationPart {
    * @returns {Promise<void>}
    */
   async wait() {}
+
+  /**
+   * Si ce type de visio est actuellement utilisable.
+   *
+   * Permet à un type de visio (notamment fourni par un autre plugin via
+   * {@link VisioManager.AddVisioType}) de se désactiver conditionnellement
+   * (ex. plugin serveur absent, fonctionnalité désactivée).
+   * @virtual
+   * @static
+   * @returns {boolean}
+   * @default true
+   */
+  static Enabled() {
+    return true;
+  }
+
+  /**
+   * Plugin qui fournit ce type de visio.
+   *
+   * Utilisé pour résoudre la traduction du libellé de l'option du select
+   * dans le bon espace de traduction (voir `JsMelHtml#text`).
+   * @virtual
+   * @static
+   * @returns {string}
+   * @default 'mel_metapage'
+   */
+  static PluginName() {
+    return 'mel_metapage';
+  }
 }
 
 /**
@@ -1010,6 +1080,14 @@ class IntegratedVisio extends AVisio {
     return (
       !!rcmail.env.plugin_list_visio || !!parent.rcmail.env.plugin_list_visio
     );
+  }
+
+  /**
+   * @inheritdoc
+   * @override
+   */
+  static Enabled() {
+    return this.VisioEnabled();
   }
 }
 
@@ -1952,6 +2030,19 @@ export class LocationPartManager extends IDestroyable {
     this.FAKE_LOCATION_PART.push(extra);
   }
 }
+
+/**
+ * Liste ordonnée des types de visioconférence disponibles.
+ *
+ * L'ordre compte : lors de la détection automatique du type à partir d'une
+ * localisation existante ({@link VisioManager._resolveType}), le premier type
+ * dont `Enabled()` est vrai et `Has(location)` correspond est utilisé.
+ * `ExternalVisio` reste toujours le dernier élément et sert de solution de
+ * repli générique — voir {@link VisioManager.AddVisioType} pour en ajouter un.
+ * @type {Array<typeof AVisio>}
+ * @static
+ */
+VisioManager.TYPES = [IntegratedVisio, ExternalVisio];
 
 /**
  * Liste des différentes classes qui gère les différentes parties des emplacements

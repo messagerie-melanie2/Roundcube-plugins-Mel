@@ -152,6 +152,24 @@ if (window.rcmail) {
       }
     } else if (rcmail.env.task === 'mail' && rcmail.env.action === 'compose') {
       $('#compose-options select[name="_store_target"]').change();
+
+      // On bloque le drop en phase de capture
+      // Les dépôts de vrais fichiers ne sont pas concernés
+      document.addEventListener(
+        'drop',
+        function (e) {
+          debugger;
+          if (
+            e.dataTransfer &&
+            e.dataTransfer.types &&
+            Array.prototype.indexOf.call(e.dataTransfer.types, 'roundcube-uri') !== -1
+          ) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+        },
+        true,
+      );
     } else if (rcmail.env.task == 'settings') {
       // Masquer la skin mobile de l'interface de choix des skins
       if ($('#rcmfd_skinmel_larry_mobile').length) {

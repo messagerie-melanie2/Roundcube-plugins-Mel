@@ -3850,6 +3850,7 @@ function rcube_calendar_ui(settings) {
         .click(function (e) {
           data._savemode = String(this.href).replace(/.+#/, '');
 
+          
           // open event edit dialog when saving as new
           if (data._savemode == 'new') {
             event._savemode = 'new';

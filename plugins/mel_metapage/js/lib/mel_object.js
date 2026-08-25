@@ -333,6 +333,26 @@ class MelObject extends ABaseMelObject {
   }
 
   /**
+   * Vérifie si l'interface est actuellement affichée en mode tactile
+   * (téléphone) ou en petit écran.
+   *
+   * @returns {boolean} `true` si le layout est en mode téléphone ou petit écran
+   *
+   * @example
+   * if (this.isLayoutSmallOfPhone()) {
+   *   // Simplifie l'UI pour un affichage mobile
+   * }
+   */
+  isLayoutSmallOfPhone() {
+    const html = document.querySelector('html');
+
+    return (
+      html.classList.contains('layout-phone') ||
+      html.classList.contains('layout-small')
+    );
+  }
+
+  /**
    * Envoie un MelObject vide.
    * @returns {EmptyMelObject}
    * @static

@@ -165,6 +165,17 @@ export default class BridgeRc extends MelObject {
   }
 
   /**
+   * Retourne l'élément racine dans lequel rechercher les dossiers.
+   * Il s'agit du conteneur du treelist de Roundcube, ou, à défaut, du `document`
+   * si le treelist n'est pas (encore) initialisé.
+   * @returns {HTMLElement|Document} Conteneur du treelist ou `document` en repli
+   * @private
+   */
+  #_findTreelistContainer() {
+    return this.rcmail()?.treelist?.container?.[0] ?? document;
+  }
+
+  /**
    * Construit et retourne l'instance du menu contextuel de dossiers.
    * @param {Object} props - Propriétés transmises à contextmenu.init (menu_source, etc.)
    * @param {Object} [events] - Gestionnaires d'événements supplémentaires à fusionner
@@ -192,6 +203,33 @@ export default class BridgeRc extends MelObject {
               return { abort: true, result: true };
             } else if (p.command === 'mark-all-read') {
               this.rcmail().mark_all_read(sourceId);
+              return { abort: true, result: true };
+            } else if (
+              [
+                'plugin.contextmenu.collapseall',
+                'plugin.contextmenu.expandall',
+              ].includes(p.command)
+            ) {
+              // Équivalent DS de treelist.collapse_all()/expand_all() : les dossiers
+              // sont des <bnum-folder>, ils ne sont donc plus indexés par le treelist.
+              const collapsed = p.command === 'plugin.contextmenu.collapseall';
+              const container = this.#_findTreelistContainer();
+
+              for (const folder of container.querySelectorAll(
+                HTMLBnumFolder.TAG,
+              )) {
+                // Un dossier sans sous-dossier n'est ni pliable ni dépliable
+                if (!folder.querySelector(HTMLBnumFolder.TAG)) continue;
+
+                // toggle() émet `bnum-folder:toggle`, ce qui répercute l'état sur le
+                // treelist de Roundcube et sauvegarde la préférence `collapsed_folders`.
+                if (
+                  (folder.getAttribute('is-collapsed') === 'true') !==
+                  collapsed
+                )
+                  folder.toggle?.();
+              }
+
               return { abort: true, result: true };
             }
           }
@@ -234,5 +272,67 @@ export default class BridgeRc extends MelObject {
     const folderMenu = this.#_buildFolderMenu(props, events);
 
     this.#_attachFolderListeners(el, folderMenu);
+  }
+
+  /**
+   * Patch : conserve le comportement natif du sélecteur de dossier (bouton
+   * "Déplacer" de la liste des messages), puis corrige un décalage visuel du
+   * popover qui s'affiche à côté. Roundcube laisse une `transform` CSS sur ce
+   * popover après son ouverture initiale ; on attend qu'il soit référencé par
+   * le bouton (`aria-describedby`) puis on retire cette transformation une
+   * fois le rendu stabilisé. Ignoré sur écran normal ou plus grand, où ce popover
+   * fonctionne correctement.
+   *
+   * @param {Object} target - Instance Roundcube sur laquelle la méthode d'origine est appelée
+   * @param {AnyFunction} oldFn - Méthode `folder_selector` d'origine de Roundcube
+   * @param {...any} args - Arguments transmis à la méthode d'origine
+   * @returns {Promise<void>}
+   */
+  async patch_folder_selector(target, oldFn, ...args) {
+    oldFn.call(target, ...args);
+
+    if (!this.isLayoutSmallOfPhone()) return;
+
+    /**
+     * Reporte `callback` après le microtask courant, en visant le prochain
+     * repaint via `requestAnimationFrame`.
+     *
+     * @param {Function} callback
+     */
+    const addInQueue = (callback) => {
+      queueMicrotask(() => {
+        requestAnimationFrame(callback);
+      });
+    };
+
+    /**
+     * Exécute `callback` après un délai, pour laisser le popover se stabiliser
+     * avant de lui retirer sa `transform`.
+     *
+     * @param {Function} callback
+     * @param {number} [timeout=200] - Délai en millisecondes avant exécution
+     */
+    const fire = (callback, timeout = 200) => {
+      setTimeout(callback, timeout);
+    };
+
+    const element = document.querySelector('#messagelist-header a.move');
+
+    await this.wait_something(() => element.hasAttribute('aria-describedby'));
+
+    addInQueue(() => {
+      if (element.hasAttribute('aria-describedby')) {
+        const popover = document.getElementById(
+          element.getAttribute('aria-describedby'),
+        );
+
+        fire(async () => {
+          if (popover) {
+            await this.wait_something(() => !!popover.style.transform);
+            popover.style.transform = null;
+          }
+        });
+      }
+    });
   }
 }

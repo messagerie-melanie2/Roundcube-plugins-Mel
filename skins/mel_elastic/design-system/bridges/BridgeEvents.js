@@ -2,6 +2,7 @@ import { BnumLog } from '../../../../plugins/mel_metapage/js/lib/classes/bnum_lo
 import { EMPTY_STRING } from '../../../../plugins/mel_metapage/js/lib/constants/constants.js';
 import { pipe } from '../../../../plugins/mel_metapage/js/lib/helpers/pipe.js';
 import { MelObject } from '../../../../plugins/mel_metapage/js/lib/mel_object.js';
+import { BridgeNavigator } from './navigators/BridgeNavigator.js';
 
 /**
  * Singleton gérant les événements de pont entre l'UI et la logique métier.
@@ -17,6 +18,9 @@ export default class BridgeEvents extends MelObject {
     return (this.#_instance ??= new BridgeEvents());
   }
 
+  /**
+   * Construit l'instance. Ne pas appeler directement : utiliser {@link BridgeEvents.Instance}.
+   */
   constructor() {
     super();
   }
@@ -137,12 +141,26 @@ export default class BridgeEvents extends MelObject {
     else this.#_onFolderCallerFallback(e);
   }
 
+  /**
+   * Reconstruit les données manquantes de l'événement de toggle dossier
+   * (via {@link BridgeEvents#_getToggleEventDetail}) et relance le traitement.
+   * @param {CustomEvent} e - Événement de toggle incomplet (sans `caller`/`collapsed` directs)
+   * @private
+   */
   #_onFolderCallerFallback(e) {
     const detail = this.#_getToggleEventDetail(e);
 
     this.onFolderToggle({ detail });
   }
 
+  /**
+   * Recherche récursivement le détail contenant les informations de toggle (`collapsed`)
+   * en remontant la chaîne des événements imbriqués (`innerEvent`).
+   * @param {CustomEvent} e - Événement de départ
+   * @returns {Object} Détail de l'événement contenant les données du dossier
+   * @throws {Error} Si aucune donnée de dossier valide n'est trouvée
+   * @private
+   */
   #_getToggleEventDetail(e) {
     let currentEvent = e;
 
@@ -485,6 +503,7 @@ export default class BridgeEvents extends MelObject {
    */
   onMailDragEnd() {
     this.#_clearDragClasses();
+    BridgeNavigator.stopDragTimeout();
   }
 
   /**
@@ -500,8 +519,11 @@ export default class BridgeEvents extends MelObject {
     if (innerEvent.dataTransfer) innerEvent.dataTransfer.dropEffect = 'move';
 
     this.#_clearDragClasses();
+    BridgeNavigator.stopDragTimeout(target);
 
     target.classList.add('dragover');
+
+    if (target.collapsed) BridgeNavigator.initiateDragTimeout(target);
   }
 
   /**
@@ -514,6 +536,8 @@ export default class BridgeEvents extends MelObject {
     innerEvent.preventDefault();
     let data = innerEvent.dataTransfer.getData('text/plain');
 
+    BridgeNavigator.stopDragTimeout();
+
     if (!(data || false)) return;
 
     data = data.split(',').map((x) => +x);
@@ -525,6 +549,13 @@ export default class BridgeEvents extends MelObject {
     this.rcmail().move_messages(folder, null, data);
   }
 
+  /**
+   * Met à jour l'état visuel des actions et icônes de sélection des lignes du tableau de messages.
+   * @param {Function} getSelectionIcon - Fonction retournant l'icône à afficher pour une ligne sélectionnée
+   * @param {typeof HTMLElement} HTMLBnumAvatarAction - Composant action d'avatar (fournit `TAG`)
+   * @param {typeof HTMLElement} HTMLBnumButtonIcon - Composant bouton icône (fournit `TAG`)
+   * @param {Object} messageList - Liste de messages Roundcube (`rows`, `selection`)
+   */
   onMessagesSelected(
     getSelectionIcon,
     HTMLBnumAvatarAction,
@@ -556,5 +587,48 @@ export default class BridgeEvents extends MelObject {
     requestAnimationFrame(() => {
       callback();
     });
+  }
+
+  /**
+   * Sauvegarde l'UID du message courant avant l'exécution d'une commande de téléchargement.
+   * Écoutée sur le hook Roundcube `actionbefore` (déclenché pour chaque commande exécutée).
+   * Certaines actions de téléchargement font perdre le contexte du message courant
+   * (ex: ouverture d'une nouvelle fenêtre/onglet) ; l'UID est donc mis de côté ici pour
+   * être réutilisé en repli par {@link BridgeEvents#onGetSingleUid}.
+   *
+   * @param {Object} args - Détail de l'événement `actionbefore`
+   * @param {string} args.action - Nom de la commande exécutée
+   * @param {Object} [args.props] - Arguments associés à la commande
+   * @param {Event} [args.originalEvent] - Événement DOM d'origine, le cas échéant
+   */
+  onActionBeforeDownload(args) {
+    const { action } = args;
+
+    if (action !== 'download') return;
+
+    this.rcmail().env._last_uid = this.rcmail().get_single_uid();
+  }
+
+  /**
+   * Repli pour `get_single_uid()` lorsque Roundcube ne parvient pas à résoudre l'UID
+   * du message courant (ex: après une action de téléchargement ayant fait perdre ce
+   * contexte). Écoutée sur le hook Roundcube `get_single_uid`. Renvoie l'UID sauvegardé
+   * par {@link BridgeEvents#onActionBeforeDownload}, puis le supprime immédiatement
+   * (usage à usage unique).
+   *
+   * @param {Object} obj - Détail de l'événement `get_single_uid`
+   * @param {string | number | null | undefined} obj.uid - UID déjà résolu par Roundcube (env.uid ou sélection unique), s'il existe
+   * @returns {string | number | null | undefined} UID du message courant à utiliser
+   */
+  onGetSingleUid(obj) {
+    const { uid } = obj;
+
+    if (!this.isNullOrUndefined(uid)) return uid;
+
+    const _uid = this.get_env('_last_uid');
+
+    if (_uid) this.rcmail().env._last_uid = null;
+
+    return _uid;
   }
 }

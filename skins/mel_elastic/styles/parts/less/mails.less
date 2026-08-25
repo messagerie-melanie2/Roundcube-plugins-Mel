@@ -506,12 +506,33 @@ html.layout-small {
       bottom: 0;
     }
   }
+
+  .popover:not(.select-menu) {
+    transform: unset !important;
+  }
 }
 
 #searchmenu .formcontent {
   color: var(--bnum-text-primary);
 }
 
-#layout-sidebar .header {
-  --layout-sidebar-header-padding: 12px 10px 12px 16px;
+#layout-sidebar {
+  .header {
+    --layout-sidebar-header-padding: 12px 10px 12px 16px;
+  }
+  #compose-attachments #attachment-list {
+    a.filename .attachment-name,
+    a.filename .attachment-size,
+    a.button,
+    a.delete {
+      color: var(--bnum-text-primary);
+    }
+
+    a.button:hover,
+    a.button:focus,
+    a.delete:hover,
+    a.delete:focus {
+      background-color: var(--bnum-color-list-hover);
+    }
+  }
 }

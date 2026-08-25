@@ -38,9 +38,8 @@ if (window.rcmail) {
 
       // Ajout du nombre de notification non lues
       if (!notificationunread) {
-        const notificationButton = document.getElementById(
-          '#notifications-icon',
-        );
+        const notificationButton =
+          document.getElementById('notifications-icon');
 
         if (notificationButton) {
           notificationunread = document.createElement('div');
@@ -610,7 +609,11 @@ function m_mp_NotificationsShowUnread(unread) {
 
   // Afficher les non lues ou non
   if (unread) {
-    notificationunread.className = 'active';
+    try {
+      notificationunread.className = 'active';
+    } catch (error) {
+      notificationunread.classList.add('active');
+    }
     notificationunread.textContent = unread;
     notificationunread.title =
       unread === 1
@@ -619,7 +622,11 @@ function m_mp_NotificationsShowUnread(unread) {
             .get_label('mel_notification.X unread notifications')
             .replace(/%d/, unread);
   } else {
-    notificationunread.className = '';
+    try {
+      notificationunread.className = '';
+    } catch (error) {
+      notificationunread.classList.remove('active');
+    }
     notificationunread.textContent = '';
     notificationunread.title = '';
   }
@@ -713,7 +720,10 @@ function m_mp_NotificationsAppendToPanel(notifications) {
   let content = notificationspanel.querySelector('.content');
 
   // Nettoie le notifications panel pour le refresh
-  content.innerHTML = Object.keys(notifications).length > 0 ? '' : "<span class='d-flex justify-content-center'>Aucune notification</span>";
+  content.innerHTML =
+    Object.keys(notifications).length > 0
+      ? ''
+      : "<span class='d-flex justify-content-center'>Aucune notification</span>";
 
   for (const uid in notifications) {
     if (Object.hasOwnProperty.call(notifications, uid)) {
@@ -826,8 +836,7 @@ function m_mp_NotificationsAppendFilters() {
   let settings = document.createElement('span'),
     delete_all = document.createElement('span');
 
-  settings.className =
-    'material-symbols-outlined fw-300 text-center';
+  settings.className = 'material-symbols-outlined fw-300 text-center';
   settings.innerText = 'settings';
 
   delete_all.className = 'material-symbols-outlined fw-300';

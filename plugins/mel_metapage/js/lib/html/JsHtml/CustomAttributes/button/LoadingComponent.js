@@ -1,3 +1,4 @@
+import { BnumLog } from '../../../../classes/bnum_log.js';
 import { BnumHtmlIcon } from '../js_html_base_web_elements.js';
 import AHTMLComponent from '../lib/AHTMLComponent.js';
 import { HTMLWrapperElement } from '../wrapper.js';
@@ -117,6 +118,13 @@ export default class LoadingComponent extends AHTMLComponent {
     return this.#_parent.querySelector(`.${CLASS_LOADING_RECEIVER}`);
   }
 
+  #_getParentIcon() {
+    return (
+      this.#_parent?.querySelector?.('bnum-icon') ??
+      this.#_parent?.querySelector?.('old-bnum-icon')
+    );
+  }
+
   /**
    * Active l'apparance et le fonctionnement du mode "chargement"
    * @returns {this}
@@ -134,7 +142,12 @@ export default class LoadingComponent extends AHTMLComponent {
       if (this.#_parent.icon) {
         this._p_save_data('icon', this.#_parent.icon);
         this.#_parent.icon = ICON_LOADER;
-        this.#_parent.querySelector('bnum-icon').classList.add(CLASS_SPIN);
+
+        const icon = this.#_getParentIcon();
+
+        if (icon) icon.classList.add(CLASS_SPIN);
+        // eslint-disable-next-line quotes
+        else BnumLog.error('setLoadingMode', "Impossible de trouve l'icône !");
         //Spin est une classe qui fait tourner l'élément
       } else {
         //init_state est pour éviter les bugs avec `stopLoadingmode`, pour éviter qu'il considère qu'il y avait une icône avant et que l'affichage fasse n'importe quoi
@@ -180,7 +193,12 @@ export default class LoadingComponent extends AHTMLComponent {
 
       if (this.#_parent.icon && !this.getData('init_state')) {
         this.#_parent.icon = this.getData('icon');
-        this.#_parent.querySelector('bnum-icon').classList.remove(CLASS_SPIN);
+
+        const icon = this.#_getParentIcon();
+
+        if (icon) icon.classList.remove(CLASS_SPIN);
+        // eslint-disable-next-line quotes
+        else BnumLog.error('setLoadingMode', "Impossible de trouve l'icône !");
       } else {
         this.#_parent.style.width = null;
         this.#_parent.style.height = null;

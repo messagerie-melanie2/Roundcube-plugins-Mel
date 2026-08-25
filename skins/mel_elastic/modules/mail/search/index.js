@@ -295,7 +295,7 @@ export class Search extends ABaseSubModule {
    * @returns {this}
    */
   #_addListeners() {
-    const { search, searchButton } = this.#_ui;
+    const { search, searchButton, filterButton } = this.#_ui;
 
     if (!search) return this;
 
@@ -307,6 +307,8 @@ export class Search extends ABaseSubModule {
     if (searchButton) {
       this.#_bindSearchToggle(search, searchButton);
     }
+
+    filterButton.addEventListener('click', () => this.#_onButtonFilterClick());
 
     return this;
   }
@@ -413,6 +415,29 @@ export class Search extends ABaseSubModule {
    */
   #_afterList() {
     this.#_ui.search.removeAttribute('state');
+    if (!this.rcmail().env.search_request) {
+      this.#_ui.search.value = '';
+      this.#_ui.search.dispatchEvent(new Event('input'));
+    }
+  }
+
+  #_onButtonFilterClick() {
+    const currentMbox = this.get_env('mailbox');
+    let mboxUid = null;
+
+    if (currentMbox.includes('/')) mboxUid = currentMbox.split('/')[1];
+    else mboxUid = this.get_env('username');
+
+    if (typeof mceToRcId === 'function')
+      mboxUid = mceToRcId(mboxUid).toLowerCase();
+
+    for (const option of this.#_filterUi.searchFilterDummy.options) {
+      if (!option.classList.contains('labels')) continue;
+
+      if (option.classList.contains(mboxUid))
+        option.style.display = EMPTY_STRING;
+      else option.style.display = 'none';
+    }
   }
   //#endregion
   // ─── Cycle de vie statique ─────────────────────────────────────────────────

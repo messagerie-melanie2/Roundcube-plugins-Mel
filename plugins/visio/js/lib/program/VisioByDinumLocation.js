@@ -4,6 +4,7 @@ import { AVisio } from '../../../../mel_metapage/js/lib/calendar/event/parts/loc
 import { BnumMessage } from '../../../../mel_metapage/js/lib/classes/bnum_message.js';
 import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
 import { VisioRooms } from './visio_rooms.js';
+import { VisioWebconfLink } from './VisioWebconfLink.js';
 
 /**
  * Active le cache statique de room entre deux ouvertures de la dialog
@@ -29,6 +30,15 @@ export class VisioByDinumLocation extends AVisio {
    * @type {{name: string, location: string}|null}
    */
   static #_visioData = null;
+
+  constructor(location, index) {
+    super(location, index);
+    if (location) {
+      const link = new VisioWebconfLink(location);
+      const cache = { name: link.roomName, location };
+      VisioByDinumLocation.#_visioData = cache;
+    }
+  }
 
   /**
    * Construit le bouton (désactivé) affichant le nom de la room.
@@ -128,8 +138,6 @@ export class VisioByDinumLocation extends AVisio {
     $parent.append(div);
     this.btn = btn;
 
-    this.#_setSaveButtonEnabled(false);
-
     const { location: cachedLocation } = VisioByDinumLocation.#_visioData || {};
     if (ENABLE_SECURE && cachedLocation) {
       this.location = cachedLocation;
@@ -137,6 +145,7 @@ export class VisioByDinumLocation extends AVisio {
       return;
     }
 
+    this.#_setSaveButtonEnabled(false);
     this.promise = this.#_createRoom();
   }
 
@@ -181,5 +190,9 @@ export class VisioByDinumLocation extends AVisio {
    */
   static PluginName() {
     return 'visio';
+  }
+
+  static Has(location) {
+    return VisioWebconfLink.IsVisioUrl(location);
   }
 }

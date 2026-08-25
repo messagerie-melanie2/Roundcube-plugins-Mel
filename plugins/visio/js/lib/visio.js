@@ -1,6 +1,7 @@
 import { VisioManager } from '../../../mel_metapage/js/lib/calendar/event/parts/location_part.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { VisioByDinumLocation } from './program/VisioByDinumLocation.js';
+import { VisioWebconfLink } from './program/VisioWebconfLink.js';
 
 export class VisioByDinum extends MelObject {
   constructor() {
@@ -9,6 +10,19 @@ export class VisioByDinum extends MelObject {
   }
 
   #_init() {
+    this.listen('webconflink.create', (args) => {
+      const { event, created } = args;
+
+      if (created) return args;
+
+      const location = event.location;
+
+      if (VisioWebconfLink && VisioWebconfLink.IsVisioUrl(location))
+        args.created = new VisioWebconfLink(location);
+
+      return args;
+    });
+
     if (!this.#_can()) return;
     VisioManager.PrependVisioType(VisioByDinumLocation);
   }

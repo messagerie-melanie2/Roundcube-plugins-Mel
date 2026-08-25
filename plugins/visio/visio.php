@@ -38,6 +38,7 @@ class visio extends bnum_plugin
         ]);
 
         try {
+            $this->set_env('visio_gouv_base_url', $this->get_config('visio_gouv_base_url'));
             $this->include_module('visio.js');
         } catch (\Throwable $th) {
             //throw $th;

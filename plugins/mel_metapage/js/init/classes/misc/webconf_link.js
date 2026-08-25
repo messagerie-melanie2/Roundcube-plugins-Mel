@@ -37,6 +37,13 @@ class WebconfLink {
   }
 
   static create(event) {
+    const created = rcmail.triggerEvent('webconflink.create', {
+      event,
+      created: null,
+    });
+
+    if (created) return created;
+
     if (
       rcube_calendar.is_desc_frame_webconf &&
       rcube_calendar.is_desc_frame_webconf(event.location)

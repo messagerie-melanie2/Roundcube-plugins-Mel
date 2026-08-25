@@ -57,8 +57,8 @@ class visio_api extends amel_lib
         $url = $this->url . $endpoint;
 
         $response = strtoupper($method) === 'GET'
-            ? $this->fetch()->_get_url($url, null, $headers, [CURLOPT_PROXY => 'http://pfrie-std.proxy.e2.rie.gouv.fr:8080'])
-            : $this->fetch()->_custom_url($url, strtoupper($method), $body, null, $headers, [CURLOPT_PROXY => 'http://pfrie-std.proxy.e2.rie.gouv.fr:8080']);
+            ? $this->fetch()->_get_url($url, null, $headers, $this->_getProxy())
+            : $this->fetch()->_custom_url($url, strtoupper($method), $body, null, $headers, $this->_getProxy());
 
         return [
             'httpCode' => $response['httpCode'],
@@ -122,6 +122,11 @@ class visio_api extends amel_lib
         return $this->request_new_token($user_email);
     }
 
+    private function _getProxy() {
+        $proxy = $this->get_config('visio_gouv_proxy');
+        return $proxy ? [CURLOPT_PROXY => $proxy] : [];
+    }
+
     /**
      * Demande un nouveau token via le flow OAuth2 client_credentials et le
      * met en cache en session pour l'utilisateur concerné.
@@ -136,7 +141,7 @@ class visio_api extends amel_lib
             'client_secret' => $this->client_secret,
             'grant_type' => 'client_credentials',
             'scope' => $user_email,
-        ], null, ['Content-Type: application/json'], [CURLOPT_PROXY => 'http://pfrie-std.proxy.e2.rie.gouv.fr:8080']);
+        ], null, ['Content-Type: application/json'], $this->_getProxy());
 
         $content = json_decode((string) $response['content'], true);
 

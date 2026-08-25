@@ -1,0 +1,4 @@
+<?php
+$config = [];
+$config['php_dsn'] = '';
+$config['js_dsn'] = '';

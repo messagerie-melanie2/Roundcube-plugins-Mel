@@ -793,7 +793,7 @@ class mtes_driver_mel extends mce_driver_mel
           $rcmail = rcmail::get_instance();
 
           $bodymail = new MailBody('mel.email_external_welcome', [
-            'user.url'              => $this->url('public/welcome/?_h=' . base64_encode(serialize($hash))),
+            'user.url'              => $this->url('public/welcome/?_h=' . base64_encode(json_encode($hash))),
             'user.name'             => driver_mel::gi()->getUser()->name,
             'user.email'            => driver_mel::gi()->getUser()->email,
             'wsp.url'               => $rcmail->url(['task' => 'workspace', 'action' => 'workspace', '_uid' => $workspace->uid], true, true),

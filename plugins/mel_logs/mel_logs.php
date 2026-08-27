@@ -43,6 +43,14 @@ class mel_logs extends rcube_plugin
 	 */
 	private static $instance;
 
+	/**
+	 * Photographie de la session prise juste avant sa destruction
+	 * kill_session() vide $_SESSION avant l'appel du hook logout_after,
+	 * les informations de la session ne sont donc plus lisibles à ce moment là
+	 * @var array
+	 */
+	private static $session_context = [];
+
     /**
      * @var string
      */
@@ -85,6 +93,8 @@ class mel_logs extends rcube_plugin
 		$this->add_hook('login_after', array($this, 'login_after'));
 		$this->add_hook('login_failed', array($this, 'login_failed'));
 		$this->add_hook('message_sent', array($this, 'message_sent'));
+		$this->add_hook('session_destroy', array($this, 'session_destroy'));
+		$this->add_hook('logout_after', array($this, 'logout_after'));
 
 		$this->logOnInit();
 	}
@@ -154,7 +164,40 @@ class mel_logs extends rcube_plugin
 			$this->log(self::INFO, "[login] Connexion directe BALP <".rcmail::get_instance()->get_user_name()."> [" . driver_mel::gi()->getUser()->type . "]");
 		}
 
+		// Détail du contexte de connexion (réseau, niveau d'authentification, client, ...)
+		$this->log_login_details();
+
 	    return $args;
+	}
+
+	/**
+	 * Trace détaillée du contexte de la connexion
+	 * Complète la ligne "[login] Connexion réussie" sans la modifier
+	 */
+	private function log_login_details()
+	{
+		$rc = rcmail::get_instance();
+
+		$eidas = isset($_SESSION['eidas']) ? $_SESSION['eidas'] : '';
+		$interne = $this->_is_internal();
+		$auth_forte = $interne || in_array($eidas, ['eidas2', 'eidas3']);
+
+		$details = [
+			'reseau'      => $interne ? 'intranet' : 'internet',
+			'auth'        => isset($_SESSION['auth_type']) ? $_SESSION['auth_type'] : 'password',
+			'eidas'       => $eidas !== '' ? $eidas : 'aucun',
+			'auth_forte'  => $auth_forte ? 'oui' : 'non',
+			'2fa'         => $this->_login_2fa_state($auth_forte),
+			'cookie_2fa'  => isset($_COOKIE['roundcube_doubleauth']) ? 'oui' : 'non',
+		];
+
+		$message = "[login] Détail connexion <".$rc->get_user_name().">";
+		foreach ($details as $key => $value) {
+			$message .= " | $key=$value";
+		}
+		$message .= ' | ua="'.(isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '-').'"';
+
+		$this->log(self::INFO, $message);
 	}
 	/**
 	 * Login failed
@@ -169,6 +212,94 @@ class mel_logs extends rcube_plugin
 		$this->log(self::INFO, "[login] Echec de connexion pour l'utilisateur <".$args['user']."> Code erreur : ".$args['code'].$message);
 		return $args;
 	}
+	/**
+	 * Hook session_destroy
+	 * Appelé par kill_session() alors que la session est encore lisible
+	 * On en profite pour photographier la session, et pour tracer les fins de
+	 * session qui ne passeront pas par le hook logout_after (session expirée,
+	 * ré-authentification forcée par un plugin, ...)
+	 */
+	public function session_destroy($args)
+	{
+		$rc = rcmail::get_instance();
+
+		// Purge de session sur la page de login (nouvelle authentification) : aucune
+		// session utilisateur ne se termine ici, il ne faut ni photographier ni tracer
+		// sous peine de polluer les lignes de log de la connexion qui suit
+		if (empty($_SESSION['user_id']) || $rc->task === 'login') {
+			return $args;
+		}
+
+		self::$session_context = [
+			'user'       => $rc->get_user_name() ?: (isset($_SESSION['username']) ? $_SESSION['username'] : ''),
+			'login_time' => isset($_SESSION['login_time']) ? $_SESSION['login_time'] : null,
+			'host'       => isset($_SESSION['storage_host']) ? $_SESSION['storage_host'] : '-',
+			'eidas'      => isset($_SESSION['eidas']) ? $_SESSION['eidas'] : '',
+			'auth_type'  => isset($_SESSION['auth_type']) ? $_SESSION['auth_type'] : 'password',
+			'doubleauth' => isset($_SESSION['mel_doubleauth_2FA_login']),
+			'session'    => $this->_short_session_id(),
+		];
+
+		// Sur la tâche logout le hook logout_after prend le relais juste après,
+		// ailleurs c'est une fin de session subie (expiration, ré-authentification
+		// forcée par un plugin, ...) qui ne sera tracée que d'ici
+		if ($rc->task !== 'logout') {
+			$this->log(self::INFO, $this->_logout_message($rc->task, $rc->action));
+		}
+
+		return $args;
+	}
+
+	/**
+	 * Hook logout_after
+	 * Déconnexion explicite demandée par l'utilisateur
+	 */
+	public function logout_after($args)
+	{
+		if (!empty($args['user'])) {
+			self::$session_context['user'] = $args['user'];
+		}
+		if (!empty($args['host'])) {
+			self::$session_context['host'] = $args['host'];
+		}
+
+		$this->log(self::INFO, $this->_logout_message('explicite'));
+
+		return $args;
+	}
+
+	/**
+	 * Construit la ligne de log de déconnexion à partir de la photographie de session
+	 *
+	 * @param string $task tâche en cours (fin de session uniquement)
+	 * @param string $action action en cours (fin de session uniquement)
+	 *
+	 * @return string
+	 */
+	private function _logout_message($task = null, $action = null)
+	{
+		$ctx = self::$session_context;
+
+		$user = isset($ctx['user']) ? $ctx['user'] : '';
+		$login_time = isset($ctx['login_time']) ? $ctx['login_time'] : null;
+
+		$details = [
+			'duree'  => $login_time ? $this->_format_duration(time() - intval($login_time)) : 'inconnue',
+			'reseau' => $this->_is_internal() ? 'intranet' : 'internet',
+			'auth'   => isset($ctx['auth_type']) ? $ctx['auth_type'] : 'password',
+			'eidas'  => !empty($ctx['eidas']) ? $ctx['eidas'] : 'aucun',
+			'2fa'    => !empty($ctx['doubleauth']) ? 'validee' : 'non',
+			'host'   => isset($ctx['host']) ? $ctx['host'] : '-',
+		];
+
+		$message = "[logout] Déconnexion de l'utilisateur <$user>";
+		foreach ($details as $key => $value) {
+			$message .= " | $key=$value";
+		}
+
+		return $message;
+	}
+
 	/**
 	 * Triggered when a message is finally sent
 	 * This hook doesn't have any return values but can be used for logging or notifications.
@@ -199,7 +330,7 @@ class mel_logs extends rcube_plugin
 
 		// Fichier de log spécifique
 		$rcmail = rcmail::get_instance();
-		$username = $rcmail->get_user_name();
+		$username = $this->_current_username();
 		if (in_array($level, [self::TRACE, self::DEBUG, self::ERROR, self::INFO])
 				&& in_array($username, $rcmail->config->get('mel_logs_trace_users', []))) {
 			$this->write_log($username, $level, $message);
@@ -221,10 +352,10 @@ class mel_logs extends rcube_plugin
 	{
 		$ip = $this->_get_address_ip();
 		$procid = getmypid();
-		$username = rcmail::get_instance()->get_user_name();
+		$username = $this->_current_username();
 		$provenance = rcmail::get_instance()->config->get('provenance');
 		$courrielleur = isset($_GET['_courrielleur']) ? " {Courrielleur}" : " {Web}";
-		$doubleauth = isset($_SESSION['mel_doubleauth_2FA_login']) ? " [doubleauth]" : "";
+		$doubleauth = $this->_is_doubleauth() ? " [doubleauth]" : "";
 		rcmail::get_instance()->write_log($log_file, "[$level] $ip ($provenance)$doubleauth PROC[$procid]$courrielleur $username - $message");
 	}
 
@@ -242,6 +373,109 @@ class mel_logs extends rcube_plugin
 	}
 
 	/******** PRIVATE **********/
+	/**
+	 * Retourne l'utilisateur courant
+	 * Après kill_session() l'utilisateur n'est plus connu de rcmail, on se rabat
+	 * alors sur la photographie prise dans le hook session_destroy
+	 * @return string
+	 * @private
+	 */
+	private function _current_username()
+	{
+		$username = rcmail::get_instance()->get_user_name();
+
+		if (empty($username) && !empty(self::$session_context['user'])) {
+			$username = self::$session_context['user'];
+		}
+
+		return $username;
+	}
+
+	/**
+	 * La session courante a-t-elle valide la double authentification ?
+	 * Après kill_session() l'information n'est plus dans $_SESSION, on se rabat
+	 * sur la photographie prise dans le hook session_destroy
+	 * @return boolean
+	 * @private
+	 */
+	private function _is_doubleauth()
+	{
+		if (isset($_SESSION['mel_doubleauth_2FA_login'])) {
+			return true;
+		}
+
+		return empty(rcmail::get_instance()->get_user_name()) && !empty(self::$session_context['doubleauth']);
+	}
+
+	/**
+	 * Connexion depuis le réseau interne ?
+	 * Copie locale du test de mel::is_internal() : mel_logs est chargé très tôt
+	 * et ne doit pas dépendre du plugin mel
+	 * @return boolean
+	 * @private
+	 */
+	private function _is_internal()
+	{
+		if (isset($_GET['internet'])) {
+			return false;
+		}
+
+		return (bool) rcmail::get_instance()->config->get('is_internal', false);
+	}
+
+	/**
+	 * État de la double authentification au moment de la connexion
+	 * @param boolean $auth_forte
+	 * @return string
+	 * @private
+	 */
+	private function _login_2fa_state($auth_forte)
+	{
+		if (isset($_SESSION['mel_doubleauth_2FA_login'])) {
+			return 'validee';
+		}
+
+		return $auth_forte ? 'non_requise' : 'en_attente';
+	}
+
+	/**
+	 * Identifiant court de session, permet de corréler les lignes de log
+	 * @return string
+	 * @private
+	 */
+	private function _short_session_id()
+	{
+		$id = session_id();
+
+		return empty($id) ? '-' : substr($id, 0, 8);
+	}
+
+	/**
+	 * Formatte une durée en secondes
+	 * @param int $seconds
+	 * @return string
+	 * @private
+	 */
+	private function _format_duration($seconds)
+	{
+		if ($seconds < 0) {
+			return 'inconnue';
+		}
+
+		$hours = intdiv($seconds, 3600);
+		$minutes = intdiv($seconds % 3600, 60);
+		$seconds = $seconds % 60;
+
+		if ($hours) {
+			return sprintf('%dh%02dm%02ds', $hours, $minutes, $seconds);
+		}
+		if ($minutes) {
+			return sprintf('%dm%02ds', $minutes, $seconds);
+		}
+
+		return $seconds . 's';
+	}
+
 	/**
 	 * Retourne l'adresse ip
 	 * @return string

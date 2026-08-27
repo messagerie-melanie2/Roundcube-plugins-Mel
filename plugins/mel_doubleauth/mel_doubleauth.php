@@ -61,6 +61,8 @@ class mel_doubleauth extends bnum_plugin
             // Si on est internal on considère qu'on s'est connecté avec la double auth (en cas de changement de VPN)
             $_SESSION['mel_doubleauth_login'] = time();
             $_SESSION['mel_doubleauth_2FA_login'] = time();
+            // La double authentification est court-circuitée, on trace quand même l'orientation
+            $this->add_hook('login_after', [$this, 'log_login_destination_internal']);
         }
 
         $this->add_texts('localization/', true);
@@ -112,7 +114,10 @@ class mel_doubleauth extends bnum_plugin
     public function login_after($args)
     {
         //mel_logs::get_instance()->log(mel_logs::DEBUG, "doubleauth_login_after");
-        if ($this->is_auth_strong()) return $args;
+        if ($this->is_auth_strong()) {
+            $this->__logLoginDestination('bnum', self::date_grace_enabled() ? 'delai_de_grace' : 'auth_forte');
+            return $args;
+        }
 
         $_SESSION['mel_doubleauth_login'] = time();
 
@@ -140,6 +145,8 @@ class mel_doubleauth extends bnum_plugin
                             // envoi des données au webservice pour sauvegarde en base
                             $this->__modifyCookie($info_doubleauth[0], $info_doubleauth[1], intval($expiration), "roundcube");
 
+                            $this->__logLoginDestination('bnum', 'cookie_2fa_valide');
+
                             if (isset($url) && $url !== '') $this->__goingToUrl($url);
                             else $this->__goingRoundcubeTask($this->rc->config->get('default_task', 'mail'));
                         } else {
@@ -166,10 +173,14 @@ class mel_doubleauth extends bnum_plugin
 
         if (!$config_2FA['activate']) {
             if ($this->rc->config->get('force_enrollment_users')) {
+                $this->__logLoginDestination('enrolement_2fa', 'enrolement_force');
                 $this->__goingRoundcubeTask('settings', 'plugin.mel_doubleauth');
             }
+            $this->__logLoginDestination('bnum', '2fa_inactive');
             return $args;
         }
+
+        $this->__logLoginDestination('page_2fa', '2fa_active');
 
         $this->rc->output->set_pagetitle($this->gettext('mel_doubleauth'));
 
@@ -182,6 +193,40 @@ class mel_doubleauth extends bnum_plugin
         $this->rc->output->set_env("_url", $url);
 
         $this->rc->output->send('login');
+    }
+
+    /**
+     * Hook login_after déclenché uniquement sur les connexions intranet
+     * La double authentification y est court-circuitée : il n'y a rien à faire,
+     * on trace juste l'orientation de l'utilisateur
+     *
+     * @param array $args
+     */
+    public function log_login_destination_internal($args)
+    {
+        $this->__logLoginDestination('bnum', 'intranet');
+
+        return $args;
+    }
+
+    /**
+     * Trace où l'utilisateur est envoyé juste après une connexion réussie
+     *
+     * Cette information n'est pas observable depuis mel_logs : elle est décidée ici,
+     * et chaque branche se termine par un exit (redirection ou envoi de la page).
+     * Complète les lignes de mel_logs sans les modifier.
+     *
+     * @param string $destination bnum|page_2fa|enrolement_2fa|deconnexion
+     * @param string $motif raison de cette orientation
+     */
+    private function __logLoginDestination($destination, $motif)
+    {
+        $url = rcube_utils::get_input_value('_url', rcube_utils::INPUT_GPC);
+
+        mel_logs::get_instance()->log(mel_logs::INFO,
+            "[login] Orientation après connexion <" . $this->rc->get_user_name() . ">"
+                . " | destination=" . $destination
+                . " | motif=" . $motif);
     }
 
     private function login_after_check_deadline($config_2FA, $user = null)
@@ -200,10 +245,12 @@ class mel_doubleauth extends bnum_plugin
                 !$config_2FA['activate'] &&
                 (!$deadline || new DateTime() > $deadline)
             ) {
+                $this->__logLoginDestination('deconnexion', '2fa_obligatoire_hors_delai');
                 $this->__exitSession($this->gettext('logout_2fa_needed_not_secure'));
                 $return = false;
             }
         } else {
+            $this->__logLoginDestination('deconnexion', 'utilisateur_inconnu');
             $this->__exitSession($this->gettext('logout_2fa_needed_unknown'));
             $return = false;
         }

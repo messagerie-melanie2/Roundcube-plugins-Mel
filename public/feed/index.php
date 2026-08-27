@@ -73,7 +73,7 @@ if (isset($keyhash)) {
   $value = $user->getCalendarPreference("calendarskeyhash");
 
   if (isset($value)) {
-    $value = unserialize($value);
+    $value = unserialize($value, ['allowed_classes' => false]);
     if (!isset($value[$calendar_name]) || $value[$calendar_name] != $keyhash) {
       $keyhash = null;
     }

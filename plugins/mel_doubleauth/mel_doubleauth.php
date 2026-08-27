@@ -126,7 +126,7 @@ class mel_doubleauth extends bnum_plugin
 
         if (isset($_COOKIE['roundcube_login'])) {
             // Vérifier la présence du cookies
-            if (isset($_COOKIE['roundcube_doubleauth'])) {
+            if (false && isset($_COOKIE['roundcube_doubleauth'])) {
                 $info_doubleauth = explode('###', $_COOKIE['roundcube_doubleauth']);
                 if (count($info_doubleauth) == 4) {
                     // test d'expiration cookies

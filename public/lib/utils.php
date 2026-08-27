@@ -630,7 +630,7 @@ class utils
       $value = $user->getCalendarPreference("appointmentkeyhash");
 
       if (isset($value)) {
-        $value = unserialize($value);
+        $value = unserialize($value, ['allowed_classes' => false]);
         if (!isset($value[$calendar_name]) || $value[$calendar_name] != $keyhash) {
           $keyhash = null;
         }

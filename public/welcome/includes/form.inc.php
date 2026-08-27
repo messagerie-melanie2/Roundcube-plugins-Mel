@@ -8,16 +8,16 @@
 
             <div class="form-group">
                 <div class="controls">
-                    <input type="email" name="_email" id="email" value="<?= $user->email; ?>" readonly>
-                    <input type="hidden" name="_h" id="hash" value="<?= $hash; ?>">
+                    <input type="email" name="_email" id="email" value="<?= htmlspecialchars($user->email, ENT_QUOTES); ?>" readonly>
+                    <input type="hidden" name="_h" id="hash" value="<?= htmlspecialchars($hash, ENT_QUOTES); ?>">
                     <label for="email" class="active">E-mail</label>
                 </div>
                 <div class="controls">
-                    <input type="text" name="_firstname" id="firstname" class="floatLabel" value="<?= $user->firstname; ?>" required>
+                    <input type="text" name="_firstname" id="firstname" class="floatLabel" value="<?= htmlspecialchars($user->firstname, ENT_QUOTES); ?>" required>
                     <label for="firstname" class="<?= empty($user->firstname) ?: 'active'; ?>">Prénom</label>
                 </div>
                 <div class="controls">
-                    <input type="text" name="_lastname" id="lastname" class="floatLabel" value="<?= $user->lastname; ?>" required>
+                    <input type="text" name="_lastname" id="lastname" class="floatLabel" value="<?= htmlspecialchars($user->lastname, ENT_QUOTES); ?>" required>
                     <label for="lastname" class="<?= empty($user->lastname) ?: 'active'; ?>">Nom</label>
                 </div>
                 <div class="controls">

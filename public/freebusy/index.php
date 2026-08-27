@@ -70,9 +70,10 @@ if (!isset($end)) {
   $end = $start + (2 * $config['nb_days'] * 24 * 60 * 60);
 }
 if (isset($email)
-    && !isset($uid)) {
+    && !isset($uid)
+    && utils::check_email($email, false)) {
   // Récupération de l'utilisateur depuis le serveur LDAP
-  $infos = \LibMelanie\Ldap\Ldap::GetUserInfosFromEmail($email);
+  $infos = \LibMelanie\Ldap\Ldap::GetUserInfosFromEmail(utils::escape_ldap_filter($email));
   if (isset($infos)) {
     $uid = $infos['uid'][0];
   }

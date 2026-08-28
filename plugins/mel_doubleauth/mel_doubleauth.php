@@ -54,6 +54,13 @@ class mel_doubleauth extends bnum_plugin
         if (!$this->is_internal()) { // Connexion intranet => pas de double auth
             $this->add_hook('login_after', [$this,'login_after']);
             $this->add_hook('logout_after', array($this, 'logout_after'));
+            // __exitSession() détruit désormais la session côté serveur avant la redirection
+            // (cf. sa docblock) : au moment où le client suit cette redirection vers
+            // ?_task=logout, $_SESSION['user_id'] n'existe plus, donc le cœur de Roundcube
+            // ne déclenche pas 'logout_after' et affiche directement la page de connexion via
+            // le hook 'unauthenticated'. Sans ce hook supplémentaire, le message
+            // (_logout_msg, toujours présent dans l'URL) ne serait jamais affiché.
+            $this->add_hook('unauthenticated', array($this, 'logout_after'));
             $this->add_hook('send_page', array($this, 'check_2FAlogin'));
             $this->add_hook('render_page', array($this, 'popup_msg_enrollment'));
             $this->add_hook('once_per_day', [$this,'hook_oncePerDay']);

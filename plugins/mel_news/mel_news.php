@@ -1,6 +1,8 @@
 <?php
 class mel_news extends rcube_plugin {
   private const RSS_ENABLED = false;
+  private const WRITE_ENABLED = false;
+  private const READ_ENABLED = false;
 
   /**
    *
@@ -155,7 +157,6 @@ class mel_news extends rcube_plugin {
 
   function check_user()
   {
-    $user;
     $val = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_GPC);
     if (strpos($val, "@") !== false) $user = driver_mel::gi()->getUser(null, true, false, null, $val);
     else  $user = driver_mel::gi()->getUser($val);
@@ -916,6 +917,12 @@ class mel_news extends rcube_plugin {
 
   public function get_rss_data()
   {
+    if (!self::RSS_ENABLED)
+    {
+      header('HTTP/1.0 404 Not Found');
+      exit;
+    }
+
     $fileName = rcube_utils::get_input_value("_file", rcube_utils::INPUT_GPC);
     $url = rcube_utils::get_input_value("_url", rcube_utils::INPUT_GPC);
 
@@ -1040,6 +1047,8 @@ class mel_news extends rcube_plugin {
 
   private function write_to_file($fileName, $text)
   {
+    if (!self::WRITE_ENABLED) return;
+
     $folderPath = $this->rc->config->get('folder_path', 'files');
     $path = "$folderPath/$fileName";
 
@@ -1075,6 +1084,8 @@ class mel_news extends rcube_plugin {
 
   private function get_from_file($fileName, $check = true)
   {
+    if (!self::READ_ENABLED) return false;
+
     $folderPath = $this->rc->config->get('folder_path', 'files');
     $cacheTime = $this->rc->config->get('time_cache', 60) * 60;
 

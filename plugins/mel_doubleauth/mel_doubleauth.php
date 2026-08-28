@@ -849,22 +849,74 @@ class mel_doubleauth extends bnum_plugin
 
     /**
      * Destruction de la session de l'utilisateur (via Logout)
-     * 
+     *
+     * ATTENTION : la redirection émise en fin de méthode n'est qu'une instruction
+     * donnée au client, qui reste libre de l'ignorer. Toute la destruction doit
+     * donc être faite ici, côté serveur, AVANT le exit : sans quoi un client qui
+     * ne suit pas la redirection conserve une session pleinement authentifiée.
+     *
      * @param string $message
+     * @param bool $da_logout_message
      */
     private function __exitSession($message = null, $da_logout_message = true)
     {
-        unset($_SESSION['mel_doubleauth_login']);
-        unset($_SESSION['mel_doubleauth_2FA_login']);
+        // Tracé ici explicitement : le hook session_destroy de mel_logs s'inhibe
+        // sur la tâche login, or __exitSession() est appelé depuis login_after.
+        // Sans cette ligne la destruction resterait invisible dans les logs.
+        mel_logs::get_instance()->log(mel_logs::INFO,
+            "[logout] Destruction de session (rejet 2FA) <" . $this->rc->get_user_name() . ">");
+
+        $this->__destroySession();
+
+        $params = ['_task' => 'logout'];
 
         if (isset($message)) {
-            header('Location: ?_task=logout&_logout_msg=' . $message . '&_da_logout_message='.$da_logout_message.'&_token=' . $this->rc->get_request_token());
-        } else {
-            header('Location: ?_task=logout&_token=' . $this->rc->get_request_token());
+            $params['_logout_msg'] = $message;
+            $params['_da_logout_message'] = $da_logout_message ? 1 : 0;
         }
 
+        // Le jeton de requête n'est volontairement plus transmis : il est lu dans
+        // $_SESSION, qui n'existe plus. La tâche logout sur une session anonyme
+        // renvoie de toute façon vers la page de connexion.
 
+        // Une requête AJAX ne fait rien d'exploitable d'une redirection HTTP nue :
+        // le client JS de Roundcube attend une commande, on la lui envoie.
+        if (is_object($this->rc->output) && $this->rc->output->type == 'js') {
+            $this->rc->output->redirect($params);
+            exit;
+        }
+
+        header('Location: ?' . http_build_query($params));
         exit;
+    }
+
+    /**
+     * Destruction effective et immédiate de la session, côté serveur
+     *
+     * kill_session() ne suffit pas à lui seul avec session_storage = php :
+     * rcube_session_php::destroy() est une méthode vide, et l'effacement réel
+     * reposerait alors sur la seule réécriture de $_SESSION en fin de requête.
+     * Le pilote php n'appelant jamais register_session_handler(), c'est le
+     * gestionnaire natif de PHP qui est actif : session_destroy() supprime donc
+     * bien l'enregistrement.
+     */
+    private function __destroySession()
+    {
+        // Vide $_SESSION, réinitialise l'utilisateur, supprime le cookie
+        // d'authentification de session et déclenche le hook session_destroy.
+        $this->rc->kill_session();
+
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            // Supprime l'enregistrement portant l'identifiant que le client
+            // détient : cet identifiant ne doit plus rien désigner. La session
+            // n'étant plus active, le write_close() de fin de requête devient un
+            // no-op et plus rien n'est écrit.
+            $_SESSION = [];
+            session_destroy();
+        }
+
+        // Et le cookie de session lui-même
+        rcube_utils::setcookie(session_name(), '', time() - 3600);
     }
 
     /**

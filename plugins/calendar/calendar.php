@@ -241,6 +241,59 @@ class calendar extends rcube_plugin
     }
 
     /**
+     * PAMELLA
+     * 
+     * Récupère les différents chemins relatifs aux drivers du calendrier
+     * @param $driver_name Nom du dossier
+     * @param $driver_class Nom du fichier php et de sa classe
+     */
+    private function _getDrivers(string $driver_name, string $driver_class): array {
+        $BASE = $this->home . '/drivers';
+        return ['base' => $BASE, 
+                'calendar' => "$BASE/calendar_driver.php", 
+                'config' => "$BASE/$driver_name/$driver_class.php"];
+    }
+
+    private function _trySafeRequireDrivers(array $drivers): void {
+        if (!class_exists('mel_helper')) {
+            $loaded = include_once __DIR__."/../mel_helper/mel_helper.php";
+
+            if (!$loaded) {
+                $MESSAGE = '/!\\ Impossible de charger "mel_helper" !';
+                try {
+                    mel_logs::gi()->log(mel_logs::WARN, $MESSAGE);
+                } catch (\Throwable $th) {
+                    rcmail::get_instance()->write_log('warnings', $MESSAGE);
+                }
+                
+                if (rcmail::get_instance()->config->get('allow_unsafe_require', false) === true) {
+                    $this->_requireDriver($drivers);  
+                    return;
+                }
+                else {
+                    header('HTTP/1.0 404 Not Found');
+                    exit;
+                }
+            }   
+        }   
+
+        $this->_safeRequireDrivers($drivers);
+    }
+
+    private function _safeRequireDrivers(array $drivers): void {
+        $baseDir = $drivers['base'];
+        $calendarDriver = $drivers['calendar'];
+        $configDriver = $drivers['config'];
+        mel_helper::safe_require($baseDir, $calendarDriver);
+        mel_helper::safe_require($baseDir, $configDriver);
+    }
+
+    private function _requireDriver(array $drivers) {
+        require_once($drivers['calendar']);
+        require_once($drivers['config']);   
+    }
+
+    /**
      * Helper method to load the backend driver according to local config
      */
     private function load_driver()
@@ -252,8 +305,8 @@ class calendar extends rcube_plugin
         $driver_name = $this->rc->config->get('calendar_driver', 'database');
         $driver_class = $driver_name . '_driver';
 
-        require_once($this->home . '/drivers/calendar_driver.php');
-        require_once($this->home . '/drivers/' . $driver_name . '/' . $driver_class . '.php');
+        //PAMELA - Avoid injection
+        $this->_trySafeRequireDrivers($this->_getDrivers($driver_name, $driver_class));
 
         $this->driver = new $driver_class($this);
 

@@ -150,5 +150,5 @@ $config['kolab_invitation_calendars'] = false;
 // Set it to the prefix URL, e.g. 'https://hostname/freebusy' or just '/freebusy'.
 // See freebusy_session_auth in configuration of kolab_auth plugin.
 $config['calendar_freebusy_session_auth_url'] = null;
-
+$config['allow_unsafe_require'] = false;
 ?>

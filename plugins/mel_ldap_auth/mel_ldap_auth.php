@@ -65,6 +65,21 @@ class mel_ldap_auth extends rcube_plugin {
     if (!isset($args['pass']) || strlen($args['pass']) === 0) {
       $args['pass'] = rcube_utils::get_input_value('_pass', rcube_utils::INPUT_GPC, true, $this->rc->config->get('password_charset', 'ISO-8859-1'));
     }
+
+    // Protection contre l'injection de filtre LDAP : un identifiant légitime
+    // (uid ou adresse mail) ne contient jamais de métacaractère de filtre LDAP
+    if ($this->_contains_ldap_filter_metacharacters($args['user'])) {
+      if (mel_logs::is(mel_logs::WARN))
+        mel_logs::get_instance()->log(mel_logs::WARN, "[mel_ldap_auth] Identifiant refusé (caractères de filtre LDAP interdits) : <" . $args['user'] . ">");
+      // Suppression du cookie
+      unset($_COOKIE['roundcube_login']);
+      rcube_utils::setcookie('roundcube_login', null, -1);
+      $args['abort'] = true;
+      $args['valid'] = false;
+      $args['error'] = 49;
+      return $args;
+    }
+
     // get username and host
     $host = $args['host'];
     $user = $args['user'];
@@ -271,6 +286,23 @@ class mel_ldap_auth extends rcube_plugin {
     }
     return $args;
   }
+  /**
+   * Vérifie si l'identifiant contient un métacaractère de filtre LDAP, afin
+   * de refuser toute tentative d'injection de filtre LDAP au moment de
+   * l'authentification. S'appuie sur l'échappement de référence de
+   * rcube_ldap_generic::quote_string() (core Roundcube) : si l'échappement
+   * modifie la chaîne, elle contient un caractère dangereux pour une
+   * insertion dans un filtre LDAP.
+   *
+   * @param string $user Identifiant saisi par l'utilisateur
+   *
+   * @return boolean
+   * @private
+   */
+  private function _contains_ldap_filter_metacharacters($user) {
+    return rcube_ldap_generic::quote_string($user) !== $user;
+  }
+
   /**
    * Retourne l'adresse ip
    * @return string

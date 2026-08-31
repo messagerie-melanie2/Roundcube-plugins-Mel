@@ -1,6 +1,6 @@
 <?php
 class WspMailBody extends MailBody {
-    const PROPS = ['logobnum', 'user_name', 'user_email', 'wsp_name', 'wsp_shares_rounded', 'wsp_creator', 'wsp_last__action_text', 'wsp_last__action_date',  'url', 'bnum_base__url'];
+    const PROPS = ['logobnum', 'user_name', 'user_email', 'wsp_name', 'wsp_shares_rounded', 'wsp_creator', 'wsp_last__action_text', 'wsp_last__action_date',  'url', 'bnum_base__url', 'external_notice'];
     public function __construct($template) {
         parent::__construct($template);
     }

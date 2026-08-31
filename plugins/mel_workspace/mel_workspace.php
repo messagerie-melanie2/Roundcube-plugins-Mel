@@ -947,6 +947,10 @@ class mel_workspace extends bnum_plugin
         $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
         $workspace = self::Workspace($uid);
         if ($workspace->isAdmin()) {
+            //mantis 0009299 capture avant que la boucle delete_user ne vide les partatages
+            $title = $workspace->title();
+            $recipients = $this->_get_workspace_recipients($workspace);
+
 
             // Suppression de la catégorie pour chaque utilisateur
             if ($workspace->hasService(self::KEY_AGENDA)) {
@@ -984,6 +988,9 @@ class mel_workspace extends bnum_plugin
 
             $workspace->get()->delete();
             unset($workspace);
+
+            //mantis 009299 notification des participants
+            if($deleted) $this->_notify_workspace_deleted($title, $recipients);
         } else
             echo "denied";
         exit;
@@ -1617,6 +1624,63 @@ class mel_workspace extends bnum_plugin
             $message = $bodymail->body();
 
             $sent = \LibMelanie\Mail\Mail::Send($email, driver_mel::gi()->getUser($userid)->email, $subject, $message);
+        }
+    }
+        /**
+     * Récupère les destinataires à notifier lors de la suppression d'un espace.
+     * L'utilisateur courant, qui déclenche la suppression, est exclu.
+     *
+     * @param Workspace $workspace
+     * @return array Liste de ['email' => string, 'name' => string, 'is_external' => bool]
+     */
+    private function _get_workspace_recipients($workspace)
+    {
+        $current_uid = $this->get_user()->uid;
+
+        return $workspace->users(true)->where(function ($k, $v) use ($current_uid) {
+            return isset($v) && $v->uid !== $current_uid && !empty($v->email);
+        })->select(function ($k, $v) {
+            return ['email' => $v->email, 'name' => $v->name, 'is_external' => $v->is_external];
+        })->toArray();
+    }
+
+    /**
+     * Notifie par mail les participants de la suppression d'un espace de travail.
+     * Un échec d'envoi est journalisé sans être propagé : l'espace est déjà supprimé.
+     *
+     * @param string $title Titre de l'espace supprimé
+     * @param array $recipients Retour de _get_workspace_recipients()
+     * @return void
+     */
+    private function _notify_workspace_deleted($title, $recipients)
+    {
+        if (count($recipients) === 0) return;
+
+        try {
+            mel_helper::include_mail_body();
+            include_once 'lib/WspMailBody.php';
+
+            $current = $this->get_user();
+            $logo = MailBody::load_image(__DIR__ . '/skins/mel_elastic/pictures/logobnum.png', 'png');
+
+            foreach ($recipients as $recipient) {
+                $bodymail = new WspMailBody('mel_workspace.email_deleted');
+                $bodymail->user_name = $current->name;
+                $bodymail->user_email = $current->email;
+                $bodymail->wsp_name = $title;
+                $bodymail->logobnum = $logo;
+                $bodymail->bnum_base__url = 'http://mtes.fr/2';
+                $bodymail->external_notice = $recipient['is_external']
+                    ? $this->gettext('workspace_deleted_external_notice')
+                    : '';
+
+                \LibMelanie\Mail\Mail::Send('bnum', $recipient['email'], $bodymail->subject(), $bodymail->body());
+            }
+        } catch (\Throwable $th) {
+            mel_logs::get_instance()->log(
+                mel_logs::ERROR,
+                "###[mel_workspace->_notify_workspace_deleted] Notification impossible pour l'espace ''$title'' : " . $th->getMessage()
+            );
         }
     }
 

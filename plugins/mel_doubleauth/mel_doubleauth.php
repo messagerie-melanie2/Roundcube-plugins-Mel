@@ -37,6 +37,8 @@ class mel_doubleauth extends bnum_plugin
      */
     const EXPIRE_COOKIE = 2592000;
 
+    const COOKIE_MEMORY_ENABLED = false;
+
     /**
      * Initialisation du plugin
      *
@@ -111,6 +113,10 @@ class mel_doubleauth extends bnum_plugin
         }
     }
 
+    private function _cookieDoubleAuthEnabled() {
+        return self::COOKIE_MEMORY_ENABLED;
+    }
+
     /**
      * Hook login_after
      * Permet d'afficher la demande de double authentification en js
@@ -138,7 +144,7 @@ class mel_doubleauth extends bnum_plugin
 
         if (isset($_COOKIE['roundcube_login'])) {
             // Vérifier la présence du cookies
-            if (false && isset($_COOKIE['roundcube_doubleauth'])) {
+            if ($this->_cookieDoubleAuthEnabled() && isset($_COOKIE['roundcube_doubleauth'])) {
                 $info_doubleauth = explode('###', $_COOKIE['roundcube_doubleauth']);
                 if (count($info_doubleauth) == 4) {
                     // test d'expiration cookies

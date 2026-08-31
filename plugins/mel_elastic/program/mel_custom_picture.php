@@ -144,6 +144,8 @@ final class mel_custom_picture
      */
     private static function reencode(string $binary, int $type): string
     {
+        self::require_functions(['imagecreatefromstring', 'imagedestroy']);
+
         // `imagecreatefromstring` émet un warning au lieu de lever : on neutralise
         // le handler le temps de l'appel plutôt que d'utiliser `@`.
         set_error_handler(static function (): bool {
@@ -185,22 +187,26 @@ final class mel_custom_picture
     {
         switch ($type) {
             case IMAGETYPE_PNG:
+                self::require_functions(['imagealphablending', 'imagesavealpha', 'imagepng']);
+
                 imagealphablending($image, false);
                 imagesavealpha($image, true);
 
                 return imagepng($image);
 
             case IMAGETYPE_JPEG:
+                self::require_functions(['imagejpeg']);
+
                 return imagejpeg($image, null, 85);
 
             case IMAGETYPE_GIF:
+                self::require_functions(['imagegif']);
+
                 // GD n'écrit qu'une frame : un GIF animé est aplati.
                 return imagegif($image);
 
             case IMAGETYPE_WEBP:
-                if (!function_exists('imagewebp')) {
-                    throw new mel_custom_picture_exception('WebP non supporté par cette installation.');
-                }
+                self::require_functions(['imagealphablending', 'imagesavealpha', 'imagewebp']);
 
                 imagealphablending($image, false);
                 imagesavealpha($image, true);
@@ -209,6 +215,28 @@ final class mel_custom_picture
 
             default:
                 return false;
+        }
+    }
+
+    /**
+     * Vérifie que les fonctions GD requises existent sur cette installation.
+     *
+     * GD est une extension optionnelle : certaines fonctions (notamment
+     * `imagewebp`) peuvent être absentes même quand l'extension est chargée,
+     * selon la version de la libgd liée au build de PHP.
+     *
+     * @param array<int, string> $functions Noms des fonctions GD requises.
+     *
+     * @throws mel_custom_picture_exception Si une fonction requise est absente.
+     */
+    private static function require_functions(array $functions): void
+    {
+        foreach ($functions as $function) {
+            if (!function_exists($function)) {
+                throw new mel_custom_picture_exception(
+                    "Fonction GD indisponible sur cette installation : {$function}()."
+                );
+            }
         }
     }
 }

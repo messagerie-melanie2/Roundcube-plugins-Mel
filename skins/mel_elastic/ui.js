@@ -1212,7 +1212,18 @@ $(document).ready(() => {
       const CUSTOM_THEME_PARENT_DIV_CLASS = 'div-custom-picture px-1';
       const CUSTOM_THEME_CLASSES_PIC = 'half-resize';
       const INPUT_CLASS = 'hidden';
-      const INPUT_ACCEPT = ['.png', '.jpg', '.svg', '.gif'].join(',');
+      // Plus de SVG : script inline exécuté dans le contexte du Bnum + XXE au parsing.
+      const INPUT_ACCEPT = [
+        '.png',
+        '.jpg',
+        '.jpeg',
+        '.gif',
+        '.webp',
+        'image/png',
+        'image/jpeg',
+        'image/gif',
+        'image/webp',
+      ].join(',');
       const THEME_ATTRIB_DATA_USER_PREF_ID = 'prefid';
       const THEME_ATTRIB_DATA_PATH = 'picpath';
       const THEME_ATTRIB_DATA_ID = 'picid';
@@ -1270,52 +1281,54 @@ $(document).ready(() => {
             class: INPUT_CLASS,
             type: CONST_ATTRIB_TYPE_FILE,
             accept: INPUT_ACCEPT,
-            'data-prefid': iterator.value.userprefid,
+            // 'data-prefid': iterator.value.userprefid,
+            'data-picid': iterator.key,
           });
 
           //MAJ de l'image
           $input.onchange.push((ev) => {
             ev = $(ev.currentTarget);
-            const prefid = ev.data(THEME_ATTRIB_DATA_USER_PREF_ID);
+            const picid = ev.data('picid');
             const file = ev[0].files[0];
-            var reader = new FileReader();
-            reader.onload = (e) => {
-              const picture = e.target.result;
-              const size =
-                mel_metapage.Functions.calculateObjectSizeInMo(picture);
 
-              if (size < 2) {
-                this.update_custom_picture(picture, prefid);
-                let $selectable = ev
-                  .parent()
-                  .parent()
-                  .find(
-                    `${CONST_JQUERY_SELECTOR_CLASS}${CONST_CLASS_SELECTABLE}`,
-                  )
-                  .removeClass(THEME_DEFAULT_CLASS)
-                  .css(
-                    CONST_CSS_BACKGROUND_IMAGE,
-                    `${CONST_CSS_BACKGROUND_URL}(${picture})`,
-                  )
-                  .css(
-                    CONST_CSS_BACKGROUND_SIZE,
-                    CONST_CSS_BACKGROUND_SIZE_COVER,
-                  )
-                  .data(THEME_ATTRIB_DATA_PATH, picture)
-                  .data(THEME_ATTRIB_DATA_IS_CUSTOM, true);
+            if (!file) return;
 
-                if (
-                  $selectable.data(THEME_ATTRIB_DATA_ID) ===
-                  this.get_theme_picture()
-                ) {
-                  this.css_rules.remove(RULE_KEY);
-                  this._add_background(picture, true);
-                }
-              } else {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+              const local = e.target.result;
+
+              // Pré-filtre de confort uniquement : la limite qui compte est côté serveur.
+              if (mel_metapage.Functions.calculateObjectSizeInMo(local) >= 2) {
                 rcmail.display_message(
                   'Votre image est trop lourde !',
                   'error',
                 );
+                return;
+              }
+
+              const picture = await this.update_custom_picture(local, picid);
+
+              if (!picture) return;
+
+              const $selectable = ev
+                .parent()
+                .parent()
+                .find(`${CONST_JQUERY_SELECTOR_CLASS}${CONST_CLASS_SELECTABLE}`)
+                .removeClass(THEME_DEFAULT_CLASS)
+                .css(
+                  CONST_CSS_BACKGROUND_IMAGE,
+                  `${CONST_CSS_BACKGROUND_URL}(${picture})`,
+                )
+                .css(CONST_CSS_BACKGROUND_SIZE, CONST_CSS_BACKGROUND_SIZE_COVER)
+                .data(THEME_ATTRIB_DATA_PATH, picture)
+                .data(THEME_ATTRIB_DATA_IS_CUSTOM, true);
+
+              if (
+                $selectable.data(THEME_ATTRIB_DATA_ID) ===
+                this.get_theme_picture()
+              ) {
+                this.css_rules.remove(RULE_KEY);
+                this._add_background(picture, true);
               }
             };
             reader.readAsDataURL(file);
@@ -1496,26 +1509,60 @@ $(document).ready(() => {
       return this;
     }
 
-    async update_custom_picture(datas, pref) {
+    /**
+     * Envoie une image personnalisée et retourne la data-URI normalisée par le
+     * serveur, ou null si elle a été refusée.
+     *
+     * @param {string} datas Data-URI lue localement
+     * @param {string} picid Id de l'image à personnaliser
+     * @returns {Promise<?string>}
+     */
+    async update_custom_picture(datas, picid) {
+      let normalized = null;
+
       await mel_metapage.Functions.post(
         mel_metapage.Functions.url(
           'mel_metapage',
           'plugin.update_custom_picture',
         ),
-        {
-          _datas: datas,
-          _prefid: pref,
-        },
-        (datas) => {
-          const VALIDATION = 'ok';
-          if (VALIDATION === datas) {
+        { _datas: datas, _id: picid },
+        (response) => {
+          const parsed =
+            typeof response === 'string' ? JSON.parse(response) : response;
+
+          if (parsed?.status === 'ok') {
+            normalized = parsed.picture;
             rcmail.display_message(
               'Image chargée avec succès !',
               'confirmation',
             );
+          } else {
+            rcmail.display_message(
+              parsed?.message || "Impossible de charger l'image.",
+              'error',
+            );
           }
         },
+        (failed) => {
+          let data = null;
+
+          try {
+            data = JSON.parse(failed.responseText);
+          } catch (error) {
+            console.info(
+              'update_custom_picture',
+              'unable to parse : ',
+              failed?.responseText,
+            );
+            data = failed?.responseText || null;
+          }
+
+          if (data && data.message)
+            rcmail.display_message(data.message, 'error');
+        },
       );
+
+      return normalized;
     }
 
     async set_theme_picture(id) {

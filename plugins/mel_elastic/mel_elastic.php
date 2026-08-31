@@ -1,5 +1,6 @@
 <?php
-include_once __DIR__.'/../bnum/bnum_plugin.php';
+require_once __DIR__.'/../bnum/bnum_plugin.php';
+require_once __DIR__.'/program/mel_custom_picture.php';
 
 /**
  * Plugin Mel Elastic
@@ -494,7 +495,7 @@ class mel_elastic extends bnum_plugin
 
         // Récupère l'image de fond associée au thème actuel
         $picture = $this->rc->config->get('mel_elastic.picture.current', null);
-        if (isset($picture)) {
+        if (isset($picture) && mel_custom_picture::is_normalized($picture)) {
             // Définit l'image de fond sélectionnée dans l'environnement utilisateur
             $this->rc->output->set_env('theme_selected_picture', $picture);
         }
@@ -587,10 +588,63 @@ class mel_elastic extends bnum_plugin
      * @return void
      */
     public function update_custom_picture(){
-        $datas = rcube_utils::get_input_value('_datas', rcube_utils::INPUT_POST);
-        $pref = rcube_utils::get_input_value('_prefid', rcube_utils::INPUT_POST);
-        $this->rc->user->save_prefs(array($pref => $datas));
-        echo 'ok';
+        if (empty($this->rc->user->ID) || !$this->rc->check_request()) {
+            $this->_send_custom_picture_error('Requête invalide.', 403);
+            return;
+        }
+
+        $picture_id = (string) (rcube_utils::get_input_value('_id', rcube_utils::INPUT_POST) ?? '');
+        $pref = $this->_resolve_custom_picture_pref($picture_id);
+
+        if ($pref === null) {
+            $this->_send_custom_picture_error('Image inconnue.', 400);
+            return;
+        }
+
+        $raw = (string) (rcube_utils::get_input_value('_datas', rcube_utils::INPUT_POST) ?? '');
+
+        try {
+            $picture = mel_custom_picture::from_data_uri($raw);
+        } catch (mel_custom_picture_exception $ex) {
+            $this->_send_custom_picture_error($ex->getMessage(), 400);
+            return;
+        }
+
+        $normalized = $picture->to_data_uri();
+        $this->rc->user->save_prefs([$pref => $normalized]);
+
+        echo json_encode(['status' => 'ok', 'picture' => $normalized]);
+        exit;
+    }
+
+    /**
+     * Résout l'id de préférence associé à une image personnalisable.
+     *
+     * La liste blanche n'est pas dupliquée ici : elle est dérivée de la même
+     * source que l'env `mel_themes_pictures` envoyée au client. Un id d'image
+     * inconnu, ou une image sans `userprefid`, retourne null.
+     */
+    private function _resolve_custom_picture_pref(string $picture_id): ?string
+    {
+        if ($picture_id === '') {
+            return null;
+        }
+
+        $pictures = Background::from_path($this->skinPath.'/images/backgrounds/backgrounds.json');
+
+        if (!isset($pictures[$picture_id]['userprefid'])) {
+            return null;
+        }
+
+        $pref = (string) $pictures[$picture_id]['userprefid'];
+
+        return $pref === '' ? null : $pref;
+    }
+
+    private function _send_custom_picture_error(string $message, int $code)
+    {
+        header('HTTP/1.1 ' . $code);
+        echo json_encode(['status' => 'error', 'message' => $message]);
         exit;
     }
 

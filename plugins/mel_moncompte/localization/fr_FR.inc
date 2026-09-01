@@ -167,10 +167,10 @@ $labels['changepassword_convention_error'] = 'Le nouveau mot de passe ne respect
 $labels['changepassword_modification_error'] = 'Echec de la modification du mot de passe. ';
 $labels['changepassword_appel_error'] = 'Echec de la modification du mot de passe. ';
 $labels['error_password_confirm'] = 'Mots de passe différents';
-$labels['changepassword_infos'] = "Vous pouvez modifier ici votre mot de passe d'accès à Mél et aux applications Cerbère. Une fois ce changement effectué, pensez à mettre à jour le nouveau mot de passe sur vos appareils mobiles synchronisés avec Mél ainsi que dans les différents outils de synchronisation (MDrive, Ariane, ...).";
+$labels['changepassword_infos'] = "Vous pouvez modifier ici votre mot de passe d'accès au Bnum, à Mél et aux applications Cerbère. Une fois ce changement effectué, pensez à mettre à jour le nouveau mot de passe sur vos appareils mobiles synchronisés avec Mél.";
 $labels['changepassword_infos_bureautique'] = "Vous pouvez modifier ici votre mot de passe d'accès à Mél, aux applications Cerbère et à votre poste de travail. Une fois ce changement effectué, fermez votre session Windows et reconnectez-vous avec votre nouveau mot de passe pour retrouver votre accès aux partages réseaux. Pensez également à mettre à jour le nouveau mot de passe sur vos appareils mobiles synchronisés avec Mél ainsi que dans les différents outils de synchronisation (MDrive, Ariane, ...).";
 $labels['changepassword_explic'] = "<p>Le nouveau mot de passe doit être différent des anciens mots de passe (d'au moins 3 caractères pour le dernier) et ne pas contenir nom et prénom de l'utilisateur.
-<br>- Il doit avoir une longueur d'au moins 10 caractères, avec au moins un caractère de chaque type : majuscule, minuscule, chiffre, caractère spécial (!\"#$%&'()*+,-./:<=>?@[^]_{|}~). Les accents (â à â é è ê …) ne sont pas autorisés.
+<br>- Il doit avoir une longueur d'au moins 12 caractères, avec au moins un caractère de chaque type : majuscule, minuscule, chiffre, caractère spécial (!\"#$%&'()*+,-./:<=>?@[^]_{|}~). Les accents (â à â é è ê …) ne sont pas autorisés.
 <br>- Si vous synchronisez un téléphone avec Mél, pensez à mettre à jour le nouveau mot de passe sur les comptes du téléphone.
 </p>
 <p><b>ATTENTION - pour les agents des services MTECT/MTE (sauf DREAL Grand-Est, CGDD Orléans et DRIEE) et des DDT :</b>

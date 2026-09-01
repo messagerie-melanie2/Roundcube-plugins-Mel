@@ -57,7 +57,17 @@ class roundrive_collabora
     private function create_document($path, $name, $ext, $model)
     {
         $dir = __DIR__;
-        $doc = fopen("$dir/../files/$model.$ext", 'r');
+
+        $model = basename($model);
+        $files_dir = realpath("$dir/../files");
+        $file = realpath("$dir/../files/$model.$ext");
+
+        if ($files_dir === false || 
+            $file === false      || 
+            strpos($file, $files_dir . DIRECTORY_SEPARATOR) !== 0) return false;
+        
+        $doc = fopen($file, 'r');
+
         return $this->filesystem->putStream("$path/$name.$ext", $doc);
     }
 

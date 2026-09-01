@@ -455,7 +455,7 @@ class mel_news extends rcube_plugin {
     }
 
     $news->title = rcube_utils::get_input_value("_title", rcube_utils::INPUT_POST);
-    $news->description = rcube_utils::get_input_value("_description", rcube_utils::INPUT_POST, true);
+    $news->description = mel_helper::wash_html(rcube_utils::get_input_value("_description", rcube_utils::INPUT_POST, true));
     $news->modified = date('Y-m-d H:i:s');
     $news->service = $service;
     $news->service_name = explode('=', explode(',', $service, 2)[0])[1];

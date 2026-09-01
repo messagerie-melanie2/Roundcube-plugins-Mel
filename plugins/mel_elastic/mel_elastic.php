@@ -495,7 +495,7 @@ class mel_elastic extends bnum_plugin
 
         // Récupère l'image de fond associée au thème actuel
         $picture = $this->rc->config->get('mel_elastic.picture.current', null);
-        if (isset($picture) && mel_custom_picture::is_normalized($picture)) {
+        if (isset($picture)) {
             // Définit l'image de fond sélectionnée dans l'environnement utilisateur
             $this->rc->output->set_env('theme_selected_picture', $picture);
         }

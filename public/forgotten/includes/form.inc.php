@@ -25,7 +25,7 @@
                     <form action="." method="post">
                         <div class="form-group">
                             <div class="controls">
-                                <input type="email" name="_email" id="email" value="<?= (isset($user) ? $user->email : ""); ?>" class="floatLabel" required>
+                                <input type="email" name="_email" id="email" value="<?= htmlspecialchars(isset($user) ? $user->email : "", ENT_QUOTES); ?>" class="floatLabel" required>
                                 <label for="email">E-mail</label>
                             </div>
                             <div class="controls">

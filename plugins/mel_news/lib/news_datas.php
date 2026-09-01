@@ -149,7 +149,7 @@ class news_datas extends anews_datas
         $model = str_replace("<datacopy/>", "", $model);
         $model = str_replace("<dataformat/>", "small", $model);
         $model = str_replace("<datatype/>", $this->_service, $model);
-        $model = str_replace("<title/>", $this->title, $model);
+        $model = str_replace("<title/>", html::quote($this->title), $model);
         $model = str_replace("<headlines_other_classes/>", "", $model);
         $model = str_replace("<text/>", $this->text, $model);
         $model = str_replace("<date/>", $this->tradDate($this->date->getFullDate($plugin), $plugin), $model);

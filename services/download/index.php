@@ -177,13 +177,12 @@ function write_log($message) {
  * @return string
  */
 function get_address_ip() {
-  // REMOTE_ADDR fait toujours foi (non falsifiable côté client) ; les en-têtes
-  // client sont ajoutés en annotation uniquement, jamais substitués.
-  $ip = $_SERVER['REMOTE_ADDR'];
   if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-    $ip = "[".$_SERVER['REMOTE_ADDR']."]/[".$_SERVER['HTTP_CLIENT_IP']."]";
+    $ip = $_SERVER['HTTP_CLIENT_IP'];
   } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-    $ip = "[".$_SERVER['REMOTE_ADDR']."]/[".$_SERVER['HTTP_X_FORWARDED_FOR']."]";
+    $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+  } else {
+    $ip = $_SERVER['REMOTE_ADDR'];
   }
   return $ip;
 }

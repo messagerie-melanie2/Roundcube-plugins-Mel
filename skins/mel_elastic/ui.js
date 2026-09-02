@@ -1605,6 +1605,7 @@ $(document).ready(() => {
         .setup_nav()
         .setup_tasks()
         .setup_search()
+        .setup_autocomplete()
         .setup_other_apps()
         .setup_calendar()
         .setup_settings();
@@ -2587,6 +2588,67 @@ $(document).ready(() => {
           folders,
           save_error,
         });
+      };
+
+      return this;
+    }
+    /**
+     * 0009207 - Segmente les résultats d'autocomplétion par source
+     * @returns {Mel_Elastic} Chaînage
+     */
+    setup_autocomplete() {
+      if (window.rcmail === undefined) return this;
+
+      const GROUPS = [
+        { id: 'contacts',  label: "Mes carnets d'adresses", match: (s) => /^(sql|melanie|carnet)/i.test(s) || s.includes(rcmail.env.username)},
+        { id: 'collected', label: 'Adresses collectées',    match: (s) => /collected/i.test(s) },
+        { id: 'amande',    label: 'Annuaire',               match: (s) => /amande|ldap/i.test(s) },
+        { id: 'other',     label: 'Autres',                 match: () => true },
+      ];
+
+      const group_of = (source) => GROUPS.find((g) => g.match(String(source ?? '')));
+
+      // Regroupement des <li> après chaque réponse (compatible recherche parallèle multi-sources)
+      const alias_results = rcmail.ksearch_query_results;
+      rcmail.ksearch_query_results = function (results, search, reqid) {
+        alias_results.call(this, results, search, reqid);
+
+        if (!this.ksearch_pane || !this.ksearch_pane.__ul) return;
+
+        const ul = this.ksearch_pane.__ul;
+        $(ul).children('li.ksearch-source-header').remove();
+
+        let buckets = new Map(GROUPS.map((g) => [g.id, []]));
+
+        for (const li of $(ul).children('li').get()) {
+          const contact = this.env.contacts[li._rcm_id];
+          buckets.get(group_of(contact?.source).id).push(li);
+        }
+
+
+        for (const g of GROUPS) {
+          const nodes = buckets.get(g.id);
+          if (!nodes.length) continue;
+
+          ul.appendChild(
+            $('<li>')
+              .addClass('ksearch-source-header')
+              .attr({ role: 'presentation', 'aria-hidden': 'true' })
+              .text(g.label)[0],
+          );
+
+          for (const li of nodes) ul.appendChild(li);
+        }
+      };
+
+      // Sauter les en-têtes lors de la navigation clavier
+      const alias_select = rcmail.ksearch_select;
+      rcmail.ksearch_select = function (node) {
+        if (node && $(node).hasClass('ksearch-source-header')) {
+          const current = this.ksearch_pane ? this.ksearch_pane.find('li.selected')[0] : null;
+          node = node.nextSibling === current ? node.previousSibling : node.nextSibling;
+        }
+        alias_select.call(this, node);
       };
 
       return this;

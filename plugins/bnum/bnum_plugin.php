@@ -214,6 +214,51 @@ abstract class bnum_plugin extends rcube_plugin
     }
 
     /**
+     * Vérifie que la requête courante est un POST muni d'un jeton CSRF valide.
+     * Interrompt l'exécution (403) et journalise si ce n'est pas le cas.
+     *
+     * À appeler en tête d'une action d'écriture, notamment lorsqu'elle est
+     * multiplexée avec des actions de lecture au sein d'une même action
+     * Roundcube (donc non protégeable via {@see protect_actions()}).
+     *
+     * @return void
+     */
+    protected function assert_post_csrf() {
+        if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST' || !$this->rc()->check_request()) {
+            mel_logs::gi()->log(
+                mel_logs::ERROR,
+                "[csrf] Requête rejetée pour l'action '" . $this->get_current_action()
+                    . "' (méthode=" . ($_SERVER['REQUEST_METHOD'] ?? '?') . ")"
+            );
+            header('HTTP/1.1 403 Forbidden');
+            exit;
+        }
+    }
+
+    /**
+     * Protège une liste d'actions enregistrées : toute requête vers l'une de ces
+     * actions doit être un POST muni d'un jeton CSRF valide, sinon elle est
+     * rejetée avant le handler.
+     *
+     * À n'utiliser que si l'action Roundcube correspond à UNE SEULE opération
+     * d'écriture : si l'action multiplexe lecture (GET légitime) et écriture
+     * via un paramètre interne, protéger directement le point d'écriture avec
+     * {@see assert_post_csrf()} plutôt que l'action entière.
+     *
+     * @param array $action_names Noms d'actions (tels que passés à register_action).
+     *
+     * @return void
+     */
+    protected function protect_actions(array $action_names) {
+        $this->add_hook('ready', function ($args) use ($action_names) {
+            if (in_array($this->get_current_action(), $action_names, true)) {
+                $this->assert_post_csrf();
+            }
+            return $args;
+        });
+    }
+
+    /**
      * Vérifie si l'action en cours est l'action par défaut (index).
      *
      * @return bool

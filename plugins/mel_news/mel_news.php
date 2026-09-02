@@ -1,8 +1,5 @@
 <?php
-class mel_news extends rcube_plugin {
-  private const RSS_ENABLED = false;
-  private const WRITE_ENABLED = false;
-  private const READ_ENABLED = false;
+class mel_news extends bnum_plugin {
 
   /**
    *
@@ -20,6 +17,52 @@ class mel_news extends rcube_plugin {
 
   public const MODE_ALL = "tout";
   public const MODE_VIGNETTE = "un";
+
+  /**
+   * Indique si une fonctionnalité pilotée par configuration est activée.
+   *
+   * Ne lit la configuration que si le plugin `bnum_prefs_whitelist` est
+   * chargé : sans lui, une clé de configuration ordinaire reste
+   * surchargeable par une préférence utilisateur (`dont_override` ne la
+   * bloque pas), ce qui permettrait de contourner une désactivation admin.
+   * Tant que ce garde-fou n'est pas en place, la fonctionnalité reste
+   * verrouillée à `false`.
+   *
+   * @param string $config_key Clé de configuration à lire.
+   *
+   * @return bool
+   */
+  private function is_feature_enabled($config_key) {
+    if (!class_exists('bnum_prefs_whitelist')) return false;
+    return (bool) $this->get_config($config_key, false);
+  }
+
+  /**
+   * Indique si le flux RSS des actualités est activé.
+   *
+   * @return bool
+   */
+  private function is_rss_enabled() {
+    return $this->is_feature_enabled('mel_news_rss_enabled');
+  }
+
+  /**
+   * Indique si l'écriture d'actualités est activée.
+   *
+   * @return bool
+   */
+  private function is_write_enabled() {
+    return $this->is_feature_enabled('mel_news_write_enabled');
+  }
+
+  /**
+   * Indique si la lecture d'actualités est activée.
+   *
+   * @return bool
+   */
+  private function is_read_enabled() {
+    return $this->is_feature_enabled('mel_news_read_enabled');
+  }
 
   public const SORT_DATE_ASC = "date_asc";
   public const SORT_DATE_DESC = "date_desc";
@@ -134,7 +177,7 @@ class mel_news extends rcube_plugin {
     $this->rc->output->set_env("news_mode", $this->get_news_mode());
     $this->rc->output->set_env("news_starting_nb_rows", $this->get_starting_nb_rows());
     $this->rc->output->set_env("news_service_for_publish", self::get_user_service_list(null, $this));
-     $this->rc->output->set_env("RSS_ENABLED", self::RSS_ENABLED);
+     $this->rc->output->set_env("RSS_ENABLED", $this->is_rss_enabled());
 
     $this->rc->html_editor();
 
@@ -215,7 +258,7 @@ class mel_news extends rcube_plugin {
 
     switch ($section) {
       case 'mel_news_flux':
-        if (!self::RSS_ENABLED) break;
+        if (!$this->is_rss_enabled()) break;
 
         include_once "lib/flux_page.php";
 
@@ -404,7 +447,7 @@ class mel_news extends rcube_plugin {
       unset($list[2]);
 
 
-    if (!self::RSS_ENABLED) {
+    if (!$this->is_rss_enabled()) {
       unset($list[1]);
     }
 
@@ -917,7 +960,7 @@ class mel_news extends rcube_plugin {
 
   public function get_rss_data()
   {
-    if (!self::RSS_ENABLED)
+    if (!$this->is_rss_enabled())
     {
       header('HTTP/1.0 404 Not Found');
       exit;
@@ -1047,7 +1090,7 @@ class mel_news extends rcube_plugin {
 
   private function write_to_file($fileName, $text)
   {
-    if (!self::WRITE_ENABLED) return;
+    if (!$this->is_write_enabled()) return;
 
     $folderPath = $this->rc->config->get('folder_path', 'files');
     $path = "$folderPath/$fileName";
@@ -1084,7 +1127,7 @@ class mel_news extends rcube_plugin {
 
   private function get_from_file($fileName, $check = true)
   {
-    if (!self::READ_ENABLED) return false;
+    if (!$this->is_read_enabled()) return false;
 
     $folderPath = $this->rc->config->get('folder_path', 'files');
     $cacheTime = $this->rc->config->get('time_cache', 60) * 60;
@@ -1116,7 +1159,7 @@ class mel_news extends rcube_plugin {
     $news = [];
 
     foreach ($this->generate_dn_news($user_dn) as $raw_new) {
-      if (!self::RSS_ENABLED && anews_datas::isRss($raw_new)) continue;
+      if (!$this->is_rss_enabled() && anews_datas::isRss($raw_new)) continue;
       $news[] = anews_datas::isRss($raw_new) ? new rss_datas($raw_new) : new news_datas($raw_new);
     }
 
@@ -1134,7 +1177,7 @@ class mel_news extends rcube_plugin {
       driver_mel::gi()->getUser()->getUserNews()
     ];
 
-    if (self::RSS_ENABLED)
+    if ($this->is_rss_enabled())
       $raw_news[] = driver_mel::gi()->getUser()->getUserRss();
 
     $intra = $this->rc->config->get('intranet_list', []);
@@ -1199,7 +1242,7 @@ class mel_news extends rcube_plugin {
     $intra = $this->rc->config->get('intranet_list', []);
     foreach ($my_fluxs->generator_flux() as $value) {
 
-      if (!self::RSS_ENABLED) continue;
+      if (!$this->is_rss_enabled()) continue;
 
       if (!is_array($value["datas"]))
         continue;

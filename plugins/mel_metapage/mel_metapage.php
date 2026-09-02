@@ -281,7 +281,7 @@ class mel_metapage extends bnum_plugin
         $this->add_hook("calendar.on_attendees_notified", [$this, 'on_attendees_notified']);
         $this->add_hook('contact_photo', [$this, 'no_contact_found']);
         $this->add_hook('plugin.mel_doubleauth.init', [$this, 'hook_double_auth_init']);
-
+        
         if ($this->rc->task === 'settings' && $this->rc->action === "edit-prefs") {
             if (rcube_utils::get_input_value('_section', rcube_utils::INPUT_GPC) === 'globalsearch') $this->include_script('js/actions/settings_gs.js');
             $this->include_script('js/actions/base_settings.js');
@@ -630,7 +630,7 @@ class mel_metapage extends bnum_plugin
             $this->register_action('save_user_pref_domain', array($this, 'save_user_pref_domain'));
             $this->add_hook('refresh', array($this, 'refresh'));
             $this->add_hook("startup", array($this, "send_spied_urls"));
-            //$this->add_hook('contacts_autocomplete_after', [$this, 'contacts_autocomplete_after']);
+            $this->add_hook('contacts_autocomplete_after', [$this, 'contacts_autocomplete_after']);//Mantis 0009521
             if ($this->rc->task === 'settings' && rcube_utils::get_input_value('_open_section', rcube_utils::INPUT_GET) !== null) $this->add_hook('ready', array($this, 'open_section'));
 
             $this->rc->output->set_env("webconf.base_url", $this->rc->config->get("web_conf"));
@@ -3524,11 +3524,49 @@ class mel_metapage extends bnum_plugin
      */
     function contacts_autocomplete_after($args)
     {
-        $args['contacts'] = mel_helper::Enumerable($args['contacts'])->removeTwins(function ($k, $v) {
+        $contacts = mel_helper::Enumerable($args['contacts'])->removeTwins(function ($k, $v) {
             if (strpos($v['name'], '<') !== false) return strtolower($v['name']);
             else return $v;
-        })->toArray();
+        });
+
+        // BNUM - MANTIS 0009521: prioriser les correspondances orthographiques
+        // sur les correspondances phonétiques
+        $search = $this->_normalize_autocomplete(
+            rcube_utils::get_input_value('_search', rcube_utils::INPUT_GPC, true)
+        );
+
+        if (!empty($search)) {
+            $contacts = $contacts->orderBy(function ($k, $v) use ($search) {
+                $name = $this->_normalize_autocomplete($v['name'] ?? $v);
+
+                if (strpos($name, $search) === 0) return 0;          // commence par la saisie
+                else if (strpos($name, ' ' . $search) !== false) return 1; // un mot commence par la saisie
+                else if (strpos($name, $search) !== false) return 2; // contient la saisie
+                else return 3;                                        // phonétique uniquement
+            });
+        }
+        $args['contacts'] = $contacts->toArray();
         return $args;
+    }
+
+    /**
+     * Normalise une chaîne pour la comparaison (minuscules, sans accents).
+     * BNUM - MANTIS 0009521
+     *
+     * @param string $str
+     * @return string
+     */
+    private function _normalize_autocomplete($str)
+    {
+        $str = mb_strtolower($str ?? '');
+        return strtr($str, [
+            'à' => 'a', 'â' => 'a', 'ä' => 'a',
+            'é' => 'e', 'è' => 'e', 'ê' => 'e', 'ë' => 'e',
+            'î' => 'i', 'ï' => 'i',
+            'ô' => 'o', 'ö' => 'o',
+            'ù' => 'u', 'û' => 'u', 'ü' => 'u',
+            'ç' => 'c',
+        ]);
     }
 
     /**

@@ -115,7 +115,11 @@ class Driver {
     }
     else {
       // Récupère la liste des étiquettes
-      $value = driver_mel::gi()->getUser($username)->getPreference(self::PREF_SCOPE, self::PREF_NAME);
+      try {
+              $value = driver_mel::gi()->getUser($username)->getPreference(self::PREF_SCOPE, self::PREF_NAME);
+      } catch (\Throwable $th) {
+        return [];
+      }
       $labels = isset($value) ? $this->_m2_to_rc($value, $username) : [];
 
       if (!$this->_add_defaults_labels($username, $labels)) {

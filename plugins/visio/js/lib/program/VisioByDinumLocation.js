@@ -147,6 +147,8 @@ export class VisioByDinumLocation extends AVisio {
 
     this.#_setSaveButtonEnabled(false);
     this.promise = this.#_createRoom();
+
+    return this;
   }
 
   /**

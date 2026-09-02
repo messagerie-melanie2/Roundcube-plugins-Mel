@@ -1001,6 +1001,9 @@ class mel extends rcube_plugin
   {
     $cache = self::_InitSessionCache();
     if (isset($cache[$key]) && isset($cache[$key]['expire']) && $cache[$key]['expire'] > time()) {
+      // Pas de restriction allowed_classes : API de cache générique consommée par de nombreux
+      // appelants dont le type stocké n'est pas garanti être un array/scalaire ; à auditer avant
+      // de restreindre (cache en session uniquement, non exposé directement à une requête HTTP).
       $ret = unserialize($cache[$key]['value']);
       if ($ret !== false) {
         return $ret;

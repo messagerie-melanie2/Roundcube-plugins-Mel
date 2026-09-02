@@ -259,7 +259,7 @@ class mel_notification extends rcube_plugin
                     'created'   => $notif->created,
                     'modified'  => $notif->modified,
                     'category'  => $notif->category,
-                    'action'    => unserialize($notif->action),
+                    'action'    => unserialize($notif->action, ['allowed_classes' => false]),
                     'isread'    => $notif->isread,                    
                 ];
             }

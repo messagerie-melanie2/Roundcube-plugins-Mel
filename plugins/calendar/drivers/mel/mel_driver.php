@@ -3194,7 +3194,7 @@ class mel_driver extends calendar_driver {
     $value = driver_mel::gi()->getUser()->getCalendarPreference("calendarskeyhash");
 
     if (isset($value)) {
-      $value = unserialize($value);
+      $value = unserialize($value, ['allowed_classes' => false]);
       if (isset($value[$calendar])) {
         $result = $value[$calendar];
       }
@@ -3220,7 +3220,7 @@ class mel_driver extends calendar_driver {
     $value = driver_mel::gi()->getUser()->getCalendarPreference("calendarskeyhash");
 
     if (isset($value)) {
-      $value = unserialize($value);
+      $value = unserialize($value, ['allowed_classes' => false]);
       $value[$calendar] = $key;
     }
     else {
@@ -3240,7 +3240,7 @@ class mel_driver extends calendar_driver {
     $value = driver_mel::gi()->getUser()->getCalendarPreference("calendarskeyhash");
 
     if (isset($value)) {
-      $value = unserialize($value);
+      $value = unserialize($value, ['allowed_classes' => false]);
       if (isset($value[$calendar])) {
         unset($value[$calendar]);
         // Enregistrement de la valeur de pref
@@ -3262,7 +3262,7 @@ class mel_driver extends calendar_driver {
     $value = driver_mel::gi()->getUser()->getCalendarPreference("appointmentkeyhash");
 
     if (isset($value)) {
-      $value = unserialize($value);
+      $value = unserialize($value, ['allowed_classes' => false]);
       if (isset($value[$calendar])) {
         $result = $value[$calendar];
       }
@@ -3287,7 +3287,7 @@ class mel_driver extends calendar_driver {
     $value = driver_mel::gi()->getUser()->getCalendarPreference("appointmentkeyhash");
 
     if (isset($value)) {
-      $value = unserialize($value);
+      $value = unserialize($value, ['allowed_classes' => false]);
       $value[$calendar] = $key;
     }
     else {
@@ -3307,7 +3307,7 @@ class mel_driver extends calendar_driver {
     $value = driver_mel::gi()->getUser()->getCalendarPreference("appointmentkeyhash");
 
     if (isset($value)) {
-      $value = unserialize($value);
+      $value = unserialize($value, ['allowed_classes' => false]);
       if (isset($value[$calendar])) {
         unset($value[$calendar]);
         // Enregistrement de la valeur de pref

@@ -20,7 +20,7 @@ if (!is_internal()) {
  */
 function is_internal()
 {
-  return (!isset($_SERVER["HTTP_X_MINEQPROVENANCE"]) || strcasecmp($_SERVER["HTTP_X_MINEQPROVENANCE"], "intranet") === 0);
+  return (isset($_SERVER["HTTP_X_MINEQPROVENANCE"]) && strcasecmp($_SERVER["HTTP_X_MINEQPROVENANCE"], "intranet") === 0);
 }
 
 // Gestion des logs

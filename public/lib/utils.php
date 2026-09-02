@@ -103,6 +103,17 @@ class utils
     return false;
   }
 
+  /**
+   * Échappe une valeur pour un usage sûr dans un filtre de recherche LDAP.
+   *
+   * @param string $value Valeur à échapper
+   *
+   * @return string Valeur échappée, utilisable dans un filtre LDAP
+   */
+  public static function escape_ldap_filter($value)
+  {
+    return ldap_escape($value, '', LDAP_ESCAPE_FILTER);
+  }
 
   /**
    * Validates IPv4 or IPv6 address
@@ -630,7 +641,7 @@ class utils
       $value = $user->getCalendarPreference("appointmentkeyhash");
 
       if (isset($value)) {
-        $value = unserialize($value);
+        $value = unserialize($value, ['allowed_classes' => false]);
         if (!isset($value[$calendar_name]) || $value[$calendar_name] != $keyhash) {
           $keyhash = null;
         }

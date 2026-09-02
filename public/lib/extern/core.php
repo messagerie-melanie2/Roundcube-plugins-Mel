@@ -52,9 +52,9 @@ class Core {
             // Récupération des paramètres de la requête
             $hash = utils::get_input_value("_h", utils::INPUT_GPC);
 
-            $params = unserialize(base64_decode(urldecode($hash)));
+            $params = json_decode(base64_decode(urldecode($hash)), true);
 
-            if ($params === false) {
+            if (!is_array($params) || !isset($params['email'], $params['key'])) {
                 utils::log("Extern/Core::Process() - Invalid hash");
                 return false;
             }
@@ -63,9 +63,14 @@ class Core {
             $email = $params['email'];
             $key = $params['key'];
 
+            if (!utils::check_email($email, false)) {
+                utils::log("Extern/Core::Process() [$email] - Invalid email format");
+                return false;
+            }
+
             // Récupération de l'objet utilisateur
             $user = new LibMelanie\Api\Mel\User(\LibMelanie\Config\Ldap::$MASTER_LDAP, 'webmail.external.users');
-            $user->email = $email;
+            $user->email = utils::escape_ldap_filter($email);
 
             if (!$user->load(['uid', 'email', 'firstname', 'lastname'])) {
                 utils::log("Extern/Core::Process() [$email] - User not found");
@@ -203,9 +208,14 @@ class Core {
             // Récupération des paramètres de la requête
             $email = utils::get_input_value("_email", utils::INPUT_GPC);
 
+            if (!utils::check_email($email, false)) {
+                utils::log("Extern/Core::Reinit() [$email] - Invalid email format");
+                return false;
+            }
+
             // Récupération de l'objet utilisateur
             $user = new LibMelanie\Api\Mel\User();
-            $user->email = $email;
+            $user->email = utils::escape_ldap_filter($email);
 
             if (!$user->load(['uid', 'email'])) {
                 utils::log("Extern/Core::Reinit() [$email] - User not found");
@@ -252,7 +262,7 @@ class Core {
                 '{{bnum.base_url}}',
             ],[
                 MailBody::load_image($dir . '/plugins/mel_workspace/skins/elastic/pictures/logobnum.png', 'png'),
-                utils::url('public/reinit/?_h=' . base64_encode(serialize($hash))),
+                utils::url('public/reinit/?_h=' . base64_encode(json_encode($hash))),
                 'https://fabrique-numerique.gitbook.io/bnum/ressources/guide-des-fonctionnalites/espaces-de-travail',
                 'http://mtes.fr/2',
             ], $body);

@@ -373,7 +373,7 @@ class mel_moncompte extends rcube_plugin {
         if ($calendar->load()) {
           // Chargement des preferences de l'utilisateur
           $value = $user->getCalendarPreference('synchro_mobile');
-          $synchro_mobile = isset($value) ? unserialize($value) : [];
+          $synchro_mobile = isset($value) ? unserialize($value, ['allowed_classes' => false]) : [];
           $no_invitation = $this->rc->config->get('no_invitation_calendars', []);
 
           $default_calendar = $user->getDefaultCalendar();
@@ -505,7 +505,7 @@ class mel_moncompte extends rcube_plugin {
         if ($addressbook->load()) {
           // Chargement des preferences de l'utilisateur
           $value = $user->getAddressbookPreference('synchro_mobile');
-          $synchro_mobile = isset($value) ? unserialize($value) : [];
+          $synchro_mobile = isset($value) ? unserialize($value, ['allowed_classes' => false]) : [];
 
           $default_addressbook = $user->getDefaultAddressbook();
           $acl = ($addressbook->asRight(LibMelanie\Config\ConfigMelanie::WRITE) ? $this->gettext('read_write') : ($addressbook->asRight(LibMelanie\Config\ConfigMelanie::READ) ? $this->gettext('read_only') : ($addressbook->asRight(LibMelanie\Config\ConfigMelanie::FREEBUSY) ? $this->gettext('show') : $this->gettext('none'))));
@@ -586,7 +586,7 @@ class mel_moncompte extends rcube_plugin {
         if ($taskslist->load()) {
           // Chargement des preferences de l'utilisateur
           $value = $user->getTaskslistPreference('synchro_mobile');
-          $synchro_mobile = isset($value) ? unserialize($value) : [];
+          $synchro_mobile = isset($value) ? unserialize($value, ['allowed_classes' => false]) : [];
 
           $default_taskslist = $user->getDefaultTaskslist();
           $acl = ($taskslist->asRight(LibMelanie\Config\ConfigMelanie::WRITE) ? $this->gettext('read_write') : ($taskslist->asRight(LibMelanie\Config\ConfigMelanie::READ) ? $this->gettext('read_only') : ($taskslist->asRight(LibMelanie\Config\ConfigMelanie::FREEBUSY) ? $this->gettext('show') : $this->gettext('none'))));
@@ -878,7 +878,7 @@ class mel_moncompte extends rcube_plugin {
     $pref->name = "caldav_properties";
     $calendars_prop = [];
     if ($pref->load()) {
-      $calendars_prop = unserialize($pref->value);
+      $calendars_prop = unserialize($pref->value, ['allowed_classes' => false]);
     }
     return $calendars_prop;
   }
@@ -940,7 +940,7 @@ class mel_moncompte extends rcube_plugin {
           $value = $user->getTaskslistPreference('synchro_mobile');
         }
         if (isset($value)) {
-          $value = unserialize($value);
+          $value = unserialize($value, ['allowed_classes' => false]);
           if ($value === false) {
             $value = [];
           }
@@ -1019,7 +1019,7 @@ class mel_moncompte extends rcube_plugin {
           $value = $user->getTaskslistPreference('synchro_mobile');
         }
         if (isset($value)) {
-          $value = unserialize($value);
+          $value = unserialize($value, ['allowed_classes' => false]);
           if ($value === false) {
             $value = [];
           }

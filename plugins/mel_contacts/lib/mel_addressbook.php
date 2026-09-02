@@ -158,7 +158,7 @@ class mel_addressbook extends rcube_addressbook
                   $_group->id = $this->group_id;
                 }                
                 foreach($_group->getList(array('uid', 'addressbook', 'members')) as $group) { break; }
-                $members = unserialize($group->members);
+                $members = unserialize($group->members, ['allowed_classes' => false]);
                 if (is_array($members) && count($members) > 0) {
                     // Récupère les contacts membres du groupe
                     $_contact = driver_mel::gi()->contact([$this->user, $this->addressbook]);
@@ -320,7 +320,7 @@ class mel_addressbook extends rcube_addressbook
                 $group = $_contacts[$this->addressbook->id]['groups'][$this->group_id];
                 $count = 0;
                 if ($group !== false) {
-                    $members = unserialize($group->members);
+                    $members = unserialize($group->members, ['allowed_classes' => false]);
                     if ($members !== false) {
                         $members = array_unique($members);
                         $count = count($members);
@@ -815,7 +815,7 @@ class mel_addressbook extends rcube_addressbook
             $_group->id = $group_id;
             if (!is_array($ids)) $ids = [$ids];
             foreach($_group->getList() as $group) {
-                $members = unserialize($group->members);
+                $members = unserialize($group->members, ['allowed_classes' => false]);
                 if (!is_array($members)) $members = array();
                 $members = $this->_clean_group_members(array_unique($members));
                 $count = 0;
@@ -870,7 +870,7 @@ class mel_addressbook extends rcube_addressbook
             $_group->type = Defaut\Contact::TYPE_LIST;
             $_group->id = $group_id;
             foreach($_group->getList() as $group) {
-                $members = unserialize($group->members);
+                $members = unserialize($group->members, ['allowed_classes' => false]);
                 if (!is_array($members)) $members = array();
                 $members = $this->_clean_group_members(array_unique($members));
                 $count = 0;
@@ -948,7 +948,7 @@ class mel_addressbook extends rcube_addressbook
             $_group = driver_mel::gi()->contact([$this->user, $this->addressbook]);
             $_group->type = Defaut\Contact::TYPE_LIST;
             foreach($_group->getList() as $group) {
-                $members = unserialize($group->members);
+                $members = unserialize($group->members, ['allowed_classes' => false]);
                 if (is_array($members)
                         && in_array($id, $members)) $result[$group->id] = $group->lastname;
             }

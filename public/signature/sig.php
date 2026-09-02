@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../lib/utils.php';
+
 // *** CONFIGURATION
 // Application locale ou intégrée à Roundcube Mél ?
 define('APPLICATION_LOCALE', false);
@@ -47,8 +49,8 @@ else {
   include_once $dir . '/plugins/mel_signatures/config.inc.php';
 }
 
-if (!empty($_GET['email'])) {
-  $email = htmlspecialchars($_GET['email']);
+if (!empty($_GET['email']) && utils::check_email($_GET['email'], false)) {
+  $email = $_GET['email'];
 }
 
 $env_links = [];
@@ -276,7 +278,7 @@ if (APPLICATION_LOCALE) {
 
   // Récupération des infos utilisateur
   $user = new LibMelanie\Api\Mel\User();
-  $user->email = $email;
+  $user->email = utils::escape_ldap_filter($email);
   $userLoaded = $user->load($rcmail_config['signature_field_list']);
 }
 
@@ -390,19 +392,19 @@ if ($userLoaded) {
             <div class="grid-form">
               <div class="form-section">
                 <label for="input-nom">Nom</label>
-                <input type="text" id="input-nom" onkeyup="onInputChange();" value="<?= $name ?>" required="">
+                <input type="text" id="input-nom" onkeyup="onInputChange();" value="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" required="">
               </div>
               <div class="form-section" style="margin-top: 23px;">
                 <label for="input-fonction">Fonction / Intitulé de poste</label>
-                <input type="text" id="input-fonction" onchange="onInputChange();" onkeyup="onInputChange();" value="<?= $observation ?>" required="">
+                <input type="text" id="input-fonction" onchange="onInputChange();" onkeyup="onInputChange();" value="<?= htmlspecialchars($observation, ENT_QUOTES, 'UTF-8') ?>" required="">
               </div>
               <div class="form-section">
                 <label for="input-service">Service</label>
-                <input type="text" id="input-service" onkeyup="onInputChange();" value="<?= $service ?>">
+                <input type="text" id="input-service" onkeyup="onInputChange();" value="<?= htmlspecialchars($service, ENT_QUOTES, 'UTF-8') ?>">
               </div>
               <div class="form-section">
                 <label for="input-department">Direction / Département</label>
-                <input type="text" id="input-department" onkeyup="onInputChange();" value="<?= $direction ?>">
+                <input type="text" id="input-department" onkeyup="onInputChange();" value="<?= htmlspecialchars($direction, ENT_QUOTES, 'UTF-8') ?>">
               </div>
               <div class="form-section">
                 <label for="input-links">Choix des liens</label>
@@ -414,19 +416,19 @@ if ($userLoaded) {
               </div>
               <div class="form-section">
                 <label for="input-address">Adresse</label>
-                <input type="text" id="input-address" onkeyup="onInputChange();" value="<?= $address ?>">
+                <input type="text" id="input-address" onkeyup="onInputChange();" value="<?= htmlspecialchars($address, ENT_QUOTES, 'UTF-8') ?>">
               </div>
               <div class="form-section">
                 <label for="input-bureau">Bureau (ou pôle)</label>
-                <input type="text" id="input-bureau" onkeyup="onInputChange();" value="<?= $roomnumber ?>">
+                <input type="text" id="input-bureau" onkeyup="onInputChange();" value="<?= htmlspecialchars($roomnumber, ENT_QUOTES, 'UTF-8') ?>">
               </div>
               <div class="form-section">
                 <label for="input-fixe">Téléphone fixe</label>
-                <input type="text" id="input-fixe" onkeyup="onInputChange();" value="<?= $phonenumber ?>">
+                <input type="text" id="input-fixe" onkeyup="onInputChange();" value="<?= htmlspecialchars($phonenumber, ENT_QUOTES, 'UTF-8') ?>">
               </div>
               <div class="form-section">
                 <label for="input-mobile">Téléphone mobile</label>
-                <input type="text" id="input-mobile" onkeyup="onInputChange();" value="<?= $mobilephone ?>">
+                <input type="text" id="input-mobile" onkeyup="onInputChange();" value="<?= htmlspecialchars($mobilephone, ENT_QUOTES, 'UTF-8') ?>">
               </div>
               <div class="form-section">
                 <label for="input-logo">Choix du logo</label>
@@ -442,7 +444,7 @@ if ($userLoaded) {
               </div>
               <div class="form-section custom-logotype">
                 <label for="input-logo-type">Logo type personnalisé</label>
-                <input type="text" id="input-logo-type" onkeyup="onInputChange();" value="<?= $logotype ?>">
+                <input type="text" id="input-logo-type" onkeyup="onInputChange();" value="<?= htmlspecialchars($logotype, ENT_QUOTES, 'UTF-8') ?>">
               </div>
             </div>
           </div>

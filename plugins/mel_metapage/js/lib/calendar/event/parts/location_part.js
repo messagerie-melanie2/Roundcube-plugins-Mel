@@ -430,11 +430,9 @@ class VisioManager extends ALocationPart {
 
       element = null;
     } else {
-      this._current = new (VisioManager.TYPES.find(
-        (x) => x.OptionValue() === val,
-      ))('', this.id, this.categoryPart).generate(
-        $(`#visio-${this.id}-container`),
-      );
+      const TYPE = VisioManager.TYPES.find((x) => x.OptionValue() === val);
+      this._current = new TYPE(EMPTY_STRING, this.id, this.categoryPart);
+      this._current.generate($(`#visio-${this.id}-container`));
       this._current.onchange.push(this._on_change_action.bind(this));
     }
 

@@ -10,7 +10,7 @@ if (!is_internal()) {
  * Permet la selection de la bonne url
  */
 function is_internal() {
-    return (!isset($_SERVER["HTTP_X_MINEQPROVENANCE"]) || strcasecmp($_SERVER["HTTP_X_MINEQPROVENANCE"], "intranet") === 0);
+    return (isset($_SERVER["HTTP_X_MINEQPROVENANCE"]) && strcasecmp($_SERVER["HTTP_X_MINEQPROVENANCE"], "intranet") === 0);
 }
 
 ?>

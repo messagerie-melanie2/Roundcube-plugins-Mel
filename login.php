@@ -39,10 +39,17 @@ if (!is_internal()) {
   write_log("[ERROR] login.php Not internal, forbidden");
   echo 'You are forbidden!';
 }
+else if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+  // Les identifiants ne doivent jamais transiter en GET (journalisés en clair
+  // dans les logs d'accès et l'historique proxy).
+  header('HTTP/1.0 405 Method Not Allowed');
+  write_log("[ERROR] login.php rejected non-POST request");
+  echo 'Method not allowed';
+}
 else {
   // Récupération des paramètres
-  $username = rcube_utils::get_input_string("horde_user", rcube_utils::INPUT_GPC);
-  $password = rcube_utils::get_input_string("horde_pass", rcube_utils::INPUT_GPC);
+  $username = rcube_utils::get_input_string("horde_user", rcube_utils::INPUT_POST);
+  $password = rcube_utils::get_input_string("horde_pass", rcube_utils::INPUT_POST);
 
   // Positionner le path de la session
   // session_save_path(SESSION_PATH);
@@ -71,6 +78,11 @@ else {
     unset($_SESSION["user_uid"]);
     write_log("[ERROR] Bad login or password for '$username'");
     session_destroy();
+    // Ralentit le brute force en mémoire de requête. Ce script est autonome
+    // (pas de bootstrap rcmail) : il ne peut pas réutiliser le rate-limiting
+    // persistant du core (rcube_user::failed_login()/is_locked()), qui
+    // nécessiterait un changement d'architecture plus lourd, hors périmètre ici.
+    sleep(1);
     echo "Auth KO";
   }
 }

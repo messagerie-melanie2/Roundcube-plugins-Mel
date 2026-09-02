@@ -556,7 +556,7 @@ class mel_driver extends calendar_driver {
           // Executer la commande de synchro ?
           $command = $this->rc->config->get('calendar_external_command', '');
           if (!empty($command)) {
-            $command = str_replace('%%username%%', $this->user->uid, $command);
+            $command = str_replace('%%username%%', escapeshellarg($this->user->uid), $command);
             exec($command, $output);
           }
         }
@@ -3077,6 +3077,33 @@ class mel_driver extends calendar_driver {
   }
 
   /**
+   * Vérifie qu'une URL freebusy de contact est sûre à interroger : schéma
+   * http/https et hôte résolu vers une IP publique (ni privée, ni loopback,
+   * ni link-local) — protection contre le SSRF via une URL de contact
+   * modifiable par l'utilisateur.
+   *
+   * @param string $url URL freebusy à vérifier
+   *
+   * @return bool true si l'URL peut être interrogée
+   */
+  private function is_safe_freebusy_url($url) {
+    $parts = parse_url($url);
+    if (!isset($parts['scheme']) || !in_array(strtolower($parts['scheme']), ['http', 'https'], true)) {
+      return false;
+    }
+    if (empty($parts['host'])) {
+      return false;
+    }
+
+    $ip = filter_var($parts['host'], FILTER_VALIDATE_IP) ? $parts['host'] : gethostbyname($parts['host']);
+    if (!filter_var($ip, FILTER_VALIDATE_IP)) {
+      return false;
+    }
+
+    return filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false;
+  }
+
+  /**
    * Fetch free/busy information from a person within the given range
    */
   public function get_freebusy_list($email, $start, $end) {
@@ -3128,8 +3155,9 @@ class mel_driver extends calendar_driver {
 
           if ($result = $abook->search(array('email'), $email, true, true, true/*, 'freebusyurl'*/)) {
             while ($contact = $result->iterate()) {
-              if ($fburl = $contact['freebusyurl']) {
-                $fbdata = @file_get_contents($fburl);
+              if (($fburl = $contact['freebusyurl']) && $this->is_safe_freebusy_url($fburl)) {
+                $context = stream_context_create(['http' => ['timeout' => 5], 'https' => ['timeout' => 5]]);
+                $fbdata = @file_get_contents($fburl, false, $context);
                 break;
               }
             }

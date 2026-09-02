@@ -284,9 +284,9 @@ class mel_nextcloud extends rcube_plugin {
     }
     else if (isset($_GET['_params'])) {
       $params = rcube_utils::get_input_value('_params', rcube_utils::INPUT_GET);
-      $rcmail->output->set_env('nextcloud_gotourl', $nextcloud_url . ($params ?? ""));
+      $rcmail->output->set_env('nextcloud_gotourl', $this->build_nextcloud_url($nextcloud_url, $params));
       $rcmail->output->set_env('nextcloud_gotourl_params', $params);
-    }
+    }    
     else {
       $rcmail->output->set_env('nextcloud_gotourl', $nextcloud_url);
     }
@@ -297,6 +297,72 @@ class mel_nextcloud extends rcube_plugin {
     else
       $this->include_script('nextcloud.js');
   }
+
+  /**
+   * Construit une URL de redirection vers Nextcloud à partir d'un chemin
+   * fourni par l'utilisateur ($_GET['_params']), en s'assurant que l'URL
+   * finale reste bien sur le même schéma et le même hôte que l'URL Nextcloud
+   * de configuration (protection contre l'open redirect / la confusion
+   * d'autorité du type "https://nextcloud.example.com@evil.tld/").
+   *
+   * @param string      $base_url URL Nextcloud de configuration (fiable)
+   * @param string|null $params   Chemin/paramètres fournis par l'utilisateur
+   * @return string URL sûre à utiliser ; $base_url si $params est invalide
+   */
+  private function build_nextcloud_url($base_url, $params) {
+    $params = (string) $params;
+  
+    if ($params === '') {
+      return $base_url;
+    }
+  
+    // Rejet immédiat de tout ce qui pourrait changer de schéma/hôte :
+    // - un schéma explicite (http:, javascript:, //evil.tld, ...)
+    // - une URL "protocol-relative" (//evil.tld/...)
+    // - un caractère '@' (technique de confusion userinfo/host)
+    // - un saut de ligne/tabulation (injection d'en-tête)
+    // - des backslashes, souvent normalisés en "/" par les navigateurs
+    if (
+      preg_match('#^[a-zA-Z][a-zA-Z0-9+.\-]*:#', $params) ||
+      str_starts_with($params, '//') ||
+      strpos($params, '@') !== false ||
+      preg_match('/[\r\n\t\\\\]/', $params)
+    ) {
+      return $base_url;
+    }
+  
+    // $params doit être un chemin ou une query relative : on force un
+    // séparateur en tête pour éviter tout accolement ambigu au domaine.
+    if ($params[0] !== '/' && $params[0] !== '?') {
+      $params = '/' . $params;
+    }
+  
+    $base_parts = parse_url($base_url);
+    if ($base_parts === false || !isset($base_parts['scheme'], $base_parts['host'])) {
+      // Config invalide : on ne prend aucun risque.
+      return $base_url;
+    }
+  
+    $candidate = rtrim($base_url, '/') . $params;
+    $candidate_parts = parse_url($candidate);
+  
+    // Vérification finale : même parsé, le résultat doit pointer vers le
+    // même schéma et le même hôte que la config, et ne doit contenir aucune
+    // information d'authentification (user:pass@).
+    if (
+      $candidate_parts === false ||
+      !isset($candidate_parts['host']) ||
+      strcasecmp($candidate_parts['host'], $base_parts['host']) !== 0 ||
+      ($candidate_parts['scheme'] ?? '') !== $base_parts['scheme'] ||
+      isset($candidate_parts['user']) ||
+      isset($candidate_parts['pass'])
+    ) {
+      return $base_url;
+    }
+  
+    return $candidate;
+  }
+
   /**
    * Encrypt using 3DES
    *

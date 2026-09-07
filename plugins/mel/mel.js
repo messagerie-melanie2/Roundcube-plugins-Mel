@@ -350,8 +350,11 @@ function show_password_change() {
       .dialog({
         modal: true,
         resizable: false,
-        closeOnEscape: true,
+        closeOnEscape: !rcmail.env.passwordchange_title.endsWith('.'),
         title: rcmail.env.passwordchange_title,
+        create: function() {
+          if (rcmail.env.passwordchange_title.endsWith('.')) $(this).closest(".ui-dialog").find(".ui-dialog-titlebar-close").hide();
+        },
         close: function () {
           frame.dialog('destroy').remove();
         },

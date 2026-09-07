@@ -140,6 +140,7 @@ class mel_doubleauth extends bnum_plugin
 
         $url = rcube_utils::get_input_value('_url', rcube_utils::INPUT_GPC);
 
+        if (isset($url) && !$this->__is_safe_relative_url($url)) $url = '';
         if (isset($url) && (strpos($url, 'login') !== false || strpos($url, 'logout') !== false)) $url = '';
 
         if (isset($_COOKIE['roundcube_login'])) {
@@ -353,6 +354,7 @@ class mel_doubleauth extends bnum_plugin
                     }
                     $url = rcube_utils::get_input_value('_url', rcube_utils::INPUT_GPC);
 
+                    if (isset($url) && !$this->__is_safe_relative_url($url)) $url = '';
                     if (isset($url) && (strpos($url, 'login') !== false || strpos($url, 'logout') !== false)) $url = '';
 
                     if (isset($url) && $url !== '') $this->__goingToUrl($url);
@@ -362,7 +364,14 @@ class mel_doubleauth extends bnum_plugin
                 }
             }
             // we're into some task but marked with login...
-            else if ($this->rc->task !== 'login' && !$_SESSION['mel_doubleauth_2FA_login'] >= $_SESSION['mel_doubleauth_login']) {
+            else if (
+                $this->rc->task !== 'login'
+                && (
+                    !isset($_SESSION['mel_doubleauth_2FA_login'])
+                    || !isset($_SESSION['mel_doubleauth_login'])
+                    || $_SESSION['mel_doubleauth_2FA_login'] < $_SESSION['mel_doubleauth_login']
+                )
+            ) {
                 $this->__exitSession();
             }
         }
@@ -854,10 +863,30 @@ class mel_doubleauth extends bnum_plugin
     {
         $_SESSION['mel_doubleauth_2FA_login'] = time();
 
+        if (!$this->__is_safe_relative_url($url)) $url = '';
+
         if (isset($url) && $url !== "" && strpos($url, '_task=') !== false && $url[0] !== '?') $url = "?$url";
 
         header("Location: $url");
         exit;
+    }
+
+    /**
+     * Vérifie qu'une URL de redirection est strictement relative (pas de schéma,
+     * pas d'hôte) — protection contre l'open redirect via le paramètre `_url`.
+     *
+     * @param mixed $url Valeur à vérifier
+     *
+     * @return bool true si l'URL est relative et sûre pour une redirection
+     */
+    private function __is_safe_relative_url($url)
+    {
+        if (!isset($url) || $url === '') return true;
+        if (strpos($url, '://') !== false) return false;
+        if (strpos($url, '//') === 0) return false;
+
+        $host = parse_url($url, PHP_URL_HOST);
+        return empty($host);
     }
 
     /**

@@ -404,7 +404,6 @@ class mel_metapage extends bnum_plugin
         $this->rc->output->set_env("main_nav_can_deploy", $this->rc->config->get('main_nav_can_deploy', true));
         $this->rc->output->set_env("avatar_background_color", $this->rc->config->get('avatar_error_color', null));
 
-
         $this->rc->output->set_env('mel_metapage_const', [
             "key" => self::FROM_KEY,
             "value" => self::FROM_VALUE
@@ -630,7 +629,8 @@ class mel_metapage extends bnum_plugin
             $this->register_action('save_user_pref_domain', array($this, 'save_user_pref_domain'));
             $this->add_hook('refresh', array($this, 'refresh'));
             $this->add_hook("startup", array($this, "send_spied_urls"));
-            //$this->add_hook('contacts_autocomplete_after', [$this, 'contacts_autocomplete_after']);
+            $this->add_hook('contacts_autocomplete_after', [$this, 'contacts_autocomplete_group_sources']);
+            
             if ($this->rc->task === 'settings' && rcube_utils::get_input_value('_open_section', rcube_utils::INPUT_GET) !== null) $this->add_hook('ready', array($this, 'open_section'));
 
             $this->rc->output->set_env("webconf.base_url", $this->rc->config->get("web_conf"));
@@ -3528,6 +3528,36 @@ class mel_metapage extends bnum_plugin
             if (strpos($v['name'], '<') !== false) return strtolower($v['name']);
             else return $v;
         })->toArray();
+        return $args;
+    }
+    /**
+     * 0009207 - Réordonne les résultats d'autocomplétion par source
+     * (carnets > collectées > annuaire) en préservant le tri interne
+     *
+     * @param array $args Contient 'contacts'
+     * @return array
+     */
+    public function autocomplete_group_sources($args)
+    {
+        $priority = function ($contact) {
+            $source = strtolower($contact['source'] ?? '');
+
+            if (strpos($source, 'collected') !== false) return 1;
+            if (strpos($source, 'amande') !== false)    return 2;
+            return 0;
+        };
+
+        $decorated = [];
+        foreach ($args['contacts'] as $i => $c) {
+            $decorated[] = [$priority($c), $i, $c];
+        }
+
+        usort($decorated, function ($a, $b) {
+            return [$a[0], $a[1]] <=> [$b[0], $b[1]];
+        });
+
+        $args['contacts'] = array_column($decorated, 2);
+
         return $args;
     }
 

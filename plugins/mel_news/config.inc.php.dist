@@ -1,0 +1,15 @@
+<?php
+
+// Ces clés ne sont effectives que si le plugin bnum_prefs_whitelist est
+// chargé (sans lui, elles resteraient surchargeables par une préférence
+// utilisateur) ; en son absence, les fonctionnalités correspondantes
+// restent verrouillées à false quelle que soit la valeur ci-dessous.
+
+// Active le flux RSS des actualités (désactivé par défaut).
+$config['mel_news_rss_enabled'] = false;
+
+// Active l'écriture d'actualités (désactivé par défaut).
+$config['mel_news_write_enabled'] = false;
+
+// Active la lecture d'actualités (désactivé par défaut).
+$config['mel_news_read_enabled'] = false;

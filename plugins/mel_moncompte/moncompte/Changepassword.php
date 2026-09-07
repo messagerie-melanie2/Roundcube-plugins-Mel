@@ -135,6 +135,7 @@ class Changepassword extends Moncompteobject {
 				// Erreur d'appel au service Web
 				rcmail::get_instance()->output->show_message('mel_moncompte.changepassword_appel_error', 'error');
 				mel_logs::get_instance()->log(mel_logs::ERROR, 'changepassword_appel_error ' . $ex->getMessage() . $ex->getTraceAsString());
+				$_SESSION['plugin.show_password_change'] = false;
 			}
 			
 		}

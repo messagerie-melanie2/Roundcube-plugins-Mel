@@ -16,6 +16,7 @@ $(document).ready(() => {
   //const CONST_FORMAT_THEME_TITLE = '%1?/( -?(%1?&&%2?||!%1?)? )/%2?';
   const CONST_TAB_THEME_ID = 'theme-pannel-tab-theme';
   const CONST_TAB_PICTURE_ID = 'theme-pannel-tab-pictures';
+  
   const CONST_TABS_LIST = [
     {
       display: 'Thèmes',
@@ -2576,7 +2577,7 @@ $(document).ready(() => {
         $('#contacthead').append($tmp);
       }
 
-      return this;
+      return this; //._setup_contact_qrcode_dialog
     }
 
     /**

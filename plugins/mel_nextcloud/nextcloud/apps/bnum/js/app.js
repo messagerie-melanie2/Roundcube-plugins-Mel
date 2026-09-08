@@ -232,6 +232,10 @@ window.addEventListener('DOMContentLoaded', function() {
 
 	// Gérer le switch des thèmes
 	window.addEventListener("message", (event) => {
+		// N'accepter que les messages envoyés par le vrai parent de cette page
+		if (event.source !== window.parent) {
+			return;
+		}
 		if (event.data === 'switch-theme-dark' || event.data === 'switch-theme-light') {
 			const current_theme = document.querySelector('body').dataset.themes;
 			const themeId = event.data.replace(/switch-theme-/, '');

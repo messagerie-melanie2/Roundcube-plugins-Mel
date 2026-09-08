@@ -379,13 +379,6 @@ class mel_metapage extends bnum_plugin
             ), 'toolbar');
         }
 
-        if ($this->rc->task === "portail") {
-            $this->rc->output->redirect([
-                '_task' => 'bureau',
-            ]);
-            return;
-        }
-
         $this->rc->output->set_env("plugin.mel_metapage", true); //compose_extwin
         $this->rc->output->set_env("matomo_tracking", $this->rc->config->get("matomo_tracking", false));
         $this->rc->output->set_env("matomo_tracking_popup", $this->rc->config->get("matomo_tracking_popup", false));
@@ -1290,7 +1283,7 @@ class mel_metapage extends bnum_plugin
                     $html = '<select id=wsp-event-all-cal-mm class="form-control input-mel">';
                     $html .= "<option value=\"#none\">" . $this->gettext('none') . "</option>";
                     foreach ($workspaces as $key => $value) {
-                        $html .= '<option value="' . $value->uid . '">' . $value->title . '</option>';
+                        $html .= '<option value="' . rcube::Q($value->uid) . '">' . rcube::Q($value->title) . '</option>';
                     }
                     $html .= "</select>";
                     return $html;
@@ -2018,7 +2011,7 @@ class mel_metapage extends bnum_plugin
             $html = '<select class="form-control input-mel">';
             $html .= "<option value=none>" . $this->gettext('none') . "</option>";
             foreach ($workspaces as $key => $value) {
-                $html .= '<option value="' . $value->uid . '">' . $value->title . '</option>';
+                $html .= '<option value="' . rcube::Q($value->uid) . '">' . rcube::Q($value->title) . '</option>';
             }
             $html .= "</select>";
             return $html;

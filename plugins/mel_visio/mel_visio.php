@@ -322,7 +322,7 @@ class mel_visio extends bnum_plugin
         $html = '<select class="wsp_select input-mel">';
 
         foreach ($workspaces as $workspace) {
-            $html .= '<option '.($this->data->wsp() !== null && $this->data->wsp() === $workspace->uid() ? "selected" : "" ).' value="'.$workspace->uid().'">'.$workspace->title().'</option>';
+            $html .= '<option '.($this->data->wsp() !== null && $this->data->wsp() === $workspace->uid() ? "selected" : "" ).' value="'.rcube::Q($workspace->uid()).'">'.rcube::Q($workspace->title()).'</option>';
         }
         $html .= "</select>";
 

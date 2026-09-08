@@ -120,7 +120,7 @@ if (window.rcmail) {
           // ajax
           $('#2FA_check_code').click(function () {
             url =
-              './?_action=plugin.mel_doubleauth-checkcode&code=' +
+              './?_task=settings&_action=plugin.mel_doubleauth-checkcode&code=' +
               $('#2FA_code_to_check').val();
             $.post(url, function (data) {
               alert(data);
@@ -216,7 +216,7 @@ if (window.rcmail) {
     // ajax
     $('#2FA_check_code').click(function () {
       url =
-        './?_action=plugin.mel_doubleauth-checkcode&code=' +
+        './?_task=settings&&_action=plugin.mel_doubleauth-checkcode&code=' +
         $('#2FA_code_to_check').val();
       $.post(url, function (data) {
         alert(data);
@@ -277,7 +277,7 @@ if (window.rcmail) {
 
       if (
         await MelDialog.Confirm(
-          'Confirmez-vous demander la désactivation de l\'authentification à deux facteurs ?',
+          "Confirmez-vous demander la désactivation de l'authentification à deux facteurs ?",
           {
             waiting_button_enabled: 5,
             title: 'Confirmation',

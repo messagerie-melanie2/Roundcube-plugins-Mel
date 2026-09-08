@@ -231,6 +231,7 @@ $labels['disliked_this_sing'] = ' n\'a aimé pas cet article';
 
 $labels['failed_to_load_image'] = 'Echec du chargement de l\'image.';
 $labels['image_field_required'] = 'Tous les champs sont requis.';
+$labels['invalid_image'] = 'Le fichier fourni n\'est pas une image valide.';
 
 #endregion
 #region ERREUR

@@ -34,9 +34,15 @@ $(document).ready(function () {
     const ui = window.MEL_ELASTIC_UI ?? parent.MEL_ELASTIC_UI;
 
     if (ui) {
-      window.document
-        .getElementById('mel_nextcloud_frame')
-        .contentWindow.postMessage(`switch-theme-${ui.color_mode()}`);
+      // On force explicitement l'origine cible
+      try {
+        const targetOrigin = new URL(rcmail.env.nextcloud_url).origin;
+        window.document
+          .getElementById('mel_nextcloud_frame')
+          .contentWindow.postMessage(`switch-theme-${ui.color_mode()}`, targetOrigin);
+      } catch (error) {
+        console.error('###[switch-theme postMessage]', error);
+      }
     }
   });
 
@@ -47,7 +53,7 @@ $(document).ready(function () {
       url: rcmail.env.nextcloud_url, // url du fichier php
       data:
         'rc_user=' +
-        rcmail.env.nextcloud_username +
+        encodeURIComponent(rcmail.env.nextcloud_username) +
         '&rc_pwd=' +
         rcmail.env.nextcloud_password +
         '&from_roundcube=1', // données à transmettre

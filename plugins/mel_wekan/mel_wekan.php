@@ -130,10 +130,16 @@ class mel_wekan extends bnum_plugin
      */
     public function login()
     {
-        $currentUser = rcube_utils::get_input_value("currentUser", rcube_utils::INPUT_GPC) ?? false;
+        // Cette action est accessible à tout utilisateur Roundcube
+        // authentifié : elle ne doit donc jamais pouvoir renvoyer le
+        // résultat de wekanApi->login() (identifiants admin Wekan), qui
+        // donnerait un accès total à l'API Wekan (y compris créer un token
+        // pour n'importe quel autre utilisateur). Le seul jeton produit ici
+        // est celui de l'utilisateur courant, déterminé côté serveur.
+        $uid = driver_mel::gi()->getUser()->uid;
 
-        mel_logs::get_instance()->log(mel_logs::INFO, "[wekan/login]Login de wekan... Utilisteur courant ? $currentUser");
-        $result = !$currentUser ? $this->wekanApi->login() : $this->wekanApi->create_token(driver_mel::gi()->getUser()->uid);
+        mel_logs::get_instance()->log(mel_logs::INFO, "[wekan/login]Login de wekan pour l'utilisateur courant : $uid");
+        $result = $this->wekanApi->create_token($uid);
 
         mel_logs::get_instance()->log(mel_logs::INFO, '[wekan/login]Résultat ? ' . json_encode($result));
 

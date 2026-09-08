@@ -30,6 +30,8 @@ class mel_forum extends bnum_plugin
     const DEFAULTSORTBY = 'created';
     const DEFAULTASC = false;
     const POST_DEFAULT_LIMIT = 20;
+    // Taille maximale acceptée pour une image en base64, une fois décodée (en octets).
+    const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
     public $current_post;
 
@@ -107,7 +109,7 @@ class mel_forum extends bnum_plugin
 
 
                 $this->register_action('create_zip_with_md_and_images', [$this, 'create_zip_with_md_and_images']);
-            } else if (!$this->rc()->action === 'load_image') {
+            } else if ($this->rc()->action !== 'load_image') {
                 $this->_display_error_page();
             }
             else {
@@ -1957,22 +1959,25 @@ class mel_forum extends bnum_plugin
     /**
      * Vérifie si une chaîne Base64 représente une image valide.
      *
-     * Cette fonction analyse la chaîne pour s'assurer qu'elle suit le format attendu 
-     * (`data:image/<type>;base64,<data>`), puis tente de décoder la partie Base64 pour confirmer 
-     * qu'elle contient des données valides.
+     * Cette fonction s'assure que la chaîne suit le format attendu
+     * (`data:image/<type>;base64,<data>`) avec un type d'image dans une liste
+     * blanche restreinte (jpeg/jpg/png/gif/webp — exclut notamment le SVG,
+     * format XML pouvant embarquer du script), que la partie Base64 se décode
+     * correctement, que les octets décodés sont réellement une image
+     * (`getimagesizefromstring()`, pas juste un base64 bien formé avec un
+     * en-tête MIME mensonger), et que la taille décodée reste raisonnable.
      *
      * @param string $base64 La chaîne Base64 à valider.
-     * 
-     * @return bool Retourne `true` si la chaîne est une image Base64 valide, sinon `false`.
      *
-     * @throws Exception Peut générer une erreur si la chaîne n'est pas correctement formatée.
+     * @return bool Retourne `true` si la chaîne est une image Base64 valide, sinon `false`.
      *
      * @example $isValid = $this->_is_valid_base64_image('data:image/png;base64,iVBORw...');
      */
     protected function _is_valid_base64_image($base64)
     {
         // Vérifiez si le format correspond à data:image/<type>;base64,<data>
-        if (!preg_match('/^data:image\/[a-zA-Z]+;base64,/', $base64)) {
+        // avec un type restreint à une liste blanche de formats raster sûrs.
+        if (!preg_match('/^data:image\/(jpeg|jpg|png|gif|webp);base64,/', $base64)) {
             return false;
         }
 
@@ -1980,7 +1985,16 @@ class mel_forum extends bnum_plugin
         $data = explode(',', $base64)[1] ?? '';
         $decodedData = base64_decode($data, true);
 
-        return $decodedData !== false; // Retourne true si les données sont décodables
+        if ($decodedData === false) {
+            return false;
+        }
+
+        if (strlen($decodedData) > self::MAX_IMAGE_SIZE) {
+            return false;
+        }
+
+        // Vérifie que les octets décodés sont réellement une image.
+        return @getimagesizefromstring($decodedData) !== false;
     }
 
     /**
@@ -2007,7 +2021,7 @@ class mel_forum extends bnum_plugin
         // Créer une nouvelle image
         $image = new LibMelanie\Api\Defaut\Posts\Image();
         $image->uid = $this->_generateRandomString(24);
-        $image->post_id = $post_id;
+        $image->post = $post_id;
         $image->data = $data;
 
         // Sauvegarde de l'image
@@ -2083,11 +2097,18 @@ class mel_forum extends bnum_plugin
     public function upload_image()
     {
         $post_id = $this->get_input('_post_id', rcube_utils::INPUT_POST);
+        $data = $this->get_input('_file', rcube_utils::INPUT_POST);
+
+        if (!$this->_is_valid_base64_image($data)) {
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("invalid_image", "mel_forum")]);
+            exit;
+        }
+
         // $post = new LibMelanie\Api\Defaut\Posts\Post();
         // $post->post = $post_id;
         $image = new LibMelanie\Api\Defaut\Posts\Image();
         $image->post = $post_id;
-        $image->data = $this->get_input('_file', rcube_utils::INPUT_POST);
+        $image->data = $data;
         $image->uid = $this->_generateRandomString(24);
         // Sauvegarde de l'image
         $ret = $image->save();
@@ -2120,12 +2141,42 @@ class mel_forum extends bnum_plugin
      */
     public function load_image()
     {
+        $image_uid = $this->get_input('_image_uid', rcube_utils::INPUT_GET);
+
+        $image_lookup = new LibMelanie\Api\Defaut\Posts\Image();
+        $image_lookup->uid = $image_uid;
+        $images = $image_lookup->getList(['post']);
+        $post_id = !empty($images) ? current($images)->post : null;
+
+        $workspace_uid = null;
+        if (isset($post_id)) {
+            $post_lookup = new LibMelanie\Api\Defaut\Posts\Post();
+            $post_lookup->id = $post_id;
+            $posts = $post_lookup->getList(['workspace']);
+            $workspace_uid = !empty($posts) ? current($posts)->workspace : null;
+        }
+
+        if (!isset($workspace_uid) || !driver_mel::gi()->getUser()->isWorkspaceMember($workspace_uid)) {
+            // Message identique au cas "image inexistante" : ne pas
+            // transformer l'endpoint en oracle d'énumération.
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("failed_to_load_image", "mel_forum")]);
+            exit;
+        }
+
         $image = new LibMelanie\Api\Defaut\Posts\Image();
-        $image->uid = $this->get_input('_image_uid', rcube_utils::INPUT_GET);
+        $image->uid = $image_uid;
         $ret = $image->load();
         if (!is_null($ret)) {
             $img = $image->data;
-            $this->rc()->output->sendExit(base64_decode(explode(',', $img)[1]), ['Content-Type: ' . rcube_mime::image_content_type($img)]);
+            // rcube_mime::image_content_type() détecte le type par magic bytes en
+            // début de chaîne : il faut lui passer les octets décodés, pas la
+            // data URL texte (qui commence toujours par "data:" et ne matchait
+            // donc jamais rien, retombant systématiquement sur image/jpeg).
+            $decoded = base64_decode(explode(',', $img)[1] ?? '');
+            $this->rc()->output->sendExit($decoded, [
+                'Content-Type: ' . rcube_mime::image_content_type($decoded),
+                'X-Content-Type-Options: nosniff',
+            ]);
         } else {
             // TODO tester les erreurs
             echo json_encode(['status' => 'error', 'message' => $this->gettext("failed_to_load_image", "mel_forum")]);

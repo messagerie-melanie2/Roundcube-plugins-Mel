@@ -597,7 +597,7 @@ class utils
   /**
    * Hash Key validation.
    *
-   * @return User user on success, False if key is invalid
+   * @return array|false user on success, False if key is invalid
    */
   public static function check_hash_key()
   {
@@ -627,6 +627,7 @@ class utils
     }
 
 
+    $user = null;
     // Génération de l'utilisateur Mél
     if (isset($_user)) {
       $user = new LibMelanie\Api\Mel\User();
@@ -649,7 +650,7 @@ class utils
     }
 
     // Vérification de la clé
-    if (!isset($keyhash)) {
+    if (!isset($keyhash) || !$user) {
       return false;
     }
     return ["user" => $user, "calendar_name" => $calendar_name];

@@ -34,6 +34,9 @@ class calendar extends rcube_plugin
     const FREEBUSY_TELEWORK  = 5;
     // MANTIS 0008012: Ajouter un statut "Congés"
     const FREEBUSY_VACATION  = 6;
+    // MANTIS 0009355: Création de catégories avec caractères spéciaux
+    const CATEGORY_NAME_MAXLEN = 64;
+    const CATEGORY_NAME_REGEX  = '/^[\p{L}\p{N} \'\-_]+$/u';
 
     const SESSION_KEY = 'calendar_temp';
 
@@ -101,6 +104,19 @@ class calendar extends rcube_plugin
         if ('' !== $this->rc->config->get('calendar_default_alarm_type') && $this->rc->task === 'calendar' && 'GET' === $_SERVER['REQUEST_METHOD']) {
             $this->rc->output->set_env('calendar_default_alarm_offset', $this->rc->config->get('calendar_default_alarm_offset'));
         }
+    }
+
+    /**
+     * Aucuin nom de xatégorie ne doit contenir de caractère spécial ,sauf ',-, _et les caractères avec accent.
+     * 
+     * mantis 0009355 
+     */
+
+    public static function is_valid_category_name($name){
+        $name = trim((string) $name);
+
+        return $name !== '' && mb_strlen($name) <= self::CATEGORY_NAME_MAXLEN
+               && preg_match(self::CATEGORY_NAME_REGEX, $name) === 1;
     }
 
     /**
@@ -737,23 +753,31 @@ class calendar extends rcube_plugin
                 'content' => html::div('input-group', $new_category->show('') . $add_category),
             ];
 
-            $this->rc->output->add_label('delete', 'calendar.remove_category');
+            $this->rc->output->add_label('delete', 'calendar.remove_category', 'calendar.invalidcategoryname');
             $this->rc->output->add_script('
 function rcube_calendar_add_category() {
-    var name = $("#rcmfd_new_category").val();
-    if (name.length) {
-        var button_label = rcmail.gettext("calendar.remove_category");
-        var input = $("<input>").attr({type: "text", name: "_categories[]", size: 30, "class": "form-control"}).val(name);
-        var color = $("<input>").attr({type: "text", name: "_colors[]", size: 6, "class": "colors form-control"}).val("000000");
-        var button = $("<a>").attr({"class": "button icon delete input-group-text", title: button_label, href: "#rcmfd_new_category"})
-            .click(function() { $(this).parent().parent().remove(); })
-            .append($("<span>").addClass("inner").text(rcmail.gettext("delete")));
-
-        $("<div>").addClass("input-group").append(input).append(color).append($("<span class=\'input-group-append\'>").append(button))
-            .appendTo("#calendarcategories");
-        color.minicolors(rcmail.env.minicolors_config || {});
-        $("#rcmfd_new_category").val("");
+    var name = $.trim($("#rcmfd_new_category").val());
+    if (!name.length) {
+        return ;
     }
+    //mantis 0009355
+    if (name.length > 64 || !/^[\p{L}\p{N} \'\-_]+$/u.test(name)){
+        rcmail.display_message(rcmail.gettext("calendar.invalidcategoryname"), "warning");
+        return;
+    
+    }
+    var button_label = rcmail.gettext("calendar.remove_category");
+    var input = $("<input>").attr({type: "text", name: "_categories[]", size: 30, "class": "form-control"}).val(name);
+    var color = $("<input>").attr({type: "text", name: "_colors[]", size: 6, "class": "colors form-control"}).val("000000");
+    var button = $("<a>").attr({"class": "button icon delete input-group-text", title: button_label, href: "#rcmfd_new_category"})
+        .click(function() { $(this).parent().parent().remove(); })
+        .append($("<span>").addClass("inner").text(rcmail.gettext("delete")));
+
+    $("<div>").addClass("input-group").append(input).append(color).append($("<span class=\'input-group-append\'>").append(button))
+        .appendTo("#calendarcategories");
+    color.minicolors(rcmail.env.minicolors_config || {});
+    $("#rcmfd_new_category").val("");
+    
 }',
                 'foot'
             );
@@ -910,16 +934,35 @@ $("#rcmfd_new_category").keypress(function(event) {
                 $categories = (array) rcube_utils::get_input_value('_categories', rcube_utils::INPUT_POST);
                 $colors     = (array) rcube_utils::get_input_value('_colors', rcube_utils::INPUT_POST);
 
+                // MANTIS 0009355
+                $rejected = [];
+
                 foreach ($categories as $key => $name) {
                     if (!isset($colors[$key])) {
                         continue;
                     }
 
-                    $color = preg_replace('/^#/', '', strval($colors[$key]));
+                    $color   = preg_replace('/^#/', '', strval($colors[$key]));
+                    $name    = trim($name);
+                    $oldname = !empty($old_categories[$key]) ? $old_categories[$key] : null;
+
+                    // MANTIS 0009355: on ne bloque que création et renommage,
+                    // les catégories déjà enregistrées restent intactes
+                    if ($name !== $oldname && !self::is_valid_category_name($name)) {
+                        $rejected[] = $name;
+
+                        if ($oldname !== null) {
+                            // conserver l'ancien nom, ne mettre à jour que la couleur
+                            $this->driver->replace_category($oldname, $oldname, $color);
+                            $new_categories[$oldname] = $color;
+                            unset($old_categories[$key]);
+                        }
+
+                        continue;
+                    }
 
                     // rename categories in existing events -> driver's job
-                    if (!empty($old_categories[$key])) {
-                        $oldname = $old_categories[$key];
+                    if ($oldname !== null) {
                         $this->driver->replace_category($oldname, $name, $color);
                         unset($old_categories[$key]);
                     }
@@ -936,6 +979,12 @@ $("#rcmfd_new_category").keypress(function(event) {
                 }
 
                 $p['prefs']['calendar_categories'] = $new_categories;
+
+                // MANTIS 0009355
+                if (!empty($rejected)) {
+                    $this->rc->output->show_message('calendar.invalidcategoryname', 'warning',
+                        ['categories' => implode(', ', $rejected)]);
+                }
             }
         }
 

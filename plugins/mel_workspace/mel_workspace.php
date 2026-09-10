@@ -1405,7 +1405,7 @@ class mel_workspace extends bnum_plugin
             $loaded_list = driver_mel::gi()->getUser(null, true, false, null, $list);
             $list_members = $loaded_list->list->members;
             $all_saved_list_data = $wsp->settings()->get('lists');
-            $current_saved_list_data = $all_saved_list_data->$list;
+            $current_saved_list_data = $all_saved_list_data->$list ?? [];
             $shared = $wsp->users();
 
             $_POST['_users'] = [];
@@ -2026,7 +2026,13 @@ class mel_workspace extends bnum_plugin
      */
     public static function LoadWorkspaces($mode = 0, $limit = null, $offset = null)
     {
-        if (!isset(self::$_workspaces)) self::$_workspaces = driver_mel::gi()->getUser()->getSharedWorkspaces(null, false, $limit, $offset);
+        if (!isset(self::$_workspaces)) {
+            $workspaces = driver_mel::gi()->getUser()->getSharedWorkspaces(null, false, $limit, $offset);
+
+            if (!$workspaces) $workspaces = [];
+
+            self::$_workspaces = $workspaces;
+        }
 
         $data = self::$_workspaces;
 

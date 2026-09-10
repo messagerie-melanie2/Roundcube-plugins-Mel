@@ -140,8 +140,17 @@ class Driver {
    * @return boolean
    */
   public function modify_user_labels($username, $labels) {
+    $user = driver_mel::gi()->getUser($username);
+
+    if (!$user) {
+      if (mel_logs::is(mel_logs::WARN)) 
+        mel_logs::gi()->log(mel_logs::WARN, "/!\\ [mel_label_sync/driver/modify_user_labels] L'utilisateur $username n'éxiste pas !");
+
+      return false;
+    }
+
     // Modifie la liste des étiquettes
-    if (driver_mel::gi()->getUser($username)->savePreference(self::PREF_SCOPE, self::PREF_NAME, $this->_rc_to_m2($labels))) {
+    if ($user->savePreference(self::PREF_SCOPE, self::PREF_NAME, $this->_rc_to_m2($labels))) {
       if (!empty($labels)) {
         $this->_labels_cache[$username] = $labels;
       }

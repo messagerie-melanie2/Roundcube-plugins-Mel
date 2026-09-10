@@ -80,12 +80,14 @@ class Workspace {
   /**
    * Initialise l'objet à partir d'une instance d'espace de travail.
    *
-   * @param object $workspace Instance de l'espace de travail.
+   * @param object|string $workspace Instance de l'espace de travail.
    * @return self
    */
-  private function _from_workspace($workspace) {
-    $this->_workspace = $workspace;
-    $this->_uid = $this->_workspace->uid;
+  private function _from_workspace(object|string $workspace) {
+    if (!is_string($workspace)) {
+      $this->_workspace = $workspace;
+      $this->_uid = $this->_workspace->uid;
+    }
 
     return $this->_unset();
   }
@@ -647,10 +649,10 @@ class Workspace {
   /**
    * Initialise un objet Workspace à partir d'une instance d'espace de travail.
    *
-   * @param LibMelanie\Api\Defaut\Workspace $workspace Instance de l'espace de travail.
+   * @param LibMelanie\Api\Defaut\Workspace|string $workspace Instance de l'espace de travail.
    * @return Workspace
    */
-  public static function FromWorkspace($workspace) {
+  public static function FromWorkspace(LibMelanie\Api\Defaut\Workspace|string $workspace) {
     $wsp = new Workspace(null);
 
     return $wsp->_from_workspace($workspace);

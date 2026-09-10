@@ -1955,14 +1955,16 @@ class mel_workspace extends bnum_plugin
         return $html;
     }
 
-    public static function GetWorkspaceBlocksGenerator($workspaces)
+    public static function GetWorkspaceBlocksGenerator(\IMel_Enumerable|array $workspaces)
     {
         foreach ($workspaces as $workspace) {
-            yield self::GetWorkspacesBlock(get_class($workspace) === 'Mel_KeyValue' ? $workspace->get_value() : $workspace);
+            yield self::GetWorkspacesBlock(
+                is_string($workspace) ? $workspace : 
+                    (get_class($workspace) === 'Mel_KeyValue' ? $workspace->get_value() : $workspace));
         }
     }
 
-    public static function GetWorkspacesBlock($workspace)
+    public static function GetWorkspacesBlock(mixed $workspace)
     {
         $isblank = $workspace === 'blank';
         $workspace = Workspace::FromWorkspace($workspace);

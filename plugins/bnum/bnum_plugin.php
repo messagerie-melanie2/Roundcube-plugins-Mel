@@ -196,6 +196,18 @@ abstract class bnum_plugin extends rcube_plugin
     }
 
     /**
+     * Retourne le délimiteur IMAP hiérarchique courant, avec une valeur de
+     * repli si l'information n'est pas encore disponible en session (avant
+     * une connexion IMAP aboutie, ou en dehors du contexte mail).
+     *
+     *
+     * @return string Délimiteur IMAP hiérarchique (ex. '/', '.'), jamais vide.
+     */
+    public static function get_imap_delimiter(): string {
+        return $_SESSION['imap_delimiter'] ?? '/';
+    }
+
+    /**
      * Retourne la tâche en cours.
      *
      * @return string

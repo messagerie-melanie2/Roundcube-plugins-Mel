@@ -22,7 +22,7 @@ use LibMelanie\Api\Defaut;
  */
 class mel_contacts_mapping
 {
-  public static $mapping_contact_cols = array(
+  public static array $mapping_contact_cols = array(
     "name" => "name",
     "firstname" => "firstname",
     "surname" => "lastname",
@@ -50,7 +50,7 @@ class mel_contacts_mapping
     "notes" => "notes"
   );
 
-  private static $_countries_list;
+  private static array $_countries_list;
   /**
    * Converti un contact roundcube pour mel
    *
@@ -186,7 +186,7 @@ class mel_contacts_mapping
    * @param Defaut\Contact $_contact
    * @return array:
    */
-  public static function m2_to_rc_contact($cols = null, $_contact)
+  public static function m2_to_rc_contact(?array $cols, mixed $_contact)
   {
     $contact = array();
     $all = false;
@@ -255,7 +255,7 @@ class mel_contacts_mapping
   }
 
 
-  private static function m2_to_rc_country($m2_country)
+  private static function m2_to_rc_country(string $m2_country)
   {
     if (!isset(self::$_countries_list)) {
       self::$_countries_list = require_once 'horde_countries.php';
@@ -267,7 +267,7 @@ class mel_contacts_mapping
     }
   }
 
-  private static function rc_to_m2_country($rc_country)
+  private static function rc_to_m2_country(string $rc_country)
   {
     if (!isset(self::$_countries_list)) {
       self::$_countries_list = require_once 'horde_countries.php';

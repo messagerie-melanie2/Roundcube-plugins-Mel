@@ -2026,7 +2026,13 @@ class mel_workspace extends bnum_plugin
      */
     public static function LoadWorkspaces($mode = 0, $limit = null, $offset = null)
     {
-        if (!isset(self::$_workspaces)) self::$_workspaces = driver_mel::gi()->getUser()->getSharedWorkspaces(null, false, $limit, $offset);
+        if (!isset(self::$_workspaces)) {
+            $workspaces = driver_mel::gi()->getUser()->getSharedWorkspaces(null, false, $limit, $offset);
+
+            if (!$workspaces) $workspaces = [];
+
+            self::$_workspaces = $workspaces;
+        }
 
         $data = self::$_workspaces;
 

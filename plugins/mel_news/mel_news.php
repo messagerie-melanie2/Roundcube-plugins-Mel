@@ -220,7 +220,16 @@ class mel_news extends bnum_plugin {
       if ($uid === $current_uid)
         continue;
 
-      $newsShare = driver_mel::gi()->newsshare([driver_mel::gi()->getUser($uid)]);
+      $currentUser = driver_mel::gi()->getUser($uid);
+
+      if ($currentUser === null) {
+        if (mel_logs::is(mel_logs::WARN)) 
+          mel_logs::gi()->log(mel_logs::WARN, "/!\\ [mel_news/update_rights] Impossible de modifier les droits de $uid, il n'éxiste pas.");
+
+        continue;
+      }
+
+      $newsShare = driver_mel::gi()->newsshare([$currentUser]);
       foreach ($services as $key => $value) {
 
         if ($value === "")
@@ -231,7 +240,7 @@ class mel_news extends bnum_plugin {
         $newsShare->save();
       }
 
-      $newsShares = driver_mel::gi()->getUser($uid)->getUserNewsShares();
+      $newsShares = $currentUser->getUserNewsShares();
 
       $enum = mel_helper::Enumerable($array[$uid]);
       foreach ($newsShares as $newsShare) {

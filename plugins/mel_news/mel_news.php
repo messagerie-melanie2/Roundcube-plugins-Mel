@@ -793,12 +793,8 @@ class mel_news extends bnum_plugin {
 
   /**
    * Affiche toute les news
-   *
-   * @param [type] $args
-   * @param integer $nbRows
-   * @return void
    */
-  function show_all_news($args, $nbRows = null)
+  function show_all_news(?array $args, ?int $nbRows = null): string
   {
     $isVignette = $this->get_news_mode() === self::MODE_VIGNETTE;
 

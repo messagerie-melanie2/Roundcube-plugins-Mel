@@ -872,14 +872,16 @@ class WorkspaceSetting {
    * @return self
    */
   public function set($key, $value) {
-    if ($this->_workspace->settings === null)
-      $this->_workspace->settings = [$key => $value];
+    $workspaceSettings = $this->_workspace->settings;
+
+    if ($workspaceSettings === null)
+      $workspaceSettings = [$key => $value];
     else {
-        $this->_workspace->settings = json_decode($this->_workspace->settings);
-        $this->_workspace->settings->$key = $value;
+        $workspaceSettings = json_decode($this->_workspace->settings);
+        $workspaceSettings->$key = $value;
     }
 
-    $this->_workspace->settings = json_encode($this->_workspace->settings);
+    $this->_workspace->settings = json_encode($workspaceSettings);
 
     return $this;
   }

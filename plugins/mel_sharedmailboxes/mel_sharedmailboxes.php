@@ -530,7 +530,7 @@ class mel_sharedmailboxes extends rcube_plugin {
         $ret = null;
         $balp_label = driver_mel::gi()->getBalpLabel();
         if (isset($balp_label) && strpos($folder, $balp_label) === 0) {
-            $delimiter = $_SESSION['imap_delimiter'];
+            $delimiter = bnum_plugin::get_imap_delimiter();
             $osDelim = driver_mel::gi()->objectShareDelimiter();
             $data = explode($delimiter, $folder, 3);
             $_objects = driver_mel::gi()->getUser()->getObjectsShared();
@@ -570,7 +570,7 @@ class mel_sharedmailboxes extends rcube_plugin {
             $folder = rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GET);
             $balp_label = driver_mel::gi()->getBalpLabel();
             if (isset($balp_label) && strpos($folder, $balp_label) === 0) {
-                $delimiter = $_SESSION['imap_delimiter'];
+                $delimiter = bnum_plugin::get_imap_delimiter();
                 $osDelim = driver_mel::gi()->objectShareDelimiter();
                 $data = explode($delimiter, $folder, 3);
                 $_objects = driver_mel::gi()->getUser()->getObjectsShared();
@@ -772,21 +772,31 @@ class mel_sharedmailboxes extends rcube_plugin {
         return $args;
     }
 
+  /**
+   * Récupère le délimiteur imap
+   */
+  private function _get_imap_delimiter() : string {
+    if (class_exists('bnum_plugin')) return bnum_plugin::get_imap_delimiter();
+
+    return $_SESSION['imap_delimiter'] ?? '/';
+  }
+
     /**
      * Modify the user configuration to adapt to mobile skin
      *
      * @param array $args
      */
     public function config_get($args) {
+        $delimiter = $this->_get_imap_delimiter();
         switch ($args['name']) {
             case 'sent_mbox':
                 $sent_mbox = $args['result'];
                 if (!empty($args['result']) && !empty($this->get_account) && $this->get_account != $this->rc->user->get_username()) {
                     if ($sent_mbox == 'INBOX') {
-                        $sent_mbox = driver_mel::gi()->getBalpLabel() . $_SESSION['imap_delimiter'] . $this->mel->get_user_bal();
+                        $sent_mbox = driver_mel::gi()->getBalpLabel() . $delimiter . $this->mel->get_user_bal();
                     }
                     else {
-                        $sent_mbox = driver_mel::gi()->getBalpLabel() . $_SESSION['imap_delimiter'] . $this->mel->get_user_bal() . $_SESSION['imap_delimiter'] . $sent_mbox;
+                        $sent_mbox = driver_mel::gi()->getBalpLabel() . $delimiter . $this->mel->get_user_bal() . $delimiter . $sent_mbox;
                     }
                 }
                 $args['result'] = $sent_mbox;
@@ -794,18 +804,18 @@ class mel_sharedmailboxes extends rcube_plugin {
             case 'drafts_mbox':
                 $drafts_mbox = $args['result'];
                 if (!empty($args['result']) && !empty($this->get_account) && $this->get_account != $this->rc->user->get_username()) {
-                    $drafts_mbox = driver_mel::gi()->getBalpLabel() . $_SESSION['imap_delimiter'] . $this->mel->get_user_bal() . $_SESSION['imap_delimiter'] . $drafts_mbox;
+                    $drafts_mbox = driver_mel::gi()->getBalpLabel() . $delimiter . $this->mel->get_user_bal() . $delimiter . $drafts_mbox;
                 }
                 else if (!empty($args['result']) && isset($_POST['_store_target']) && strpos($_POST['_store_target'], driver_mel::gi()->getBalpLabel()) === 0) {
-                    $_target = explode($_SESSION['imap_delimiter'], rcube_utils::get_input_value('_store_target', rcube_utils::INPUT_POST), 3);
-                    $drafts_mbox = implode($_SESSION['imap_delimiter'], [$_target[0], $_target[1], $drafts_mbox]);
+                    $_target = explode($delimiter, rcube_utils::get_input_value('_store_target', rcube_utils::INPUT_POST), 3);
+                    $drafts_mbox = implode($delimiter, [$_target[0], $_target[1], $drafts_mbox]);
                 }
                 $args['result'] = $drafts_mbox;
                 break;
             case 'junk_mbox':
                 $junk_mbox = $args['result'];
                 if (!empty($args['result']) && !empty($this->get_account) && $this->get_account != $this->rc->user->get_username()) {
-                    $junk_mbox = driver_mel::gi()->getBalpLabel() . $_SESSION['imap_delimiter'] . $this->mel->get_user_bal() . $_SESSION['imap_delimiter'] . $junk_mbox;
+                    $junk_mbox = driver_mel::gi()->getBalpLabel() . $delimiter . $this->mel->get_user_bal() . $delimiter . $junk_mbox;
                 }
                 $args['result'] = $junk_mbox;
                 break;
@@ -815,7 +825,7 @@ class mel_sharedmailboxes extends rcube_plugin {
                     $trash_mbox = $_SESSION['trash_folders'][$this->mel->get_user_bal()];
                 }
                 else if (!empty($args['result']) && isset($_REQUEST['_mbox']) && strpos($_REQUEST['_mbox'], driver_mel::gi()->getBalpLabel()) === 0) {
-                    $tmp = explode($_SESSION['imap_delimiter'], rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GPC));
+                    $tmp = explode($delimiter, rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GPC));
                     if (isset($_SESSION['trash_folders'][$tmp[1]])) {
                         $trash_mbox = $_SESSION['trash_folders'][$tmp[1]];
                     }
@@ -826,11 +836,11 @@ class mel_sharedmailboxes extends rcube_plugin {
                 $drafts_mbox = $args['result'];
                 $models_mbox = rcube_charset::convert($args['result'], RCUBE_CHARSET, 'UTF7-IMAP');
                 if (!empty($args['result']) && !empty($this->get_account) && $this->get_account != $this->rc->user->get_username()) {
-                    $models_mbox = driver_mel::gi()->getBalpLabel() . $_SESSION['imap_delimiter'] . $this->mel->get_user_bal() . $_SESSION['imap_delimiter'] . $models_mbox;
+                    $models_mbox = driver_mel::gi()->getBalpLabel() . $delimiter . $this->mel->get_user_bal() . $delimiter . $models_mbox;
                 }
                 else if (!empty($args['result']) && isset($_POST['_store_target']) && strpos($_POST['_store_target'], driver_mel::gi()->getBalpLabel()) === 0) {
-                    $_target = explode($_SESSION['imap_delimiter'], rcube_utils::get_input_value('_store_target', rcube_utils::INPUT_POST), 3);
-                    $models_mbox = implode($_SESSION['imap_delimiter'], [$_target[0], $_target[1], $models_mbox]);
+                    $_target = explode($delimiter, rcube_utils::get_input_value('_store_target', rcube_utils::INPUT_POST), 3);
+                    $models_mbox = implode($delimiter, [$_target[0], $_target[1], $models_mbox]);
                 }
                 $args['result'] = $models_mbox;
                 break;
@@ -845,7 +855,7 @@ class mel_sharedmailboxes extends rcube_plugin {
      */
     public function is_inbox($args) {
         if (!$args['isInbox'] && strpos($args['mbox'], driver_mel::gi()->getBalpLabel()) === 0) {
-            $exp = explode($_SESSION['imap_delimiter'], $args['mbox']);
+            $exp = explode($this->_get_imap_delimiter(), $args['mbox']);
             $args['isInbox'] = count($exp) === 2;
             if (!$args['isInbox'] && isset($args['smart']) && $args['smart']) {
                 $args['isInbox'] = $args['mbox'] != $this->rc->config->get('sent_mbox') && $args['mbox'] != $this->rc->config->get('drafts_mbox');
@@ -866,8 +876,9 @@ class mel_sharedmailboxes extends rcube_plugin {
         $mbox  = rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_POST, true);
         if (isset($mbox)) {
             if (strpos($args['target'], driver_mel::gi()->getBalpLabel()) === 0 && strpos($mbox, driver_mel::gi()->getBalpLabel()) === 0) {
-                $targetTmp = explode($_SESSION['imap_delimiter'], $args['target'], 3);
-                $mboxTmp = explode($_SESSION['imap_delimiter'], $mbox, 3);
+                $delimiter = $this->_get_imap_delimiter();
+                $targetTmp = explode($delimiter, $args['target'], 3);
+                $mboxTmp = explode($delimiter, $mbox, 3);
                 $args['continue'] = $targetTmp[1] == $mboxTmp[1];
             }
             else if (strpos($args['target'], driver_mel::gi()->getBalpLabel()) === 0 || strpos($mbox, driver_mel::gi()->getBalpLabel()) === 0) {
@@ -943,8 +954,9 @@ class mel_sharedmailboxes extends rcube_plugin {
         $mbox  = rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_POST, true);
         if (isset($mbox)) {
             if (strpos($args['target'], driver_mel::gi()->getBalpLabel()) === 0 && strpos($mbox, driver_mel::gi()->getBalpLabel()) === 0) {
-                $targetTmp = explode($_SESSION['imap_delimiter'], $args['target'], 3);
-                $mboxTmp = explode($_SESSION['imap_delimiter'], $mbox, 3);
+                $delimiter = $this->_get_imap_delimiter();
+                $targetTmp = explode($delimiter, $args['target'], 3);
+                $mboxTmp = explode($delimiter, $mbox, 3);
                 $args['continue'] = $targetTmp[1] == $mboxTmp[1];
             }
             else if (strpos($args['target'], driver_mel::gi()->getBalpLabel()) === 0 || strpos($mbox, driver_mel::gi()->getBalpLabel()) === 0) {
@@ -1278,8 +1290,9 @@ class mel_sharedmailboxes extends rcube_plugin {
         if (isset($this->prev_folder) && $this->prev_folder != $args['folder']) {
             $relog = false;
             if (strpos($args['folder'], driver_mel::gi()->getBalpLabel()) === 0 && strpos($this->prev_folder, driver_mel::gi()->getBalpLabel()) === 0) {
-                $folderTmp = explode($_SESSION['imap_delimiter'], $args['folder'], 3);
-                $prevFolderTmp = explode($_SESSION['imap_delimiter'], $this->prev_folder, 3);
+                $delimiter = $this->_get_imap_delimiter();
+                $folderTmp = explode($delimiter, $args['folder'], 3);
+                $prevFolderTmp = explode($delimiter, $this->prev_folder, 3);
                 $relog = $folderTmp[1] != $prevFolderTmp[1];
             }
             else if (strpos($args['folder'], driver_mel::gi()->getBalpLabel()) === 0 || strpos($this->prev_folder, driver_mel::gi()->getBalpLabel()) === 0) {
@@ -1604,7 +1617,7 @@ class mel_sharedmailboxes extends rcube_plugin {
         $identities = $this->rc->user->list_identities();
         // Gestion du dossier courant pour l'account
         if (strpos($_SESSION['mbox'], driver_mel::gi()->getBalpLabel()) === 0) {
-            $tmp = explode($_SESSION['imap_delimiter'], $_SESSION['mbox'], 3);
+            $tmp = explode($this->_get_imap_delimiter(), $_SESSION['mbox'], 3);
             $account = $tmp[1];
         }
         // Lister les boites auxquelles l'utilisateur a accés

@@ -760,6 +760,15 @@ class mel_labels_sync extends rcube_plugin
   }
 
   /**
+   * Récupère le délimiteur imap
+   */
+  private function _get_imap_delimiter() : string {
+    if (class_exists('bnum_plugin')) return bnum_plugin::get_imap_delimiter();
+
+    return $_SESSION['imap_delimiter'] ?? '/';
+  }
+
+  /**
    * Récupère la configuration user/host en fonction du folder
    * 
    * @param string $folder Nom du folder
@@ -771,7 +780,7 @@ class mel_labels_sync extends rcube_plugin
     $ret = null;
     $balp_label = driver_mel::gi()->getBalpLabel();
     if (isset($balp_label) && strpos($folder, $balp_label) === 0) {
-      $delimiter = $_SESSION['imap_delimiter'];
+      $delimiter = $this->_get_imap_delimiter();
       $osDelim = driver_mel::gi()->objectShareDelimiter();
       $data = explode($delimiter, $folder, 3);
       $_objects = driver_mel::gi()->getUser()->getObjectsShared();

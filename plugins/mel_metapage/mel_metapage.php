@@ -4040,7 +4040,7 @@ class mel_metapage extends bnum_plugin
         $maxOrder;
         $init = $folders;
         $balp_label = driver_mel::gi()->getBalpLabel();
-        $delimiter = $_SESSION['imap_delimiter'];
+        $delimiter = bnum_plugin::get_imap_delimiter();
         $bal = explode('.-.', $id)[1] ?? $id;
         $folders = mel_helper::Enumerable($folders)->where(function ($k, $v) use ($balp_label) {
             return strpos($v, $balp_label) !== false;

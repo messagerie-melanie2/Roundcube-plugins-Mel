@@ -1107,7 +1107,7 @@ class mel_news extends bnum_plugin {
     
     $url .= "/spip.php?page=backend-actu";
 
-    $fetched = mel_helper::load_helper($this->rc)->fetch("", $config["verify_peer"], $config["verify_host"])->_get_url($url,
+    $fetched = mel_helper::load_helper($this->rc)->fetch("", false, 0)->_get_url($url,
       null,
       null, 
       $proxy

@@ -559,8 +559,9 @@ class mce_driver_mel extends driver_mel
     // Requête http à l'API
     $ch = curl_init();
     curl_setopt_array($ch, [
-      CURLOPT_URL => $this->get_restoration_api_url($mbox) . '/dir?key=' . $this->_restoration_api_key . '&user=' . $mbox,
-      CURLOPT_RETURNTRANSFER => 1
+      CURLOPT_URL => $this->get_restoration_api_url($mbox) . '/dir?user=' . $mbox,
+      CURLOPT_RETURNTRANSFER => 1,
+      CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . $this->_restoration_api_key,],
     ]);
     $output = curl_exec($ch);
     if ($output === false) {

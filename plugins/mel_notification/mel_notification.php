@@ -276,7 +276,16 @@ class mel_notification extends rcube_plugin
         echo json_encode($result);
         exit();
     }
-    
+
+    /**
+     * Récupère le délimiteur imap
+     */
+    private function _get_imap_delimiter() : string {
+        if (class_exists('bnum_plugin')) return bnum_plugin::get_imap_delimiter();
+
+        return $_SESSION['imap_delimiter'] ?? '/';
+    }
+
     /**
      * Handler for new message action (new_messages hook)
      */
@@ -309,7 +318,7 @@ class mel_notification extends rcube_plugin
 
             // PAMELA - Gestion de la mailbox
             if (strpos($mbox, driver_mel::gi()->getBalpLabel()) === 0) {
-                $tmp = explode($_SESSION['imap_delimiter'], $mbox, 3);
+                $tmp = explode($this->_get_imap_delimiter(), $mbox, 3);
                 $content = driver_mel::gi()->getUser($tmp[1])->fullname;
                 $mailbox = $tmp[1];
                 

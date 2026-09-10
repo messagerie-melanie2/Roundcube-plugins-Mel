@@ -4950,9 +4950,9 @@ class mel_metapage extends bnum_plugin
      * - Calcule une couleur de texte contrastante pour une bonne lisibilité.
      * - Dessine la première lettre majuscule de l'email au centre de l'image.
      *
-     * @return resource Image GD créée.
+     * @return mixed Image GD créée.
      */
-    public function _generate_no_picture()
+    public function _generate_no_picture(): mixed
     {
         $image = imagecreate(200, 200);
 

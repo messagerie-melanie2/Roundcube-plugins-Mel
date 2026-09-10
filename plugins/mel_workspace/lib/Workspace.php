@@ -877,7 +877,7 @@ class WorkspaceSetting {
     if ($workspaceSettings === null)
       $workspaceSettings = [$key => $value];
     else {
-        $workspaceSettings = json_decode($this->_workspace->settings);
+        $workspaceSettings = json_decode($workspaceSettings);
         $workspaceSettings->$key = $value;
     }
 

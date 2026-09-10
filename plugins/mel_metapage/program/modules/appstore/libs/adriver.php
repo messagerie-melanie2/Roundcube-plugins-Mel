@@ -10,7 +10,7 @@ abstract class ADriverBase implements idriver
 
     protected function load_config($conf, $default = null)
     {
-        $this->plugin->$rc->config->get($conf, $default);
+        $this->plugin->rc->config->get($conf, $default);
     }
 
     protected function save_config($conf, $value)

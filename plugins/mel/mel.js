@@ -158,7 +158,6 @@ if (window.rcmail) {
       document.addEventListener(
         'drop',
         function (e) {
-          debugger;
           if (
             e.dataTransfer &&
             e.dataTransfer.types &&

@@ -77,6 +77,13 @@ class mel_france_transfert extends rcube_plugin {
         'save_message'
       ));
 
+      // PAMELLA
+      // hook attachement_delete
+      $this->add_hook('attachment_delete', array(
+        $this,
+        'attachment_delete'
+      ));
+
       // Charger le javascript si on est dans l'écriture d'un message
       if ($this->rc->action == 'compose') {
         $max_attachments_size = $this->rc->config->get('max_attachments_size', 5000000);
@@ -179,6 +186,38 @@ class mel_france_transfert extends rcube_plugin {
     if ($message_size > $max_message_size) {
       $args['abort'] = true;
       $args['return'] = false;
+    }
+
+    return $args;
+  }
+
+  /**
+   * PAMELLA
+   *
+   * self::$SESSION_KEY n'est jamais initialisé et la pj reste dans le compose_data 
+   * Résultat : après suppression d'une pj, le calcul du size France Transfert (testServiceFranceTransfert) la recompte toujours
+   *
+   * Correction : en repassant par les accesseurs storage-aware, et puis unset() le fichier s'il existe dans $COMPOSE['attachments']
+  */
+  public function attachment_delete($args) {
+    $COMPOSE_ID = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
+    $file_id = rcube_utils::get_input_value('_file', rcube_utils::INPUT_GPC);
+    $file_id = preg_replace('/^rcmfile/', '', $file_id) ?: 'unknown';
+
+    $COMPOSE = rcmail_action_mail_compose::get_compose_data($COMPOSE_ID);
+
+    if (mel_logs::is(mel_logs::DEBUG))
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_france_transfert::attachment_delete() COMPOSE_ID=$COMPOSE_ID file_id=$file_id attachments_keys_before=" . (is_array($COMPOSE['attachments'] ?? null) ? implode(',', array_keys($COMPOSE['attachments'])) : 'N/A'));
+
+    if (is_array($COMPOSE) && isset($COMPOSE['attachments'][$file_id])) {
+      unset($COMPOSE['attachments'][$file_id]);
+      rcmail_action_mail_compose::set_compose_data($COMPOSE_ID, $COMPOSE);
+
+      if (mel_logs::is(mel_logs::DEBUG))
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_france_transfert::attachment_delete() removed file_id=$file_id, attachments_keys_after=" . implode(',', array_keys($COMPOSE['attachments'])));
+    }
+    else if (mel_logs::is(mel_logs::DEBUG)) {
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_france_transfert::attachment_delete() file_id=$file_id NOT FOUND in COMPOSE attachments");
     }
 
     return $args;

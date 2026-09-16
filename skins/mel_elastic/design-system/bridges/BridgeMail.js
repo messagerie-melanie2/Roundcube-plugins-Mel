@@ -11,7 +11,7 @@ import {
   HTMLBnumAvatarAction,
   HTMLBnumButtonIcon,
   HTMLBnumFolder,
-} from '../ds-module-bnum';
+} from '../ds-module-bnum.js';
 import ABridge from './ABridge.js';
 import BridgeCommands from './BridgeCommands.js';
 import BridgeEvents from './BridgeEvents.js';

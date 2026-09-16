@@ -1,6 +1,6 @@
-import { HTMLBnumInputText } from '../../../../../skins/mel_elastic/design-system/ds-module-bnum';
-import ABaseMelObject from '../../../../mel_metapage/js/lib/base_mel_object';
-import { JsHtml } from '../../../../mel_metapage/js/lib/html/JsHtml/JsHtml';
+import { HTMLBnumInputText } from '../../../../../skins/mel_elastic/design-system/ds-module-bnum.js';
+import ABaseMelObject from '../../../../mel_metapage/js/lib/base_mel_object.js';
+import { JsHtml } from '../../../../mel_metapage/js/lib/html/JsHtml/JsHtml.js';
 
 export class LinkModal {
   static get(id, title, url, icon) {

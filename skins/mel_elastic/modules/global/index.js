@@ -1,5 +1,5 @@
-import { HTMLBnumHeader } from '../../design-system/ds-module-bnum';
-import { ABaseModule } from '../core/ABaseModule';
+import { HTMLBnumHeader } from '../../design-system/ds-module-bnum.js';
+import { ABaseModule } from '../core/ABaseModule.js';
 
 /**
  * Module UI transverse regroupant les ajustements globaux de la skin

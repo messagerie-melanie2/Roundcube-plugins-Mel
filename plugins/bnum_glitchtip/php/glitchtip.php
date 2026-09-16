@@ -82,27 +82,6 @@ final class Glitchtip
     }
 
     /**
-     * Capture l'erreur fatale PHP courante (E_ERROR/E_PARSE) via error_get_last() et
-     * force son envoi synchrone vers Glitchtip avant que le process ne se termine.
-     *
-     * Utilisée depuis le hook `fatal_error`, déclenché par le core juste avant l'exit()
-     * de rcmail_fatal_error() — le flush différé habituel ({@see __destruct()}) n'aurait
-     * pas le temps de s'exécuter dans ce contexte.
-     *
-     * @return void
-     */
-    public function captureFatalError(): void {
-        if (!$this->initialized) return;
-
-        \Sentry\captureLastError();
-
-        $client = \Sentry\SentrySdk::getCurrentHub()->getClient();
-        if ($client !== null) {
-            $client->flush(5);
-        }
-    }
-
-    /**
      * Démarre une transaction Sentry pour la requête courante, si aucune n'est déjà en cours.
      *
      * @param string $name Nom de la transaction.
@@ -133,6 +112,27 @@ final class Glitchtip
 
         $this->transaction->finish();
         $this->transaction = null;
+    }
+
+        /**
+     * Capture l'erreur fatale PHP courante (E_ERROR/E_PARSE) via error_get_last() et
+     * force son envoi synchrone vers Glitchtip avant que le process ne se termine.
+     *
+     * Utilisée depuis le hook `fatal_error`, déclenché par le core juste avant l'exit()
+     * de rcmail_fatal_error() — le flush différé habituel ({@see __destruct()}) n'aurait
+     * pas le temps de s'exécuter dans ce contexte.
+     *
+     * @return void
+     */
+    public function captureFatalError(): void {
+        if (!$this->initialized) return;
+
+        \Sentry\captureLastError();
+
+        $client = \Sentry\SentrySdk::getCurrentHub()->getClient();
+        if ($client !== null) {
+            $client->flush(5);
+        }
     }
 
     /**

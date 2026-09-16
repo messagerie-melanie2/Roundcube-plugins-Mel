@@ -7,14 +7,6 @@ $beforePluginFactory();
 
 require_once __DIR__ . '/php/functions/logs.php';
 
-/**
- * Plugin bnum_glitchtip — intégration Sentry/GlitchTip pour Roundcube-Mel.
- *
- * Hooks utilisés :
- * - startup     : initialisation du SDK Sentry pour la requête courante
- * - write_log   : relai des logs internes Roundcube vers Glitchtip
- * - fatal_error : hook projet (core), capture des erreurs fatales PHP avant l'exit()
- */
 class bnum_glitchtip extends bnum_plugin {
     use BGT_LogsTrait {
         BGT_LogsTrait::logTrace as private __rcpclBody_BGT_LogsTrait_logTrace;
@@ -38,30 +30,44 @@ class bnum_glitchtip extends bnum_plugin {
         return (Closure::bind($factory, null, self::class))($this, $args);
     }
 
+    /**
+     * Hook "fatal_error".
+     *
+     * ⚠️ Ce hook n'est PAS déclenché nativement par Roundcube (aucun appel de hook
+     * n'existe à cet endroit dans une installation standard). Il suppose que le core
+     * Roundcube a été modifié pour appeler les hooks juste avant l'exit() de
+     * `rcmail_fatal_error()` (dans `program/include/iniset.php`) ; sans cette
+     * modification côté core, ce hook ne sera jamais invoqué.
+     *
+     * Une fois déclenché, il capture l'erreur fatale PHP en cours (via
+     * {@see Glitchtip::captureFatalError()}) et force son envoi synchrone vers
+     * Glitchtip, car le shutdown handler du SDK Sentry (enregistré trop tard,
+     * pendant le hook `startup`) n'aurait pas le temps de s'exécuter avant l'exit()
+     * du core.
+     *
+     * @see php/hooks/fatal_error.php Implémentation du hook.
+     **/
     public function hook_fatal_error(array $args): array {
         $factory = include __DIR__ . '/php/hooks/fatal_error.php';
         return (Closure::bind($factory, null, self::class))($this, $args);
     }
 
     /**
-         * Initialise le singleton {@see Glitchtip} à partir de la configuration du
-         * plugin, si ce n'est pas déjà fait.
-         *
-         * Centralise le bloc lecture de config + {@see Glitchtip::init()} partagé par
-         * les hooks `startup`, `fatal_error` et le point d'entrée `init()` du plugin.
-         *
-         * @return void
-         **/
-    public function ensure_glitchtip_initialized(): void {
-        if (Glitchtip::Instance()->isInitialized()) return;
-
-        Glitchtip::Instance()->init((string) $this->get_config('php_dsn'), [
-            'environment' => (string) $this->get_config('env', 'dev'),
-            'enable_logs' => (bool) $this->get_config('enable_logs', false),
-            'traces_sample_rate' => (float) $this->get_config('traces_sample_rate', 0.01),
-            'log_level' => (string) $this->get_config('log_level', 'error'),
-            'error_types' => $this->get_config('error_types'),
-        ]);
+     * Initialise paresseusement le singleton {@see Glitchtip} à partir de la
+     * configuration du plugin (DSN, environnement, activation des logs, taux
+     * d'échantillonnage des traces, niveau de log, `error_types`).
+     *
+     * N'a aucun effet si le SDK est déjà initialisé ({@see Glitchtip::isInitialized()}) :
+     * elle peut donc être appelée sans risque à plusieurs reprises.
+     *
+     * Appelée depuis les hooks `startup`, `init` et `fatal_error` afin de garantir
+     * que le SDK est prêt avant toute utilisation, quel que soit le point d'entrée.
+     *
+     * @return void
+     **/
+    private function _ensureGlitchtipIsInitialized(): void {
+        $factory = include __DIR__ . '/php/functions/ensure_glitchtip_initialized.php';
+        (Closure::bind($factory, null, self::class))($this);
     }
 
     /**
@@ -165,12 +171,10 @@ class bnum_glitchtip extends bnum_plugin {
         $this->load_config();
 
 
-        $this->add_hooks([
-            'startup'     => [$this, 'hook_startup'],
-            'write_log'   => [$this, 'hook_write_log'],
-            'fatal_error' => [$this, 'hook_fatal_error'],
-        ]);
-
+        $this->add_hook('startup', [$this, 'hook_startup']);
+        $this->add_hook('write_log', [$this, 'hook_write_log']);
+        $this->add_hook('fatal_error', [$this, 'hook_fatal_error']);
+        
         $initFactory = include __DIR__ . '/php/init/init.php';
         (Closure::bind($initFactory, null, self::class))($this);
     }

@@ -13,7 +13,7 @@ declare(strict_types=1);
  * @return array Les arguments inchangés, tels que reçus.
  */
 return static function (bnum_glitchtip $plugin, array $args): array {
-    $plugin->ensure_glitchtip_initialized();
+   $plugin->_ensureGlitchtipIsInitialized();
 
     return $args;
 };

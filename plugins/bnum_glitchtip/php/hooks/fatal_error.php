@@ -20,12 +20,6 @@ return static function (bnum_glitchtip $plugin, array $args): array {
     try {
         $plugin->ensure_glitchtip_initialized();
         Glitchtip::Instance()->captureFatalError();
-
-        mel_logs::gi()->log(
-            mel_logs::ERROR,
-            "[bnum_glitchtip] Erreur fatale transmise à Glitchtip avant exit : "
-                . "{$error['message']} dans {$error['file']}:{$error['line']}"
-        );
     } catch (\Throwable $e) {
         // On ne relance jamais depuis ce handler : le core est déjà en train de
         // terminer le script suite à une erreur fatale.

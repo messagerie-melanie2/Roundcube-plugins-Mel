@@ -7,6 +7,14 @@ $beforePluginFactory();
 
 require_once __DIR__ . '/php/functions/logs.php';
 
+/**
+ * Plugin bnum_glitchtip — intégration Sentry/GlitchTip pour Roundcube-Mel.
+ *
+ * Hooks utilisés :
+ * - startup     : initialisation du SDK Sentry pour la requête courante
+ * - write_log   : relai des logs internes Roundcube vers Glitchtip
+ * - fatal_error : hook projet (core), capture des erreurs fatales PHP avant l'exit()
+ */
 class bnum_glitchtip extends bnum_plugin {
     use BGT_LogsTrait {
         BGT_LogsTrait::logTrace as private __rcpclBody_BGT_LogsTrait_logTrace;
@@ -28,6 +36,32 @@ class bnum_glitchtip extends bnum_plugin {
     public function hook_write_log(array $args): array {
         $factory = include __DIR__ . '/php/hooks/write_log.php';
         return (Closure::bind($factory, null, self::class))($this, $args);
+    }
+
+    public function hook_fatal_error(array $args): array {
+        $factory = include __DIR__ . '/php/hooks/fatal_error.php';
+        return (Closure::bind($factory, null, self::class))($this, $args);
+    }
+
+    /**
+         * Initialise le singleton {@see Glitchtip} à partir de la configuration du
+         * plugin, si ce n'est pas déjà fait.
+         *
+         * Centralise le bloc lecture de config + {@see Glitchtip::init()} partagé par
+         * les hooks `startup`, `fatal_error` et le point d'entrée `init()` du plugin.
+         *
+         * @return void
+         **/
+    public function ensure_glitchtip_initialized(): void {
+        if (Glitchtip::Instance()->isInitialized()) return;
+
+        Glitchtip::Instance()->init((string) $this->get_config('php_dsn'), [
+            'environment' => (string) $this->get_config('env', 'dev'),
+            'enable_logs' => (bool) $this->get_config('enable_logs', false),
+            'traces_sample_rate' => (float) $this->get_config('traces_sample_rate', 0.01),
+            'log_level' => (string) $this->get_config('log_level', 'error'),
+            'error_types' => $this->get_config('error_types'),
+        ]);
     }
 
     /**
@@ -131,8 +165,11 @@ class bnum_glitchtip extends bnum_plugin {
         $this->load_config();
 
 
-        $this->add_hook('startup', [$this, 'hook_startup']);
-        $this->add_hook('write_log', [$this, 'hook_write_log']);
+        $this->add_hooks([
+            'startup'     => [$this, 'hook_startup'],
+            'write_log'   => [$this, 'hook_write_log'],
+            'fatal_error' => [$this, 'hook_fatal_error'],
+        ]);
 
         $initFactory = include __DIR__ . '/php/init/init.php';
         (Closure::bind($initFactory, null, self::class))($this);

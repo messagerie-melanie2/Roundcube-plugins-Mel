@@ -16,15 +16,7 @@ return static function (bnum_glitchtip $plugin): void {
     $env = (string) $plugin->get_config('env', 'dev');
     $enable_logs = (bool) $plugin->get_config('enable_logs', false);
 
-    if (!Glitchtip::Instance()->isInitialized()) {
-        Glitchtip::Instance()->init((string) $plugin->get_config('php_dsn'), [
-            'environment' => $env,
-            'enable_logs' => $enable_logs,
-            'traces_sample_rate' => (float) $plugin->get_config('traces_sample_rate', 0.01),
-            'log_level' => (string) $plugin->get_config('log_level', 'error'),
-            'error_types' => $plugin->get_config('error_types'),
-        ]);
-    }
+    $plugin->ensure_glitchtip_initialized();
 
     if($_SERVER['REQUEST_METHOD'] === 'GET') {
         try {

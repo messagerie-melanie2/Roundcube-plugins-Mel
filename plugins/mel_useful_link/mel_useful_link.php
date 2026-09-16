@@ -561,7 +561,7 @@ class mel_useful_link extends bnum_plugin
   private function _get_external_links(array $args, $hook = 'get_external_ulink', string $key = 'links'): array {
     $external_links = null;  
     $hook_plugin = $this->rc->plugins->exec_hook($hook, $args) ?? [];
-    $links = $hook_plugin['links'];
+    $links = $hook_plugin[$key];
     
     if (isset($links) && is_object($links)) $external_links = get_object_vars($links);
     

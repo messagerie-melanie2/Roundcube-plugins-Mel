@@ -509,7 +509,7 @@ class mel_useful_link extends bnum_plugin
 
     $isMultiLink = is_array($link) || strpos($link, '{') !== false;
 
-    $external_links = get_object_vars($this->rc->plugins->exec_hook('get_external_ulink', ['key' => $key])['links']);
+    $external_links = $this->_get_external_links(['key' => $key]);
 
     $config = $key ? $external_links : $this->rc->config->get('new_personal_useful_links', []);
 
@@ -558,12 +558,22 @@ class mel_useful_link extends bnum_plugin
     exit;
   }
 
+  private function _get_external_links(array $args, $hook = 'get_external_ulink', string $key = 'links'): array {
+    $external_links = null;  
+    $hook_plugin = $this->rc->plugins->exec_hook($hook, $args) ?? [];
+    $links = $hook_plugin['links'];
+    
+    if (isset($links) && is_object($links)) $external_links = get_object_vars($links);
+    
+    return $external_links ?? [];
+  }
+
   function delete_link()
   {
     $id = rcube_utils::get_input_value("_id", rcube_utils::INPUT_GPC);
     $key = rcube_utils::get_input_value("_key", rcube_utils::INPUT_GPC);
 
-    $external_links = get_object_vars($this->rc->plugins->exec_hook('get_external_ulink', ['key' => $key])['links']);
+    $external_links = $this->_get_external_links(['key' => $key]);
 
     $links = $key ? $external_links : $this->rc->config->get('new_personal_useful_links', []);
 

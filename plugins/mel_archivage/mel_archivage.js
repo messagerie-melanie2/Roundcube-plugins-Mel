@@ -51,57 +51,17 @@ if (window.rcmail) {
         })
 
         $('#form_archivage').submit(function (event) {
-            if (rcmail.env.iselectron) {
-                event.preventDefault();
-                var params = {
-                    _mbox: rcmail.env.mailbox,
-                    nb_jours: $('#nb_jours').val(),
-                    archivage_date: $('#archivage_date').val()
-                };
-                //Dans le cas d'une boite partagée
-                if (rcmail.env.account) {
-                    params._account = rcmail.env.account;
-                }
-                rcmail.http_get('mail/plugin.mel_archivage_traitement_electron', params);
-
-                rcmail.addEventListener('responseafterplugin.mel_archivage_traitement_electron', function (event) {
-                    let stringified = JSON.stringify(event.response.data);
-                    let parsedObj = JSON.parse(stringified);
-                    let files = [];
-                    for (const mbox in parsedObj) {
-                        for (let i = 0; i < parsedObj[mbox].length; i++) {
-                            const uid = parsedObj[mbox][i];
-                            uid.flags = (Array.isArray(uid.flags)) ? { "SEEN": false } : uid.flags;
-                            if (!uid.flags.hasOwnProperty('SEEN')) {
-                                uid.flags.SEEN = false;
-                            }
-                            
-                            if (rcmail.env.mailbox.indexOf("Boitepartag&AOk-e") === 0) {
-                                var path_folder = rcmail.env.mailbox.replace("Boitepartag&AOk-e/", "");
-                            }
-                            else {
-                                var path_folder = rcmail.env.account + "/" + mbox;
-                            }
-                            files.push({ "url": rcmail.url('mail/viewsource', rcmail.params_from_uid(uid.message_uid)).replace(/_framed=/, '_save='), "uid": uid.message_uid, "path_folder": path_folder, "mbox": mbox, "etiquettes": uid.flags });
-                        }
-                        window.parent.api.send('download_eml', { "files": files, "token": rcmail.env.request_token });
-                        $("#nb_mails").text(rcmail.get_label('mel_archivage.archive_downloading'));
-                    }
-                });
-            }
-            else {
-                $("#submit_archivage").prop("disabled", true);
-                $("body.archivage").addClass("loading");
-                $("#nb_mails").text(rcmail.get_label('mel_archivage.generating_archive') + ' ' + rcmail.get_label('mel_archivage.dont_reload_page'));
-                listenCookieChange("current_archivage", function () {
-                    $("body.archivage").removeClass("loading");
-                    $("#nb_mails").text(rcmail.get_label('mel_archivage.archive_generated'));
-                    rcmail.display_message(rcmail.get_label('mel_archivage.archive_generated'), 'confirm');
-                    setTimeout(() => {
-                        parent.location.reload();
-                    }, 5000);
-                });
-            }
+            $("#submit_archivage").prop("disabled", true);
+            $("body.archivage").addClass("loading");
+            $("#nb_mails").text(rcmail.get_label('mel_archivage.generating_archive') + ' ' + rcmail.get_label('mel_archivage.dont_reload_page'));
+            listenCookieChange("current_archivage", function () {
+                $("body.archivage").removeClass("loading");
+                $("#nb_mails").text(rcmail.get_label('mel_archivage.archive_generated'));
+                rcmail.display_message(rcmail.get_label('mel_archivage.archive_generated'), 'confirm');
+                setTimeout(() => {
+                    parent.location.reload();
+                }, 5000);
+            });
         })
 
         function listenCookieChange(cookieName, callback) {

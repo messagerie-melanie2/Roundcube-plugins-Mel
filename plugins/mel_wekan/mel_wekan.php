@@ -370,7 +370,13 @@ class mel_wekan extends bnum_plugin
     public function action_get_user_board()
     {
         $this->require_plugin('mel_helper');
-        $user = rcube_utils::get_input_value('_user', rcube_utils::INPUT_POST) ?? driver_mel::gi()->getUser()->uid;
+        // _user n'est volontairement plus lu depuis la requête : cette action
+        // est accessible à tout utilisateur Roundcube authentifié, et rien
+        // ne vérifiait qu'il avait le droit de consulter les tableaux d'un
+        // autre utilisateur (IDOR). Aucun appelant légitime n'envoie ce
+        // paramètre, elle ne peut donc renvoyer que les tableaux de
+        // l'utilisateur courant.
+        $user = driver_mel::gi()->getUser()->uid;
         $moderator_only = rcube_utils::get_input_value('_moderator', rcube_utils::INPUT_POST) ?? false;
         $mode = rcube_utils::get_input_value('_mode', rcube_utils::INPUT_POST) ?? 0;
         $only_title_and_id = (rcube_utils::get_input_value('_minified_datas', rcube_utils::INPUT_POST) ?? true) == 'true';
@@ -472,10 +478,13 @@ class mel_wekan extends bnum_plugin
         // 5. Parcourt les tableaux administrés par l'utilisateur courant
         foreach ($this->get_user_admin_board_generator($userUid) as $value) {
             // Filtre selon la visibilité du workspace et du tableau
-            if (($wsp->isPublic() && $value->permission === 'public') || 
+            if (($wsp->isPublic() && $value->permission === 'public') ||
             (!$wsp->isPublic() && $value->permission === 'private'))
-                // Ajoute une option au select, sélectionnée si c'est le tableau courant
-                $html .= '<option value="'.$value->id.'" '.($value->id === $wekan ? 'selected' : '').'>'.$value->title.'</option>';
+                // Ajoute une option au select, sélectionnée si c'est le tableau courant.
+                // $value->title est un titre de tableau Wekan choisi librement par
+                // son créateur : il doit être échappé, ce select étant vu par tout
+                // membre du workspace qui ouvre ce sélecteur (XSS stockée sinon).
+                $html .= '<option value="'.rcube::Q($value->id).'" '.($value->id === $wekan ? 'selected' : '').'>'.rcube::Q($value->title).'</option>';
         }
 
         // 6. Termine le select et retourne le HTML

@@ -5098,6 +5098,34 @@ button.melv2-sec-nav-correction {
   }
 }
 
+//Mantis 9476
+.ui-dialog:has(img[src*='_action=qrcode']) {
+  width: auto !important;
+  height: auto !important;
+
+  .ui-dialog-content {
+    width: auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+  }
+
+  img {
+    display: block;
+    width: 300px;
+    height: 300px;
+  }
+
+  @media screen and (max-width: 904px) {
+    img {
+      width: 100%;
+      max-width: 300px;
+      height: auto;
+      margin: 0 auto;
+    }
+  }
+}
+
 .new-note-button {
   margin: 10px;
   border: none;

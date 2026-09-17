@@ -209,7 +209,7 @@ class mel_useful_link extends bnum_plugin
   private function convert_image_icon($new_personal_useful_links)
   {
     foreach ($new_personal_useful_links as $id => $item) {
-      $item = json_decode($item);
+      if (is_string($item)) $item = json_decode($item);
       if ($item->links) {
         foreach ($item->links as $key => $value) {
           if (strpos($value->icon, '://')) {

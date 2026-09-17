@@ -41,4 +41,7 @@ $labels['error_too_many_messages'] = "Une erreur s'est produite lors de la gén�
 $labels['INBOX'] = 'boite de reception';
 $labels['help'] = 'Afficher l\'aide';
 
+$labels['error_invalid_days'] = "Le nombre de jours doit être un entier supérieur ou égal à 1.";
+$labels['error_invalid_date'] = "La date indiquée est invalide. Format attendu : jj/mm/aaaa.";
+
 ?>

@@ -145,10 +145,17 @@ class mel_envoi_differe extends rcube_plugin
      */
     function disconnection() 
     {
+        $rcmail = rcmail::get_instance();
+
+        // Protection CSRF : rejette toute requête sans jeton valide.
+        if (!$rcmail->check_request(rcube_utils::INPUT_POST)) {
+            $rcmail->output->show_message('invalidrequest', 'error');
+            return;
+        }
+
         $_SESSION['disconnexion_popup'] = true;
-        $act = rcube_utils::get_input_value('_act', rcube_utils::INPUT_GPC);
+        $act = rcube_utils::get_input_value('_act', rcube_utils::INPUT_POST);
         if ($act == 'continue_with_remise_differe') {
-            $rcmail = rcmail::get_instance();
             $this->add_texts('localization/', ['disco_remise_differe_enabled']);
 
             // Get config values

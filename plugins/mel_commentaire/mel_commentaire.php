@@ -56,7 +56,8 @@ class mel_commentaire extends rcube_plugin
      */
     function message_headers($args) {
         if ($header = $args['headers']->get(strtolower(self::$header), true)) {
-            $commentaires = explode("¤¤", $header);
+            // Échappement HTML : le contenu de l'en-tête IMAP est une donnée externe non fiable
+            $commentaires = array_map(['rcube', 'Q'], explode("¤¤", $header));
             $html = '';
             $i = 0;
             $firstline = null;

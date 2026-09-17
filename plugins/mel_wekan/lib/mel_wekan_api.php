@@ -296,8 +296,8 @@ class mel_wekan_api extends amel_lib
             $this->login();
 
         //Add to cache, avoid to do multiple get
-        if ($cache["users"] !== null && $cache["users"][$username] !== null)
-            $users = $cache["users"][$username];
+        if (isset($this->cache["users"][$username]))
+            $users = $this->cache["users"][$username];
         else {
             $users = $this->get(self::CALL_GET_USERS."/$username", null, ['Authorization: Bearer '.$_SESSION[self::KEY_SESSION_AUTH]["token"]]);
 
@@ -305,10 +305,7 @@ class mel_wekan_api extends amel_lib
             {
                 $content = json_decode($users["content"]);
 
-                if ($cache["users"] === null)
-                    $cache["users"] = [];
-
-                $cache["users"][$username] = $content->_id;
+                $this->cache["users"][$username] = $content->_id;
 
                 $users = $content->_id;
             }

@@ -3804,19 +3804,15 @@ function rcube_calendar_ui(settings) {
       }
     }
 
-    // recurring event: user needs to select the savemode
+        // recurring event: user needs to select the savemode
     if (event.recurrence) {
-      var future_disabled = '',
-        message_label =
-          action == 'remove'
-            ? 'removerecurringeventwarning'
-            : 'changerecurringeventwarning';
+      var message_label =
+        action == 'remove'
+          ? 'removerecurringeventwarning'
+          : 'changerecurringeventwarning';
 
-      // disable the 'future' savemode if I'm an attendee
-      // reason: no calendaring system supports the thisandfuture range parameter in iTip REPLY
-      if (action == 'remove' && !_is_organizer && _is_attendee) {
-        future_disabled = ' disabled';
-      }
+      // MANTIS 0009140: masquer le mode "future" lorsque je suis simple participant.
+      var future_hidden = action == 'remove' && !_is_organizer && _is_attendee;
 
       html +=
         '<div class="message dialog-message ui alert boxwarning">' +
@@ -3826,11 +3822,11 @@ function rcube_calendar_ui(settings) {
         '<a href="#current" class="button btn btn-secondary">' +
         rcmail.gettext('currentevent', 'calendar') +
         '</a>' +
-        '<a href="#future" class="button btn btn-secondary' +
-        future_disabled +
-        '">' +
-        rcmail.gettext('futurevents', 'calendar') +
-        '</a>' +
+        (future_hidden
+          ? ''
+          : '<a href="#future" class="button btn btn-secondary">' +
+            rcmail.gettext('futurevents', 'calendar') +
+            '</a>') +
         '<a href="#all" class="button btn btn-secondary">' +
         rcmail.gettext('allevents', 'calendar') +
         '</a>' +
@@ -3868,6 +3864,8 @@ function rcube_calendar_ui(settings) {
               data._decline = $dialog.find(
                 'input.confirm-attendees-decline:checked',
               ).length;
+              //Mantis 0009140 pasz de reply possible sur un rang THISANDFUTURE
+              data._decline = data.find('input.confirm-attendees-decline:checked').length;
               data._notify = 0;
             }
             update_event(action, data);

@@ -87,6 +87,7 @@ class mel_visio extends bnum_plugin
         
         $driverName = strtolower($driverName);
 
+        //Devrait éviter les problèmes de charger un driver dans un endroit inconnu
         if (!preg_match('/^[a-z0-9_]+$/', $driverName)) {
             throw new \InvalidArgumentException("Invalid driver name: $driverName");
         }

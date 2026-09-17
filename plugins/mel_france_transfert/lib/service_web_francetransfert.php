@@ -267,18 +267,23 @@ class ServiceWebFranceTransfert {
     $total_chunks_number = intdiv($file_size, $chunk_size)  + ($file_size % $chunk_size > 0 ? 1 : 0);
     
     $handle = fopen($path, "rb");
-    
+
+    // Le nom de fichier est inséré tel quel dans le corps multipart : on retire les
+    // guillemets et retours à la ligne pour empêcher une injection d'en-tête/de partie
+    // (le nom d'un fichier joint est entièrement contrôlé par l'utilisateur).
+    $safe_name = str_replace(['"', "\r", "\n"], '', $name);
+
     while ($total_chunk_size < $file_size) {
       // Génération de la boundary
       $boundary = '-----=' . md5(uniqid(mt_rand()));
       $delimiter = '--' . $boundary;
-  
+
       $contents = fread($handle, $chunk_size);
       $current_chunk_size = strlen($contents);
 
-      $parts = $this->getChunkParts($delimiter, $idPli, $from, $chunk_number, $current_chunk_size, $file_size, $id, $name, $total_chunks_number);
+      $parts = $this->getChunkParts($delimiter, $idPli, $from, $chunk_number, $current_chunk_size, $file_size, $id, $safe_name, $total_chunks_number);
       $parts[] = $delimiter;
-      $parts[] = 'Content-Disposition: form-data; name="fichier"; filename="' . $name . '"';
+      $parts[] = 'Content-Disposition: form-data; name="fichier"; filename="' . $safe_name . '"';
       $parts[] = 'Content-Type: application/octet-stream';
       $parts[] = '';
       $parts[] = $contents;
@@ -572,8 +577,6 @@ class ServiceWebFranceTransfert {
       $data_string = "";
     }
 
-    $fp = fopen('/var/log/roundcube/bnum/curl_errors.log', 'w');
-
     // Options list
     $options = [
       CURLOPT_RETURNTRANSFER  => true, // return web page
@@ -583,8 +586,6 @@ class ServiceWebFranceTransfert {
       CURLOPT_TIMEOUT         => $this->rc->config->get('curl_timeout', 1200), // time-out on response
       CURLOPT_SSL_VERIFYPEER  => $this->rc->config->get('curl_ssl_verifierpeer', 0),
       CURLOPT_SSL_VERIFYHOST  => $this->rc->config->get('curl_ssl_verifierhost', 0),
-      CURLOPT_VERBOSE         => true,
-      CURLOPT_STDERR          => $fp,
       CURLOPT_POST            => true,
       CURLOPT_POSTFIELDS      => $data_string,
     ];

@@ -49,7 +49,7 @@ class Moncompte {
 		$fid = rcube_utils::get_input_value('_fid', rcube_utils::INPUT_GPC);
 		if (isset($fid) && !empty($fid)) {
 			$this->rc->output->add_handler('moncompte_balp_list', array($this, 'moncompte_balp_list'));
-			$classname = ucfirst(strtolower($fid));
+			$classname = $fid |> strtolower(...) |> ucfirst(...);
 			include_once __DIR__.'/'.$classname.'.php';
 			$this->rc->output->set_env('fid', $fid);
 			if (class_exists($classname)) {
@@ -94,7 +94,7 @@ class Moncompte {
 		$pages = $this->rc->config->get('mel_moncompte_pages', ['informationspersonnelles','changepassword','gestionnaireabsence','accesinternet','synchronisationmobile','gestionnairelistes']);
 		// Génération de l'affichage
 		foreach ($pages as $page) {
-			$class = ucfirst(strtolower($page));
+			$class = $page |> strtolower(...) |> ucfirst(...);
 			include_once __DIR__.'/'.$class.'.php';
 			if ($class::isEnabled()) {
 				$result[] = array('id' => $page, 'name' => $this->plugin->gettext($page), 'class' => '');

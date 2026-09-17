@@ -1260,7 +1260,7 @@ class mel_forum extends bnum_plugin
         $tag = new LibMelanie\Api\Defaut\Posts\Tag();
 
         //Définition des propriétés du tag
-        $tag->name = ucfirst(str_replace(' ', '', $name));
+        $tag->name = $name |> (fn($n) => str_replace(' ', '', $n)) |> ucfirst(...);
         mel_helper::load_helper($this->rc())->include_utilities();
         $tag->name = mel_utils::remove_accents($tag->name);
 

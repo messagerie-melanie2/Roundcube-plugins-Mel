@@ -1,7 +1,16 @@
 class Wekan {
   constructor() {
-    this.tokenName = `Meteor.loginToken:/:/${rcmail.env.wekan_storage_end}`;
-    this.tokenId = `Meteor.userId:/:/${rcmail.env.wekan_storage_end}`;
+    const origin = this.#_getOrigine();
+    this.tokenName = `Meteor.loginToken:${origin}:/${rcmail.env.wekan_storage_end}`;
+    this.tokenId = `Meteor.userId:${origin}:/${rcmail.env.wekan_storage_end}`;
+  }
+
+  #_getOrigine() {
+    let origin = window.location.origin + window.location.pathname;
+
+    if (origin.at(-1) !== '/') origin += '/';
+
+    return origin;
   }
 
   login() {

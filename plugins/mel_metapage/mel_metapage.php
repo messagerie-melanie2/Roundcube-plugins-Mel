@@ -4979,7 +4979,7 @@ class mel_metapage extends bnum_plugin
         $text_color = imagecolorallocate($image, $colors['text'][0], $colors['text'][1], $colors['text'][2]);
 
         $font = __DIR__ . '/skins/mel_elastic/roboto.ttf';
-        $letter = strtoupper(substr($email, 0, 1));
+        $letter = $email |> (fn($v) => substr($v, 0, 1)) |> strtoupper(...);
         $font_size = 120;
 
         $bbox = imagettfbbox($font_size, 0, $font, $letter);

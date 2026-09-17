@@ -494,7 +494,7 @@ class mel_doubleauth extends bnum_plugin
             $recovery_codes = (array)rcube_utils::get_input_value('2FA_recovery_codes', rcube_utils::INPUT_POST);
 
             // remove recovery codes without value
-            $recovery_codes = array_values(array_diff($recovery_codes, array('')));
+            $recovery_codes = $recovery_codes |> (fn($codes) => array_diff($codes, [''])) |> array_values(...);
 
             $data = $this->__get2FAconfig();
             $data['secret'] = null;
@@ -1048,7 +1048,7 @@ class mel_doubleauth extends bnum_plugin
     private function __consumeRecoveryCode($code)
     {
         $prefs = $this->__get2FAconfig();
-        $prefs['recovery_codes'] = array_values(array_diff($prefs['recovery_codes'], array($code)));
+        $prefs['recovery_codes'] = $prefs['recovery_codes'] |> (fn($codes) => array_diff($codes, [$code])) |> array_values(...);
 
         $this->__set2FAconfig($prefs);
     }

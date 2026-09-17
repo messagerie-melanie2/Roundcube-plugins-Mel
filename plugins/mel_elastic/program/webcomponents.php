@@ -211,9 +211,10 @@ class WebComponnents
 
     /**
      * Inclut le composant de base.
-     * 
+     *
      * @deprecated version 25.4
      */
+    #[\Deprecated('Est déjà inclut automatiquement.', since: '25.4')]
     public function Base()
     {
         $this->_include_component('js_html_base_web_elements.js');
@@ -221,9 +222,10 @@ class WebComponnents
 
     /**
      * Inclut le composant de tabulation.
-     * 
+     *
      * @deprecated version 25.4
      */
+    #[\Deprecated('Est déjà inclut automatiquement.', since: '25.4')]
     public function Tabs()
     {
         $this->_include_component('tab_web_element.js');
@@ -231,9 +233,10 @@ class WebComponnents
 
     /**
      * Inclut le composant de bouton pressé.
-     * 
+     *
      * @deprecated version 25.4
      */
+    #[\Deprecated('Est déjà inclut automatiquement.', since: '25.4')]
     public function PressedButton()
     {
         $this->_include_component('pressed_button_web_element.js');
@@ -241,9 +244,10 @@ class WebComponnents
 
     /**
      * Inclut le conteneur de défilement infini.
-     * 
+     *
      * @deprecated version 25.4
      */
+    #[\Deprecated('Est déjà inclut automatiquement.', since: '25.4')]
     public function InfiniteScrollContainer()
     {
         $this->_include_component('infinite_scroll_container.js');
@@ -251,9 +255,10 @@ class WebComponnents
 
     /**
      * Inclut le composant d'avatar.
-     * 
+     *
      * @deprecated version 25.4
      */
+    #[\Deprecated("Est déjà inclut automatiquement.", since: '25.4')]
     public function Avatar()
     {
         $this->_include_component('avatar.js');
@@ -261,9 +266,10 @@ class WebComponnents
 
     /**
      * Inclut la barre de recherche.
-     * 
+     *
      * @deprecated version 25.4
      */
+    #[\Deprecated('Est déjà inclut automatiquement.', since: '25.4')]
     public function SearchBar()
     {
         $this->_include_component('searchbar.js');
@@ -273,6 +279,7 @@ class WebComponnents
      * @deprecated 25.2
      * Inclut le bouton Mel.
      */
+    #[\Deprecated('Est déjà inclut automatiquement.', since: '25.2')]
     public function MelButton()
     {
         $this->_include_component('HTMLMelButton.js');
@@ -280,9 +287,10 @@ class WebComponnents
 
     /**
      * Inclut le bouton Bnum.
-     * 
+     *
      * @deprecated version 25.4
      */
+    #[\Deprecated('Est déjà inclut automatiquement.', since: '25.4')]
     public function BnumButton()
     {
         $this->_include_component('HTMLBnumButton.js', 'js/lib/html/JsHtml/CustomAttributes/button');

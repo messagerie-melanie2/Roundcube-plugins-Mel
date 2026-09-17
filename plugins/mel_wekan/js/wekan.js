@@ -1,5 +1,22 @@
+(() => {
 class Wekan {
+  get #_melMetapage() {
+    const mel_metapage = window.mel_metapage || {};
+
+    if (!mel_metapage) 
+      console.error('### [Wekan/constructor] Impossible de trouver mel_metapage !', mel_metapage);
+
+    return mel_metapage;
+  }
+
   constructor() {
+    const rcmail = window.rcmail || null;
+
+    if (!rcmail) {
+      console.error('### [Wekan/constructor] Impossible de trouver rcmail !', rcmail);
+      return;
+    }
+
     const origin = this.#_getOrigine();
     this.tokenName = `Meteor.loginToken:${origin}:/${rcmail.env.wekan_storage_end}`;
     this.tokenId = `Meteor.userId:${origin}:/${rcmail.env.wekan_storage_end}`;
@@ -14,7 +31,7 @@ class Wekan {
   }
 
   login() {
-    return mel_metapage.Functions.post(
+    return this.#_melMetapage.Functions.post(
       this.url('login'),
       {
         currentUser: true,
@@ -25,9 +42,10 @@ class Wekan {
           datas = JSON.parse(datas.content);
           const token = this.tokenName;
 
-          //mel_metapage.Storage.set(token, datas.authToken, false);
           localStorage.setItem(token, datas.authToken);
-        } catch (error) {}
+        } catch (error) {
+          return error;
+        }
       },
     ).then(
       (e) =>
@@ -41,49 +59,69 @@ class Wekan {
   }
 
   create_board(title, isPublic, color = null) {
-    return mel_metapage.Functions.post(
+    return this.#_melMetapage.Functions.post(
       this.url('create_board'),
       {
         _title: title,
         _isPublic: isPublic,
         _color: color,
       },
-      (datas) => {
-        //console.log("wekan", datas);
+      (_) => {
+        return _;
       },
     );
   }
 
   update_user_status() {
-    return mel_metapage.Functions.post(
+    return this.#_melMetapage.Functions.post(
       this.url('update_user_status'),
-      (datas) => {
-        //console.log("wekan", datas);
+      (_) => {
+        return _;
       },
     );
   }
 
   check_board() {
-    return mel_metapage.Functions.post(
+    return this.#_melMetapage.Functions.post(
       this.url('check_board'),
       {
         _board: 'pSSkHJ6wb64ZS2gxE',
       },
-      (datas) => {
-        //console.log("wekan", JSON.parse(datas));
+      (_) => {
+        return _;
       },
     );
   }
 
   url(task) {
-    return mel_metapage.Functions.url('wekan', task);
+    return this.#_melMetapage.Functions.url('wekan', task);
   }
 }
 
 
 window.wekan = new Wekan();
 
+const $ = window.$ || null;
+
+if (!$) {
+  console.error('### [Wekan] Impossible de trouver la classe Jquery !', $);
+  return;
+}
+
 $(document).ready(async () => {
+  const rcmail = window.rcmail || null;
+  const wekan = window.wekan || null;
+
+  if (!rcmail) {
+    console.error('### [Wekan] Impossible de trouver rcmail !', rcmail);
+    return;
+  }
+
+  if (!wekan) {
+    console.error('### [Wekan] Impossible de trouver la classe Wekan !', wekan);
+    return;
+  }
+
   if (
     rcmail.env.task === 'wekan' &&
     (rcmail.env.action === '' || rcmail.env.action === 'index')
@@ -99,7 +137,7 @@ $(document).ready(async () => {
         window.addEventListener('storage', (e) => {
           if (e.key === wekan.tokenId) {
             if (
-              rcmail.env.wekan_startup_url != null &&
+              rcmail.env.wekan_startup_url !== null &&
               rcmail.env.wekan_startup_url !== undefined
             )
               $('#wekan-iframe')[0].src = rcmail.env.wekan_startup_url;
@@ -108,7 +146,7 @@ $(document).ready(async () => {
         });
 
         if (
-          rcmail.env.wekan_startup_url != null &&
+          rcmail.env.wekan_startup_url !== null &&
           rcmail.env.wekan_startup_url !== undefined
         )
           $('#wekan-iframe')[0].src = rcmail.env.wekan_startup_url;
@@ -120,3 +158,4 @@ $(document).ready(async () => {
     }
   }
 });
+})();

@@ -26,7 +26,11 @@ class visio_api extends amel_lib
     /** @var string */
     private $client_secret;
 
-    public function __construct($rc, $plugin)
+    /**
+     * @param rcmail      $rc     Instance rcmail courante
+     * @param bnum_plugin $plugin Plugin propriétaire de ce client API
+     */
+    public function __construct(rcmail $rc, bnum_plugin $plugin)
     {
         parent::__construct($rc, $plugin);
         $this->url = rtrim((string) $this->get_config('visio_gouv_url'), '/');
@@ -57,8 +61,8 @@ class visio_api extends amel_lib
         $url = $this->url . $endpoint;
 
         $response = strtoupper($method) === 'GET'
-            ? $this->fetch()->_get_url($url, null, $headers, $this->_getProxy())
-            : $this->fetch()->_custom_url($url, strtoupper($method), $body, null, $headers, $this->_getProxy());
+            ? $this->fetch()->_get_url($url, null, $headers, $this->get_proxy())
+            : $this->fetch()->_custom_url($url, strtoupper($method), $body, null, $headers, $this->get_proxy());
 
         return [
             'httpCode' => $response['httpCode'],
@@ -122,7 +126,13 @@ class visio_api extends amel_lib
         return $this->request_new_token($user_email);
     }
 
-    private function _getProxy() {
+    /**
+     * Construit les options cURL de proxy à partir de la configuration.
+     *
+     * @return array<int, mixed> Options cURL additionnelles (vide si aucun proxy configuré)
+     */
+    private function get_proxy(): array
+    {
         $proxy = $this->get_config('visio_gouv_proxy');
         return $proxy ? [CURLOPT_PROXY => $proxy] : [];
     }
@@ -141,7 +151,7 @@ class visio_api extends amel_lib
             'client_secret' => $this->client_secret,
             'grant_type' => 'client_credentials',
             'scope' => $user_email,
-        ], null, ['Content-Type: application/json'], $this->_getProxy());
+        ], null, ['Content-Type: application/json'], $this->get_proxy());
 
         $content = json_decode((string) $response['content'], true);
 

@@ -47,7 +47,14 @@ class Wekan {
    * @returns {string} Origine normalisée
    */
   #_getOrigine() {
-    let origin = window.location.origin + window.location.pathname;
+    const rcmail = window.rcmail || null;
+
+    if (!rcmail) {
+      console.error('### [Wekan/#_getOrigine] Impossible de trouver rcmail !', rcmail);
+      return;
+    }
+    
+    let origin = rcmail.env.wekan_base_url;//window.location.origin + window.location.pathname;
 
     if (origin.at(-1) !== '/') origin += '/';
 

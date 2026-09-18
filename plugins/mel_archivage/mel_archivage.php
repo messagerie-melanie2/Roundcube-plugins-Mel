@@ -76,7 +76,6 @@ class mel_archivage extends rcube_plugin
       $rcmail->output->set_env('archive_folder', $folder);
       $this->register_action('plugin.mel_archivage', array($this, 'request_action'));
       $this->register_action('plugin.mel_archivage_traitement_browser', array($this, 'traitement_archivage_browser'));
-      $this->register_action('plugin.mel_archivage_traitement_electron', array($this, 'traitement_archivage_electron'));
 
       if ($rcmail->task == 'mail') {
         // Ajout du bouton dans la toolbar
@@ -95,6 +94,23 @@ class mel_archivage extends rcube_plugin
   }
 
   /**
+   * Rejette la requête si ce n'est pas un POST muni d'un jeton CSRF valide.
+   */
+  private function assert_post_csrf()
+  {
+    $rcmail  = rcmail::get_instance();
+    $is_post = ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST';
+    if (!$is_post || !$rcmail->check_request()) {
+      if (class_exists('mel_logs')) {
+        mel_logs::get_instance()->log(mel_logs::ERROR,
+          "[mel_archivage] Requête CSRF rejetée sur l'action " . $rcmail->action);
+      }
+      header('HTTP/1.1 403 Forbidden');
+      exit;
+    }
+  }
+
+  /**
    * Affichage du template archivage
    */
   public function request_action()
@@ -108,28 +124,11 @@ class mel_archivage extends rcube_plugin
   }
 
   /**
-   * Envoi la liste des mails au javascript
-   */
-  public function traitement_archivage_electron()
-  {
-    header("Content-Type: application/json; charset=" . RCUBE_CHARSET);
-    $uids = rcube_utils::get_input_value('_uids', rcube_utils::INPUT_GET);
-    $path_folder = rcube_utils::get_input_value('_path_folder', rcube_utils::INPUT_GET);
-    $result = "";
-    //Système d'archivage avec glisser/déposer
-    if ($uids) {
-      $result = array('action' => 'plugin.mel_archivage_traitement_electron', 'data' => $this->traitement_archivage_drag_drop(), 'path_folder' => $path_folder);
-    } else {
-      $result = array('action' => 'plugin.mel_archivage_traitement_electron', 'data' => $this->traitement_archivage());
-    }
-    echo json_encode($result);
-    exit;
-  }
-  /**
    * Téléchargement des mails
    */
   public function traitement_archivage_browser()
   {
+    $this->assert_post_csrf();
     $messageset = [];
     $messageset = $this->traitement_archivage();
 
@@ -139,49 +138,28 @@ class mel_archivage extends rcube_plugin
     exit;
   }
 
-
-  /**
-   * Récupération des flags pour les mails archivés à l'aide du glisser/déposer
-   */
-  public function traitement_archivage_drag_drop()
-  {
-    try {
-      $rcmail = rcmail::get_instance();
-      $storage = $rcmail->get_storage();
-
-      $uids = rcube_utils::get_input_value('_uids', rcube_utils::INPUT_GET);
-      $mbox = rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GET);
-
-      $messageset = [];
-      foreach ($uids as $uid) {
-        $message = $storage->get_message($uid, $mbox);
-        $messageset[$message->folder][] = [
-          "message_uid" => $message->uid,
-          "flags" => $message->flags
-        ];
-      }
-      setcookie("current_archivage", "1");
-      return $messageset;
-
-    } catch (Exception $ex) {
-      if (class_exists('mel_logs')) {
-        mel_logs::get_instance()->log(mel_logs::ERROR, "[mel_archivage] traitement_archivage() Error: " . $ex->getMessage());
-      }
-      setcookie("current_archivage", "0");
-      $rcmail->output->set_env('mailbox', rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GET));
-      $rcmail->output->show_message('mel_archivage.error_too_many_messages', 'error');
-      $rcmail->output->send('mel_archivage.mel_archivage');
-    }
-  }
-
-
   /**
    * Generation de la liste d'uid de mails à télécharger et deplacement des messages
    */
   public function traitement_archivage()
   {
     try {
-      $nbJours = rcube_utils::get_input_value('nb_jours', rcube_utils::INPUT_GET);
+      $nbJours = rcube_utils::get_input_value('nb_jours', rcube_utils::INPUT_POST);
+
+      // Validation : nb_jours doit être un entier strictement positif
+      if (!ctype_digit((string) $nbJours) || (int) $nbJours < 1) {
+        $rcmail = rcmail::get_instance();
+        if (class_exists('mel_logs')) {
+          mel_logs::get_instance()->log(mel_logs::ERROR,
+            "[mel_archivage] traitement_archivage() Error: nb_jours invalide (" . var_export($nbJours, true) . ")");
+        }
+        setcookie("current_archivage", "0");
+        $rcmail->output->set_env('mailbox', rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_POST));
+        $rcmail->output->show_message('mel_archivage.error_invalid_days', 'error');
+        $rcmail->output->send('mel_archivage.mel_archivage');
+      }
+      $nbJours = (int) $nbJours;
+
       $dateActuelle = new DateTime(date('Y-m-d'));
 
       $rcmail = rcmail::get_instance();
@@ -205,7 +183,7 @@ class mel_archivage extends rcube_plugin
           mel_logs::get_instance()->log(mel_logs::ERROR, "[mel_archivage] traitement_archivage() Error: Bad Mbox");
         }
         setcookie("current_archivage", "0");
-        $rcmail->output->set_env('mailbox', rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GET));
+        $rcmail->output->set_env('mailbox', rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_POST));
         $rcmail->output->show_message('mel_archivage.error_bad_folder', 'error');
         $rcmail->output->send('mel_archivage.mel_archivage');
       }
@@ -222,14 +200,7 @@ class mel_archivage extends rcube_plugin
               if (!is_array($messageset[$message->folder])) {
                 $messageset[$message->folder] = [];
               }
-              if ($rcmail->output->get_env('iselectron')) {
-                $messageset[$message->folder][] = [
-                  "message_uid" => $message->uid,
-                  "flags" => $message->flags
-                ];
-              } else {
-                $messageset[$message->folder][] = $message->uid;
-              }
+              $messageset[$message->folder][] = $message->uid;
             } else {
               $break = true;
               break;
@@ -240,7 +211,6 @@ class mel_archivage extends rcube_plugin
         }
       }
 
-
       if (count($messageset) > 0) {
         setcookie("current_archivage", "1");
         return $messageset;
@@ -249,7 +219,7 @@ class mel_archivage extends rcube_plugin
           mel_logs::get_instance()->log(mel_logs::ERROR, "[mel_archivage] traitement_archivage() Error: Count message = 0");
         }
         setcookie("current_archivage", "0");
-        $rcmail->output->set_env('mailbox', rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GET));
+        $rcmail->output->set_env('mailbox', rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_POST));
         $rcmail->output->show_message('mel_archivage.error_no_message', 'error');
         $rcmail->output->send('mel_archivage.mel_archivage');
       }
@@ -258,7 +228,7 @@ class mel_archivage extends rcube_plugin
         mel_logs::get_instance()->log(mel_logs::ERROR, "[mel_archivage] traitement_archivage() Error: " . $ex->getMessage());
       }
       setcookie("current_archivage", "0");
-      $rcmail->output->set_env('mailbox', rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GET));
+      $rcmail->output->set_env('mailbox', rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_POST));
       $rcmail->output->show_message('mel_archivage.error_too_many_messages', 'error');
       $rcmail->output->send('mel_archivage.mel_archivage');
     }
@@ -385,8 +355,21 @@ class mel_archivage extends rcube_plugin
       }
 
       // Nom du fichier archive_<date>_dossier.zip
-      $archivage_date = rcube_utils::get_input_value('archivage_date', rcube_utils::INPUT_GET);
-      $date = DateTime::createFromFormat('d/m/Y', urldecode($archivage_date));
+      $archivage_date = rcube_utils::get_input_value('archivage_date', rcube_utils::INPUT_POST);
+      $date = DateTime::createFromFormat('!d/m/Y', (string) $archivage_date);
+      $date_errors = DateTime::getLastErrors();
+      if (!$date instanceof DateTime
+          || ($date_errors && ($date_errors['warning_count'] || $date_errors['error_count']))) {
+        if (class_exists('mel_logs')) {
+          mel_logs::get_instance()->log(mel_logs::ERROR,
+            "[mel_archivage] _download_messages() Error: archivage_date invalide (" . var_export($archivage_date, true) . ")");
+        }
+        setcookie("current_archivage", "0");
+        $rcmail->output->set_env('mailbox', rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_POST));
+        $rcmail->output->show_message('mel_archivage.error_invalid_date', 'error');
+        $rcmail->output->send('mel_archivage.mel_archivage');
+      }
+
       $_folder = rcube_charset::convert($imap->get_folder(), 'UTF7-IMAP');
       if (strtoupper($_folder) == 'INBOX') {
         $_folder = $rcmail->get_user_name();

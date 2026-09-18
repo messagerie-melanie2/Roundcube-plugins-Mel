@@ -121,7 +121,11 @@ function image_data($uri)
   } else {
     $dir = __DIR__ . '/../../plugins/mel_signatures';
   }
-  return 'data:' . mime_content_type($dir . '/' . $uri) . ';base64,' . base64_encode(file_get_contents($dir . '/' . $uri));
+
+  $uriPath = "$dir/$uri";
+  $encodedData = $uriPath |> file_get_contents(...) |> base64_encode(...);
+  $contentType = mime_content_type($uriPath);
+  return "data:$contentType;base64,$encodedData";
 }
 
 /**

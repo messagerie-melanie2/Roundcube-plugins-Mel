@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types = 1);
 /**
  * Classe représentant une localité.
  *
@@ -9,34 +9,30 @@
 class Locality {
     /**
      * Identifiant unique de la localité.
-     * @var string
      */
-    public $uid;
+    public readonly string $uid;
 
     /**
      * Nom de la localité.
-     * @var string
      */
-    public $name;
+    public readonly string $name;
 
     /**
      * Description de la localité.
-     * @var string
      */
-    public $description;
+    public readonly string $description;
 
     /**
      * Code postal de la localité.
-     * @var string
      */
-    public $postalcode;
+    public readonly ?string $postalcode;
 
     /**
      * Constructeur de la classe Locality.
      *
-     * @param object $locality Objet contenant les informations de la localité.
+     * @param $locality Objet contenant les informations de la localité.
      */
-    public function __construct($locality) {
+    public function __construct(object $locality) {
         $this->uid = $locality->uid;
         $this->name = $locality->name;
         $this->description  = $this->_get_description($locality->description);
@@ -46,10 +42,10 @@ class Locality {
     /**
      * Récupère la description de la localité.
      *
-     * @param string $item Description renvoyée par $locality->description.
+     * @param string|array<int, string> $item Description renvoyée par $locality->description.
      * @return string Description formatée en majuscules.
      */
-    private function _get_description($item) : string {
+    private function _get_description(string|array $item) : string {
         if (is_array($item)) $item = $item[0];
         
         return strtoupper($item);

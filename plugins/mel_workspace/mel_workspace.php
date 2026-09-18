@@ -1405,7 +1405,7 @@ class mel_workspace extends bnum_plugin
             $loaded_list = driver_mel::gi()->getUser(null, true, false, null, $list);
             $list_members = $loaded_list->list->members;
             $all_saved_list_data = $wsp->settings()->get('lists');
-            $current_saved_list_data = $all_saved_list_data->$list;
+            $current_saved_list_data = $all_saved_list_data->$list ?? [];
             $shared = $wsp->users();
 
             $_POST['_users'] = [];
@@ -1582,7 +1582,8 @@ class mel_workspace extends bnum_plugin
             $bodymail->wsp_name = $workspace->title;
             $bodymail->wsp_creator = $workspace->creator;
             $bodymail->wsp_last__action_text = $workspace->created === $workspace->modified ? 'Crée le' : 'Mise à jour';
-            $bodymail->wsp_last__action_date = DateTime::createFromFormat('Y-m-d H:i:s', $workspace->modified)->format('d/m/Y');
+            $wsp_last__action_date = DateTime::createFromFormat('Y-m-d H:i:s', $workspace->modified);
+            $bodymail->wsp_last__action_date = $wsp_last__action_date !== false ? $wsp_last__action_date->format('d/m/Y') : '';
             $bodymail->logobnum = MailBody::load_image(__DIR__ . '/skins/mel_elastic/pictures/logobnum.png', 'png');
             $bodymail->bnum_base__url = 'http://mtes.fr/2';
             $bodymail->url = 'https://bnum.din.gouv.fr/?_task=workspace&_action=workspace&_uid=' . $workspace->uid;
@@ -1954,14 +1955,16 @@ class mel_workspace extends bnum_plugin
         return $html;
     }
 
-    public static function GetWorkspaceBlocksGenerator($workspaces)
+    public static function GetWorkspaceBlocksGenerator(\IMel_Enumerable|array $workspaces)
     {
         foreach ($workspaces as $workspace) {
-            yield self::GetWorkspacesBlock(get_class($workspace) === 'Mel_KeyValue' ? $workspace->get_value() : $workspace);
+            yield self::GetWorkspacesBlock(
+                is_string($workspace) ? $workspace : 
+                    (get_class($workspace) === 'Mel_KeyValue' ? $workspace->get_value() : $workspace));
         }
     }
 
-    public static function GetWorkspacesBlock($workspace)
+    public static function GetWorkspacesBlock(mixed $workspace)
     {
         $isblank = $workspace === 'blank';
         $workspace = Workspace::FromWorkspace($workspace);
@@ -2026,7 +2029,13 @@ class mel_workspace extends bnum_plugin
      */
     public static function LoadWorkspaces($mode = 0, $limit = null, $offset = null)
     {
-        if (!isset(self::$_workspaces)) self::$_workspaces = driver_mel::gi()->getUser()->getSharedWorkspaces(null, false, $limit, $offset);
+        if (!isset(self::$_workspaces)) {
+            $workspaces = driver_mel::gi()->getUser()->getSharedWorkspaces(null, false, $limit, $offset);
+
+            if (!$workspaces) $workspaces = [];
+
+            self::$_workspaces = $workspaces;
+        }
 
         $data = self::$_workspaces;
 

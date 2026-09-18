@@ -54,7 +54,7 @@ class mel_wekan_api extends amel_lib
     {
         if ($this->cache[self::KEY_CACHE_FETCH] === null)
         {
-            $config = $this->get_config("wekan_ssl_options");
+            $config = (array)($this->get_config("wekan_ssl_options")??[]);
             $this->cache[self::KEY_CACHE_FETCH] = $this->helper()->fetch(self::USER_AGENT, $config["verify_peer"], $config["verify_host"]);
         }
     }

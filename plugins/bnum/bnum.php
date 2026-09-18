@@ -1,4 +1,5 @@
 <?php 
+declare(strict_types = 1);
 if (!defined('EMPTY_STRING')) {
     define('EMPTY_STRING', '');
 }
@@ -18,7 +19,7 @@ class bnum extends bnum_plugin {
   /**
    * Initialise le plugin.
    */
-  function init() {
+  public function init() {
     if (self::IsCalendarDriverForced()) self::UnforceCalendarDriver();
 
     $this->load_config();
@@ -26,8 +27,8 @@ class bnum extends bnum_plugin {
     $isLogged = $this->rc()->user->ID && $this->rc()->task !== 'login';
     if($_SERVER['REQUEST_METHOD'] === 'GET' && $isLogged) {
       try {
-      $this->load_script_module('main', '/js/');
-      }catch(Error $e) {}
+        $this->load_script_module('main', '/js/');
+      }catch(Error $_) {}
     }
 
     $this->add_hook('refresh', [$this, 'hook_refresh']);
@@ -38,6 +39,45 @@ class bnum extends bnum_plugin {
   }
 
   /**
+   * Gestion du cookie once per day en php et JS
+   */
+  public function hook_refresh(array $args): array {
+    if(!isset($_COOKIE['once_per_day'])) {
+      setcookie('once_per_day', 'true', time()+60*60*24);
+      $this->exec_hook('once_per_day');
+
+      $this->rc()->output->command('plugin.local_once_per_day');
+    }
+
+    return $args;
+  }
+
+  public function hook_logout_after(array $args): array {
+
+    unset($_COOKIE['once_per_day']);
+    rcube_utils::setcookie('once_per_day', '-del-', time() - 60);
+    rcube_utils::setcookie('popup_msg_enrollment', '-del-', time() - 60);
+
+    return $args;
+  }
+
+  /**
+   * Gestion lors de la première connexion pour ne pas doubler les actions au premier refresh
+   */
+  public function action_after(): void { 
+    $valid = true;
+
+    try {
+      unset($_COOKIE['once_per_day']);
+      $this->hook_refresh([]);
+    } catch (\Throwable $th) {
+      $valid = $th;
+    }
+
+    $this->set_env('action_after.once_per_day_data', ['valid' => $valid === true, 'error' => $valid !== true ? $valid : null]);
+  }
+
+    /**
    * Force l'utilisation du driver calendrier en définissant une variable d'environnement.
    */
   public static function ForceCalendarDriver() : void {
@@ -58,44 +98,5 @@ class bnum extends bnum_plugin {
    */
   public static function IsCalendarDriverForced() : bool {
     return $_ENV[FORCE_CALENDAR_DRIVER] === true;
-  }
-
-  /**
-   * Gestion du cookie once per day en php et JS
-   */
-  public function hook_refresh($args) {
-    if(!isset($_COOKIE['once_per_day'])) {
-      setcookie('once_per_day', true, time()+60*60*24);
-      $this->exec_hook('once_per_day');
-
-      $this->rc()->output->command('plugin.local_once_per_day');
-    }
-
-    return $args;
-  }
-
-  public function hook_logout_after($args) {
-
-    unset($_COOKIE['once_per_day']);
-    rcube_utils::setcookie('once_per_day', '-del-', time() - 60);
-    rcube_utils::setcookie('popup_msg_enrollment', '-del-', time() - 60);
-
-    return $args;
-  }
-
-  /**
-   * Gestion lors de la première connexion pour ne pas doubler les actions au premier refresh
-   */
-  public function action_after() { 
-    $valid = true;
-
-    try {
-      unset($_COOKIE['once_per_day']);
-      $this->hook_refresh([]);
-    } catch (\Throwable $th) {
-      $valid = $th;
-    }
-
-    $this->set_env('action_after.once_per_day_data', ['valid' => $valid === true, 'error' => $valid !== true ? $valid : null]);
   }
 }

@@ -40,8 +40,7 @@ class visio extends bnum_plugin
         try {
             $this->set_env('visio_gouv_base_url', $this->get_config('visio_gouv_base_url'));
             $this->include_module('visio.js');
-        } catch (\Throwable $th) {
-            //throw $th;
+        } catch (\Throwable $_) {
         }
     }
 
@@ -58,7 +57,7 @@ class visio extends bnum_plugin
      */
     public function action_retrieve_room(): void
     {
-        $id = (string) $this->get_input('id');
+        $id = (string) $this->get_input('id', rcube_utils::INPUT_GET);
         $this->respond($this->api()->retrieve_room($this->get_user()->email, $id));
     }
 
@@ -105,10 +104,8 @@ class visio extends bnum_plugin
     {
         mel_helper::load_helper($this->rc())->include_amel_lib();
 
-        foreach (scandir(__DIR__ . '/lib') as $file) {
-            if (strpos($file, '.php') !== false) {
-                include_once __DIR__ . '/lib/' . $file;
-            }
+        foreach (glob(__DIR__ . '/lib/*.php') as $file) {
+            include_once $file;
         }
     }
 

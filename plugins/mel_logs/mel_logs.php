@@ -24,6 +24,7 @@ class mel_logs extends rcube_plugin
 	const ERROR = 'ERROR';
 	const WARN = 'WARN';
 	const TRACE = 'TRACE';
+	const ACCESS = 'ACCESS';
 
 	/**
 	 * Fichier de log
@@ -97,6 +98,9 @@ class mel_logs extends rcube_plugin
 		$this->add_hook('logout_after', array($this, 'logout_after'));
 
 		$this->logOnInit();
+
+		// Log "apache-like" a la fin pour avoir la taille du buffer
+		rcmail::get_instance()->add_shutdown_function([$this, 'log_apache_style']);
 	}
 	/**
 	 * Récupération de l'instance
@@ -496,20 +500,75 @@ class mel_logs extends rcube_plugin
 	}
 
 	/**
+	 * Ajouter une ligne de log au format "apache access"
+	 * 
+	 * @return void
+	 * @private
+	 */
+	public function log_apache_style(): void {
+		$method = $_SERVER['REQUEST_METHOD'] ?? '-';
+		$uri    = $this->_sanitize_for_log($_SERVER['REQUEST_URI'] ?? '-');
+		$proto  = $_SERVER['SERVER_PROTOCOL'] ?? '-';
+		$status = http_response_code() ?: 200;
+		$ref    = $this->_sanitize_for_log($_SERVER['HTTP_REFERER'] ?? '-');
+		$ua     = $this->_sanitize_for_log($_SERVER['HTTP_USER_AGENT'] ?? '-');
+		$body_size = $this->_get_total_output_size(); // taille du buffer courant, avant flush final
+	
+		$line = sprintf(
+			'"%s %s %s" %d %d - "%s" "%s"',
+			$method, $uri, $proto, $status, $body_size, $ref, $ua
+		);
+
+		// Libérer le client maintenant : il reçoit sa réponse et se déconnecte,
+        //    le process PHP continue de tourner en tâche de fond pour finir le log
+        if (function_exists('fastcgi_finish_request')) {
+            fastcgi_finish_request();
+        }
+	
+		$this->log(self::ACCESS, $line);
+	}
+
+	/**
+	 * Sanitize a string for logging by replacing newlines and carriage returns
+	 * 
+	 * @param string $value The string to sanitize
+	 * @return string The sanitized string
+	 * @private
+	 */
+	private function _sanitize_for_log(string $value): string {
+		return str_replace(["\r", "\n"], ['\\r', '\\n'], $value);
+	}
+
+	/**
+	 * Get the total output size of all output buffers
+	 * 
+	 * @return int The total output size in bytes
+	 * @private
+	 */
+	private function _get_total_output_size(): int
+    {
+        $total = 0;
+        for ($i = 0, $level = ob_get_level(); $i < $level; $i++) {
+            $total += ob_get_length() ?: 0;
+        }
+        return $total;
+    }
+
+	/**
 	 * Enregistre un log lors de l'ouverture du bnum
 	 * Permet de comptabiliser les connexions journalières.
 	 */
 	private function logOnInit()
 	{
-			$rc = rcmail::get_instance();
+		$rc = rcmail::get_instance();
 
-			if ($rc->task === 'bnum' && $rc->action === '') {
-					$today = date('Y-m-d');
+		if ($rc->task === 'bnum' && $rc->action === '') {
+			$today = date('Y-m-d');
 
-					if (!isset($_SESSION['bnum_opened_today']) || $_SESSION['bnum_opened_today'] !== $today) {
-							$this->log(self::INFO, "[activity] Ouverture du bnum");
-							$_SESSION['bnum_opened_today'] = $today;
-					}
+			if (!isset($_SESSION['bnum_opened_today']) || $_SESSION['bnum_opened_today'] !== $today) {
+				$this->log(self::INFO, "[activity] Ouverture du bnum");
+				$_SESSION['bnum_opened_today'] = $today;
 			}
+		}
 	}
 }

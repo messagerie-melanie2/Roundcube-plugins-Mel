@@ -187,7 +187,14 @@ class mel_forum extends bnum_plugin
         $uid = $this->get_input('_uid', rcube_utils::INPUT_GET);
         $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
         $this->current_post = $this->_get_post($uid);
-        if (driver_mel::gi()->getUser()->isWorkspaceMember($workspace_uid) && !is_null($this->current_post)) {
+        // La vérification porte sur l'espace réel de l'article (post->workspace),
+        // et non sur le paramètre _workspace_uid fourni par le client, pour éviter
+        // qu'un membre d'un espace A ne consulte un article d'un espace B.
+        if (
+            !is_null($this->current_post)
+            && $this->current_post->workspace === $workspace_uid
+            && driver_mel::gi()->getUser()->isWorkspaceMember($workspace_uid)
+        ) {
             mel_metapage::IncludeAvatar();
             //Récupérér uid avec GET
             $this->load_script_module('manager');
@@ -237,8 +244,10 @@ class mel_forum extends bnum_plugin
      */
     public function show_post_title()
     {
-
-        return $this->current_post->title;
+        // Le titre n'est jamais nettoyé à l'écriture (contrairement au contenu
+        // qui passe par mel_helper::wash_html()) : il doit donc être échappé
+        // systématiquement à l'affichage pour éviter une XSS stockée.
+        return rcube::Q($this->current_post->title);
     }
 
     /**
@@ -414,7 +423,9 @@ class mel_forum extends bnum_plugin
                     $is_editing = true;
 
                     // Vérifier si l'utilisateur connecté est bien le créateur de l'article
-                    if (!$this->_has_owner_rights($post, $this->get_input('_workspace_uid'))) {
+                    // (comparaison sur post->workspace, valeur chargée en base, jamais
+                    // sur le paramètre _workspace_uid fourni par le client)
+                    if (!$this->_has_owner_rights($post, $post->workspace)) {
                         //afficher une page d'erreur
                         $this->_display_error_page();
                         exit; // Arrêter l'exécution si l'utilisateur n'est pas le créateur
@@ -699,7 +710,9 @@ class mel_forum extends bnum_plugin
             $posts_data[$post->uid] = [
                 'uid' => $post->uid,
                 'id' => $post->id,
-                'title' => $post->title,
+                // Le titre n'est jamais nettoyé à l'écriture : il est échappé ici
+                // car il est injecté tel quel dans le DOM côté client (MelTemplate).
+                'title' => rcube::Q($post->title),
                 'creation_date' => $formatted_date,
                 'formatted_full_date' => $formatted_full_date,
                 'post_creator' => $post_creator->name,
@@ -968,11 +981,15 @@ class mel_forum extends bnum_plugin
         //charge l'article en bdd
         $post = new LibMelanie\Api\Defaut\Posts\Post();
         $post->uid = $uid;
-        $post_exists = $post->load();
+        $is_existing_post = $post->load();
 
-        // Dans un espace public, seuls les admin de l'espace peuvent créer un nouvel article
-        if (!$post_exists && !$this->_can_write_article($workspace_uid)) {
-            return null;
+        // Vérifier les droits sur l'article existant : le workspace pris en compte
+        // est celui chargé en base (post->workspace), jamais celui fourni par le
+        // client, pour éviter qu'un propriétaire de son propre espace ne réécrive
+        // ou ne déplace l'article de quelqu'un d'autre.
+        if ($is_existing_post && !$this->_has_owner_rights($post, $post->workspace)) {
+            $this->_display_error_page();
+            exit;
         }
 
         // Section miniature
@@ -1483,7 +1500,7 @@ class mel_forum extends bnum_plugin
 
         // Création du commentaire
         $comment = new LibMelanie\Api\Defaut\Posts\Comment();
-        $comment->content = $content;
+        $comment->content = $this->_sanitize_comment_content($content);
         $comment->uid = $this->_generateRandomString(24);
         $comment->created = date('Y-m-d H:i:s');
         $comment->modified = date('Y-m-d H:i:s');
@@ -1522,7 +1539,12 @@ class mel_forum extends bnum_plugin
         $commentData = [
             'id' => $id, // Inclure l'ID récupéré
             'uid' => $comment->uid,
-            'content' => $comment->content,
+            // Le contenu d'un commentaire n'est jamais nettoyé à l'écriture
+            // (texte brut, contrairement au contenu des articles) : il doit
+            // donc être échappé à l'affichage pour éviter une XSS stockée.
+            // $newlines=false : les retours à la ligne restent bruts, gérés
+            // côté client (conversion en <br> à l'affichage uniquement).
+            'content' => rcube::Q($comment->content, 'strict', false),
             'created' => $comment->created,
             'creator' => $comment->creator,
             'post' => $comment->post,
@@ -1585,14 +1607,16 @@ class mel_forum extends bnum_plugin
         }
 
         // Définir les nouvelles données
-        $comment->content = $content;
+        $comment->content = $this->_sanitize_comment_content($content);
         $comment->modified = date('Y-m-d H:i:s');
 
         // Sauvegarde du commentaire
         $ret = $comment->save();
         if (!is_null($ret)) {
             $modifyData = [
-                'content' => $comment->content,
+                // Cf. create_comment() : le contenu n'est jamais nettoyé à
+                // l'écriture, il est échappé ici à l'affichage.
+                'content' => rcube::Q($comment->content, 'strict', false),
                 'modified' => $comment->modified,
                 'user_name' => $user->name
             ];
@@ -1702,6 +1726,13 @@ class mel_forum extends bnum_plugin
         $comment->uid = $comment_uid;
 
         if (!$comment->load()) {
+            $this->sendEncodedExit(['status' => 'error', 'message' => $this->gettext('comment_unfindable', 'mel_forum')]);
+        }
+
+        // Vérifier que le commentaire appartient à un article d'un espace dont
+        // l'utilisateur est membre (comment_id/comment_uid sont énumérables).
+        $comment_post_workspace = $this->_get_workspace_of_post_id($comment->post);
+        if (is_null($comment_post_workspace) || !$user->isWorkspaceMember($comment_post_workspace)) {
             $this->sendEncodedExit(['status' => 'error', 'message' => $this->gettext('comment_unfindable', 'mel_forum')]);
         }
 
@@ -1828,7 +1859,9 @@ class mel_forum extends bnum_plugin
 
         $comments_array = [];
 
-        if ($post->load()) {
+        // Vérifier que l'utilisateur est membre de l'espace réel de l'article
+        // (post->workspace) avant de lister ses commentaires.
+        if ($post->load() && driver_mel::gi()->getUser()->isWorkspaceMember($post->workspace)) {
             // Si un ID de commentaire est fourni, récupérer les réponses de ce commentaire
             if ($param_comment_id) {
                 $comment = new LibMelanie\Api\Defaut\Posts\Comment();
@@ -1880,7 +1913,9 @@ class mel_forum extends bnum_plugin
                         'user_id' => $comment->user_uid,
                         'user_email' => $user->email,
                         'user_name' => $user_name, // Utiliser le nom ou la valeur par défaut
-                        'content' => $comment->content,
+                        // Cf. create_comment() : le contenu n'est jamais nettoyé à
+                        // l'écriture, il est échappé ici à l'affichage.
+                        'content' => rcube::Q($comment->content, 'strict', false),
                         'created' => $formatted_date,
                         'parent' => $comment->parent,
                         'children_number' => $comment->countChildren(),
@@ -2245,8 +2280,16 @@ class mel_forum extends bnum_plugin
     public function pin_post()
     {
         $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_POST);
-        if (driver_mel::gi()->getUser()->isWorkspaceOwner($workspace_uid)) {
-            $post_uid = $this->get_input('_post_id', rcube_utils::INPUT_POST);
+        $post_uid = $this->get_input('_post_id', rcube_utils::INPUT_POST);
+        // Vérifier que l'article à épingler appartient bien à l'espace ciblé,
+        // pour éviter qu'un propriétaire n'épingle sur son espace un article
+        // provenant d'un espace privé dont il n'est pas membre.
+        $post_to_pin = $this->_get_post($post_uid);
+        if (
+            driver_mel::gi()->getUser()->isWorkspaceOwner($workspace_uid)
+            && !is_null($post_to_pin)
+            && $post_to_pin->workspace === $workspace_uid
+        ) {
             $workspace = mel_workspace::Workspace($workspace_uid);
             if ($workspace->settings()->get('forum_pinned_post') === $post_uid) {
                 $workspace->settings()->set('forum_pinned_post', '');
@@ -2282,10 +2325,10 @@ class mel_forum extends bnum_plugin
         $new_fav_post_workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_POST);
         $new_fav_post_uid = $this->get_input('_article_uid', rcube_utils::INPUT_POST);
         $fav_articles = $this->rc()->config->get('favorite_article', []);
+        if (!isset($fav_articles[$new_fav_post_workspace_uid])) {
+            $fav_articles[$new_fav_post_workspace_uid] = [];
+        }
         if (!in_array($new_fav_post_uid, $fav_articles[$new_fav_post_workspace_uid])) {
-            if (!isset($fav_articles[$new_fav_post_workspace_uid])) {
-                $fav_articles[$new_fav_post_workspace_uid] = [];
-            }
             $fav_articles[$new_fav_post_workspace_uid][] = $new_fav_post_uid;
             $this->rc()->user->save_prefs(array('favorite_article' => $fav_articles));
         } else {
@@ -2327,6 +2370,13 @@ class mel_forum extends bnum_plugin
 
         $type = $this->get_input('_type', rcube_utils::INPUT_POST);
         $post_id = intval($this->get_input('_post_id', rcube_utils::INPUT_POST));
+
+        // Vérifier que l'article ciblé appartient bien à un espace dont
+        // l'utilisateur est membre (post_id est un entier énumérable).
+        $post_workspace = $this->_get_workspace_of_post_id($post_id);
+        if (is_null($post_workspace) || !$user->isWorkspaceMember($post_workspace)) {
+            $this->sendEncodedExit(['status' => 'error', 'message' => $this->gettext('article_unfindable', 'mel_forum')]);
+        }
 
         $reaction = new LibMelanie\Api\Defaut\Posts\Reaction();
         $reaction->post = $post_id;
@@ -2467,6 +2517,14 @@ class mel_forum extends bnum_plugin
 
         // Récupérer l'article à partir de son UID
         $post = $this->_get_post($uid);
+
+        // Vérifier que l'utilisateur est membre de l'espace réel de l'article
+        // (post->workspace) avant tout export, indépendamment de l'espace pour
+        // lequel l'action a été enregistrée côté client.
+        if (is_null($post) || !driver_mel::gi()->getUser()->isWorkspaceMember($post->workspace)) {
+            $this->_display_error_page();
+            exit;
+        }
 
         // Traiter en fonction du format
         switch (strtolower($format)) {
@@ -2703,8 +2761,12 @@ class mel_forum extends bnum_plugin
      */
     protected function sanitize_content($content)
     {
-        // Permet de conserver les balises HTML de base
-        $content = strip_tags($content, '<p><a><ul><li><h1><h2><h3><img><br><strong><em>');
+        // strip_tags() conserve les attributs des balises autorisées (onerror,
+        // href="javascript:", etc.) sans les neutraliser. On réutilise le
+        // sanitizer HTML du core (rcube_washtml, déjà utilisé pour laver le
+        // contenu des articles à l'écriture) qui neutralise réellement les
+        // vecteurs XSS plutôt que de filtrer uniquement les noms de balises.
+        $content = mel_helper::wash_html($content);
 
         // Remplacer les espaces multiples par un seul espace
         $content = preg_replace('/\s+/', ' ', $content);
@@ -2719,6 +2781,38 @@ class mel_forum extends bnum_plugin
         $content = trim($content);
 
         return $content;
+    }
+
+    /**
+     * Nettoie le contenu brut d'un commentaire.
+     *
+     * Un commentaire n'autorise aucune mise en forme HTML : seuls les
+     * retours à la ligne sont significatifs. Les variantes de `<br>`
+     * (encodage utilisé par l'éditeur pour transporter les sauts de ligne)
+     * sont donc converties en retour à la ligne réel avant que toute autre
+     * balise ne soit supprimée.
+     *
+     * Pas de passage par mel_helper::wash_html() ici : ce washer traite
+     * l'entrée comme du vrai HTML (où les retours à la ligne du code source
+     * ne sont jamais significatifs), ce qui corromprait les retours à la
+     * ligne qu'on vient de préserver. Comme strip_tags() a déjà retiré toute
+     * balise, il ne reste plus rien à neutraliser ; la sécurité XSS reste de
+     * toute façon couverte par rcube::Q() appliqué systématiquement à la
+     * lecture.
+     *
+     * @param string $content Le contenu brut du commentaire à nettoyer
+     * @return string Le contenu nettoyé, texte brut avec retours à la ligne réels
+     */
+    protected function _sanitize_comment_content($content)
+    {
+        // Convertir toutes les variantes de <br> en retour à la ligne réel
+        // avant de supprimer le reste des balises.
+        $content = preg_replace('/<br\s*\/?>/i', "\n", $content);
+
+        // Aucune balise HTML n'est légitime dans un commentaire.
+        $content = strip_tags($content);
+
+        return trim($content);
     }
 
     /**
@@ -3391,19 +3485,18 @@ class mel_forum extends bnum_plugin
     }
 
     /**
-     * Seuls les admins d'un espace de travail public peuvent rédiger des articles.
+     * Récupère l'espace de travail réel d'un article à partir de son id numérique,
+     * sans dépendre d'une valeur fournie par le client.
      *
-     * @param string $workspace_uid Workspace
-     *
-     * @return boolean
+     * @param int $post_id id de l'article
+     * @return string|null uid de l'espace de travail, ou null si l'article n'existe pas
      */
-    protected function _can_write_article($workspace_uid)
+    protected function _get_workspace_of_post_id($post_id)
     {
-        if (mel_workspace::Workspace($workspace_uid)->isPublic()) {
-            return driver_mel::gi()->getUser()->isWorkspaceOwner($workspace_uid);
-        }
-
-        return true;
+        $post_lookup = new LibMelanie\Api\Defaut\Posts\Post();
+        $post_lookup->id = $post_id;
+        $posts = $post_lookup->getList(['workspace']);
+        return !empty($posts) ? current($posts)->workspace : null;
     }
 
     /**

@@ -43,6 +43,12 @@ if (!empty($_SERVER['PHP_AUTH_USER'])
 
 // require HTTP auth
 if (empty($username)) {
+  // Ralentit le brute force en mémoire de requête, seulement sur un échec
+  // effectif (des identifiants ont été envoyés et refusés).
+  // Permet d'éviter le bruteforce
+  if (!empty($_SERVER['PHP_AUTH_USER'])) {
+    sleep(1);
+  }
   header('WWW-Authenticate: Basic realm="Roundcube Public Calendar"');
   header('HTTP/1.0 401 Unauthorized');
   exit;

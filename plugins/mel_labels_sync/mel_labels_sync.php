@@ -115,8 +115,6 @@ class mel_labels_sync extends rcube_plugin
       $this,
       'managesieve_custom_flags'
     ));
-
-
     if ($this->rc->task == 'mail') {
       // disable plugin when printing message
       if (

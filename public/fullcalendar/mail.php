@@ -49,6 +49,15 @@ class Mail
   {
     require __DIR__ . '/../config.inc.php';
 
+    // L'adresse n'est pas encodée (contrairement au nom, protégé par le
+    // base64 du mot encodé MIME) : sans validation stricte, un email
+    // contenant un retour à la ligne permettrait d'injecter des en-têtes
+    // SMTP supplémentaires (Bcc, To, ...).
+    if (!filter_var($organizer->email, FILTER_VALIDATE_EMAIL)) {
+      utils::log("Mail::SendOrganizerAppointmentMail() - Invalid organizer email");
+      return false;
+    }
+
     $subject = $config["organizer_mail_subject"];
     $from = $config['mail_from'];
     $to = '=?UTF-8?B?' . base64_encode('"' . $organizer->name . '"') . '?=' . "\r\n <" . $organizer->email . ">";
@@ -80,6 +89,13 @@ class Mail
   {
     require __DIR__ . '/../config.inc.php';
 
+    // Même raison que côté organisateur : l'adresse n'est pas encodée, elle
+    // doit être un email valide avant d'être placée dans l'en-tête To:.
+    if (!filter_var($attendee['email'], FILTER_VALIDATE_EMAIL)) {
+      utils::log("Mail::SendAttendeeAppointmentMail() - Invalid attendee email");
+      return false;
+    }
+
     $subject = $config["attendee_mail_subject"];
     $from = $config['mail_from'];
     $to = '=?UTF-8?B?' . base64_encode('"' . $attendee['name'] . '"') . '?=' . "\r\n <" . $attendee['email'] . ">";
@@ -106,7 +122,12 @@ class Mail
       $body = str_replace("%%appointment_description%%", "Aucune informations sur cet évènement", $body);
     }
 
-    if ($appointment['type']) {
+    // Liste blanche des gabarits existants : $appointment['type'] vient du
+    // client (POST JSON) et ne doit jamais être interpolé tel quel dans un
+    // chemin de fichier (traversée de répertoire).
+    $allowed_location_types = ['address', 'attendee_call', 'organizer_call', 'webconf'];
+    $type_template = '';
+    if (in_array($appointment['type'], $allowed_location_types, true)) {
       $type_template =  file_get_contents(__DIR__ . '/templates/location/' . $appointment['type'] . '.html');
       $type_template =  str_replace("%%appointment_location%%", $appointment['location'], $type_template);
       if ($appointment['type'] == "webconf") {

@@ -670,12 +670,16 @@ class PostComment {
           // Fermer le formulaire de modification en ajoutant la classe 'hidden'
           $('#edit-comment-' + uid).addClass('hidden');
 
-          // Mettre à jour l'affichage du commentaire avec le nouveau contenu
+          // Mettre à jour l'affichage du commentaire avec le nouveau contenu.
+          // updatedContent vient du textarea (saisie brute non échappée) : on
+          // l'échappe avant de l'insérer en HTML, comme pour l'affichage
+          // initial d'un commentaire (cf. generateHtmlFromTemplate()).
+          const escapedContent = $('<div>').text(updatedContent).html();
           $('#comment-text-' + uid).replaceWith(
             '<div class="forum-comment-text" id="comment-text-' +
               uid +
               '"><p>' +
-              updatedContent +
+              escapedContent.replace(/\n/g, '<br>') +
               '</p></div>',
           );
         } else if (response.status === 'error') {
@@ -838,7 +842,12 @@ class PostComment {
       USER_EMAIL: this.user_email,
       USER_NAME: this.user_name,
       COMMENT_DATE: formatCommentDate(this.created),
+      // Affichage (<p>, rendu HTML) : les retours à la ligne doivent devenir <br>.
       COMMENT_CONTENT: this.content.replace(/\n/g, '<br>'),
+      // Édition (<textarea>, RCDATA) : un <textarea> respecte nativement les
+      // retours à la ligne réels, il ne faut donc pas les convertir en <br>
+      // (qui y resterait du texte littéral et corromprait le contenu).
+      COMMENT_CONTENT_EDIT: this.content,
       COMMENT_ID: this.id,
       LIKE_CLASS: likeClass,
       DISLIKE_CLASS: dislikeClass,

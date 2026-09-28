@@ -237,36 +237,46 @@ class mel_resource extends bnum_plugin
 
   /**
    * Vérifie si l'utilisateur a accès à la ressource demandée.
-   * 
+   *
+   * @param string $type Type de ressource attendu (celui de la page en cours).
+   *
    * @return bool
    */
-  protected function check_user_access_to_ressource()
+  protected function check_user_access_to_ressource($type)
   {
-    $resource_uid = rcube_utils::get_input_value('_resource_uid', rcube_utils::INPUT_GPC);
+    $resource_uid = rcube_utils::get_input_value('_resource_uid', rcube_utils::INPUT_GP);
 
-    if (!empty($resource_uid)) {
-      if (isset($_POST['resource_type'])) {
-        $resource = driver_mel::gi()->resource([null, 'webmail.resource']);
-      }
-      else {
-        $resource = driver_mel::gi()->resource();
-      }
-      
-      $resource->uid = $resource_uid;
-
-      if ($resource->load()) {
-        $this->resource = $resource;
-        $localities = $this->get_user_localities($this->resource->type);
-
-        return in_array($this->get_resource_locality(), $localities);
-      }
-      else {
-        return false;
-      }
-    }
-    else {
+    if (empty($resource_uid)) {
       return false;
     }
+
+    if (isset($_POST['resource_type'])) {
+      $resource = driver_mel::gi()->resource([null, 'webmail.resource']);
+    }
+    else {
+      $resource = driver_mel::gi()->resource();
+    }
+
+    $resource->uid = $resource_uid;
+
+    if (!$resource->load()) {
+      return false;
+    }
+    // Empecher un utilisateur de piloter une ressource d'un autre type
+    //  que celui pour lequel ses droits ont été vérifiés.
+    if ($resource->type !== $type) {
+      return false;
+    }
+
+    $this->resource = $resource;
+    $locality = $this->get_resource_locality();
+
+    // Comparaison stricte + rejet explicite du cas null.
+    if ($locality === null) {
+      return false;
+    }
+
+    return in_array($locality, $this->get_user_localities($type), true);
   }
 
   /**
@@ -652,7 +662,7 @@ class mel_resource extends bnum_plugin
       // Affichage normal de la page de configuration
       $this->include_script('js/resource.js');
 
-      $action = trim(rcube_utils::get_input_value('_act', rcube_utils::INPUT_GPC));
+      $action = trim(rcube_utils::get_input_value('_act', rcube_utils::INPUT_GP));
 
       $this->set_env('resource_type', $type);
 
@@ -779,9 +789,28 @@ class mel_resource extends bnum_plugin
    */
   protected function action_create_ressource()
   {
+    $resource_type = trim(rcube_utils::get_input_value('resource_type', rcube_utils::INPUT_POST));
+
+    // Vérification des droits utilisateurs. 
+    if (!$this->check_rights_user($resource_type)) {
+      $this->show_message_error($this->gettext('access_denied'));
+      $this->send_and_exit('error');
+    }
+
+    // Evite la création dans une localité non autorisée.
+    $resource_building = trim(rcube_utils::get_input_value('resource_building', rcube_utils::INPUT_POST));
+    $locality_uid = strpos($resource_building, '/') !== false
+      ? explode('/', $resource_building, 2)[0]
+      : null;
+
+    if (!in_array($locality_uid, $this->get_user_localities($resource_type), true)) {
+      $this->show_message_error($this->gettext('access_denied'));
+      $this->send_and_exit('error');
+    }
+
     $resource = driver_mel::gi()->resource([null, 'webmail.resource']);
-    
-    $resource->type             = trim(rcube_utils::get_input_value('resource_type', rcube_utils::INPUT_GPC));
+
+    $resource->type             = $resource_type;
     $resource->uid              = $this->generate_uid($resource->type);
 
     $resource = $this->resource_from_post($resource);
@@ -819,12 +848,13 @@ class mel_resource extends bnum_plugin
     $resource = $this->resource_from_post($resource);
 
     // Gestion de la description
-    $description  = trim(rcube_utils::get_input_value('resource_description', rcube_utils::INPUT_GPC, true));
+    $description  = trim(rcube_utils::get_input_value('resource_description', rcube_utils::INPUT_POST, true));
 
     if (empty($description) && !empty($resource->description)) {
       $resource->description = '';
     } else if (!empty($description)) {
-      $resource->description = $description;
+      // On assainit l'entrée avec le washer HTML.
+      $resource->description = mel_helper::wash_html($description);
     }
 
     $ret = $resource->save();
@@ -843,6 +873,8 @@ class mel_resource extends bnum_plugin
    */
   protected function action_delete_ressource()
   {
+    $this->assert_post_csrf();
+
     if ($this->resource->delete()) {
       mel_logs::get_instance()->log(mel_logs::INFO, "[Resources] Suppression de {$this->resource->type} '{$this->resource->name}'");
       $this->show_message($this->gettext($this->type($this->resource->type) . '_deleted'), 'confirmation');
@@ -863,31 +895,37 @@ class mel_resource extends bnum_plugin
    */
   protected function resource_from_post($resource) 
   {
-    $resource->name         = trim(rcube_utils::get_input_value('resource_name', rcube_utils::INPUT_GPC));
-    $resource->etage        = trim(rcube_utils::get_input_value('resource_floor', rcube_utils::INPUT_GPC));
-    $resource->roomnumber   = trim(rcube_utils::get_input_value('resource_room', rcube_utils::INPUT_GPC));
-    $resource->capacite     = trim(rcube_utils::get_input_value('resource_capacity', rcube_utils::INPUT_GPC));
+    $resource->name         = trim(rcube_utils::get_input_value('resource_name', rcube_utils::INPUT_POST));
+    $resource->etage        = trim(rcube_utils::get_input_value('resource_floor', rcube_utils::INPUT_POST));
+    $resource->roomnumber   = trim(rcube_utils::get_input_value('resource_room', rcube_utils::INPUT_POST));
+    $resource->capacite     = trim(rcube_utils::get_input_value('resource_capacity', rcube_utils::INPUT_POST));
 
     if ($resource->type == LibMelanie\Api\Defaut\Resource::TYPE_VROOM) {
-      $resource->zoom_internal_email     = trim(rcube_utils::get_input_value('vroom_zoom_email', rcube_utils::INPUT_GPC));
+      $resource->zoom_internal_email     = trim(rcube_utils::get_input_value('vroom_zoom_email', rcube_utils::INPUT_POST));
       $resource->is_zoom_room = true;
     }
     else if ($resource->type == LibMelanie\Api\Defaut\Resource::TYPE_FLEX_OFFICE) {
-      $place = trim(rcube_utils::get_input_value('resource_place', rcube_utils::INPUT_GPC));
+      $place = trim(rcube_utils::get_input_value('resource_place', rcube_utils::INPUT_POST));
       $resource->name = $this->gettext('resource_room') . ' ' . $resource->roomnumber . ' ' . $this->gettext('resource_place') . ' ' . $place;
     }
 
     $resource->fullname     = $resource->type . " $resource->name";
     $resource->displayname  = $resource->type . " $resource->name";
 
-    $resource_building = trim(rcube_utils::get_input_value('resource_building', rcube_utils::INPUT_GPC));
+    $resource_building = trim(rcube_utils::get_input_value('resource_building', rcube_utils::INPUT_POST));
 
     if (strpos($resource_building, '/') !== false) {
       // Format locality/building
       list($locality_uid, $resource_building) = explode('/', $resource_building, 2);
 
-      $resource->dn = "cn=$resource->fullname,ou=$locality_uid," . driver_mel::gi()->constant('Resource::DN');
+      // Protection de l'entrée LDAP
+      $cn      = ldap_escape($resource->fullname, '', LDAP_ESCAPE_DN);
+      $ou      = ldap_escape($locality_uid, '', LDAP_ESCAPE_DN);
+      $base_dn = driver_mel::gi()->constant('Resource::DN');
+
+      $resource->dn = "cn=$cn,ou=$ou,$base_dn";
     }
+
     else {
       // Format building only
       $locality_uid = $this->get_resource_locality();
@@ -956,9 +994,11 @@ class mel_resource extends bnum_plugin
    */
   protected function action_add_calendar_share()
   {
-    $user   = trim(rcube_utils::get_input_value('_user', rcube_utils::INPUT_GPC));
-    $group  = trim(rcube_utils::get_input_value('_group', rcube_utils::INPUT_GPC));
-    $acl    = trim(rcube_utils::get_input_value('_acl', rcube_utils::INPUT_GPC));
+    $this->assert_post_csrf();
+
+    $user   = trim(rcube_utils::get_input_value('_user', rcube_utils::INPUT_POST));
+    $group  = trim(rcube_utils::get_input_value('_group', rcube_utils::INPUT_POST));
+    $acl    = trim(rcube_utils::get_input_value('_acl', rcube_utils::INPUT_POST));
 
     $group = $group === 'true' ? true : false;
 
@@ -1044,8 +1084,10 @@ class mel_resource extends bnum_plugin
    */
   protected function action_delete_calendar_share()
   {
-    $user  = trim(rcube_utils::get_input_value('_user', rcube_utils::INPUT_GPC));
-    $group  = trim(rcube_utils::get_input_value('_group', rcube_utils::INPUT_GPC));
+    $this->assert_post_csrf();
+    
+    $user  = trim(rcube_utils::get_input_value('_user', rcube_utils::INPUT_POST));
+    $group  = trim(rcube_utils::get_input_value('_group', rcube_utils::INPUT_POST));
 
     $group = $group === 'true' ? true : false;
 

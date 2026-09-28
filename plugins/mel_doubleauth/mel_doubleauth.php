@@ -562,7 +562,7 @@ class mel_doubleauth extends bnum_plugin
             $bouton_active = new html_inputfield(['name' => $field_id, 'id' => $field_id, 'type' => 'button', 'class' => 'button mainaction', 'value' => $this->gettext('activate')]);
 
             $div_container .= row(
-                col(html::label($field_id, $this->Q($this->gettext('label_activate'))), 'col-sm-2 my-auto') .
+                col(html::label($field_id, $this->_Q($this->gettext('label_activate'))), 'col-sm-2 my-auto') .
                     col($bouton_active->show(), 'col-sm-3')
             );
 
@@ -1337,7 +1337,7 @@ class mel_doubleauth extends bnum_plugin
      *
      * @return string The quoted string
      */
-    private function Q($str, $mode = 'strict', $newlines = true)
+    private function _Q($str, $mode = 'strict', $newlines = true)
     {
         return rcube_utils::rep_specialchars_output($str, 'html', $mode, $newlines);
     }

@@ -3498,6 +3498,20 @@ class mel_forum extends bnum_plugin
         $posts = $post_lookup->getList(['workspace']);
         return !empty($posts) ? current($posts)->workspace : null;
     }
+    /*
+     * Récupère l'espace de travail réel d'un article à partir de son id numérique,
+     * sans dépendre d'une valeur fournie par le client.
+     *
+     * @param int $post_id id de l'article
+     * @return string|null uid de l'espace de travail, ou null si l'article n'existe pas
+     */
+    protected function _get_workspace_of_post_id($post_id)
+    {
+        $post_lookup = new LibMelanie\Api\Defaut\Posts\Post();
+        $post_lookup->id = $post_id;
+        $posts = $post_lookup->getList(['workspace']);
+        return !empty($posts) ? current($posts)->workspace : null;
+    }
 
     /**
      * affichage la page d'erreur de forum

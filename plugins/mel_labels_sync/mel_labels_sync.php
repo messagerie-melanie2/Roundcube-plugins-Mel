@@ -110,6 +110,12 @@ class mel_labels_sync extends rcube_plugin
     $this->load_config();
     // Récupération du driver
     $this->driver = Driver::get_instance();
+    //Mantis 0009311
+    $this->add_hook('managesieve_custom_flags', array(
+      $this,
+      'managesieve_custom_flags'
+    ));
+
 
     if ($this->rc->task == 'mail') {
       // disable plugin when printing message
@@ -242,10 +248,7 @@ class mel_labels_sync extends rcube_plugin
         $this,
         'preferences_sections_list'
       ));
-      $this->add_hook('managesieve_custom_flags', array(
-        $this,
-        'managesieve_custom_flags'
-      ));
+     
     }
   }
 

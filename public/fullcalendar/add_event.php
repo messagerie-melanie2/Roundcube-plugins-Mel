@@ -21,13 +21,16 @@ require_once '../lib/vendor/autoload.php';
 require_once $dir . '/vendor/autoload.php';
 
 $data = utils::check_hash_key();
-$data['user']->load();
 
-if (!$data['user']) {
+// check_hash_key() renvoie false (booléen) quand la clé est invalide : il faut
+// vérifier $data avant d'accéder à $data['user'], sous peine d'erreur fatale.
+if (!$data || !$data['user']) {
   header('Content-Type: application/json; charset=utf-8');
   echo json_encode(["error" => "La clé d'identification n'est pas valide"]);
   exit;
 }
+
+$data['user']->load();
 
 $calendar = new LibMelanie\Api\Mel\Calendar($data['user']);
 $calendar->id = $data['calendar_name'];

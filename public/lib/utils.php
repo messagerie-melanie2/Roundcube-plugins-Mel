@@ -634,23 +634,27 @@ class utils
       $user->uid = $_user;
     }
 
-    // Récupération de la clé de la requête 
+    // Récupération de la clé de la requête
     $keyhash = self::get_input_value('_key', self::INPUT_GET);
     $keyhash = urldecode($keyhash);
-    if (isset($keyhash)) {
+
+    // Vérification de la clé : par défaut refusée, n'est acceptée que sur une
+    // correspondance explicite avec la préférence enregistrée (une préférence
+    // absente ou invalide ne doit jamais valoir "clé non requise").
+    $valid_key = false;
+    if ($user && isset($keyhash) && $keyhash !== '') {
       // On compare la clé avec la valeur des paramètres utilisateurs
       $value = $user->getCalendarPreference("appointmentkeyhash");
 
       if (isset($value)) {
         $value = unserialize($value, ['allowed_classes' => false]);
-        if (!isset($value[$calendar_name]) || $value[$calendar_name] != $keyhash) {
-          $keyhash = null;
+        if (is_array($value) && isset($value[$calendar_name]) && is_string($value[$calendar_name]) && hash_equals($value[$calendar_name], $keyhash)) {
+          $valid_key = true;
         }
       }
     }
 
-    // Vérification de la clé
-    if (!isset($keyhash) || !$user) {
+    if (!$valid_key) {
       return false;
     }
     return ["user" => $user, "calendar_name" => $calendar_name];

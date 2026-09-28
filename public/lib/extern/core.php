@@ -85,7 +85,7 @@ class Core {
             // Récupération de l'objet de la clé
             $currentKey = $user->getDefaultPreference('external_key');
 
-            if (empty($currentKey) || $currentKey != $key) {
+            if (empty($currentKey) || !is_string($key) || !hash_equals((string) $currentKey, $key)) {
                 utils::log("Extern/Core::Process() [$email] - Invalid key");
                 return false;
             }
@@ -99,7 +99,7 @@ class Core {
             }
 
             // Est-ce qu'on est dans un post ?
-            if (isset($_POST['_email']) && $_POST['_email'] = $user->email) {
+            if (isset($_POST['_email']) && $_POST['_email'] === $user->email) {
                 return self::Post($user);
             }
         }

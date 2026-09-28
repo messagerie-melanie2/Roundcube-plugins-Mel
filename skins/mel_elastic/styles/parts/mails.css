@@ -75,6 +75,7 @@ table.messagelist td.subject span.msgicon.status:hover::before {
 }
 table.messagelist tr .mail-avatar {
   --avatar-size: 40px;
+  --bnum-avatar-initials-font-size: calc(var(--avatar-size) * 0.4);
   height: var(--avatar-size);
   width: var(--avatar-size);
   position: absolute;

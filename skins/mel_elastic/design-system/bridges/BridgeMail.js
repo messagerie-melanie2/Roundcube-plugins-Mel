@@ -675,6 +675,8 @@ export default class BridgeMail extends ABridge {
     const avatar = AvatarElement.Create({
       email:
         address?.getAttribute('data-email') ?? address?.getAttribute('title'),
+      // Nom affiché (déjà nettoyé par hook_messages_list) → initiales prénom + nom
+      name: address?.textContent?.trim(),
     }).addClass('mail-avatar--avatar');
 
     /**

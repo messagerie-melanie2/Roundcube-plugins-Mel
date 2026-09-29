@@ -4986,10 +4986,23 @@ class mel_metapage extends bnum_plugin
         $text_color = imagecolorallocate($image, $colors['text'][0], $colors['text'][1], $colors['text'][2]);
 
         $font = __DIR__ . '/skins/mel_elastic/roboto.ttf';
-        $letter = strtoupper(substr($email, 0, 1));
+
+        // Initiales calculées côté client (AvatarElement.GetInitials), sinon première lettre de l'email
+        $initials = rcube_utils::get_input_value('_initials', rcube_utils::INPUT_GET);
+
+        $letter = is_string($initials) && preg_match('/^\p{Lu}{1,2}$/u', $initials)
+            ? $initials
+            : strtoupper(substr($email, 0, 1));
         $font_size = 120;
 
         $bbox = imagettfbbox($font_size, 0, $font, $letter);
+
+        // Réduit la police si le texte déborde (deux lettres)
+        while ($bbox[2] - $bbox[0] > 160 && $font_size > 40) {
+            $font_size -= 10;
+            $bbox = imagettfbbox($font_size, 0, $font, $letter);
+        }
+
         $x = (200 - ($bbox[2] - $bbox[0])) / 2 - $bbox[0];
         $y = (200 - ($bbox[1] + $bbox[7])) / 2;
 

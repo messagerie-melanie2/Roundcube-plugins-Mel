@@ -473,9 +473,14 @@ class mel_workspace extends bnum_plugin
             $this->sendEncodedExit($retour, []);
         } catch (\Throwable $th) {
             $func = "create";
-            mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func] Un erreur est survenue lors de la création de l'espace de travail ''" . $workspace->title() . "'' !");
+            $title = isset($workspace) ? $workspace->title() : 'Uncreated';
+            mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func] Un erreur est survenue lors de la création de l'espace de travail ''$title'' !");
             mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func]" . $th->getTraceAsString());
             mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func]" . $th->getMessage());
+
+            if (class_exists('bnum_glitchtip')) {
+                bnum_glitchtip::captureException($th, ['workspace_title' => $title], ['plugin' => 'mel_workspace']);
+            }
         }
     }
 
@@ -1847,6 +1852,8 @@ class mel_workspace extends bnum_plugin
 
         $services = $this->_set_tasklist($workspace, $services, $default_value);
         $services = $this->_set_agenda($workspace, $services);
+
+        return $services;
     }
 
     private function _set_tasklist(&$workspace, $services, $default_value)

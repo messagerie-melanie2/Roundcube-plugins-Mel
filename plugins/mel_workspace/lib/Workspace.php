@@ -680,18 +680,21 @@ class Workspace {
       $max = 30;
 
       mel_helper::load_helper()->include_utilities();
-      $text = mel_utils::replace_determinants(mel_utils::replace_special_char(strtolower(mel_utils::remove_accents($title))), "-");
-      $text = str_replace(" ", "-", $text);
+      $text = $title
+          |> mel_utils::remove_accents(...)
+          |> strtolower(...)
+          |> mel_utils::replace_special_char(...)
+          |> (fn($value) => mel_utils::replace_determinants($value, "-"))
+          |> (fn($value) => str_replace(" ", "-", $value))
+          |> (fn($value) => is_array($value) ? implode("", $value) : $value)
+          |> mb_str_split(...);
+
       if (count($text) > $max)
       {
-          $title = "";
-          for ($i=0; $i < count($text); $i++) { 
-              if ($i >= $max)
-                  break;
-              $title.= $text[$i];
-          }
-          $text = $title;
+          $text = array_slice($text, 0, $max);
       }
+
+      $text = implode("", $text);
       $it = 0;
 
       $workspace = driver_mel::gi()->workspace();

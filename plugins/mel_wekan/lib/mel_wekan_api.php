@@ -35,6 +35,9 @@ class mel_wekan_api extends amel_lib
     const CALL_CREATE_SWIMLINE = "/api/boards/{board}/swimlanes";
 
     private $cache;
+    /**
+     * @var string
+     */
     private $url;
 
     public function __construct($rc, $plugin)
@@ -141,7 +144,15 @@ class mel_wekan_api extends amel_lib
         //$_SESSION[self::KEY_SESSION_AUTH];
     }
 
-    public function create_token($username)
+    /**
+     * Crée un token de connexion Wekan pour un autre utilisateur (impersonation admin).
+     * Depuis Wekan v11.08, une raison est obligatoire : elle est tracée dans l'audit d'impersonation.
+     *
+     * @param string $username
+     * @param string $reason - Raison enregistrée dans l'audit Wekan (500 caractères max)
+     * @return array
+     */
+    public function create_token($username, $reason = 'SSO Bnum')
     {
         $username = $this->get_user($username);
 
@@ -150,7 +161,7 @@ class mel_wekan_api extends amel_lib
 
         mel_logs::get_instance()->log(mel_logs::INFO, '[wekan_api/create_token]Url : '.$this->url.self::CALL_CREATE_TOKEN."/$username");
 
-        return $this->call(self::CALL_CREATE_TOKEN."/$username", null);
+        return $this->call(self::CALL_CREATE_TOKEN."/$username", ["reason" => $reason]);
     }
 
     /**

@@ -52,7 +52,7 @@ class Core {
             // Récupération des paramètres de la requête
             $hash = utils::get_input_value("_h", utils::INPUT_GPC);
 
-            $params = json_decode(base64_decode(urldecode($hash)), true);
+            $params = $hash |> urldecode(...) |> base64_decode(...) |> (fn($j) => json_decode($j, true));
 
             if (!is_array($params) || !isset($params['email'], $params['key'])) {
                 utils::log("Extern/Core::Process() - Invalid hash");
@@ -254,6 +254,7 @@ class Core {
             // Chargement du body
             $body = file_get_contents(__DIR__ . '/../../forgotten/mail/email_external_reinit.html');
 
+            $encodedHash = ($hash |> json_encode(...) |> base64_encode(...));
             // Remplacement des variables
             $body = str_replace([
                 '{{logobnum}}',
@@ -261,8 +262,8 @@ class Core {
                 '{{documentation.url}}',
                 '{{bnum.base_url}}',
             ],[
-                MailBody::load_image($dir . '/plugins/mel_workspace/skins/elastic/pictures/logobnum.png', 'png'),
-                utils::url('public/reinit/?_h=' . base64_encode(json_encode($hash))),
+                MailBody::load_image("$dir/plugins/mel_workspace/skins/elastic/pictures/logobnum.png", 'png'),
+                utils::url("public/reinit/?_h=$encodedHash"),
                 'https://fabrique-numerique.gitbook.io/bnum/ressources/guide-des-fonctionnalites/espaces-de-travail',
                 'http://mtes.fr/2',
             ], $body);

@@ -107,7 +107,8 @@ class mel_help extends rcube_plugin
     ));
 
     // Récupération du json
-    $help_array = json_decode(file_get_contents(__DIR__ . '/public/help.json'), true);
+    $helpPath = (__DIR__ . '/public/help.json');
+    $help_array = $helpPath |> file_get_contents(...) |> (fn($j) => json_decode($j, true));
 
     // Génération de l'index
     $index = [];
@@ -137,7 +138,8 @@ class mel_help extends rcube_plugin
   function video_json()
   {
     // Récupération du json
-    $video_array = json_decode(file_get_contents(__DIR__ . '/public/video.json'), true);
+    $videoPath = (__DIR__ . '/public/video.json');
+    $video_array = $videoPath |> file_get_contents(...) |> (fn($j) => json_decode($j, true));
 
     // Génération de l'index
     $index = [];
@@ -214,7 +216,8 @@ class mel_help extends rcube_plugin
     $attrib['class'] = 'help_news';
 
     // Récupération du json
-    $help_news = json_decode(file_get_contents(__DIR__ . '/public/news.json'), true);
+    $newsPath = (__DIR__ . '/public/news.json');
+    $help_news = $newsPath |> file_get_contents(...) |> (fn($j) => json_decode($j, true));
 
     $html = html::span(['class' => 'label'], $this->gettext('news'));
     $list_news = '';

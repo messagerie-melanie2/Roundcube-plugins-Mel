@@ -181,6 +181,27 @@ class bnum_glitchtip extends bnum_plugin {
         return self::__rcpclBody_BGT_LogsTrait_isLogLevel($level);
     }
 
+    public function hook_bnum_log_is_log_level(array $args): array {
+        if ($args['result'] === true) return $args;
+
+		$level = $args['level'];
+        $args['result'] = Glitchtip::Instance()->isLogLevel($level?->value ?? EMPTY_STRING);
+
+        return $args;
+    }
+
+    public function hook_bnum_log(array $args): array {
+        if (!$args['data'] || $args['data']['_bnum.log.can_distant_app'] === false) return $args;
+
+        Glitchtip::Instance()->log($args['level']->value, $args['message'], context:$args['data'] ?? [], attributes:['plugin.caller' => $args['caller']]);
+        return $args;
+    }
+
+    public function hook_log_capture_error(array $args): array {
+        Glitchtip::Instance()->captureException($args['error'], $args['data']['extra'] ?? [], $args['data']['tags'] ?? []);
+        return $args;
+    }
+
     public function init(): void {
 
         $this->load_config();
@@ -189,6 +210,12 @@ class bnum_glitchtip extends bnum_plugin {
         $this->add_hook('startup', [$this, 'hook_startup']);
         $this->add_hook('fatal_error', [$this, 'hook_fatal_error']);
         $this->add_hook('write_log', [$this, 'hook_write_log']);
+
+        if (class_exists('bnum', autoload:false)) {
+			$this->add_hook('bnum.log.isLogLevel', [$this, 'hook_bnum_log_is_log_level']);
+			$this->add_hook('bnum.log', [$this, 'hook_bnum_log']);
+            $this->add_hook('bnum.log.captureError', [$this, 'hook_log_capture_error']);
+		}
 
         $initFactory = include __DIR__ . '/php/init/init.php';
         (Closure::bind($initFactory, null, self::class))($this);

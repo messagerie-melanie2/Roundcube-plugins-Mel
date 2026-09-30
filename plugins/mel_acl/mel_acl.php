@@ -766,9 +766,11 @@ class mel_acl extends bnum_plugin
 
         if ($group) {
             $uid_field = $this->rc->config->get('acl_groups_field', 'dn');
+            $mail_field = $this->rc->config->get('acl_groups_mail_field', 'mail');
             $filter    = $this->rc->config->get('acl_groups_filter');
         } else {
             $uid_field = $this->rc->config->get('acl_users_field', 'uid');
+            $mail_field = $this->rc->config->get('acl_users_mail_field', 'mail');
             $filter    = $this->rc->config->get('acl_users_filter');
         }
 
@@ -789,12 +791,11 @@ class mel_acl extends bnum_plugin
         $config['fieldmap'] = array(
             'name' => $name_field,
             'uid'  => $uid_field,
+            'email' => $mail_field,
         );
 
-        // only search in name field
-        // $name_field can be in a form of <field>:<modifier> (#1490591)
-        $name_field = preg_replace('/:.*$/', '', $name_field);
-        $search     = array($name_field);
+        // search in configured fields
+        $search = $this->rc->config->get('acl_search_fields', ['name']);
 
         $config['search_fields']   = $search;
         $config['required_fields'] = array($uid_field);

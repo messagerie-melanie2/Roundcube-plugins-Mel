@@ -1,4 +1,6 @@
 <?php
+include_once __DIR__ . '/program/attributes.php';
+
 /**
  * Classe abstraite bnum_plugin
  * Fournit des fonctionnalités de base pour les plugins Roundcube.
@@ -23,6 +25,13 @@ abstract class bnum_plugin extends rcube_plugin
     private static $module_loaded = false;
 
     private $script_manager;
+
+    /**
+     * Déclarations par attributs, lues une fois par classe et par requête.
+     *
+     * @var array<class-string, array{actions: array<int, array{0: string, 1: BnumAction}>, hooks: array<int, array{0: string, 1: BnumHook}>, handlers: array<int, array{0: string, 1: BnumHandler}>}>
+     */
+    private static array $attributes_cache = [];
 
     public function __construct($api)
     {
@@ -267,6 +276,156 @@ abstract class bnum_plugin extends rcube_plugin
                 $this->assert_post_csrf();
             }
             return $args;
+        });
+    }
+
+    /**
+     * Enregistre les actions, hooks et handlers déclarés par attributs
+     * ({@see BnumAction}, {@see BnumHook}, {@see BnumHandler}) sur les méthodes
+     * publiques du plugin.
+     *
+     * Opt-in : à appeler explicitement à la fin d'`init()`. L'API impérative
+     * (`register_action()`, `add_hook()`, `add_handler()`) reste utilisable en parallèle.
+     *
+     * @return void
+     *
+     * @example
+     * public function init(): void {
+     *     $this->register_attributes();
+     * }
+     */
+    protected function register_attributes(): void {
+        $declarations = self::$attributes_cache[static::class] ??= $this->read_attributes();
+
+        foreach ($declarations['actions'] as [$method, $action]) {
+            $this->register_attributed_action($method, $action);
+        }
+
+        foreach ($declarations['hooks'] as [$method, $hook]) {
+            $this->register_attributed_hook($method, $hook);
+        }
+
+        foreach ($declarations['handlers'] as [$method, $handler]) {
+            $this->add_handler($handler->name, [$this, $method]);
+        }
+    }
+
+/**
+     * Lit les attributs Bnum des méthodes publiques déclarées par le plugin.
+     *
+     * Les méthodes du socle (bnum_plugin et ses ancêtres) sont ignorées : elles
+     * ne portent jamais d'attribut Bnum et représentent l'essentiel des méthodes
+     * publiques retournées par la réflexion.
+     * Un hook déclaré plusieurs fois n'est retenu qu'une fois (erreur journalisée).
+     *
+     * @return array{actions: array<int, array{0: string, 1: BnumAction}>, hooks: array<int, array{0: string, 1: BnumHook}>, handlers: array<int, array{0: string, 1: BnumHandler}>}
+     */
+    private function read_attributes(): array {
+        // Calculé une seule fois par requête, partagé par tous les plugins.
+        static $socle = null;
+        $socle ??= [bnum_plugin::class => true] + array_fill_keys(class_parents(bnum_plugin::class), true);
+
+        $declarations = ['actions' => [], 'hooks' => [], 'handlers' => []];
+        $hook_names = [];
+
+        foreach ((new ReflectionClass($this))->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+            if (isset($socle[$method->class])) {
+                continue;
+            }
+
+            $name = $method->name;
+
+            // Un seul appel à getAttributes() ; newInstance() uniquement pour les
+            // attributs Bnum, les autres (Override, Deprecated…) ne sont pas instanciés.
+            foreach ($method->getAttributes() as $attribute) {
+                match ($attribute->getName()) {
+                    BnumAction::class => $declarations['actions'][] = [$name, $attribute->newInstance()],
+                    BnumHandler::class => $declarations['handlers'][] = [$name, $attribute->newInstance()],
+                    BnumHook::class => $this->collect_hook($declarations['hooks'], $hook_names, $name, $attribute->newInstance()),
+                    default => null,
+                };
+            }
+        }
+
+        return $declarations;
+    }
+
+    /**
+     * Ajoute un hook aux déclarations s'il n'a pas déjà été déclaré par une
+     * autre méthode du plugin ; sinon journalise une erreur et l'ignore.
+     *
+     * @param array<int, array{0: string, 1: BnumHook}> $hooks      Hooks retenus (modifié).
+     * @param array<string, string>                     $hook_names Nom du hook => méthode qui le déclare (modifié).
+     * @param string                                    $method     Nom de la méthode du plugin.
+     * @param BnumHook                                  $hook       Déclaration du hook.
+     *
+     * @return void
+     */
+    private function collect_hook(array &$hooks, array &$hook_names, string $method, BnumHook $hook): void {
+        if (isset($hook_names[$hook->name])) {
+            mel_logs::gi()->log(
+                mel_logs::ERROR,
+                "[{$this->ID}] Hook '{$hook->name}' déclaré plusieurs fois ({$hook_names[$hook->name]}, $method) : seule la première déclaration est enregistrée"
+            );
+            return;
+        }
+
+        $hook_names[$hook->name] = $method;
+        $hooks[] = [$method, $hook];
+    }
+
+    /**
+     * Enregistre une action déclarée par {@see BnumAction}, en appliquant la
+     * vérification CSRF et l'envoi JSON demandés.
+     *
+     * @param string     $method Nom de la méthode du plugin.
+     * @param BnumAction $action Déclaration de l'action.
+     *
+     * @return void
+     */
+    private function register_attributed_action(string $method, BnumAction $action): void {
+        $callback = function () use ($method, $action) {
+            if ($action->csrf) {
+                $this->assert_post_csrf();
+            }
+
+            $result = $this->$method();
+
+            if ($action->json) {
+                $this->sendEncodedExit($result);
+            }
+        };
+
+        if ($action->task === null) {
+            $this->register_action($action->name, $callback);
+            return;
+        }
+
+        $this->force_register_action($action->name, $callback, $action->task);
+    }
+
+    /**
+     * Enregistre un hook déclaré par {@see BnumHook} ; un retour `null` du
+     * handler est journalisé et remplacé par les arguments d'origine.
+     *
+     * @param string   $method Nom de la méthode du plugin.
+     * @param BnumHook $hook   Déclaration du hook.
+     *
+     * @return void
+     */
+    private function register_attributed_hook(string $method, BnumHook $hook): void {
+        $this->add_hook($hook->name, function ($args) use ($method, $hook) {
+            $result = $this->$method($args);
+
+            if ($result === null) {
+                mel_logs::gi()->log(
+                    mel_logs::WARN,
+                    "[{$this->ID}] Le hook '{$hook->name}' ($method) a retourné null : arguments d'origine renvoyés"
+                );
+                return $args;
+            }
+
+            return $result;
         });
     }
 

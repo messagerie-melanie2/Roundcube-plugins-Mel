@@ -61,7 +61,7 @@ class Background {
 
     static function from_path($path) {
         $backs = [];
-        $datas = json_decode(file_get_contents($path));
+        $datas = $path |> file_get_contents(...) |> json_decode(...);
 
         foreach ($datas as $key => $decoded) {
             $backs[$key] = (new Background($decoded))->for_serialize();

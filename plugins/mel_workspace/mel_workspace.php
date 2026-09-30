@@ -419,6 +419,11 @@ class mel_workspace extends bnum_plugin
             }
 
             if ($data["color"] === "" || $data["color"] === null) $data["color"] = "#FFFFFF";
+
+            if ($data["uid"] !== null && $data["uid"] !== "" && !Workspace::IsUIDValid($data["uid"])) {
+                $this->sendEncodedExit(['error' => $this->gettext("workspace_uid_invalid", "mel_workspace")], []);
+            }
+
             if ($data["uid"] === null || $data["uid"] === "") $data['uid'] = Workspace::GenerateUID($data["title"]);
 
             $retour = [
@@ -468,9 +473,14 @@ class mel_workspace extends bnum_plugin
             $this->sendEncodedExit($retour, []);
         } catch (\Throwable $th) {
             $func = "create";
-            mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func] Un erreur est survenue lors de la création de l'espace de travail ''" . $workspace->title() . "'' !");
+            $title = isset($workspace) ? $workspace->title() : 'Uncreated';
+            mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func] Un erreur est survenue lors de la création de l'espace de travail ''$title'' !");
             mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func]" . $th->getTraceAsString());
             mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func]" . $th->getMessage());
+
+            if (class_exists('bnum_glitchtip')) {
+                bnum_glitchtip::captureException($th, ['workspace_title' => $title], ['plugin' => 'mel_workspace']);
+            }
         }
     }
 
@@ -500,6 +510,9 @@ class mel_workspace extends bnum_plugin
     public function toggle_favorite()
     {
         $uid = $this->get_input_post('_id');
+        $workspace = new Workspace($uid, true);
+
+        if (!$workspace->hasUser()) $this->sendEncodedExit(['newState' => false], []);
 
         $wsp = Workspace::ToggleFavoriteWsp($uid);
 
@@ -518,6 +531,13 @@ class mel_workspace extends bnum_plugin
     public function update_module_visibility()
     {
         $uid = $this->get_input_post('_uid');
+        $workspace = new Workspace($uid, true);
+
+        if (!$workspace->hasUser()) {
+            echo false;
+            exit;
+        }
+
         $task = $this->get_input_post('_key');
         $state = $this->get_input_post('_state');
 
@@ -541,8 +561,14 @@ class mel_workspace extends bnum_plugin
 
     function get_email_from_workspace()
     {
-        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $uid = $this->get_input_post("_uid");
         $workspace = new Workspace($uid, true);
+
+        if (!$workspace->hasUser()) {
+            echo json_encode([]);
+            exit;
+        }
+
         $shares = $workspace->users(true);
         $array = [];
         $user = driver_mel::gi()->getUser()->uid;
@@ -751,11 +777,20 @@ class mel_workspace extends bnum_plugin
     function add_users()
     {
         //get input
-        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
-        $tmp_users = rcube_utils::get_input_value("_users", rcube_utils::INPUT_POST);
+        $uid = $this->get_input_post("_uid");
+        $tmp_users = $this->get_input_post("_users");
         $workspace = new Workspace($uid, true);
+
+        // vérifier les droits AVANT toute mutation : Workspace::add_users() persiste
+        // immédiatement le partage en base (via _add_users()->save()), donc l'appeler
+        // sans contrôle préalable permettrait à n'importe quel utilisateur de s'ajouter
+        // à un espace privé arbitraire
+        if (!$workspace->isAdmin($this->_CurrentUser()->uid)) {
+            echo "denied";
+            exit;
+        }
+
         //get users
-        $users = [];
         $noNotifUsers = [];
         $users = $workspace->add_users(...$tmp_users);
 
@@ -763,19 +798,16 @@ class mel_workspace extends bnum_plugin
             echo "no one was found";
             exit;
         } else {
-            //get workspace
-            if ($workspace->isAdmin($this->_CurrentUser()->uid)) {
-                $this->_add_users($workspace, mel_helper::Enumerable($users['existing_users'])->select(function ($k, $v) use ($workspace) {
-                    $this->_notify_user($v['user'], $workspace->get(), $v['user']);
-                    return driver_mel::gi()->getUser($v['user']);
-                })->toArray(), null, $noNotifUsers);
-                //save
-                $workspace->save();
-                //end
-                echo json_encode($users['errored_user'] ?? []);
-            } else echo "denied";
+            $this->_add_users($workspace, mel_helper::Enumerable($users['existing_users'])->select(function ($k, $v) use ($workspace) {
+                $this->_notify_user($v['user'], $workspace->get(), $v['user']);
+                return driver_mel::gi()->getUser($v['user']);
+            })->toArray(), null, $noNotifUsers);
+            //save
+            $workspace->save();
+            //end
+            echo json_encode($users['errored_user'] ?? []);
 
-            if (!rcube_utils::get_input_value("_not_exist", rcube_utils::INPUT_POST)) exit;
+            if (!$this->get_input_post("_not_exist")) exit;
         }
     }
 
@@ -1146,15 +1178,15 @@ class mel_workspace extends bnum_plugin
         $html->color = $workspace->color();
         $html->applications = $this->setup_params_apps();
 
-        $html->title = $user_rights === Share::RIGHT_OWNER ? $workspace->title() : '';
-        $html->desc = ($user_rights === Share::RIGHT_OWNER ? ($workspace->description() === '' ? 'Nouvelle description...' : ($workspace->description() ?? 'Nouvelle description...')) : '');
+        $html->title = $user_rights === Share::RIGHT_OWNER ? $this->q($workspace->title()) : '';
+        $html->desc = ($user_rights === Share::RIGHT_OWNER ? $this->q($workspace->description() === '' ? 'Nouvelle description...' : ($workspace->description() ?? 'Nouvelle description...')) : '');
 
         if ($user_rights === Share::RIGHT_OWNER) {
             $hashtag = $workspace->hashtag();
 
             if (($hashtag ?? '') === '') $hashtag = "Nouvelle thématique...";
 
-            $html->current_hashtag = $hashtag;
+            $html->current_hashtag = $this->q($hashtag);
         } else $html->current_hashtag = '';
 
 
@@ -1179,7 +1211,7 @@ class mel_workspace extends bnum_plugin
 
         if ($user_rights === Share::RIGHT_OWNER) {
             $logo = $workspace->logo();
-            $html->logo = (($logo ?? "false") == "false" ? '<span>' . substr($workspace->title(), 0, 3) . "</span>" : '<img src="' . $logo . '" />');
+            $html->logo = (($logo ?? "false") == "false" ? '<span>' . $this->q(substr($workspace->title(), 0, 3)) . "</span>" : '<img src="' . $this->q($logo) . '" />');
             $html->visibility = $workspace->isPublic() ? 'privé' : 'public';
         } else {
             $html->logo = '';
@@ -1405,7 +1437,7 @@ class mel_workspace extends bnum_plugin
             $loaded_list = driver_mel::gi()->getUser(null, true, false, null, $list);
             $list_members = $loaded_list->list->members;
             $all_saved_list_data = $wsp->settings()->get('lists');
-            $current_saved_list_data = $all_saved_list_data->$list;
+            $current_saved_list_data = $all_saved_list_data->$list ?? [];
             $shared = $wsp->users();
 
             $_POST['_users'] = [];
@@ -1579,10 +1611,11 @@ class mel_workspace extends bnum_plugin
 
             $bodymail->user_name = driver_mel::gi()->getUser()->name;
             $bodymail->user_email = driver_mel::gi()->getUser()->email;
-            $bodymail->wsp_name = $workspace->title;
+            $bodymail->wsp_name = $this->q($workspace->title);
             $bodymail->wsp_creator = $workspace->creator;
             $bodymail->wsp_last__action_text = $workspace->created === $workspace->modified ? 'Crée le' : 'Mise à jour';
-            $bodymail->wsp_last__action_date = DateTime::createFromFormat('Y-m-d H:i:s', $workspace->modified)->format('d/m/Y');
+            $wsp_last__action_date = DateTime::createFromFormat('Y-m-d H:i:s', $workspace->modified);
+            $bodymail->wsp_last__action_date = $wsp_last__action_date !== false ? $wsp_last__action_date->format('d/m/Y') : '';
             $bodymail->logobnum = MailBody::load_image(__DIR__ . '/skins/mel_elastic/pictures/logobnum.png', 'png');
             $bodymail->bnum_base__url = 'http://mtes.fr/2';
             $bodymail->url = 'https://bnum.din.gouv.fr/?_task=workspace&_action=workspace&_uid=' . $workspace->uid;
@@ -1819,6 +1852,8 @@ class mel_workspace extends bnum_plugin
 
         $services = $this->_set_tasklist($workspace, $services, $default_value);
         $services = $this->_set_agenda($workspace, $services);
+
+        return $services;
     }
 
     private function _set_tasklist(&$workspace, $services, $default_value)
@@ -1954,14 +1989,16 @@ class mel_workspace extends bnum_plugin
         return $html;
     }
 
-    public static function GetWorkspaceBlocksGenerator($workspaces)
+    public static function GetWorkspaceBlocksGenerator(\IMel_Enumerable|array $workspaces)
     {
         foreach ($workspaces as $workspace) {
-            yield self::GetWorkspacesBlock(get_class($workspace) === 'Mel_KeyValue' ? $workspace->get_value() : $workspace);
+            yield self::GetWorkspacesBlock(
+                is_string($workspace) ? $workspace : 
+                    (get_class($workspace) === 'Mel_KeyValue' ? $workspace->get_value() : $workspace));
         }
     }
 
-    public static function GetWorkspacesBlock($workspace)
+    public static function GetWorkspacesBlock(mixed $workspace)
     {
         $isblank = $workspace === 'blank';
         $workspace = Workspace::FromWorkspace($workspace);
@@ -1995,14 +2032,14 @@ class mel_workspace extends bnum_plugin
         $block = mel_helper::Parse($name);
 
         $block->id = $workspace->uid();
-        $block->picture = self::GetWorkspaceLogo($workspace->get());
+        $block->picture = rcube::Q(self::GetWorkspaceLogo($workspace->get()));
         $block->tag = $workspace->hashtag();
         $block->tag = mel_utils::for_data_html($block->tag);
         $block->title = mel_utils::for_data_html($workspace->title());
         $block->description = mel_utils::for_data_html($workspace->description());
         $block->users = implode(',', $users);
         $block->edited = $workspace->modified();
-        $block->color = $workspace->color();
+        $block->color = rcube::Q($workspace->color());
         $block->favorite = $workspace->isFavorite();
         $block->private = !$workspace->isPublic();
         $block->join = $workspace->hasUser();
@@ -2026,7 +2063,13 @@ class mel_workspace extends bnum_plugin
      */
     public static function LoadWorkspaces($mode = 0, $limit = null, $offset = null)
     {
-        if (!isset(self::$_workspaces)) self::$_workspaces = driver_mel::gi()->getUser()->getSharedWorkspaces(null, false, $limit, $offset);
+        if (!isset(self::$_workspaces)) {
+            $workspaces = driver_mel::gi()->getUser()->getSharedWorkspaces(null, false, $limit, $offset);
+
+            if (!$workspaces) $workspaces = [];
+
+            self::$_workspaces = $workspaces;
+        }
 
         $data = self::$_workspaces;
 

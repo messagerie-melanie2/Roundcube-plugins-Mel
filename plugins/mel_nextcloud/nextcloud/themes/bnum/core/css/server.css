@@ -86,6 +86,10 @@ body[data-themes="light-highcontrast,opendyslexic"] .app-menu-main .app-menu-ent
 	filter: invert(1) !important;
 }
 
+body[data-theme-light] #header .header-right>.header-menu:not(.user-menu) .unified-search__trigger {
+	filter: invert(1) !important;
+}
+
 #notifications,
 #contactsmenu,
 #user-menu .user-status-menu-item,

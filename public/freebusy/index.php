@@ -23,6 +23,14 @@ if (! defined('CONFIGURATION_APP_LIBM2')) {
   define('CONFIGURATION_APP_LIBM2', 'roundcube');
 }
 
+// Accès public assumé par défaut (besoin métier). Si activé (true) dans la
+// configuration locale, exige une clé signée (_cal + _key), comme
+// public/fullcalendar/calendar.php, et refuse les identifiants username/email
+// fournis sans clé.
+if (!defined('FREEBUSY_SECURE_ACCESS')) {
+  define('FREEBUSY_SECURE_ACCESS', false);
+}
+
 $dir = utils::getDirPath('freebusy');
 
 // Inclusion de l'ORM M2
@@ -31,6 +39,16 @@ $dir = utils::getDirPath('freebusy');
 // Utilisation de la librairie Sabre VObject pour la conversion ICS
 require_once '../lib/vendor/autoload.php';
 require_once $dir.'/vendor/autoload.php';
+
+if (FREEBUSY_SECURE_ACCESS) {
+  // Accès sécurisé : clé signée obligatoire (même mécanisme que fullcalendar/calendar.php)
+  $secure_data = utils::check_hash_key();
+  if (!$secure_data['user']) {
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(["error" => "La clé d'identification n'est pas valide"]);
+    exit();
+  }
+}
 
 // Récupération des paramètres de la requête
 $start = utils::get_input_value("start", utils::INPUT_GET);

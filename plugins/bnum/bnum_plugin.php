@@ -196,6 +196,18 @@ abstract class bnum_plugin extends rcube_plugin
     }
 
     /**
+     * Retourne le délimiteur IMAP hiérarchique courant, avec une valeur de
+     * repli si l'information n'est pas encore disponible en session (avant
+     * une connexion IMAP aboutie, ou en dehors du contexte mail).
+     *
+     *
+     * @return string Délimiteur IMAP hiérarchique (ex. '/', '.'), jamais vide.
+     */
+    public static function get_imap_delimiter(): string {
+        return $_SESSION['imap_delimiter'] ?? '/';
+    }
+
+    /**
      * Retourne la tâche en cours.
      *
      * @return string
@@ -270,24 +282,77 @@ abstract class bnum_plugin extends rcube_plugin
     /**
      * Récupère une valeur d'entrée.
      *
+     * $allow_html à false (par défaut) fait passer la valeur par strip_tags() côté
+     * rcube_utils::get_input_value() : protection XSS de base sur toute donnée affichée
+     * telle quelle. Ne passer true que pour un champ dont le HTML est explicitement voulu
+     * (auquel cas l'échappement en sortie reste à la charge de l'appelant).
+     *
      * @param string $arg Nom de l'argument.
      * @param int $type Type d'entrée (par défaut : rcube_utils::INPUT_GPC).
+     * @param bool $allow_html Autorise les balises HTML dans la valeur (par défaut : false).
      * @return mixed
      */
-    protected function get_input($arg, $type = rcube_utils::INPUT_GPC)
+    protected function get_input($arg, $type = rcube_utils::INPUT_GPC, $allow_html = false)
     {
-        return rcube_utils::get_input_value($arg, $type);
+        return rcube_utils::get_input_value($arg, $type, $allow_html);
     }
 
     /**
      * Récupère une valeur d'entrée POST.
      *
      * @param string $arg Nom de l'argument.
+     * @param bool $allow_html Autorise les balises HTML dans la valeur (par défaut : false).
      * @return mixed
      */
-    protected function get_input_post($arg)
+    protected function get_input_post($arg, $allow_html = false)
     {
-        return rcube_utils::get_input_value($arg, rcube_utils::INPUT_POST);
+        return rcube_utils::get_input_value($arg, rcube_utils::INPUT_POST, $allow_html);
+    }
+
+    /**
+     * Récupère une valeur d'entrée déjà échappée pour une interpolation SQL directe.
+     *
+     * À réserver aux requêtes où un paramètre lié (`$db->query($sql, ...)`) n'est pas
+     * possible ; sinon préférer la liaison de paramètres, qui reste la protection de
+     * référence contre l'injection SQL.
+     *
+     * @param string $arg Nom de l'argument.
+     * @param int $type Type d'entrée (par défaut : rcube_utils::INPUT_GPC).
+     * @return string
+     */
+    protected function get_input_sql($arg, $type = rcube_utils::INPUT_GPC)
+    {
+        return $this->db()->quote($this->get_input($arg, $type));
+    }
+
+    /**
+     * Récupère une valeur d'entrée échappée pour un filtre ou un RDN LDAP
+     * (ldap_escape(), cf. RFC 4515) — protection contre l'injection/manipulation LDAP.
+     *
+     * @param string $arg Nom de l'argument.
+     * @param int $type Type d'entrée (par défaut : rcube_utils::INPUT_GPC).
+     * @param bool $dn Échappe pour un RDN/DN plutôt qu'un filtre de recherche.
+     * @return string
+     */
+    protected function get_input_ldap($arg, $type = rcube_utils::INPUT_GPC, $dn = false)
+    {
+        return ldap_escape($this->get_input($arg, $type), '', $dn ? LDAP_ESCAPE_DN : LDAP_ESCAPE_FILTER);
+    }
+
+    /**
+     * Échappe une chaîne pour un affichage HTML sûr (rcube::Q(), protection XSS en sortie).
+     * get_input()/get_input_post() filtrent déjà les balises à la lecture, mais Q() reste
+     * la protection de référence au moment de l'affichage — à utiliser sur toute valeur
+     * (issue de l'entrée utilisateur ou non) interpolée dans du HTML généré côté PHP.
+     *
+     * @param string $str Chaîne à échapper.
+     * @param string $mode Mode rcube::Q() ('strict', 'remove', ou '').
+     * @param bool $newlines Convertit les retours à la ligne en <br> si true.
+     * @return string
+     */
+    protected function q($str, $mode = 'strict', $newlines = true)
+    {
+        return rcube::Q($str, $mode, $newlines);
     }
 
     /**

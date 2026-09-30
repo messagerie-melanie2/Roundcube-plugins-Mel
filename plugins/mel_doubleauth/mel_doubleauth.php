@@ -103,7 +103,7 @@ class mel_doubleauth extends bnum_plugin
             $user->load(['double_authentification_forcee', 'double_authentification_date_butoir', 'internet_access_enable']);
             $this->rc->output->set_env("internet_access_enable", $user->internet_access_enable);
             if ($user->double_authentification_forcee) {
-                $config_2FA = $this->__get2FAconfig();
+                $config_2FA = $this->__get2FAconfig() ?? [];
 
                 if (!$config_2FA['activate']) {
                     $this->rc->output->set_env("double_authentification_forcee", $user->double_authentification_forcee);
@@ -134,7 +134,7 @@ class mel_doubleauth extends bnum_plugin
 
         $_SESSION['mel_doubleauth_login'] = time();
 
-        $config_2FA = $this->__get2FAconfig();
+        $config_2FA = $this->__get2FAconfig() ?? [];
 
         if (!$this->login_after_check_deadline($config_2FA)) return $args;
 
@@ -331,7 +331,7 @@ class mel_doubleauth extends bnum_plugin
             return $p;
         }
 
-        $config_2FA = $this->__get2FAconfig();
+        $config_2FA = $this->__get2FAconfig() ?? [];
 
         if ($config_2FA['activate']) {
             $code = rcube_utils::get_input_value('_code_2FA', rcube_utils::INPUT_POST);
@@ -402,7 +402,7 @@ class mel_doubleauth extends bnum_plugin
      */
     public function popup_msg_enrollment()
     {
-        $config_2FA = $this->__get2FAconfig();
+        $config_2FA = $this->__get2FAconfig() ?? [];
 
         if (
             !$config_2FA['activate']
@@ -431,8 +431,8 @@ class mel_doubleauth extends bnum_plugin
         }
     }
 
-    public function hook_oncePerDay($args) {
-        $config_2FA = $this->__get2FAconfig();
+    public function hook_oncePerDay(array $args): array {
+        $config_2FA = $this->__get2FAconfig() ?? [];
 
         if ( $this->is_bnum_task() && 
             !$config_2FA['activate'] && 
@@ -494,9 +494,9 @@ class mel_doubleauth extends bnum_plugin
             $recovery_codes = (array)rcube_utils::get_input_value('2FA_recovery_codes', rcube_utils::INPUT_POST);
 
             // remove recovery codes without value
-            $recovery_codes = array_values(array_diff($recovery_codes, array('')));
+            $recovery_codes = $recovery_codes |> (fn($codes) => array_diff($codes, [''])) |> array_values(...);
 
-            $data = $this->__get2FAconfig();
+            $data = $this->__get2FAconfig() ?? [];
             $data['secret'] = null;
             $data['activate'] = $activate ? true : false;
             $data['recovery_codes'] = $recovery_codes;
@@ -545,7 +545,7 @@ class mel_doubleauth extends bnum_plugin
             return html::div(['class' => "$rowclass"], html::div(['class' => "$colclass", 'id' => $rowid], $content));
         }
 
-        $data = $this->__get2FAconfig();
+        $data = $this->__get2FAconfig() ?? [];
 
         // info
         $div_container = rowcol(html::span(['class' => 'texte_explic'], $this->gettext('msg_infor')));
@@ -562,7 +562,7 @@ class mel_doubleauth extends bnum_plugin
             $bouton_active = new html_inputfield(['name' => $field_id, 'id' => $field_id, 'type' => 'button', 'class' => 'button mainaction', 'value' => $this->gettext('activate')]);
 
             $div_container .= row(
-                col(html::label($field_id, $this->Q($this->gettext('label_activate'))), 'col-sm-2 my-auto') .
+                col(html::label($field_id, $this->_Q($this->gettext('label_activate'))), 'col-sm-2 my-auto') .
                     col($bouton_active->show(), 'col-sm-3')
             );
 
@@ -964,9 +964,8 @@ class mel_doubleauth extends bnum_plugin
     /**
      * Récupérer la configuration de double authentification
      * 
-     * @return boolean
      */
-    private function __get2FAconfig()
+    private function __get2FAconfig(): ?array
     {
         if (!isset($_SESSION['2FA_config'])) {
             $user = $this->rc->user;
@@ -1034,7 +1033,7 @@ class mel_doubleauth extends bnum_plugin
      */
     private function __isRecoveryCode($code)
     {
-        $prefs = $this->__get2FAconfig();
+        $prefs = $this->__get2FAconfig() ?? [];
         return in_array($code, $prefs['recovery_codes']);
     }
 
@@ -1047,8 +1046,8 @@ class mel_doubleauth extends bnum_plugin
      */
     private function __consumeRecoveryCode($code)
     {
-        $prefs = $this->__get2FAconfig();
-        $prefs['recovery_codes'] = array_values(array_diff($prefs['recovery_codes'], array($code)));
+        $prefs = $this->__get2FAconfig() ?? [];
+        $prefs['recovery_codes'] = $prefs['recovery_codes'] |> (fn($codes) => array_diff($codes, [$code])) |> array_values(...);
 
         $this->__set2FAconfig($prefs);
     }
@@ -1337,7 +1336,7 @@ class mel_doubleauth extends bnum_plugin
      *
      * @return string The quoted string
      */
-    private function Q($str, $mode = 'strict', $newlines = true)
+    private function _Q($str, $mode = 'strict', $newlines = true)
     {
         return rcube_utils::rep_specialchars_output($str, 'html', $mode, $newlines);
     }

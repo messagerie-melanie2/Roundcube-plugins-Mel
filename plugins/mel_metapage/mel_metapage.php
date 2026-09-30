@@ -379,13 +379,6 @@ class mel_metapage extends bnum_plugin
             ), 'toolbar');
         }
 
-        if ($this->rc->task === "portail") {
-            $this->rc->output->redirect([
-                '_task' => 'bureau',
-            ]);
-            return;
-        }
-
         $this->rc->output->set_env("plugin.mel_metapage", true); //compose_extwin
         $this->rc->output->set_env("matomo_tracking", $this->rc->config->get("matomo_tracking", false));
         $this->rc->output->set_env("matomo_tracking_popup", $this->rc->config->get("matomo_tracking_popup", false));
@@ -1290,7 +1283,7 @@ class mel_metapage extends bnum_plugin
                     $html = '<select id=wsp-event-all-cal-mm class="form-control input-mel">';
                     $html .= "<option value=\"#none\">" . $this->gettext('none') . "</option>";
                     foreach ($workspaces as $key => $value) {
-                        $html .= '<option value="' . $value->uid . '">' . $value->title . '</option>';
+                        $html .= '<option value="' . rcube::Q($value->uid) . '">' . rcube::Q($value->title) . '</option>';
                     }
                     $html .= "</select>";
                     return $html;
@@ -2018,7 +2011,7 @@ class mel_metapage extends bnum_plugin
             $html = '<select class="form-control input-mel">';
             $html .= "<option value=none>" . $this->gettext('none') . "</option>";
             foreach ($workspaces as $key => $value) {
-                $html .= '<option value="' . $value->uid . '">' . $value->title . '</option>';
+                $html .= '<option value="' . rcube::Q($value->uid) . '">' . rcube::Q($value->title) . '</option>';
             }
             $html .= "</select>";
             return $html;
@@ -4047,7 +4040,7 @@ class mel_metapage extends bnum_plugin
         $maxOrder;
         $init = $folders;
         $balp_label = driver_mel::gi()->getBalpLabel();
-        $delimiter = $_SESSION['imap_delimiter'];
+        $delimiter = bnum_plugin::get_imap_delimiter();
         $bal = explode('.-.', $id)[1] ?? $id;
         $folders = mel_helper::Enumerable($folders)->where(function ($k, $v) use ($balp_label) {
             return strpos($v, $balp_label) !== false;
@@ -4957,9 +4950,9 @@ class mel_metapage extends bnum_plugin
      * - Calcule une couleur de texte contrastante pour une bonne lisibilité.
      * - Dessine la première lettre majuscule de l'email au centre de l'image.
      *
-     * @return resource Image GD créée.
+     * @return mixed Image GD créée.
      */
-    public function _generate_no_picture()
+    public function _generate_no_picture(): mixed
     {
         $image = imagecreate(200, 200);
 
@@ -4986,7 +4979,7 @@ class mel_metapage extends bnum_plugin
         $text_color = imagecolorallocate($image, $colors['text'][0], $colors['text'][1], $colors['text'][2]);
 
         $font = __DIR__ . '/skins/mel_elastic/roboto.ttf';
-        $letter = strtoupper(substr($email, 0, 1));
+        $letter = $email |> (fn($v) => substr($v, 0, 1)) |> strtoupper(...);
         $font_size = 120;
 
         $bbox = imagettfbbox($font_size, 0, $font, $letter);

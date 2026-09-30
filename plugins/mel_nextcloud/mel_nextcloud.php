@@ -237,24 +237,14 @@ class mel_nextcloud extends rcube_plugin {
   private function get_env_js()
   {
     $rcmail = rcmail::get_instance();
-    if (mel::is_internal()) {
-      $nextcloud_url = $rcmail->config->get('nextcloud_url');
-      if ($settings) {
-        $nextcloud_settings_url = $rcmail->config->get('nextcloud_settings_url');
-      }
-    }
-    else {
-      $nextcloud_url = $rcmail->config->get('nextcloud_external_url');
-      if ($settings) {
-        $nextcloud_settings_url = $rcmail->config->get('nextcloud_external_settings_url');
-      }
-    }
+    $nextcloud_url = mel::is_internal()
+      ? $rcmail->config->get('nextcloud_url')
+      : $rcmail->config->get('nextcloud_external_url');
+
     // Configuration de l'environnement
     $rcmail->output->set_env('nextcloud_origin', $rcmail->config->get('nextcloud_origin', ''));
     $rcmail->output->set_env('nextcloud_username', $rcmail->user->get_username());
-    //$rcmail->output->set_env('nextcloud_password', urlencode($this->encrypt($rcmail->get_user_password())));
     $rcmail->output->set_env('nextcloud_url', $nextcloud_url);
- 
   }
 
   /**

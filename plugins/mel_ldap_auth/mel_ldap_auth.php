@@ -151,6 +151,12 @@ class mel_ldap_auth extends rcube_plugin {
     } else {
       // Récupération des données de l'utilisateur depuis le cache
       $_user_mce = driver_mel::gi()->getUser($args['user']);
+
+      //MANTIS 0009619 - Ne plus permettre la connexion directe sur une balp (sufr) avec le mot de passe d'un gestionnaire
+      $args = $this->_validate_user_type($_user_mce, $args);
+
+      if ($args['abort'] === true) return $args;
+
       // MANTIS 0004868: Permetttre la connexion M2web avec l'adresse mail comme identifiant
       $args['user'] = $_user_mce->uid;
       if (isset($_user_mce) && $_user_mce->authentification($pass)) {
@@ -280,12 +286,59 @@ class mel_ldap_auth extends rcube_plugin {
         $this->rc->output->send($this->rc->task);
       }
     }
+
     if ($_POST['_keeplogin'] === "keeplogin") {
       $lifetime = $this->rc->config->get('session_lifetime', 0) * 60;
       rcube_utils::setcookie('keep_login', true, $lifetime ? time() + $lifetime * 100 : 0);
     }
+
     return $args;
   }
+
+  /**
+   * Vérifie si le type de compte de l'utilisateur autorise une connexion directe.
+   *
+   * Seuls les comptes applicatifs et individuels sont autorisés ; les boîtes
+   * partagées (BALP) et les autres types de compte en sont exclus
+   * (cf. MANTIS 0009619).
+   *
+   * @param \LibMelanie\Api\Defaut\User $user Utilisateur dont le type est vérifié
+   *
+   * @return bool `true` si le compte est applicatif ou individuel, `false` sinon
+   */
+  private function _is_valid_user_type(\LibMelanie\Api\Defaut\User $user): bool {
+    return $user->is_applicative || $user->is_individuelle;
+  }
+
+  /**
+   * Valide le type de compte de l'utilisateur avant authentification et
+   * abandonne la connexion s'il n'est pas autorisé.
+   *
+   * Empêche la connexion directe sur une boîte partagée (BALP) avec le mot
+   * de passe d'un gestionnaire (cf. MANTIS 0009619) : si
+   * {@see mel_ldap_auth::_is_valid_user_type()} renvoie `false`, le refus est
+   * journalisé, `$args['abort']` et `$args['valid']` sont positionnés en
+   * conséquence et le cookie `roundcube_login` est supprimé.
+   *
+   * @param \LibMelanie\Api\Defaut\User $user Utilisateur ciblé par la tentative de connexion
+   * @param array<string, mixed>        $args Arguments du hook `authenticate`
+   *
+   * @return array<string, mixed> Arguments du hook, éventuellement modifiés pour abandonner la connexion
+   */
+  private function _validate_user_type(\LibMelanie\Api\Defaut\User $user, array $args) {
+    if (!$this->_is_valid_user_type($user)) {
+        if (mel_logs::is(mel_logs::INFO))
+          mel_logs::get_instance()->log(mel_logs::INFO, "Refus de connexion: Le compte <$user> n'est pas un compte valide !");
+        
+        $args['abort'] = true;
+        $args['valid'] = false;
+        unset($_COOKIE['roundcube_login']);
+        rcube_utils::setcookie('roundcube_login', null, -1);
+    }
+
+    return $args;
+  }
+
   /**
    * Vérifie si l'identifiant contient un métacaractère de filtre LDAP, afin
    * de refuser toute tentative d'injection de filtre LDAP au moment de

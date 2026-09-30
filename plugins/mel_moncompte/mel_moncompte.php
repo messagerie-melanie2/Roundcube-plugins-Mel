@@ -358,6 +358,25 @@ class mel_moncompte extends rcube_plugin {
   }
 
   /**
+   * Désérialise la préférence utilisateur `synchro_mobile` (calendrier ou carnet
+   * d'adresses) pour obtenir la liste des identifiants de ressources synchronisées
+   * avec le mobile.
+   *
+   * @param string|null $value Valeur sérialisée de la préférence `synchro_mobile`
+   *                           (`null` si l'utilisateur n'a pas encore de préférence)
+   *
+   * @return array<int, string> Identifiants des ressources synchronisées ; tableau
+   *                            vide si `$value` est `null` ou si la désérialisation échoue
+   */
+  private function _get_synchro_mobile(?string $value): array {
+    $sync_m = isset($value) ? unserialize($value, ['allowed_classes' => false]) : [];
+
+    if (!$sync_m) $sync_m = [];
+
+    return $sync_m;
+  }
+
+  /**
    * Initialisation du menu ressources pour les Agendas
    * Affichage du template et gestion de la sélection
    */
@@ -373,7 +392,8 @@ class mel_moncompte extends rcube_plugin {
         if ($calendar->load()) {
           // Chargement des preferences de l'utilisateur
           $value = $user->getCalendarPreference('synchro_mobile');
-          $synchro_mobile = isset($value) ? unserialize($value, ['allowed_classes' => false]) : [];
+          $synchro_mobile = $this->_get_synchro_mobile($value);
+
           $no_invitation = $this->rc->config->get('no_invitation_calendars', []);
 
           $default_calendar = $user->getDefaultCalendar();
@@ -505,7 +525,7 @@ class mel_moncompte extends rcube_plugin {
         if ($addressbook->load()) {
           // Chargement des preferences de l'utilisateur
           $value = $user->getAddressbookPreference('synchro_mobile');
-          $synchro_mobile = isset($value) ? unserialize($value, ['allowed_classes' => false]) : [];
+          $synchro_mobile = $this->_get_synchro_mobile($value);
 
           $default_addressbook = $user->getDefaultAddressbook();
           $acl = ($addressbook->asRight(LibMelanie\Config\ConfigMelanie::WRITE) ? $this->gettext('read_write') : ($addressbook->asRight(LibMelanie\Config\ConfigMelanie::READ) ? $this->gettext('read_only') : ($addressbook->asRight(LibMelanie\Config\ConfigMelanie::FREEBUSY) ? $this->gettext('show') : $this->gettext('none'))));
@@ -586,7 +606,7 @@ class mel_moncompte extends rcube_plugin {
         if ($taskslist->load()) {
           // Chargement des preferences de l'utilisateur
           $value = $user->getTaskslistPreference('synchro_mobile');
-          $synchro_mobile = isset($value) ? unserialize($value, ['allowed_classes' => false]) : [];
+          $synchro_mobile = $this->_get_synchro_mobile($value);
 
           $default_taskslist = $user->getDefaultTaskslist();
           $acl = ($taskslist->asRight(LibMelanie\Config\ConfigMelanie::WRITE) ? $this->gettext('read_write') : ($taskslist->asRight(LibMelanie\Config\ConfigMelanie::READ) ? $this->gettext('read_only') : ($taskslist->asRight(LibMelanie\Config\ConfigMelanie::FREEBUSY) ? $this->gettext('show') : $this->gettext('none'))));

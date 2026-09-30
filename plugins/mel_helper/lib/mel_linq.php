@@ -578,7 +578,7 @@ class MelFusion extends Mel_Enumerable{
                 $value = $value->get_value();
             }
 
-            if ($this->copy) $value = unserialize(serialize($value));
+            if ($this->copy) $value = $value |> serialize(...) |> unserialize(...);
 
             if (is_array($value)) $value[$this->key] = is_callable($this->value) ? call_user_func($this->value, $key, $value) : $this->value;
             else {

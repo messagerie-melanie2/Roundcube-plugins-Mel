@@ -47,6 +47,7 @@ class mel_sharedmailboxes extends rcube_plugin {
      * @var string
      */
     private $prev_folder;
+    private bool $ui_initialized = false;
 
     /**
      * Initialisation du plugin

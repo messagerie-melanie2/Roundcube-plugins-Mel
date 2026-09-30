@@ -292,9 +292,10 @@ class MailLoaderDataBase extends MailLoaderBase {
   async load_mails() {
     let mails = [];
     const self = this;
-    await this.http_internal_get({
+    await this.http_internal_post({
       task: 'bureau',
       action: 'mails_get',
+      params: { _token: this.get_env('request_token') },
       on_success: function (datas) {
         try {
           if (typeof datas === 'string') datas = JSON.parse(datas);

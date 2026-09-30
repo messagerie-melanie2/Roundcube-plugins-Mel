@@ -249,6 +249,7 @@ class mel_portal extends bnum_plugin
      *
      * @return array<int, string> Noms des modules
      */
+    #[\NoDiscard("discover_module_names() ne charge rien : elle renvoie seulement la liste des modules")]
     private function discover_module_names(): array
     {
         return array_filter(
@@ -264,6 +265,7 @@ class mel_portal extends bnum_plugin
      *
      * @return Module
      */
+    #[\NoDiscard("create_module() n'enregistre ni n'affiche le module : l'instance renvoyée doit être utilisée")]
     private function create_module(string $name): Module
     {
         include_once __DIR__ . '/modules/module.php';

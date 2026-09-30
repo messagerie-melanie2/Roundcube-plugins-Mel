@@ -108,6 +108,7 @@ abstract class Module
     /**
      * @return int Ordre d'affichage (config `module_orders` prioritaire)
      */
+    #[\NoDiscard("order() ne modifie rien : son seul effet est de renvoyer l'ordre d'affichage du module")]
     public function order(): int
     {
         return (int) ($this->rc->config->get('module_orders', [])[$this->id] ?? $this->order ?? self::DEFAULT_ORDER);
@@ -158,6 +159,7 @@ abstract class Module
      *
      * @return string
      */
+    #[\NoDiscard("item_html() n'affiche rien : le html renvoyé doit être ajouté à la page")]
     public function item_html(): string
     {
         $html = $this->generate_html();
@@ -186,6 +188,7 @@ abstract class Module
      *
      * @return string
      */
+    #[\NoDiscard("text() ne fait que traduire : ignorer le texte renvoyé rend l'appel inutile")]
     public function text(string $text): string
     {
         return $this->plugin->gettext($text);
@@ -204,6 +207,7 @@ abstract class Module
      *
      * @return string
      */
+    #[\NoDiscard("render_card() génère du html : ignorer le html renvoyé rend l'appel inutile")]
     private function render_card(string $html): string
     {
         $pre_contents = [];

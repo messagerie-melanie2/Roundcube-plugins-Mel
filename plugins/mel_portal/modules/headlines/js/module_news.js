@@ -52,9 +52,10 @@ export class ModuleNew extends BaseModule {
   }
 
   _on_refresh() {
-    this.http_internal_get({
+    this.http_internal_post({
       task: 'bureau',
       action: 'get_last_new',
+      params: { _token: this.get_env('request_token') },
       on_success: (datas) => {
         if (typeof datas === 'string') datas = JSON.parse(datas);
 

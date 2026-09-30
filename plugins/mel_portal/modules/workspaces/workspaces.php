@@ -28,6 +28,7 @@ class Workspaces extends Module
     /** Nombre d'espaces favoris affichés. */
     private const MAX_WORKSPACES = 5;
 
+    #[\Override]
     public function init(): void
     {
         $this->edit_row_size(12);
@@ -36,6 +37,7 @@ class Workspaces extends Module
         mel_metapage::IncludeAvatar();
     }
 
+    #[\Override]
     public function enabled(): bool
     {
         return class_exists('mel_workspace');
@@ -46,12 +48,13 @@ class Workspaces extends Module
      *
      * @return string
      */
-    #[BnumAction('get_html_workspaces')]
+    #[BnumAction('get_html_workspaces', csrf: true)]
     public function get_workspaces(): string
     {
         return $this->generate_html();
     }
 
+    #[\Override]
     protected function generate_html(): string
     {
         $workspaces = mel_workspace::LoadFavoriteWorkspaces(self::MAX_WORKSPACES, null, true);
@@ -65,11 +68,13 @@ class Workspaces extends Module
         return $title . html::div(['class' => '--row workspace-list'], mel_workspace::IncludeWorkspacesBlocks($workspaces));
     }
 
+    #[\Override]
     protected function include_css(): void
     {
         $this->plugin->include_stylesheet('modules/workspaces/css/workspaces.css');
     }
 
+    #[\Override]
     protected function include_js(): void
     {
         $this->plugin->include_script('modules/workspaces/js/init.js');

@@ -6,6 +6,7 @@ declare(strict_types = 1);
  */
 class Headlines extends Module
 {
+    #[\Override]
     public function init(): void
     {
         mel_logs::gi()->log(mel_logs::DEBUG, '[mel_portal] Initialisation du module Headlines');
@@ -14,6 +15,7 @@ class Headlines extends Module
         $this->set_use_custom_style(true);
     }
 
+    #[\Override]
     public function enabled(): bool
     {
         return class_exists('mel_news');
@@ -24,12 +26,13 @@ class Headlines extends Module
      *
      * @return news_datas
      */
-    #[BnumAction('get_last_new', json: true)]
+    #[BnumAction('get_last_new', csrf: true, json: true)]
     public function action_get_last_news(): news_datas
     {
         return $this->get_last_news();
     }
 
+    #[\Override]
     protected function generate_html(): string
     {
         $this->plugin->require_plugin('mel_helper');
@@ -49,6 +52,7 @@ class Headlines extends Module
         return html::tag('bnum-card', ['data-title-text' => $this->text('headline'), 'data-title-icon' => 'feed'], $html);
     }
 
+    #[\Override]
     protected function include_css(): void
     {
         $this->plugin->include_stylesheet('modules/headlines/css/headlines.css');
@@ -59,6 +63,7 @@ class Headlines extends Module
      *
      * @return news_datas
      */
+    #[\NoDiscard("get_last_news() récupère des données en bases : ignorer les données renvoyés provoque un appel inutile à la bdd")]
     private function get_last_news(): news_datas
     {
         include_once __DIR__ . '/../../../mel_news/lib/news_datas.php';

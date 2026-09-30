@@ -31,6 +31,7 @@ class My_day extends Module
     /** Url de suppression d'un évènement. */
     public const CALENDAR_REMOVE_EVENT_URL = '?_task=calendar&_action=event';
 
+    #[\Override]
     public function init(): void
     {
         $this->edit_row_size(4);
@@ -38,16 +39,19 @@ class My_day extends Module
         $this->set_use_custom_style(true);
     }
 
+    #[\Override]
     public function enabled(): bool
     {
         return class_exists('calendar');
     }
 
+    #[\Override]
     protected function generate_html(): string
     {
         return html::tag('bnum-card-agenda', ['loading' => 'true', 'data-max' => 3, 'data-url' => $this->rc->url(['_task' => 'calendar'])]);
     }
 
+    #[\Override]
     protected function set_js_vars(): void
     {
         $this->rc->output->set_env('ev_calendar_url', self::CALENDAR_EVENT_URL);

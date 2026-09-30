@@ -10,6 +10,7 @@ class Mails extends Module
 {
     public const NUMBER_LASTS_MAILS = 3;
 
+    #[\Override]
     public function init(): void
     {
         $this->edit_row_size(4);
@@ -22,7 +23,7 @@ class Mails extends Module
      *
      * @return array<int, Mail>
      */
-    #[BnumAction('mails_get', json: true)]
+    #[BnumAction('mails_get', csrf: true, json: true)]
     public function get_lasts_mails(): array
     {
         $storage = $this->rc->get_storage();
@@ -31,6 +32,7 @@ class Mails extends Module
         return array_map(Mail::from_header(...), $storage->list_messages('INBOX', null, 'ARRIVAL'));
     }
 
+    #[\Override]
     protected function generate_html(): string
     {
         return html::tag('bnum-card-email', ['loading' => 'true', 'data-url' => $this->rc->url(['_task' => 'mail'])]);

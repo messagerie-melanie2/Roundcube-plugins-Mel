@@ -28,6 +28,7 @@ final class Mail
      *
      * @return self
      */
+    #[\NoDiscard("from_header() ne modifie pas l'en-tête : son seul effet est de renvoyer un nouveau Mail")]
     public static function from_header(rcube_message_header $header): self
     {
         return new self(

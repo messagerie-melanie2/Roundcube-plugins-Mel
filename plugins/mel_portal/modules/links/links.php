@@ -6,6 +6,7 @@ declare(strict_types = 1);
  */
 class Links extends Module
 {
+    #[\Override]
     public function init(): void
     {
         $this->edit_row_size(12);
@@ -13,6 +14,7 @@ class Links extends Module
         $this->set_name('Applications');
     }
 
+    #[\Override]
     protected function generate_html(): string
     {
         $datas = $this->plugin->api->exec_hook('mel.portal.links.html', [

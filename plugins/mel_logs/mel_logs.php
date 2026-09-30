@@ -96,6 +96,11 @@ class mel_logs extends rcube_plugin
 		$this->add_hook('message_sent', array($this, 'message_sent'));
 		$this->add_hook('session_destroy', array($this, 'session_destroy'));
 		$this->add_hook('logout_after', array($this, 'logout_after'));
+		
+		if (class_exists('bnum', autoload:false)) {
+			$this->add_hook('bnum.log.isLogLevel', [$this, 'hook_bnum_log_is_log_level']);
+			$this->add_hook('bnum.log', [$this, 'hook_bnum_log']);
+		}
 
 		$this->logOnInit();
 
@@ -376,7 +381,58 @@ class mel_logs extends rcube_plugin
 		return $this->log($level, $message);
 	}
 
+	public function hook_bnum_log_is_log_level(array $args): array {
+		if ($args['result'] === true) return $args;
+
+		$level = $args['level'];
+		$args['result'] = $level->value |> $this->_logLevelMapping(...) |> $this->is_level(...);
+
+		return $args;
+	}
+
+	public function hook_bnum_log(array $args): array {
+		if($args['data'] && $args['data']['_bnum.log.only_distant_app'] === true) return $args;
+
+		$level = $args['level'];
+		$level->value 
+			|> $this->_logLevelMapping(...) 
+			|> (fn($value) => $this->log($value, $args['message']));
+
+		return $args;
+	}
+
 	/******** PRIVATE **********/
+	private function _logLevelMapping(string $logLevel): string {
+		if (class_exists('bnum', autoload:false)) {
+			$level = \Bnum\LogLevel::from($logLevel);
+
+			switch ($level) {
+				case \Bnum\LogLevel::Trace:
+					return self::TRACE;
+
+				case \Bnum\LogLevel::Info:
+					return self::INFO;
+
+				case \Bnum\LogLevel::Debug:
+					return self::DEBUG;
+				
+				case \Bnum\LogLevel::Warn:
+					return self::WARN;
+					
+				case \Bnum\LogLevel::Error:
+					return self::ERROR;
+
+				case \Bnum\LogLevel::Fatal:
+					return self::ERROR;
+				
+				default:
+					return self::TRACE;
+			}
+		}
+
+		return self::TRACE;
+	}
+
 	/**
 	 * Retourne l'utilisateur courant
 	 * Après kill_session() l'utilisateur n'est plus connu de rcmail, on se rabat

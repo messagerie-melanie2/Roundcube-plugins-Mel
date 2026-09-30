@@ -203,7 +203,10 @@ class mel_signatures extends bnum_plugin
      */
     private function image_data($uri) {
         // Format the image SRC:  data:{mime};base64,{data};
-        return 'data:'.mime_content_type(__DIR__.'/'.$uri).';base64,'.base64_encode(file_get_contents(__DIR__.'/'.$uri));
+        $uriPath = (__DIR__.'/'.$uri);
+        $encodedContent = ($uriPath |> file_get_contents(...) |> base64_encode(...));
+        $contentType = mime_content_type($uriPath);
+        return "data:$contentType;base64,$encodedContent";
     }
 
     /**

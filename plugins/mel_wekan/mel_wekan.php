@@ -130,10 +130,16 @@ class mel_wekan extends bnum_plugin
      */
     public function login()
     {
-        $currentUser = rcube_utils::get_input_value("currentUser", rcube_utils::INPUT_GPC) ?? false;
+        // Cette action est accessible à tout utilisateur Roundcube
+        // authentifié : elle ne doit donc jamais pouvoir renvoyer le
+        // résultat de wekanApi->login() (identifiants admin Wekan), qui
+        // donnerait un accès total à l'API Wekan (y compris créer un token
+        // pour n'importe quel autre utilisateur). Le seul jeton produit ici
+        // est celui de l'utilisateur courant, déterminé côté serveur.
+        $uid = driver_mel::gi()->getUser()->uid;
 
-        mel_logs::get_instance()->log(mel_logs::INFO, "[wekan/login]Login de wekan... Utilisteur courant ? $currentUser");
-        $result = !$currentUser ? $this->wekanApi->login() : $this->wekanApi->create_token(driver_mel::gi()->getUser()->uid);
+        mel_logs::get_instance()->log(mel_logs::INFO, "[wekan/login]Login de wekan pour l'utilisateur courant : $uid");
+        $result = $this->wekanApi->create_token($uid);
 
         mel_logs::get_instance()->log(mel_logs::INFO, '[wekan/login]Résultat ? ' . json_encode($result));
 
@@ -364,7 +370,13 @@ class mel_wekan extends bnum_plugin
     public function action_get_user_board()
     {
         $this->require_plugin('mel_helper');
-        $user = rcube_utils::get_input_value('_user', rcube_utils::INPUT_POST) ?? driver_mel::gi()->getUser()->uid;
+        // _user n'est volontairement plus lu depuis la requête : cette action
+        // est accessible à tout utilisateur Roundcube authentifié, et rien
+        // ne vérifiait qu'il avait le droit de consulter les tableaux d'un
+        // autre utilisateur (IDOR). Aucun appelant légitime n'envoie ce
+        // paramètre, elle ne peut donc renvoyer que les tableaux de
+        // l'utilisateur courant.
+        $user = driver_mel::gi()->getUser()->uid;
         $moderator_only = rcube_utils::get_input_value('_moderator', rcube_utils::INPUT_POST) ?? false;
         $mode = rcube_utils::get_input_value('_mode', rcube_utils::INPUT_POST) ?? 0;
         $only_title_and_id = (rcube_utils::get_input_value('_minified_datas', rcube_utils::INPUT_POST) ?? true) == 'true';
@@ -466,10 +478,13 @@ class mel_wekan extends bnum_plugin
         // 5. Parcourt les tableaux administrés par l'utilisateur courant
         foreach ($this->get_user_admin_board_generator($userUid) as $value) {
             // Filtre selon la visibilité du workspace et du tableau
-            if (($wsp->isPublic() && $value->permission === 'public') || 
+            if (($wsp->isPublic() && $value->permission === 'public') ||
             (!$wsp->isPublic() && $value->permission === 'private'))
-                // Ajoute une option au select, sélectionnée si c'est le tableau courant
-                $html .= '<option value="'.$value->id.'" '.($value->id === $wekan ? 'selected' : '').'>'.$value->title.'</option>';
+                // Ajoute une option au select, sélectionnée si c'est le tableau courant.
+                // $value->title est un titre de tableau Wekan choisi librement par
+                // son créateur : il doit être échappé, ce select étant vu par tout
+                // membre du workspace qui ouvre ce sélecteur (XSS stockée sinon).
+                $html .= '<option value="'.rcube::Q($value->id).'" '.($value->id === $wekan ? 'selected' : '').'>'.rcube::Q($value->title).'</option>';
         }
 
         // 6. Termine le select et retourne le HTML

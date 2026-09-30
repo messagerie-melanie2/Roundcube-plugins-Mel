@@ -256,7 +256,7 @@ class Webconf extends Program
         $html = '<select class="wsp_select input-mel">';
 
         foreach ($workspaces as $workspace) {
-            $html .= '<option '.($this->get_input("_wsp") !== null && $this->get_input("_wsp") === $workspace->uid ? "selected" : "" ).' value="'.$workspace->uid.'">'.$workspace->title.'</option>';
+            $html .= '<option '.($this->get_input("_wsp") !== null && $this->get_input("_wsp") === $workspace->uid ? "selected" : "" ).' value="'.rcube::Q($workspace->uid).'">'.rcube::Q($workspace->title).'</option>';
         }
         $html .= "</select>";
 

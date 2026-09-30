@@ -195,6 +195,25 @@ class mel_helper extends rcube_plugin
        return $html;
     }
 
+    /**
+ * Charge un fichier PHP en vérifiant qu'il reste dans le dossier autorisé.
+ * Remplace les require_once avec chemin dynamique.
+ */
+    public static function safe_require(string $base_dir, string $relative_path): string
+    {
+        $base     = realpath($base_dir);
+        $resolved = realpath($base_dir . '/' . $relative_path);
+
+        if ($resolved === false || strpos($resolved, $base . DIRECTORY_SEPARATOR) !== 0) {
+            mel_logs::gi()->log(mel_logs::ERROR, "safe_require: chemin non autorisé '$relative_path'");
+            rcube::raise_error("safe_require: chemin non autorisé '$relative_path'", true, true);
+            throw new RuntimeException("Chemin de driver non autorisé");
+        }
+
+        require_once $resolved;
+        return $resolved;
+    }
+
     public static function settings($only_include = false)
     {
         include_once "lib/mel_settings.php";

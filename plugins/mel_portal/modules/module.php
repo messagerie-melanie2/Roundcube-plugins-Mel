@@ -202,6 +202,8 @@ class Module implements iModule {
             } catch (\Throwable $th) {
                 //throw $th;
             }
+            // Pas de restriction allowed_classes : aucun appelant de set_config() n'a pu être
+            // localisé dans le dépôt pour confirmer que $config ne sérialise jamais d'objet.
             $this->config = unserialize($config);
             $this->after_set_config();
         } catch (\Throwable $th) {

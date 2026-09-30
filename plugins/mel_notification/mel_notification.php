@@ -112,7 +112,6 @@ class mel_notification extends rcube_plugin
             // Liste des actions js
             $this->register_action('plugin.notifications_action',   [$this, 'action']);
             $this->register_action('plugin.notifications_refresh',  [$this, 'refresh']);
-            $this->register_action('plugin.notification_test',   [$this, 'test']);
         }
         else if ($this->rc->task == 'mail') {
             // Cas particulier des mails pour les notifications
@@ -154,37 +153,22 @@ class mel_notification extends rcube_plugin
         }
     }
 
-    public function test()
-    {
-        $this->notify("suggestion", "GOUBIER Arnaud a ajouté une nouvelle suggestion", "Ceci est un test de notification lancé par rotomeca !", 
-          [
-              'href' => "./?_task=workspace&_action=workspace&_uid=",
-              'text' => $this->gettext("mel_workspace.open"),
-              'title' => $this->gettext("mel_workspace.click_for_open"),
-              'command' => "event.click"
-          ]);
-        // echo json_encode($a);
-        // exit;
-    }
-
-    public function test_mail()
-    {
-      $this->add_texts('localization/', true);
-
-      $args = [
-        'mailbox' => "INBOX", 'is_current' => false, 'diff' => [
-          'new' => "1",
-        ],
-        'abort' => false
-      ];
-      $this->notify_mail($args);
-    }
-
     /**
      * Gestion des actions sur les notifications (passage en lu, suppression, ...)
      */
     public function action()
     {
+        // Protection CSRF
+        if (!$this->rc->check_request(rcube_utils::INPUT_POST)) {
+            header("Content-Type: application/json; charset=" . RCUBE_CHARSET);
+            http_response_code(403);
+            echo json_encode([
+                'action'  => 'plugin.notifications_action',
+                'success' => false,
+            ]);
+            exit();
+        }
+    
         // Récupère les params
         $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
         $uids = rcube_utils::get_input_value('_uids', rcube_utils::INPUT_POST);
@@ -259,7 +243,7 @@ class mel_notification extends rcube_plugin
                     'created'   => $notif->created,
                     'modified'  => $notif->modified,
                     'category'  => $notif->category,
-                    'action'    => unserialize($notif->action),
+                    'action'    => unserialize($notif->action, ['allowed_classes' => false]),
                     'isread'    => $notif->isread,                    
                 ];
             }
@@ -276,7 +260,16 @@ class mel_notification extends rcube_plugin
         echo json_encode($result);
         exit();
     }
-    
+
+    /**
+     * Récupère le délimiteur imap
+     */
+    private function _get_imap_delimiter() : string {
+        if (class_exists('bnum_plugin')) return bnum_plugin::get_imap_delimiter();
+
+        return $_SESSION['imap_delimiter'] ?? '/';
+    }
+
     /**
      * Handler for new message action (new_messages hook)
      */
@@ -309,7 +302,7 @@ class mel_notification extends rcube_plugin
 
             // PAMELA - Gestion de la mailbox
             if (strpos($mbox, driver_mel::gi()->getBalpLabel()) === 0) {
-                $tmp = explode($_SESSION['imap_delimiter'], $mbox, 3);
+                $tmp = explode($this->_get_imap_delimiter(), $mbox, 3);
                 $content = driver_mel::gi()->getUser($tmp[1])->fullname;
                 $mailbox = $tmp[1];
                 
@@ -332,9 +325,10 @@ class mel_notification extends rcube_plugin
                 
             if ($unseen->count() == 1) {
                 $msg = $storage->get_message($unseen->get_element(0), $mbox);
+                // Sécurité : sender/subject viennent d'un mail externe (donc potentiellement hostile) et sont réinjectés en HTML côté client, on les échappe.
                 $txt = $this->gettext(['name' => 'notificationof', 'vars' => [
-                    'sender' => $msg->get('from', true),
-                    'subject' => $msg->get('subject', true),
+                    'sender' => rcube::Q($msg->get('from', true)),
+                    'subject' => rcube::Q($msg->get('subject', true)),
                     'end' => $endText
                 ]]);
             }

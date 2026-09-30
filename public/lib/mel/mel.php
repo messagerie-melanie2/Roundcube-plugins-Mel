@@ -72,7 +72,11 @@ abstract class AMel implements IMel {
         if (!empty($args))
         {
             foreach ($args as $key => $value) {
-                $others .= "&$key=$value";
+                // Encodage systématique pour éviter l'injection de paramètres GET
+                // supplémentaires (une valeur contenant "&_task=" pourrait sinon
+                // altérer la requête) et pour transporter correctement les
+                // caractères spéciaux.
+                $others .= "&$key=".urlencode($value);
             }
         }
 

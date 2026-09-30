@@ -39,7 +39,10 @@ class Background {
             $item['userprefid'] = $this->userprefid;
             $pref = rcmail::get_instance()->config->get($this->userprefid, null);
 
-            if (isset($pref)) {
+            // Une préférence enregistrée avant l'introduction de mel_custom_picture
+            // peut contenir n'importe quoi : on ne l'injecte dans le CSS que si
+            // elle est sous forme normalisée.
+            if (isset($pref) && mel_custom_picture::is_normalized($pref)) {
                 $item['background'] = $pref;
                 $this->isThemeColor = false;
             }
@@ -58,7 +61,7 @@ class Background {
 
     static function from_path($path) {
         $backs = [];
-        $datas = json_decode(file_get_contents($path));
+        $datas = $path |> file_get_contents(...) |> json_decode(...);
 
         foreach ($datas as $key => $decoded) {
             $backs[$key] = (new Background($decoded))->for_serialize();

@@ -10,10 +10,10 @@
 	</h1>
 	<div id="archivage-details" class="boxcontent">
 		<roundcube:object name="mel_archivage" />
-		<form name="valide" action="" method="get" class="propform" id="form_archivage">
+		<form name="valide" action="" method="post" class="propform" id="form_archivage">
 			<fieldset>
 				<input type="hidden" value="mail" name="_task">
-				<input type="hidden" value="plugin.mel_archivage_traitement" name="_action">
+				<input type="hidden" value="plugin.mel_archivage_traitement_browser" name="_action">
 				<input type="hidden" value="<roundcube:var name="env:mailbox" />" name="_mbox">
 				<input type="hidden" value="<roundcube:var name="env:account" />" name="_account">
 				<div class="description"><roundcube:label name="mel_archivage.description" /></div>
@@ -23,7 +23,7 @@
 				</div>
 				<div>
 					<label for="archivage_date" style="display: block; width: 120px; float: left;"><roundcube:label name="mel_archivage.date" /></label>
-					<input type="text" id="archivage_date" required/>
+					<input type="text" id="archivage_date" name="archivage_date" required/>
 				</div>
 				<br>
 				<div id="nb_mails"></div>

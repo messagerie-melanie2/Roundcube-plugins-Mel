@@ -52,9 +52,9 @@ class Core {
             // Récupération des paramètres de la requête
             $hash = utils::get_input_value("_h", utils::INPUT_GPC);
 
-            $params = unserialize(base64_decode(urldecode($hash)));
+            $params = $hash |> urldecode(...) |> base64_decode(...) |> (fn($j) => json_decode($j, true));
 
-            if ($params === false) {
+            if (!is_array($params) || !isset($params['email'], $params['key'])) {
                 utils::log("Extern/Core::Process() - Invalid hash");
                 return false;
             }
@@ -63,9 +63,14 @@ class Core {
             $email = $params['email'];
             $key = $params['key'];
 
+            if (!utils::check_email($email, false)) {
+                utils::log("Extern/Core::Process() [$email] - Invalid email format");
+                return false;
+            }
+
             // Récupération de l'objet utilisateur
             $user = new LibMelanie\Api\Mel\User(\LibMelanie\Config\Ldap::$MASTER_LDAP, 'webmail.external.users');
-            $user->email = $email;
+            $user->email = utils::escape_ldap_filter($email);
 
             if (!$user->load(['uid', 'email', 'firstname', 'lastname'])) {
                 utils::log("Extern/Core::Process() [$email] - User not found");
@@ -80,7 +85,7 @@ class Core {
             // Récupération de l'objet de la clé
             $currentKey = $user->getDefaultPreference('external_key');
 
-            if (empty($currentKey) || $currentKey != $key) {
+            if (empty($currentKey) || !is_string($key) || !hash_equals((string) $currentKey, $key)) {
                 utils::log("Extern/Core::Process() [$email] - Invalid key");
                 return false;
             }
@@ -94,7 +99,7 @@ class Core {
             }
 
             // Est-ce qu'on est dans un post ?
-            if (isset($_POST['_email']) && $_POST['_email'] = $user->email) {
+            if (isset($_POST['_email']) && $_POST['_email'] === $user->email) {
                 return self::Post($user);
             }
         }
@@ -203,9 +208,14 @@ class Core {
             // Récupération des paramètres de la requête
             $email = utils::get_input_value("_email", utils::INPUT_GPC);
 
+            if (!utils::check_email($email, false)) {
+                utils::log("Extern/Core::Reinit() [$email] - Invalid email format");
+                return false;
+            }
+
             // Récupération de l'objet utilisateur
             $user = new LibMelanie\Api\Mel\User();
-            $user->email = $email;
+            $user->email = utils::escape_ldap_filter($email);
 
             if (!$user->load(['uid', 'email'])) {
                 utils::log("Extern/Core::Reinit() [$email] - User not found");
@@ -244,6 +254,7 @@ class Core {
             // Chargement du body
             $body = file_get_contents(__DIR__ . '/../../forgotten/mail/email_external_reinit.html');
 
+            $encodedHash = ($hash |> json_encode(...) |> base64_encode(...));
             // Remplacement des variables
             $body = str_replace([
                 '{{logobnum}}',
@@ -251,8 +262,8 @@ class Core {
                 '{{documentation.url}}',
                 '{{bnum.base_url}}',
             ],[
-                MailBody::load_image($dir . '/plugins/mel_workspace/skins/elastic/pictures/logobnum.png', 'png'),
-                utils::url('public/reinit/?_h=' . base64_encode(serialize($hash))),
+                MailBody::load_image("$dir/plugins/mel_workspace/skins/elastic/pictures/logobnum.png", 'png'),
+                utils::url("public/reinit/?_h=$encodedHash"),
                 'https://fabrique-numerique.gitbook.io/bnum/ressources/guide-des-fonctionnalites/espaces-de-travail',
                 'http://mtes.fr/2',
             ], $body);

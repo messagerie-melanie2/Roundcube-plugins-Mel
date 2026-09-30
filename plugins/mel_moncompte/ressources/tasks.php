@@ -115,10 +115,15 @@ class M2tasks
   /**
    * Récupération de l'acl
    *
-   * @return array
+   * @param $user Compatibilité classes filles.
+   * 
+   * @return array|bool false si erreur
    */
-  public function getAcl()
+  public function getAcl(?LibMelanie\Api\Defaut\User $user = null): array|bool
   {
+
+    if ($user && $user->uid !== $this->user->uid) return false;
+
     if (!isset($this->taskslist) || $this->taskslist->owner != $this->user->uid)
       return false;
     try {
@@ -541,10 +546,12 @@ class M2taskswsp extends M2tasks
   /**
    * Récupération de l'acl
    *
-   * @return array
+   * @return array|bool
    */
-  public function getAcl($user)
+  public function getAcl(?LibMelanie\Api\Defaut\User $user=null): array|bool
   {
+    if (!$user) return false;
+
     if (!isset($this->taskslist)) return false;
     else if ($this->taskslist->owner === $user->uid) return true;
 

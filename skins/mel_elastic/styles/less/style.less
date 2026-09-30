@@ -1105,6 +1105,42 @@ a {
     max-width: 300px;
   }
 }
+/* 0009207 - Titres de section de l'autocomplétion (ksearch) */
+
+#rcmKSearchpane,
+ .select-menu {
+
+  li.ksearch-source-header {
+    pointer-events: none !important;
+    cursor: default !important;
+    user-select: none;
+
+    display: block;
+    padding: 8px 12px 4px !important;
+    margin: 0;
+
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--secondary-text-color);
+    opacity: 0.75;
+
+    background-color: var(--invisible) !important;
+    border-top: solid thin var(--main-border-color-transparent);
+
+    &:first-child {
+      border-top: none;
+      padding-top: 10px !important;
+    }
+
+    &:hover,
+    &.selected {
+      background-color: var(--invisible) !important;
+      color: var(--secondary-text-color) !important;
+    }
+  }
+}
 
 #compose-content {
   html@{layout-phone} & {

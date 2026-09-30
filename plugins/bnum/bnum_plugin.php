@@ -1,4 +1,7 @@
 <?php
+
+require_once __DIR__.'/log_manager.php';
+
 /**
  * Classe abstraite bnum_plugin
  * Fournit des fonctionnalités de base pour les plugins Roundcube.
@@ -23,6 +26,10 @@ abstract class bnum_plugin extends rcube_plugin
     private static $module_loaded = false;
 
     private $script_manager;
+
+    protected \Bnum\LogManager $logging {
+        get => \Bnum\LogManager::GetInstance();
+    }
 
     public function __construct($api)
     {
@@ -235,13 +242,13 @@ abstract class bnum_plugin extends rcube_plugin
      *
      * @return void
      */
+    #[\Bnum\DistantAppLog(onlyDistantAppLog:false)]
     protected function assert_post_csrf() {
         if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST' || !$this->rc()->check_request()) {
-            mel_logs::gi()->log(
-                mel_logs::ERROR,
-                "[csrf] Requête rejetée pour l'action '" . $this->get_current_action()
-                    . "' (méthode=" . ($_SERVER['REQUEST_METHOD'] ?? '?') . ")"
-            );
+            if ($this->logging->isLogLevel(\Bnum\LogLevel::Error)) {
+                $method = ($_SERVER['REQUEST_METHOD'] ?? '?');
+                $this->logging->logError("[csrf] Requête rejetée pour l'action '{$this->get_current_action()}' (méthode=$method)");
+            }
             header('HTTP/1.1 403 Forbidden');
             exit;
         }

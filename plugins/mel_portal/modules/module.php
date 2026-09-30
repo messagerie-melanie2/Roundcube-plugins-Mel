@@ -1,27 +1,36 @@
 <?php
-include_once 'module_action.php';
+declare(strict_types = 1);
+
 /**
-* Class for php modules
-*
-* Portail web
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License version 2
-* as published by the Free Software Foundation.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License along
-* with this program; if not, write to the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
-class Module implements iModule {
+ * Classe de base des modules du portail Mél
+ *
+ * Portail web
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
+/**
+ * Module affiché sur le portail.
+ *
+ * Un module se configure dans {@see Module::init()} (taille, ordre, style) et
+ * produit son html dans {@see Module::generate_html()}. Ses actions AJAX se
+ * déclarent avec `#[BnumAction]` sur des méthodes publiques ; elles sont
+ * enregistrées par {@see mel_portal}.
+ */
+abstract class Module
+{
     public const DEFAULT_ORDER = 9999;
-    public const NO_NAME = null;
-    public const NO_ICON = null;
     public const HTML_CARD_CLASS = 'melv2-card';
     public const HTML_CARD_CONTENTS_CLASS = 'melv2-card-contents';
     public const HTML_CARD_PRE_CONTENTS_CLASS = 'melv2-card-pre';
@@ -29,157 +38,141 @@ class Module implements iModule {
     public const HTML_CARD_ICON_CLASS = 'melv2-card-icon';
     public const HTML_CARD_ICON_DATAS = 'data-melv2-icon';
 
+    /** Instance rcmail. */
+    protected readonly rcmail $rc;
+
+    /** Largeur de colonne bootstrap du module. */
+    private ?int $row_size = null;
+
+    /** Ordre par défaut du module, surchargeable par la config `module_orders`. */
+    private ?int $order = null;
+
+    /** Si vrai, le html du module est affiché tel quel, sans carte générique. */
+    private bool $custom_style = false;
+
+    /** Titre de la carte générique. */
+    private ?string $name = null;
+
+    /** Icône de la carte générique. */
+    private ?string $icon = null;
 
     /**
-     * @var rcmail The one and only instance
+     * @param string     $id     Identifiant du module (nom de son dossier)
+     * @param mel_portal $plugin Plugin portail
      */
-    protected $rc;
-
-    /**
-     * @var rcube_plugin mel_portail plugin
-     */
-    protected $plugin;
-    
-    /**
-     * Identifiant du module
-     * 
-     * @var string
-     */
-    protected $id;
-
-    /**
-     * Configuration du module.
-     */
-    protected $config;
-    /**
-     * Identification si il y a plusieurs modules identiques.
-     */
-    protected $identifier;
-
-    /**
-     * Taille du module.
-     */
-    private $row_size;
-
-    private $_order;
-    private $actions;
-    private $have_custom_style;
-    private $name;
-    private $icon;
-    private $custom_attribs;
-    /**
-     * Constructeur avec identifiant du module
-     */
-    public function __construct($id, $plugin, $identifier = "") {
+    public function __construct(
+        protected readonly string $id,
+        protected readonly mel_portal $plugin,
+    ) {
         $this->rc = rcmail::get_instance();
-        $this->plugin = $plugin;
-        $this->id = $id;
-        $this->config = array();
-        $this->identifier = $identifier;
-        $this->actions = [];
     }
 
     /**
-     * Dossier module
+     * Configure le module (taille, ordre, style…).
      */
-    public function folder()
-    {
-        return "modules/";
-    }
+    abstract public function init(): void;
 
     /**
-     * Chemin du fichier "module_action.php"
+     * Génère le html propre au module.
+     *
+     * @return string
      */
-    public function module_action_path()
-    {
-        return getcwd()."/plugins/mel_portal/".$this->folder()."module_action.php";
-    }
+    abstract protected function generate_html(): string;
 
     /**
-    * Est-ce que le module doit être affiché ou non ?
-    * 
-    * @return boolean
-    */
-    public function show() {
+     * Indique si le module doit être affiché.
+     *
+     * @return bool
+     */
+    public function enabled(): bool
+    {
         return true;
     }
 
     /**
-     * Initialisation du module
+     * @return int|null Largeur de colonne bootstrap
      */
-    public function init() {}
-
-    public function row_size()
+    public function row_size(): ?int
     {
         return $this->row_size;
     }
 
-    public function edit_row_size($size)
+    /**
+     * @param int $size Largeur de colonne bootstrap
+     */
+    public function edit_row_size(int $size): void
     {
         $this->row_size = $size;
     }
 
-    public function edit_order($order) {
-        $this->_order = $order;
-    }
-
-    public function order() {
-        return $this->rc->config->get('module_orders', [])[$this->id] ?? $this->_order ?? self::DEFAULT_ORDER;
-    }
-
-    public function use_custom_style(){
-        return $this->have_custom_style ?? false;
-    }
-    public function set_use_custom_style($use)
+    /**
+     * @return int Ordre d'affichage (config `module_orders` prioritaire)
+     */
+    public function order(): int
     {
-        $this->have_custom_style = $use;
-    }
-    public function set_name($new_name){
-        $this->name = $new_name;
-    }
-    public function set_icon($new_icon) {
-        $this->icon = $new_icon;
+        return (int) ($this->rc->config->get('module_orders', [])[$this->id] ?? $this->order ?? self::DEFAULT_ORDER);
     }
 
     /**
-     * Génération du html pour l'item
+     * @param int $order Ordre d'affichage par défaut
      */
-    public function item_html()
+    public function edit_order(int $order): void
+    {
+        $this->order = $order;
+    }
+
+    /**
+     * @return bool Vrai si le module gère lui-même son rendu
+     */
+    public function use_custom_style(): bool
+    {
+        return $this->custom_style;
+    }
+
+    /**
+     * @param bool $use Vrai si le module gère lui-même son rendu
+     */
+    public function set_use_custom_style(bool $use): void
+    {
+        $this->custom_style = $use;
+    }
+
+    /**
+     * @param string $name Titre de la carte générique
+     */
+    public function set_name(string $name): void
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @param string $icon Icône de la carte générique
+     */
+    public function set_icon(string $icon): void
+    {
+        $this->icon = $icon;
+    }
+
+    /**
+     * Génère le html du module, encapsulé dans la carte générique sauf style personnalisé.
+     *
+     * @return string
+     */
+    public function item_html(): string
     {
         $html = $this->generate_html();
-        if (!$this->use_custom_style())
-        {
-            $have_name = $this->name !== self::NO_NAME;
-            $have_icon = $this->icon !== self::NO_ICON;
-            $have_pre_content = $have_icon || $have_name;
 
-            if ($have_pre_content) {
-                unset($have_pre_content);
-                $div_contents = [];
-                
-                if ($have_icon) {
-                    unset($have_icon);
-                    $div_contents[] = html::span(['class' => self::HTML_CARD_ICON_CLASS, self::HTML_CARD_ICON_DATAS => $this->icon], '');
-                }
-
-                if ($have_name){
-                    unset($have_name);
-                    $div_contents[] = '<h2>'.html::a(['class' => self::HTML_CARD_TITLE_CLASS], $this->name).'</h2>';
-                }
-
-                $html = html::div(['class' => self::HTML_CARD_PRE_CONTENTS_CLASS], implode('', $div_contents)).html::div(['class' => self::HTML_CARD_CONTENTS_CLASS], $html);
-            }
-
-            $html = $this->html_square(['class' => self::HTML_CARD_CLASS], $html);
+        if ($this->use_custom_style()) {
+            return $html;
         }
 
-        return $html;
+        return $this->render_card($html);
     }
 
     /**
-     * Ajoute les éléments nécessaire au module pour fonctionner.
+     * Ajoute les ressources (js, css, variables d'environnement) du module.
      */
-    public function include_module()
+    public function include_module(): void
     {
         $this->include_js();
         $this->include_css();
@@ -187,203 +180,47 @@ class Module implements iModule {
     }
 
     /**
-     * Récupère la configuration d'un module.
+     * Récupère un texte localisé du plugin.
+     *
+     * @param string $text Clé du texte
+     *
+     * @return string
      */
-    public function set_config($config, $includes)
-    {
-        try {
-            try {
-                if ($includes !== null && is_array($includes))
-                {
-                    foreach ($includes as $key => $value) {
-                        include_once $value;
-                    }       
-                } 
-            } catch (\Throwable $th) {
-                //throw $th;
-            }
-            // Pas de restriction allowed_classes : aucun appelant de set_config() n'a pu être
-            // localisé dans le dépôt pour confirmer que $config ne sérialise jamais d'objet.
-            $this->config = unserialize($config);
-            $this->after_set_config();
-        } catch (\Throwable $th) {
-            //throw $th;
-        }
-    }
-
-    /**
-     * Actions à faire après avoir récupérer une configuration.
-     */
-    protected function after_set_config()
-    {
-
-    }
-
-    /**
-     * Récupère un texte.
-     */
-    public function text($text)
+    public function text(string $text): string
     {
         return $this->plugin->gettext($text);
     }
 
+    protected function include_js(): void {}
+
+    protected function include_css(): void {}
+
+    protected function set_js_vars(): void {}
+
     /**
-     * Récupère la config du module.
+     * Encapsule le html dans la carte générique, avec icône et titre s'ils sont définis.
+     *
+     * @param string $html Html du module
+     *
+     * @return string
      */
-    protected function load_config()
+    private function render_card(string $html): string
     {
-        include_once $this->id.'/conf.php';
-        $this->config = $config;
-    }
+        $pre_contents = [];
 
-    /**
-     * Charge les actions d'un module.
-     */
-    public function load_actions()
-    {
-        $actions = $this->register_actions() ?? [];
-        $actions = array_merge($actions, $this->action ?? []);
-
-        if ($actions != null)
-        {
-            $size = count($actions);
-            if ($size > 0)
-            {
-                for ($i=0; $i < $size; ++$i) { 
-                    $this->plugin->register_action($actions[$i]->action_name, array($actions[$i]->action_item->object, $actions[$i]->action_item->function_name));
-                }
-            }
-        }
-    }
-
-    /**
-     * Ajoute le plugin au menu.
-     */
-    public function add_to_menu()
-    {
-        
-    }
-
-    /**
-     * Si le module est activé ou non
-     */
-    public function enabled() {
-        return true;
-    }
-
-    protected function generate_html(){}
-    protected function set_js_vars(){} 
-    protected function include_js(){}
-    protected function include_css(){}
-    protected function register_actions(){}
-
-    protected function register_action($action_name, $object, $func_name) {
-        $this->action[] = new Module_Action($action_name, $object, $func_name);
-    }
-
-    /**
-     * Carré en html
-     */
-    protected function html_square($attribs = [], $contents = '')
-    {
-        //if ($this->custom_attribs !== null) $attribs = array_merge($attribs, $this->custom_attribs);
-        $config = $this->custom_attribs ?? [];//['class' => 'melv2-card'];
-
-        if (isset($attribs['class'])){
-            $config['class'] = ' '.$attribs['class'];
-            unset($attribs['class']);
+        if ($this->icon !== null) {
+            $pre_contents[] = html::span(['class' => self::HTML_CARD_ICON_CLASS, self::HTML_CARD_ICON_DATAS => $this->icon], '');
         }
 
-        if (count($attribs) > 0) $config = array_merge($config, $attribs);
-
-        return html::div(
-            $config,
-            $contents);
-    }
-
-    /**
-     * Block html séparé en header/body/footer
-     */
-    function html_square_hbf($title, $classHeader = "", $classBody = "", $classFooter = "", $idSquare = null, $idContent = null, $contents = null, $classContent = '')
-    {
-        return $this->html_square($title, $idSquare, $idContent, 
-        html::div(array("class" => "square-contents"),
-        html::div(array("class" => $classHeader." square-header"), (($contents === null) ? null : $contents["header"])).
-        html::div(array("class" => $classBody." square-body"), (($contents === null) ? null : $contents["body"])).
-        html::div(array("class" => $classFooter." square-footer"), (($contents === null) ? null : $contents["footer"])))
-        ,$classContent);
-    }
-
-    /**
-     * Onglet html
-     */
-    function html_tab($tabName, $id, $selected=false, $misc = "")
-    {
-        return html::tag("button",
-            array("class" => "tablinks sub-title".(($selected == true) ? " selected" : ""), 'onclick' => 'selectTab(`'.$id.'`, this)'),
-            $misc.$tabName
-        );
-    }
-
-    /**
-     * Données d'un onglet html.
-     */
-    function html_tab_content($id, $hidden = false)
-    {
-        return html::div(
-            array("class" => "tabcontent".(($hidden) ? " hidden" : ""), "id" => $id)
-        );
-    }
-
-    /**
-     * Bloack html avec des onglets.
-     */
-    function html_square_tab($array, $title="", $id="")
-    {
-        $dir = __DIR__;
-        include_once "$dir/../program/html_helper/HTMLTab.php";
-
-        $tabs = new HTMLDivTab(null, [
-            aHTMLElement::ARG_CLASSES => ["tabs"],
-        ]);
-
-        if ($title !== "")
-            $tabs->arias[] = "aria-label=\"$title\"";
-
-        $tabs->base->classes = ["tabs-contents"];
-        $count = count($array);
-
-        for ($i=0; $i < $count; ++$i) { 
-
-            $tab = new HTMLTab(($array[$i]["tab-id"] === "" ? null : $array[$i]["tab-id"]), null, [
-                aHTMLElement::ARG_CLASSES => ["tablinks sub-title".($i === 0 ? " selected" : "")],
-                aHTMLElement::ARG_ATTRIBUTES => ['onclick="selectTab(`'.$array[$i]["id"].'`, this)"'],
-            ]);
-
-            if ($i !== 0)
-                $tab->attributes[] = "tabindex=-1";
-
-            $tab->html(($array[$i]["deco"] === null ? "" : $array[$i]["deco"])." <span class=tab-title>".($array[$i]["name"] === null ? "" : $array[$i]["name"]).'</span>');
-            $tab->content->id = $array[$i]["id"];
-            $tab->content->classes = ["tabcontent"];
-
-            if ($array[$i]["content-attributes"] != null)
-                $tab->content->attributes = $array[$i]["content-attributes"];
-
-            $tabs->addTab($tab);
-            unset($tab);
-
+        if ($this->name !== null) {
+            $pre_contents[] = html::tag('h2', [], html::a(['class' => self::HTML_CARD_TITLE_CLASS], $this->name));
         }
 
-        $parent = new HTMLBaseElement($id === "" ? null : $id, [
-            aHTMLElement::ARG_CLASSES => ["square_tab"]
-        ]);
-        if ($title !== "" && $title !== null)
-            $parent->append("<h2>$title</h2>");
-        $parent->append($tabs);
+        if ($pre_contents !== []) {
+            $html = html::div(['class' => self::HTML_CARD_PRE_CONTENTS_CLASS], implode('', $pre_contents))
+                . html::div(['class' => self::HTML_CARD_CONTENTS_CLASS], $html);
+        }
 
-        return $parent->toHtml();
+        return html::div(['class' => self::HTML_CARD_CLASS], $html);
     }
-
-
 }

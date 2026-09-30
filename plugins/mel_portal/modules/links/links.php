@@ -1,20 +1,24 @@
 <?php
+declare(strict_types = 1);
+
+/**
+ * Module « Applications » : html fourni par le hook `mel.portal.links.html`.
+ */
 class Links extends Module
 {
-    public const NUMBER_LASTS_MAILS = 3;
-
-    function init() {
+    public function init(): void
+    {
         $this->edit_row_size(12);
         $this->edit_order(5);
         $this->set_name('Applications');
-        // $this->set_icon('mail');
     }
 
-    function generate_html() {
+    protected function generate_html(): string
+    {
         $datas = $this->plugin->api->exec_hook('mel.portal.links.html', [
-            'html' => ''
+            'html' => '',
         ]);
 
-        return $datas['html'] ?? '';
+        return (string) ($datas['html'] ?? '');
     }
 }

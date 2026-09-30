@@ -56,7 +56,7 @@ export class ModuleNew extends BaseModule {
       task: 'bureau',
       action: 'get_last_new',
       on_success: (datas) => {
-        datas = JSON.parse(datas);
+        if (typeof datas === 'string') datas = JSON.parse(datas);
 
         this._on_get_last_new_success(datas);
       },

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types = 1);
+
 /**
  * Plugin Mél Portail
  *
@@ -17,276 +19,299 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+
+/**
+ * Portail d'accueil du Bnum : affiche les modules présents dans `modules/`.
+ *
+ * Actions (tâche `task_name`) :
+ * - index : affichage du portail
+ * - actions déclarées par `#[BnumAction]` sur les modules (voir {@see mel_portal::register_module_actions()})
+ *
+ * Handlers de template :
+ * - modules         : html des modules activés
+ * - maintenancetext : texte de maintenance
+ * - feedback_button : bouton de retour utilisateur
+ */
 class mel_portal extends bnum_plugin
 {
-    /**
-     * Contient le nom de la tâhce pour pouvoir entrer dans ce plugin.
-     */
-    public $taskName;
-    /**
-     * Nom de la barre sur le côté.
-     */
-    public $sidebarName;
-    /**
-     * Nom du css de ce plugin.
-     */
-    private $cssName;
-    /**
-     * Nom du template de ce plugin
-     */
-    private $templateName;
-    /**
-     * Le html des différents modules qui seront affiché sur la page.
-     */
-    private $modules_html;
-    /**
-     * Le html du menu de gauche.
-     */
-    private $left_menu;
     /**
      * Contient la task associé au plugin
      * @var string
      */
     public $task = '.*';
+
+    /** Nom de la tâche du portail. */
+    private readonly string $task_name;
+
+    /** Nom de la barre latérale qui reçoit le bouton du portail. */
+    private readonly string $sidebar_name;
+
+    /** Nom du css du portail. */
+    private readonly string $css_name;
+
+    /** Nom du template du portail. */
+    private readonly string $template_name;
+
     /**
-     * Méthode héritée de rcube_plugin
-     * pour l'initialisation du plugin
-     * @see rcube_plugin::init()
+     * Html des modules à afficher sur la page.
+     *
+     * @var array<int, string>
      */
-    function init()
+    private array $modules_html = [];
+
+    /**
+     * Initialise le plugin ; les actions et handlers ne sont enregistrés
+     * que sur la tâche du portail.
+     */
+    #[\Override]
+    public function init(): void
     {
         $this->setup();
-        if ($this->rc()->task === $this->taskName)
-        {
-            $this->load_modules_actions();
-            $this->portal();
+
+        if ($this->get_current_task() !== $this->task_name) {
+            return;
         }
+
+        $this->load_modules_actions();
+        // Limité à la tâche du portail pour ne pas écraser les handlers homonymes d'autres plugins (ex. mel_workspace).
+        $this->register_attributes();
     }
 
     /**
-     * Met en place le plugin (appelé dans init())
+     * Action index : affiche le portail et ses modules.
      */
-    function setup()
+    #[BnumAction('index')]
+    public function index(): void
     {
-        $this->load_config();
-        $this->setup_config();
-        $this->add_texts('localization/', true);
-        $this->register_task($this->taskName);
-        // Ajoute le bouton en fonction de la skin
-        $this->add_button(array(
-            'command' => $this->taskName,
-            'class'	=> 'button-home order1 icon-mel-home',
-            'classsel' => 'button-home button-selected order1 icon-mel-home',
-            'innerclass' => 'button-inner',
-            'label'	=> 'portal',
-            'title' => '',
-            'type'       => 'link',
-            'domain' => "mel_portal"
-        ), $this->sidebarName);
-      
-    }
-
-    /**
-     * Récupère les données de la config de ce plugin.
-     */
-    function setup_config()
-    {
-        $config = $this->rc()->config->all();
-        $this->taskName = $this->rc()->config->get('task_name', 'bureau');//$config['task_name'];
-        $this->templateName = $config['template_name'];
-        $this->sidebarName = $config['sidebar_name'];
-        $this->cssName = $config['css_name'];
-    }
-
-    /**
-     * Charge les modules demandée.
-     */
-    function load_modules($pageName = 'dashboard')
-    {
-        try {
-            // Ajout de l'interface
-            include_once 'modules/imodule.php';
-            include_once 'modules/module.php';
-
-            // Recuperation de la configuration
-            $config = scandir(getcwd()."/plugins/mel_portal/modules"); 
-            $existing = [];
-
-            $classname = '';
-            $confModule = null;
-            mel_helper::Enumerable($config)->where(function($k, $v) {
-                return strpos($v, '.php') === false && $v !== "." && $v !== "..";
-            })->select(function ($k, $v) use (&$classname) {
-                include_once "modules/$v/$v.php";
-                $classname = ucfirst($v);
-                $classname = new $classname($v, $this, $k);
-                return $classname;
-            })
-            ->where(function ($k, $v) {
-                return $v->enabled();
-            })
-            ->select(function ($k, $v) {
-                $v->init();
-                return $v;
-            })
-            ->orderBy(function ($k, $v) {return $v->order();})
-            ->select(function ($k, $object) use(&$confModule, &$existing) {
-                $confModule = get_class($object);
-
-                if ($existing[$confModule] !== true) //Ca ne sert à rien de charger le module plusieurs fois.
-                {
-                    $object->include_module();
-                    $existing[$confModule] = true;
-                }
-
-                //Ajout du module.
-                $this->add_module($confModule, $object->item_html(), $object->row_size());
-            })->toArray();
-        } catch (\Throwable $th) {
-            mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_portal->load_modules] Un erreur est survenue pour le module ".$config[$pageName]["modules"][$i]." !");
-            mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_portal->load_modules]".$th->getTraceAsString());
-            mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_portal->load_modules]".$th->getMessage());
-        }
-    }
-
-    /**
-     * Charge les actions d'une page.
-     * - Les inclusions (css/js/autre)
-     * - Les modules
-     * - Le html 
-     */
-    function load_action($current_page)
-    {
-      $this->include_page_css();
-      $this->include_js();
-      $this->load_modules($current_page);
-      $this->generate_html();
-    }
-
-    /**
-     * Charge les actions de chaque modules.
-     */
-    function load_modules_actions()
-    {
-      // Ajout de l'interface
-      include_once 'modules/imodule.php';
-      include_once 'modules/module.php';
-
-      // Recuperation de la configuration
-      $config = scandir(getcwd()."/plugins/mel_portal/modules"); 
-      $size = count($config);
-      for ($i=0; $i < $size; ++$i) { 
-        if (strpos($config[$i], '.php') !== false || $config[$i] === "." || $config[$i] == "..")
-          continue;
-          try {
-              include_once 'modules/'.$config[$i]."/".$config[$i].".php";
-              $classname = ucfirst($config[$i]);
-              $object = new $classname($config[$i], $this, $i);
-              $object->load_actions();
-              $object->add_to_menu();
-          } catch (\Throwable $th) {
-          }
-      }
-    }
-
-    /**
-     * Action lorsque l'utilisateur appel ce plugin.
-     */
-    function portal()
-    {
-      $this->register_action('index', array($this, 'index'));
-    }
-
-    /**
-     * Action index de ce plugin
-     */
-    function index()
-    {
-      $acname = rcube_utils::get_input_value('_data', rcube_utils::INPUT_GPC);
-      $this->load_action(($acname == null) ? "dashboard" : $acname);
-    }
-
-    /**
-     * Récupère le css utile pour ce plugin.
-     */
-    function include_page_css()
-    {
-        // Ajout du css
-        $this->include_stylesheet($this->local_skin_path().'/'.$this->cssName);
-
-        if ($this->rc()->config->get('skin') != 'mel_elastic')
-          $this->include_stylesheet($this->local_skin_path().'/icofont.min.css');
-    }
-
-    /**
-     * Récupère le js utile pour ce plugin.
-     */
-    function include_js()
-    {
+        $this->include_page_css();
         $this->load_script_module();
+        $this->load_modules();
+        $this->send_and_exit('mel_portal.' . $this->template_name);
     }
 
     /**
-     * Récupère et envoie le html.
+     * Handler de template, renvoie le html des modules.
+     *
+     * @return string
      */
-    function generate_html()
+    #[BnumHandler('modules')]
+    public function render_modules(): string
     {
-        $this->rc()->output->add_handlers(array(
-            'modules'    => array($this, 'creates_modules'),
-            'maintenancetext' => [$this, 'maintenancetext'],
-            'feedback_button' => [$this, 'handler_feedback_button']
-        ));
-        $this->rc()->output->send('mel_portal.'.$this->templateName);
+        $html = implode('', $this->modules_html);
+        $this->modules_html = [];
+
+        return html::div(['class' => 'row'], $html);
     }
 
     /**
-     * Récupère le html d'un module.
+     * Handler de template, renvoie le texte de maintenance.
+     *
+     * @return string
      */
-    function add_module($name, $html, $size)
-    {
-        if ($this->modules_html == null) $this->modules_html = [];
-
-        $this->modules_html[] = html::div(array("class" => "col-md-".$size),
-            html::div(array("class" => "module_$name module_parent"), $html)
-        );
-    }
-
-    /**
-     * Callback, renvoie le html des différents modules.
-     */
-    function creates_modules()
-    {
-        $tmp = implode('', $this->modules_html);
-        $this->modules_html = null;
-        return html::div(array("class" => "row"), $tmp);
-    }
-
-    function maintenancetext()
+    #[BnumHandler('maintenancetext')]
+    public function render_maintenance_text(): string
     {
         $this->require_plugin('mel_helper');
         return mel_helper::get_maintenance_text($this->rc());
     }
 
     /**
-     * Callback, renvoie le bouton de feedback.
+     * Handler de template, renvoie le bouton de feedback.
      *
-     * @return void
+     * @return string
      */
-    public function handler_feedback_button() {
+    #[BnumHandler('feedback_button')]
+    public function render_feedback_button(): string
+    {
         return mel_metapage::GetSurveyButton();
     }
 
     /**
-     * Callback, renvoie le html du menu de gauche.
+     * Lit la configuration, enregistre la tâche et ajoute le bouton du portail.
      */
-    function create_left_menu()
+    private function setup(): void
     {
-        return $this->left_menu;
+        $this->task_name     = $this->get_config('task_name', 'bureau');
+        $this->template_name = $this->get_config('template_name', 'mel_portal');
+        $this->sidebar_name  = $this->get_config('sidebar_name', 'taskbar');
+        $this->css_name      = $this->get_config('css_name', 'mel-portal.css');
+
+        $this->add_texts('localization/', true);
+        $this->register_task($this->task_name);
+        $this->add_button([
+            'command'    => $this->task_name,
+            'class'      => 'button-home order1 icon-mel-home',
+            'classsel'   => 'button-home button-selected order1 icon-mel-home',
+            'innerclass' => 'button-inner',
+            'label'      => 'portal',
+            'title'      => '',
+            'type'       => 'link',
+            'domain'     => $this->ID,
+        ], $this->sidebar_name);
     }
 
+    /**
+     * Enregistre les actions de chaque module, activé ou non : `enabled()` dépend
+     * souvent d'autres plugins qui ne sont pas forcément chargés à l'`init`.
+     */
+    private function load_modules_actions(): void
+    {
+        foreach ($this->discover_module_names() as $name) {
+            try {
+                $this->register_module_actions($this->create_module($name));
+            } catch (\Throwable $th) {
+                $this->log_module_error($name, 'Chargement des actions', $th);
+            }
+        }
+    }
+
+    /**
+     * Initialise les modules activés, triés par ordre, et prépare leur html.
+     */
+    private function load_modules(): void
+    {
+        $modules = [];
+
+        foreach ($this->discover_module_names() as $name) {
+            try {
+                $module = $this->create_module($name);
+
+                if (!$module->enabled()) {
+                    continue;
+                }
+
+                $module->init();
+                $modules[$name] = $module;
+            } catch (\Throwable $th) {
+                $this->log_module_error($name, 'Initialisation', $th);
+            }
+        }
+
+        uasort($modules, fn(Module $a, Module $b) => $a->order() <=> $b->order());
+
+        foreach ($modules as $name => $module) {
+            try {
+                $module->include_module();
+                $this->add_module(get_class($module), $module->item_html(), $module->row_size());
+            } catch (\Throwable $th) {
+                $this->log_module_error($name, 'Affichage', $th);
+            }
+        }
+    }
+
+    /**
+     * Enregistre les actions déclarées par `#[BnumAction]` sur les méthodes
+     * publiques d'un module.
+     *
+     * @param Module $module Module à inspecter
+     */
+    private function register_module_actions(Module $module): void
+    {
+        foreach ((new ReflectionObject($module))->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+            foreach ($method->getAttributes(BnumAction::class) as $attribute) {
+                $action = $attribute->newInstance();
+                $callback = fn() => $this->run_module_action($module, $method->getName(), $action);
+
+                if ($action->task === null) {
+                    $this->register_action($action->name, $callback);
+                    continue;
+                }
+
+                $this->force_register_action($action->name, $callback, $action->task);
+            }
+        }
+    }
+
+    /**
+     * Exécute l'action d'un module et envoie son résultat, en JSON si demandé.
+     *
+     * @param Module     $module Module porteur de l'action
+     * @param string     $method Méthode du module
+     * @param BnumAction $action Déclaration de l'action
+     */
+    private function run_module_action(Module $module, string $method, BnumAction $action): void
+    {
+        if ($action->csrf) {
+            $this->assert_post_csrf();
+        }
+
+        $result = $module->$method();
+
+        if ($action->json) {
+            $this->sendEncodedExit($result);
+        }
+
+        $this->sendExit($result);
+    }
+
+    /**
+     * Liste les dossiers de modules présents dans `modules/`.
+     *
+     * @return array<int, string> Noms des modules
+     */
+    private function discover_module_names(): array
+    {
+        return array_filter(
+            scandir(__DIR__ . '/modules') ?: [],
+            fn(string $entry) => $entry !== '.' && $entry !== '..' && !str_contains($entry, '.php')
+        );
+    }
+
+    /**
+     * Instancie un module à partir du nom de son dossier.
+     *
+     * @param string $name Nom du dossier du module
+     *
+     * @return Module
+     */
+    private function create_module(string $name): Module
+    {
+        include_once __DIR__ . '/modules/module.php';
+        include_once __DIR__ . "/modules/$name/$name.php";
+
+        $classname = ucfirst($name);
+        return new $classname($name, $this);
+    }
+
+    /**
+     * Journalise l'échec d'un module sans interrompre le chargement des autres.
+     *
+     * @param string     $name  Nom du module
+     * @param string     $step  Étape en échec
+     * @param \Throwable $error Erreur levée
+     */
+    private function log_module_error(string $name, string $step, \Throwable $error): void
+    {
+        mel_logs::gi()->log(mel_logs::ERROR, "[mel_portal] $step du module '$name' impossible : " . $error->getMessage());
+
+        if (mel_logs::is(mel_logs::DEBUG)) {
+            mel_logs::gi()->log(mel_logs::DEBUG, "[mel_portal] " . $error->getTraceAsString());
+        }
+    }
+
+    /**
+     * Inclut le css du portail.
+     */
+    private function include_page_css(): void
+    {
+        $this->include_stylesheet($this->local_skin_path() . '/' . $this->css_name);
+
+        if ($this->get_config('skin') !== 'mel_elastic') {
+            $this->include_stylesheet($this->local_skin_path() . '/icofont.min.css');
+        }
+    }
+
+    /**
+     * Ajoute le html d'un module à la page.
+     *
+     * @param string   $name Nom de la classe du module
+     * @param string   $html Html du module
+     * @param int|null $size Largeur de colonne bootstrap
+     */
+    private function add_module(string $name, string $html, ?int $size): void
+    {
+        $this->modules_html[] = html::div(['class' => "col-md-$size"],
+            html::div(['class' => "module_$name module_parent"], $html)
+        );
+    }
 }
-
-
-
-
-

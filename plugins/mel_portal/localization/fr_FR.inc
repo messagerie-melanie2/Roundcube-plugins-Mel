@@ -1,5 +1,5 @@
 <?php
-$labels = array();
+$labels = [];
 $labels['portal'] = "Accueil";
 $labels['news'] = "S'informer";
 //Modules
@@ -37,6 +37,8 @@ $labels['workspaces'] = "Espaces de travail";
 //Workspaces
 $labels['tak'] = "Épingler";
 $labels['untak'] = "Désépingler";
+$labels['see_all'] = "Voir tout";
+$labels['see_all_workspaces_title'] = "Afficher la liste des espaces de travail";
 
 $labels["no_event_today"] = "Pas de réunion prévue aujourd'hui.";
 $labels["next_agenda_event"] = "Prochaine réunion planifiée le : {date} à {horaire}";

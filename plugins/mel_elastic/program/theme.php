@@ -286,7 +286,7 @@ class Theme {
      * @return boolean
      */
     protected static function loaded_style_is_folder($style) {
-        return strpos($style, self::EXT_STYLE) !== false;
+        return strpos($style ?? '', self::EXT_STYLE) !== false;
     }
 
     /**

@@ -252,6 +252,9 @@ class mtes_driver_mel extends mce_driver_mel
     $filter_ldap = rcmail::get_instance()->config->get('roundcube_nextcloud_filter_ldap', array());
     $hasAccess = false;
     $user = driver_mel::gi()->getUser();
+
+    if (!isset($user)) return false;
+
     $user->load(array_keys($filter_ldap));
 
     if (isset($filter_ldap) && count($filter_ldap) > 0) {

@@ -26,6 +26,43 @@ require_once INSTALL_PATH.'program/lib/Roundcube/rcube_session.php';
 require_once INSTALL_PATH.'program/lib/Roundcube/session/php.php';
 require_once INSTALL_PATH.'plugins/mel/mel.php';
 require_once '../lib/utils.php';
+include_once INSTALL_PATH.'plugins/bnum_glitchtip/bnum_glitchtip.php';
+
+if (class_exists('bnum_glitchtip', autoload:false)) {
+    define('RCMAIL_VERSION', '1.6.19');
+    
+    function getConfig(): array {
+        require_once INSTALL_PATH."/plugins/bnum_glitchtip/config.inc.php";
+        return $config;
+    }
+
+    $config = getConfig();
+
+    $dsn = $config['php_dsn'];
+    $options = ['enable_logs' => (bool)$config['enable_logs'], 
+                'log_level' => (string)$config['log_level'],
+                'traces_sample_rate' => (float)$config['traces_sample_rate'],
+                'environment' => (string)$config['env'],
+                'error_types' => $config['error_types']
+                ];
+
+    Glitchtip::Instance()->init($dsn, $options);
+}
+
+enum GlitchtipState {
+    case All;
+    case OnlyDistant;
+    case OnlyLocal;
+}
+
+final class GlitchtipData {
+    public function __construct(
+        public readonly string $log_level,
+        public readonly GlitchtipState $state = GlitchtipState::All
+    )
+    {}
+}
+
 abstract class AMel implements IMel {
     static $session;
     static $plugins = [];
@@ -63,7 +100,7 @@ abstract class AMel implements IMel {
         return $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST']."/$path";
     }
 
-    protected function redirect_to_rc($task, $action = '', $args)
+    protected function redirect_to_rc($task, $action = '', $args = [])
     {
         if (!empty($action)) $action = "&_action=$action";
 
@@ -122,6 +159,17 @@ abstract class AMel implements IMel {
     protected function get_user_from_mail($email)
     {
         return $this->gi()->getUser(null, true, false, null, $email);
+    }
+
+    protected function log(string $message, ?GlitchtipData $data = null): void {
+        if (isset($data) 
+            && ($data->state === GlitchtipState::All || $data->state === GlitchtipState::OnlyDistant) 
+            && class_exists('bnum_glitchtip', autoload:false)) {
+            Glitchtip::Instance()->log($data->log_level, $message);
+        }
+
+        if (isset($data) && ($data->state === GlitchtipState::OnlyDistant)) return;
+        utils::log($message);
     }
 
     public abstract function run(...$args);

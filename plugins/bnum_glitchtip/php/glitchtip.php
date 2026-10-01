@@ -187,7 +187,7 @@ final class Glitchtip
      * @return void
      */
     public function log(string $level, string $message, int $offset = 1, array $context = [], array $attributes = []): void {
-        $caller = $this->_get_calling_method($offset);
+        $caller = $attributes['caller'] ?? $this->_get_calling_method($offset);
 
         if (!array_key_exists('service.name', $attributes)) {
             $attributes['service.name'] = $this->env;

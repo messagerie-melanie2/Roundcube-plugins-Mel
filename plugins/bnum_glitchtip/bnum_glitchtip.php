@@ -264,6 +264,11 @@ class bnum_glitchtip extends bnum_plugin {
         return $args;
     }
 
+    public function hook_log_capture_error(array $args): array {
+        $this->captureException($args['error']);
+        return $args;
+    }
+
     public function init(): void {
 
         $this->load_config();

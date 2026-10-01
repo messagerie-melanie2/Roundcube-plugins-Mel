@@ -165,6 +165,7 @@ class mel_logs extends rcube_plugin
 	 * Récupération de l'instance
 	 * @return mel_logs
 	 */
+	#[\NoDiscard("Ne pas utiliser le résultat est un non-sens")]
 	public static function get_instance() {
 	    if (!isset(self::$instance))
 	        self::$instance = new self(rcmail::get_instance()->plugins);
@@ -177,6 +178,7 @@ class mel_logs extends rcube_plugin
 	 *
 	 * @return mel_logs
 	 */
+	#[\NoDiscard("Ne pas utiliser le résultat est un non-sens")]
 	public static function gi() {
 		return self::get_instance();
 	}
@@ -184,13 +186,15 @@ class mel_logs extends rcube_plugin
 	/**
 	 * Test si l'instance de mel_log permet de logger a ce niveau
 	 */
+	#[\NoDiscard("lecture sans effet de bord : sans utiliser le résultat, l'appel est inutile")]
 	public static function is(string|LogLevel $level): bool {
       return self::get_instance()->is_level($level);
 	}
 
-  /**
-   * Test si le niveau de log est le bon
-   */
+	/**
+	 * Test si le niveau de log est le bon
+	 */
+    #[\NoDiscard("lecture sans effet de bord : sans utiliser le résultat, l'appel est inutile")]
 	public function is_level(string|LogLevel $logLevel): bool {
 		$level = is_string($logLevel) ? $this->map_log_level($logLevel) : $logLevel;
 		$rcmail = rcmail::get_instance();
@@ -532,8 +536,18 @@ class mel_logs extends rcube_plugin
 	 * @param string $message
 	 * 
 	 */
-	public function l($level, $message) {
-		return $this->log($level, $message);
+	public function l(string|LogLevel $level, string $message, array $data = []): void {
+		$this->log($level, $message, $data);
+	}
+
+	public function captureError(\Throwable $th, $writeLogs = false): void {
+		$this->_execHook('log.capture_error', ['error' => $th]);
+
+		if ($writeLogs) $this->l(LogLevel::Error, $th->getMessage());
+	}
+
+	public static function capture(\Throwable $th, $writeLogs = false): void {
+		self::gi()->captureError($th, $writeLogs);
 	}
 
 	/******** PRIVATE **********/

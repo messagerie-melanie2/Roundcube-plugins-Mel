@@ -232,6 +232,43 @@ class bnum_glitchtip extends bnum_plugin {
         return self::__rcpclBody_BGT_LogsTrait_isLogLevel($level);
     }
 
+    public function hook_log_call(array $args): array {
+        if (!class_exists('\MelLogs\LogLevel', autoload:false)) return $args;
+
+        $level = $args['level'];
+        $message = $args['message'];
+        $data = $args['data'];
+        $caller = $args['caller'];
+
+        switch ($level) {
+            case \MelLogs\LogLevel::Trace:
+            case \MelLogs\LogLevel::Access:
+                $level = LogLevel::Trace;
+                break;
+
+            case \MelLogs\LogLevel::Debug:
+                $level = LogLevel::Debug;
+                break;
+
+            case \MelLogs\LogLevel::Warn:
+                $level = LogLevel::Warn;
+                break;
+
+            case \MelLogs\LogLevel::Error:
+                $level = LogLevel::Error;
+                break;
+
+            default:
+                throw new Exception("Le niveau de log $level n'est pas compatible avec Glitchtip", 1);
+        }
+
+        $data['attributes'] ??= [];
+        $data['attributes']['caller'] ??= $caller;
+
+        Glitchtip::Instance()->log($level->value, $message, (int)($data['log.offset'] ?? 0), $data['context'] ?? [], $data['attributes']);
+        return $args;
+    }
+
     public function init(): void {
 
         $this->load_config();

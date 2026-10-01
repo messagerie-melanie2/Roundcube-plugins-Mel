@@ -1285,9 +1285,14 @@ class mel_sharedmailboxes extends rcube_plugin {
      * @param array $args
      */
     public function set_folder_name($args) {
+        if (!is_string($args['folder'] ?? null /* ?? null Désactive le warning*/)) {
+            return $args;
+        }
+
         if ($this->is_individual_trash($args['folder'])) {
             $args['folder'] = $this->get_trash_folder_name($args['folder']);
         }
+
         if (isset($this->prev_folder) && $this->prev_folder != $args['folder']) {
             $relog = false;
             if (strpos($args['folder'], driver_mel::gi()->getBalpLabel()) === 0 && strpos($this->prev_folder, driver_mel::gi()->getBalpLabel()) === 0) {

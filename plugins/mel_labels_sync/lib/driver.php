@@ -229,15 +229,17 @@ class Driver {
   }
   /**
    * Méthode de conversion des étiquettes Mél vers Roundcube
-   * @param array $m2_labels
+   * @param array|string $m2_labels
    * @param string $mailbox
    * @return Label[]
    */
   protected function _m2_to_rc($m2_labels, $mailbox) {
-    $_rc_labels = array();
-    $_ex_m2_labels = json_decode($m2_labels);
+    $_rc_labels = [];
+    $_ex_m2_labels = is_string($m2_labels) ? json_decode($m2_labels) : $m2_labels;
 
     foreach ($_ex_m2_labels as $_m2_label) {
+      if (!isset($_m2_label)) continue;
+
       $_m2_label->mailbox = $mailbox;
       $_rc_label = Label::withArray($_m2_label);
 

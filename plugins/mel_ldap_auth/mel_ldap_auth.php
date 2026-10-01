@@ -152,6 +152,8 @@ class mel_ldap_auth extends rcube_plugin {
       // Récupération des données de l'utilisateur depuis le cache
       $_user_mce = driver_mel::gi()->getUser($args['user']);
 
+      if (!isset($_user_mce)) return $args;
+
       //MANTIS 0009619 - Ne plus permettre la connexion directe sur une balp (sufr) avec le mot de passe d'un gestionnaire
       $args = $this->_validate_user_type($_user_mce, $args);
 

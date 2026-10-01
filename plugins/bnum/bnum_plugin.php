@@ -235,13 +235,17 @@ abstract class bnum_plugin extends rcube_plugin
      *
      * @return void
      */
+    #[\MelLogs\ExtraLog()]
     protected function assert_post_csrf() {
         if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST' || !$this->rc()->check_request()) {
-            mel_logs::gi()->log(
-                mel_logs::ERROR,
-                "[csrf] Requête rejetée pour l'action '" . $this->get_current_action()
-                    . "' (méthode=" . ($_SERVER['REQUEST_METHOD'] ?? '?') . ")"
-            );
+            if (mel_logs::is(mel_logs::LogLevel()::Error))
+            {
+                $method = $_SERVER['REQUEST_METHOD'] ?? '?';
+                mel_logs::gi()->log(
+                    mel_logs::LogLevel()::Error,
+                    "[csrf] Requête rejetée pour l'action '{$this->get_current_action()}' (méthode=$method)"
+                );   
+            }
             header('HTTP/1.1 403 Forbidden');
             exit;
         }

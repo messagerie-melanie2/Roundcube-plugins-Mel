@@ -371,7 +371,7 @@ class ThemeLocalization  {
     }
 
     public function __toString() {
-        return SingletonThemeLocalization::Instance()->get($this->theme, $this->key, $this->local, $this->path);
+        return SingletonThemeLocalization::Instance()->get($this->theme, $this->key, $this->local, $this->path) ?? '';
     }
 } 
 

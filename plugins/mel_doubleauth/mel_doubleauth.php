@@ -1031,10 +1031,10 @@ class mel_doubleauth extends bnum_plugin
      * 
      * @return boolean
      */
-    private function __isRecoveryCode($code)
+    private function __isRecoveryCode($code): bool
     {
-        $prefs = $this->__get2FAconfig() ?? [];
-        return in_array($code, $prefs['recovery_codes']);
+        $codes = $this->__get2FAconfig()['recovery_codes'] ?? null;
+        return is_array($codes) && in_array($code, $codes, true);
     }
 
     /**

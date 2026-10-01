@@ -391,7 +391,7 @@ class mtes_driver_mel extends mce_driver_mel
       // Ajout de toutes les adresses de messagerie
 
       if (isset($args['record']['type'])) {
-        $emails = isset($args['record']['email_list']) ? $args['record']['email_list'] : [];
+        $emails = (array) ($args['record']['email_list'] ?? []);
         $main_email = isset($args['record']['email']) ? $args['record']['email'] : '';
         $other_emails = array_filter($emails, function ($email) use ($main_email) {
           return $email !== $main_email;

@@ -181,40 +181,35 @@ class bnum_glitchtip extends bnum_plugin {
         return self::__rcpclBody_BGT_LogsTrait_isLogLevel($level);
     }
 
+    /**
+         * Hook "log.call" émis par mel_logs pour les appelants portant l'attribut
+         * {@see \MelLogs\ExtraLog} : relaie le log vers {@see Glitchtip}.
+         *
+         * Les niveaux mel_logs sont convertis vers les niveaux Glitchtip (`Access` → `Trace`).
+         * Un niveau inconnu est ignoré : un hook de log ne doit jamais interrompre la requête.
+         *
+         * ⚠️ Si `enable_logs_hooks` est actif et que le log est aussi écrit localement
+         * (`ExtraLog(false)`), il arrive deux fois dans Glitchtip (via ce hook et via `write_log`).
+         *
+         * @param array{level: \MelLogs\LogLevel, message: string, data: array, caller: string} $args
+         * @return array Les arguments inchangés, tels que reçus.
+         **/
     public function hook_log_call(array $args): array {
-        if (!class_exists('\MelLogs\LogLevel', autoload:false)) return $args;
+        $level = match ($args['level'] ?? null) {
+            \MelLogs\LogLevel::Trace, \MelLogs\LogLevel::Access => LogLevel::Trace,
+            \MelLogs\LogLevel::Debug => LogLevel::Debug,
+            \MelLogs\LogLevel::Info => LogLevel::Info,
+            \MelLogs\LogLevel::Warn => LogLevel::Warn,
+            \MelLogs\LogLevel::Error => LogLevel::Error,
+            default => null,
+        };
 
-        $level = $args['level'];
-        $message = $args['message'];
-        $data = $args['data'];
-        $caller = $args['caller'];
+        if ($level === null) return $args;
 
-        switch ($level) {
-            case \MelLogs\LogLevel::Trace:
-            case \MelLogs\LogLevel::Access:
-                $level = LogLevel::Trace;
-                break;
+        $data = $args['data'] ?? [];
+        $attributes = ($data['attributes'] ?? []) + ['caller' => $args['caller'] ?? 'unknown'];
 
-            case \MelLogs\LogLevel::Debug:
-                $level = LogLevel::Debug;
-                break;
-
-            case \MelLogs\LogLevel::Warn:
-                $level = LogLevel::Warn;
-                break;
-
-            case \MelLogs\LogLevel::Error:
-                $level = LogLevel::Error;
-                break;
-
-            default:
-                throw new Exception("Le niveau de log $level n'est pas compatible avec Glitchtip", 1);
-        }
-
-        $data['attributes'] ??= [];
-        $data['attributes']['caller'] ??= $caller;
-
-        Glitchtip::Instance()->log($level->value, $message, (int)($data['log.offset'] ?? 0), $data['context'] ?? [], $data['attributes']);
+        Glitchtip::Instance()->log($level->value, (string)($args['message'] ?? ''), 0, $data['context'] ?? [], $attributes);
         return $args;
     }
 

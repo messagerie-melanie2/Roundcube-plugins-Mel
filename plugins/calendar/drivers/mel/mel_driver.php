@@ -148,7 +148,7 @@ class mel_driver extends calendar_driver {
    * @private
    */
   private function _random_color() {
-    mt_srand(( double ) microtime() * 1000000);
+    mt_srand(( float ) microtime() * 1000000);
     $c = '';
     while (strlen($c) < 6) {
       $c .= sprintf("%02X", mt_rand(0, 255));
@@ -429,7 +429,7 @@ class mel_driver extends calendar_driver {
       // Trier les calendriers
       uasort($calendars, function ($a, $b) {
         if ($a['order'] === $b['order'])
-          return strcmp(strtolower($a['listname']), strtolower($b['listname']));
+          return strcmp(strtolower($a['listname'] ?? ''), strtolower($b['listname'] ?? ''));
         else
           return strnatcmp($a['order'], $b['order']);
       });
@@ -439,7 +439,7 @@ class mel_driver extends calendar_driver {
         $sortTree = function ($a, $b) {
           global $calendars;
           if ($a->order === $b->order)
-            return strcmp(strtolower($calendars[$a->id]['listname']), strtolower($calendars[$b->id]['listname']));
+            return strcmp(strtolower($calendars[$a->id]['listname'] ?? ''), strtolower($calendars[$b->id]['listname'] ?? ''));
           else
             return strnatcmp($a->order, $b->order);
         };

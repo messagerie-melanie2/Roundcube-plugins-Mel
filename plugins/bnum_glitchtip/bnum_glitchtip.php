@@ -213,6 +213,11 @@ class bnum_glitchtip extends bnum_plugin {
         return $args;
     }
 
+    public function hook_log_capture_error(array $args): array {
+        $this->captureException($args['error']);
+        return $args;
+    }
+
     public function init(): void {
 
         $this->load_config();
@@ -222,6 +227,7 @@ class bnum_glitchtip extends bnum_plugin {
         $this->add_hook('fatal_error', [$this, 'hook_fatal_error']);
         $this->add_hook('write_log', [$this, 'hook_write_log']);
         $this->add_hook('log.call', [$this, 'hook_log_call']);
+        $this->add_hook('log.capture_error', [$this, 'hook_log_capture_error']);
 
         $initFactory = include __DIR__ . '/php/init/init.php';
         (Closure::bind($initFactory, null, self::class))($this);

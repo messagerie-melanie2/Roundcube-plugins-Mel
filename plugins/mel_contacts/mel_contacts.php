@@ -159,8 +159,8 @@ class mel_contacts extends bnum_plugin
       }
       $sources = [];
       // Récupération des préférences de l'utilisateur
-      $hidden_contacts = $this->rc->config->get('hidden_contacts', []);
-      $sort_contacts = $this->rc->config->get('sort_contacts', []);
+      $hidden_contacts = (array) $this->rc->config->get('hidden_contacts', []);
+      $sort_contacts = (array) $this->rc->config->get('sort_contacts', []);
       // attempt to create a default calendar for this user
       if (!$this->has_principal) {
         $ret = $this->user->createDefaultAddressbook($this->rc->config->get('default_addressbook_name', null));
@@ -208,7 +208,7 @@ class mel_contacts extends bnum_plugin
       // Tri des carnets
       uasort($sources, function ($a, $b) {
         if ($a['order'] === $b['order'])
-          return strcmp(strtolower($a['name']), strtolower($b['name']));
+          return strcmp(strtolower((string) $a['name']), strtolower((string) $b['name']));
         else
           return strnatcmp($a['order'], $b['order']);
       });
@@ -230,13 +230,14 @@ class mel_contacts extends bnum_plugin
         // Supprimer MAIA de la récupération des photos
         unset($p['sources']['annuaire']);
         unset($p['sources']['amande_group']);
-        $p['sources'] = array_replace([$sources[driver_mel::gi()->mceToRcId($this->user->uid)]], $p['sources']);
+        $principal = $sources[driver_mel::gi()->mceToRcId($this->user->uid)] ?? null;
+        $p['sources'] = isset($principal) ? array_replace([$principal], $p['sources']) : $p['sources'];
       } else if ($this->rc->task == 'addressbook') {
         $p['sources'] = array_replace($all_source, $p['sources'], $sources);
       } else {
-        $annuaire = $p['sources']['annuaire'];
+        $annuaire = $p['sources']['annuaire'] ?? null;
         unset($p['sources']['annuaire']);
-        $p['sources'] = array_replace($all_source, $p['sources'], $sources, [$annuaire]);
+        $p['sources'] = array_replace($all_source, $p['sources'], $sources, isset($annuaire) ? [$annuaire] : []);
       }
       return $p;
     } catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
@@ -279,7 +280,7 @@ class mel_contacts extends bnum_plugin
     //limiter l'affichage de l'annuaire interministériel
     if ($args['name'] == 'ldap_public' && !mel::is_secured()) {
       unset($args['result']['annuaire']);
-      $args['result']['amande']['base_dn'] = explode(',', driver_mel::gi()->getUser()->dn, 2)[1];
+      $args['result']['amande']['base_dn'] = explode(',', driver_mel::gi()->getUser()->dn ?? '', 2)[1] ?? null;
     }
     if ($args['name'] != 'autocomplete_addressbooks') {
       return $args;
@@ -296,7 +297,9 @@ class mel_contacts extends bnum_plugin
         $this->user = driver_mel::gi()->getUser();
       }
       $abook = $this->user->getDefaultAddressbook();
-      $sources[] = $abook->id;
+      if (isset($abook)) {
+        $sources[] = $abook->id;
+      }
       $args['result'] = $sources;
       return $args;
     } catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
@@ -322,7 +325,7 @@ class mel_contacts extends bnum_plugin
       }
       // Il remplace les . par _ dans la recherche
       // TODO: il faut peut être anticiper ça avant
-      $p['id'] = driver_mel::gi()->rcToMceId($p['id']);
+      $p['id'] = (string) driver_mel::gi()->rcToMceId($p['id']);
       // Gestion du All
       if ($p['id'] == 'all') {
         $p['instance'] = new all_addressbook($this->rc);
@@ -353,7 +356,7 @@ class mel_contacts extends bnum_plugin
    */
   public function book_actions()
   {
-    $action = trim(rcube_utils::get_input_value('_act', rcube_utils::INPUT_GPC));
+    $action = trim(rcube_utils::get_input_string('_act', rcube_utils::INPUT_GPC));
 
     if ($action == 'create') {
       $this->ui->book_edit();
@@ -370,15 +373,16 @@ class mel_contacts extends bnum_plugin
   public function book_save()
   {
     $prop = array(
-      'id' => driver_mel::gi()->rcToMceId(trim(rcube_utils::get_input_value('_source', rcube_utils::INPUT_POST))),
-      'name' => trim(rcube_utils::get_input_value('_name', rcube_utils::INPUT_POST)),
-      'oldname' => trim(rcube_utils::get_input_value('_oldname', rcube_utils::INPUT_POST, true)), // UTF7-IMAP
+      'id' => driver_mel::gi()->rcToMceId(trim(rcube_utils::get_input_string('_source', rcube_utils::INPUT_POST))),
+      'name' => trim(rcube_utils::get_input_string('_name', rcube_utils::INPUT_POST)),
+      'oldname' => trim(rcube_utils::get_input_string('_oldname', rcube_utils::INPUT_POST, true)), // UTF7-IMAP
       'subscribed' => true
     );
     $type = strlen($prop['oldname']) ? 'update' : 'create';
 
     try {
       $result = $error = false;
+      $ret = null;
       $addressbook = driver_mel::gi()->addressbook([$this->user]);
       if ($type == 'update') {
         $addressbook->id = $prop['id'];
@@ -427,7 +431,7 @@ class mel_contacts extends bnum_plugin
    */
   private function book_delete()
   {
-    $folder = trim(rcube_utils::get_input_value('_source', rcube_utils::INPUT_GPC));
+    $folder = trim(rcube_utils::get_input_string('_source', rcube_utils::INPUT_GPC));
 
     try {
       $addressbook = driver_mel::gi()->addressbook([$this->user]);
@@ -501,7 +505,7 @@ class mel_contacts extends bnum_plugin
   // returns list of contacts
   public function get_lists()
   {
-    $cid = rcube_utils::get_input_value('cid', rcube_utils::INPUT_POST);
+    $cid = rcube_utils::get_input_string('cid', rcube_utils::INPUT_POST);
     $dn = base64_decode(explode('-', $cid, 2)[0]);
     $user = driver_mel::gi()->getUser(null, true, null, $dn);
     $lists = $user->getListsIsMember(['dn', 'email', 'name']);

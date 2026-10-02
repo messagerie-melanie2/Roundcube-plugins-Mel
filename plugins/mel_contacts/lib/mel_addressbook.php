@@ -111,7 +111,7 @@ class mel_addressbook extends rcube_addressbook
      * @return array  Indexed list of contact records, each a hash array
      */
     function list_records($cols=null, $subset=0, $nocount=false) {
-        if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, "mel_addressbook::list_records($cols, $subset)");
+        if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, "mel_addressbook::list_records(" . json_encode($cols) . ", $subset)");
         if (isset($this->result)) return $this->result;
 
         try {
@@ -157,8 +157,9 @@ class mel_addressbook extends rcube_addressbook
                 else {
                   $_group->id = $this->group_id;
                 }                
-                foreach($_group->getList(array('uid', 'addressbook', 'members')) as $group) { break; }
-                $members = unserialize($group->members, ['allowed_classes' => false]);
+                $group = null;
+                foreach($_group->getList(array('uid', 'addressbook', 'members')) ?? [] as $group) { break; }
+                $members = isset($group) ? unserialize($group->members ?? '', ['allowed_classes' => false]) : false;
                 if (is_array($members) && count($members) > 0) {
                     // Récupère les contacts membres du groupe
                     $_contact = driver_mel::gi()->contact([$this->user, $this->addressbook]);
@@ -175,13 +176,13 @@ class mel_addressbook extends rcube_addressbook
                 $_contacts = $_contact->getList(null, "", array(), "object_lastname, object_firstname", true, $limit, $offset);
                 if ($this->result->count == 0) {
                     $nb_contacts = $_contact->getList('count');
-                    $count = $nb_contacts['']->count;
+                    $count = $nb_contacts['']->count ?? 0;
                     unset($nb_contacts);
                 }
             }
 
             $i=0;
-            foreach ($_contacts as $_contact) {
+            foreach ($_contacts ?? [] as $_contact) {
                 $this->result->add(mel_contacts_mapping::m2_to_rc_contact($cols, $_contact));
                 if ($subset > 0 && $subset == $i) break;
                 $i++;
@@ -217,7 +218,7 @@ class mel_addressbook extends rcube_addressbook
      * @return object rcube_result_set List of contact records and 'count' value
     */
     function search($fields, $value, $mode=0, $select=true, $nocount=false, $required=array()) {
-        if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, "mel_addressbook::search($fields, $value, $mode, $select, $nocount, $required");
+        if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, "mel_addressbook::search(" . json_encode($fields) . ", " . json_encode($value) . ", $mode, $select, $nocount, " . json_encode($required) . ")");
         try {
             $_contact = driver_mel::gi()->contact([$this->user, $this->addressbook]);
             $_contact->type = Defaut\Contact::TYPE_CONTACT;
@@ -285,7 +286,7 @@ class mel_addressbook extends rcube_addressbook
             $i=0;
             $this->result = new rcube_result_set();
 
-            foreach ($_contact->getList($searchfields, $filter, $operators, "object_lastname, object_firstname", true, null, null, $case_unsensitive_fields) as $_contact) {
+            foreach ($_contact->getList($searchfields, $filter, $operators, "object_lastname, object_firstname", true, null, null, $case_unsensitive_fields) ?? [] as $_contact) {
                 $this->result->add(mel_contacts_mapping::m2_to_rc_contact(null, $_contact));
                 $i++;
             }
@@ -300,7 +301,6 @@ class mel_addressbook extends rcube_addressbook
         catch (\Exception $ex) {
             return false;
         }
-        return false;
     }
 
     /**
@@ -320,8 +320,8 @@ class mel_addressbook extends rcube_addressbook
                 $group = $_contacts[$this->addressbook->id]['groups'][$this->group_id];
                 $count = 0;
                 if ($group !== false) {
-                    $members = unserialize($group->members, ['allowed_classes' => false]);
-                    if ($members !== false) {
+                    $members = unserialize($group->members ?? '', ['allowed_classes' => false]);
+                    if (is_array($members)) {
                         $members = array_unique($members);
                         $count = count($members);
                     }
@@ -347,7 +347,7 @@ class mel_addressbook extends rcube_addressbook
                     $_contact->type = Defaut\Contact::TYPE_CONTACT;
                     $results = $_contact->getList('count');
                     $count = 0;
-                    foreach($results as $result) {
+                    foreach($results ?? [] as $result) {
                         $count = $result->count;
                         break;
                     }
@@ -384,7 +384,7 @@ class mel_addressbook extends rcube_addressbook
      * @return mixed Result object with all record fields or False if not found
     */
     function get_record($id, $assoc=false) {
-        if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, "mel_addressbook::get_record($id, $assoc)");
+        if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, "mel_addressbook::get_record(" . json_encode($id) . ", $assoc)");
         try {
             // Chargement du contact depuis le cache
             $_contact = driver_mel::gi()->contact([$this->user, $this->addressbook]);
@@ -392,16 +392,20 @@ class mel_addressbook extends rcube_addressbook
             $_contact->type = Defaut\Contact::TYPE_CONTACT;
             $_contacts = $_contact->getList();
 
-            foreach ($_contacts as $_contact) {
+            $contact = null;
+            foreach ($_contacts ?? [] as $_contact) {
                 $contact = $_contact;
                 break;
+            }
+            if (!isset($contact)) {
+                return false;
             }
 
             $this->result = new rcube_result_set();
             $this->result->add(mel_contacts_mapping::m2_to_rc_contact(null, $contact));
 
             $first = $this->result->first();
-            $sql_arr = $first['ID'] == $id ? $first : null;
+            $sql_arr = ($first['ID'] ?? null) == $id ? $first : null;
             return $assoc && $sql_arr ? $sql_arr : $this->result;
         }
         catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
@@ -425,7 +429,7 @@ class mel_addressbook extends rcube_addressbook
      */
     function insert($save_data, $check=false)
     {
-        if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, "mel_addressbook::insert($save_data, $check)");
+        if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, "mel_addressbook::insert(" . json_encode(array_keys((array) $save_data)) . ", $check)");
         if ($this->readonly) {
             return false;
         }
@@ -433,7 +437,7 @@ class mel_addressbook extends rcube_addressbook
             $_contact = driver_mel::gi()->contact([$this->user, $this->addressbook]);
             $contact = mel_contacts_mapping::rc_to_m2_contact($save_data, $_contact);
             $contact->id = md5(uniqid(mt_rand(), true));
-            $contact->uid = date('YmdHis') . '.' . substr(str_pad(base_convert(microtime(), 10, 36), 16, uniqid(mt_rand()), STR_PAD_LEFT), -16) . '@roundcube';
+            $contact->uid = date('YmdHis') . '.' . substr(str_pad(base_convert(preg_replace('/\D/', '', microtime()), 10, 36), 16, uniqid(mt_rand()), STR_PAD_LEFT), -16) . '@roundcube';
             $contact->modified = time();
             $ret = $contact->save();
             return !is_null($ret) ? $contact->id : false;
@@ -459,7 +463,7 @@ class mel_addressbook extends rcube_addressbook
      */
     function update($id, $save_cols)
     {
-        if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, "mel_addressbook::update($id, $save_cols)");
+        if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, "mel_addressbook::update(" . json_encode($id) . ", " . json_encode(array_keys((array) $save_cols)) . ")");
         if ($this->readonly) {
             return false;
         }
@@ -467,7 +471,7 @@ class mel_addressbook extends rcube_addressbook
             $_contact = driver_mel::gi()->contact([$this->user, $this->addressbook]);
             $_contact->id = $id;
             $_contact->type = Defaut\Contact::TYPE_CONTACT;
-            foreach($_contact->getList() as $contact) {
+            foreach($_contact->getList() ?? [] as $contact) {
                 break;
             }
             if (isset($contact)) {
@@ -496,7 +500,7 @@ class mel_addressbook extends rcube_addressbook
      */
     function delete($ids, $force=true)
     {
-        if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, "mel_addressbook::delete($ids, $force)");
+        if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, "mel_addressbook::delete(" . json_encode($ids) . ", $force)");
         if ($this->readonly) {
             return false;
         }
@@ -505,7 +509,7 @@ class mel_addressbook extends rcube_addressbook
             $_contact->id = $ids;
             $_contact->type = Defaut\Contact::TYPE_CONTACT;
             $count = 0;
-            foreach($_contact->getList() as $contact) {
+            foreach($_contact->getList() ?? [] as $contact) {
                 if (!$contact->delete()) return false;
                 else $count++;
             }
@@ -594,7 +598,7 @@ class mel_addressbook extends rcube_addressbook
             if (!isset($_contacts[$this->addressbook->id]['groups'])) {
                 $_contacts[$this->addressbook->id]['groups'] = [];
             }
-            foreach ($_group->getList(array(), "", $operators, "lastname") as $_g) {
+            foreach ($_group->getList(array(), "", $operators, "lastname") ?? [] as $_g) {
                 if ($_g->uid == 'favorites') {
                   $favorites_exists = true;
                 }
@@ -642,7 +646,11 @@ class mel_addressbook extends rcube_addressbook
                 $_group = driver_mel::gi()->contact([$this->user, $this->addressbook]);
                 $_group->type = Defaut\Contact::TYPE_LIST;
                 $_group->id = $group_id;
-                foreach($_group->getList() as $group) { break; }
+                $group = null;
+                foreach($_group->getList() ?? [] as $group) { break; }
+            }
+            if (!isset($group) || $group === false) {
+                return [];
             }
             return mel_contacts_mapping::m2_to_rc_contact(null, $group);
         }
@@ -681,14 +689,14 @@ class mel_addressbook extends rcube_addressbook
             $_group->lastname = $name;
             // MANTIS 0004236: RC permet de créer des groupes de même nom
             $groups = $_group->getList();
-            if (count($groups) > 0) return false;
+            if (!empty($groups)) return false;
 
             $_group->id = md5(uniqid(mt_rand(), true));
             if ($favoris) {
               $_group->uid = 'favorites';
             }
             else {
-              $_group->uid = date('YmdHis') . '.' . substr(str_pad(base_convert(microtime(), 10, 36), 16, uniqid(mt_rand()), STR_PAD_LEFT), -16) . '@roundcube';
+              $_group->uid = date('YmdHis') . '.' . substr(str_pad(base_convert(preg_replace('/\D/', '', microtime()), 10, 36), 16, uniqid(mt_rand()), STR_PAD_LEFT), -16) . '@roundcube';
             }
             $_group->modified = time();
             $ret = $_group->save();
@@ -739,7 +747,7 @@ class mel_addressbook extends rcube_addressbook
                 unset($_contacts[$this->addressbook->id]['groups'][$gid]);
                 \mel::setCache('contacts', $_contacts);
             }
-            foreach($_group->getList() as $group) {
+            foreach($_group->getList() ?? [] as $group) {
                 return $group->delete();
             }
         }
@@ -768,7 +776,7 @@ class mel_addressbook extends rcube_addressbook
             $_group = driver_mel::gi()->contact([$this->user, $this->addressbook]);
             $_group->type = Defaut\Contact::TYPE_LIST;
             $_group->id = $gid;
-            foreach($_group->getList() as $group) {
+            foreach($_group->getList() ?? [] as $group) {
                 $group->lastname = $newname;
                 $group->modified = time();
                 $ret = $group->save();
@@ -808,7 +816,7 @@ class mel_addressbook extends rcube_addressbook
      */
     function add_to_group($group_id, $ids)
     {
-        if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, "mel_addressbook::add_to_group($group_id, $ids)");
+        if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, "mel_addressbook::add_to_group($group_id, " . json_encode($ids) . ")");
         try {
             $_group = driver_mel::gi()->contact([$this->user, $this->addressbook]);
             $_group->type = Defaut\Contact::TYPE_LIST;
@@ -816,8 +824,8 @@ class mel_addressbook extends rcube_addressbook
 
             if (!is_array($ids)) $ids = [$ids];
 
-            foreach($_group->getList() as $group) {
-                $members = unserialize($group->members, ['allowed_classes' => false]);
+            foreach($_group->getList() ?? [] as $group) {
+                $members = unserialize($group->members ?? '', ['allowed_classes' => false]);
                 if (!is_array($members)) $members = [];
                 $members = $this->_clean_group_members(array_unique($members)) ?? [];
                 $count = 0;
@@ -866,15 +874,15 @@ class mel_addressbook extends rcube_addressbook
      */
     function remove_from_group($group_id, $ids)
     {
-        if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, "mel_addressbook::remove_from_group($group_id, $ids)");
+        if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, "mel_addressbook::remove_from_group($group_id, " . json_encode($ids) . ")");
         try {
             if (!is_array($ids)) $ids = [$ids];
 
             $_group = driver_mel::gi()->contact([$this->user, $this->addressbook]);
             $_group->type = Defaut\Contact::TYPE_LIST;
             $_group->id = $group_id;
-            foreach($_group->getList() as $group) {
-                $members = unserialize($group->members, ['allowed_classes' => false]);
+            foreach($_group->getList() ?? [] as $group) {
+                $members = unserialize($group->members ?? '', ['allowed_classes' => false]);
                 if (!is_array($members)) $members = array();
                 $members = $this->_clean_group_members(array_unique($members)) ?? [];
                 $count = 0;
@@ -930,7 +938,7 @@ class mel_addressbook extends rcube_addressbook
             $_contact->id = $members;
             $_contacts = $_contact->getList(['id']);
 
-            foreach ($_contacts as $contact) {
+            foreach ($_contacts ?? [] as $contact) {
                 $_members[] = $contact->id;
             }
         }
@@ -952,8 +960,8 @@ class mel_addressbook extends rcube_addressbook
             $result = array();
             $_group = driver_mel::gi()->contact([$this->user, $this->addressbook]);
             $_group->type = Defaut\Contact::TYPE_LIST;
-            foreach($_group->getList() as $group) {
-                $members = unserialize($group->members, ['allowed_classes' => false]);
+            foreach($_group->getList() ?? [] as $group) {
+                $members = unserialize($group->members ?? '', ['allowed_classes' => false]);
                 if (is_array($members)
                         && in_array($id, $members)) $result[$group->id] = $group->lastname;
             }

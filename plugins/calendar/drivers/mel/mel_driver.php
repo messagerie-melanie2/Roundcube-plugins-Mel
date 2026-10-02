@@ -181,6 +181,12 @@ class mel_driver extends calendar_driver {
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::list_calendars(filter = $filter)");
 
     try {
+      if (!isset($this->user)) {
+        if (mel_logs::is(mel_logs::ERROR)) 
+          mel_logs::gi()->l(mel_logs::ERROR, '###[mel_driver::list_calendars] Impossible de récupérer les agenda pour un utilisateur vide !');
+        return [];
+      }
+
       // Chargement des calendriers si besoin
       if (!isset($this->calendars)) {
         $this->_read_calendars($calid);

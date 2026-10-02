@@ -66,7 +66,7 @@ class mel_contacts_ui
                 $content = html::tag('li', $idx ? null : array('class' => 'separator_above'),
                     $this->plugin->api->output->button(array(
                         'label'    => 'mel_contacts.'.str_replace('-', '', $command),
-                        'domain'   => $this->ID,
+                        'domain'   => $this->plugin->ID,
                         'class' => 'disabled '.str_replace('-', '', $command),
                         'classact' => 'active '.str_replace('-', '', $command),
                         'command'  => $command,
@@ -119,20 +119,20 @@ class mel_contacts_ui
      */
     public function book_form($attrib)
     {
-        $action = trim(rcube_utils::get_input_value('_act', rcube_utils::INPUT_GPC));
-        $folder = trim(rcube_utils::get_input_value('_source', rcube_utils::INPUT_GPC, true)); // UTF8
+        $action = trim(rcube_utils::get_input_string('_act', rcube_utils::INPUT_GPC));
+        $folder = trim(rcube_utils::get_input_string('_source', rcube_utils::INPUT_GPC, true)); // UTF8
 
         $hidden_fields[] = array('name' => '_source', 'value' => $folder);
         
         if ($this->rc->action == 'plugin.book-save') {
             // save error
-            $name      = trim(rcube_utils::get_input_value('_name', rcube_utils::INPUT_GPC, true)); // UTF8
-            $old       = trim(rcube_utils::get_input_value('_oldname', rcube_utils::INPUT_GPC, true)); // UTF7-IMAP
+            $name      = trim(rcube_utils::get_input_string('_name', rcube_utils::INPUT_GPC, true)); // UTF8
+            $old       = trim(rcube_utils::get_input_string('_oldname', rcube_utils::INPUT_GPC, true)); // UTF7-IMAP
 
             $hidden_fields[] = array('name' => '_oldname', 'value' => $old);
         }
         else if ($action == 'edit') {
-            $name      = trim(rcube_utils::get_input_value('_name', rcube_utils::INPUT_GPC, true)); // UTF8
+            $name      = trim(rcube_utils::get_input_string('_name', rcube_utils::INPUT_GPC, true)); // UTF8
             $hidden_fields[] = array('name' => '_oldname', 'value' => $name);
         }
         else { // create
@@ -186,7 +186,7 @@ class mel_contacts_ui
 
         // Allow plugins to modify address book form content (e.g. with ACL form)
         $plugin = $this->rc->plugins->exec_hook('addressbook_form',
-            array('form' => $form, 'options' => $options, 'name' => $folder));
+            array('form' => $form, 'options' => [], 'name' => $folder));
 
         $form = $plugin['form'];
 
@@ -268,7 +268,7 @@ class mel_contacts_ui
             }
         }
 
-        $form_end = !strlen($attrib['form']) ? '</form>' : '';
+        $form_end = empty($attrib['form']) ? '</form>' : '';
 
         $EDIT_FORM = !empty($attrib['form']) ? $attrib['form'] : 'form';
         $this->rc->output->add_gui_object('editform', $EDIT_FORM);

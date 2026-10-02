@@ -386,7 +386,9 @@ class Gestionnairelistes extends Moncompteobject {
 							$member_to_add->email = $member;
 							if ($member_to_add->load(['uid']) 
 									&& !isset($list_members[$member_to_add->uid])) {
-								$list_members[$member_to_add->uid] = $member_to_add;
+								
+								if (!isset($member_to_add->email) || !isset($member_to_add->uid)) $addr_error[] = $member;
+								else $list_members[$member_to_add->uid] = $member_to_add;
 							}
 						}
 						sort($list_emails);
@@ -403,6 +405,7 @@ class Gestionnairelistes extends Moncompteobject {
 				}
 			}
 		}
+		$addr_error ??= [];
 		$result = array('action' => 'plugin.listes_upload_csv', 'data' => $list_emails, 'dn_list' => $dn_list, 'addr_error' => $addr_error);
 		rcmail::get_instance()->output->command('plugin.import_listes_csv_success', $result);
 		rcmail::get_instance()->output->send('iframe');

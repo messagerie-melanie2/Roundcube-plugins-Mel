@@ -94,20 +94,20 @@ class mel_contacts_mapping
         $_contact_m2->notes .= "\r\n\r\n";
       }
       if (is_array($_contact_rc['description'])) {
-        if (strpos($_contact_m2->name, $_contact_rc['description'][0]) === false)
+        if (strpos((string) $_contact_m2->name, $_contact_rc['description'][0]) === false)
           $_contact_m2->name = $_contact_m2->name . ' (' . $_contact_rc['description'][0] . ')';
         $_contact_m2->notes .= $_contact_rc['description'][0];
       } else {
-        if (strpos($_contact_m2->name, $_contact_rc['description']) === false)
+        if (strpos((string) $_contact_m2->name, $_contact_rc['description']) === false)
           $_contact_m2->name = $_contact_m2->name . ' (' . $_contact_rc['description'] . ')';
         $_contact_m2->notes .= $_contact_rc['description'];
       }
     }
     // Departement
     if (isset($_contact_rc['department'])) {
-      if (is_array($_contact_rc['department']) && strpos($_contact_m2->name, $_contact_rc['department'][0]) === false)
+      if (is_array($_contact_rc['department']) && strpos((string) $_contact_m2->name, $_contact_rc['department'][0]) === false)
         $_contact_m2->name = $_contact_m2->name . ' - ' . $_contact_rc['department'][0];
-      else if (is_string($_contact_rc['department']) && strpos($_contact_m2->name, $_contact_rc['department']) === false)
+      else if (is_string($_contact_rc['department']) && strpos((string) $_contact_m2->name, $_contact_rc['department']) === false)
         $_contact_m2->name = $_contact_m2->name . ' - ' . $_contact_rc['department'];
     }
     // Email home
@@ -239,10 +239,10 @@ class mel_contacts_mapping
           if ($_contact->uid == 'favorites') {
             $contact['name'] = rcmail::get_instance()->gettext('favorites', 'mel_contacts');
           } else {
-            $contact['name'] = isset($contact['surname']) ? $contact['surname'] : $contact['firstname'];
+            $contact['name'] = $contact['surname'] ?? $contact['firstname'] ?? '';
           }
         } else {
-          $contact['name'] = $contact['firstname'] . (isset($contact['surname']) ? ' ' . $contact['surname'] : '');
+          $contact['name'] = ($contact['firstname'] ?? '') . (isset($contact['surname']) ? ' ' . $contact['surname'] : '');
         }
       }
 
@@ -258,7 +258,7 @@ class mel_contacts_mapping
   private static function m2_to_rc_country(string $m2_country)
   {
     if (!isset(self::$_countries_list)) {
-      self::$_countries_list = require_once 'horde_countries.php';
+      self::$_countries_list = require 'horde_countries.php';
     }
     if (isset(self::$_countries_list[strtoupper($m2_country)])) {
       return self::$_countries_list[strtoupper($m2_country)];
@@ -270,7 +270,7 @@ class mel_contacts_mapping
   private static function rc_to_m2_country(string $rc_country)
   {
     if (!isset(self::$_countries_list)) {
-      self::$_countries_list = require_once 'horde_countries.php';
+      self::$_countries_list = require 'horde_countries.php';
     }
     $countries = array_map('strtolower', self::$_countries_list);
     if (in_array(strtolower($rc_country), $countries)) {

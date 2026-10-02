@@ -14,6 +14,10 @@ if (!defined('RCUBE_LOCALIZATION_DIR')) {
     define('RCUBE_LOCALIZATION_DIR', INSTALL_PATH . 'program/localization/');
 }
 
+if (!defined('RCMAIL_VERSION')) {
+    define('RCMAIL_VERSION', '1.6.19');
+}
+
 define('RCUBE_INSTALL_PATH', INSTALL_PATH);
 define('RCUBE_CONFIG_DIR',  RCMAIL_CONFIG_DIR.'/');
 require_once 'imel.php';
@@ -29,8 +33,6 @@ require_once '../lib/utils.php';
 include_once INSTALL_PATH.'plugins/bnum_glitchtip/bnum_glitchtip.php';
 
 if (class_exists('bnum_glitchtip', autoload:false)) {
-    define('RCMAIL_VERSION', '1.6.19');
-    
     function getConfig(): array {
         require_once INSTALL_PATH."/plugins/bnum_glitchtip/config.inc.php";
         return $config;
@@ -47,6 +49,8 @@ if (class_exists('bnum_glitchtip', autoload:false)) {
                 ];
 
     Glitchtip::Instance()->init($dsn, $options);
+
+    register_shutdown_function(fn() => Glitchtip::Instance()->flush());
 }
 
 enum GlitchtipState {
@@ -185,6 +189,10 @@ abstract class AMel implements IMel {
             self::$plugins[$i]->run();
         }
     } 
+
+    public static function l(string $message, ?GlitchtipData $data = null): void {
+        MelEmpty::Instance()->log($message, $data);
+    }
 }
 
 class ConfigMel extends AMel {
@@ -226,5 +234,25 @@ class ConfigMel extends AMel {
 
     public function conf($conf, $df = null) {
         return rcube::get_instance()->config->get($conf, $df);
+    }
+}
+
+final class MelEmpty extends AMel
+{
+
+    public function __construct()
+    {
+        return parent::__construct();
+    }
+
+    #[Override]
+    public function run(...$args)
+    {
+        
+    }
+
+    private static ?MelEmpty $_instance;
+    public static function Instance(): MelEmpty {
+        return (self::$_instance??=new MelEmpty());
     }
 }

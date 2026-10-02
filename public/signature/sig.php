@@ -1,4 +1,5 @@
 <?php
+include_once __DIR__.'/../lib/mel/mel.php';
 require_once __DIR__ . '/../lib/utils.php';
 
 // *** CONFIGURATION

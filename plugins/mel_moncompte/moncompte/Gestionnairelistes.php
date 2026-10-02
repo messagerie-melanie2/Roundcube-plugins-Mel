@@ -154,8 +154,12 @@ class Gestionnairelistes extends Moncompteobject {
 				$group = driver_mel::gi()->getGroup($dn_list, false, true, 'webmail.moncompte.grouplistes');
 				if ($group->load(['owners', 'members_email', 'is_dynamic', 'liens_import']) 
 						&& $group->isOwner($user)) {
-					$list_emails = array_map('strtolower', $group->members_email);
-					sort($list_emails);
+					
+					if (is_array($group->members_email)) {
+						$list_emails = array_map('strtolower', $group->members_email);
+						sort($list_emails);
+					}
+
 					$islistdyn = $group->is_dynamic || !empty($group->liens_import);
 				}
 			}

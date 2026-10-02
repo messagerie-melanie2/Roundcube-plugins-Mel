@@ -347,7 +347,7 @@ class Gestionnairelistes extends Moncompteobject {
 	/**
 	 * Upload d'un fichier CSV pour importer des membres du groupe
 	 */
-	public function uploadCSVMembers() {
+	public static function uploadCSVMembers() {
 		$dn_list = rcube_utils::get_input_value('_dn_list', rcube_utils::INPUT_POST);
 		$list_emails = [];
 		

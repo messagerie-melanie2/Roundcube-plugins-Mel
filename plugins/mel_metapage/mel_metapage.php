@@ -3506,59 +3506,71 @@ class mel_metapage extends bnum_plugin
     }
 
     /**
-     * Filtre les contacts pour enlever les doublons dans la liste d'autocomplétion.
+     * Filtre les doublons de l'autocomplétion puis priorise les correspondances
+     * orthographiques sur les correspondances phonétiques.
+     * BNUM - MANTIS 0009521
      *
-     * Utilise une fonction personnalisée pour détecter les doublons en se basant sur le champ 'name'.
-     * Si le nom contient un '<', la comparaison se fait sur la version en minuscules du nom complet,
-     * sinon la valeur entière est utilisée pour la comparaison.
-     *
-     * @param array $args Tableau contenant au moins la clé 'contacts' avec la liste des contacts.
-     * @return array Retourne le tableau $args avec la liste des contacts filtrée sans doublons.
+     * @param array $args Contient 'search' et 'contacts'
+     * @return array
      */
     function contacts_autocomplete_after($args)
     {
         $contacts = mel_helper::Enumerable($args['contacts'])->removeTwins(function ($k, $v) {
             if (strpos($v['name'], '<') !== false) return strtolower($v['name']);
             else return $v;
-        });
+        })->toArray();
 
-        // BNUM - MANTIS 0009521: prioriser les correspondances orthographiques
-        // sur les correspondances phonétiques
-        $search = $this->_normalize_autocomplete(
-            rcube_utils::get_input_value('_search', rcube_utils::INPUT_GPC, true)
-        );
+        $search = $this->_normalize_autocomplete($args['search'] ?? '');
 
-        if (!empty($search)) {
-            $contacts = $contacts->orderBy(function ($k, $v) use ($search) {
-                $name = $this->_normalize_autocomplete($v['name'] ?? $v);
+        if ($search !== '') {
+            $word_start = '/[\s.,<"\'-]' . preg_quote($search, '/') . '/';
 
-                if (strpos($name, $search) === 0) return 0;          // commence par la saisie
-                else if (strpos($name, ' ' . $search) !== false) return 1; // un mot commence par la saisie
-                else if (strpos($name, $search) !== false) return 2; // contient la saisie
-                else return 3;                                        // phonétique uniquement
+            // usort est stable (PHP >= 8) : l'ordre serveur est conservé à rang égal
+            usort($contacts, function ($a, $b) use ($search, $word_start) {
+                return $this->_autocomplete_rank($a, $search, $word_start)
+                    <=> $this->_autocomplete_rank($b, $search, $word_start);
             });
         }
-        $args['contacts'] = $contacts->toArray();
+
+        // Clés séquentielles obligatoires : sinon json_encode produit un objet
+        // et le client (results.length) n'affiche rien
+        $args['contacts'] = array_values($contacts);
+
         return $args;
+    }
+
+    /**
+     * Rang de correspondance orthographique d'un contact.
+     * 0 : commence par la saisie, 1 : un mot commence par la saisie,
+     * 2 : contient la saisie, 3 : correspondance phonétique uniquement.
+     * BNUM - MANTIS 0009521
+     */
+    private function _autocomplete_rank($contact, string $search, string $word_start): int
+    {
+        $name = $this->_normalize_autocomplete((string) ($contact['name'] ?? ''));
+
+        return match (true) {
+            str_starts_with($name, $search)      => 0,
+            (bool) preg_match($word_start, $name) => 1,
+            str_contains($name, $search)         => 2,
+            default                              => 3,
+        };
     }
 
     /**
      * Normalise une chaîne pour la comparaison (minuscules, sans accents).
      * BNUM - MANTIS 0009521
-     *
-     * @param string $str
-     * @return string
      */
-    private function _normalize_autocomplete($str)
+    private function _normalize_autocomplete(?string $str): string
     {
-        $str = mb_strtolower($str ?? '');
-        return strtr($str, [
-            'à' => 'a', 'â' => 'a', 'ä' => 'a',
+        return strtr(mb_strtolower($str ?? '', 'UTF-8'), [
+            'à' => 'a', 'â' => 'a', 'ä' => 'a', 'á' => 'a',
             'é' => 'e', 'è' => 'e', 'ê' => 'e', 'ë' => 'e',
-            'î' => 'i', 'ï' => 'i',
-            'ô' => 'o', 'ö' => 'o',
-            'ù' => 'u', 'û' => 'u', 'ü' => 'u',
-            'ç' => 'c',
+            'î' => 'i', 'ï' => 'i', 'í' => 'i',
+            'ô' => 'o', 'ö' => 'o', 'ó' => 'o',
+            'ù' => 'u', 'û' => 'u', 'ü' => 'u', 'ú' => 'u',
+            'ÿ' => 'y', 'ç' => 'c', 'ñ' => 'n',
+            'œ' => 'oe', 'æ' => 'ae',
         ]);
     }
 

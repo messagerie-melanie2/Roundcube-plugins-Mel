@@ -2487,18 +2487,36 @@ class mel_driver extends calendar_driver {
       // Recurrence
       if (!$isexception) {
         $recurrence = $event->recurrence->rrule;
-        // Problème de UNTIL avec les journées entières
-        if (isset($recurrence['UNTIL']) && $recurrence['UNTIL'] instanceof \DateTime && $_event['allday']) {
-          $recurrence['UNTIL']->setTime(23, 59);
+
+        $isValid = true;
+        if (is_string($recurrence)) {
+          try {
+            $recurrence = json_decode($recurrence);
+
+            if (!is_string($recurrence)) $isValid = false;
+
+          } catch (\Throwable $th) {
+            if (mel_logs::is(mel_logs::WARN)) {
+              mel_logs::gi()->log(mel_logs::WARN, '/!\\ [mel_driver::_read_postprocess]Impossible de lire ' . (string) $event->recurrence->rrule);
+              mel_logs::gi()->log(mel_logs::WARN, "### [mel_driver::_read_postprocess]{$th->getMessage()}");
+            }
+          }
         }
-        //0008897 - L'affichage BYDAY=-1LD fait crash le calendrier de prise de rendez-vous
-        if ($recurrence['FREQ'] == 'MONTHLY' && isset($recurrence['BYMONTHDAY'])) {
-          $recurrence['BYDAY'] = $recurrence['BYMONTHDAY'] . 'LD';
-          unset($recurrence['BYMONTHDAY']);
-        }
-        if (is_array($recurrence) && count($recurrence) > 0) {
-          // Récupération des exceptions dans la récurrence de l'évènement
-          $_event['recurrence'] = $this->_read_event_exceptions($event, $recurrence);
+
+        if ($isValid) {
+          // Problème de UNTIL avec les journées entières
+          if (isset($recurrence['UNTIL']) && $recurrence['UNTIL'] instanceof \DateTime && $_event['allday']) {
+            $recurrence['UNTIL']->setTime(23, 59);
+          }
+          //0008897 - L'affichage BYDAY=-1LD fait crash le calendrier de prise de rendez-vous
+          if ($recurrence['FREQ'] == 'MONTHLY' && isset($recurrence['BYMONTHDAY'])) {
+            $recurrence['BYDAY'] = $recurrence['BYMONTHDAY'] . 'LD';
+            unset($recurrence['BYMONTHDAY']);
+          }
+          if (is_array($recurrence) && count($recurrence) > 0) {
+            // Récupération des exceptions dans la récurrence de l'évènement
+            $_event['recurrence'] = $this->_read_event_exceptions($event, $recurrence);
+          }
         }
       }
 

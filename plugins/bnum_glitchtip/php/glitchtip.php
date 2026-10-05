@@ -14,6 +14,7 @@ use Sentry\Tracing\TransactionContext;
  */
 final class Glitchtip
 {
+    /** Instance unique du singleton, créée au premier appel de {@see Instance()}. */
     static private ?Glitchtip $instance = null;
 
     /**
@@ -27,14 +28,23 @@ final class Glitchtip
         return self::$instance;
     }
 
+    /** Rang de chaque niveau de log, du plus verbeux au plus critique, comparé au seuil {@see $logLevel}. */
     private const LEVELS = ['trace' => 0, 'debug' => 1, 'info' => 2, 'warn' => 3, 'error' => 4, 'fatal' => 5];
 
+    /** `true` une fois le SDK Sentry initialisé par {@see init()}. */
     private bool $initialized = false;
+    /** Option `enable_logs` : active l'envoi des logs via `\Sentry\logger()`. */
     private bool $logsEnabled = false;
+    /** Rang (voir {@see LEVELS}) du niveau minimal à journaliser, issu de l'option `log_level`. */
     private int $logLevel = self::LEVELS['error'];
+    /** Transaction Sentry de la requête courante, ou `null` si aucune n'est en cours. */
     private ?Transaction $transaction = null;
+    /** Environnement Sentry, réutilisé comme attribut/tag `service.name`. */
     private string $env = 'unknown';
 
+    /**
+     * Constructeur privé : passer par {@see Instance()}.
+     */
     private function __construct()
     {
 
@@ -48,7 +58,8 @@ final class Glitchtip
      *
      * @param string $dsn DSN Sentry/GlitchTip à utiliser.
      * @param array $options Options d'initialisation : `enable_logs` (bool), `log_level` (string),
-     *                        `environment` (string), `traces_sample_rate` (float).
+     *                        `environment` (string), `traces_sample_rate` (float),
+     *                        `error_types` (int|null, masque de bits `E_*` des erreurs PHP remontées).
      * @return void
      */
     public function init(#[\SensitiveParameter] string $dsn, array $options = []): void {

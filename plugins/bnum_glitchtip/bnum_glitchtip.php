@@ -19,6 +19,14 @@ class bnum_glitchtip extends bnum_plugin {
 
     public $task = '.*';
 
+    /**
+     * Hook Roundcube "startup".
+     *
+     * Initialise le singleton {@see Glitchtip} à partir de la configuration du plugin
+     * (via `_ensureGlitchtipIsInitialized()`), une seule fois par requête.
+     *
+     * @see php/hooks/startup.php Implémentation du hook.
+     **/
     public function hook_startup(array $args): array {
         $factory = include __DIR__ . '/php/hooks/startup.php';
         return (Closure::bind($factory, null, self::class))($this, $args);
@@ -46,8 +54,51 @@ class bnum_glitchtip extends bnum_plugin {
         return (Closure::bind($factory, null, self::class))($this, $args);
     }
 
+    /**
+         * Hook Roundcube "write_log".
+         *
+         * Relaie les lignes de log internes de Roundcube vers {@see Glitchtip} si
+         * `enable_logs_hooks` est activé. Le niveau est déduit du nom du canal
+         * (`error` s'il contient "error", `info` sinon).
+         *
+         * @see php/hooks/write_log.php Implémentation du hook.
+         **/
     public function hook_write_log(array $args): array {
         $factory = include __DIR__ . '/php/hooks/write_log.php';
+        return (Closure::bind($factory, null, self::class))($this, $args);
+    }
+
+    /**
+        * Hook "log_call" émis par mel_logs pour les appelants portant l'attribut
+        * {@see \MelLogs\ExtraLog} : relaie le log vers {@see Glitchtip}.
+        *
+        * Les niveaux mel_logs sont convertis vers les niveaux Glitchtip (`Access` → `Trace`).
+        * Un niveau inconnu est ignoré : un hook de log ne doit jamais interrompre la requête.
+        *
+        * ⚠️ Si `enable_logs_hooks` est actif et que le log est aussi écrit localement
+        * (`ExtraLog(false)`), il arrive deux fois dans Glitchtip (via ce hook et via `write_log`).
+        *
+        * @param array{level: \MelLogs\LogLevel, message: string, data: array, caller: string} $args
+        * @return array Les arguments inchangés, tels que reçus.
+        **/
+    public function hook_log_call(array $args): array {
+        $factory = include __DIR__ . '/php/hooks/log_call.php';
+        return (Closure::bind($factory, null, self::class))($this, $args);
+    }
+
+    /**
+         * Hook "log_capture_error" émis par mel_logs pour remonter une exception :
+         * la relaie vers {@see Glitchtip::captureException()}.
+         *
+         * L'exception arrive dans Glitchtip comme erreur (Issue) avec sa stacktrace :
+         * `enable_logs` et `log_level` ne s'appliquent pas.
+         *
+         * @param array{error: \Throwable} $args
+         * @return array Les arguments inchangés, tels que reçus.
+         * @see php/hooks/log_capture_error.php Implémentation du hook.
+         **/
+    public function hook_log_capture_error(array $args): array {
+        $factory = include __DIR__ . '/php/hooks/log_capture_error.php';
         return (Closure::bind($factory, null, self::class))($this, $args);
     }
 
@@ -76,11 +127,11 @@ class bnum_glitchtip extends bnum_plugin {
          *
          * @param string $message Message à journaliser.
          * @param array $context Données de contexte associées au message.
-         * @param array $attibutes Attributs additionnels transmis à Sentry/GlitchTip.
+         * @param array $attributes Attributs additionnels transmis à Sentry/GlitchTip.
          * @return void
          **/
-    public static function logTrace(string $message, array $context = [ ], array $attibutes = [ ]): void {
-        self::__rcpclBody_BGT_LogsTrait_logTrace($message, $context, $attibutes);
+    public static function logTrace(string $message, array $context = [ ], array $attributes = [ ]): void {
+        self::__rcpclBody_BGT_LogsTrait_logTrace($message, $context, $attributes);
     }
 
     /**
@@ -90,11 +141,11 @@ class bnum_glitchtip extends bnum_plugin {
          *
          * @param string $message Message à journaliser.
          * @param array $context Données de contexte associées au message.
-         * @param array $attibutes Attributs additionnels transmis à Sentry/GlitchTip.
+         * @param array $attributes Attributs additionnels transmis à Sentry/GlitchTip.
          * @return void
          **/
-    public static function logDebug(string $message, array $context = [ ], array $attibutes = [ ]): void {
-        self::__rcpclBody_BGT_LogsTrait_logDebug($message, $context, $attibutes);
+    public static function logDebug(string $message, array $context = [ ], array $attributes = [ ]): void {
+        self::__rcpclBody_BGT_LogsTrait_logDebug($message, $context, $attributes);
     }
 
     /**
@@ -104,11 +155,11 @@ class bnum_glitchtip extends bnum_plugin {
          *
          * @param string $message Message à journaliser.
          * @param array $context Données de contexte associées au message.
-         * @param array $attibutes Attributs additionnels transmis à Sentry/GlitchTip.
+         * @param array $attributes Attributs additionnels transmis à Sentry/GlitchTip.
          * @return void
          **/
-    public static function logInfo(string $message, array $context = [ ], array $attibutes = [ ]): void {
-        self::__rcpclBody_BGT_LogsTrait_logInfo($message, $context, $attibutes);
+    public static function logInfo(string $message, array $context = [ ], array $attributes = [ ]): void {
+        self::__rcpclBody_BGT_LogsTrait_logInfo($message, $context, $attributes);
     }
 
     /**
@@ -118,11 +169,11 @@ class bnum_glitchtip extends bnum_plugin {
          *
          * @param string $message Message à journaliser.
          * @param array $context Données de contexte associées au message.
-         * @param array $attibutes Attributs additionnels transmis à Sentry/GlitchTip.
+         * @param array $attributes Attributs additionnels transmis à Sentry/GlitchTip.
          * @return void
          **/
-    public static function logWarning(string $message, array $context = [ ], array $attibutes = [ ]): void {
-        self::__rcpclBody_BGT_LogsTrait_logWarning($message, $context, $attibutes);
+    public static function logWarning(string $message, array $context = [ ], array $attributes = [ ]): void {
+        self::__rcpclBody_BGT_LogsTrait_logWarning($message, $context, $attributes);
     }
 
     /**
@@ -132,11 +183,11 @@ class bnum_glitchtip extends bnum_plugin {
          *
          * @param string $message Message à journaliser.
          * @param array $context Données de contexte associées au message.
-         * @param array $attibutes Attributs additionnels transmis à Sentry/GlitchTip.
+         * @param array $attributes Attributs additionnels transmis à Sentry/GlitchTip.
          * @return void
          **/
-    public static function logError(string $message, array $context = [ ], array $attibutes = [ ]): void {
-        self::__rcpclBody_BGT_LogsTrait_logError($message, $context, $attibutes);
+    public static function logError(string $message, array $context = [ ], array $attributes = [ ]): void {
+        self::__rcpclBody_BGT_LogsTrait_logError($message, $context, $attributes);
     }
 
     /**
@@ -146,11 +197,11 @@ class bnum_glitchtip extends bnum_plugin {
          *
          * @param string $message Message à journaliser.
          * @param array $context Données de contexte associées au message.
-         * @param array $attibutes Attributs additionnels transmis à Sentry/GlitchTip.
+         * @param array $attributes Attributs additionnels transmis à Sentry/GlitchTip.
          * @return void
          **/
-    public static function logFatal(string $message, array $context = [ ], array $attibutes = [ ]): void {
-        self::__rcpclBody_BGT_LogsTrait_logFatal($message, $context, $attibutes);
+    public static function logFatal(string $message, array $context = [ ], array $attributes = [ ]): void {
+        self::__rcpclBody_BGT_LogsTrait_logFatal($message, $context, $attributes);
     }
 
     /**
@@ -163,8 +214,8 @@ class bnum_glitchtip extends bnum_plugin {
         * @param array $tags Tags indexés, filtrables dans GlitchTip.
         * @return string|null Identifiant de l'événement, ou `null` s'il n'a pas été envoyé.
         **/
-    public static function captureException(Throwable $throwable, array $extra = [ ], array $tags = [ ]): string {
-        $factory = include __DIR__ . '/php/functions/capture_exception.php';
+    public static function captureException(\Throwable $throwable, array $extra = [ ], array $tags = [ ]): ?string {
+        $factory = include __DIR__ . '/php/functions/captureException.php';
         return (Closure::bind($factory, null, self::class))($throwable, $extra, $tags);
     }
 
@@ -176,46 +227,9 @@ class bnum_glitchtip extends bnum_plugin {
          * @param LogLevel $level Niveau de log à vérifier (ex: "debug", "info", "error"...).
          * @return bool
          **/
-    #[NoDiscard('Vérification sans effet de bord, le résultat doit conditionner le log')]
+    #[\NoDiscard('Vérification sans effet de bord, le résultat doit conditionner le log')]
     public static function isLogLevel(LogLevel $level): bool {
         return self::__rcpclBody_BGT_LogsTrait_isLogLevel($level);
-    }
-
-    /**
-         * Hook "log.call" émis par mel_logs pour les appelants portant l'attribut
-         * {@see \MelLogs\ExtraLog} : relaie le log vers {@see Glitchtip}.
-         *
-         * Les niveaux mel_logs sont convertis vers les niveaux Glitchtip (`Access` → `Trace`).
-         * Un niveau inconnu est ignoré : un hook de log ne doit jamais interrompre la requête.
-         *
-         * ⚠️ Si `enable_logs_hooks` est actif et que le log est aussi écrit localement
-         * (`ExtraLog(false)`), il arrive deux fois dans Glitchtip (via ce hook et via `write_log`).
-         *
-         * @param array{level: \MelLogs\LogLevel, message: string, data: array, caller: string} $args
-         * @return array Les arguments inchangés, tels que reçus.
-         **/
-    public function hook_log_call(array $args): array {
-        $level = match ($args['level'] ?? null) {
-            \MelLogs\LogLevel::Trace, \MelLogs\LogLevel::Access => LogLevel::Trace,
-            \MelLogs\LogLevel::Debug => LogLevel::Debug,
-            \MelLogs\LogLevel::Info => LogLevel::Info,
-            \MelLogs\LogLevel::Warn => LogLevel::Warn,
-            \MelLogs\LogLevel::Error => LogLevel::Error,
-            default => null,
-        };
-
-        if ($level === null) return $args;
-
-        $data = $args['data'] ?? [];
-        $attributes = ($data['attributes'] ?? []) + ['caller' => $args['caller'] ?? 'unknown'];
-
-        Glitchtip::Instance()->log($level->value, (string)($args['message'] ?? ''), 0, $data['context'] ?? [], $attributes);
-        return $args;
-    }
-
-    public function hook_log_capture_error(array $args): array {
-        $this->captureException($args['error']);
-        return $args;
     }
 
     public function init(): void {
@@ -226,8 +240,8 @@ class bnum_glitchtip extends bnum_plugin {
         $this->add_hook('startup', [$this, 'hook_startup']);
         $this->add_hook('fatal_error', [$this, 'hook_fatal_error']);
         $this->add_hook('write_log', [$this, 'hook_write_log']);
-        $this->add_hook('log.call', [$this, 'hook_log_call']);
-        $this->add_hook('log.capture_error', [$this, 'hook_log_capture_error']);
+        $this->add_hook('log_call', [$this, 'hook_log_call']);
+        $this->add_hook('log_capture_error', [$this, 'hook_log_capture_error']);
 
         $initFactory = include __DIR__ . '/php/init/init.php';
         (Closure::bind($initFactory, null, self::class))($this);

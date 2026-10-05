@@ -1,6 +1,13 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Implémentation des méthodes statiques de log exposées par `bnum_glitchtip`
+ * (référencées depuis `bnum_glitchtip.bnum` via `php/functions/logs.php#BGT_LogsTrait::...`).
+ *
+ * Chaque méthode délègue à {@see Glitchtip::log()} avec {@see Constants::LOG_OFFSET},
+ * afin que le message soit préfixé par l'appelant réel et non par ce trait.
+ */
 trait BGT_LogsTrait
 {
     /**
@@ -10,12 +17,12 @@ trait BGT_LogsTrait
      *
      * @param string $message Message à journaliser.
      * @param array $context Données de contexte associées au message.
-     * @param array $attibutes Attributs additionnels transmis à Sentry/GlitchTip.
+     * @param array $attributes Attributs additionnels transmis à Sentry/GlitchTip.
      * @return void
      */
-    public static function logTrace(string $message, array $context = [], array $attibutes = []): void
+    public static function logTrace(string $message, array $context = [], array $attributes = []): void
     {
-        Glitchtip::Instance()->log('trace', $message, Constants::LOG_OFFSET, $context, $attibutes);
+        Glitchtip::Instance()->log('trace', $message, Constants::LOG_OFFSET, $context, $attributes);
     }
 
     /**
@@ -25,12 +32,12 @@ trait BGT_LogsTrait
      *
      * @param string $message Message à journaliser.
      * @param array $context Données de contexte associées au message.
-     * @param array $attibutes Attributs additionnels transmis à Sentry/GlitchTip.
+     * @param array $attributes Attributs additionnels transmis à Sentry/GlitchTip.
      * @return void
      */
-    public static function logDebug(string $message, array $context = [], array $attibutes = []): void
+    public static function logDebug(string $message, array $context = [], array $attributes = []): void
     {
-        Glitchtip::Instance()->log('debug', $message, Constants::LOG_OFFSET, $context, $attibutes);
+        Glitchtip::Instance()->log('debug', $message, Constants::LOG_OFFSET, $context, $attributes);
     }
 
     /**
@@ -40,12 +47,12 @@ trait BGT_LogsTrait
      *
      * @param string $message Message à journaliser.
      * @param array $context Données de contexte associées au message.
-     * @param array $attibutes Attributs additionnels transmis à Sentry/GlitchTip.
+     * @param array $attributes Attributs additionnels transmis à Sentry/GlitchTip.
      * @return void
      */
-    public static function logInfo(string $message, array $context = [], array $attibutes = []): void
+    public static function logInfo(string $message, array $context = [], array $attributes = []): void
     {
-        Glitchtip::Instance()->log('info', $message, Constants::LOG_OFFSET, $context, $attibutes);
+        Glitchtip::Instance()->log('info', $message, Constants::LOG_OFFSET, $context, $attributes);
     }
 
     /**
@@ -55,12 +62,12 @@ trait BGT_LogsTrait
      *
      * @param string $message Message à journaliser.
      * @param array $context Données de contexte associées au message.
-     * @param array $attibutes Attributs additionnels transmis à Sentry/GlitchTip.
+     * @param array $attributes Attributs additionnels transmis à Sentry/GlitchTip.
      * @return void
      */
-    public static function logWarning(string $message, array $context = [], array $attibutes = []): void
+    public static function logWarning(string $message, array $context = [], array $attributes = []): void
     {
-        Glitchtip::Instance()->log('warn', $message, Constants::LOG_OFFSET, $context, $attibutes);
+        Glitchtip::Instance()->log('warn', $message, Constants::LOG_OFFSET, $context, $attributes);
     }
 
     /**
@@ -70,12 +77,12 @@ trait BGT_LogsTrait
      *
      * @param string $message Message à journaliser.
      * @param array $context Données de contexte associées au message.
-     * @param array $attibutes Attributs additionnels transmis à Sentry/GlitchTip.
+     * @param array $attributes Attributs additionnels transmis à Sentry/GlitchTip.
      * @return void
      */
-    public static function logError(string $message, array $context = [], array $attibutes = []): void
+    public static function logError(string $message, array $context = [], array $attributes = []): void
     {
-        Glitchtip::Instance()->log('error', $message, Constants::LOG_OFFSET, $context, $attibutes);
+        Glitchtip::Instance()->log('error', $message, Constants::LOG_OFFSET, $context, $attributes);
     }
 
     /**
@@ -85,12 +92,12 @@ trait BGT_LogsTrait
      *
      * @param string $message Message à journaliser.
      * @param array $context Données de contexte associées au message.
-     * @param array $attibutes Attributs additionnels transmis à Sentry/GlitchTip.
+     * @param array $attributes Attributs additionnels transmis à Sentry/GlitchTip.
      * @return void
      */
-    public static function logFatal(string $message, array $context = [], array $attibutes = []): void
+    public static function logFatal(string $message, array $context = [], array $attributes = []): void
     {
-        Glitchtip::Instance()->log('fatal', $message, Constants::LOG_OFFSET, $context, $attibutes);
+        Glitchtip::Instance()->log('fatal', $message, Constants::LOG_OFFSET, $context, $attributes);
     }
 
     /**

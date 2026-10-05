@@ -2844,7 +2844,14 @@ class mel_driver extends calendar_driver {
       $_attachment->path = $event->realuid . '/' . $this->calendars[$event->calendar]->id;
       $_attachment->owner = $this->user->uid;
       $_attachment->isfolder = false;
-      $_attachment->data = $attachment['data'] ? $attachment['data'] : file_get_contents($attachment['path']);
+
+      if (empty($attachment['path'])) {
+        if (mel_logs::is(mel_logs::DEBUG))
+          mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar::add_attachment]Le chemin n'existe pas ! => " . json_encode($attachment));
+        return false;
+      }
+
+      $_attachment->data = ($attachment['data'] ?? false) ?: file_get_contents($attachment['path']);
       $ret = $_attachment->save();
 
       // Ajouter la pièce jointe dans l'évenement

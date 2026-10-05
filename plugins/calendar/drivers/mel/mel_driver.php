@@ -1968,7 +1968,7 @@ class mel_driver extends calendar_driver {
         if (mel_logs::is(mel_logs::WARN))
           mel_logs::get_instance()->log(mel_logs::WARN, "/!\\[calendar]event est un string ! : $event");
         
-        $decoded = json_decode($event);
+        $decoded = json_decode($event, associative:true);
 
         if ($decoded === null || !is_array($decoded)) $event = ['uid' => $event];     
       }
@@ -2500,9 +2500,9 @@ class mel_driver extends calendar_driver {
         $isValid = true;
         if (is_string($recurrence)) {
           try {
-            $recurrence = json_decode($recurrence);
+            $recurrence = json_decode($recurrence, associative:true);
 
-            if (!is_string($recurrence)) $isValid = false;
+            if (is_string($recurrence)) $isValid = false;
 
           } catch (\Throwable $th) {
             if (mel_logs::is(mel_logs::WARN)) {

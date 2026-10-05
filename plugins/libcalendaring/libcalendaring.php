@@ -1499,7 +1499,7 @@ class libcalendaring extends rcube_plugin
                 continue 2;
             }
 
-            if (strlen($val)) {
+            if (is_array($val) ? count($val) : strlen((string)$val)) {
                 $rrule .= $k . '=' . $val . ';';
             }
         }

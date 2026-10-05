@@ -1964,6 +1964,15 @@ class mel_driver extends calendar_driver {
       //   return $this->get_birthday_event($id);
       // }
 
+      if (is_string($event)) {
+        if (mel_logs::is(mel_logs::WARN))
+          mel_logs::get_instance()->log(mel_logs::WARN, "/!\\[calendar]event est un string ! : $event");
+        
+        $decoded = json_decode($event);
+
+        if ($decoded === null || !is_array($decoded)) $event = ['uid' => $event];     
+      }
+
       // MANTIS 3915: L'envoi d'une invitation depuis une BALP ne fonctionne pas
       $_identity = $event['_identity'] ?  : null;
       // MANTIS 3846: Le champ 'commentaire' de l'onglet Participants n'est pas pris en compte

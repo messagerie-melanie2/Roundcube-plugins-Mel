@@ -112,7 +112,7 @@ class calendar extends rcube_plugin
      * mantis 0009355 
      */
 
-    public static function is_valid_category_name($name){
+    public static function is_valid_category_name(String $name): bool{
         $name = trim((string) $name);
 
         return $name !== '' && mb_strlen($name) <= self::CATEGORY_NAME_MAXLEN
@@ -1033,6 +1033,10 @@ $("#rcmfd_new_category").keypress(function(event) {
 
                 foreach ($categories as $key => $name) {
                     if (!isset($colors[$key])) {
+                        continue;
+                    }
+                    // MANTIS 0009355: ignorer les entrées malformées _categories[x][]
+                    if (!is_string($name)) {
                         continue;
                     }
 

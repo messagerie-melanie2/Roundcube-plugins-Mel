@@ -199,10 +199,9 @@ class mel_france_transfert extends rcube_plugin {
    *
    * Correction : en repassant par les accesseurs storage-aware, et puis unset() le fichier s'il existe dans $COMPOSE['attachments']
   */
-  public function attachment_delete($args) {
+  public function attachment_delete($args): array {
     $COMPOSE_ID = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
-    $file_id = rcube_utils::get_input_value('_file', rcube_utils::INPUT_GPC);
-    $file_id = preg_replace('/^rcmfile/', '', $file_id) ?: 'unknown';
+    $file_id = $args['id'] ?? (preg_replace('/^rcmfile/', '', rcube_utils::get_input_string('_file', rcube_utils::INPUT_GPC)) ?: 'unknown');
 
     $COMPOSE = rcmail_action_mail_compose::get_compose_data($COMPOSE_ID);
 

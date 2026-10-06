@@ -256,6 +256,18 @@
         <roundcube:label name="search" />
       </button> -->
     </div>
+    <!-- Mémorisation des options de recherche pour le dossier courant (plugin bnum_mail) -->
+    <div class="formcontent bnum-search-remember-container">
+      <ul class="proplist">
+        <li class="bnum-search-remember">
+          <span class="material-symbols-outlined" aria-hidden="true">bookmark</span>
+          <bnum-switch id="s_mods_remember" data-no-hint="true" data-legend="<roundcube:label name="bnum_mail.remember_search_mods" />"></bnum-switch>
+        </li>
+      </ul>
+      <bnum-tertiary-button id="s_reset_filters" data-icon="restart_alt" data-icon-pos="left" block>
+        <roundcube:label name="bnum_mail.reset_search_filters" />
+      </bnum-tertiary-button>
+    </div>
   </div>
 
   <roundcube:add_label name="showunread" />

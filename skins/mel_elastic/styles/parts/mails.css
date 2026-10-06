@@ -315,3 +315,49 @@ html.layout-small .popover:not(.select-menu) {
 #layout-sidebar #compose-attachments #attachment-list a.delete:focus {
   background-color: var(--bnum-color-list-hover);
 }
+
+#searchmenu .bnum-search-remember {
+  display: flex;
+  align-items: center;
+  gap: var(--bnum-space-s);
+}
+#searchmenu .bnum-search-remember > bnum-switch {
+  display: flex;
+  align-items: center;
+  --bnum-input-container-margin-bottom: 0;
+}
+#searchmenu .bnum-search-remember > .material-symbols-outlined {
+  color: var(--bnum-color-primary);
+  font-size: 1.75rem;
+  translate: 0 0.125rem;
+}
+
+#searchmenu .bnum-search-remember-container {
+  margin-top: var(--bnum-space-s);
+  padding: var(--bnum-space-s) var(--bnum-space-m);
+  border-top: 1px dashed var(--bnum-color-border);
+  background-color: var(--bnum-color-surface);
+  border-radius: 0 0 5px 5px;
+}
+
+#searchmenu #s_reset_filters {
+  --bnum-button-justify-content: flex-end;
+  --bnum-button-icon-gap: var(--bnum-space-s);
+  --bnum-button-display: block;
+  width: auto;
+  --bnum-button-padding: var(--bnum-space-xs) calc(var(--bnum-space-m) - var(--bnum-space-xs));
+  margin: var(--bnum-space-s) calc(var(--bnum-space-xs) - var(--bnum-space-m)) 0;
+  --bnum-button-border-radius: 5px;
+  --bnum-button-font-weight: normal;
+  --bnum-icon-font-size: 1.75rem;
+  --bnum-button-tertiary-text-color: var(--bnum-color-primary);
+  --bnum-button-tertiary-hover-text-color: var(--bnum-color-primary);
+  --bnum-button-tertiary-hover-background-color: var(--bnum-color-in-surface-hover);
+  --bnum-button-tertiary-active-background-color: var(--bnum-color-in-surface-active);
+  font-size: var(--bnum-font-size-s);
+}
+
+html.dark-mode #searchmenu #s_reset_filters,
+html.dark-mode-custom #searchmenu #s_reset_filters {
+  --bnum-button-tertiary-hover-text-color: var(--bnum-color-primary-hover);
+}

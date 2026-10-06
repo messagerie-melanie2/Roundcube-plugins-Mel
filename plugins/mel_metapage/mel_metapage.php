@@ -3530,7 +3530,7 @@ class mel_metapage extends bnum_plugin
      * @param array $args Contient 'contacts'
      * @return array
      */
-    public function autocomplete_group_sources($args)
+    public function autocomplete_group_sources(array $args): array
     {
         $priority = function ($contact) {
             $source = strtolower($contact['source'] ?? '');

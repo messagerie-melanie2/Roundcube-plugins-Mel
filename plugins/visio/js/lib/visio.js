@@ -1,7 +1,13 @@
 import { HTMLBnumButton } from '../../../../skins/mel_elastic/design-system/ds-module-bnum.js';
 import { VisioManager } from '../../../mel_metapage/js/lib/calendar/event/parts/location_part.js';
 import { ActionLocation } from '../../../mel_metapage/js/lib/calendar/event_location.js';
+import { BnumLog } from '../../../mel_metapage/js/lib/classes/bnum_log.js';
+import {
+  BnumMessage,
+  eMessageType,
+} from '../../../mel_metapage/js/lib/classes/bnum_message.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
+import { VisioRooms } from './program/visio_rooms.js';
 import { VisioByDinumLocation } from './program/VisioByDinumLocation.js';
 import { VisioWebconfLink } from './program/VisioWebconfLink.js';
 
@@ -95,6 +101,42 @@ export class VisioByDinum extends MelObject {
         generated.visio = new VisioDinumLocation(current);
 
         return data;
+      })
+      .listen('calendar.appointment.toggle_fields', async (args) => {
+        const { field } = args;
+
+        if (field !== 'visio') return args;
+        const INPUT_CLASS = 'visio-room-field';
+
+        const manager = new VisioRooms();
+
+        const loader = BnumMessage.DisplayLoadingMessage();
+        //disable buttons
+        const room = await manager.createRoom();
+        //enable_buttons
+        BnumMessage.ClearMessage(loader);
+
+        if (room.has_error || room.datas?.httpCode !== 201) {
+          BnumMessage.DisplayMessage(
+            'Impossible de créer une room.',
+            eMessageType.Error,
+          );
+          BnumLog.error(
+            'VisioByDinum::<calendar.appointment.toggle_fields>',
+            'Impossible de créer une room !',
+            room,
+          );
+        } else {
+          const input = [...document.querySelectorAll(`.${INPUT_CLASS}`)].at(
+            -1,
+          );
+
+          if (input) {
+            input.value = room.datas.content.url;
+          }
+        }
+
+        return args;
       });
 
     if (!this.#_can()) return;

@@ -37,6 +37,8 @@ class visio extends bnum_plugin
             'create_room' => [$this, 'action_create_room'],
         ]);
 
+        $this->add_hook('calendar_appointment_feature', [$this, 'hook_calendar_appointment_feature']);
+
         try {
             $this->set_env('visio_gouv_base_url', $this->get_config('visio_gouv_base_url'));
             $this->include_module('visio.js');
@@ -80,6 +82,11 @@ class visio extends bnum_plugin
         }
 
         $this->respond($this->api()->create_room($this->get_user()->email, $body === [] ? null : $body));
+    }
+
+    public function hook_calendar_appointment_feature(array $args): array {
+        $args['html'] = $this->rc()->output->parse('visio.visio_appointment', false, false);
+        return $args;
     }
 
     /**

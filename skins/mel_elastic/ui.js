@@ -1615,7 +1615,8 @@ $(document).ready(() => {
      * @returns {Mel_Elastic} ChaÃ®nage
      */
     setup_nav() {
-      if (parent === window) {
+      // Pas de décalage si la barre de navigation est masquée (courrielleur, extwin)
+      if (parent === window && !this._hide_main_menu) {
         //La sidebar étant en position absolue, on décale certaines divs pour que l'affichage soit correct.
         const width = '60px';
 

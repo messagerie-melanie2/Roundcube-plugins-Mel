@@ -236,9 +236,25 @@ class mtes_driver_mel extends mce_driver_mel
   public function setHeadersMessageBeforeSend($headers)
   {
     // Positionner le HEADER pour indiquer l'origine du message (internet, intranet)
-    $headers['X-Depot'] = 'from butineur (par ' . $_SERVER["HTTP_X_MINEQPROVENANCE"] . ' [' . $_SERVER["HTTP_X_FORWARDED_FOR"] . ']) by ' . $_SERVER["HTTP_X_FORWARDED_SERVER"] . ' [' . $_SERVER["SERVER_ADDR"] . ']';
+    $headers['X-Depot'] = 'from butineur (par ' . ($_SERVER["HTTP_X_MINEQPROVENANCE"] ?? '') . ' [' . $this->get_browser_ip() . ']) by ' . ($_SERVER["HTTP_X_FORWARDED_SERVER"] ?? '') . ' [' . ($_SERVER["SERVER_ADDR"] ?? '') . ']';
 
     return $headers;
+  }
+
+  /**
+   * Adresse IP du navigateur à l'origine de la requête
+   *
+   * Comme pour les logs (mel_logs) : depuis le passage en php-fpm, X-Forwarded-For
+   * n'est plus transmis et l'IP du navigateur se trouve dans REMOTE_ADDR
+   *
+   * @return string Adresse IP du navigateur
+   */
+  protected function get_browser_ip()
+  {
+    if (!empty($_SERVER["HTTP_X_FORWARDED_FOR"])) {
+      return $_SERVER["HTTP_X_FORWARDED_FOR"];
+    }
+    return $_SERVER["REMOTE_ADDR"] ?? '';
   }
 
   /**

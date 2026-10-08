@@ -11,6 +11,9 @@ import { VisioRooms } from './program/visio_rooms.js';
 import { VisioByDinumLocation } from './program/VisioByDinumLocation.js';
 import { VisioWebconfLink } from './program/VisioWebconfLink.js';
 
+/** Identifiant du champ contenant l'URL de la salle dans la prise de rendez-vous. */
+const APPOINTMENT_ROOM_ID = 'visio-room';
+
 class VisioDinumLocation extends ActionLocation {
   constructor(location) {
     super(location);
@@ -102,38 +105,30 @@ export class VisioByDinum extends MelObject {
 
         return data;
       })
-      .listen('calendar.appointment.toggle_fields', async (args) => {
-        const { field } = args;
+      .listen('calendar.appointment.toggle_fields', (args) => {
+        if (args.field === 'visio') this.#_onAppointmentVisioToggled();
 
-        if (field !== 'visio') return args;
-        const INPUT_CLASS = 'visio-room-field';
+        return args;
+      })
+      .listen('calendar.appointment.save_place', (args) => {
+        const { id, form, place } = args;
 
-        const manager = new VisioRooms();
+        if (id === 'visio')
+          place.push({
+            type: 'visio',
+            value: form.find(`#${APPOINTMENT_ROOM_ID}`).val(),
+            text: form.find('#visio_text').text(),
+          });
 
-        const loader = BnumMessage.DisplayLoadingMessage();
-        //disable buttons
-        const room = await manager.createRoom();
-        //enable_buttons
-        BnumMessage.ClearMessage(loader);
+        return args;
+      })
+      .listen('calendar.appointment.load_place', (args) => {
+        const { element, form } = args;
 
-        if (room.has_error || room.datas?.httpCode !== 201) {
-          BnumMessage.DisplayMessage(
-            'Impossible de créer une room.',
-            eMessageType.Error,
-          );
-          BnumLog.error(
-            'VisioByDinum::<calendar.appointment.toggle_fields>',
-            'Impossible de créer une room !',
-            room,
-          );
-        } else {
-          const input = [...document.querySelectorAll(`.${INPUT_CLASS}`)].at(
-            -1,
-          );
-
-          if (input) {
-            input.value = room.datas.content.url;
-          }
+        if (element.type === 'visio') {
+          form.find('#visio').prop('checked', true);
+          form.find('#visio_fields').show();
+          form.find(`#${APPOINTMENT_ROOM_ID}`).val(element.value);
         }
 
         return args;
@@ -141,6 +136,52 @@ export class VisioByDinum extends MelObject {
 
     if (!this.#_can()) return;
     VisioManager.PrependVisioType(VisioByDinumLocation);
+  }
+
+  /**
+   * Crée une salle de visio lorsque l'option « Visio » de la prise de
+   * rendez-vous est activée et qu'aucune salle n'est encore associée.
+   *
+   * @returns {Promise<void>}
+   * @private
+   */
+  async #_onAppointmentVisioToggled() {
+    const form = this.get_env('appointment_form');
+    const checkbox = form.find('#visio');
+    const input = form.find(`#${APPOINTMENT_ROOM_ID}`);
+
+    if (!checkbox.prop('checked') || input.val()) return;
+
+    const controls = form
+      .closest('.ui-dialog')
+      .find('.ui-dialog-buttonpane button')
+      .add(checkbox);
+    const loader = BnumMessage.DisplayLoadingMessage();
+
+    // Évite une sauvegarde ou une fermeture pendant la création de la salle.
+    controls.prop('disabled', true);
+
+    try {
+      const room = await new VisioRooms().createRoom();
+
+      if (room.has_error || room.datas?.httpCode !== 201) {
+        BnumMessage.DisplayMessage(
+          'Impossible de créer une salle de visio.',
+          eMessageType.Error,
+        );
+        BnumLog.error(
+          'VisioByDinum::#_onAppointmentVisioToggled',
+          'Impossible de créer une salle !',
+          room,
+        );
+        return;
+      }
+
+      input.val(room.datas.content.url);
+    } finally {
+      controls.prop('disabled', false);
+      BnumMessage.ClearMessage(loader);
+    }
   }
 
   #_onClick(url) {

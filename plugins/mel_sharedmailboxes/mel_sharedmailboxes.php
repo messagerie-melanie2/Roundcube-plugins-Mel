@@ -47,6 +47,7 @@ class mel_sharedmailboxes extends rcube_plugin {
      * @var string
      */
     private $prev_folder;
+    private bool $ui_initialized = false;
 
     /**
      * Initialisation du plugin
@@ -1284,9 +1285,14 @@ class mel_sharedmailboxes extends rcube_plugin {
      * @param array $args
      */
     public function set_folder_name($args) {
+        if (!is_string($args['folder'] ?? null /* ?? null Désactive le warning*/)) {
+            return $args;
+        }
+
         if ($this->is_individual_trash($args['folder'])) {
             $args['folder'] = $this->get_trash_folder_name($args['folder']);
         }
+
         if (isset($this->prev_folder) && $this->prev_folder != $args['folder']) {
             $relog = false;
             if (strpos($args['folder'], driver_mel::gi()->getBalpLabel()) === 0 && strpos($this->prev_folder, driver_mel::gi()->getBalpLabel()) === 0) {
@@ -1585,7 +1591,8 @@ class mel_sharedmailboxes extends rcube_plugin {
      * @return boolean true si c'est une corbeille individuelle, false sinon
      */
     private function is_individual_trash($folder) {
-        return strpos($folder, driver_mel::gi()->getBalpLabel()) === 0 
+        return is_string($folder)
+            && strpos($folder, driver_mel::gi()->getBalpLabel()) === 0 
             && strpos($folder, driver_mel::gi()->getMboxTrash() . '-individuelle') !== false;
     }
 

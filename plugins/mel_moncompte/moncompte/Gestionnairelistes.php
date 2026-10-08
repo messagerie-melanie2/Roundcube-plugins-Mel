@@ -154,8 +154,12 @@ class Gestionnairelistes extends Moncompteobject {
 				$group = driver_mel::gi()->getGroup($dn_list, false, true, 'webmail.moncompte.grouplistes');
 				if ($group->load(['owners', 'members_email', 'is_dynamic', 'liens_import']) 
 						&& $group->isOwner($user)) {
-					$list_emails = array_map('strtolower', $group->members_email);
-					sort($list_emails);
+					
+					if (is_array($group->members_email)) {
+						$list_emails = array_map('strtolower', $group->members_email);
+						sort($list_emails);
+					}
+
 					$islistdyn = $group->is_dynamic || !empty($group->liens_import);
 				}
 			}
@@ -343,7 +347,7 @@ class Gestionnairelistes extends Moncompteobject {
 	/**
 	 * Upload d'un fichier CSV pour importer des membres du groupe
 	 */
-	public function uploadCSVMembers() {
+	public static function uploadCSVMembers() {
 		$dn_list = rcube_utils::get_input_value('_dn_list', rcube_utils::INPUT_POST);
 		$list_emails = [];
 		
@@ -382,7 +386,9 @@ class Gestionnairelistes extends Moncompteobject {
 							$member_to_add->email = $member;
 							if ($member_to_add->load(['uid']) 
 									&& !isset($list_members[$member_to_add->uid])) {
-								$list_members[$member_to_add->uid] = $member_to_add;
+								
+								if (!isset($member_to_add->email) || !isset($member_to_add->uid)) $addr_error[] = $member;
+								else $list_members[$member_to_add->uid] = $member_to_add;
 							}
 						}
 						sort($list_emails);
@@ -399,6 +405,7 @@ class Gestionnairelistes extends Moncompteobject {
 				}
 			}
 		}
+		$addr_error ??= [];
 		$result = array('action' => 'plugin.listes_upload_csv', 'data' => $list_emails, 'dn_list' => $dn_list, 'addr_error' => $addr_error);
 		rcmail::get_instance()->output->command('plugin.import_listes_csv_success', $result);
 		rcmail::get_instance()->output->send('iframe');

@@ -1503,7 +1503,7 @@ $("#rcmfd_new_category").keypress(function(event) {
                     'noreply'       => '1'
                 ];
                 //Changement du calendrier
-                $event['calendar'] = driver_mel::mceToRcId($user->uid);
+                $event['calendar'] = driver_mel::gi()->mceToRcId($user->uid);
 
                 $title = $event['title'];
                 $subject = "$user->name a rejoint votre évènement $title !";

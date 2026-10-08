@@ -307,7 +307,7 @@ class ServiceWebFranceTransfert {
       else if ($this->_httpCode == 403) {
         $this->_errorMessage = 'Erreur d’authentification sur le service France Transfert (erreur interne)';
         mel_logs::get_instance()->log(mel_logs::ERROR, "ServiceWebFranceTransfert::sendFile() Erreur [".$this->_httpCode."] : " . $this->_errorMessage);
-        fclose($handle);
+        if ($handle !== false) fclose($handle);
         rcmail_action_mail_compose::set_compose_data($COMPOSE_ID, $COMPOSE);
         return false;
       }
@@ -321,7 +321,7 @@ class ServiceWebFranceTransfert {
           $this->_errorMessage = implode(' / ', $errors);
         }
         mel_logs::get_instance()->log(mel_logs::ERROR, "ServiceWebFranceTransfert::sendFile() Erreur [".$this->_httpCode."] : " . $this->_errorMessage);
-        fclose($handle);
+        if ($handle !== false) fclose($handle);
         rcmail_action_mail_compose::set_compose_data($COMPOSE_ID, $COMPOSE);
         return false;
       }
@@ -332,7 +332,7 @@ class ServiceWebFranceTransfert {
       $chunk_number++;
     }
     
-    fclose($handle);
+    if ($handle !== false) fclose($handle);
 
     $COMPOSE['ft_action'] = "Fichier '$name' envoyé vers France Transfert";
     $COMPOSE['ft_value'] = null;

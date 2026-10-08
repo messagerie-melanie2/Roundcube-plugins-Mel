@@ -83,6 +83,7 @@ class mel_moncompte extends rcube_plugin {
       'plugin.melanie2_resources_contacts'  => 'plugin.mel_resources_contacts',
       'plugin.melanie2_resources_tasks'     => 'plugin.mel_resources_tasks',
   ];
+  private bool $ui_initialized = false;
 
   /**
    * Initialisation du plugin

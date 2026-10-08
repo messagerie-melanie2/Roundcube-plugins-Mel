@@ -15,6 +15,8 @@
 use Sabre\VObject;
 use LibMelanie\Config\ConfigMelanie;
 
+include_once __DIR__.'/../lib/mel/mel.php';
+
 // Inclusion des fichiers
 require_once '../lib/utils.php';
 require_once '../config.inc.php';
@@ -96,6 +98,8 @@ if ($calendar->load()
     $event->vcalendar = $vcalendar;
     $vcalendar = $event->vcalendar;
   }
+
+  $_user ??= '';
   
   // MANTIS 0005005: Rajouter une ligne de log pour un acces a l'url du calendrier
   utils::log("/calendar $_user $calendar_name");

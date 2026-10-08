@@ -6,6 +6,10 @@ $beforePluginFactory();
 
 require_once __DIR__ . '/php/functions/logs.php';
 
+if (!class_exists('bnum_plugin', autoload:false)) {
+    require_once __DIR__.'/../bnum/bnum_plugin.php';
+}
+
 class bnum_glitchtip extends bnum_plugin {
     use BGT_LogsTrait {
         BGT_LogsTrait::logTrace as private __rcpclBody_BGT_LogsTrait_logTrace;

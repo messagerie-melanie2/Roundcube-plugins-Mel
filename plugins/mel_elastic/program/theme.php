@@ -286,7 +286,7 @@ class Theme {
      * @return boolean
      */
     protected static function loaded_style_is_folder($style) {
-        return strpos($style, self::EXT_STYLE) !== false;
+        return strpos($style ?? '', self::EXT_STYLE) !== false;
     }
 
     /**
@@ -371,7 +371,7 @@ class ThemeLocalization  {
     }
 
     public function __toString() {
-        return SingletonThemeLocalization::Instance()->get($this->theme, $this->key, $this->local, $this->path);
+        return SingletonThemeLocalization::Instance()->get($this->theme, $this->key, $this->local, $this->path) ?? '';
     }
 } 
 

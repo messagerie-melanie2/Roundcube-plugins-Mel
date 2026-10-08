@@ -4798,6 +4798,10 @@ function rcube_calendar_ui(settings) {
               break;
 
             default:
+              rcmail.triggerEvent('calendar.appointment.load_place', {
+                element,
+                form,
+              });
               break;
           }
         });
@@ -5045,6 +5049,11 @@ function rcube_calendar_ui(settings) {
             break;
 
           default:
+            rcmail.triggerEvent('calendar.appointment.save_place', {
+              id,
+              form,
+              place,
+            });
             break;
         }
       }

@@ -5,10 +5,13 @@ export { connectors as VisioRoomsConnectors };
 
 /**
  * Connecteurs AJAX du plugin visio, pour les endpoints "Rooms" de l'API
- * de visioconférence "La Suite Numérique".
- * @type {Object<string, Connector>}
+ * de visioconférence "La Suite Numérique" (actions de visio.php) :
+ * - list_rooms    : liste des salles de l'utilisateur (GET)
+ * - retrieve_room : détail d'une salle (GET, `id`)
+ * - create_room   : création d'une salle (POST, `access_level`, `configuration` JSON)
+ * @type {Readonly<Object<string, Connector>>}
  */
-const connectors = {
+const connectors = Object.freeze({
   list_rooms: Connector.Create('visio', 'list_rooms', {
     type: Connector.enums.type.get,
   }),
@@ -20,4 +23,4 @@ const connectors = {
     type: Connector.enums.type.post,
     needed: { access_level: EMPTY_STRING, configuration: EMPTY_STRING },
   }),
-};
+});

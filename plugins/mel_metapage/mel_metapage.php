@@ -281,7 +281,7 @@ class mel_metapage extends bnum_plugin
         $this->add_hook("calendar.on_attendees_notified", [$this, 'on_attendees_notified']);
         $this->add_hook('contact_photo', [$this, 'no_contact_found']);
         $this->add_hook('plugin.mel_doubleauth.init', [$this, 'hook_double_auth_init']);
-
+        
         if ($this->rc->task === 'settings' && $this->rc->action === "edit-prefs") {
             if (rcube_utils::get_input_value('_section', rcube_utils::INPUT_GPC) === 'globalsearch') $this->include_script('js/actions/settings_gs.js');
             $this->include_script('js/actions/base_settings.js');
@@ -623,7 +623,7 @@ class mel_metapage extends bnum_plugin
             $this->register_action('save_user_pref_domain', array($this, 'save_user_pref_domain'));
             $this->add_hook('refresh', array($this, 'refresh'));
             $this->add_hook("startup", array($this, "send_spied_urls"));
-            //$this->add_hook('contacts_autocomplete_after', [$this, 'contacts_autocomplete_after']);
+            $this->add_hook('contacts_autocomplete_after', [$this, 'contacts_autocomplete_after']);//Mantis 0009521
             if ($this->rc->task === 'settings' && rcube_utils::get_input_value('_open_section', rcube_utils::INPUT_GET) !== null) $this->add_hook('ready', array($this, 'open_section'));
 
             $this->rc->output->set_env("webconf.base_url", $this->rc->config->get("web_conf"));
@@ -3506,22 +3506,72 @@ class mel_metapage extends bnum_plugin
     }
 
     /**
-     * Filtre les contacts pour enlever les doublons dans la liste d'autocomplétion.
+     * Filtre les doublons de l'autocomplétion puis priorise les correspondances
+     * orthographiques sur les correspondances phonétiques.
+     * BNUM - MANTIS 0009521
      *
-     * Utilise une fonction personnalisée pour détecter les doublons en se basant sur le champ 'name'.
-     * Si le nom contient un '<', la comparaison se fait sur la version en minuscules du nom complet,
-     * sinon la valeur entière est utilisée pour la comparaison.
-     *
-     * @param array $args Tableau contenant au moins la clé 'contacts' avec la liste des contacts.
-     * @return array Retourne le tableau $args avec la liste des contacts filtrée sans doublons.
+     * @param array $args Contient 'search' et 'contacts'
+     * @return array
      */
     function contacts_autocomplete_after($args)
     {
-        $args['contacts'] = mel_helper::Enumerable($args['contacts'])->removeTwins(function ($k, $v) {
+        $contacts = mel_helper::Enumerable($args['contacts'])->removeTwins(function ($k, $v) {
             if (strpos($v['name'], '<') !== false) return strtolower($v['name']);
             else return $v;
         })->toArray();
+
+        $search = $this->_normalize_autocomplete($args['search'] ?? '');
+
+        if ($search !== '') {
+            $word_start = '/[\s.,<"\'-]' . preg_quote($search, '/') . '/';
+
+            // usort est stable (PHP >= 8) : l'ordre serveur est conservé à rang égal
+            usort($contacts, function ($a, $b) use ($search, $word_start) {
+                return $this->_autocomplete_rank($a, $search, $word_start)
+                    <=> $this->_autocomplete_rank($b, $search, $word_start);
+            });
+        }
+
+        // Clés séquentielles obligatoires : sinon json_encode produit un objet
+        // et le client (results.length) n'affiche rien
+        $args['contacts'] = array_values($contacts);
+
         return $args;
+    }
+
+    /**
+     * Rang de correspondance orthographique d'un contact.
+     * 0 : commence par la saisie, 1 : un mot commence par la saisie,
+     * 2 : contient la saisie, 3 : correspondance phonétique uniquement.
+     * BNUM - MANTIS 0009521
+     */
+    private function _autocomplete_rank($contact, string $search, string $word_start): int
+    {
+        $name = $this->_normalize_autocomplete((string) ($contact['name'] ?? ''));
+
+        return match (true) {
+            str_starts_with($name, $search)      => 0,
+            (bool) preg_match($word_start, $name) => 1,
+            str_contains($name, $search)         => 2,
+            default                              => 3,
+        };
+    }
+
+    /**
+     * Normalise une chaîne pour la comparaison (minuscules, sans accents).
+     * BNUM - MANTIS 0009521
+     */
+    private function _normalize_autocomplete(?string $str): string
+    {
+        return strtr(mb_strtolower($str ?? '', 'UTF-8'), [
+            'à' => 'a', 'â' => 'a', 'ä' => 'a', 'á' => 'a',
+            'é' => 'e', 'è' => 'e', 'ê' => 'e', 'ë' => 'e',
+            'î' => 'i', 'ï' => 'i', 'í' => 'i',
+            'ô' => 'o', 'ö' => 'o', 'ó' => 'o',
+            'ù' => 'u', 'û' => 'u', 'ü' => 'u', 'ú' => 'u',
+            'ÿ' => 'y', 'ç' => 'c', 'ñ' => 'n',
+            'œ' => 'oe', 'æ' => 'ae',
+        ]);
     }
 
     /**

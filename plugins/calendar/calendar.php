@@ -112,8 +112,8 @@ class calendar extends rcube_plugin
      * mantis 0009355 
      */
 
-    public static function is_valid_category_name(String $name): bool{
-        $name = trim((string) $name);
+    public static function is_valid_category_name(string $name): bool{
+        $name = trim( $name);
 
         return $name !== '' && mb_strlen($name) <= self::CATEGORY_NAME_MAXLEN
                && preg_match(self::CATEGORY_NAME_REGEX, $name) === 1;

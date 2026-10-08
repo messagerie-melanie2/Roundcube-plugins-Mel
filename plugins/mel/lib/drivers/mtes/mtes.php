@@ -210,7 +210,7 @@ class mtes_driver_mel extends mce_driver_mel
     $root_mapping = rcmail::get_instance()->config->get('root_mapping', []);
 
     if (isset($root_mapping[$hostname])) $hostname = $root_mapping[$hostname];
-    
+
     return $hostname;
   }
 
@@ -235,8 +235,11 @@ class mtes_driver_mel extends mce_driver_mel
    */
   public function setHeadersMessageBeforeSend($headers)
   {
-    // Positionner le HEADER pour indiquer l'origine du message (internet, intranet)
-    $headers['X-Depot'] = 'from butineur (par ' . ($_SERVER["HTTP_X_MINEQPROVENANCE"] ?? '') . ' [' . $this->get_browser_ip() . ']) by ' . ($_SERVER["HTTP_X_FORWARDED_SERVER"] ?? '') . ' [' . ($_SERVER["SERVER_ADDR"] ?? '') . ']';
+    $http_mineq_provenance = $_SERVER['HTTP_X_MINEQPROVENANCE'] ?? '';
+    $http_fordwarded_server = $_SERVER['HTTP_X_FORWARDED_SERVER'] ?? '';
+    $serveur_addr = $_SERVER['SERVER_ADDR'] ?? '';
+
+    $headers['X-Depot'] = "from butineur (par $http_mineq_provenance [{$this->get_browser_ip()}]) by  $http_fordwarded_server [$serveur_addr]";
 
     return $headers;
   }
@@ -248,13 +251,12 @@ class mtes_driver_mel extends mce_driver_mel
    * n'est plus transmis et l'IP du navigateur se trouve dans REMOTE_ADDR
    *
    * @return string Adresse IP du navigateur
+   * 
    */
-  protected function get_browser_ip()
+  #[\NoDiscard("get_browser_ip() n'a aucun effet de bord : l'adresse ip retournée doit être utilisé")]
+  protected function get_browser_ip() : string
   {
-    if (!empty($_SERVER["HTTP_X_FORWARDED_FOR"])) {
-      return $_SERVER["HTTP_X_FORWARDED_FOR"];
-    }
-    return $_SERVER["REMOTE_ADDR"] ?? '';
+    return ($_SERVER["HTTP_X_FORWARDED_FOR"] ?? '') ?: ($_SERVER["REMOTE_ADDR"] ?? '');
   }
 
   /**

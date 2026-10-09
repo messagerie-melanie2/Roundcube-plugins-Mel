@@ -6,39 +6,39 @@ class bnum_mail extends bnum_plugin {
    * Préférence utilisateur des options de recherche mémorisées, par dossier :
    * [dossier => ['mods' => [champ => 1], 'scope' => string, 'filter' => string, 'interval' => string]].
    */
-  public const PREF_SEARCH_MEMORY = 'bnum_search_memory';
+  public const string PREF_SEARCH_MEMORY = 'bnum_search_memory';
 
   /**
    * Champs de recherche acceptés (valeurs des cases `s_mods[]`).
    */
-  public const SEARCH_MODS_FIELDS = ['subject', 'from', 'to', 'cc', 'bcc', 'body', 'text', 'replyto', 'followupto'];
+  public const array SEARCH_MODS_FIELDS = ['subject', 'from', 'to', 'cc', 'bcc', 'body', 'text', 'replyto', 'followupto'];
 
   /**
    * Portées de recherche acceptées (select `s_scope`).
    */
-  public const SEARCH_SCOPES = ['base', 'sub', 'all'];
+  public const array SEARCH_SCOPES = ['base', 'sub', 'all'];
 
   /**
    * Périodes acceptées (select `s_interval`, cf. rcmail_action_mail_index::search_interval()).
    */
-  public const SEARCH_INTERVALS = ['', '1W', '1M', '1Y', '-1W', '-1M', '-1Y'];
+  public const array SEARCH_INTERVALS = ['', '1W', '1M', '1Y', '-1W', '-1M', '-1Y'];
 
   /**
    * Longueur maximale du filtre de type (critère IMAP du select `searchfilter`).
    */
-  public const SEARCH_FILTER_MAX_LENGTH = 255;
+  public const int SEARCH_FILTER_MAX_LENGTH = 255;
 
   /**
    * Nombre maximum de dossiers mémorisés par utilisateur.
    */
-  public const SEARCH_MEMORY_MAX_FOLDERS = 100;
+  public const int SEARCH_MEMORY_MAX_FOLDERS = 100;
 
   /**
    * Désactive la fusion des options mémorisées dans `search_mods` (lecture des valeurs par défaut).
    *
    * @var bool
    */
-  private $search_memory_bypass = false;
+  private bool $search_memory_bypass = false;
 
   function init() {
     // PAMELA - 0008128 - Plusieurs signatures
@@ -80,12 +80,16 @@ class bnum_mail extends bnum_plugin {
       $this->protect_actions(['plugin.bnum_mail.reset_search']);
     }
 
-    $this->add_hook('messages_list', [$this, 'hook_message_list']);
-    $this->add_hook('config_get', [$this, 'hook_config_get']);
-    $this->add_hook('preferences_update', [$this, 'hook_preferences_update']);
+      $this->add_hooks(
+          [
+            'messages_list.links' => $this->hook_message_list(...),
+            'config_get' => $this->hook_config_get(...),
+            'preferences_update' => $this->hook_preferences_update(...)
+          ]
+        );
   }
 
-  public function hook_message_list($args) {
+  public function hook_message_list(array $args) : array {
     if ($args['cols'] && is_array($args['cols'])) {
       $this->load_config();
       // Gestion des colonnes additionnels
@@ -99,7 +103,7 @@ class bnum_mail extends bnum_plugin {
    * Fusionne les champs de recherche mémorisés par l'utilisateur par-dessus `search_mods`
    * de la configuration (verrouillé par `dont_override`).
    */
-  public function hook_config_get($args) {
+  private function hook_config_get(array $args) : array {
     if (($args['name'] ?? null) !== 'search_mods' || $this->search_memory_bypass) return $args;
 
     $mods = [];
@@ -119,7 +123,7 @@ class bnum_mail extends bnum_plugin {
    * Le core enregistre `search_mods` à chaque recherche alors qu'il est dans `dont_override` :
    * on retire la clé pour éviter des écritures inutiles en base.
    */
-  public function hook_preferences_update($args) {
+  private function hook_preferences_update(string $args) : string {
     if (isset($args['prefs']['search_mods'])
         && in_array('search_mods', (array) $this->rc()->config->get('dont_override'), true)) {
       unset($args['prefs']['search_mods']);
@@ -135,7 +139,7 @@ class bnum_mail extends bnum_plugin {
    *
    * @return array [dossier => [champ => 1]]
    */
-  private function get_default_search_mods() {
+  private function get_default_search_mods() : array {
     $this->search_memory_bypass = true;
 
     try {
@@ -151,7 +155,8 @@ class bnum_mail extends bnum_plugin {
    *
    * @return array [dossier => ['mods' => [...], 'scope' => ..., 'filter' => ..., 'interval' => ...]]
    */
-  private function get_search_memory() {
+  #[\NoDiscard("Ne pas utiliser le résultat de get_search_memory() fait un appel à la config inutile")]
+  private function get_search_memory() : array {
     $memory = $this->rc()->config->get(self::PREF_SEARCH_MEMORY);
 
     return is_array($memory) ? array_filter($memory, 'is_array') : [];
@@ -161,7 +166,7 @@ class bnum_mail extends bnum_plugin {
    * Enregistre ou supprime les options de recherche du dossier courant au lancement d'une recherche,
    * selon l'état de la case « Mémoriser » envoyé par le client (`_bnum_remember`).
    */
-  private function remember_search_options() {
+  private function remember_search_options() : void {
     $remember = $this->get_input('_bnum_remember', rcube_utils::INPUT_GET);
 
     if ($remember !== '1' && $remember !== '0') return;
@@ -179,7 +184,7 @@ class bnum_mail extends bnum_plugin {
    * mémorise les valeurs par défaut du dossier si la case « Mémoriser » est cochée, sinon
    * supprime sa mémorisation. Aucune recherche n'est lancée.
    */
-  public function action_reset_search() {
+  public function action_reset_search() : void {
     $mbox     = (string) rcube_utils::get_input_string('_mbox', rcube_utils::INPUT_POST, true);
     $remember = $this->get_input('_bnum_remember', rcube_utils::INPUT_POST) === '1';
 
@@ -195,7 +200,7 @@ class bnum_mail extends bnum_plugin {
    *
    * @return array ['mods' => [champ => 1], 'scope' => string, 'filter' => string, 'interval' => string]
    */
-  private function default_search_options($mbox) {
+  private function default_search_options(string $mbox) : array {
     $mods  = $this->get_default_search_mods();
     $scope = $this->get_config('search_scope');
 
@@ -213,7 +218,7 @@ class bnum_mail extends bnum_plugin {
    * @param string     $mbox    Dossier
    * @param array|null $options Options à mémoriser, null pour supprimer
    */
-  private function store_search_memory($mbox, $options) {
+  private function store_search_memory(string $mbox, ?array $options) : void {
     if ($mbox === '') return;
 
     $memory = $this->get_search_memory();
@@ -242,14 +247,14 @@ class bnum_mail extends bnum_plugin {
    *
    * @return array ['mods' => [champ => 1], 'scope' => string, 'filter' => string, 'interval' => string]
    */
-  private function search_options_from_request() {
+  private function search_options_from_request() : array {
     $mods = array_intersect(explode(',', (string) $this->get_input('_bnum_mods', rcube_utils::INPUT_GET)), self::SEARCH_MODS_FIELDS);
     $mods = in_array('text', $mods, true) ? ['text' => 1] : array_fill_keys(array_values($mods), 1);
 
     $scope    = (string) $this->get_input('_scope', rcube_utils::INPUT_GET);
     $interval = (string) $this->get_input('_interval', rcube_utils::INPUT_GET);
     // Critère IMAP passé tel quel par le core : on retire les retours à la ligne comme lui (search.php)
-    $filter   = trim(preg_replace('/[\r\n]+/', ' ', (string) $this->get_input('_filter', rcube_utils::INPUT_GET)));
+    $filter   = preg_replace('/[\r\n]+/', ' ', (string) $this->get_input('_filter', rcube_utils::INPUT_GET)) |> trim(...);
 
     return [
       'mods'     => $mods,

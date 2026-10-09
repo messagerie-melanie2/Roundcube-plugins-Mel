@@ -536,3 +536,69 @@ html.layout-small {
     }
   }
 }
+
+// Mémorisation des options de recherche (plugin bnum_mail) : icône à gauche de l'interrupteur
+#searchmenu .bnum-search-remember {
+  display: flex;
+  align-items: center;
+  gap: var(--bnum-space-s);
+
+  // bnum-switch est inline : sa hauteur suit le line-height du li (2rem dans .proplist) et sa marge
+  // basse interne, pas la ligne bouton + texte. En flex sans marge, sa boîte = cette ligne,
+  // et l'icône centrée s'aligne sur le texte.
+  > bnum-switch {
+    display: flex;
+    align-items: center;
+    --bnum-input-container-margin-bottom: 0;
+  }
+
+  > .material-symbols-outlined {
+    color: var(--bnum-color-primary);
+    font-size: 1.75rem;
+    // Correction optique : centrée sur sa boîte, l'icône s'aligne sur la hauteur des majuscules et
+    // paraît trop haute ; on la cale sur la hauteur des minuscules (translate n'affecte pas la mise en page)
+    translate: 0 0.125rem;
+  }
+}
+
+// Pied de la popup des filtres : séparé des filtres par une bordure et un fond légèrement différent
+#searchmenu .bnum-search-remember-container {
+  margin-top: var(--bnum-space-s);
+  padding: var(--bnum-space-s) var(--bnum-space-m);
+  border-top: 1px dashed var(--bnum-color-border);
+  background-color: var(--bnum-color-surface);
+  border-radius: 0 0 5px 5px;
+}
+
+// Bouton « Réinitialiser les filtres » : action secondaire discrète, alignée sur la colonne
+// de l'icône « Mémoriser » (variables exposées par bnum-tertiary-button)
+#searchmenu #s_reset_filters {
+  // icon-pos="left" passe le wrapper en row-reverse : flex-end aligne à gauche
+  --bnum-button-justify-content: flex-end;
+  --bnum-button-icon-gap: var(--bnum-space-s);
+  // Presque toute la largeur du pied de popup (léger retrait --bnum-space-xs sur les bords) :
+  // la marge négative mange le padding horizontal du conteneur et le padding du bouton le
+  // restitue, l'icône reste dans la colonne
+  --bnum-button-display: block;
+  width: auto;
+  --bnum-button-padding: var(--bnum-space-xs) calc(var(--bnum-space-m) - var(--bnum-space-xs));
+  margin: var(--bnum-space-s) calc(var(--bnum-space-xs) - var(--bnum-space-m)) 0;
+  --bnum-button-border-radius: 5px;
+  --bnum-button-font-weight: normal;
+  --bnum-icon-font-size: 1.75rem;
+  --bnum-button-tertiary-text-color: var(--bnum-color-primary);
+  // Pas de changement de couleur du texte au survol en thème clair (le fond suffit)
+  --bnum-button-tertiary-hover-text-color: var(--bnum-color-primary);
+  // Couleurs prévues pour un élément posé sur --bnum-color-surface
+  --bnum-button-tertiary-hover-background-color: var(--bnum-color-in-surface-hover);
+  --bnum-button-tertiary-active-background-color: var(--bnum-color-in-surface-active);
+  font-size: var(--bnum-font-size-s);
+}
+
+// Thème sombre : on garde le changement de couleur du texte au survol
+html.dark-mode,
+html.dark-mode-custom {
+  #searchmenu #s_reset_filters {
+    --bnum-button-tertiary-hover-text-color: var(--bnum-color-primary-hover);
+  }
+}

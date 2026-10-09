@@ -1284,6 +1284,17 @@ class mel_sharedmailboxes extends rcube_plugin {
      * @param array $args
      */
     public function set_folder_name($args) {
+        // Recherche multi-dossiers (portée « Sous-dossiers » ou « Tous les dossiers ») : rcube_imap::search()
+        // transmet un tableau de dossiers. On convertit les corbeilles individuelles une à une ; la
+        // reconnexion de boîte partagée ci-dessous ne concerne qu'un dossier unique.
+        if (is_array($args['folder'])) {
+            $args['folder'] = array_map(function ($folder) {
+                return $this->is_individual_trash($folder) ? $this->get_trash_folder_name($folder) : $folder;
+            }, $args['folder']);
+
+            return $args;
+        }
+
         if ($this->is_individual_trash($args['folder'])) {
             $args['folder'] = $this->get_trash_folder_name($args['folder']);
         }
@@ -1585,7 +1596,8 @@ class mel_sharedmailboxes extends rcube_plugin {
      * @return boolean true si c'est une corbeille individuelle, false sinon
      */
     private function is_individual_trash($folder) {
-        return strpos($folder, driver_mel::gi()->getBalpLabel()) === 0 
+        return is_string($folder)
+            && strpos($folder, driver_mel::gi()->getBalpLabel()) === 0 
             && strpos($folder, driver_mel::gi()->getMboxTrash() . '-individuelle') !== false;
     }
 

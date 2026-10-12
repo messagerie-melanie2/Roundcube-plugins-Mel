@@ -304,7 +304,7 @@ class mce_driver_mel extends driver_mel
     // Récupération de la configuration de la boite pour l'affichage
     $host = $this->get_restoration_host($mbox);
 
-    return $host . ":" . $this->_restoration_api_port;
+    return 'https://' . $host . ":" . $this->_restoration_api_port;
   }
 
   /**

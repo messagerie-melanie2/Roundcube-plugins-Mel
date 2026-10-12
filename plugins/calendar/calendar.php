@@ -107,7 +107,7 @@ class calendar extends rcube_plugin
     }
 
     /**
-     * Aucuin nom de xatégorie ne doit contenir de caractère spécial ,sauf ',-, _et les caractères avec accent.
+     * Aucun nom de catégorie ne doit contenir de caractère spécial ,sauf ',-, _et les caractères avec accent.
      * 
      * mantis 0009355 
      */

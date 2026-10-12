@@ -52,8 +52,10 @@ export class VisioIndex extends ABaseMelObject {
       const { actions } = args;
 
       if (!actions.visio) return args;
+      const plugin = { plugin: 'visio' };
 
-      actions.visio.text = this.getLocalization('a_visio', { plugin: 'visio' });
+      actions.visio.title = this.getLocalization('open_in_new', plugin);
+      actions.visio.text = this.getLocalization('a_visio', plugin);
       actions.visio.action = START_ACTION;
 
       args.actions = actions;

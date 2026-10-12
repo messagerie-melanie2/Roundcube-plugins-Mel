@@ -18,15 +18,19 @@ declare(strict_types=1);
  */
 final class visio extends bnum_plugin
 {
-    /** @var string Tâches Roundcube sur lesquelles le plugin est actif */
-    public $task = '?(?!login|logout).*';
+    /**
+     * @var string Tâches Roundcube sur lesquelles le plugin est actif : toutes
+     *             sauf connexion, paramètres, tâches, kanban et drives, où la
+     *             visio n'est pas proposée.
+     */
+    public $task = '?(?!(?:login|logout|settings|tasks|wekan|stockage|roundrive)$).*';
 
     /** Client API, instancié à la demande (@see api()) */
     private ?visio_api $api_client = null;
 
     /**
-     * Initialise le plugin : configuration, langue, librairie du client API,
-     * actions, hook et module JS.
+     * Initialise le plugin selon la tâche courante (@see _init_bnum_task(),
+     * @see _init()).
      */
     #[\Override]
     public function init(): void
@@ -51,14 +55,15 @@ final class visio extends bnum_plugin
 
     /**
      * Initialisation hors tâche bnum : dépendance `mel_helper`, textes,
-     * configuration, librairies, tâche `visio`, actions AJAX, hook
-     * `calendar_appointment_feature` et module JS client.
+     * tâche `visio`, actions AJAX, hook `calendar_appointment_feature` et
+     * module JS client.
+     *
+     * Les librairies du client API ne sont pas chargées ici : seules les
+     * actions de la tâche `visio` en ont besoin (@see create_api_client()).
      */
     private function _init(): void {
-        $this->require_plugin('mel_helper');
+        $this->require_mel_helper();
         $this->add_texts('localization/', true);
-        $this->load_config();
-        $this->load_lib();
 
         $this->register_task('visio');
         $this->register_actions([
@@ -80,7 +85,33 @@ final class visio extends bnum_plugin
     #[\NoDiscard("api() n'a aucun effet de bord : le client renvoyé doit être utilisé")]
     public function api(): visio_api
     {
-        return $this->api_client ??= new visio_api($this->rc(), $this);
+        return $this->api_client ??= $this->create_api_client();
+    }
+
+    /**
+     * Charge les librairies puis instancie le client API.
+     *
+     * Chargement différé : évite d'inclure amel_lib et lib/ à chaque requête
+     * alors que seules les actions de la tâche `visio` les utilisent.
+     *
+     * @return visio_api Client API authentifié pour la plateforme de visioconférence
+     */
+    private function create_api_client(): visio_api
+    {
+        $this->load_lib();
+
+        return new visio_api($this->rc(), $this);
+    }
+
+    /**
+     * Charge la dépendance `mel_helper` si aucun autre plugin ne l'a déjà
+     * fait, pour éviter un passage inutile par le chargeur de plugins du core.
+     */
+    private function require_mel_helper(): void
+    {
+        if ($this->rc()->plugins->get_plugin('mel_helper') !== null) return;
+
+        $this->require_plugin('mel_helper');
     }
 
     /**

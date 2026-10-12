@@ -193,7 +193,7 @@ function m_mp_Create() {
       _button(actions.event) +
       '</li>';
     let viso =
-      `<li class="col-sd-4 col-md-4" id="viso" title="${rcmail.gettext('mel_metapage.menu_create_help_webconf')}">` +
+      `<li class="col-sd-4 col-md-4" id="viso" title="${actions.visio?.title || rcmail.gettext('mel_metapage.menu_create_help_webconf')}">` +
       _button(actions.visio) +
       '</li>';
     let tache =

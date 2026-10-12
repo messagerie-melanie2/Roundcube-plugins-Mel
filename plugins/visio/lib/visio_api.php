@@ -110,7 +110,7 @@ final class visio_api extends amel_lib
     public function __construct(rcmail $rc, bnum_plugin $plugin)
     {
         parent::__construct($rc, $plugin);
-        $this->url = rtrim((string) $this->get_config('visio_gouv_url'), '/');
+        $this->url = (string) $this->get_config('visio_gouv_url') |> (fn($url) => rtrim($url, '/'));
         $this->client_id = (string) $this->get_config('client_id');
         $this->client_secret = (string) $this->get_config('client_secret');
     }
@@ -228,6 +228,10 @@ final class visio_api extends amel_lib
 
         if ($response->http_code !== 200 || !is_string($token)) {
             mel_logs::gi()->log(mel_logs::ERROR, "[visio_api] Échec récupération token (HTTP {$response->http_code}) : " . ($response->content['error'] ?? 'erreur inconnue'));
+            
+            if (bnum_glitchtip::isLogLevel(LogLevel::Error)) 
+                bnum_glitchtip::logError("Échec récupération token (HTTP {$response->http_code}) : " . ($response->content['error'] ?? 'erreur inconnue'));
+
             return null;
         }
 

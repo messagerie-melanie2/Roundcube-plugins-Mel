@@ -64,7 +64,9 @@ final class visio extends bnum_plugin
      */
     private function action_list_rooms(): void
     {
-        $this->respond($this->api()->list_rooms($this->current_user_email()));
+        $this->current_user_email() 
+            |> $this->api()->list_rooms(...) 
+            |> $this->respond(...);
     }
 
     /**
@@ -74,7 +76,9 @@ final class visio extends bnum_plugin
     {
         $id = (string) $this->get_input('id', rcube_utils::INPUT_GET);
 
-        $this->respond($this->api()->retrieve_room($this->current_user_email(), $id));
+        $this->current_user_email() 
+            |> (fn($email) => $this->api()->retrieve_room($email, $id))
+            |> $this->respond(...);
     }
 
     /**
@@ -84,7 +88,11 @@ final class visio extends bnum_plugin
     {
         $this->rc()->check_request();
 
-        $this->respond($this->api()->create_room($this->current_user_email(), $this->build_room_body()));
+        $email = $this->current_user_email();
+        $body = $this->build_room_body();
+
+        $this->api()->create_room($email, $body)
+            |> $this->respond(...);
     }
 
     /**
@@ -127,7 +135,7 @@ final class visio extends bnum_plugin
         $body = array_filter(
             [
                 'access_level' => (string) $this->get_input_post('access_level'),
-                'configuration' => $this->decode_configuration((string) $this->get_input_post('configuration')),
+                'configuration' => (string) $this->get_input_post('configuration') |> $this->decode_configuration(...),
             ],
             static fn(string|array|null $value): bool => $value !== null && $value !== '',
         );
@@ -177,6 +185,13 @@ final class visio extends bnum_plugin
     {
         if ($response->is_failure()) {
             mel_logs::gi()->log(mel_logs::ERROR, "[visio] Échec appel API (HTTP {$response->http_code})");
+            if (bnum_glitchtip::isLogLevel(LogLevel::Error)) 
+                bnum_glitchtip::logError("Échec appel API (HTTP {$response->http_code})");
+
+            if (bnum_glitchtip::isLogLevel(LogLevel::Debug)) {
+                $data = json_encode($response);
+                bnum_glitchtip::logDebug("Données : $data");
+            }
         }
 
         $this->sendEncodedExit($response);

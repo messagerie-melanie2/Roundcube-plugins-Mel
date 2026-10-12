@@ -2577,7 +2577,7 @@ $(document).ready(() => {
         $('#contacthead').append($tmp);
       }
 
-      return this; //._setup_contact_qrcode_dialog
+      return this; 
     }
 
     /**

@@ -421,8 +421,16 @@ class calendar extends rcube_plugin
         return $calendar ?: $first;
     }
 
-    // remplace le rappel d'un event par le rappel par défaut de l'invité, au lieu de garder celui choisi par l'organisateur
-    private function apply_default_alarm(&$event) {
+    /**
+     * Remplace le rappel d'un événement reçu via une invitation (iTip)
+     * par le rappel par défaut de l'invité après acceptation de l'invitation, 
+     * au lieu de garder celui choisi par l'organisateur
+     *
+     * @param array $event
+     * 
+     * @return void
+     */
+    private function apply_default_alarm(&$event): void {
         unset($event['alarms'], $event['valarms']);
 
         $type = $this->rc->config->get('calendar_default_alarm_type', '');

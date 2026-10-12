@@ -225,7 +225,7 @@ function m_mp_Create() {
       reu = '';
     }
 
-    if (!rcmail.env.plugin_list_visio) {
+    if (!rcmail.env.plugin_list_visio && !rcmail.env.plugin_list_d_visio) {
       reu = reu.replace('col-6', 'col-12');
       reu = reu.replace('col-sd-4 col-md-4', 'col-6');
       mail = mail.replace('col-6', 'col-12');
@@ -776,7 +776,10 @@ function m_mp_step3_param(type) {
                     // pour éviter une XSS stockée.
                     $('<option>')
                       .val(it.id)
-                      .prop('selected', it.id === m_mp_step3_param.datas[type].value)
+                      .prop(
+                        'selected',
+                        it.id === m_mp_step3_param.datas[type].value,
+                      )
                       .text(it.title)
                       .appendTo($linked_kanban_select);
                   }

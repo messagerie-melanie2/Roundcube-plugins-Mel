@@ -19,7 +19,7 @@ declare(strict_types=1);
 final class visio extends bnum_plugin
 {
     /** @var string Tâches Roundcube sur lesquelles le plugin est actif */
-    public $task = '?(?!login|logout|bnum).*';
+    public $task = '?(?!login|logout).*';
 
     /** Client API, instancié à la demande (@see api()) */
     private ?visio_api $api_client = null;
@@ -31,6 +31,19 @@ final class visio extends bnum_plugin
     #[\Override]
     public function init(): void
     {
+        if ($this->is_bnum_task()) $this->_init_bnum_task();
+        else $this->_init();
+    }
+
+    private function _init_bnum_task(): void {
+        if (!$this->is_index_action()) return;
+
+        $this->add_texts('localization/bnum', true);
+        $this->include_module('index.js', 'js/lib/pages');
+        $this->set_env('visio_gouv_base_url', $this->get_config('visio_gouv_base_url'));
+    }
+
+    private function _init(): void {
         $this->require_plugin('mel_helper');
         $this->add_texts('localization/', true);
         $this->load_config();

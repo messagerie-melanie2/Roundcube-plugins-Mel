@@ -16,6 +16,31 @@ declare(strict_types = 1);
  */
 abstract class bnum_plugin extends rcube_plugin
 {
+    /** Chemin par défaut des modules ESM d'un plugin. */
+    public const string BASE_MODULE_PATH = '/js/lib/';
+
+    /** Nom par défaut du module d'entrée d'un plugin. */
+    public const string BASE_MODULE_NAME = 'main';
+
+    /**
+     * Suffixe marquant un script à émettre en `type="module"`.
+     *
+     * Le core ne sait pas produire de balise module : le hook render_page de
+     * mel_metapage (mel_metapage::appendTo()) remplace ce marqueur par
+     * `?v=<version>" type="module"`. Sans mel_metapage, le script n'est pas chargé.
+     */
+    private const string MODULE_MARKER = 'scriptType:module';
+
+    /**
+     * Modules déjà lancés via runModule() pendant la requête, tous plugins confondus.
+     *
+     * Partagé (static) pour qu'un module demandé par deux plugins ne soit lancé
+     * qu'une fois. Les fichiers inclus par balise sont, eux, dédoublonnés par le core.
+     *
+     * @var array<string, true>
+     */
+    private static array $_started_modules = [];
+
     /** Instance rcmail courante (singleton du core). */
     protected rcmail $rc {
         get => rcmail::get_instance();
@@ -424,6 +449,234 @@ abstract class bnum_plugin extends rcube_plugin
     protected function include_css(string $path): void
     {
         $this->include_stylesheet($this->local_skin_path() . "/$path");
+    }
+
+    /**
+     * Indique si la sortie courante est une page HTML.
+     *
+     * Les inclusions de scripts n'ont de sens qu'en HTML : en réponse AJAX
+     * (rcmail_output_json) ou en CLI, il n'y a ni balise ni script à émettre.
+     *
+     * @return bool true si la sortie accepte des scripts.
+     */
+    #[\NoDiscard("is_html_output() n'a pas d'effet de bord : ignorer son résultat rend l'appel inutile")]
+    protected function is_html_output(): bool
+    {
+        return $this->rc->output instanceof rcmail_output_html;
+    }
+
+    /**
+     * Ajoute un script JavaScript à la page (sans effet hors sortie HTML).
+     *
+     * À réserver à de courts appels d'amorçage : toute logique doit vivre dans
+     * un module ESM du plugin. Les valeurs PHP interpolées doivent être
+     * encodées avec json_encode() ou rcube::JQ().
+     *
+     * @param string $script Code JavaScript.
+     * @param string $where  Position : 'head' (défaut), 'head_top', 'foot' ou 'docready'.
+     *
+     * @return void
+     */
+    protected function add_script(string $script, string $where = 'head'): void
+    {
+        $output = $this->rc->output;
+
+        if ($output instanceof rcmail_output_html) {
+            $output->add_script($script, $where);
+        }
+    }
+
+    /**
+     * Charge le chargeur de modules de mel_metapage (runModule, loadJsModule…).
+     *
+     * Appelé automatiquement par les méthodes qui en ont besoin ; le core
+     * dédoublonne l'inclusion.
+     *
+     * Attention : nécessite le plugin `mel_metapage`.
+     *
+     * @return void
+     */
+    protected function setup_module(): void
+    {
+        $this->include_script_from_plugin('mel_metapage', 'js/always_load/load_module.js', 'head');
+    }
+
+    /**
+     * Lance le module ESM d'entrée du plugin courant via runModule().
+     *
+     * @param string $name           Nom du module, sans extension (défaut : 'main').
+     * @param string $path           Dossier du module dans le plugin (défaut : '/js/lib/').
+     * @param bool   $save_in_memory Conserve le module pour loadAction() côté client.
+     *
+     * @return void
+     */
+    protected function load_script_module(string $name = self::BASE_MODULE_NAME, string $path = self::BASE_MODULE_PATH, bool $save_in_memory = false): void
+    {
+        $this->load_script_module_from_plugin($this->ID, $name, $path, $save_in_memory);
+    }
+
+    /**
+     * Lance un module ESM d'un plugin via runModule(), une seule fois par requête.
+     *
+     * @param string $plugin         Plugin propriétaire du module.
+     * @param string $name           Nom du module, sans extension.
+     * @param string $path           Dossier du module dans le plugin.
+     * @param bool   $save_in_memory Conserve le module pour loadAction() côté client.
+     * @param string $where          Position du script d'amorçage (défaut : 'docready').
+     *
+     * @return void
+     */
+    protected function load_script_module_from_plugin(string $plugin, string $name = self::BASE_MODULE_NAME, string $path = self::BASE_MODULE_PATH, bool $save_in_memory = false, string $where = 'docready'): void
+    {
+        $key = "$plugin|$path|$name";
+
+        if (!$this->is_html_output() || isset(self::$_started_modules[$key])) {
+            return;
+        }
+
+        self::$_started_modules[$key] = true;
+        $this->setup_module();
+
+        $args = implode(', ', array_map(
+            static fn (string|bool $arg): string => json_encode($arg, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES),
+            [$plugin, $name, $path, $save_in_memory]
+        ));
+
+        $this->add_script("runModule($args);", $where);
+    }
+
+    /**
+     * Inclut un fichier JavaScript d'un plugin par balise <script>.
+     *
+     * Sans effet hors sortie HTML ; le core ignore un fichier déjà inclus à la
+     * même position.
+     *
+     * @param string $plugin Plugin propriétaire du fichier.
+     * @param string $fn     Chemin du fichier relatif au dossier du plugin.
+     * @param string $pos    Position : 'head', 'head_bottom' (défaut) ou 'foot'.
+     *
+     * @return void
+     */
+    public function include_script_from_plugin(string $plugin, string $fn, string $pos = 'head_bottom'): void
+    {
+        $output = $this->rc->output;
+
+        if ($output instanceof rcmail_output_html) {
+            $output->include_script($this->api->url . $plugin . '/' . ltrim($fn, '/'), $pos, false);
+        }
+    }
+
+    /**
+     * Inclut un module ESM d'un plugin par balise <script type="module">.
+     *
+     * Attention : le type module est posé par mel_metapage (voir {@see MODULE_MARKER}).
+     *
+     * @param string $plugin Plugin propriétaire du module.
+     * @param string $path   Dossier du module, relatif au plugin.
+     * @param string $name   Nom du fichier du module.
+     * @param string $pos    Position : 'head' (défaut), 'head_bottom' ou 'foot'.
+     *
+     * @return void
+     */
+    private function include_module_from_plugin(string $plugin, string $path, string $name, string $pos = 'head'): void
+    {
+        $path = trim($path, '/');
+        $this->include_script_from_plugin($plugin, "$path/$name/" . self::MODULE_MARKER, $pos);
+    }
+
+    /**
+     * Inclut un module ESM du plugin courant par balise.
+     *
+     * @param string $name     Nom du fichier du module.
+     * @param string $path     Dossier relatif au plugin (défaut : 'js/lib').
+     * @param string $position Position : 'head' (défaut), 'head_bottom' ou 'foot'.
+     *
+     * @return void
+     */
+    public function include_module(string $name, string $path = 'js/lib', string $position = 'head'): void
+    {
+        $this->include_module_from_plugin($this->ID, $path, $name, $position);
+    }
+
+    /**
+     * Inclut un module de js/lib/program du plugin courant.
+     *
+     * @param string      $name Nom du fichier du module.
+     * @param string|null $path Sous-dossier éventuel de js/lib/program.
+     *
+     * @return void
+     */
+    public function include_module_program(string $name, ?string $path = null): void
+    {
+        $this->include_module($name, self::sub_path('js/lib/program', $path));
+    }
+
+    /**
+     * Inclut un module d'action (js/lib/program/actions) du plugin courant.
+     *
+     * @param string      $name Nom du fichier du module.
+     * @param string|null $path Sous-dossier éventuel (action en plusieurs fichiers).
+     *
+     * @return void
+     */
+    public function include_module_action(string $name, ?string $path = null): void
+    {
+        $this->include_module($name, self::sub_path('js/lib/program/actions', $path));
+    }
+
+    /**
+     * Inclut un module d'addon (js/lib/program/addons) du plugin courant.
+     *
+     * @param string      $name Nom du fichier du module.
+     * @param string|null $path Sous-dossier éventuel.
+     *
+     * @return void
+     */
+    public function include_module_addon(string $name, ?string $path = null): void
+    {
+        $this->include_module($name, self::sub_path('js/lib/program/addons', $path));
+    }
+
+    /**
+     * Inclut le gestionnaire de frames de scripts de mel_metapage.
+     *
+     * Attention : nécessite le plugin `mel_metapage`.
+     *
+     * @return void
+     */
+    protected function include_script_frame_manager(): void
+    {
+        $this->setup_module();
+        $this->include_script_from_plugin('mel_metapage', 'js/scripting_frame_manager.js');
+    }
+
+    /**
+     * Neutralise un comportement natif côté client en interceptant son événement rcmail.
+     *
+     * L'écouteur ajouté retourne {break: true}, ce qui interrompt le traitement
+     * par défaut de l'événement.
+     *
+     * @param string $key Nom de l'événement rcmail.
+     *
+     * @return void
+     */
+    protected function break_initial_fonctionality(string $key): void
+    {
+        $event = json_encode($key, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
+        $this->add_script("rcmail.addEventListener($event, () => ({break: true}));");
+    }
+
+    /**
+     * Concatène un dossier de base et un sous-dossier optionnel.
+     *
+     * @param string      $base Dossier de base.
+     * @param string|null $sub  Sous-dossier, ou null.
+     *
+     * @return string Chemin résultant, sans slash final.
+     */
+    private static function sub_path(string $base, ?string $sub): string
+    {
+        return $sub === null ? $base : $base . '/' . trim($sub, '/');
     }
 
     /**

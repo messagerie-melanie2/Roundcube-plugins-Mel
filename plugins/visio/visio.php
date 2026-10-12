@@ -35,6 +35,12 @@ final class visio extends bnum_plugin
         else $this->_init();
     }
 
+    /**
+     * Initialisation propre à la tâche bnum, limitée à la page d'accueil :
+     * charge les textes `localization/bnum`, le module `pages/index.js`
+     * (bouton « Visio » du menu « Créer ») et expose `visio_gouv_base_url`
+     * au client JS.
+     */
     private function _init_bnum_task(): void {
         if (!$this->is_index_action()) return;
 
@@ -43,6 +49,11 @@ final class visio extends bnum_plugin
         $this->set_env('visio_gouv_base_url', $this->get_config('visio_gouv_base_url'));
     }
 
+    /**
+     * Initialisation hors tâche bnum : dépendance `mel_helper`, textes,
+     * configuration, librairies, tâche `visio`, actions AJAX, hook
+     * `calendar_appointment_feature` et module JS client.
+     */
     private function _init(): void {
         $this->require_plugin('mel_helper');
         $this->add_texts('localization/', true);

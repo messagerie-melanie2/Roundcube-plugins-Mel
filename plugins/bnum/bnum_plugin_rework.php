@@ -1,47 +1,67 @@
 <?php
 declare(strict_types = 1);
 
-abstract class bnum_plugin extends rcube_plugin {   
+/**
+ * Classe de base de tous les plugins Bnum.
+ *
+ * Centralise l'accès à l'API Roundcube (rcmail, base, stockage, sortie) et
+ * fournit des helpers typés pour les entrées HTTP, la configuration, les
+ * réponses et l'annuaire. Tout plugin Bnum en hérite au lieu de rcube_plugin.
+ *
+ * @property-read rcmail        $rc             Instance rcmail courante.
+ * @property-read rcube_db      $db             Connexion à la base de données.
+ * @property-read rcube_storage $storage        Stockage IMAP courant.
+ * @property-read string        $current_task   Tâche Roundcube en cours ('' si non définie).
+ * @property-read string        $current_action Action Roundcube en cours ('' pour l'index).
+ */
+abstract class bnum_plugin extends rcube_plugin
+{
+    /** Instance rcmail courante (singleton du core). */
     protected rcmail $rc {
         get => rcmail::get_instance();
     }
 
+    /** Connexion à la base de données Roundcube. */
     protected rcube_db $db {
         get => $this->rc->get_dbh();
     }
 
+    /** Stockage IMAP ; l'initialise à la première lecture. */
     protected rcube_storage $storage {
         get => $this->rc->get_storage();
     }
 
+    /** Tâche en cours ; chaîne vide tant que rcmail ne l'a pas définie. */
     protected string $current_task {
-        get => $this->rc->task;
+        get => $this->rc->task ?? '';
     }
 
+    /** Action en cours ; chaîne vide pour l'action par défaut. */
     protected string $current_action {
-        get => $this->rc->action;
-    }
-
-    #[\Override]
-    public function __construct(rcube_plugin_api $api) {
-        parent::__construct($api);
+        get => $this->rc->action ?? '';
     }
 
     /**
-     * Méthode abstraite d'initialisation.
-     * Doit être implémentée par les classes dérivées.
+     * Initialise le plugin : enregistrement des hooks, actions et ressources.
+     *
+     * Appelée par Roundcube après le chargement du plugin.
+     *
+     * @return void
      */
     public abstract function init(): void;
 
     /**
-     * Enregistre un gestionnaire pour une action de requête client spécifique.
+     * Enregistre une action client en la rattachant explicitement à une tâche.
      *
-     * Le callback sera exécuté lors d'une requête comme /?_task=mail&_action=plugin.myaction
+     * Contrairement à register_action(), permet de cibler une tâche différente
+     * de la tâche courante. Le callback est exécuté lors d'une requête du type
+     * /?_task=mail&_action=plugin.mon_action.
      *
-     * @param string $action Nom de l'action (doit être unique).
-     * @param callable $callback Fonction de rappel sous forme de chaîne de caractères
-     *                           ou tableau avec référence d'objet et nom de méthode.
-     * @param ?string $current_task (optionnel) Tâche liée à l'action (par défaut, celle en cours).
+     * @param string      $action       Nom de l'action (unique).
+     * @param callable    $callback     Callback exécuté pour cette action.
+     * @param string|null $current_task Tâche liée à l'action (défaut : tâche courante).
+     *
+     * @return void
      */
     protected function force_register_action(string $action, callable $callback, ?string $current_task = null): void
     {
@@ -49,196 +69,269 @@ abstract class bnum_plugin extends rcube_plugin {
     }
 
     /**
-     * Enregistre plusieurs actions.
+     * Enregistre plusieurs actions client en une fois.
      *
-     * @param array<string, callable> $array Tableau associatif des actions et de leurs callbacks.
+     * @param array<string, callable> $array Actions indexées par nom, associées à leur callback.
+     *
+     * @return void
      */
-    protected function register_actions(array $array) {
+    protected function register_actions(array $array): void
+    {
         foreach ($array as $key => $action) {
             $this->register_action($key, $action);
         }
     }
 
     /**
-     * Vérifie si l'action en cours est l'action par défaut (index).
+     * Indique si l'action en cours est l'action par défaut (index).
      *
-     * @return bool
+     * @return bool true si l'action est vide ou vaut 'index'.
      */
-    #[\NoDiscard('is_index_action() n\'a pas d\'effets de bords. Ne pas utiliser le résultat est un appel inutile à cette fonction')]
-    protected function is_index_action(): bool {
-        $current_action = $this->current_action;
-        return $current_action === '' || $current_action === 'index';
+    #[\NoDiscard("is_index_action() n'a pas d'effet de bord : ignorer son résultat rend l'appel inutile")]
+    protected function is_index_action(): bool
+    {
+        return $this->current_action === '' || $this->current_action === 'index';
     }
 
     /**
-     * Retourne le délimiteur IMAP hiérarchique courant, avec une valeur de
-     * repli si l'information n'est pas encore disponible en session (avant
-     * une connexion IMAP aboutie, ou en dehors du contexte mail).
+     * Indique si la tâche en cours est la tâche 'bnum'.
      *
-     *
-     * @return string Délimiteur IMAP hiérarchique (ex. '/', '.'), jamais vide.
+     * @return bool true si la tâche courante vaut 'bnum'.
      */
-    #[\NoDiscard('get_imap_delimiter() n\'a pas d\'effets de bords. Ne pas utiliser le résultat est un appel inutile à cette fonction')]
-    public static function get_imap_delimiter(): string {
-        return $_SESSION['imap_delimiter'] ?? '/';
+    #[\NoDiscard("is_bnum_task() n'a pas d'effet de bord : ignorer son résultat rend l'appel inutile")]
+    protected function is_bnum_task(): bool
+    {
+        return $this->current_task === 'bnum';
     }
 
     /**
-     * Récupère une valeur d'entrée.
+     * Retourne le délimiteur hiérarchique IMAP courant.
      *
-     * $allow_html à false (par défaut) fait passer la valeur par strip_tags() côté
-     * rcube_utils::get_input_value() : protection XSS de base sur toute donnée affichée
-     * telle quelle. Ne passer true que pour un champ dont le HTML est explicitement voulu
-     * (auquel cas l'échappement en sortie reste à la charge de l'appelant).
+     * Retombe sur '/' si l'information n'est pas encore en session (avant une
+     * connexion IMAP aboutie, ou hors contexte mail).
      *
-     * @param $arg Nom de l'argument.
-     * @param $type Type d'entrée (par défaut : rcube_utils::INPUT_GPC).
-     * @param $allow_html Autorise les balises HTML dans la valeur (par défaut : false).
+     * @return string Délimiteur IMAP (ex. '/', '.'), jamais vide.
      */
+    #[\NoDiscard("get_imap_delimiter() n'a pas d'effet de bord : ignorer son résultat rend l'appel inutile")]
+    public static function get_imap_delimiter(): string
+    {
+        return ($_SESSION['imap_delimiter'] ?? '') ?: '/';
+    }
+
+    /**
+     * Récupère une valeur d'entrée HTTP brute (chaîne, tableau ou absence).
+     *
+     * Avec $allow_html à false (défaut), rcube_utils applique strip_tags() :
+     * protection XSS de base. Ne passer true que pour un champ dont le HTML est
+     * voulu ; l'échappement en sortie reste alors à la charge de l'appelant.
+     *
+     * @param string $arg        Nom du paramètre.
+     * @param int    $type       Source : rcube_utils::INPUT_GET, INPUT_POST, INPUT_COOKIE ou INPUT_GPC (défaut).
+     * @param bool   $allow_html Conserve les balises HTML.
+     *
+     * @return string|array<array-key, mixed>|null Valeur, ou null si absente.
+     */
+    #[\NoDiscard("get_input() n'a pas d'effet de bord : ignorer son résultat rend l'appel inutile")]
     protected function get_input(string $arg, int $type = rcube_utils::INPUT_GPC, bool $allow_html = false): string|array|null
     {
         return rcube_utils::get_input_value($arg, $type, $allow_html);
     }
 
     /**
-     * Récupère une valeur d'entrée.
+     * Récupère une valeur d'entrée HTTP garantie sous forme de chaîne.
      *
-     * $allow_html à false (par défaut) fait passer la valeur par strip_tags() côté
-     * rcube_utils::get_input_value() : protection XSS de base sur toute donnée affichée
-     * telle quelle. Ne passer true que pour un champ dont le HTML est explicitement voulu
-     * (auquel cas l'échappement en sortie reste à la charge de l'appelant).
+     * Une valeur absente ou non scalaire (tableau) donne une chaîne vide.
+     * Même filtrage HTML que {@see get_input()}.
      *
-     * @param $arg Nom de l'argument.
-     * @param $type Type d'entrée (par défaut : rcube_utils::INPUT_GPC).
-     * @param $allow_html Autorise les balises HTML dans la valeur (par défaut : false).
+     * @param string $arg        Nom du paramètre.
+     * @param int    $type       Source (défaut : rcube_utils::INPUT_GPC).
+     * @param bool   $allow_html Conserve les balises HTML.
+     *
+     * @return string Valeur, ou '' si absente.
      */
+    #[\NoDiscard("get_input_string() n'a pas d'effet de bord : ignorer son résultat rend l'appel inutile")]
     protected function get_input_string(string $arg, int $type = rcube_utils::INPUT_GPC, bool $allow_html = false): string
     {
         return rcube_utils::get_input_string($arg, $type, $allow_html);
     }
 
     /**
-     * Récupère une valeur d'entrée POST.
+     * Récupère une valeur POST brute. Voir {@see get_input()}.
      *
-     * @param $arg Nom de l'argument.
-     * @param $allow_html Autorise les balises HTML dans la valeur (par défaut : false).
+     * @param string $arg        Nom du paramètre.
+     * @param bool   $allow_html Conserve les balises HTML.
+     *
+     * @return string|array<array-key, mixed>|null Valeur, ou null si absente.
      */
+    #[\NoDiscard("get_input_post() n'a pas d'effet de bord : ignorer son résultat rend l'appel inutile")]
     protected function get_input_post(string $arg, bool $allow_html = false): string|array|null
     {
         return $this->get_input($arg, rcube_utils::INPUT_POST, $allow_html);
     }
 
     /**
-     * Récupère une valeur d'entrée POST.
+     * Récupère une valeur POST garantie sous forme de chaîne. Voir {@see get_input_string()}.
      *
-     * @param $arg Nom de l'argument.
-     * @param $allow_html Autorise les balises HTML dans la valeur (par défaut : false).
+     * @param string $arg        Nom du paramètre.
+     * @param bool   $allow_html Conserve les balises HTML.
+     *
+     * @return string Valeur, ou '' si absente.
      */
+    #[\NoDiscard("get_input_string_post() n'a pas d'effet de bord : ignorer son résultat rend l'appel inutile")]
     protected function get_input_string_post(string $arg, bool $allow_html = false): string
     {
         return $this->get_input_string($arg, rcube_utils::INPUT_POST, $allow_html);
     }
 
-
-        /**
-     * Récupère une valeur d'entrée échappée pour un filtre ou un RDN LDAP
-     * (ldap_escape(), cf. RFC 4515) — protection contre l'injection/manipulation LDAP.
+    /**
+     * Récupère une entrée échappée pour un filtre de recherche LDAP (RFC 4515).
      *
-     * @param string $arg Nom de l'argument.
-     * @param int $type Type d'entrée (par défaut : rcube_utils::INPUT_GPC).
-     * @param bool $is_dn Échappe pour un RDN/DN plutôt qu'un filtre de recherche.
-     * @return string
+     * Protège contre l'injection dans un filtre ; utiliser
+     * {@see get_input_ldap_dn()} pour un DN/RDN.
+     *
+     * @param string $arg  Nom du paramètre.
+     * @param int    $type Source (défaut : rcube_utils::INPUT_GPC).
+     *
+     * @return string Valeur échappée, '' si absente.
      */
-    protected function get_input_ldap(string $arg, int $type = rcube_utils::INPUT_GPC, bool $allow_html = false, bool $is_dn = false, bool $reverse = false): string
+    #[\NoDiscard("get_input_ldap_filter() n'a pas d'effet de bord : ignorer son résultat rend l'appel inutile")]
+    protected function get_input_ldap_filter(string $arg, int $type = rcube_utils::INPUT_GPC): string
     {
-        return rcube_ldap_generic::quote_string($this->get_input_string($arg, $type, $allow_html), $is_dn, $reverse);
+        return rcube_ldap_generic::quote_string($this->get_input_string($arg, $type));
     }
 
     /**
-     * Échappe une chaîne pour un affichage HTML sûr (rcube::Q(), protection XSS en sortie).
-     * get_input()/get_input_post() filtrent déjà les balises à la lecture, mais Q() reste
-     * la protection de référence au moment de l'affichage — à utiliser sur toute valeur
-     * (issue de l'entrée utilisateur ou non) interpolée dans du HTML généré côté PHP.
+     * Récupère une entrée échappée pour un DN/RDN LDAP (RFC 4514).
      *
-     * @param string $str Chaîne à échapper.
-     * @param string $mode Mode rcube::Q() ('strict', 'remove', ou '').
-     * @param bool $newlines Convertit les retours à la ligne en <br> si true.
-     * @return string
+     * @param string $arg  Nom du paramètre.
+     * @param int    $type Source (défaut : rcube_utils::INPUT_GPC).
+     *
+     * @return string Valeur échappée, '' si absente.
      */
+    #[\NoDiscard("get_input_ldap_dn() n'a pas d'effet de bord : ignorer son résultat rend l'appel inutile")]
+    protected function get_input_ldap_dn(string $arg, int $type = rcube_utils::INPUT_GPC): string
+    {
+        return rcube_ldap_generic::quote_string($this->get_input_string($arg, $type), true);
+    }
+
+    /**
+     * Échappe une chaîne pour un affichage HTML sûr (rcube::Q()).
+     *
+     * Protection XSS de référence en sortie : à appliquer à toute valeur
+     * interpolée dans du HTML généré côté PHP, même si elle a été filtrée à
+     * la lecture par {@see get_input()}.
+     *
+     * @param string $str      Chaîne à échapper.
+     * @param string $mode     Mode rcube::Q() : 'strict' (défaut), 'remove' ou ''.
+     * @param bool   $newlines Convertit les retours à la ligne en <br>.
+     *
+     * @return string Chaîne échappée.
+     */
+    #[\NoDiscard("q() n'a pas d'effet de bord : ignorer son résultat laisse la valeur non échappée")]
     protected function q(string $str, string $mode = 'strict', bool $newlines = true): string
     {
         return rcube::Q($str, $mode, $newlines);
     }
 
     /**
-     * Récupère une valeur de configuration.
+     * Récupère une valeur de configuration, après chargement de la config du plugin.
      *
-     * @param string $key Clé de configuration.
-     * @param mixed $default_value Valeur par défaut si la clé n'existe pas.
-     * @return mixed
+     * Le chargement n'a lieu qu'une fois : rcube_plugin::load_config() le mémorise.
+     *
+     * @param string $key           Clé de configuration.
+     * @param mixed  $default_value Valeur retournée si la clé est absente.
+     *
+     * @return mixed Valeur configurée, ou $default_value.
      */
-    protected function get_config(string $key, mixed $default_value = null): mixed {
+    #[\NoDiscard("get_config() n'a pas d'effet de bord observable : ignorer son résultat rend l'appel inutile")]
+    protected function get_config(string $key, mixed $default_value = null): mixed
+    {
         $this->load_config();
         return $this->rc->config->get($key, $default_value);
     }
 
     /**
-     * Définit une variable d'environnement pour la page.
+     * Définit une variable rcmail.env côté client.
      *
-     * @param string $key Nom de la variable.
-     * @param mixed $value Valeur de la variable.
+     * Le nom ne doit pas contenir de tiret (tokenisé comme opérateur par le
+     * parseur de templates) : utiliser des underscores.
+     *
+     * @param string $key   Nom de la variable.
+     * @param mixed  $value Valeur, sérialisée en JSON.
+     *
+     * @return void
      */
-    protected function set_env(string $key, mixed $value): void {
+    protected function set_env(string $key, mixed $value): void
+    {
         $this->rc->output->set_env($key, $value);
     }
 
     /**
-     * Définit plusieurs variables d'environnement pour la page.
+     * Définit plusieurs variables rcmail.env. Voir {@see set_env()}.
      *
-     * @param array<string, mixed> $envs Tableau associatif des variables d'environnement.
+     * @param array<string, mixed> $envs Variables indexées par nom.
+     *
+     * @return void
      */
-    protected function set_envs(array $envs): void {
+    protected function set_envs(array $envs): void
+    {
         foreach ($envs as $key => $value) {
             $this->set_env($key, $value);
         }
     }
 
     /**
-     * Envoie le template spécifié à l'utilisateur.
+     * Envoie un template sans interrompre l'exécution.
      *
-     * @param string $templ Nom du template à envoyer.
-     * @return bool
+     * @param string|null $templ Nom du template (null : sortie déjà préparée).
+     *
+     * @return void
      */
-    protected function send(?string $templ = null): bool {
-        return $this->rc->output->send($templ, false);
+    protected function send(?string $templ = null): void
+    {
+        $this->rc->output->send($templ, false);
     }
 
     /**
-     * Envoie le template spécifié à l'utilisateur et termine l'exécution.
+     * Envoie un template puis termine la requête.
      *
-     * @param string $templ Nom du template à envoyer.
+     * Point de sortie centralisé : à préférer à exit/die dans les plugins.
+     *
+     * @param string|null $templ Nom du template (null : sortie déjà préparée).
+     *
+     * @return never
      */
-    protected function send_and_exit(?string $templ = null): never {
+    protected function send_and_exit(?string $templ = null): never
+    {
         $this->rc->output->send($templ, true);
         exit;
     }
 
     /**
-     * Exécute une commande Roundcube côté client.
+     * Demande l'exécution d'une commande rcmail côté client.
      *
-     * @param string $cmd Nom de la commande.
-     * @param array ...$args Arguments de la commande.
+     * @param string $cmd     Nom de la commande.
+     * @param mixed  ...$args Arguments transmis à la commande.
+     *
+     * @return void
      */
-    protected function send_command(string $cmd, array ...$args): void {
+    protected function send_command(string $cmd, mixed ...$args): void
+    {
         $this->rc->output->command($cmd, ...$args);
     }
 
-        /**
-     * Exécute plusieurs commandes Roundcube côté client.
+    /**
+     * Demande l'exécution de plusieurs commandes client.
      *
-     * @param array<string, mixed> $commands Tableau associatif des commandes et de leurs arguments.
+     * Une valeur tableau est dépliée en arguments ; une valeur scalaire est
+     * passée comme argument unique.
+     *
+     * @param array<string, mixed> $commands Arguments indexés par nom de commande.
+     *
+     * @return void
      */
-    protected function send_commands(array $commands): void {
+    protected function send_commands(array $commands): void
+    {
         foreach ($commands as $cmd => $args) {
             if (is_array($args)) {
                 $this->send_command($cmd, ...$args);
@@ -251,154 +344,164 @@ abstract class bnum_plugin extends rcube_plugin {
     /**
      * Définit le titre de la page.
      *
-     * @param string $title Titre à afficher.
+     * @param string $title Titre affiché.
+     *
+     * @return void
      */
-    protected function set_page_title(string $title): void {
-        $this->rc()->output->set_pagetitle($title);
+    protected function set_page_title(string $title): void
+    {
+        $this->rc->output->set_pagetitle($title);
     }
 
     /**
      * Affiche un message à l'utilisateur.
      *
-     * @param string $message Message à afficher.
-     * @param string $type Type du message ('notice', 'confirm', 'error').
-     * @param mixed $vars Variables supplémentaires pour le message.
-     * @param bool $override Indique si le message doit écraser les précédents.
-     * @param int $timeout Durée d'affichage du message (en ms).
+     * @param string     $message  Message ou clé de localisation.
+     * @param string     $type     'notice' (défaut), 'confirm', 'error' ou 'warning'.
+     * @param array<string, mixed>|null $vars Variables de substitution du message.
+     * @param bool       $override Remplace le message affiché.
+     * @param int        $timeout  Durée d'affichage en secondes (0 : défaut Roundcube).
+     *
+     * @return void
      */
-    protected function show_message(string $message, string $type = 'notice', mixed $vars = null, bool $override = true, int $timeout = 0) {
-        $this->rc->output->show_message(
-            $message,
-            $type,
-            $vars,
-            $override,
-            $timeout
-        );
+    protected function show_message(string $message, string $type = 'notice', ?array $vars = null, bool $override = true, int $timeout = 0): void
+    {
+        $this->rc->output->show_message($message, $type, $vars, $override, $timeout);
     }
 
     /**
-     * Affiche un message de type 'notice'.
+     * Affiche un message d'information. Voir {@see show_message()}.
      *
-     * @param string $message Message à afficher.
-     * @param mixed $vars Variables supplémentaires pour le message.
-     * @param bool $override Indique si le message doit écraser les précédents.
-     * @param int $timeout Durée d'affichage du message (en ms).
+     * @param string                    $message  Message ou clé de localisation.
+     * @param array<string, mixed>|null $vars     Variables de substitution.
+     * @param bool                      $override Remplace le message affiché.
+     * @param int                       $timeout  Durée d'affichage en secondes.
+     *
+     * @return void
      */
-    protected function show_message_notice($message, $vars = null, $override = true, $timeout = 0): void {
+    protected function show_message_notice(string $message, ?array $vars = null, bool $override = true, int $timeout = 0): void
+    {
         $this->show_message($message, 'notice', $vars, $override, $timeout);
     }
 
     /**
-     * Affiche un message de type 'confirm'.
+     * Affiche un message de confirmation. Voir {@see show_message()}.
      *
-     * @param string $message Message à afficher.
-     * @param mixed $vars Variables supplémentaires pour le message.
-     * @param bool $override Indique si le message doit écraser les précédents.
-     * @param int $timeout Durée d'affichage du message (en ms).
+     * @param string                    $message  Message ou clé de localisation.
+     * @param array<string, mixed>|null $vars     Variables de substitution.
+     * @param bool                      $override Remplace le message affiché.
+     * @param int                       $timeout  Durée d'affichage en secondes.
+     *
+     * @return void
      */
-    protected function show_message_confirm(string $message, mixed $vars = null, bool $override = true, int $timeout = 0): void {
+    protected function show_message_confirm(string $message, ?array $vars = null, bool $override = true, int $timeout = 0): void
+    {
         $this->show_message($message, 'confirm', $vars, $override, $timeout);
     }
 
     /**
-     * Affiche un message de type 'error'.
+     * Affiche un message d'erreur. Voir {@see show_message()}.
      *
-     * @param string $message Message à afficher.
-     * @param mixed $vars Variables supplémentaires pour le message.
-     * @param bool $override Indique si le message doit écraser les précédents.
-     * @param int $timeout Durée d'affichage du message (en ms).
+     * @param string                    $message  Message ou clé de localisation.
+     * @param array<string, mixed>|null $vars     Variables de substitution.
+     * @param bool                      $override Remplace le message affiché.
+     * @param int                       $timeout  Durée d'affichage en secondes.
+     *
+     * @return void
      */
-    protected function show_message_error(string $message, mixed $vars = null, bool $override = true, int $timeout = 0): void {
+    protected function show_message_error(string $message, ?array $vars = null, bool $override = true, int $timeout = 0): void
+    {
         $this->show_message($message, 'error', $vars, $override, $timeout);
     }
 
     /**
-     * Inclut une feuille de style CSS.
+     * Inclut une feuille de style de la skin courante du plugin.
      *
-     * @param string $path Chemin de la feuille de style.
-     * @param bool $local Indique si le chemin est local.
+     * @param string $path Chemin relatif au dossier de skin du plugin.
+     *
+     * @return void
      */
-    protected function include_css(string $path, bool $local = false): void
+    protected function include_css(string $path): void
     {
-        if ($local)
-            $this->include_stylesheet(__DIR__."/css/$path");
-        else
-            $this->include_stylesheet($this->local_skin_path()."/$path");
+        $this->include_stylesheet($this->local_skin_path() . "/$path");
     }
 
     /**
-     * Ajoute plusieurs hooks à la liste des hooks du plugin.
+     * Enregistre plusieurs hooks en une fois.
      *
-     * @param array<string, callable> $hooks Tableau associatif où la clé est le nom du hook et la valeur est le callback à exécuter.
+     * Un même hook ne doit être enregistré qu'une fois par plugin, et chaque
+     * handler doit retourner $args.
+     *
+     * @param array<string, callable> $hooks Callbacks indexés par nom de hook.
+     *
+     * @return void
      */
-    protected function add_hooks(array $hooks): void {
+    protected function add_hooks(array $hooks): void
+    {
         foreach ($hooks as $hook => $callback) {
             $this->add_hook($hook, $callback);
         }
     }
 
     /**
-     * Exécute un hook.
+     * Déclenche un hook et retourne les arguments modifiés par les plugins.
      *
-     * @param string $hook Nom du hook.
-     * @param array $args Arguments du hook.
+     * @param string               $hook Nom du hook.
+     * @param array<string, mixed> $args Arguments transmis aux handlers.
+     *
+     * @return array<string, mixed> Arguments après passage dans tous les handlers.
      */
-    protected function exec_hook(string $hook, array $args = []): array {
+    protected function exec_hook(string $hook, array $args = []): array
+    {
         return $this->rc->plugins->exec_hook($hook, $args);
     }
 
     /**
-     * Ajoute plusieurs gestionnaires d'événements.
+     * Enregistre plusieurs handlers d'objets de template (<roundcube:object name="…">).
      *
-     * @param array $handlers Tableau associatif où la clé est le nom du gestionnaire et la valeur est la fonction de rappel.
+     * @param array<string, callable> $handlers Callbacks indexés par nom d'objet.
+     *
+     * @return void
      */
-    protected function add_handlers(array $handlers): void {
+    protected function add_handlers(array $handlers): void
+    {
         $this->rc->output->add_handlers($handlers);
     }
 
     /**
-     * Ajoute un gestionnaire d'événements.
+     * Enregistre un handler d'objet de template. Voir {@see add_handlers()}.
      *
-     * @param string $name Nom de l'événement.
-     * @param callable $callback Fonction de rappel.
+     * @param string   $name     Nom de l'objet de template.
+     * @param callable $callback Callback produisant le HTML de l'objet.
+     *
+     * @return void
      */
     protected function add_handler(string $name, callable $callback): void
     {
-        $this->add_handlers([
-            $name    => $callback,
-        ]);
+        $this->add_handlers([$name => $callback]);
     }
 
     /**
-     * Redirige vers une tâche et une action spécifiques.
+     * Redirige vers une tâche/action.
      *
-     * @param string $task Tâche cible.
-     * @param string|null $action Action cible.
-     * @param array|null $params Paramètres supplémentaires pour la redirection.
+     * En sortie HTML ou JSON, la redirection termine la requête ; le retour
+     * n'est possible qu'en sortie CLI.
+     *
+     * @param string                    $task   Tâche cible.
+     * @param string|null               $action Action cible.
+     * @param array<string, mixed>|null $params Paramètres d'URL supplémentaires (prioritaires).
+     *
+     * @return void
      */
-    protected function redirect(string $task, ?string $action = null, ?array $params = null): mixed {
-        $args = [
-            '_task' => $task
-        ];
+    protected function redirect(string $task, ?string $action = null, ?array $params = null): void
+    {
+        $args = ['_task' => $task];
 
-        if (isset($action)) $args['_action'] = $action;
-
-        if (isset($params) && count($params) > 0) {
-            foreach ($params as $key => $value) {
-                $args[$key] = $value;
-            }
+        if ($action !== null) {
+            $args['_action'] = $action;
         }
- 
-        return $this->rc->output->redirect($args);
-    }
 
-    /**
-     * Vérifie si la tâche en cours est 'bnum'.
-     *
-     * @return bool
-     */
-    protected function is_bnum_task() {
-        return $this->current_task === 'bnum';
+        $this->rc->output->redirect(array_merge($args, $params ?? []));
     }
 
     /**
@@ -407,45 +510,51 @@ abstract class bnum_plugin extends rcube_plugin {
      * Attention : nécessite le plugin `mel` (classe `driver_mel`). Sans lui,
      * l'appel provoque une erreur fatale « Class not found ».
      *
-     * @param string|null $uid Identifiant de l'utilisateur.
+     * @param string|null $uid Identifiant (null : utilisateur connecté).
      *
      * @return \LibMelanie\Api\Defaut\User|null Utilisateur, ou null s'il est introuvable.
      *
      * @throws \Error Si la classe `driver_mel` n'est pas chargée.
      */
-    protected function get_user(?string $uid = null): ?\LibMelanie\Api\Defaut\User {
+    #[\NoDiscard("get_user() sert à lire un utilisateur : ignorer son résultat rend l'appel inutile")]
+    protected function get_user(?string $uid = null): ?\LibMelanie\Api\Defaut\User
+    {
         return driver_mel::gi()->getUser($uid);
     }
 
     /**
-     * Récupère un utilisateur à partir de son email.
+     * Récupère un utilisateur à partir de son adresse e-mail (sans cache).
      *
      * Attention : nécessite le plugin `mel` (classe `driver_mel`). Sans lui,
      * l'appel provoque une erreur fatale « Class not found ».
      *
-     * @param string $email Identifiant de l'utilisateur.
+     * @param string $email Adresse e-mail.
      *
      * @return \LibMelanie\Api\Defaut\User|null Utilisateur, ou null s'il est introuvable.
      *
      * @throws \Error Si la classe `driver_mel` n'est pas chargée.
      */
-    protected function get_user_from_email(string $email): ?\LibMelanie\Api\Defaut\User {
+    #[\NoDiscard("get_user_from_email() sert à lire un utilisateur : ignorer son résultat rend l'appel inutile")]
+    protected function get_user_from_email(string $email): ?\LibMelanie\Api\Defaut\User
+    {
         return driver_mel::gi()->getUser(null, true, false, null, $email);
     }
 
     /**
-     * Récupère un utilisateur à partir de son dn
+     * Récupère un utilisateur à partir de son DN (sans cache).
      *
      * Attention : nécessite le plugin `mel` (classe `driver_mel`). Sans lui,
      * l'appel provoque une erreur fatale « Class not found ».
      *
-     * @param string $dn dn de l'utilisateur.
+     * @param string $dn DN LDAP de l'utilisateur.
      *
      * @return \LibMelanie\Api\Defaut\User|null Utilisateur, ou null s'il est introuvable.
      *
      * @throws \Error Si la classe `driver_mel` n'est pas chargée.
      */
-    protected function get_user_from_dn(string $dn): ?\LibMelanie\Api\Defaut\User {
+    #[\NoDiscard("get_user_from_dn() sert à lire un utilisateur : ignorer son résultat rend l'appel inutile")]
+    protected function get_user_from_dn(string $dn): ?\LibMelanie\Api\Defaut\User
+    {
         return driver_mel::gi()->getUser(null, true, false, $dn);
     }
 
@@ -455,34 +564,49 @@ abstract class bnum_plugin extends rcube_plugin {
      * Attention : nécessite le plugin `mel` (classe `driver_mel`). Sans lui,
      * l'appel provoque une erreur fatale « Class not found ».
      *
-     * @param string $dn Identifiant de l'utilisateur.
+     * @param string $dn DN LDAP du groupe.
      *
-     * @return \LibMelanie\Api\Defaut\Group|null Utilisateur, ou null s'il est introuvable.
+     * @return \LibMelanie\Api\Defaut\Group|null Groupe, ou null s'il est introuvable.
      *
      * @throws \Error Si la classe `driver_mel` n'est pas chargée.
      */
-    protected function get_group(string $dn): ?\LibMelanie\Api\Defaut\Group {
+    #[\NoDiscard("get_group() sert à lire un groupe : ignorer son résultat rend l'appel inutile")]
+    protected function get_group(string $dn): ?\LibMelanie\Api\Defaut\Group
+    {
         return driver_mel::gi()->getGroup($dn);
     }
 
     /**
-     * Indique au footer que le footer doit être caché.
+     * Masque le footer de la page courante.
+     *
+     * Attention : nécessite le plugin `mel_elastic`. Sans lui, l'appel
+     * provoque une erreur fatale « Class not found ».
+     *
+     * @return void
+     *
+     * @throws \Error Si la classe `mel_elastic` n'est pas chargée.
      */
-    protected function ignore_footer() {
+    protected function ignore_footer(): void
+    {
         mel_elastic::IgnoreFooter();
     }
 
     /**
-     * Envoie une réponse et termine l'exécution.
+     * Envoie une réponse brute puis termine la requête.
      *
-     * @param mixed $item Contenu de la réponse.
-     * @param array $headers En-têtes HTTP à inclure dans la réponse.
+     * Point de sortie centralisé : à préférer à exit/die dans les plugins.
+     * $item doit être affichable par echo (chaîne, nombre, Stringable) ;
+     * un tableau produit « Array » et un avertissement.
+     *
+     * @param mixed         $item    Contenu de la réponse.
+     * @param list<string>  $headers En-têtes HTTP complets (ex. 'Content-Type: text/plain').
+     *
+     * @return never
      */
-    protected function sendExit(mixed $item, array $headers = []): never {
-        if (count($headers) > 0) {
-            foreach ($headers as $header) {
-                header($header);
-            }
+    protected function sendExit(mixed $item, array $headers = []): never
+    {
+        foreach ($headers as $header) {
+            header($header);
         }
 
         echo $item;
@@ -490,12 +614,17 @@ abstract class bnum_plugin extends rcube_plugin {
     }
 
     /**
-     * Envoie une réponse JSON et termine l'exécution.
+     * Envoie une réponse JSON puis termine la requête.
      *
-     * @param mixed $item Données à encoder en JSON.
-     * @param array $headers En-têtes HTTP à inclure dans la réponse.
+     * @param mixed        $item    Données à encoder.
+     * @param list<string> $headers En-têtes HTTP (défaut : Content-Type JSON).
+     *
+     * @return never
+     *
+     * @throws \JsonException Si les données ne sont pas encodables.
      */
-    protected function sendEncodedExit(mixed $item, array $headers = ['Content-Type: application/json']): never {
-        $this->sendExit(json_encode($item), $headers);
+    protected function sendEncodedExit(mixed $item, array $headers = ['Content-Type: application/json']): never
+    {
+        $this->sendExit(json_encode($item, JSON_THROW_ON_ERROR), $headers);
     }
 }

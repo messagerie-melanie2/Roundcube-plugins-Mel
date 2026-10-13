@@ -175,8 +175,11 @@ class mel_fetch
       $options[CURLOPT_HTTPHEADER] = array_merge($options[CURLOPT_HTTPHEADER], $headers);
     }
 
-    if (isset($otherOptions))
-      $otherOptions = array_merge($options, $otherOptions);
+    if (isset($otherOptions)) {
+      foreach ($otherOptions as $key => $value) {
+        $options[$key] = $value;
+      }
+    }
 
     // open connection
     $ch = curl_init($url);

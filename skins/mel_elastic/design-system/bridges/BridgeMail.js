@@ -669,8 +669,14 @@ export default class BridgeMail extends ABridge {
    * @returns {HTMLBnumAvatarAction}
    */
   #buildAvatarContainer(row) {
+    // data-email : le title peut contenir `"Nom" <email>` quand
+    // mel_messages_list_clear_headers n'est pas à "full".
+    const address = row.querySelector('.rcmContactAddress');
     const avatar = AvatarElement.Create({
-      email: row.querySelector('.rcmContactAddress')?.getAttribute('title'),
+      email:
+        address?.getAttribute('data-email') ?? address?.getAttribute('title'),
+      // Nom affiché (déjà nettoyé par hook_messages_list) → initiales prénom + nom
+      name: address?.textContent?.trim(),
     }).addClass('mail-avatar--avatar');
 
     /**

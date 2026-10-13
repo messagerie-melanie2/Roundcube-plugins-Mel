@@ -4,7 +4,7 @@
  * 
  * Leur permet d'initialiser leur compte avec nom, prénom et mot de passe
  */
-
+include_once __DIR__.'/../lib/mel/mel.php';
 // Inclusion du traitement
 require_once __DIR__ . '/../lib/extern/core.php';
 

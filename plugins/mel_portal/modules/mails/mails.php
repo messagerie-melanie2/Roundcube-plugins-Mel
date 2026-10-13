@@ -34,7 +34,7 @@ class Mails extends Module
         exit;
     }
 
-    public function register_actions() {
+    public function register_actions(): ?array {
         $this->register_action('mails_get', $this, 'get_lasts_mails');
         return null;
     }

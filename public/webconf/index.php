@@ -24,7 +24,7 @@ class Webconf extends AMel{
             if (!empty($this->wsp)) $config['_wsp'] = $this->wsp;
             if (!empty($this->pass)) $config['_pass'] = $this->pass;
 
-            $this->redirect_to_rc('webconf', '', $config);
+            $this->redirect_to_rc('webconf', args:$config);
         }
         else {
             // Contrairement à redirect_to_rc(), cette redirection concatène
@@ -34,7 +34,8 @@ class Webconf extends AMel{
             // le format pour refuser tout ce qui permettrait de sortir de ce
             // segment (retour à la ligne, "..", changement de schéma/hôte...).
             if (!$this->is_safe_webconf_key($this->key)) {
-                utils::log("Webconf - Invalid _key format");
+                // utils::log("Webconf - Invalid _key format");
+                $this->log("Webconf - Invalid _key '{$this->key}' format", new GlitchtipData('fatal', GlitchtipState::All));
                 header('HTTP/1.0 400 Bad Request');
                 exit;
             }

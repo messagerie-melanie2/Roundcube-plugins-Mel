@@ -360,12 +360,13 @@ class mel extends rcube_plugin
    */
   public static function get_account()
   {
-    if (isset($_POST['_account']) && !empty($_POST['_account'])) {
-      $_account = trim(rcube_utils::get_input_value('_account', rcube_utils::INPUT_POST));
-    } else {
-      $_account = trim(rcube_utils::get_input_value('_account', rcube_utils::INPUT_GET));
-    }
-    return $_account;
+    $INPUT_TYPE = isset($_POST['_account']) && !empty($_POST['_account']) ? rcube_utils::INPUT_POST : rcube_utils::INPUT_GET;
+
+    $_account = rcube_utils::get_input_value('_account', $INPUT_TYPE);
+
+    if ($_account !== null) $_account = trim((string) $_account);
+
+    return $_account ?? '';
   }
 
   /**
@@ -807,7 +808,7 @@ class mel extends rcube_plugin
         'size' => '40',
         'autocapitalize' => 'off',
         'autocomplete' => 'off',
-        'class' => $input_class
+        'class' => trim($input_class . ' password-field')
       ));
       if (!$this->rc->config->get('hide_keep_login_button', false)) {
         $checkbox_keeplogin = new html_checkbox(array(
@@ -817,6 +818,15 @@ class mel extends rcube_plugin
           'title' => $this->gettext('computer_private_title')
         ));
       }
+      $password_html = html::div(array('class' => 'password-area'),
+        $input_password->show() . html::tag('button', array(
+          'type'  => 'button',
+          'id'    => 'toggle_password_view',
+          'class' => 'toggle-password',
+          'title' => $this->gettext('show_hide_password'),
+          'aria-label' => $this->gettext('show_hide_password'),
+        ), '')
+      );
 
       $keeplogin = "";
       $class_tr = "";
@@ -858,7 +868,7 @@ class mel extends rcube_plugin
           'class' => $class_tr
         ), $input_login->show($username)) . html::div(null, html::label(array(
           'for' => 'rcmloginpwd'
-        ), $this->rc->gettext('password'))) . html::div(null, $input_password->show()) . $keeplogin_html) . html::p(array(
+        ), $this->rc->gettext('password'))) . html::div(null, $password_html) . $keeplogin_html) . html::p(array(
           'class' => 'formbuttons'
         ), html::tag('button', array(
           'id' => 'rcmloginsubmit',
@@ -889,7 +899,7 @@ class mel extends rcube_plugin
         ), $this->rc->gettext('password')));
         $table->add(array(
           'class' => 'input'
-        ), $input_password->show());
+        ), $password_html);
         $table->add_row(array(
           'class' => $class_tr
         ));

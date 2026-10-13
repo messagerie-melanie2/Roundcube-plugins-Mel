@@ -252,6 +252,9 @@ class mtes_driver_mel extends mce_driver_mel
     $filter_ldap = rcmail::get_instance()->config->get('roundcube_nextcloud_filter_ldap', array());
     $hasAccess = false;
     $user = driver_mel::gi()->getUser();
+
+    if (!isset($user)) return false;
+
     $user->load(array_keys($filter_ldap));
 
     if (isset($filter_ldap) && count($filter_ldap) > 0) {
@@ -391,7 +394,7 @@ class mtes_driver_mel extends mce_driver_mel
       // Ajout de toutes les adresses de messagerie
 
       if (isset($args['record']['type'])) {
-        $emails = isset($args['record']['email_list']) ? $args['record']['email_list'] : [];
+        $emails = (array) ($args['record']['email_list'] ?? []);
         $main_email = isset($args['record']['email']) ? $args['record']['email'] : '';
         $other_emails = array_filter($emails, function ($email) use ($main_email) {
           return $email !== $main_email;

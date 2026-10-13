@@ -68,6 +68,55 @@
   }
 }
 
+.password-area {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.password-field {
+  padding-right: 40px; /* Espace pour l'icône */
+}
+
+.toggle-password {
+  position: absolute;
+  right: 8px;
+  background: none !important;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  &:focus { outline: none; }
+}
+
+#toggle_password_view {
+  &:focus {
+    box-shadow: none;
+  }
+
+  &:focus-visible {
+    outline: 1px solid var(--main-text-color);;
+  }
+  &::before {
+    content: '\e8f5';
+    font-family: 'Material Symbols Outlined' !important;
+    font-variation-settings: 'wght' 300, 'opsz' 40;
+    font-weight: normal !important;
+    font-size: 24px;
+    color: var(--main-text-color);
+    margin-right: 0 !important;
+    height: 34px;
+
+    html.dark-mode & {
+      color: #c7dfff !important;
+    }
+  }
+  &.text-visible::before {
+    content: '\e8f4';
+  }
+}
+
 #mel-login-form {
   p.formbuttons {
     text-align: center;

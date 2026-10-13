@@ -69,6 +69,7 @@ $labels['view_history'] = 'Historique';
 
 $labels['admin_edit_only'] = 'Autoriser uniquement les administrateurs de l\'espace à modifier l\'article';
 $labels['enable_comments'] = 'Autoriser la publication de commentaires';
+$labels['admin_only_publish'] = 'Seuls les administrateurs peuvent publier dans ce salon.';
 
 #endregion
 #region Bouton et Action

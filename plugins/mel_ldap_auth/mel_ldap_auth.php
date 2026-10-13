@@ -52,9 +52,34 @@ class mel_ldap_auth extends rcube_plugin {
   }
 
   /**
-   * Find user credentials In LDAP.
+   * Hook authenticate
+   *
+   * Une indisponibilité de l'annuaire ne doit pas finir en erreur fatale :
+   * la page 500 pousse l'utilisateur à renvoyer le formulaire avec un jeton
+   * périmé, dans une session que rcmail_fatal_error() a enregistrée sans
+   * l'IP du client (échec de l'IP check à la requête suivante).
+   *
+   * @param array $args Arguments du hook authenticate
+   *
+   * @return array Arguments du hook, connexion abandonnée si le LDAP est injoignable
    */
   public function authenticate($args) {
+    try {
+      return $this->_authenticate($args);
+    }
+    catch (\LibMelanie\Exceptions\Melanie2LdapException $e) {
+      mel_logs::get_instance()->log(mel_logs::ERROR, "[mel_ldap_auth] Authentification impossible pour <" . $args['user'] . "> : " . $e->getMessage());
+      // Échec technique : ne pas le compter comme une tentative en échec
+      $args['abort'] = true;
+      $args['error'] = rcmail::ERROR_STORAGE;
+      return $args;
+    }
+  }
+
+  /**
+   * Find user credentials In LDAP.
+   */
+  private function _authenticate($args) {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::authenticate()");
 
@@ -151,6 +176,8 @@ class mel_ldap_auth extends rcube_plugin {
     } else {
       // Récupération des données de l'utilisateur depuis le cache
       $_user_mce = driver_mel::gi()->getUser($args['user']);
+
+      if (!isset($_user_mce)) return $args;
 
       //MANTIS 0009619 - Ne plus permettre la connexion directe sur une balp (sufr) avec le mot de passe d'un gestionnaire
       $args = $this->_validate_user_type($_user_mce, $args);

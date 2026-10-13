@@ -770,9 +770,15 @@ function m_mp_step3_param(type) {
                   datas = JSON.parse(datas);
 
                   for (const it of datas) {
-                    $linked_kanban_select.append(`
-                                            <option ${it.id === m_mp_step3_param.datas[type].value ? 'selected' : ''} value="${it.id}">${it.title}</option>
-                                        `);
+                    // it.title est un titre de tableau Wekan choisi librement par
+                    // son créateur : on construit l'option via .text() (échappé
+                    // par jQuery) plutôt que par interpolation dans du HTML brut,
+                    // pour éviter une XSS stockée.
+                    $('<option>')
+                      .val(it.id)
+                      .prop('selected', it.id === m_mp_step3_param.datas[type].value)
+                      .text(it.title)
+                      .appendTo($linked_kanban_select);
                   }
 
                   $linked_kanban_div.css('display', '');

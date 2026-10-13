@@ -37,6 +37,8 @@ class mel_doubleauth extends bnum_plugin
      */
     const EXPIRE_COOKIE = 2592000;
 
+    const COOKIE_MEMORY_ENABLED = false;
+
     /**
      * Initialisation du plugin
      *
@@ -54,6 +56,13 @@ class mel_doubleauth extends bnum_plugin
         if (!$this->is_internal()) { // Connexion intranet => pas de double auth
             $this->add_hook('login_after', [$this,'login_after']);
             $this->add_hook('logout_after', array($this, 'logout_after'));
+            // __exitSession() détruit désormais la session côté serveur avant la redirection
+            // (cf. sa docblock) : au moment où le client suit cette redirection vers
+            // ?_task=logout, $_SESSION['user_id'] n'existe plus, donc le cœur de Roundcube
+            // ne déclenche pas 'logout_after' et affiche directement la page de connexion via
+            // le hook 'unauthenticated'. Sans ce hook supplémentaire, le message
+            // (_logout_msg, toujours présent dans l'URL) ne serait jamais affiché.
+            $this->add_hook('unauthenticated', array($this, 'logout_after'));
             $this->add_hook('send_page', array($this, 'check_2FAlogin'));
             $this->add_hook('render_page', array($this, 'popup_msg_enrollment'));
             $this->add_hook('once_per_day', [$this,'hook_oncePerDay']);
@@ -61,6 +70,8 @@ class mel_doubleauth extends bnum_plugin
             // Si on est internal on considère qu'on s'est connecté avec la double auth (en cas de changement de VPN)
             $_SESSION['mel_doubleauth_login'] = time();
             $_SESSION['mel_doubleauth_2FA_login'] = time();
+            // La double authentification est court-circuitée, on trace quand même l'orientation
+            $this->add_hook('login_after', [$this, 'log_login_destination_internal']);
         }
 
         $this->add_texts('localization/', true);
@@ -92,7 +103,7 @@ class mel_doubleauth extends bnum_plugin
             $user->load(['double_authentification_forcee', 'double_authentification_date_butoir', 'internet_access_enable']);
             $this->rc->output->set_env("internet_access_enable", $user->internet_access_enable);
             if ($user->double_authentification_forcee) {
-                $config_2FA = $this->__get2FAconfig();
+                $config_2FA = $this->__get2FAconfig() ?? [];
 
                 if (!$config_2FA['activate']) {
                     $this->rc->output->set_env("double_authentification_forcee", $user->double_authentification_forcee);
@@ -100,6 +111,10 @@ class mel_doubleauth extends bnum_plugin
                 }
             }
         }
+    }
+
+    private function _cookieDoubleAuthEnabled() {
+        return self::COOKIE_MEMORY_ENABLED;
     }
 
     /**
@@ -112,21 +127,25 @@ class mel_doubleauth extends bnum_plugin
     public function login_after($args)
     {
         //mel_logs::get_instance()->log(mel_logs::DEBUG, "doubleauth_login_after");
-        if ($this->is_auth_strong()) return $args;
+        if ($this->is_auth_strong()) {
+            $this->__logLoginDestination('bnum', self::date_grace_enabled() ? 'delai_de_grace' : 'auth_forte');
+            return $args;
+        }
 
         $_SESSION['mel_doubleauth_login'] = time();
 
-        $config_2FA = $this->__get2FAconfig();
+        $config_2FA = $this->__get2FAconfig() ?? [];
 
         if (!$this->login_after_check_deadline($config_2FA)) return $args;
 
         $url = rcube_utils::get_input_value('_url', rcube_utils::INPUT_GPC);
 
+        if (isset($url) && !$this->__is_safe_relative_url($url)) $url = '';
         if (isset($url) && (strpos($url, 'login') !== false || strpos($url, 'logout') !== false)) $url = '';
 
         if (isset($_COOKIE['roundcube_login'])) {
             // Vérifier la présence du cookies
-            if (isset($_COOKIE['roundcube_doubleauth'])) {
+            if ($this->_cookieDoubleAuthEnabled() && isset($_COOKIE['roundcube_doubleauth'])) {
                 $info_doubleauth = explode('###', $_COOKIE['roundcube_doubleauth']);
                 if (count($info_doubleauth) == 4) {
                     // test d'expiration cookies
@@ -139,6 +158,8 @@ class mel_doubleauth extends bnum_plugin
                             rcube_utils::setcookie('roundcube_doubleauth', $info_doubleauth[0] . "###" . $info_doubleauth[1] . "###" . $expiration . "###roundcube", $expiration);
                             // envoi des données au webservice pour sauvegarde en base
                             $this->__modifyCookie($info_doubleauth[0], $info_doubleauth[1], intval($expiration), "roundcube");
+
+                            $this->__logLoginDestination('bnum', 'cookie_2fa_valide');
 
                             if (isset($url) && $url !== '') $this->__goingToUrl($url);
                             else $this->__goingRoundcubeTask($this->rc->config->get('default_task', 'mail'));
@@ -166,10 +187,14 @@ class mel_doubleauth extends bnum_plugin
 
         if (!$config_2FA['activate']) {
             if ($this->rc->config->get('force_enrollment_users')) {
+                $this->__logLoginDestination('enrolement_2fa', 'enrolement_force');
                 $this->__goingRoundcubeTask('settings', 'plugin.mel_doubleauth');
             }
+            $this->__logLoginDestination('bnum', '2fa_inactive');
             return $args;
         }
+
+        $this->__logLoginDestination('page_2fa', '2fa_active');
 
         $this->rc->output->set_pagetitle($this->gettext('mel_doubleauth'));
 
@@ -182,6 +207,40 @@ class mel_doubleauth extends bnum_plugin
         $this->rc->output->set_env("_url", $url);
 
         $this->rc->output->send('login');
+    }
+
+    /**
+     * Hook login_after déclenché uniquement sur les connexions intranet
+     * La double authentification y est court-circuitée : il n'y a rien à faire,
+     * on trace juste l'orientation de l'utilisateur
+     *
+     * @param array $args
+     */
+    public function log_login_destination_internal($args)
+    {
+        $this->__logLoginDestination('bnum', 'intranet');
+
+        return $args;
+    }
+
+    /**
+     * Trace où l'utilisateur est envoyé juste après une connexion réussie
+     *
+     * Cette information n'est pas observable depuis mel_logs : elle est décidée ici,
+     * et chaque branche se termine par un exit (redirection ou envoi de la page).
+     * Complète les lignes de mel_logs sans les modifier.
+     *
+     * @param string $destination bnum|page_2fa|enrolement_2fa|deconnexion
+     * @param string $motif raison de cette orientation
+     */
+    private function __logLoginDestination($destination, $motif)
+    {
+        $url = rcube_utils::get_input_value('_url', rcube_utils::INPUT_GPC);
+
+        mel_logs::get_instance()->log(mel_logs::INFO,
+            "[login] Orientation après connexion <" . $this->rc->get_user_name() . ">"
+                . " | destination=" . $destination
+                . " | motif=" . $motif);
     }
 
     private function login_after_check_deadline($config_2FA, $user = null)
@@ -200,10 +259,12 @@ class mel_doubleauth extends bnum_plugin
                 !$config_2FA['activate'] &&
                 (!$deadline || new DateTime() > $deadline)
             ) {
+                $this->__logLoginDestination('deconnexion', '2fa_obligatoire_hors_delai');
                 $this->__exitSession($this->gettext('logout_2fa_needed_not_secure'));
                 $return = false;
             }
         } else {
+            $this->__logLoginDestination('deconnexion', 'utilisateur_inconnu');
             $this->__exitSession($this->gettext('logout_2fa_needed_unknown'));
             $return = false;
         }
@@ -270,7 +331,7 @@ class mel_doubleauth extends bnum_plugin
             return $p;
         }
 
-        $config_2FA = $this->__get2FAconfig();
+        $config_2FA = $this->__get2FAconfig() ?? [];
 
         if ($config_2FA['activate']) {
             $code = rcube_utils::get_input_value('_code_2FA', rcube_utils::INPUT_POST);
@@ -293,6 +354,7 @@ class mel_doubleauth extends bnum_plugin
                     }
                     $url = rcube_utils::get_input_value('_url', rcube_utils::INPUT_GPC);
 
+                    if (isset($url) && !$this->__is_safe_relative_url($url)) $url = '';
                     if (isset($url) && (strpos($url, 'login') !== false || strpos($url, 'logout') !== false)) $url = '';
 
                     if (isset($url) && $url !== '') $this->__goingToUrl($url);
@@ -302,7 +364,14 @@ class mel_doubleauth extends bnum_plugin
                 }
             }
             // we're into some task but marked with login...
-            else if ($this->rc->task !== 'login' && !$_SESSION['mel_doubleauth_2FA_login'] >= $_SESSION['mel_doubleauth_login']) {
+            else if (
+                $this->rc->task !== 'login'
+                && (
+                    !isset($_SESSION['mel_doubleauth_2FA_login'])
+                    || !isset($_SESSION['mel_doubleauth_login'])
+                    || $_SESSION['mel_doubleauth_2FA_login'] < $_SESSION['mel_doubleauth_login']
+                )
+            ) {
                 $this->__exitSession();
             }
         }
@@ -333,7 +402,7 @@ class mel_doubleauth extends bnum_plugin
      */
     public function popup_msg_enrollment()
     {
-        $config_2FA = $this->__get2FAconfig();
+        $config_2FA = $this->__get2FAconfig() ?? [];
 
         if (
             !$config_2FA['activate']
@@ -362,8 +431,8 @@ class mel_doubleauth extends bnum_plugin
         }
     }
 
-    public function hook_oncePerDay($args) {
-        $config_2FA = $this->__get2FAconfig();
+    public function hook_oncePerDay(array $args): array {
+        $config_2FA = $this->__get2FAconfig() ?? [];
 
         if ( $this->is_bnum_task() && 
             !$config_2FA['activate'] && 
@@ -425,9 +494,9 @@ class mel_doubleauth extends bnum_plugin
             $recovery_codes = (array)rcube_utils::get_input_value('2FA_recovery_codes', rcube_utils::INPUT_POST);
 
             // remove recovery codes without value
-            $recovery_codes = array_values(array_diff($recovery_codes, array('')));
+            $recovery_codes = $recovery_codes |> (fn($codes) => array_diff($codes, [''])) |> array_values(...);
 
-            $data = $this->__get2FAconfig();
+            $data = $this->__get2FAconfig() ?? [];
             $data['secret'] = null;
             $data['activate'] = $activate ? true : false;
             $data['recovery_codes'] = $recovery_codes;
@@ -476,7 +545,7 @@ class mel_doubleauth extends bnum_plugin
             return html::div(['class' => "$rowclass"], html::div(['class' => "$colclass", 'id' => $rowid], $content));
         }
 
-        $data = $this->__get2FAconfig();
+        $data = $this->__get2FAconfig() ?? [];
 
         // info
         $div_container = rowcol(html::span(['class' => 'texte_explic'], $this->gettext('msg_infor')));
@@ -493,7 +562,7 @@ class mel_doubleauth extends bnum_plugin
             $bouton_active = new html_inputfield(['name' => $field_id, 'id' => $field_id, 'type' => 'button', 'class' => 'button mainaction', 'value' => $this->gettext('activate')]);
 
             $div_container .= row(
-                col(html::label($field_id, $this->Q($this->gettext('label_activate'))), 'col-sm-2 my-auto') .
+                col(html::label($field_id, $this->_Q($this->gettext('label_activate'))), 'col-sm-2 my-auto') .
                     col($bouton_active->show(), 'col-sm-3')
             );
 
@@ -794,6 +863,8 @@ class mel_doubleauth extends bnum_plugin
     {
         $_SESSION['mel_doubleauth_2FA_login'] = time();
 
+        if (!$this->__is_safe_relative_url($url)) $url = '';
+
         if (isset($url) && $url !== "" && strpos($url, '_task=') !== false && $url[0] !== '?') $url = "?$url";
 
         header("Location: $url");
@@ -801,31 +872,100 @@ class mel_doubleauth extends bnum_plugin
     }
 
     /**
+     * Vérifie qu'une URL de redirection est strictement relative (pas de schéma,
+     * pas d'hôte) — protection contre l'open redirect via le paramètre `_url`.
+     *
+     * @param mixed $url Valeur à vérifier
+     *
+     * @return bool true si l'URL est relative et sûre pour une redirection
+     */
+    private function __is_safe_relative_url($url)
+    {
+        if (!isset($url) || $url === '') return true;
+        if (strpos($url, '://') !== false) return false;
+        if (strpos($url, '//') === 0) return false;
+
+        $host = parse_url($url, PHP_URL_HOST);
+        return empty($host);
+    }
+
+    /**
      * Destruction de la session de l'utilisateur (via Logout)
-     * 
+     *
+     * ATTENTION : la redirection émise en fin de méthode n'est qu'une instruction
+     * donnée au client, qui reste libre de l'ignorer. Toute la destruction doit
+     * donc être faite ici, côté serveur, AVANT le exit : sans quoi un client qui
+     * ne suit pas la redirection conserve une session pleinement authentifiée.
+     *
      * @param string $message
+     * @param bool $da_logout_message
      */
     private function __exitSession($message = null, $da_logout_message = true)
     {
-        unset($_SESSION['mel_doubleauth_login']);
-        unset($_SESSION['mel_doubleauth_2FA_login']);
+        // Tracé ici explicitement : le hook session_destroy de mel_logs s'inhibe
+        // sur la tâche login, or __exitSession() est appelé depuis login_after.
+        // Sans cette ligne la destruction resterait invisible dans les logs.
+        mel_logs::get_instance()->log(mel_logs::INFO,
+            "[logout] Destruction de session (rejet 2FA) <" . $this->rc->get_user_name() . ">");
+
+        $this->__destroySession();
+
+        $params = ['_task' => 'logout'];
 
         if (isset($message)) {
-            header('Location: ?_task=logout&_logout_msg=' . $message . '&_da_logout_message='.$da_logout_message.'&_token=' . $this->rc->get_request_token());
-        } else {
-            header('Location: ?_task=logout&_token=' . $this->rc->get_request_token());
+            $params['_logout_msg'] = $message;
+            $params['_da_logout_message'] = $da_logout_message ? 1 : 0;
         }
 
+        // Le jeton de requête n'est volontairement plus transmis : il est lu dans
+        // $_SESSION, qui n'existe plus. La tâche logout sur une session anonyme
+        // renvoie de toute façon vers la page de connexion.
 
+        // Une requête AJAX ne fait rien d'exploitable d'une redirection HTTP nue :
+        // le client JS de Roundcube attend une commande, on la lui envoie.
+        if (is_object($this->rc->output) && $this->rc->output->type == 'js') {
+            $this->rc->output->redirect($params);
+            exit;
+        }
+
+        header('Location: ?' . http_build_query($params));
         exit;
+    }
+
+    /**
+     * Destruction effective et immédiate de la session, côté serveur
+     *
+     * kill_session() ne suffit pas à lui seul avec session_storage = php :
+     * rcube_session_php::destroy() est une méthode vide, et l'effacement réel
+     * reposerait alors sur la seule réécriture de $_SESSION en fin de requête.
+     * Le pilote php n'appelant jamais register_session_handler(), c'est le
+     * gestionnaire natif de PHP qui est actif : session_destroy() supprime donc
+     * bien l'enregistrement.
+     */
+    private function __destroySession()
+    {
+        // Vide $_SESSION, réinitialise l'utilisateur, supprime le cookie
+        // d'authentification de session et déclenche le hook session_destroy.
+        $this->rc->kill_session();
+
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            // Supprime l'enregistrement portant l'identifiant que le client
+            // détient : cet identifiant ne doit plus rien désigner. La session
+            // n'étant plus active, le write_close() de fin de requête devient un
+            // no-op et plus rien n'est écrit.
+            $_SESSION = [];
+            session_destroy();
+        }
+
+        // Et le cookie de session lui-même
+        rcube_utils::setcookie(session_name(), '', time() - 3600);
     }
 
     /**
      * Récupérer la configuration de double authentification
      * 
-     * @return boolean
      */
-    private function __get2FAconfig()
+    private function __get2FAconfig(): ?array
     {
         if (!isset($_SESSION['2FA_config'])) {
             $user = $this->rc->user;
@@ -893,7 +1033,7 @@ class mel_doubleauth extends bnum_plugin
      */
     private function __isRecoveryCode($code)
     {
-        $prefs = $this->__get2FAconfig();
+        $prefs = $this->__get2FAconfig() ?? [];
         return in_array($code, $prefs['recovery_codes']);
     }
 
@@ -906,8 +1046,8 @@ class mel_doubleauth extends bnum_plugin
      */
     private function __consumeRecoveryCode($code)
     {
-        $prefs = $this->__get2FAconfig();
-        $prefs['recovery_codes'] = array_values(array_diff($prefs['recovery_codes'], array($code)));
+        $prefs = $this->__get2FAconfig() ?? [];
+        $prefs['recovery_codes'] = $prefs['recovery_codes'] |> (fn($codes) => array_diff($codes, [$code])) |> array_values(...);
 
         $this->__set2FAconfig($prefs);
     }
@@ -1196,7 +1336,7 @@ class mel_doubleauth extends bnum_plugin
      *
      * @return string The quoted string
      */
-    private function Q($str, $mode = 'strict', $newlines = true)
+    private function _Q($str, $mode = 'strict', $newlines = true)
     {
         return rcube_utils::rep_specialchars_output($str, 'html', $mode, $newlines);
     }

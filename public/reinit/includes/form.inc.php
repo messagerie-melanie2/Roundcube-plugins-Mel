@@ -8,10 +8,10 @@
 
             <div class="form-group">
                 <div class="controls">
-                    <input type="email" name="_email" id="email" value="<?= $user->email; ?>" readonly>
-                    <input type="hidden" name="_h" id="hash" value="<?= $hash; ?>">
-                    <input type="hidden" name="_firstname" id="firstname" value="<?= $user->firstname; ?>">
-                    <input type="hidden" name="_lastname" id="lastname" value="<?= $user->lastname; ?>">
+                    <input type="email" name="_email" id="email" value="<?= htmlspecialchars($user->email, ENT_QUOTES); ?>" readonly>
+                    <input type="hidden" name="_h" id="hash" value="<?= htmlspecialchars($hash, ENT_QUOTES); ?>">
+                    <input type="hidden" name="_firstname" id="firstname" value="<?= htmlspecialchars($user->firstname, ENT_QUOTES); ?>">
+                    <input type="hidden" name="_lastname" id="lastname" value="<?= htmlspecialchars($user->lastname, ENT_QUOTES); ?>">
                     <label for="email" class="active">E-mail</label>
                 </div>
                 <div class="controls">

@@ -23,7 +23,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-class mel_acl extends rcube_plugin
+class mel_acl extends bnum_plugin
 {
     public $task = 'settings|addressbook|calendar';
 
@@ -522,6 +522,11 @@ class mel_acl extends rcube_plugin
      */
     private function action_save()
     {
+        // Les paramètres d'écriture sont lus en GPC (donc actionnables en GET pur) ;
+        // impose POST + jeton CSRF ici plutôt que sur toute l'action plugin.acl,
+        // qui multiplexe aussi un mode liste légitimement appelé en GET.
+        $this->assert_post_csrf();
+
         $mbox  = trim(rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GPC, true)); // UTF7-IMAP
         $user  = trim(rcube_utils::get_input_value('_user', rcube_utils::INPUT_GPC));
         $acl   = trim(rcube_utils::get_input_value('_acl', rcube_utils::INPUT_GPC));

@@ -376,7 +376,7 @@ class CommandNotification extends Notification {
    * @param NotificationActionBase|null $action Action de la notification
    * @param string|null $uid Id de la notification. Si `null` elle sera générée
    */
-  public function __construct(ENotificationType $notification_type, string $title, string $content, NotificationActionBase $action = null, string $uid = null) {
+  public function __construct(ENotificationType $notification_type, string $title, string $content, ?NotificationActionBase $action = null, ?string $uid = null) {
     parent::__construct($notification_type, $title, $content, $action);
     $this->uid = $uid ?? \LibMelanie\Lib\UUID::v4();
     $this->extra = [];

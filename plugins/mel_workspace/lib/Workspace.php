@@ -80,12 +80,14 @@ class Workspace {
   /**
    * Initialise l'objet à partir d'une instance d'espace de travail.
    *
-   * @param object $workspace Instance de l'espace de travail.
+   * @param object|string $workspace Instance de l'espace de travail.
    * @return self
    */
-  private function _from_workspace($workspace) {
-    $this->_workspace = $workspace;
-    $this->_uid = $this->_workspace->uid;
+  private function _from_workspace(object|string $workspace) {
+    if (!is_string($workspace)) {
+      $this->_workspace = $workspace;
+      $this->_uid = $this->_workspace->uid;
+    }
 
     return $this->_unset();
   }
@@ -647,10 +649,10 @@ class Workspace {
   /**
    * Initialise un objet Workspace à partir d'une instance d'espace de travail.
    *
-   * @param LibMelanie\Api\Defaut\Workspace $workspace Instance de l'espace de travail.
+   * @param LibMelanie\Api\Defaut\Workspace|string $workspace Instance de l'espace de travail.
    * @return Workspace
    */
-  public static function FromWorkspace($workspace) {
+  public static function FromWorkspace(LibMelanie\Api\Defaut\Workspace|string $workspace) {
     $wsp = new Workspace(null);
 
     return $wsp->_from_workspace($workspace);
@@ -678,18 +680,21 @@ class Workspace {
       $max = 30;
 
       mel_helper::load_helper()->include_utilities();
-      $text = mel_utils::replace_determinants(mel_utils::replace_special_char(strtolower(mel_utils::remove_accents($title))), "-");
-      $text = str_replace(" ", "-", $text);
+      $text = $title
+          |> mel_utils::remove_accents(...)
+          |> strtolower(...)
+          |> mel_utils::replace_special_char(...)
+          |> (fn($value) => mel_utils::replace_determinants($value, "-"))
+          |> (fn($value) => str_replace(" ", "-", $value))
+          |> (fn($value) => is_array($value) ? implode("", $value) : $value)
+          |> mb_str_split(...);
+
       if (count($text) > $max)
       {
-          $title = "";
-          for ($i=0; $i < count($text); $i++) { 
-              if ($i >= $max)
-                  break;
-              $title.= $text[$i];
-          }
-          $text = $title;
+          $text = array_slice($text, 0, $max);
       }
+
+      $text = implode("", $text);
       $it = 0;
 
       $workspace = driver_mel::gi()->workspace();
@@ -872,14 +877,16 @@ class WorkspaceSetting {
    * @return self
    */
   public function set($key, $value) {
-    if ($this->_workspace->settings === null)
-      $this->_workspace->settings = [$key => $value];
+    $workspaceSettings = $this->_workspace->settings;
+
+    if ($workspaceSettings === null)
+      $workspaceSettings = [$key => $value];
     else {
-        $this->_workspace->settings = json_decode($this->_workspace->settings);
-        $this->_workspace->settings->$key = $value;
+        $workspaceSettings = json_decode($workspaceSettings);
+        $workspaceSettings->$key = $value;
     }
 
-    $this->_workspace->settings = json_encode($this->_workspace->settings);
+    $this->_workspace->settings = json_encode($workspaceSettings);
 
     return $this;
   }
@@ -922,14 +929,16 @@ class WorkspaceObject {
    * @return self
    */
   public function set($key, $object) {
-    if ($this->_workspace->objects === null) $this->_workspace->objects = [$key => $object];
+    $wspObjects = $this->_workspace->objects;
+
+    if ($wspObjects === null) $wspObjects = [$key => $object];
     else
     {
-        $this->_workspace->objects = json_decode($this->_workspace->objects);
-        $this->_workspace->objects->$key = $object;
+        $wspObjects = json_decode($wspObjects);
+        $wspObjects->$key = $object;
     }
 
-    $this->_workspace->objects = json_encode($this->_workspace->objects);
+    $this->_workspace->objects = json_encode($wspObjects);
 
     return $this;
   }

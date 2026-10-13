@@ -241,6 +241,100 @@ class calendar extends rcube_plugin
     }
 
     /**
+     * PAMELLA
+     * 
+     * Récupère les chemins relatifs aux fichiers driver du calendrier (driver
+     * générique + driver de configuration spécifique).
+     *
+     * @param string $driver_name  Nom du dossier du driver (ex. "database")
+     * @param string $driver_class Nom du fichier PHP et de la classe du driver de configuration
+     *
+     * @return array<string, string> Chemins associés : 'base' (dossier), 'calendar'
+     *                                (fichier driver générique), 'config' (fichier driver spécifique)
+     */
+    private function _getDrivers(string $driver_name, string $driver_class): array {
+        $BASE = $this->home . '/drivers';
+        return ['base' => $BASE,
+                'calendar' => 'calendar_driver.php',
+                'config' => "$driver_name/$driver_class.php"];
+    }
+
+    /**
+     * PAMELLA
+     * 
+     * Tente de charger les drivers de façon sécurisée via mel_helper::safe_require().
+     *
+     * Si mel_helper n'est pas disponible, un chargement non sécurisé n'est autorisé
+     * que si la config `allow_unsafe_require` est explicitement activée ; sinon la
+     * requête est bloquée (404). $driver_name/$driver_class proviennent de la config
+     * utilisateur, d'où la nécessité de valider les chemins avant inclusion (protection
+     * contre l'injection de chemin).
+     *
+     * @param array<string, string> $drivers Chemins des drivers (voir {@link _getDrivers})
+     *
+     * @return void
+     */
+    private function _trySafeRequireDrivers(array $drivers): void {
+        if (!class_exists('mel_helper')) {
+            $loaded = include_once __DIR__."/../mel_helper/mel_helper.php";
+
+            if (!$loaded) {
+                $MESSAGE = '/!\\ Impossible de charger "mel_helper" !';
+                try {
+                    mel_logs::gi()->log(mel_logs::WARN, $MESSAGE);
+                } catch (\Throwable $th) {
+                    rcmail::get_instance()->write_log('warnings', $MESSAGE);
+                }
+                
+                if (rcmail::get_instance()->config->get('allow_unsafe_require', false) === true) {
+                    $this->_requireDriver($drivers);  
+                    return;
+                }
+                else {
+                    header('HTTP/1.0 404 Not Found');
+                    exit;
+                }
+            }   
+        }   
+
+        $this->_safeRequireDrivers($drivers);
+    }
+
+    /**
+     * PAMELLA
+     * 
+     * Inclut les fichiers driver en validant les chemins via mel_helper::safe_require().
+     *
+     * @param array<string, string> $drivers Chemins des drivers (voir {@link _getDrivers})
+     *
+     * @return void
+     */
+    private function _safeRequireDrivers(array $drivers): void {
+        $baseDir = $drivers['base'];
+        $calendarDriver = $drivers['calendar'];
+        $configDriver = $drivers['config'];
+        mel_helper::safe_require($baseDir, $calendarDriver);
+        mel_helper::safe_require($baseDir, $configDriver);
+    }
+
+    /**
+     * PAMELLA
+     * 
+     * Inclut les fichiers driver sans validation des chemins.
+     *
+     * Utilisé uniquement en repli lorsque mel_helper est indisponible et que la
+     * config `allow_unsafe_require` autorise explicitement ce mode non sécurisé.
+     *
+     * @param array<string, string> $drivers Chemins des drivers (voir {@link _getDrivers})
+     *
+     * @return void
+     */
+    private function _requireDriver(array $drivers): void {
+        require_once($drivers['base'] . '/' . $drivers['calendar']);
+        require_once($drivers['base'] . '/' . $drivers['config']);
+    }
+
+    /**
      * Helper method to load the backend driver according to local config
      */
     private function load_driver()
@@ -252,8 +346,8 @@ class calendar extends rcube_plugin
         $driver_name = $this->rc->config->get('calendar_driver', 'database');
         $driver_class = $driver_name . '_driver';
 
-        require_once($this->home . '/drivers/calendar_driver.php');
-        require_once($this->home . '/drivers/' . $driver_name . '/' . $driver_class . '.php');
+        //PAMELA - Avoid injection
+        $this->_trySafeRequireDrivers($this->_getDrivers($driver_name, $driver_class));
 
         $this->driver = new $driver_class($this);
 

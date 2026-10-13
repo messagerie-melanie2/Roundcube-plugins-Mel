@@ -372,7 +372,7 @@ class mel_melanissimo extends rcube_plugin {
     );
 
     // replace new lines and strip ending ', ', make address input more valid
-    $mailto = trim(preg_replace($regexp, $replace, $mailto));
+    $mailto = $mailto |> (fn($m) => preg_replace($regexp, $replace, $m)) |> trim(...);
     $items = rcube_utils::explode_quoted_string($delim, $mailto);
     $result = array();
 
@@ -391,7 +391,7 @@ class mel_melanissimo extends rcube_plugin {
       // address with name (handle name)
       else if (preg_match('/<*' . $email_regexp . '>*$/', $item, $matches)) {
         $address = $matches[0];
-        $name = trim(str_replace($address, '', $item));
+        $name = $item |> (fn($i) => str_replace($address, '', $i)) |> trim(...);
         if ($name[0] == '"' && $name[count($name) - 1] == '"') {
           $name = substr($name, 1, - 1);
         }

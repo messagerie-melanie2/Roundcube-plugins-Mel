@@ -193,7 +193,9 @@ class tasklist extends rcube_plugin
         $driver_class = 'tasklist_' . $driver_name . '_driver';
 
         require_once($this->home . '/drivers/tasklist_driver.php');
-        require_once($this->home . '/drivers/' . $driver_name . '/' . $driver_class . '.php');
+        mel_helper::safe_require($this->home . '/drivers', $driver_name . '/' . $driver_class . '.php');
+        // require_once($this->home . '/drivers/' . $driver_name . '/' . $driver_class . '.php');
+        // mel_helper::safe_require()
 
         $this->driver = new $driver_class($this);
 

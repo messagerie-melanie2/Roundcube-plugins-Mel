@@ -125,7 +125,9 @@ class Theme {
     public function __construct($path)
     {
         $this->path = $path;
-        $json = json_decode(file_get_contents($path.'/theme.json'));
+
+        $themePath = $path.'/theme.json';
+        $json = $themePath |> file_get_contents(...) |> json_decode(...);
 
         $this->id = $json->id;
         $this->parent = new ParentTheme($json->parent);
@@ -391,7 +393,8 @@ class SingletonThemeLocalization {
             $this->localizations[$theme] = [];
 
             if (!isset($this->localizations[$theme][$local])) {
-                $this->localizations[$theme][$local] = json_decode(file_get_contents($path."/$local.json")) ?? [];
+                $themePath = $path."/$local.json";
+                $this->localizations[$theme][$local] = ($themePath |> file_get_contents(...) |> json_decode(...)) ?? [];
             }
         }
 
@@ -486,7 +489,8 @@ class DefaultTheme extends Theme {
     public function __construct($path, $default_theme) {
         parent::__construct($path);
 
-        $json = json_decode(file_get_contents($path.'/theme.json'));
+        $themePath = $path.'/theme.json';
+        $json = $themePath |> file_get_contents(...) |> json_decode(...);
 
         $this->default_theme = $json->default_theme ?? $default_theme;
     }

@@ -67,7 +67,9 @@ class calendar_itip extends libcalendaring_itip
         if ($parts = $this->decode_token($token)) {
             $result = $this->rc->db->query("SELECT * FROM $this->db_itipinvitations WHERE `token` = ?", $parts['base']);
             if ($result && ($rec = $this->rc->db->fetch_assoc($result))) {
-                $rec['event']    = unserialize($rec['event']);
+                // allowed_classes limité à DateTime : l'événement sérialisé contient des DateTime,
+                // mais aucune autre classe métier ne doit pouvoir être injectée ici.
+                $rec['event']    = unserialize($rec['event'], ['allowed_classes' => ['DateTime']]);
                 $rec['attendee'] = $parts['attendee'];
 
                 return $rec;

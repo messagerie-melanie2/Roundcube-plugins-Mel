@@ -57,11 +57,14 @@ if (window.rcmail) {
         m_mp_NotificationStartup();
       }, 500);
 
+      // APRÈS
       // Gérer les notifications venant des autres frames
+      // Sécurité, n'accepter que les messages provenant de la même origine.
       window.addEventListener(
         'message',
         (event) => {
           if (
+            event.origin === window.location.origin &&
             event.data &&
             event.data.type &&
             event.data.type == 'notification'
@@ -71,6 +74,7 @@ if (window.rcmail) {
         },
         false,
       );
+
 
       // Tout passer en lu à la fermeture
       if (rcmail.env.notifications_set_read_on_panel_close) {
@@ -1043,6 +1047,42 @@ function m_mp_NotificationGetDate(created) {
   };
 }
 
+/**
+ * Échappe une chaîne pour une insertion sûre en HTML.
+ *
+ * @param {string} str
+ * @returns {string}
+ */
+function m_mp_EscapeHtml(str) {
+  return $('<div>').text(str ?? '').html();
+}
+
+/**
+ * Valide qu'un href de notification est sûr à injecter dans le DOM.
+ * @param {?string} href
+ * @returns {string}
+ */
+function m_mp_SafeHref(href) {
+  if (!href) return '#';
+  try {
+    const url = new URL(href, window.location.origin);
+    return ['http:', 'https:'].includes(url.protocol) ? href : '#';
+  } catch (e) {
+    return '#';
+  }
+}
+
+/**
+ * Valide qu'un nom de commande de notification a la forme attendue
+ * @param {?string} command
+ * @returns {?string} La commande si valide, sinon null.
+ */
+function m_mp_SafeCommand(command) {
+  return typeof command === 'string' && /^[A-Za-z0-9_.\-]+$/.test(command)
+    ? command
+    : null;
+}
+
 class html_notification extends mel_html2 {
   constructor(notification, isPanel) {
     super('a', {
@@ -1055,8 +1095,10 @@ class html_notification extends mel_html2 {
     let _icon = new mel_html(
       'span',
       { class: 'material-symbols-outlined notification-icon' },
-      rcmail.env.notifications_material_icons[notification.category] ??
-        notification.category,
+      m_mp_EscapeHtml(
+        rcmail.env.notifications_material_icons[notification.category] ??
+          notification.category,
+      ),
     );
 
     let _category = new mel_html2('h6', {
@@ -1065,8 +1107,10 @@ class html_notification extends mel_html2 {
         new mel_html(
           'span',
           {},
-          rcmail.env.notifications_categories[notification.category] ??
-            notification.category,
+          m_mp_EscapeHtml(
+            rcmail.env.notifications_categories[notification.category] ??
+              notification.category,
+          ),
         ),
       ],
     });
@@ -1074,7 +1118,7 @@ class html_notification extends mel_html2 {
     let _title = new mel_html(
       'p',
       { class: 'notification-title' },
-      notification.title,
+      m_mp_EscapeHtml(notification.title),
     );
 
     const _action = this._getNotificationAction(notification);
@@ -1108,14 +1152,15 @@ class html_notification extends mel_html2 {
         for (const key in notification.action) {
           if (Object.hasOwnProperty.call(notification.action, key)) {
             const action = notification.action[key];
-            this.attribs['href'] = action.href ?? '#';
+            this.attribs['href'] = m_mp_SafeHref(action.href);
 
             if (action.command || action.click) {
               this.onclick.push(
                 function (current_action, element, e) {
-                  if (current_action.command) {
+                  const safeCommand = m_mp_SafeCommand(current_action.command);
+                  if (safeCommand) {
                     rcmail.command(
-                      current_action.command,
+                      safeCommand,
                       current_action.params ?? '',
                       e,
                     );
@@ -1162,7 +1207,7 @@ class html_notification extends mel_html2 {
       let _button = new mel_html2('a', {
         attribs: {
           class: 'p-2 my-auto',
-          href: _action?.href,
+          href: m_mp_SafeHref(_action?.href),
           title: rcmail.get_label('mel_notification.Action title'),
         },
         contents: [this._getButtonIcon('open_in_new')],
@@ -1170,7 +1215,7 @@ class html_notification extends mel_html2 {
       _button.onclick.push(() => {
         _action.command
           ? (e) => {
-              rcmail.command(_action.command, _action.params ?? '', e);
+              rcmail.command(m_mp_SafeCommand(_action.command), _action.params ?? '', e);
               e.stopPropagation();
             }
           : _action.click

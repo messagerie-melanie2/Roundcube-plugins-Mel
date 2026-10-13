@@ -11,6 +11,7 @@ $labels['see_all'] = 'Voir tout';
 $labels['workspace_title_min_length'] = 'Le titre de l\'espace de travail doit contenir au minimum %d caractères.';
 $labels['workspace_title_invalid_first_char'] = 'Le titre de l\'espace de travail doit commencer par une lettre ou un chiffre.';
 $labels['workspace_title_title'] = 'Le titre doit contenir au minimum %d caractères et commencer par une lettre ou un chiffre.';
+$labels['workspace_uid_invalid'] = 'L\'identifiant de l\'espace de travail ne peut contenir que des lettres, chiffres, espaces, tirets et underscores.';
 
 $labels['minify_nav'] = 'Minimiser la barre de navigation de l\'espace.';
 $labels['expand_nav'] = 'Maximiser la barre de navigation de l\'espace.';

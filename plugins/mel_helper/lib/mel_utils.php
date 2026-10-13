@@ -783,11 +783,20 @@ class mel_utils
         return 0;
   }
 
-  public static function get_cal_categories($username)
+  public static function get_cal_categories(?string $username): array|false
   {
+    $user = driver_mel::gi()->getUser($username);
+
+    if (!$user) {
+      if (mel_logs::is(mel_logs::WARN)) 
+        mel_logs::gi()->log(mel_logs::WARN, "/!\\ [mel_helpers/mel_utils/get_cal_categories] L'utilisateur $username n'éxiste pas !");
+
+      return false;
+    }
+
     return [
-      "name" => driver_mel::gi()->getUser($username)->getDefaultPreference("categories"),
-      "colors" => driver_mel::gi()->getUser($username)->getDefaultPreference("category_colors")
+      "name" => $user->getDefaultPreference("categories"),
+      "colors" => $user->getDefaultPreference("category_colors")
     ];
   }
 

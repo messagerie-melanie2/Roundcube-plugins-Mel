@@ -354,7 +354,7 @@ if (rcmail.env.iselectron) {
           if (rcmail.env.account) {
             params._account = rcmail.env.account;
           }
-          rcmail.http_get('mail/plugin.mel_archivage_traitement_electron', params);
+          rcmail.http_post('mail/plugin.mel_archivage_traitement_electron', params);
         }
       }
     }

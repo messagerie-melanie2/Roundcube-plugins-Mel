@@ -20,7 +20,8 @@ require_once $dir . '/vendor/autoload.php';
 
 $data = utils::check_hash_key();
 
-if (!$data['user']) {
+// check_hash_key() renvoie false (booléen) quand la clé est invalide.
+if (!$data || !$data['user']) {
   header('Content-Type: application/json; charset=utf-8');
 
   echo json_encode(["error" => "La clé d'identification n'est pas valide"]);

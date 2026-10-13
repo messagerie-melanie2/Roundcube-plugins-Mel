@@ -103,6 +103,17 @@ class utils
     return false;
   }
 
+  /**
+   * Échappe une valeur pour un usage sûr dans un filtre de recherche LDAP.
+   *
+   * @param string $value Valeur à échapper
+   *
+   * @return string Valeur échappée, utilisable dans un filtre LDAP
+   */
+  public static function escape_ldap_filter($value)
+  {
+    return ldap_escape($value, '', LDAP_ESCAPE_FILTER);
+  }
 
   /**
    * Validates IPv4 or IPv6 address
@@ -586,7 +597,7 @@ class utils
   /**
    * Hash Key validation.
    *
-   * @return User user on success, False if key is invalid
+   * @return array|false user on success, False if key is invalid
    */
   public static function check_hash_key()
   {
@@ -616,29 +627,34 @@ class utils
     }
 
 
+    $user = null;
     // Génération de l'utilisateur Mél
     if (isset($_user)) {
       $user = new LibMelanie\Api\Mel\User();
       $user->uid = $_user;
     }
 
-    // Récupération de la clé de la requête 
+    // Récupération de la clé de la requête
     $keyhash = self::get_input_value('_key', self::INPUT_GET);
     $keyhash = urldecode($keyhash);
-    if (isset($keyhash)) {
+
+    // Vérification de la clé : par défaut refusée, n'est acceptée que sur une
+    // correspondance explicite avec la préférence enregistrée (une préférence
+    // absente ou invalide ne doit jamais valoir "clé non requise").
+    $valid_key = false;
+    if ($user && isset($keyhash) && $keyhash !== '') {
       // On compare la clé avec la valeur des paramètres utilisateurs
       $value = $user->getCalendarPreference("appointmentkeyhash");
 
       if (isset($value)) {
-        $value = unserialize($value);
-        if (!isset($value[$calendar_name]) || $value[$calendar_name] != $keyhash) {
-          $keyhash = null;
+        $value = unserialize($value, ['allowed_classes' => false]);
+        if (is_array($value) && isset($value[$calendar_name]) && is_string($value[$calendar_name]) && hash_equals($value[$calendar_name], $keyhash)) {
+          $valid_key = true;
         }
       }
     }
 
-    // Vérification de la clé
-    if (!isset($keyhash)) {
+    if (!$valid_key) {
       return false;
     }
     return ["user" => $user, "calendar_name" => $calendar_name];

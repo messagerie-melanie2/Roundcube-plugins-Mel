@@ -79,8 +79,11 @@ class driver_annuaire {
    */
   public static function get_instance() {
     if (!isset(self::$driver)) {
+      if (!class_exists('mel_helper')) include_once __DIR__."/../../../mel_helper/mel_helper.php";
+
       $drivername = strtolower(rcmail::get_instance()->config->get('annuaire_driver', 'default'));
-      require_once $drivername . '/' . $drivername . '.php';
+      mel_helper::safe_require(__DIR__, $drivername . '/' . $drivername . '.php');
+
       $drivername = $drivername . "_driver_annuaire";
       self::$driver = new $drivername();
     }

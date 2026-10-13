@@ -23,7 +23,7 @@
         
         <bnum-segmented-control id="control-view">
           Vue des espaces
-          <roundcube:if condition="_template_visu_mode == 'list'">
+          <roundcube:if condition="env:_template_visu_mode == 'list'">
             <bnum-segmented-item slot="items"  value="cards" data-icon="grid_view">Grille</bnum-segmented-item>
             <bnum-segmented-item slot="items" selected value="list" data-icon="splitscreen">Liste</bnum-segmented-item>
           <roundcube:else>

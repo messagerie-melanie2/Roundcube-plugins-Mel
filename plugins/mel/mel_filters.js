@@ -625,6 +625,14 @@ les propriétés « nom » et « valeur ».
     };
 
     rcmail.addEventListener('responseafterlist', function (args) {
+      // Chargement de la page suivante par le scroll infini :
+      // on conserve les filtres et le mail ouvert
+      if (
+        rcmail.env.use_infinite_scroll &&
+        args.response?.env?.current_page > 1
+      )
+        return;
+
       mel_filter_manager.Instance.enable_all();
       mel_filter_manager.Instance.deactivate_all_filters();
       mel_filter_manager.Instance.get_default_filter().activate();

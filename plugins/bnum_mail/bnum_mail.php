@@ -123,7 +123,7 @@ class bnum_mail extends bnum_plugin {
    * Le core enregistre `search_mods` à chaque recherche alors qu'il est dans `dont_override` :
    * on retire la clé pour éviter des écritures inutiles en base.
    */
-  private function hook_preferences_update(string $args) : string {
+  private function hook_preferences_update(array $args) : array {
     if (isset($args['prefs']['search_mods'])
         && in_array('search_mods', (array) $this->rc()->config->get('dont_override'), true)) {
       unset($args['prefs']['search_mods']);

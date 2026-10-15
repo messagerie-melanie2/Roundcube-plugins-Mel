@@ -3502,6 +3502,10 @@ function rcube_calendar_ui(settings) {
 
     // show menu to select rsvp reply mode (current or all)
     if (me.selected_event && me.selected_event.recurrence && !replymode) {
+      // occurrence modified by the organizer (exception) replay mode (just current) 
+      if (me.selected_event.isexception) {
+        return event_rsvp(response, delegate, 'current', event);
+      }
       rcube_libcalendaring.itip_rsvp_recurring(
         btn,
         function (resp, mode) {

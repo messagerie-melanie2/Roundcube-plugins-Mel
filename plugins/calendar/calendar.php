@@ -1526,9 +1526,17 @@ $("#rcmfd_new_category").keypress(function(event) {
             $reply_comment = $event['comment'];
 
             if($action !== 'invite-self') $this->write_preprocess($event, 'edit');
+            // when replying to the whole series, load the master event
+            if (isset($event['_savemode']) && $event['_savemode'] == 'all') {
+                unset($event['_instance']);
+            }
             $ev = $this->driver->get_event($event);
             $ev['attendees'] = $event['attendees'];
             $ev['free_busy'] = $event['free_busy'];
+            // sync status (occupé/provisoire/libre) with free_busy
+            if (!empty($ev['free_busy']) && (!isset($ev['status']) || $ev['status'] != 'CANCELLED')) {
+                $ev['status'] = $ev['free_busy'] == 'free' ? 'FREE' : 'CONFIRMED';
+            }
             $ev['_savemode'] = $event['_savemode'];
             $ev['comment']   = $reply_comment;
 

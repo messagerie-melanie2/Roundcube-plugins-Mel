@@ -196,14 +196,17 @@ class Gestionnairelistes extends Moncompteobject {
 							$new_member->email = $new_smtp;
 							if ($new_member->load(['uid'])) {
 								if (!isset($list_members[$new_member->uid])) {
-									$list_members[$new_member->uid] = $new_member;
-									$group->members = $list_members;
+									if (isset($new_member->email) && isset($new_member->uid)) {
+										$list_members[$new_member->uid] = $new_member;
+										$group->members = $list_members;
+									}
+									else mel_logs::gi()->log(mel_logs::WARN, "[moncompte::addExterneMember]Impossible d'ajouter $new_smtp");
 								}
 							}
 							if (!in_array($new_smtp, $list_emails)) {
 								$list_emails[] = strtolower($new_smtp);
 								sort($list_emails);
-								$group->members_email = $list_emails;
+								$group->members_email = array_filter($list_emails, fn($item) => isset($item));
 							}
 							$ret = $group->save();
 							if (is_null($ret)) {
@@ -337,6 +340,9 @@ class Gestionnairelistes extends Moncompteobject {
 				}
 			}
 		}
+
+		$export ??= "";
+
 		header('Content-Type: application/csv');
 		header('Content-disposition: attachment; filename=Export_liste_' . date('d/m/y') . '.csv');
 		header('Content-Length: ' . strlen($export));

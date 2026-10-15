@@ -178,6 +178,7 @@ class Driver {
    * @return array Liste d'étiquettes triée
    */
   public function order_labels($labels) {
+    $labels ??= [];
     usort($labels, function ($a, $b) {
       return ($a->key < $b->key) ? -1 : 1;
     });

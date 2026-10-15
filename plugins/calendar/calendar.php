@@ -422,6 +422,35 @@ class calendar extends rcube_plugin
     }
 
     /**
+     * Remplace le rappel d'un événement reçu via une invitation (iTip)
+     * par le rappel par défaut de l'invité après acceptation de l'invitation, 
+     * au lieu de garder celui choisi par l'organisateur
+     *
+     * @param array $event
+     * 
+     * @return void
+     */
+    private function apply_default_alarm(&$event): void {
+        unset($event['alarms'], $event['valarms']);
+
+        $type = $this->rc->config->get('calendar_default_alarm_type', '');
+
+        if ($type === '') {
+            return;
+        }
+
+        $offset  = $this->rc->config->get('calendar_default_alarm_offset', '-15M');
+        $trigger = libcalendaring::parse_alarm_value($offset);
+
+        if ($trigger) {
+            $event['valarms'] = [[
+                'action'  => $type,
+                'trigger' => $trigger[3],
+            ]];
+        }
+    }
+
+    /**
      * Render the main calendar view from skin template
      */
     function calendar_view()
@@ -1527,6 +1556,32 @@ $("#rcmfd_new_category").keypress(function(event) {
 
             if($action !== 'invite-self') $this->write_preprocess($event, 'edit');
             $ev = $this->driver->get_event($event);
+
+            // si c'est la 1ère réponse de l'utilisateur
+            // on remplace le rappel actuellement stocké (de l'organisateur) par le rappel par défaut de l'utilisateur
+            if (in_array($status, ['accepted', 'tentative'])) {
+                $rsvp_calendars = $this->driver->list_calendars(
+                    calendar_driver::FILTER_PERSONAL
+                    | calendar_driver::FILTER_SHARED
+                    | calendar_driver::FILTER_WRITEABLE
+                    | calendar_driver::FILTER_INVITATION
+                );
+                $rsvp_calendar = isset($rsvp_calendars[$event['calendar']]) ? $rsvp_calendars[$event['calendar']] : null;
+                $rsvp_emails   = $this->get_user_emails($rsvp_calendar);
+                $was_needs_action = true;
+
+                foreach ((array) $ev['attendees'] as $attendee) {
+                    if (!empty($attendee['email']) && in_array(strtolower($attendee['email']), $rsvp_emails)) {
+                        $was_needs_action = strtoupper($attendee['status'] ?? '') === 'NEEDS-ACTION';
+                        break;
+                    }
+                }
+
+                if ($was_needs_action) {
+                    $this->apply_default_alarm($ev);
+                }
+            }
+
             $ev['attendees'] = $event['attendees'];
             $ev['free_busy'] = $event['free_busy'];
             $ev['_savemode'] = $event['_savemode'];
@@ -3684,6 +3739,7 @@ $("#rcmfd_new_category").keypress(function(event) {
             $this->rc->output->show_message('calendar.successremoval', 'confirmation');
         }
         else {
+            $this->apply_default_alarm($invitation['event']);
             $this->rc->output->show_message('calendar.errorsaving', 'error');
         }
     }
@@ -4234,6 +4290,7 @@ $("#rcmfd_new_category").keypress(function(event) {
                         // PAMELA - Mode assistantes
                         $this->lib->merge_attendees($event, $existing, $status, $this->get_user_emails($calendar));
 
+                        $this->apply_default_alarm($master);
                         // set status=CANCELLED on CANCEL messages
                         if ($event['_method'] == 'CANCEL') {
                             $event['status'] = 'CANCELLED';
@@ -4247,6 +4304,7 @@ $("#rcmfd_new_category").keypress(function(event) {
                             unset($event['attachments']);
                         }
 
+                        $this->apply_default_alarm($event);
                         // show me as free when declined (#1670)
                         if ($status == 'declined'
                             || (!empty($event['status']) && $event['status'] == 'CANCELLED')

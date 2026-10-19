@@ -79,10 +79,7 @@ class mel_france_transfert extends rcube_plugin {
 
       // PAMELLA
       // hook attachement_delete
-      $this->add_hook('attachment_delete', array(
-        $this,
-        'attachment_delete'
-      ));
+      $this->add_hook('attachment_delete', $this->hook_attachment_delete(...));
 
       // Charger le javascript si on est dans l'écriture d'un message
       if ($this->rc->action == 'compose') {
@@ -198,25 +195,29 @@ class mel_france_transfert extends rcube_plugin {
    * Résultat : après suppression d'une pj, le calcul du size France Transfert (testServiceFranceTransfert) la recompte toujours
    *
    * Correction : en repassant par les accesseurs storage-aware, et puis unset() le fichier s'il existe dans $COMPOSE['attachments']
+   * 
+   * @param array $args
+   * 
+   * @return array les arguments (inchangés) à retourner au hook
   */
-  public function attachment_delete($args): array {
+  private function hook_attachment_delete($args): array {
     $COMPOSE_ID = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
     $file_id = $args['id'] ?? (preg_replace('/^rcmfile/', '', rcube_utils::get_input_string('_file', rcube_utils::INPUT_GPC)) ?: 'unknown');
 
     $COMPOSE = rcmail_action_mail_compose::get_compose_data($COMPOSE_ID);
 
     if (mel_logs::is(mel_logs::DEBUG))
-      mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_france_transfert::attachment_delete() COMPOSE_ID=$COMPOSE_ID file_id=$file_id attachments_keys_before=" . (is_array($COMPOSE['attachments'] ?? null) ? implode(',', array_keys($COMPOSE['attachments'])) : 'N/A'));
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_france_transfert::hook_attachment_delete() COMPOSE_ID=$COMPOSE_ID file_id=$file_id attachments_keys_before=" . (is_array($COMPOSE['attachments'] ?? null) ? implode(',', array_keys($COMPOSE['attachments'])) : 'N/A'));
 
     if (is_array($COMPOSE) && isset($COMPOSE['attachments'][$file_id])) {
       unset($COMPOSE['attachments'][$file_id]);
       rcmail_action_mail_compose::set_compose_data($COMPOSE_ID, $COMPOSE);
 
       if (mel_logs::is(mel_logs::DEBUG))
-        mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_france_transfert::attachment_delete() removed file_id=$file_id, attachments_keys_after=" . implode(',', array_keys($COMPOSE['attachments'])));
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_france_transfert::hook_attachment_delete() removed file_id=$file_id, attachments_keys_after=" . implode(',', array_keys($COMPOSE['attachments'])));
     }
     else if (mel_logs::is(mel_logs::DEBUG)) {
-      mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_france_transfert::attachment_delete() file_id=$file_id NOT FOUND in COMPOSE attachments");
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_france_transfert::hook_attachment_delete() file_id=$file_id NOT FOUND in COMPOSE attachments");
     }
 
     return $args;

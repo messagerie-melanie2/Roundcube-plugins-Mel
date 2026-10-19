@@ -7,7 +7,9 @@ export class AlarmManager {
         time = this._time_modifier(time);
         if (!this.has(time)) this.alarms[time] = [];
 
-        this.alarms[time].push(event);
+        //this.alarms[time].push(event);
+        //Un même évènement ne doit pas être notifié 2 fois au même instant
+        if (!this.alarms[time].includes(event)) this.alarms[time].push(event);
         return this;
     }
 

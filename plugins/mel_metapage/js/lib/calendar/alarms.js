@@ -4,6 +4,9 @@ export {Alarm};
 /**
  * Représente une alarme de l'agenda
  */
+// Formats acceptés
+const TRIGGER_REGEX = /^([+-])?P?T?(\d+)([MHDW])/i;
+const UNIT_TO_MINUTES = { M: 1, H: 60, D: 60 * 24, W: 60 * 24 * 7 };
 class Alarm{
     /**
      * 
@@ -32,31 +35,18 @@ class Alarm{
      */
     assign(string)
     {
-        if (string !== "" && string !== null && string !== "")
-        {
-            try {
-                
-                if (string[0] == "+") //Après, avant sinon
-                    this.type = Alarm.enums.type.after;
-
-                let splitted = string.split("PT")[1];
-                this.time = parseInt(splitted.split("M")[0]);
-
-                if (splitted.includes(':')) splitted = splitted.split(":")[0];
-
-                if (splitted.includes("H")) this.time *= 60;
-                else if (splitted.includes("D")) this.time *= 60 * 24;
-
-                //console.log("string", string, string.includes("DISPLAY"))
-                if (string.includes("DISPLAY")) //Type d'alarme
-                    this.mode = Alarm.enums.mode.display;
-
-                this.timeMode = this.getTimeMode();//Début ou fin de l'évènement
-
-            } catch (error) {
-                
-            }
-        }
+        if (!string || typeof string !== 'string') return;
+ 
+        const match = TRIGGER_REGEX.exec(string.trim());
+        if (!match) return;
+    
+        const [, sign, value, unit] = match;
+        this.type = sign === '+' ? Alarm.enums.type.after : Alarm.enums.type.before;
+        this.time = parseInt(value, 10) * UNIT_TO_MINUTES[unit.toUpperCase()];
+    
+        if (string.includes('DISPLAY')) this.mode = Alarm.enums.mode.display;
+    
+        this.timeMode = this.getTimeMode();
     }
 
     /**
@@ -85,35 +75,47 @@ class Alarm{
         return this.time * 60 * 1000;
     }
 
-    toString()
-    {
+    toString() {
         let time = this.time;
-        let txt = "";
-
+        let txt = '';
+    
         switch (this.timeMode) {
-            case Alarm.enums.time_type.minutes:
-                txt += ` minute${this.time > 1 ? "s" : ""}`;
-                break;
-            
-            case Alarm.enums.time_type.hour:
-                time = this.time/60;
-                txt += ` heure${time > 1 ? "s" : ""}`;
-                break;
-            
-            case Alarm.enums.time_type.day:
-                time=this.time/60/24;
-                txt += ` jour${time > 1 ? "s" : ""}`;
-        
-            default:
-                break;
+        case Alarm.enums.time_type.minutes:
+            txt += ` minute${time > 1 ? 's' : ''}`;
+            break;
+    
+        case Alarm.enums.time_type.hour:
+            time = this.time / 60;
+            txt += ` heure${time > 1 ? 's' : ''}`;
+            break;
+    
+        case Alarm.enums.time_type.day:
+            time = this.time / 60 / 24;
+            txt += ` jour${time > 1 ? 's' : ''}`;
+            break;
+    
+        default:
+            break;
         }
-
-        if (this.type === Alarm.enums.type.before)
-            txt += " avant";
-        else
-            txt += " après";
-
+    
+        txt += this.type === Alarm.enums.type.before ? ' avant' : ' après';
+    
         return time + txt;
+    }
+    
+    /**
+     * Liste des alarmes d'un évènement (valarms, ou alarms en repli)
+     * @param {*} event
+     * @returns {Alarm[]}
+     */
+    static listFromEvent(event) {
+        if (Array.isArray(event?.valarms) && event.valarms.length > 0) {
+            return event.valarms.map(
+                (v) =>new Alarm(`${v?.trigger ?? ''}:${v?.action ?? 'DISPLAY'}`),
+            );
+        }
+    
+        return event?.alarms ? [new Alarm(event.alarms)] : [];
     }
 
 }

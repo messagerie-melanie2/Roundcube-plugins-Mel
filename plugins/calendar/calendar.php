@@ -46,6 +46,7 @@ class calendar extends rcube_plugin
     public $timezone;
     public $timezone_offset;
     public $gmt_offset;
+    public $dst_active;
     public $ui;
 
     public $defaults = [
@@ -1626,11 +1627,6 @@ $("#rcmfd_new_category").keypress(function(event) {
             $plugin  = $this->rc->plugins->exec_hook('dismiss_alarms', $event);
             $success = $plugin['success'];
 
-            foreach ($event['ids'] as $id) {
-                if (strpos($id, 'cal:') === 0) {
-                    $success |= $this->driver->dismiss_alarm(substr($id, 4), $event['snooze']);
-                }
-            }
 
             break;
 
@@ -3296,7 +3292,7 @@ $("#rcmfd_new_category").keypress(function(event) {
     {
         $diff   = [];
         //PAMELA - 0007779: MAJ event: Lorsque l'organisateur ajoute un rappel sur l'évènement, l'implanter dans agenda sans transmission de notif mail + 0008049
-        $ignore = ['calendar_token' => 1, 'changed' => 1, 'attachments' => 1,'x_alarm_minutes' => 1, 'alarms' => 1, 'valarms' => 1, 'alarm_dismissed' => 1, 'x_moz_lastack' => 1, 'x_moz_snooze_time' => 1];
+        $ignore = ['calendar_token' => 1, 'changed' => 1, 'attachments' => 1,'x_alarm_minutes' => 1, 'x_alarm_last_minutes'=> 1, 'alarms' => 1, 'valarms' => 1,  'x_moz_lastack' => 1, 'x_moz_snooze_time' => 1];
 
         foreach (array_unique(array_merge(array_keys($a), array_keys($b))) as $key) {
             if (empty($ignore[$key]) && $key[0] != '_') {

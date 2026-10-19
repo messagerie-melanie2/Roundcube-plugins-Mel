@@ -19,7 +19,7 @@ import { FakePart, Parts } from './parts.js';
  * @classdesc Contient les données d'un rappel. Sa valeur et son "unitée" (minutes, heures, jours etc....)
  * @package
  */
-class AlarmData {
+export class AlarmData {
   /**
    * Helper pour récupérer toute les fonctions utiles
    * @readonly
@@ -257,7 +257,7 @@ export class AlarmPart extends FakePart {
         const val = this._$fakeField.val();
 
         if (!!(val || false) && val !== 0 && val !== '0')
-          this.helper
+          return this.helper
             .getLocalization('rappel_of', { plugin: textPlugin })
             .replaceAll('%0', this._$fakeField.find('option:selected').text());
         else

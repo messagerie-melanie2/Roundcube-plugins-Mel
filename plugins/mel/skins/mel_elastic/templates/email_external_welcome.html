@@ -34,12 +34,12 @@
 <div style="background-color: #f0f0f0;width:100%;text-align: center;border-radius: 5px;    padding: 15px 0;margin-bottom: 10px;">
     <h2>{{wsp.name}}</h2>
     <div style="padding-top: 5px;padding-bottom: 15px;">
-        <a href="{{url}}" title="Rejoindre l'espace de travail {{wsp.name}}" target="_blank" class="mel-button">Rejoindre maintenant</a>
+        <a href="{{wsp.url}}" title="Rejoindre l'espace de travail {{wsp.name}}" target="_blank" class="mel-button">Rejoindre maintenant</a>
     </div>
     <div>
-        <div style="display:inline-block;vertical-align: bottom;">
+        <!-- <div style="display:inline-block;vertical-align: bottom;">
             {{wsp.shares.rounded}}
-        </div>
+        </div> -->
         <div style="display:inline-block">
             Crée par {{wsp.creator}}
             <br/>
@@ -49,7 +49,7 @@
 </div>
 
 <p>
-    Une fois que vous aurez rejoint cet espace de travail, vous pourrez également y accéder directement depuis <a href="{{url}}" title="Rejoindre l'espace de travail {{wsp.name}}" target="_blank">[cette adresse]</a>
+    Une fois que vous aurez rejoint cet espace de travail, vous pourrez également y accéder directement depuis <a href="{{wsp.url}}" title="Rejoindre l'espace de travail {{wsp.name}}" target="_blank">[cette adresse]</a>
 </p>
 <br/>
 <h2>Qu'est ce que le Bnum ?</h2>

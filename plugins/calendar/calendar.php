@@ -496,6 +496,20 @@ class calendar extends rcube_plugin
             return $p;
         }
 
+        // mel_metapage garde en cache l'iframe "calendar"
+        // on recharge l'iframe après la sauvegarde des préférences pour qu'elle reflète les nouvelles valeurs par défaut (ex: rappel par défaut) 
+        if (!empty($p['current']) && 'POST' === $_SERVER['REQUEST_METHOD']) {
+            // try/catch: pour ne pas empêcher l'exécution du reste de 'docready'
+            $this->rc->output->add_script(
+                "try {"
+                . " var fm = window.parent?.mel_modules?.['FrameManager']?.Instance;"
+                . " var win = fm?.get_window?.();"
+                . " if (win?.has_frame?.('calendar')) { win.get_frame('calendar')?.[0]?.contentWindow?.location?.reload(); }"
+                . "} catch (e) {}",
+                'docready'
+            );
+        }
+
         $no_override = array_flip((array) $this->rc->config->get('dont_override'));
 
         $p['blocks']['view']['name'] = $this->gettext('mainoptions');

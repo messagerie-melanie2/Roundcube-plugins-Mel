@@ -44,6 +44,7 @@ import {
   WARNING_PANEL_SELECTOR,
 } from './event_view.constants.js';
 import { AlarmPart } from './parts/alarmpart.js';
+import { AdditionalAlarmsPart } from './parts/additional_alarms_part.js';
 import { CalendarOwner } from './parts/calendarparts.js';
 import { CategoryPart } from './parts/categoryparts.js';
 import { GuestsPart } from './parts/guestspart.js';
@@ -286,6 +287,7 @@ class EventParts {
       inputs.select_alarm_offset,
       fakes.select_alarm,
     );
+    this.extraAlarms = new AdditionalAlarmsPart(fakes.select_alarm);
     this.category = new CategoryPart(
       inputs.select_category,
       fakes.select_category,
@@ -336,6 +338,7 @@ class EventParts {
     this.status.onUpdate(ev.status ?? EMPTY_STRING);
     this.sensitivity.onUpdate(ev?.sensitivity ?? SensitivityPart.STATES.public);
     this.alarm.init(ev);
+    this.extraAlarms.init(ev);
     this.category.init(ev);
     this.date.init(ev);
     this.location.init(ev);
@@ -371,6 +374,7 @@ class EventParts {
 
   destroy() {
     this.location.destroy();
+    this.extraAlarms.destroy();
   }
 }
 
@@ -586,10 +590,18 @@ export class EventView {
    * @private
    */
   _generate_listeners() {
-    if ((rcmail._events?.[LISTENER_SAVE_EVENT]?.length ?? 0) > 0)
-      delete rcmail._events[LISTENER_SAVE_EVENT];
+    // if ((rcmail._events?.[LISTENER_SAVE_EVENT]?.length ?? 0) > 0)
+    //   delete rcmail._events[LISTENER_SAVE_EVENT];
 
-    rcmail.addEventListener(LISTENER_SAVE_EVENT, this.before_save.bind(this));
+    // rcmail.addEventListener(LISTENER_SAVE_EVENT, this.before_save.bind(this));
+    // MANTIS 0008412 : enregistré une seule fois, délègue à l'instance courante
+    if (!EventView._beforeSendRegistered) {
+      rcmail.addEventListener(
+        'calendar.save_event.before_send',
+        (args) => EventView.INSTANCE?.before_send(args) ?? args,
+      );
+      EventView._beforeSendRegistered = true;
+    }
   }
 
   /**
@@ -710,6 +722,23 @@ export class EventView {
     }
 
     return is_valid;
+  }
+  /**
+   * Remplace les valarms envoyés au serveur par la liste complète des rappels.
+   *
+   * Modifie `args.data` en place et renvoie `args`, pour rester compatible
+   * avec les autres écouteurs du hook (mel_workspace).
+   * @param {{data: Object, abort: boolean, calEvent: Object}} args
+   * @returns {Object}
+   */
+  before_send(args) {
+    if (!args?.data || !this.parts) return args;
+
+    args.data.valarms = this.parts.extraAlarms.buildValarms(
+      this.parts.alarm._$fakeField.val(),
+    );
+
+    return args;
   }
 
   /**
@@ -864,6 +893,7 @@ export class EventView {
  * @static
  */
 EventView.INSTANCE = null;
+EventView._beforeSendRegistered = false; //Mantis 8412
 
 /**
  * Liste des sélecteurs de la vue.

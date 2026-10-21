@@ -484,6 +484,10 @@ $labels['no_rappel'] = 'Aucun rappel';
 $labels['custom_alarm_title'] = 'Alarme personnalisée';
 $labels['validate'] = 'Valider';
 
+$labels['add_alarm']        = 'Ajouter un rappel';
+$labels['remove_alarm']     = 'Supprimer ce rappel';
+$labels['additional_alarm'] = 'Rappel supplémentaire';
+
 $labels['invalid_guests'] = 'Impossible d\'ajouter certains participants !';
 $labels['existing_guest'] = 'Le participant %0 existe déjà !';
 

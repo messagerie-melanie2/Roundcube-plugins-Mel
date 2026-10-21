@@ -1249,10 +1249,10 @@ if (rcmail && window.mel_metapage) {
       //Affichage de la récurrence puis de l'alarme
       let rec =
         event.recurrence_text === undefined ? null : event.recurrence_text;
-      let alarm =
-        event.alarms !== undefined ? new Alarm(event.alarms).toString() : null;
+      const alarms = Alarm.listFromEvent(event).filter((a) => a.time > 0);
+      const alarm = alarms.length ? alarms.map((a) => a.toString()).join(', ') : null;
 
-      html += `<div class=row style="margin-top:5px">${rec !== null ? `<div class=col-6>${rec}</div>` : ''}${alarm !== null ? `<div class=col-6><span class="icon-mel-notif mel-cal-icon"></span>Rappel : ${alarm}</div>` : ''}</div>`;
+      html += `<div class=row style="margin-top:5px">${rec !== null ? `<div class=col-6>${rec}</div>` : ''}${alarm !== null ? `<div class=col-6><span class="icon-mel-notif mel-cal-icon"></span>Rappel : ${alarms.length > 1 ? 's' : ''} : ${alarm}</div>` : ''}</div>`;
 
       let hasLocation = !!event.location;
       let location_phone = '';

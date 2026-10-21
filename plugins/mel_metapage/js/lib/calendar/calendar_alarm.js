@@ -57,59 +57,56 @@ export class Calendar_Alarm extends MelObject
     }
 
     /**
-     * Créer un timeout qui va afficher l'alarme lié à l'évènement.
+     * Mantis 0008412
+     * Planifie les rappels d'un évènement pour plusieurs rappels
      * @param {JSON} event Evènement de l'agenda
-     * @param {Moment} alarmDate Date pour le snooze
-     * @returns {number|null}
+     * @param {Moment|null} snoozeDate Date de fin du report, si l'évènement est reporté
+     * @returns {null}
      */
-    create_alarm(event, alarmDate = null)
+    create_alarm(event, snoozeDate = null)
     {
-        let start = moment(event.start);
-        let end = moment(event.end);
+        const now = moment();
+        const lastAck = event.x_moz_lastack
+            ? moment.utc(event.x_moz_lastack, 'YYYYMMDD[T]HHmmss[Z]')
+            : null;
 
-        let retour = null;
+        if (snoozeDate !== null) this._push(snoozeDate - now, event);
 
-        //mode d'alarme
-        const alarm = new Alarm(event.alarms);
-        switch (alarm.mode) {
-            case Alarm.enums.mode.display:
+        let pastPushed = false;
+        for (const alarm of Alarm.listFromEvent(event)) {
+            if (alarm.mode !== Alarm.enums.mode.display || alarm.time === 0) continue;
 
-                let time = 0;
+            const fireAt = alarm.type === Alarm.enums.type.after
+                ? moment(event.end).add(alarm.time, 'm')
+                : moment(event.start).subtract(alarm.time, 'm');
 
-                if (alarmDate === null)
-                {
-                    //type d'alarme
-                    switch (alarm.type) {
-                        case Alarm.enums.type.before:
-                            time = start.subtract(alarm.time, "m") - moment();
-                            break;
-                        case Alarm.enums.type.after:
-                            time = end.add(alarm.time, "m") - moment();
-                            break;
-                    
-                        default:
-                            break;
-                    }
-                }
-                else
-                    time = alarmDate - moment();
+            // Déjà acquitté, ou couvert par le report
+            if (lastAck && fireAt.isSameOrBefore(lastAck)) continue;
+            if (snoozeDate !== null && fireAt.isSameOrBefore(snoozeDate)) continue;
 
+            const time = fireAt - now;
 
-                if(time < Calendar_Alarm.max_time)
-                {
-                   // const id = this.generate_id(event.uid);
-                   this.showed_alarms.push(time, event);
-                    //retour = this.timeouts[id];
-                }
-                
-                break;
-        
-            default:
-                break;
+            // Un seul rappel "en retard" par évènement
+            if (time <= 0) {
+                if (pastPushed) continue;
+                pastPushed = true;
+            }
+
+            this._push(time, event);
         }
 
-        return retour;
+        return null;
+    }
 
+    /**
+     * Ajoute un rappel s'il est dans la fenêtre de planification
+     * @param {number} time Délai en ms
+     * @param {JSON} event
+     * @private
+     */
+    _push(time, event)
+    {
+        if (time < Calendar_Alarm.max_time) this.showed_alarms.push(time, event);
     }
 
     /**
@@ -243,7 +240,9 @@ export class Calendar_Alarm extends MelObject
     }
 
     is_alarm_valid(event) {
-        const alarm_is_defined = event.alarms !== undefined && event.alarms !== null;
+        //const alarm_is_defined = event.alarms !== undefined && event.alarms !== null;
+        const  alarm_is_defined = (event.valarms?.length ?? 0) > 0 ||
+          (event.alarms !== undefined && event.alarms !== null);
         const alarm_not_dismissed = event.alarm_dismissed !== true;
         const event_not_annulated = event.status !== "CANCELLED";
 

@@ -39,6 +39,8 @@ class mel_driver extends calendar_driver {
   const RECURRENCE_ID = '@RECURRENCE-ID';
   const RECURRENCE_DATE = '-XXXXXXXX';
   const CALENDAR_SEPARATOR = '##cal##';
+  //Mantis 008412 rappel supplémntaire
+  public const X_MEL_ALARMS = 'X-MEL-ALARMS';
 
   // features this backend supports
   public $alarms = true;
@@ -147,13 +149,60 @@ class mel_driver extends calendar_driver {
    * @return string Code couleur
    * @private
    */
-  private function _random_color() {
-    mt_srand(( double ) microtime() * 1000000);
-    $c = '';
-    while (strlen($c) < 6) {
-      $c .= sprintf("%02X", mt_rand(0, 255));
+  private function _random_color(): string {
+    return strtoupper(bin2hex(random_bytes(3)));
+  }
+    /**
+   * Convertit des minutes en trigger ISO 8601, toujours exprimé en minutes (sans perte).
+   * Positif = avant l'évènement, négatif = après.
+   */
+  private static function _minutes_to_trigger(int $minutes): string
+  {
+    return ($minutes > 0 ? '-' : '+') . 'PT' . abs($minutes) . 'M';
+  }
+
+  /**
+   * Extrait les rappels DISPLAY d'une liste de valarms, en minutes, sans zéro ni doublon.
+   * Le premier élément reste le rappel principal.
+   *
+   * @return int[]
+   */
+  private static function _valarms_to_minutes(array $valarms): array
+  {
+    $minutes = [];
+    foreach ($valarms as $valarm) {
+      if (!is_array($valarm)
+          || !isset($valarm['trigger'])
+          || !is_string($valarm['trigger'])          // ignore les alarmes absolues (DateTime)
+          || ($valarm['action'] ?? 'DISPLAY') !== 'DISPLAY') {
+        continue;
+      }
+      $m = (int) mel_mapping::valarm_ics_to_minutes_trigger($valarm['trigger']);
+      if ($m !== 0) {
+        $minutes[] = $m;
+      }
     }
-    return $c;
+    return array_values(array_unique($minutes));
+  }
+
+  /**
+   * Rappels d'un évènement Mél en minutes : colonne alarm puis attribut X-MEL-ALARMS.
+   *
+   * @return int[]
+   */
+  private function _read_alarm_minutes(object $event): array
+  {
+    $minutes = [(int) $event->alarm];
+    $extra   = $event->getAttribute(self::X_MEL_ALARMS);
+
+    if (is_string($extra) && $extra !== '') {
+      $decoded = json_decode($extra, true);
+      if (is_array($decoded)) {
+        $minutes = array_merge($minutes, array_map('intval', $decoded));
+      }
+    }
+
+    return array_values(array_unique(array_filter($minutes)));
   }
 
   /**
@@ -1562,16 +1611,23 @@ class mel_driver extends calendar_driver {
           $_event->alarm = mel_mapping::valarm_ics_to_minutes_trigger($valarm[0]);
         }
       }
-      // Utilisation du valarms
+      // MANTIS 0008412 : plusieurs rappels
       if (isset($event['valarms'])) {
-        if (isset($event['valarms'][0]) && isset($event['valarms'][0]['trigger']) && isset($event['valarms'][0]['action']) && $event['valarms'][0]['action'] == 'DISPLAY') {
-          $_event->alarm = mel_mapping::valarm_ics_to_minutes_trigger($event['valarms'][0]['trigger']);
-          // Remove cache
-          \mel::unsetCache('events_alarm');
+        $minutes = self::_valarms_to_minutes((array) $event['valarms']);
+        // Premier rappel dans la colonne , les suivants en attribut
+        $_event->alarm = $minutes[0] ?? 0;
+        $extra = count($minutes) > 1 ? json_encode(array_slice($minutes, 1)) : null;
+        if ($_event->getAttribute(self::X_MEL_ALARMS) !== $extra){
+          $_event->setAttribute(self::X_MEL_ALARMS, $extra);
         }
+        \mel::unsetCache('events_alarm');
       }
-      else {
+      // Ne pas écraser une alarme passée via le format historique 'alarms'
+      else if (!isset($event['alarms'])) {
         $_event->alarm = 0;
+        if ($_event->getAttribute(self::X_MEL_ALARMS) !== null){
+          $_event->setAttribute(self::X_MEL_ALARMS, null);
+        }
       }
     }
     // Recurrence
@@ -2313,7 +2369,7 @@ class mel_driver extends calendar_driver {
               // Gérer l'alarme des occurrences
               // Traiter le lastack
               if (isset($next_event['x_moz_lastack']) && is_bool($next_event["alarm_dismissed"]) && $next_event["alarm_dismissed"]) {
-                $next_event["alarm_dismissed"] = ($next_event['start']->getTimestamp() - $next_event['x_alarm_minutes'] * 60) < strtotime($next_event['x_moz_lastack']);
+                $next_event["alarm_dismissed"] = ($next_event['start']->getTimestamp() - $next_event['x_alarm_last_minutes'] * 60) < strtotime($next_event['x_moz_lastack']);
               }
 
               // Garder la date du master
@@ -2540,39 +2596,22 @@ class mel_driver extends calendar_driver {
         if (isset($event->category) && !empty($event->category)) {
           $_event['categories'] = explode(',', $event->category);
         }
-        // TODO: Alarme
-        // Alarm
-        if (isset($event->alarm) && $event->alarm != 0) {
+        // MANTIS 0008412 : plusieurs rappels
+        if (isset($event->alarm) && (int) $event->alarm !== 0) {
+          $minutes = $this->_read_alarm_minutes($event);
 
-          $modifier = 1;
+          $_event['x_alarm_minutes']      = (int) $event->alarm;
+          // Rappel le plus proche de l'évènement 
+          $_event['x_alarm_last_minutes'] = min($minutes);
+          $_event['x_moz_lastack']        = $event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_LASTACK);
+          $_event['x_moz_snooze_time']    = $event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_SNOOZE_TIME);
 
-          $_event['x_alarm_minutes'] = $event->alarm;
-          $_event['x_moz_lastack'] = $event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_LASTACK);
-          $_event['x_moz_snooze_time'] = $event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_SNOOZE_TIME);;
-
-          if ($event->alarm > 0) {
-            $_event['alarms'] = "-PT" . $event->alarm . "M:DISPLAY";
-          }
-          else {
-            $_event['alarms'] = "+" . str_replace('-', '', "PT" . strval($event->alarm)) . "M:DISPLAY";
-            $modifier = -1;
-          }
-
-          $tmp_alarm = $event->alarm * $modifier;
-          $alarm_char = "M";
-
-          if ($tmp_alarm >= 1440)
-          {
-            $tmp_alarm /= 1440;
-            $alarm_char = "D"; 
-          }
-          else if ($tmp_alarm >= 60)
-          {
-            $tmp_alarm /= 60;
-            $alarm_char = "H"; 
-          }
-
-          $_event['valarms'] = [['action' => 'DISPLAY','trigger' => ($modifier > 0 ? "-" : "+")."PT" . $tmp_alarm . $alarm_char]];
+          // Format historique conservé pour la compatibilité
+          $_event['alarms']  = self::_minutes_to_trigger((int) $event->alarm) . ':DISPLAY';
+          $_event['valarms'] = array_map(
+            fn(int $m): array => ['action' => 'DISPLAY', 'trigger' => self::_minutes_to_trigger($m)],
+            $minutes,
+          );
         }
 
         // Attendees
@@ -2686,7 +2725,7 @@ class mel_driver extends calendar_driver {
             $start = DateTime::createFromFormat('Y-m-d H:i', $start->format('Y-m-d').' 00:00');
           }
 
-          $_event["alarm_dismissed"] = ($start->getTimestamp() - $_event['x_alarm_minutes'] * 60) < strtotime($_event['x_moz_lastack']);
+          $_event["alarm_dismissed"] = ($start->getTimestamp() - $_event['x_alarm_last_minutes'] * 60) < strtotime($_event['x_moz_lastack']);
         }
       }
     }

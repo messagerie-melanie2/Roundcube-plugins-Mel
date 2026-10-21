@@ -18,6 +18,14 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+use MelSignatures\SignatureStorageException;
+use MelSignatures\SignatureText;
+use MelSignatures\SignatureTitle;
+use MelSignatures\SignatureTitleDn;
+use MelSignatures\SignatureTitleRepository;
+use MelSignatures\SignatureTitleValidator;
+use MelSignatures\SignatureValidationError;
+
 class mel_signatures extends bnum_plugin
 {
     /**
@@ -32,11 +40,46 @@ class mel_signatures extends bnum_plugin
     private $rc;
 
     /**
+     * Messages affichés après une redirection : valeur de `_msg` => [clé du texte, type de message Roundcube].
+     * Seules ces clés sont acceptées, jamais un texte venant de l'URL.
+     */
+    private const array ADMIN_MESSAGES = [
+        'saved'          => ['admin_title_msg_saved', 'confirmation'],
+        'deleted'        => ['admin_title_msg_deleted', 'confirmation'],
+        'default_set'    => ['admin_title_msg_default_set', 'confirmation'],
+        'not_found'      => ['admin_title_msg_not_found', 'error'],
+        'dn_saved'       => ['admin_msg_dn_saved', 'confirmation'],
+        'dn_deleted'     => ['admin_msg_dn_deleted', 'confirmation'],
+        'save_error'     => ['admin_msg_save_error', 'error'],
+        'db_unavailable' => ['admin_db_unavailable', 'error'],
+    ];
+
+    /**
+     * Actions d'écriture de l'administration : POST et jeton CSRF obligatoires.
+     */
+    private const array ADMIN_WRITE_ACTIONS = [
+        'plugin.mel_signatures_admin_save',
+        'plugin.mel_signatures_admin_delete',
+        'plugin.mel_signatures_admin_set_default',
+        'plugin.mel_signatures_admin_save_dn',
+        'plugin.mel_signatures_admin_delete_dn',
+    ];
+
+    /**
+     * Accès aux tables des libellés, créé au premier besoin (voir titles()).
+     */
+    private ?SignatureTitleRepository $titles = null;
+
+    /**
      * (non-PHPdoc)
      * @see rcube_plugin::init()
      */
-    function init()
+    #[\Override]
+    public function init(): void
     {
+        // Classes de lib/
+        $this->register_class_autoloader();
+
         $this->rc = rcmail::get_instance();
 
         if ($this->rc->task == 'settings') {
@@ -59,6 +102,27 @@ class mel_signatures extends bnum_plugin
                 'save_signature'
             ));
         }
+    }
+
+    /**
+     * Chargement automatique (PSR-4) des classes de l'espace de noms MelSignatures\,
+     * rangées dans lib/ : MelSignatures\SignatureTitle → lib/SignatureTitle.php.
+     */
+    private function register_class_autoloader(): void
+    {
+        spl_autoload_register(static function (string $class): void {
+            $prefix = 'MelSignatures\\';
+
+            if (!str_starts_with($class, $prefix)) {
+                return;
+            }
+
+            $file = __DIR__ . '/lib/' . str_replace('\\', '/', substr($class, strlen($prefix))) . '.php';
+
+            if (is_file($file)) {
+                require $file;
+            }
+        });
     }
 
     /**
@@ -493,5 +557,54 @@ class mel_signatures extends bnum_plugin
        $html = preg_replace(array('/<!--[^>]+-->/', '/<\/?body>/'), '', $html);
    
        return $html;
+    }
+
+    // -------------------------------------------------
+    // Administration des libellés du bloc Marque État 
+    // -------------------------------------------------
+
+    /**
+     * Indique si l'utilisateur courant figure dans `signatures_admin_list`.
+     */
+    private function is_signatures_admin(): bool
+    {
+        $uid = driver_mel::gi()->getUser()->uid;
+
+        return in_array($uid, (array) $this->rc->config->get('signatures_admin_list', []), true);
+    }
+
+    /**
+     * Arrête la requête sur une page d'erreur si l'utilisateur n'est pas administrateur.
+     */
+    private function require_signatures_admin(): void
+    {
+        if (!$this->is_signatures_admin()) {
+            $this->show_message_error($this->gettext('admin_access_denied'));
+            $this->send_and_exit('error');
+        }
+    }
+
+    /**
+     * Indique si les libellés doivent être lus en base (`signatures_db_enabled`).
+     */
+    private function db_enabled(): bool
+    {
+        return (bool) $this->rc->config->get('signatures_db_enabled', false);
+    }
+
+    /**
+     * Accès aux tables des libellés (créé une seule fois par requête).
+     */
+    private function titles(): SignatureTitleRepository
+    {
+        return $this->titles ??= new SignatureTitleRepository($this->db());
+    }
+
+    /**
+     * Règles de saisie des libellés et des DN.
+     */
+    private function validator(): SignatureTitleValidator
+    {
+        return new SignatureTitleValidator($this->titles());
     }
 }

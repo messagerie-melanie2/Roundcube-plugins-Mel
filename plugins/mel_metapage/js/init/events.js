@@ -2295,7 +2295,6 @@ if (rcmail && window.mel_metapage) {
 
       // make sure this new shortcut is always active
       menu.addEventListener('activate', function (p) {
-        console.log('p', p);
         switch (p.command) {
           case 'move':
             $(p.el).attr('aria-disabled', 'false').parent().css('display', '');

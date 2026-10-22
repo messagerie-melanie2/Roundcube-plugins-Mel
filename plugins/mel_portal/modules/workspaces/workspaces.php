@@ -224,7 +224,7 @@ class Workspaces extends Module
     //$this->plugin->include_script($this->folder().'/flux_rss/js/main.js');
   }
 
-  public function register_actions()
+  public function register_actions():?array
   {
     return [
       new Module_Action("get_html_workspaces", $this, "get_workspaces")

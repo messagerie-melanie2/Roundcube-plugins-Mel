@@ -360,12 +360,13 @@ class mel extends rcube_plugin
    */
   public static function get_account()
   {
-    if (isset($_POST['_account']) && !empty($_POST['_account'])) {
-      $_account = trim(rcube_utils::get_input_value('_account', rcube_utils::INPUT_POST));
-    } else {
-      $_account = trim(rcube_utils::get_input_value('_account', rcube_utils::INPUT_GET));
-    }
-    return $_account;
+    $INPUT_TYPE = isset($_POST['_account']) && !empty($_POST['_account']) ? rcube_utils::INPUT_POST : rcube_utils::INPUT_GET;
+
+    $_account = rcube_utils::get_input_value('_account', $INPUT_TYPE);
+
+    if ($_account !== null) $_account = trim((string) $_account);
+
+    return $_account ?? '';
   }
 
   /**

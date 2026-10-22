@@ -1,17 +1,25 @@
 <?php
 declare(strict_types=1);
 
+use BnumPlugin\Helpers\Loader;
+
 /**
  * Bootstrap du plugin.
  *
- * Charge l'autoloader Composer ainsi que les fichiers `glitchtip.php` et
- * `helpers/constants.php`, nécessaires au fonctionnement du plugin.
+ * Charge l'autoloader Composer, les helpers (`LogLevel`, `constants`,
+ * `Loader`), `glitchtip.php`, puis `bnum_plugin` s'il n'est pas déjà déclaré.
+ *
+ * @throws \BnumPlugin\Helpers\RequiredFileNotFoundException Si `bnum_plugin.php` est introuvable.
  *
  * @return void
  */
 return static function (): void {
-    require_once __DIR__.'/../vendor/autoload.php';
-    require_once __DIR__.'/helpers/LogLevel.php';
-    require_once __DIR__.'/helpers/constants.php';
-    require_once __DIR__.'/glitchtip.php';
+    require_once __DIR__ . '/../vendor/autoload.php';
+    require_once __DIR__ . '/helpers/LogLevel.php';
+    require_once __DIR__ . '/helpers/constants.php';
+    require_once __DIR__ . '/helpers/RequiredFileNotFoundException.php';
+    require_once __DIR__ . '/helpers/loaderClass.php';
+    require_once __DIR__ . '/glitchtip.php';
+
+    Loader::ensure_bnum_plugin();
 };

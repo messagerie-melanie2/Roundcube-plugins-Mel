@@ -154,8 +154,12 @@ class Gestionnairelistes extends Moncompteobject {
 				$group = driver_mel::gi()->getGroup($dn_list, false, true, 'webmail.moncompte.grouplistes');
 				if ($group->load(['owners', 'members_email', 'is_dynamic', 'liens_import']) 
 						&& $group->isOwner($user)) {
-					$list_emails = array_map('strtolower', $group->members_email);
-					sort($list_emails);
+					
+					if (is_array($group->members_email)) {
+						$list_emails = array_map('strtolower', $group->members_email);
+						sort($list_emails);
+					}
+
 					$islistdyn = $group->is_dynamic || !empty($group->liens_import);
 				}
 			}
@@ -192,14 +196,17 @@ class Gestionnairelistes extends Moncompteobject {
 							$new_member->email = $new_smtp;
 							if ($new_member->load(['uid'])) {
 								if (!isset($list_members[$new_member->uid])) {
-									$list_members[$new_member->uid] = $new_member;
-									$group->members = $list_members;
+									if (isset($new_member->email) && isset($new_member->uid)) {
+										$list_members[$new_member->uid] = $new_member;
+										$group->members = $list_members;
+									}
+									else mel_logs::gi()->log(mel_logs::WARN, "[moncompte::addExterneMember]Impossible d'ajouter $new_smtp");
 								}
 							}
 							if (!in_array($new_smtp, $list_emails)) {
 								$list_emails[] = strtolower($new_smtp);
 								sort($list_emails);
-								$group->members_email = $list_emails;
+								$group->members_email = array_filter($list_emails, fn($item) => isset($item));
 							}
 							$ret = $group->save();
 							if (is_null($ret)) {
@@ -333,6 +340,9 @@ class Gestionnairelistes extends Moncompteobject {
 				}
 			}
 		}
+
+		$export ??= "";
+
 		header('Content-Type: application/csv');
 		header('Content-disposition: attachment; filename=Export_liste_' . date('d/m/y') . '.csv');
 		header('Content-Length: ' . strlen($export));
@@ -343,7 +353,7 @@ class Gestionnairelistes extends Moncompteobject {
 	/**
 	 * Upload d'un fichier CSV pour importer des membres du groupe
 	 */
-	public function uploadCSVMembers() {
+	public static function uploadCSVMembers() {
 		$dn_list = rcube_utils::get_input_value('_dn_list', rcube_utils::INPUT_POST);
 		$list_emails = [];
 		
@@ -382,7 +392,9 @@ class Gestionnairelistes extends Moncompteobject {
 							$member_to_add->email = $member;
 							if ($member_to_add->load(['uid']) 
 									&& !isset($list_members[$member_to_add->uid])) {
-								$list_members[$member_to_add->uid] = $member_to_add;
+								
+								if (!isset($member_to_add->email) || !isset($member_to_add->uid)) $addr_error[] = $member;
+								else $list_members[$member_to_add->uid] = $member_to_add;
 							}
 						}
 						sort($list_emails);
@@ -399,6 +411,7 @@ class Gestionnairelistes extends Moncompteobject {
 				}
 			}
 		}
+		$addr_error ??= [];
 		$result = array('action' => 'plugin.listes_upload_csv', 'data' => $list_emails, 'dn_list' => $dn_list, 'addr_error' => $addr_error);
 		rcmail::get_instance()->output->command('plugin.import_listes_csv_success', $result);
 		rcmail::get_instance()->output->send('iframe');

@@ -1,4 +1,5 @@
 <?php
+include_once __DIR__.'/../lib/mel/mel.php';
 /**
  * Page d'accueil de l'application pour les utilisateurs externes
  * 

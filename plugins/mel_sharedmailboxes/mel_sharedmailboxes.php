@@ -47,6 +47,7 @@ class mel_sharedmailboxes extends rcube_plugin {
      * @var string
      */
     private $prev_folder;
+    private bool $ui_initialized = false;
 
     /**
      * Initialisation du plugin
@@ -1284,6 +1285,10 @@ class mel_sharedmailboxes extends rcube_plugin {
      * @param array $args
      */
     public function set_folder_name($args) {
+        if (!is_string($args['folder'] ?? null /* ?? null Désactive le warning*/)) {
+            return $args;
+        }
+
         // Recherche multi-dossiers (portée « Sous-dossiers » ou « Tous les dossiers ») : rcube_imap::search()
         // transmet un tableau de dossiers. On convertit les corbeilles individuelles une à une ; la
         // reconnexion de boîte partagée ci-dessous ne concerne qu'un dossier unique.
@@ -1291,13 +1296,12 @@ class mel_sharedmailboxes extends rcube_plugin {
             $args['folder'] = array_map(function ($folder) {
                 return $this->is_individual_trash($folder) ? $this->get_trash_folder_name($folder) : $folder;
             }, $args['folder']);
-
-            return $args;
         }
 
         if ($this->is_individual_trash($args['folder'])) {
             $args['folder'] = $this->get_trash_folder_name($args['folder']);
         }
+
         if (isset($this->prev_folder) && $this->prev_folder != $args['folder']) {
             $relog = false;
             if (strpos($args['folder'], driver_mel::gi()->getBalpLabel()) === 0 && strpos($this->prev_folder, driver_mel::gi()->getBalpLabel()) === 0) {

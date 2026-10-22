@@ -1186,7 +1186,7 @@ if (rcmail && window.mel_metapage) {
        */
       const audioFunction = function (phone, pin, textKey, icon) {
         return `
-          <div id="location-mel-phone-calendar" class="row" style="${rowStyle}">
+          <div id="location-mel-phone-calendar-${phone}-${pin}" class="row" style="${rowStyle}">
             <div class="col-12" style="${colStyle}">
 
               <!-- Numéro de téléphone cliquable avec icône tél -->
@@ -1270,6 +1270,16 @@ if (rcmail && window.mel_metapage) {
         let element;
         for (let index = 0; index < tmp_location.length; ++index) {
           element = tmp_location[index];
+          const plugin = rcmail.triggerEvent('event.show.location', {
+            html: '',
+            location: element,
+            audioFunction,
+          });
+
+          if (plugin && plugin.html) {
+            html += plugin.html;
+            continue;
+          }
 
           if (
             element.includes('(') &&

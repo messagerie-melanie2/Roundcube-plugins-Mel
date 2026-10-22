@@ -3934,6 +3934,7 @@ class mel_metapage extends bnum_plugin
      *
      * @return void
      */
+    #[\Bnum\Attributes\ToDo(what:'Rendre plus flexible et pas dépendant à mel_metapage')]
     private function set_plugin_env_exist()
     {
 
@@ -3972,6 +3973,10 @@ class mel_metapage extends bnum_plugin
 
         if (class_exists('mel_visio')) {
             $this->rc->output->set_env("plugin_list_visio", true);
+        }
+
+        if (class_exists('visio')) {
+            $this->rc->output->set_env("plugin_list_d_visio", true);
         }
     }
 

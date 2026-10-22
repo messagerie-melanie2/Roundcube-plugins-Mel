@@ -14,9 +14,9 @@ export class VisioDinumLocationAction extends ActionLocation {
    * @returns {VisioDinumLocationAction} Chaînage
    */
   side_action() {
-    const url = this.location.includes('http')
+    const url = (this.location.includes('http')
       ? this.location
-      : `https://${this.location}`;
+      : `https://${this.location}`).split(' ')?.[0] || this.location;
 
     window.open(url, '_blank', 'noopener,noreferrer');
     return this;

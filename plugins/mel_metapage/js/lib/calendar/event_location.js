@@ -1,5 +1,5 @@
 import ABaseMelObject from '../base_mel_object.js';
-import { EMPTY_STRING } from '../constants/constants.js';
+import { EMPTY_STRING, SPACE } from '../constants/constants.js';
 import { MainIconHtml } from '../html/html_icon.js';
 
 export { EventLocation, ActionLocation };
@@ -105,9 +105,11 @@ class CustomVisioLocation extends ActionLocation {
   }
 
   side_action() {
-    const link = this.location.includes('http')
-      ? this.location
-      : `https://${this.location}`;
+    const link =
+      (this.location.includes('http')
+        ? this.location
+        : `https://${this.location}`
+      ).split(SPACE)?.[0] || this.location;
     window.open(link, '_blank');
     return this;
   }
@@ -121,7 +123,15 @@ class CustomVisioLocation extends ActionLocation {
   }
 
   static is_custom_visio(txt) {
-    return txt.includes(CustomVisioLocation.visio_key);
+    return (
+      txt.includes(CustomVisioLocation.visio_key) || this.#_is_old_visio(txt)
+    );
+  }
+
+  static #_is_old_visio(txt) {
+    return !EventLocation.VisioEnabled()
+      ? txt.includes('/public/webconf')
+      : false;
   }
 }
 
@@ -255,7 +265,9 @@ class EventLocation extends BaseLocation {
           },
         );
 
-        if (plugin && plugin.generated) new_locations = plugin.generated;
+        if (plugin && plugin.generated && plugin.generated !== new_locations)
+          new_locations = plugin.generated;
+        else new_locations.locations.push(new BaseLocation(element));
       }
     }
 

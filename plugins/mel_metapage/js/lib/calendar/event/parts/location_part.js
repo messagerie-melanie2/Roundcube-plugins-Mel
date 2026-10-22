@@ -16,6 +16,7 @@ import {
 } from '../../../constants/regexp.js';
 import { MelHtml } from '../../../html/JsHtml/MelHtml.js';
 import { BnumEvent } from '../../../mel_events.js';
+import { MelObject } from '../../../mel_object.js';
 import { Mel_Promise } from '../../../mel_promise.js';
 import { EventView } from '../event_view.js';
 // eslint-disable-next-line no-unused-vars
@@ -2040,7 +2041,12 @@ export class LocationPartManager extends IDestroyable {
  * @type {Array<typeof AVisio>}
  * @static
  */
-VisioManager.TYPES = [IntegratedVisio, ExternalVisio];
+VisioManager.TYPES = [
+  ...[
+    MelObject.Empty().get_env('plugin_list_visio') ? IntegratedVisio : null,
+  ].filter((x) => x !== null),
+  ExternalVisio,
+];
 
 /**
  * Liste des différentes classes qui gère les différentes parties des emplacements

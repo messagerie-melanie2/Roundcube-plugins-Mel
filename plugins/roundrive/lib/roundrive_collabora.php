@@ -41,7 +41,7 @@ class roundrive_collabora
 
     public function create_text_document($path, $name, $model)
     {
-        return $this->create_document($path, $name, "odt", $model);
+        return $this->create_document($path, $name, "docx", $model);
     }
 
     public function create_spreadsheet_document($path, $name, $model)

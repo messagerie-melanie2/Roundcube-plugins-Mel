@@ -403,7 +403,7 @@ html.layout-phone .from-annuaire {
   display: block !important;
 }
 
-#toolbar-menu .create {
+html body.task-addressbook #toolbar-menu .create {
   display: none;
 }
 

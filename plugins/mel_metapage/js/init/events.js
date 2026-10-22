@@ -1844,6 +1844,16 @@ if (rcmail && window.mel_metapage) {
             querry.click((e) => {
               e.preventDefault();
               e.stopPropagation();
+
+              if (!rcmail.env.plugin_list_visio) {
+                window.open(
+                  querry.attr('href'),
+                  '_blank',
+                  'noopener,noreferrer',
+                );
+                return;
+              }
+
               modal.close();
               const categoryExist =
                 event.categories !== undefined &&
@@ -2620,13 +2630,17 @@ $(document).ready(() => {
           reloop = false;
           switch (_switch === null ? null : _switch.value) {
             case plugins.webconf:
-              const key = url.replace(_switch.key, '').replaceAll('/', '');
+              if (rcmail.env.plugin_list_visio) {
+                const key = url.replace(_switch.key, '').replaceAll('/', '');
 
-              top.webconf_helper.go(key, null, '@home');
+                top.webconf_helper.go(key, null, '@home');
 
-              if (after !== null) after();
+                if (after !== null) after();
 
-              event.preventDefault();
+                event.preventDefault();
+              } else {
+                window.open(url, '_blank', 'noopener,noreferrer');
+              }
               break;
             case plugins.drive:
               const stockage_url =

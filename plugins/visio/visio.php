@@ -239,14 +239,8 @@ final class visio extends bnum_plugin
     private function respond(VisioApiResponse $response): void
     {
         if ($response->is_failure()) {
-            mel_logs::gi()->log(mel_logs::ERROR, "[visio] Échec appel API (HTTP {$response->http_code})");
-            if (bnum_glitchtip::isLogLevel(LogLevel::Error)) 
-                bnum_glitchtip::logError("Échec appel API (HTTP {$response->http_code})");
-
-            if (bnum_glitchtip::isLogLevel(LogLevel::Debug)) {
-                $data = json_encode($response);
-                bnum_glitchtip::logDebug("Données : $data");
-            }
+            if (mel_logs::is(mel_logs::ERROR))
+                mel_logs::gi()->log(mel_logs::ERROR, "[visio] Échec appel API (HTTP {$response->http_code})");
         }
 
         $this->sendEncodedExit($response);

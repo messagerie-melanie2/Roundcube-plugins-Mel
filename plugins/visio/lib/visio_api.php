@@ -228,10 +228,6 @@ final class visio_api extends amel_lib
 
         if ($response->http_code !== 200 || !is_string($token)) {
             mel_logs::gi()->log(mel_logs::ERROR, "[visio_api] Échec récupération token (HTTP {$response->http_code}) : " . ($response->content['error'] ?? 'erreur inconnue'));
-            
-            if (bnum_glitchtip::isLogLevel(LogLevel::Error)) 
-                bnum_glitchtip::logError("Échec récupération token (HTTP {$response->http_code}) : " . ($response->content['error'] ?? 'erreur inconnue'));
-
             return null;
         }
 

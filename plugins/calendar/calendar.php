@@ -4125,7 +4125,9 @@ $("#rcmfd_new_category").keypress(function(event) {
                     $metadata['attendee'] = $sender_identity['email'];
                     // PAMELA - Mode assistantes
                     $metadata['attendee_name']  = $sender_identity['name'];
-                    $metadata['attendee_email'] = strtolower($attendee['email']);
+                    // PAMELA 0008705 - List invitation : 
+                    // Use the address of the added participant not $attendee (the last element of the loop, e.g., the list)
+                    $metadata['attendee_email'] = strtolower($sender_identity['email']);
 
                     $default_identity   = $this->rc->user->get_identity();
                     $reply_sender       = $default_identity['email'];

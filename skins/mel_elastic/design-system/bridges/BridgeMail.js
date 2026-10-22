@@ -174,6 +174,7 @@ export default class BridgeMail extends ABridge {
 
   static #ENVS = {
     TASK: 'task',
+    ACTION: 'action',
     CONTEXT_MENU: 'context_menu',
     MAILBOX: 'mailbox',
     MAILBOXES: 'mailboxes',
@@ -225,6 +226,10 @@ export default class BridgeMail extends ABridge {
   /** @returns {BridgeMail} */
   _p_onReady() {
     if (this.get_env(BridgeMail.#ENVS.TASK) !== 'mail') return this;
+    if (
+      ![EMPTY_STRING, 'index'].includes(this.get_env(BridgeMail.#ENVS.ACTION))
+    )
+      return this;
 
     return this.#initListeners().#registerCommands();
   }

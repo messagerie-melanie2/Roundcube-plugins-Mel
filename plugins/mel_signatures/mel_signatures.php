@@ -43,15 +43,15 @@ class mel_signatures extends bnum_plugin
      * Messages affichés après une redirection : valeur de `_msg` => [clé du texte, type de message Roundcube].
      * Seules ces clés sont acceptées, jamais un texte venant de l'URL.
      */
-    private const array ADMIN_MESSAGES = [
-        'saved'          => ['admin_title_msg_saved', 'confirmation'],
-        'deleted'        => ['admin_title_msg_deleted', 'confirmation'],
-        'default_set'    => ['admin_title_msg_default_set', 'confirmation'],
-        'not_found'      => ['admin_title_msg_not_found', 'error'],
-        'dn_saved'       => ['admin_msg_dn_saved', 'confirmation'],
-        'dn_deleted'     => ['admin_msg_dn_deleted', 'confirmation'],
-        'save_error'     => ['admin_msg_save_error', 'error'],
-        'db_unavailable' => ['admin_db_unavailable', 'error'],
+    private const array STATUS_MESSAGES = [
+        'saved'          => ['title_msg_saved', 'confirmation'],
+        'deleted'        => ['title_msg_deleted', 'confirmation'],
+        'default_set'    => ['title_msg_default_set', 'confirmation'],
+        'not_found'      => ['title_msg_not_found', 'error'],
+        'dn_saved'       => ['title_msg_dn_saved', 'confirmation'],
+        'dn_deleted'     => ['title_msg_dn_deleted', 'confirmation'],
+        'save_error'     => ['title_msg_save_error', 'error'],
+        'db_unavailable' => ['title_db_unavailable', 'error'],
     ];
 
     /**
@@ -176,9 +176,9 @@ class mel_signatures extends bnum_plugin
             $args['actions'][] = [
                 'action' => 'plugin.mel_signatures_list_titles',
                 'class'  => 'signature-titles',
-                'label'  => 'admin_title_menu',
+                'label'  => 'title_menu',
                 'domain' => 'mel_signatures',
-                'title'  => 'admin_title_menu_title',
+                'title'  => 'title_menu_title',
             ];
         }
 
@@ -732,7 +732,7 @@ class mel_signatures extends bnum_plugin
             'signaturetitleslist' => fn (array $attrib): string => $this->titles_list_html($attrib, $titles, $default_id),
         ]);
 
-        $this->set_page_title($this->gettext('admin_title_list_title'));
+        $this->set_page_title($this->gettext('title_list_title'));
         $this->send_and_exit('mel_signatures.signature_titles_list');
         exit;
     }
@@ -791,21 +791,18 @@ class mel_signatures extends bnum_plugin
             'signaturetitledns'  => fn (array $attrib): string => $this->title_dns_html($title_id, $dns, $dn_draft),
         ]);
 
-        $this->set_page_title($title?->label ?: $this->gettext('admin_title_new'));
+        $this->set_page_title($title?->label ?: $this->gettext('title_new'));
         $this->send_and_exit('mel_signatures.signature_title_edit');
         exit;
     }
 
     /**
-     * Ajoute les feuilles de style et le script des pages d'administration.
-     *
-     * Comme mel_forum et annuaire : une feuille de mise en page (compilée depuis le LESS),
-     * puis la surcouche DSFR du Bnum (signature_titles_dsfr.css), chargée en second pour l'emporter.
+     * Ajoute la feuille de style (compilée depuis less/signature_titles.less) et le script
+     * des pages d'administration. Boutons, recherche et badge viennent du design system Bnum.
      */
     private function include_titles_assets(): void
     {
         $this->include_stylesheet($this->local_skin_path() . '/signature_titles.css');
-        $this->include_stylesheet($this->local_skin_path() . '/signature_titles_dsfr.css');
         $this->include_script('signature_titles.js');
     }
 
@@ -819,42 +816,30 @@ class mel_signatures extends bnum_plugin
     private function titles_list_html(array $attrib, ?array $titles, ?int $default_id): string
     {
         $header = html::div('signature-titles-header',
-            html::tag('h1', 'signature-titles-heading', rcube::Q($this->gettext('admin_title_list_title')))
-            . html::a(['href' => $this->title_edit_url(), 'class' => 'btn btn-primary signature-titles-new'], rcube::Q($this->gettext('admin_title_new')))
+            html::tag('h1', 'signature-titles-heading', rcube::Q($this->gettext('title_list_title')))
+            . html::a(['href' => $this->title_edit_url(), 'class' => 'signature-titles-new'], rcube::Q($this->gettext('title_new')))
         );
 
-        $intro = $header . html::p('text-muted', rcube::Q($this->gettext('admin_title_list_help')));
+        $intro = $header . html::p('text-muted', rcube::Q($this->gettext('title_list_help')));
 
         if ($titles === null) {
-            return $intro . html::p('signature-titles-alert signature-titles-alert-error', rcube::Q($this->gettext('admin_db_unavailable')));
+            return $intro . html::p('signature-titles-alert signature-titles-alert-error', rcube::Q($this->gettext('title_db_unavailable')));
         }
 
         if ($titles === []) {
-            return $intro . html::p('signature-titles-alert signature-titles-alert-info', rcube::Q($this->gettext('admin_title_no_item')));
+            return $intro . html::p('signature-titles-alert signature-titles-alert-info', rcube::Q($this->gettext('title_no_item')));
         }
 
-        // Barre de recherche DSFR : champ, bouton « ✖ » (visible dès qu'un texte est saisi), loupe décorative.
-        // Le filtrage se fait pendant la saisie (signature_titles.js) : la loupe n'est pas un bouton.
+        // Recherche : composant <bnum-input-search> du design system Bnum (champ, bouton de vidage, loupe).
+        // Le filtrage se fait pendant la saisie (signature_titles.js). Le texte du composant sert de libellé
+        // pour les lecteurs d'écran, comme dans la recherche des mails (mail.html du skin).
         $filter = html::div(['class' => 'signature-titles-search', 'role' => 'search'],
-            html::label(['for' => 'signature-titles-filter', 'class' => 'sr-only'], rcube::Q($this->gettext('admin_title_filter')))
-            . (new html_inputfield([
-                'type'         => 'search',
-                'id'           => 'signature-titles-filter',
-                'class'        => 'signature-titles-search-input',
-                'placeholder'  => $this->gettext('admin_title_filter'),
-                'autocomplete' => 'off',
-            ]))->show()
-            . html::tag('button', [
-                    'type'       => 'button',
-                    'id'         => 'signature-titles-filter-clear',
-                    'class'      => 'signature-titles-search-clear',
-                    'title'      => $this->gettext('admin_filter_clear'),
-                    'aria-label' => $this->gettext('admin_filter_clear'),
-                    'hidden'     => 'hidden',
+            html::tag('bnum-input-search', [
+                    'id'          => 'signature-titles-filter',
+                    'placeholder' => $this->gettext('title_filter'),
                 ],
-                html::span(['class' => 'material-symbols-outlined', 'aria-hidden' => 'true'], 'close')
+                html::span('sr-only', rcube::Q($this->gettext('title_filter')))
             )
-            . html::span(['class' => 'signature-titles-search-icon material-symbols-outlined', 'aria-hidden' => 'true'], 'search')
         );
 
         // data-template : le même texte avec « $count » non remplacé ; signature_titles.js
@@ -862,9 +847,9 @@ class mel_signatures extends bnum_plugin
         $count = html::p([
                 'id'            => 'signature-titles-count',
                 'class'         => 'signature-titles-count',
-                'data-template' => $this->gettext('admin_title_count'),
+                'data-template' => $this->gettext('title_count'),
             ],
-            rcube::Q($this->gettext(['name' => 'admin_title_count', 'vars' => ['count' => count($titles)]]))
+            rcube::Q($this->gettext(['name' => 'title_count', 'vars' => ['count' => count($titles)]]))
         );
 
         $entries = '';
@@ -886,7 +871,7 @@ class mel_signatures extends bnum_plugin
                 'role'   => 'status',
                 'hidden' => 'hidden',
             ],
-            rcube::Q($this->gettext('admin_no_result'))
+            rcube::Q($this->gettext('title_no_result'))
         );
 
         return $intro . $filter . $count
@@ -906,12 +891,12 @@ class mel_signatures extends bnum_plugin
         $title_id = $title?->id ?? 0;
 
         $back = html::a(
-            ['href' => $this->action_url('plugin.mel_signatures_list_titles'), 'class' => 'btn btn-secondary signature-titles-back'],
-            rcube::Q($this->gettext('admin_title_back'))
+            ['href' => $this->action_url('plugin.mel_signatures_list_titles'), 'class' => 'signature-titles-back'],
+            rcube::Q($this->gettext('title_back'))
         );
 
         $heading = html::tag('h1', 'signature-titles-heading',
-            rcube::Q($title?->label ?: $this->gettext('admin_title_new'))
+            rcube::Q($title?->label ?: $this->gettext('title_new'))
             . ($is_default ? ' ' . $this->default_badge_html() : '')
         );
 
@@ -944,24 +929,26 @@ class mel_signatures extends bnum_plugin
             ],
             $this->hidden_fields_html(['_id' => $title_id])
             . html::div('form-group',
-                html::label('signature-titles-label', rcube::Q($this->gettext('admin_title_label_field')))
+                html::label('signature-titles-label', rcube::Q($this->gettext('title_label_field')))
                 . $label_input
             )
             . html::div('form-group',
-                html::label('signature-titles-signature-text', rcube::Q($this->gettext('admin_title_value_field')))
+                html::label('signature-titles-signature-text', rcube::Q($this->gettext('title_value_field')))
                 . $text_input
-                . html::tag('small', 'form-text text-muted', rcube::Q($this->gettext('admin_title_value_help')))
+                . html::tag('small', 'form-text text-muted', rcube::Q($this->gettext('title_value_help')))
             )
         );
 
         // « Enregistrer » est placé hors du formulaire, sur la même ligne que les autres boutons
-        // (un formulaire ne peut pas en contenir un autre) : l'attribut form="…" le rattache au formulaire.
-        $save = html::tag('button', [
-                'type'  => 'submit',
-                'form'  => 'signature-titles-form',
-                'class' => 'btn btn-primary signature-titles-save',
+        // (un formulaire ne peut pas en contenir un autre) : data-form désigne le formulaire,
+        // que signature_titles.js soumet au clic (les boutons du design system ne le font pas seuls).
+        $save = html::tag('bnum-primary-button', [
+                'data-icon'     => 'save',
+                'data-icon-pos' => 'left',
+                'data-submit'   => '1',
+                'data-form'     => 'signature-titles-form',
             ],
-            rcube::Q($this->gettext('admin_title_save'))
+            rcube::Q($this->gettext('title_save'))
         );
 
         // Création : pas encore de bouton « Définir par défaut » ni « Supprimer »
@@ -973,17 +960,17 @@ class mel_signatures extends bnum_plugin
         if ($is_default) {
             return $back . $heading . $form
                 . html::div('signature-titles-actions', $save)
-                . html::p('text-muted signature-titles-default-note', rcube::Q($this->gettext('admin_title_default_not_deletable')));
+                . html::p('text-muted signature-titles-default-note', rcube::Q($this->gettext('title_default_not_deletable')));
         }
 
-        $confirm = $this->gettext(['name' => 'admin_title_confirm_delete', 'vars' => [
+        $confirm = $this->gettext(['name' => 'title_confirm_delete', 'vars' => [
             'label' => $title->label,
             'count' => $dn_count,
         ]]);
 
         $actions = $save
-            . $this->post_button_html('plugin.mel_signatures_set_default_title', ['_id' => $title_id], $this->gettext('admin_title_set_default'), 'btn btn-secondary signature-titles-set-default')
-            . $this->post_button_html('plugin.mel_signatures_delete_title', ['_id' => $title_id], $this->gettext('admin_title_delete'), 'btn btn-danger signature-titles-delete', $confirm);
+            . $this->post_button_html('plugin.mel_signatures_set_default_title', ['_id' => $title_id], $this->gettext('title_set_default'), 'bnum-secondary-button', 'check')
+            . $this->post_button_html('plugin.mel_signatures_delete_title', ['_id' => $title_id], $this->gettext('title_delete'), 'bnum-danger-button', 'delete', $confirm);
 
         return $back . $heading . $form . html::div('signature-titles-actions', $actions);
     }
@@ -999,7 +986,7 @@ class mel_signatures extends bnum_plugin
     private function title_dns_html(int $title_id, array $dns, string $dn_draft): string
     {
         if ($title_id === 0) {
-            return html::p('text-muted', rcube::Q($this->gettext('admin_dns_after_create')));
+            return html::p('text-muted', rcube::Q($this->gettext('title_dns_after_create')));
         }
 
         $rows  = '';
@@ -1009,7 +996,7 @@ class mel_signatures extends bnum_plugin
             // La ligne « default » s'affiche sans bouton : on la déplace depuis un autre libellé
             if ($dn->isDefault()) {
                 $rows .= html::tag('li', 'signature-titles-dn signature-titles-dn-default',
-                    $this->default_badge_html() . ' ' . rcube::Q($this->gettext('admin_title_default_dn_help'))
+                    $this->default_badge_html() . ' ' . rcube::Q($this->gettext('title_default_dn_help'))
                 );
                 continue;
             }
@@ -1023,21 +1010,22 @@ class mel_signatures extends bnum_plugin
                 . $this->post_button_html(
                     'plugin.mel_signatures_delete_title_dn',
                     ['_id' => $title_id, '_dn_id' => $dn->id],
-                    $this->gettext(['name' => 'admin_delete_dn', 'vars' => ['dn' => $dn->dn]]),
-                    'signature-titles-dn-delete',
-                    $this->gettext('admin_confirm_delete_dn'),
+                    $this->gettext(['name' => 'title_delete_dn', 'vars' => ['dn' => $dn->dn]]),
+                    'bnum-icon-button',
+                    'delete',
+                    $this->gettext('title_confirm_delete_dn'),
                     icon_only: true,
                 )
             );
         }
 
         $heading = html::tag('h2', 'signature-titles-subheading',
-            rcube::Q($this->gettext(['name' => 'admin_dns_heading', 'vars' => ['count' => $count]]))
+            rcube::Q($this->gettext(['name' => 'title_dns_heading', 'vars' => ['count' => $count]]))
         );
 
         $list = $rows !== ''
             ? html::tag('ul', 'signature-titles-dns', $rows)
-            : html::p('text-muted', rcube::Q($this->gettext('admin_no_dn')));
+            : html::p('text-muted', rcube::Q($this->gettext('title_no_dn')));
 
         return $heading . $list . $this->dn_add_form_html($title_id, $dn_draft);
     }
@@ -1052,8 +1040,8 @@ class mel_signatures extends bnum_plugin
             'class'       => 'form-control',
             'maxlength'   => SignatureTitleValidator::MAX_DN_LENGTH,
             'required'    => 'required',
-            'placeholder' => $this->gettext('admin_dn_placeholder'),
-            'aria-label'  => $this->gettext('admin_dn_field'),
+            'placeholder' => $this->gettext('title_dn_placeholder'),
+            'aria-label'  => $this->gettext('title_dn_field'),
         ]);
 
         return html::tag('form', [
@@ -1063,26 +1051,29 @@ class mel_signatures extends bnum_plugin
             ],
             $this->hidden_fields_html(['_id' => $title_id])
             . $input->show($dn_draft)
-            . html::tag('button',
-                ['type' => 'submit', 'class' => 'btn btn-secondary signature-titles-add-dn'],
-                rcube::Q($this->gettext('admin_add_dn'))
+            . html::tag('bnum-secondary-button',
+                ['data-icon' => 'add', 'data-icon-pos' => 'left', 'data-submit' => '1'],
+                rcube::Q($this->gettext('title_add_dn'))
             )
         );
     }
 
     /**
-     * Formulaire POST réduit à un bouton (définir par défaut, supprimer…).
+     * Formulaire POST réduit à un bouton du design system Bnum (définir par défaut, supprimer…).
+     * Le bouton porte data-submit : signature_titles.js soumet le formulaire au clic.
      *
      * @param array<string, int> $fields    Champs cachés envoyés avec le bouton
+     * @param string             $tag       Composant : bnum-secondary-button, bnum-danger-button ou bnum-icon-button
+     * @param string             $icon      Icône Material Symbols (save, check, delete…)
      * @param string|null        $confirm   Question posée par signature_titles.js avant l'envoi
-     * @param bool               $icon_only Bouton sans texte visible (icône ajoutée par CSS) :
+     * @param bool               $icon_only Bouton sans texte visible (bnum-icon-button) :
      *                                      $label devient l'infobulle et le nom lu par les lecteurs d'écran
      */
-    private function post_button_html(string $action, array $fields, string $label, string $class, ?string $confirm = null, bool $icon_only = false): string
+    private function post_button_html(string $action, array $fields, string $label, string $tag, string $icon, ?string $confirm = null, bool $icon_only = false): string
     {
         $button = $icon_only
-            ? html::tag('button', ['type' => 'submit', 'class' => $class, 'title' => $label, 'aria-label' => $label], '')
-            : html::tag('button', ['type' => 'submit', 'class' => $class], rcube::Q($label));
+            ? html::tag($tag, ['class' => 'signature-titles-dn-delete', 'title' => $label, 'aria-label' => $label, 'data-submit' => '1'], rcube::Q($icon))
+            : html::tag($tag, ['data-icon' => $icon, 'data-icon-pos' => 'left', 'data-submit' => '1'], rcube::Q($label));
 
         return html::tag('form', [
                 'method'       => 'post',
@@ -1111,11 +1102,15 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * Badge « Défaut » (style DSFR dans signature_titles_dsfr.css).
+     * Badge « Défaut » : composant <bnum-badge> du design system Bnum, variation secondaire.
      */
     private function default_badge_html(): string
     {
-        return html::span('signature-titles-badge', rcube::Q($this->gettext('admin_default_badge')));
+        return html::tag('bnum-badge', [
+            'class'          => 'signature-titles-badge',
+            'data-value'     => $this->gettext('title_default_badge'),
+            'data-variation' => 'secondary',
+        ], '');
     }
 
     /**
@@ -1192,7 +1187,7 @@ class mel_signatures extends bnum_plugin
 
         if ($is_default) {
             // Sans lui, les agents dont le DN n'est pas reconnu n'auraient plus rien de proposé
-            $this->show_message_error($this->gettext('admin_title_error_default_not_deletable'));
+            $this->show_message_error($this->gettext('title_error_default_not_deletable'));
             $this->render_title_page($title);
         }
 
@@ -1289,14 +1284,14 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * Affiche le message demandé par `_msg` après une redirection (liste blanche ADMIN_MESSAGES).
+     * Affiche le message demandé par `_msg` après une redirection (liste blanche STATUS_MESSAGES).
      */
     private function show_status_message(): void
     {
         $key = (string) $this->get_input('_msg', rcube_utils::INPUT_GET);
 
-        if (isset(self::ADMIN_MESSAGES[$key])) {
-            [$label, $type] = self::ADMIN_MESSAGES[$key];
+        if (isset(self::STATUS_MESSAGES[$key])) {
+            [$label, $type] = self::STATUS_MESSAGES[$key];
             $this->show_message($this->gettext($label), $type);
         }
     }

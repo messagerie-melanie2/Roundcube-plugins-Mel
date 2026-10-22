@@ -32,11 +32,11 @@ final class SignatureTitleValidator
     public function validateTitle(SignatureTitle $title): ?SignatureValidationError
     {
         $key = match (true) {
-            $title->label === ''                                               => 'admin_error_label_required',
-            mb_strlen($title->label) > self::MAX_LABEL_LENGTH                  => 'admin_error_label_too_long',
-            $title->signatureText === ''                                       => 'admin_title_error_value_required',
-            mb_strlen($title->signatureText) > self::MAX_SIGNATURE_TEXT_LENGTH => 'admin_title_error_value_too_long',
-            $this->repository->labelExists($title->label, $title->id)          => 'admin_title_error_label_exists',
+            $title->label === ''                                               => 'title_error_label_required',
+            mb_strlen($title->label) > self::MAX_LABEL_LENGTH                  => 'title_error_label_too_long',
+            $title->signatureText === ''                                       => 'title_error_value_required',
+            mb_strlen($title->signatureText) > self::MAX_SIGNATURE_TEXT_LENGTH => 'title_error_value_too_long',
+            $this->repository->labelExists($title->label, $title->id)          => 'title_error_label_exists',
             default                                                            => null,
         };
 
@@ -54,11 +54,11 @@ final class SignatureTitleValidator
         $owner = $dn === '' ? null : $this->repository->findDnOwnerLabel($dn);
 
         $key = match (true) {
-            $dn === ''                                       => 'admin_error_dn_required',
-            mb_strlen($dn) > self::MAX_DN_LENGTH             => 'admin_error_dn_too_long',
-            strcasecmp($dn, SignatureTitleDn::DEFAULT) === 0 => 'admin_error_dn_reserved',
-            !str_contains($dn, '=')                          => 'admin_error_dn_invalid',
-            $owner !== null                                  => 'admin_error_dn_exists',
+            $dn === ''                                       => 'title_error_dn_required',
+            mb_strlen($dn) > self::MAX_DN_LENGTH             => 'title_error_dn_too_long',
+            strcasecmp($dn, SignatureTitleDn::DEFAULT) === 0 => 'title_error_dn_reserved',
+            !str_contains($dn, '=')                          => 'title_error_dn_invalid',
+            $owner !== null                                  => 'title_error_dn_exists',
             default                                          => null,
         };
 

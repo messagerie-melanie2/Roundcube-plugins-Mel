@@ -32,6 +32,11 @@ class mel_external_users extends rcube_plugin {
   private $rc;
 
   /**
+   * Tâches interdites aux externes, quelle que soit la méthode HTTP
+   */
+  private const FORBIDDEN_TASKS = ['mail', 'calendar', 'bureau', 'addressbook'];
+
+  /**
    * Initialisation du plugin
    *
    * @see rcube_plugin::init()
@@ -59,21 +64,27 @@ class mel_external_users extends rcube_plugin {
    * Les externes ne peuvent pas se connecter a toutes les tasks
    */
   public function startup($args) {
-    if (driver_mel::gi()->getUser($args['user'])->is_external) {
-      if ($this->rc->task == 'bnum') {
-          $task = rcube_utils::get_input_value('_initial_task', rcube_utils::INPUT_GPC);
+    $user = driver_mel::gi()->getUser();
+    if ($user === null || !$user->is_external) {
+      return $args;
+    }
+
+    $task = strtolower((string) $this->rc->task);
+    if ($task === 'bnum') {
+      $task = strtolower(rcube_utils::get_input_string('_initial_task', rcube_utils::INPUT_GET));
+    }
+
+    if (in_array($task, self::FORBIDDEN_TASKS, true)) {
+      if (($_SERVER['REQUEST_METHOD'] ?? '') === 'GET') {
+        header('Location: ' . $this->rc->url(['task' => 'workspace']));
       }
       else {
-          $task = $this->rc->task;
+        header('HTTP/1.1 403 Forbidden');
       }
-
-      if (in_array($task, array('mail', 'calendar', 'bureau', 'addressbook')) && $_SERVER['REQUEST_METHOD'] === 'GET') {
-          header('Location: ' . $this->rc->url(['task' => 'workspace']));
-          exit;
-      }
-
-      $this->add_hook('main-nav-bar', [$this, 'main_nav_manager']);
+      exit;
     }
+
+    $this->add_hook('main-nav-bar', [$this, 'main_nav_manager']);
     return $args;
   }
 

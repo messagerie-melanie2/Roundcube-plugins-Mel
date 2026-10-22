@@ -971,14 +971,26 @@ class mel_news extends bnum_plugin {
       exit;
     }
 
-    $fileName = rcube_utils::get_input_value("_file", rcube_utils::INPUT_GPC);
-    $url = rcube_utils::get_input_value("_url", rcube_utils::INPUT_GPC);
+    $url = $this->get_input("_url");
+    $intra = $this->rc->config->get('intranet_list', []);
+
+    // "_file" n'est plus jamais lu depuis la requête HTTP : on le recalcule
+    // systématiquement à partir de la configuration admin, pour empêcher
+    // tout SSRF (_url arbitraire) ou traversée de répertoire (_file arbitraire).
+    $fileName = is_string($url) && array_key_exists($url, $intra)
+      ? $this->get_file_name($intra[$url]["feedUrl"])
+      : false;
+
+    if ($fileName === false)
+    {
+      header('HTTP/1.0 404 Not Found');
+      exit;
+    }
 
     //Si on est en mode "TOUTES LES NEWS"
     if ($this->get_news_mode() === self::MODE_ALL)
     {
       include_once "lib/news_datas.php";
-      $intra = $this->rc->config->get('intranet_list', []);
       $file = [];
 
       foreach ($this->generate_all_from_rss($fileName, $url) as $value) {
@@ -1093,46 +1105,104 @@ class mel_news extends bnum_plugin {
     return new rss_xml_datas($url, new SimpleXMLElement($text));
   }
 
+  /**
+   * Nettoie un nom de fichier destiné au cache RSS local : rejette toute
+   * traversée de répertoire ou caractère inattendu (défense en profondeur,
+   * même si l'appelant est censé fournir un nom déjà dérivé de la
+   * configuration admin `intranet_list`).
+   *
+   * @param mixed $fileName
+   *
+   * @return string|false Nom de fichier nettoyé, ou false s'il est invalide
+   */
+  private function sanitize_file_name($fileName)
+  {
+    if (!is_string($fileName) || $fileName === '') return false;
+
+    $fileName = basename($fileName);
+
+    if (!preg_match('/^[A-Za-z0-9._-]+$/', $fileName)) return false;
+
+    return $fileName;
+  }
+
   private function write_to_file($fileName, $text)
   {
     if (!$this->is_write_enabled()) return;
 
+    $fileName = $this->sanitize_file_name($fileName);
+    if ($fileName === false) {
+      mel_logs::gi()->log(mel_logs::ERROR, "[mel_news] write_to_file() nom de fichier invalide rejeté");
+      return;
+    }
+
     $folderPath = $this->rc->config->get('folder_path', 'files');
     $path = "$folderPath/$fileName";
 
-    $myfile = fopen($path, "w") or die("Unable to open file!");
+    $myfile = fopen($path, "w");
+    if ($myfile === false) {
+      mel_logs::gi()->log(mel_logs::ERROR, "[mel_news] write_to_file() impossible d'ouvrir '$fileName' en écriture");
+      return;
+    }
     fwrite($myfile, $text);
     fclose($myfile);
   }
 
+  /**
+   * Récupère le flux RSS distant correspondant à $url et met à jour le cache local.
+   *
+   * Défense en profondeur : même si get_rss_data() valide déjà $url contre
+   * intranet_list avant tout appel, on revérifie ici afin qu'un futur appelant
+   * ne puisse pas réintroduire un SSRF par erreur.
+   *
+   * @param string $url      Doit correspondre à une clé de la configuration intranet_list
+   * @param string $fileName Nom de fichier de cache déjà validé par l'appelant
+   *
+   * @return string|null Contenu récupéré, ou null en cas d'échec/cible refusée
+   */
   private function get_from_source($url, $fileName)
   {
+    $intra = $this->rc->config->get('intranet_list', []);
+
+    if (!is_string($url) || !array_key_exists($url, $intra) || !preg_match('/^https?:\/\//i', $url))
+    {
+      mel_logs::gi()->log(mel_logs::WARN, "[mel_news] get_from_source() cible refusée (hors intranet_list ou schéma invalide)");
+      return null;
+    }
 
     $proxy = $this->rc->config->get('news_proxy', null);
 
     if ($proxy !== null) $proxy = [CURLOPT_PROXY => $proxy];
 
-    if(substr($url, -1) === "/") $url = substr($url, 0, -1);
-    
+    if (substr($url, -1) === "/") $url = substr($url, 0, -1);
+
     $url .= "/spip.php?page=backend-actu";
 
-    $fetched = mel_helper::load_helper($this->rc)->fetch("", false, 0)->_get_url($url,
-      null,
-      null, 
-      $proxy
-    );
-    
+    $fetched = mel_helper::load_helper($this->rc)->fetch(
+      $this->rc->config->get('curl_user_agent', ''),
+      $this->rc->config->get('curl_ssl_verifierpeer', 1),
+      $this->rc->config->get('curl_ssl_verifierhost', 2)
+    )->_get_url($url, null, null, $proxy);
+
+    if ($fetched === null || $fetched["content"] === false)
+    {
+      mel_logs::gi()->log(mel_logs::ERROR, "[mel_news] get_from_source() échec de récupération du flux distant '" . (parse_url($url, PHP_URL_HOST) ?: '?') . "'");
+      return null;
+    }
+
     $fetched = $fetched["content"];
 
-    $a = $this->write_to_file($fileName, $fetched);
+    $this->write_to_file($fileName, $fetched);
 
     return $fetched;
-
   }
 
   private function get_from_file($fileName, $check = true)
   {
     if (!$this->is_read_enabled()) return false;
+
+    $fileName = $this->sanitize_file_name($fileName);
+    if ($fileName === false) return false;
 
     $folderPath = $this->rc->config->get('folder_path', 'files');
     $cacheTime = $this->rc->config->get('time_cache', 60) * 60;

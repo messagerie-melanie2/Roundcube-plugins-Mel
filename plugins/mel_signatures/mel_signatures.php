@@ -58,11 +58,11 @@ class mel_signatures extends bnum_plugin
      * Actions d'écriture de l'administration : POST et jeton CSRF obligatoires.
      */
     private const array ADMIN_WRITE_ACTIONS = [
-        'plugin.mel_signatures_admin_save',
-        'plugin.mel_signatures_admin_delete',
-        'plugin.mel_signatures_admin_set_default',
-        'plugin.mel_signatures_admin_save_dn',
-        'plugin.mel_signatures_admin_delete_dn',
+        'plugin.mel_signatures_save_title',
+        'plugin.mel_signatures_delete_title',
+        'plugin.mel_signatures_set_default_title',
+        'plugin.mel_signatures_add_title_dn',
+        'plugin.mel_signatures_delete_title_dn',
     ];
 
     /**
@@ -101,6 +101,9 @@ class mel_signatures extends bnum_plugin
                 $this,
                 'save_signature'
             ));
+
+            // Administration des libellés du bloc Marque État
+            $this->register_admin_actions();
         }
     }
 
@@ -126,9 +129,39 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * Adds Signatures section in Settings
+     * Enregistre les pages et les actions de l'administration des libellés.
+     *
+     * Les actions sont enregistrées pour tout le monde : chacune vérifie elle-même
+     * les droits (require_signatures_admin()), ce qui protège aussi les appels directs.
      */
-    function settings_actions($args)
+    private function register_admin_actions(): void
+    {
+        $actions = [
+            'plugin.mel_signatures_list_titles'      => $this->list_titles(...),
+            'plugin.mel_signatures_edit_title'        => $this->edit_title(...),
+            'plugin.mel_signatures_save_title'        => $this->save_title(...),
+            'plugin.mel_signatures_delete_title'      => $this->delete_title(...),
+            'plugin.mel_signatures_set_default_title' => $this->set_default_title(...),
+            'plugin.mel_signatures_add_title_dn'     => $this->add_title_dn(...),
+            'plugin.mel_signatures_delete_title_dn'   => $this->delete_title_dn(...),
+        ];
+
+        foreach ($actions as $action => $callback) {
+            $this->api->register_action($action, $this->ID, $callback);
+        }
+
+        // Refuse toute écriture qui n'est pas un POST muni du jeton CSRF de Roundcube
+        $this->protect_actions(self::ADMIN_WRITE_ACTIONS);
+    }
+
+    /**
+     * Adds Signatures section in Settings
+     *
+     * @param array<string, mixed> $args Paramètres du hook settings_actions
+     *
+     * @return array<string, mixed>
+     */
+    public function settings_actions(array $args): array
     {
         $args['actions'][] = array(
             'action' => 'plugin.mel_signatures',
@@ -137,6 +170,18 @@ class mel_signatures extends bnum_plugin
             'domain' => 'mel_signatures',
             'title'  => 'signaturestitle',
         );
+
+        // Entrée « Modifier les signatures », pour les seuls administrateurs
+        if ($this->is_signatures_admin()) {
+            $args['actions'][] = [
+                'action' => 'plugin.mel_signatures_list_titles',
+                'class'  => 'signature-titles',
+                'label'  => 'admin_title_menu',
+                'domain' => 'mel_signatures',
+                'title'  => 'admin_title_menu_title',
+            ];
+        }
+
         return $args;
     }
 
@@ -662,5 +707,644 @@ class mel_signatures extends bnum_plugin
     private function validator(): SignatureTitleValidator
     {
         return new SignatureTitleValidator($this->titles());
+    }
+
+    /**
+     * Page « Libellés des signatures » : liste alphabétique (GET).
+     */
+    public function list_titles(): never
+    {
+        $this->require_signatures_admin();
+        $this->show_status_message();
+        $this->include_titles_assets();
+
+        try {
+            $titles     = $this->titles()->findAll();
+            $default_id = $this->titles()->findDefaultTitleId();
+        }
+        catch (SignatureStorageException) {
+            // Le handler affiche « Les tables de signatures sont introuvables… »
+            $titles     = null;
+            $default_id = null;
+        }
+
+        $this->rc->output->add_handlers([
+            'signaturetitleslist' => fn (array $attrib): string => $this->titles_list_html($attrib, $titles, $default_id),
+        ]);
+
+        $this->set_page_title($this->gettext('admin_title_list_title'));
+        $this->send_and_exit('mel_signatures.signature_titles_list');
+        exit;
+    }
+
+    /**
+     * Page de création (sans `_id`) ou de modification d'un libellé (GET).
+     */
+    public function edit_title(): never
+    {
+        $this->require_signatures_admin();
+
+        $title_id = (int) $this->get_input('_id', rcube_utils::INPUT_GET);
+        $title    = null;
+
+        if ($title_id > 0) {
+            try {
+                $title = $this->titles()->find($title_id);
+            }
+            catch (SignatureStorageException) {
+                $this->redirect_to_action('plugin.mel_signatures_list_titles', ['_msg' => 'db_unavailable']);
+            }
+
+            if ($title === null) {
+                $this->redirect_to_action('plugin.mel_signatures_list_titles', ['_msg' => 'not_found']);
+            }
+        }
+
+        $this->show_status_message();
+        $this->render_title_page($title);
+    }
+
+    /**
+     * Affiche la page de modification d'un libellé (création si $title vaut null).
+     * Sert aussi à réafficher le formulaire, avec la saisie de l'admin, après une erreur.
+     *
+     * @param string $dn_draft DN saisi à remettre dans le formulaire d'ajout après une erreur
+     */
+    private function render_title_page(?SignatureTitle $title, string $dn_draft = ''): never
+    {
+        $title_id   = $title?->id ?? 0;
+        $is_default = false;
+        $dns        = [];
+
+        try {
+            $is_default = $title_id > 0 && $this->titles()->findDefaultTitleId() === $title_id;
+            $dns        = $title_id > 0 ? $this->titles()->findDns($title_id) : [];
+        }
+        catch (SignatureStorageException) {
+            $this->redirect_to_action('plugin.mel_signatures_list_titles', ['_msg' => 'db_unavailable']);
+        }
+
+        $this->include_titles_assets();
+
+        $this->rc->output->add_handlers([
+            'signaturetitleform' => fn (array $attrib): string => $this->title_form_html($title, $is_default, count($dns)),
+            'signaturetitledns'  => fn (array $attrib): string => $this->title_dns_html($title_id, $dns, $dn_draft),
+        ]);
+
+        $this->set_page_title($title?->label ?: $this->gettext('admin_title_new'));
+        $this->send_and_exit('mel_signatures.signature_title_edit');
+        exit;
+    }
+
+    /**
+     * Ajoute les feuilles de style et le script des pages d'administration.
+     *
+     * Comme mel_forum et annuaire : une feuille de mise en page (compilée depuis le LESS),
+     * puis la surcouche DSFR du Bnum (signature_titles_dsfr.css), chargée en second pour l'emporter.
+     */
+    private function include_titles_assets(): void
+    {
+        $this->include_stylesheet($this->local_skin_path() . '/signature_titles.css');
+        $this->include_stylesheet($this->local_skin_path() . '/signature_titles_dsfr.css');
+        $this->include_script('signature_titles.js');
+    }
+
+    /**
+     * Contenu de <roundcube:object name="signaturetitleslist" /> : titre, bouton « Nouveau libellé »,
+     * champ de recherche, compteur et liste alphabétique.
+     *
+     * @param array<string, string> $attrib     Attributs de la balise du template
+     * @param list<SignatureTitle>|null $titles Libellés, ou null si les tables sont inaccessibles
+     */
+    private function titles_list_html(array $attrib, ?array $titles, ?int $default_id): string
+    {
+        $header = html::div('signature-titles-header',
+            html::tag('h1', 'signature-titles-heading', rcube::Q($this->gettext('admin_title_list_title')))
+            . html::a(['href' => $this->title_edit_url(), 'class' => 'btn btn-primary signature-titles-new'], rcube::Q($this->gettext('admin_title_new')))
+        );
+
+        $intro = $header . html::p('text-muted', rcube::Q($this->gettext('admin_title_list_help')));
+
+        if ($titles === null) {
+            return $intro . html::p('signature-titles-alert signature-titles-alert-error', rcube::Q($this->gettext('admin_db_unavailable')));
+        }
+
+        if ($titles === []) {
+            return $intro . html::p('signature-titles-alert signature-titles-alert-info', rcube::Q($this->gettext('admin_title_no_item')));
+        }
+
+        // Barre de recherche DSFR : champ, bouton « ✖ » (visible dès qu'un texte est saisi), loupe décorative.
+        // Le filtrage se fait pendant la saisie (signature_titles.js) : la loupe n'est pas un bouton.
+        $filter = html::div(['class' => 'signature-titles-search', 'role' => 'search'],
+            html::label(['for' => 'signature-titles-filter', 'class' => 'sr-only'], rcube::Q($this->gettext('admin_title_filter')))
+            . (new html_inputfield([
+                'type'         => 'search',
+                'id'           => 'signature-titles-filter',
+                'class'        => 'signature-titles-search-input',
+                'placeholder'  => $this->gettext('admin_title_filter'),
+                'autocomplete' => 'off',
+            ]))->show()
+            . html::tag('button', [
+                    'type'       => 'button',
+                    'id'         => 'signature-titles-filter-clear',
+                    'class'      => 'signature-titles-search-clear',
+                    'title'      => $this->gettext('admin_filter_clear'),
+                    'aria-label' => $this->gettext('admin_filter_clear'),
+                    'hidden'     => 'hidden',
+                ],
+                html::span(['class' => 'material-symbols-outlined', 'aria-hidden' => 'true'], 'close')
+            )
+            . html::span(['class' => 'signature-titles-search-icon material-symbols-outlined', 'aria-hidden' => 'true'], 'search')
+        );
+
+        // data-template : le même texte avec « $count » non remplacé ; signature_titles.js
+        // s'en sert pour mettre le compteur à jour pendant la recherche (« 120 libellé(s) »)
+        $count = html::p([
+                'id'            => 'signature-titles-count',
+                'class'         => 'signature-titles-count',
+                'data-template' => $this->gettext('admin_title_count'),
+            ],
+            rcube::Q($this->gettext(['name' => 'admin_title_count', 'vars' => ['count' => count($titles)]]))
+        );
+
+        $entries = '';
+
+        foreach ($titles as $title) {
+            $badge = $title->id === $default_id ? ' ' . $this->default_badge_html() : '';
+
+            // Toute la ligne est le lien (badge compris) ; data-label : nom en minuscules,
+            // sur lequel signature_titles.js filtre la liste
+            $entries .= html::tag('li', ['data-label' => mb_strtolower($title->label)],
+                html::a(['href' => $this->title_edit_url($title->id)], rcube::Q($title->label) . $badge)
+            );
+        }
+
+        // Message affiché par signature_titles.js quand la recherche ne trouve rien
+        $no_result = html::p([
+                'id'     => 'signature-titles-no-result',
+                'class'  => 'signature-titles-no-result',
+                'role'   => 'status',
+                'hidden' => 'hidden',
+            ],
+            rcube::Q($this->gettext('admin_no_result'))
+        );
+
+        return $intro . $filter . $count
+            . html::tag('ul', $attrib + ['class' => 'signature-titles-list'], $entries)
+            . $no_result;
+    }
+
+    /**
+     * Contenu de <roundcube:object name="signaturetitleform" /> : retour, titre de la page,
+     * formulaire (nom + texte de signature), puis une rangée de boutons :
+     * « Enregistrer le libellé », « Définir comme libellé par défaut » et « Supprimer le libellé ».
+     *
+     * @param SignatureTitle|null $title Libellé affiché, ou null sur la page de création
+     */
+    private function title_form_html(?SignatureTitle $title, bool $is_default, int $dn_count): string
+    {
+        $title_id = $title?->id ?? 0;
+
+        $back = html::a(
+            ['href' => $this->action_url('plugin.mel_signatures_list_titles'), 'class' => 'btn btn-secondary signature-titles-back'],
+            rcube::Q($this->gettext('admin_title_back'))
+        );
+
+        $heading = html::tag('h1', 'signature-titles-heading',
+            rcube::Q($title?->label ?: $this->gettext('admin_title_new'))
+            . ($is_default ? ' ' . $this->default_badge_html() : '')
+        );
+
+        $label_input = (new html_inputfield([
+            'name'      => '_label',
+            'id'        => 'signature-titles-label',
+            'class'     => 'form-control',
+            'maxlength' => SignatureTitleValidator::MAX_LABEL_LENGTH,
+            'required'  => 'required',
+        ]))->show($title?->label ?? '');
+
+        // Texte de la signature : textarea, une ligne de signature par ligne saisie.
+        // html_textarea ignore « required » et « maxlength » : la balise est écrite directement.
+        $text_input = html::tag('textarea', [
+                'name'      => '_signature_text',
+                'id'        => 'signature-titles-signature-text',
+                'class'     => 'form-control',
+                'rows'      => 5,
+                'maxlength' => SignatureTitleValidator::MAX_SIGNATURE_TEXT_LENGTH,
+                'required'  => 'required',
+            ],
+            rcube::Q($title?->signatureText ?? '', 'strict', false)
+        );
+
+        $form = html::tag('form', [
+                'method' => 'post',
+                'action' => $this->action_url('plugin.mel_signatures_save_title'),
+                'id'     => 'signature-titles-form',
+                'class'  => 'signature-titles-form',
+            ],
+            $this->hidden_fields_html(['_id' => $title_id])
+            . html::div('form-group',
+                html::label('signature-titles-label', rcube::Q($this->gettext('admin_title_label_field')))
+                . $label_input
+            )
+            . html::div('form-group',
+                html::label('signature-titles-signature-text', rcube::Q($this->gettext('admin_title_value_field')))
+                . $text_input
+                . html::tag('small', 'form-text text-muted', rcube::Q($this->gettext('admin_title_value_help')))
+            )
+        );
+
+        // « Enregistrer » est placé hors du formulaire, sur la même ligne que les autres boutons
+        // (un formulaire ne peut pas en contenir un autre) : l'attribut form="…" le rattache au formulaire.
+        $save = html::tag('button', [
+                'type'  => 'submit',
+                'form'  => 'signature-titles-form',
+                'class' => 'btn btn-primary signature-titles-save',
+            ],
+            rcube::Q($this->gettext('admin_title_save'))
+        );
+
+        // Création : pas encore de bouton « Définir par défaut » ni « Supprimer »
+        if ($title_id === 0) {
+            return $back . $heading . $form . html::div('signature-titles-actions', $save);
+        }
+
+        // Libellé par défaut : ni « Définir par défaut » ni « Supprimer », une explication à la place
+        if ($is_default) {
+            return $back . $heading . $form
+                . html::div('signature-titles-actions', $save)
+                . html::p('text-muted signature-titles-default-note', rcube::Q($this->gettext('admin_title_default_not_deletable')));
+        }
+
+        $confirm = $this->gettext(['name' => 'admin_title_confirm_delete', 'vars' => [
+            'label' => $title->label,
+            'count' => $dn_count,
+        ]]);
+
+        $actions = $save
+            . $this->post_button_html('plugin.mel_signatures_set_default_title', ['_id' => $title_id], $this->gettext('admin_title_set_default'), 'btn btn-secondary signature-titles-set-default')
+            . $this->post_button_html('plugin.mel_signatures_delete_title', ['_id' => $title_id], $this->gettext('admin_title_delete'), 'btn btn-danger signature-titles-delete', $confirm);
+
+        return $back . $heading . $form . html::div('signature-titles-actions', $actions);
+    }
+
+    /**
+     * Contenu de <roundcube:object name="signaturetitledns" /> : DN du libellé, en lecture seule
+     * avec une corbeille, puis formulaire d'ajout. Sur la page de création : un simple message.
+     * Pour corriger un DN, l'admin le supprime puis le rajoute (choix du 20/10/2026).
+     *
+     * @param list<SignatureTitleDn> $dns      DN du libellé, ligne « default » comprise
+     * @param string                 $dn_draft DN saisi à remettre dans le formulaire d'ajout
+     */
+    private function title_dns_html(int $title_id, array $dns, string $dn_draft): string
+    {
+        if ($title_id === 0) {
+            return html::p('text-muted', rcube::Q($this->gettext('admin_dns_after_create')));
+        }
+
+        $rows  = '';
+        $count = 0;
+
+        foreach ($dns as $dn) {
+            // La ligne « default » s'affiche sans bouton : on la déplace depuis un autre libellé
+            if ($dn->isDefault()) {
+                $rows .= html::tag('li', 'signature-titles-dn signature-titles-dn-default',
+                    $this->default_badge_html() . ' ' . rcube::Q($this->gettext('admin_title_default_dn_help'))
+                );
+                continue;
+            }
+
+            $count++;
+
+            // Corbeille seule : le texte du bouton (« Supprimer le DN ou=… ») n'est lu
+            // que par les lecteurs d'écran et affiché en infobulle
+            $rows .= html::tag('li', 'signature-titles-dn',
+                html::span('signature-titles-dn-value', rcube::Q($dn->dn))
+                . $this->post_button_html(
+                    'plugin.mel_signatures_delete_title_dn',
+                    ['_id' => $title_id, '_dn_id' => $dn->id],
+                    $this->gettext(['name' => 'admin_delete_dn', 'vars' => ['dn' => $dn->dn]]),
+                    'signature-titles-dn-delete',
+                    $this->gettext('admin_confirm_delete_dn'),
+                    icon_only: true,
+                )
+            );
+        }
+
+        $heading = html::tag('h2', 'signature-titles-subheading',
+            rcube::Q($this->gettext(['name' => 'admin_dns_heading', 'vars' => ['count' => $count]]))
+        );
+
+        $list = $rows !== ''
+            ? html::tag('ul', 'signature-titles-dns', $rows)
+            : html::p('text-muted', rcube::Q($this->gettext('admin_no_dn')));
+
+        return $heading . $list . $this->dn_add_form_html($title_id, $dn_draft);
+    }
+
+    /**
+     * Formulaire d'ajout d'un DN : champ + bouton « Ajouter un DN ».
+     */
+    private function dn_add_form_html(int $title_id, string $dn_draft): string
+    {
+        $input = new html_inputfield([
+            'name'        => '_dn',
+            'class'       => 'form-control',
+            'maxlength'   => SignatureTitleValidator::MAX_DN_LENGTH,
+            'required'    => 'required',
+            'placeholder' => $this->gettext('admin_dn_placeholder'),
+            'aria-label'  => $this->gettext('admin_dn_field'),
+        ]);
+
+        return html::tag('form', [
+                'method' => 'post',
+                'action' => $this->action_url('plugin.mel_signatures_add_title_dn'),
+                'class'  => 'signature-titles-dn-form',
+            ],
+            $this->hidden_fields_html(['_id' => $title_id])
+            . $input->show($dn_draft)
+            . html::tag('button',
+                ['type' => 'submit', 'class' => 'btn btn-secondary signature-titles-add-dn'],
+                rcube::Q($this->gettext('admin_add_dn'))
+            )
+        );
+    }
+
+    /**
+     * Formulaire POST réduit à un bouton (définir par défaut, supprimer…).
+     *
+     * @param array<string, int> $fields    Champs cachés envoyés avec le bouton
+     * @param string|null        $confirm   Question posée par signature_titles.js avant l'envoi
+     * @param bool               $icon_only Bouton sans texte visible (icône ajoutée par CSS) :
+     *                                      $label devient l'infobulle et le nom lu par les lecteurs d'écran
+     */
+    private function post_button_html(string $action, array $fields, string $label, string $class, ?string $confirm = null, bool $icon_only = false): string
+    {
+        $button = $icon_only
+            ? html::tag('button', ['type' => 'submit', 'class' => $class, 'title' => $label, 'aria-label' => $label], '')
+            : html::tag('button', ['type' => 'submit', 'class' => $class], rcube::Q($label));
+
+        return html::tag('form', [
+                'method'       => 'post',
+                'action'       => $this->action_url($action),
+                'class'        => 'signature-titles-inline-form',
+                'data-confirm' => $confirm,
+            ],
+            $this->hidden_fields_html($fields) . $button
+        );
+    }
+
+    /**
+     * Champs cachés d'un formulaire.
+     *
+     * @param array<string, int> $fields Nom du champ => valeur
+     */
+    private function hidden_fields_html(array $fields): string
+    {
+        $hidden = new html_hiddenfield();
+
+        foreach ($fields as $name => $value) {
+            $hidden->add(['name' => $name, 'value' => $value]);
+        }
+
+        return $hidden->show();
+    }
+
+    /**
+     * Badge « Défaut » (style DSFR dans signature_titles_dsfr.css).
+     */
+    private function default_badge_html(): string
+    {
+        return html::span('signature-titles-badge', rcube::Q($this->gettext('admin_default_badge')));
+    }
+
+    /**
+     * Crée (`_id` = 0) ou modifie un libellé (POST).
+     */
+    public function save_title(): never
+    {
+        $this->require_signatures_admin();
+
+        $title = new SignatureTitle(
+            (int) $this->get_input_post('_id'),
+            trim((string) $this->get_input_post('_label')),
+            SignatureText::normalize((string) $this->get_input_post('_signature_text')),
+        );
+        $title_id = $title->id;
+        $error    = null;
+
+        try {
+            if ($title->id > 0 && $this->titles()->find($title->id) === null) {
+                $this->redirect_to_action('plugin.mel_signatures_list_titles', ['_msg' => 'not_found']);
+            }
+
+            $error = $this->validator()->validateTitle($title);
+
+            if ($error === null) {
+                if ($title_id === 0) {
+                    $title_id = $this->titles()->create($title);
+                }
+                else {
+                    $this->titles()->update($title);
+                }
+            }
+        }
+        catch (SignatureStorageException) {
+            $this->redirect_to_action('plugin.mel_signatures_list_titles', ['_msg' => 'save_error']);
+        }
+
+        if ($error !== null) {
+            // Réaffiche le formulaire avec la saisie de l'admin, sans rien enregistrer
+            $this->show_message_error($this->validation_error_text($error));
+            $this->render_title_page($title);
+        }
+
+        $this->log_change("libellé #$title_id enregistré : « {$title->label} »");
+        $this->redirect_to_action('plugin.mel_signatures_edit_title', ['_id' => $title_id, '_msg' => 'saved']);
+    }
+
+    /**
+     * Supprime un libellé et ses DN (POST). Refusé pour le libellé par défaut.
+     */
+    public function delete_title(): never
+    {
+        $this->require_signatures_admin();
+
+        $title_id   = (int) $this->get_input_post('_id');
+        $title      = null;
+        $is_default = false;
+
+        try {
+            $title      = $this->titles()->find($title_id);
+            $is_default = $this->titles()->findDefaultTitleId() === $title_id;
+
+            if ($title !== null && !$is_default) {
+                $this->titles()->delete($title_id);
+            }
+        }
+        catch (SignatureStorageException) {
+            $this->redirect_to_action('plugin.mel_signatures_edit_title', ['_id' => $title_id, '_msg' => 'save_error']);
+        }
+
+        if ($title === null) {
+            $this->redirect_to_action('plugin.mel_signatures_list_titles', ['_msg' => 'not_found']);
+        }
+
+        if ($is_default) {
+            // Sans lui, les agents dont le DN n'est pas reconnu n'auraient plus rien de proposé
+            $this->show_message_error($this->gettext('admin_title_error_default_not_deletable'));
+            $this->render_title_page($title);
+        }
+
+        $this->log_change("libellé #$title_id supprimé : « {$title->label} »");
+        $this->redirect_to_action('plugin.mel_signatures_list_titles', ['_msg' => 'deleted']);
+    }
+
+    /**
+     * Rattache la ligne « default » à ce libellé, en la créant si besoin (POST).
+     */
+    public function set_default_title(): never
+    {
+        $this->require_signatures_admin();
+
+        $title_id = (int) $this->get_input_post('_id');
+        $title    = null;
+
+        try {
+            $title = $this->titles()->find($title_id);
+
+            if ($title !== null) {
+                $this->titles()->setDefault($title_id);
+            }
+        }
+        catch (SignatureStorageException) {
+            $this->redirect_to_action('plugin.mel_signatures_edit_title', ['_id' => $title_id, '_msg' => 'save_error']);
+        }
+
+        if ($title === null) {
+            $this->redirect_to_action('plugin.mel_signatures_list_titles', ['_msg' => 'not_found']);
+        }
+
+        $this->log_change("libellé #$title_id défini par défaut");
+        $this->redirect_to_action('plugin.mel_signatures_edit_title', ['_id' => $title_id, '_msg' => 'default_set']);
+    }
+
+    /**
+     * Ajoute un DN à un libellé (POST). Un DN ne se modifie pas : on le supprime puis on le rajoute.
+     */
+    public function add_title_dn(): never
+    {
+        $this->require_signatures_admin();
+
+        $title_id = (int) $this->get_input_post('_id');
+        $dn       = trim((string) $this->get_input_post('_dn'));
+        $title    = null;
+        $error    = null;
+
+        try {
+            $title = $this->titles()->find($title_id);
+            $error = $title === null ? null : $this->validator()->validateDn($dn);
+
+            if ($title !== null && $error === null) {
+                $this->titles()->addDn($title_id, $dn);
+            }
+        }
+        catch (SignatureStorageException) {
+            $this->redirect_to_action('plugin.mel_signatures_edit_title', ['_id' => $title_id, '_msg' => 'save_error']);
+        }
+
+        if ($title === null) {
+            $this->redirect_to_action('plugin.mel_signatures_list_titles', ['_msg' => 'not_found']);
+        }
+
+        if ($error !== null) {
+            // Réaffiche la page avec le DN saisi dans le formulaire d'ajout
+            $this->show_message_error($this->validation_error_text($error));
+            $this->render_title_page($title, $dn);
+        }
+
+        $this->log_change("DN « $dn » ajouté au libellé #$title_id");
+        $this->redirect_to_action('plugin.mel_signatures_edit_title', ['_id' => $title_id, '_msg' => 'dn_saved']);
+    }
+
+    /**
+     * Supprime un DN d'un libellé (POST). La ligne « default » n'est jamais supprimée.
+     */
+    public function delete_title_dn(): never
+    {
+        $this->require_signatures_admin();
+
+        $title_id    = (int) $this->get_input_post('_id');
+        $title_dn_id = (int) $this->get_input_post('_dn_id');
+
+        try {
+            $this->titles()->deleteDn($title_id, $title_dn_id);
+        }
+        catch (SignatureStorageException) {
+            $this->redirect_to_action('plugin.mel_signatures_edit_title', ['_id' => $title_id, '_msg' => 'save_error']);
+        }
+
+        $this->log_change("DN #$title_dn_id supprimé du libellé #$title_id");
+        $this->redirect_to_action('plugin.mel_signatures_edit_title', ['_id' => $title_id, '_msg' => 'dn_deleted']);
+    }
+
+    /**
+     * Affiche le message demandé par `_msg` après une redirection (liste blanche ADMIN_MESSAGES).
+     */
+    private function show_status_message(): void
+    {
+        $key = (string) $this->get_input('_msg', rcube_utils::INPUT_GET);
+
+        if (isset(self::ADMIN_MESSAGES[$key])) {
+            [$label, $type] = self::ADMIN_MESSAGES[$key];
+            $this->show_message($this->gettext($label), $type);
+        }
+    }
+
+    /**
+     * Texte d'une erreur de saisie, avec ses variables.
+     */
+    private function validation_error_text(SignatureValidationError $error): string
+    {
+        return $this->gettext(['name' => $error->messageKey, 'vars' => $error->vars]);
+    }
+
+    /**
+     * URL d'une page ou d'une action de l'administration.
+     *
+     * @param array<string, int|string> $params Paramètres ajoutés à l'URL
+     */
+    private function action_url(string $action, array $params = []): string
+    {
+        return $this->rc->url(['_action' => $action] + $params);
+    }
+
+    /**
+     * URL de la page de modification d'un libellé (création si $title_id = 0).
+     */
+    private function title_edit_url(int $title_id = 0): string
+    {
+        return $this->action_url('plugin.mel_signatures_edit_title', $title_id > 0 ? ['_id' => $title_id] : []);
+    }
+
+    /**
+     * Redirige vers une page de l'administration et termine la requête.
+     * Après un POST, la redirection évite qu'un F5 renvoie le formulaire.
+     *
+     * @param array<string, int|string> $params Paramètres ajoutés à l'URL
+     */
+    private function redirect_to_action(string $action, array $params = []): never
+    {
+        $this->rc->output->redirect(['_action' => $action] + $params);
+        exit;
+    }
+
+    /**
+     * Trace une modification dans les journaux Bnum (qui a fait quoi).
+     */
+    private function log_change(string $message): void
+    {
+        $uid = driver_mel::gi()->getUser()->uid;
+        mel_logs::get_instance()->log(mel_logs::INFO, "[mel_signatures] $uid : $message");
     }
 }

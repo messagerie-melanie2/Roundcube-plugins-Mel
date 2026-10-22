@@ -322,14 +322,71 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * Handler pour le choix du logo
+     * Handler pour le choix du logo (bloc Marque État)
+     *
+     * Lit les libellés en base si `signatures_db_enabled` vaut true et que la table
+     * contient au moins un libellé ; sinon, lit la config comme avant.
+     *
+     * @param array<string, string> $attrib Attributs de la balise <roundcube:object name="signaturelogo" />
      */
-    function logo($attrib) {
-        if (empty($attrib['id']))
+    public function logo(array $attrib): string
+    {
+        if (empty($attrib['id'])) {
             $attrib['id'] = 'input-logo';
+        }
 
+        $content = $this->db_enabled() ? $this->logo_options_from_db() : null;
+        $content ??= $this->logo_options_from_config();
+
+        $this->rc->output->set_env('logo_sources', []);
+        return html::tag('select', $attrib, $content);
+    }
+
+    /**
+     * Options de la liste « Choix du bloc-marque état » construites depuis la base.
+     *
+     * @return string|null Les balises <option>, ou null si la table est absente ou vide
+     */
+    private function logo_options_from_db(): ?string
+    {
+        try {
+            $titles     = $this->titles()->findAll();
+            $default_id = $this->titles()->findTitleIdForUserDn((string) driver_mel::gi()->getUser()->dn);
+        }
+        catch (SignatureStorageException) {
+            // Tables absentes ou base indisponible : l'erreur SQL est dans errors.log, on lit la config
+            return null;
+        }
+
+        if ($titles === []) {
+            return null;
+        }
+
+        // « Personnalisé » reste la première option : signature.js la reconnaît à sa valeur 'custom'
+        $content = html::tag('option', ['value' => 'custom'], rcube::Q($this->gettext('customtitle')));
+
+        foreach ($titles as $title) {
+            $params = ['value' => SignatureText::toHtml($title->signatureText)];
+
+            if ($title->id === $default_id) {
+                $params['selected'] = 'selected';
+            }
+
+            $content .= html::tag('option', $params, rcube::Q($title->label));
+        }
+
+        return $content;
+    }
+
+    /**
+     * Options de la liste « Choix du bloc-marque état » construites depuis la config
+     * (comportement d'avant le ticket 0009463, conservé comme repli).
+     *
+     * @return string Les balises <option> et <optgroup>
+     */
+    private function logo_options_from_config(): string
+    {
         $content = "";
-        $sources = [];
         $default_image = $this->get_default_image();
         foreach ($this->rc->config->get('signature_images', []) as $name => $logo) {
             if (is_array($logo)) {
@@ -355,8 +412,7 @@ class mel_signatures extends bnum_plugin
                 $content .= html::tag('option', $params, $name);
             }
         }
-        $this->rc->output->set_env('logo_sources', $sources);
-        return html::tag('select', $attrib, $content);
+        return $content;
     }
 
     /**
@@ -560,7 +616,7 @@ class mel_signatures extends bnum_plugin
     }
 
     // -------------------------------------------------
-    // Administration des libellés du bloc Marque État 
+    // Administration des libellés du bloc Marque État
     // -------------------------------------------------
 
     /**

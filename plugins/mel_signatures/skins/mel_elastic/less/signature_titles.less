@@ -1,0 +1,321 @@
+//compress:true
+// Administration des libellés de signature (ticket 0009463)
+//
+// Boutons, recherche et badge sont des composants du design system Bnum (bnum-*) :
+// ils portent leur propre style. Cette feuille ne gère que la mise en page, la liste,
+// les champs natifs et les deux liens. Toutes les couleurs passent par les variables
+// --bnum-* du design system (design-system/css/global.css), qui changent seules en mode sombre.
+// La valeur après la virgule n'est qu'un repli : celle du thème clair.
+//
+// Préfixe #layout-content : ces règles l'emportent sur celles d'Elastic, y compris en mode sombre.
+
+// Icône Material Symbols placée avant le texte d'un lien
+.signature-titles-icon-before(@icon) {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bnum-space-xs, 5px);
+
+  &::before {
+    content: @icon;
+    font-family: 'Material Symbols Outlined';
+    font-size: 20px;
+    font-weight: normal;
+    line-height: 1;
+  }
+}
+
+// Lien présenté comme un bouton du design system (mêmes variables que bnum-button)
+.signature-titles-link-button(@background, @border, @text, @background-hover) {
+  padding: var(--bnum-button-padding, 0.5rem 1rem);
+  border: 1px solid @border;
+  border-radius: var(--bnum-button-border-radius, 0);
+  background-color: @background;
+  color: @text;
+  font-weight: 700;
+  text-decoration: none;
+
+  &:hover {
+    background-color: @background-hover;
+    color: @text;
+    text-decoration: none;
+  }
+}
+
+#layout-content .signature-titles {
+  padding: 1rem;
+  overflow-y: auto;
+
+  // ----- Page « liste » : seule la liste défile -----
+  // Titre, aide, recherche et compteur gardent leur taille ; la liste prend la hauteur restante.
+  &.signature-titles-listpage {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    > * {
+      flex-shrink: 0;
+    }
+
+    .signature-titles-list {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+    }
+  }
+
+  // ----- Titres et textes -----
+  .signature-titles-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .signature-titles-heading {
+    font-size: var(--bnum-font-size-h4, 1.5rem);
+    font-weight: 700;
+    color: var(--bnum-text-title-primary, #161616);
+    margin: 0 0 var(--bnum-space-m, 15px);
+  }
+
+  .signature-titles-subheading {
+    font-size: var(--bnum-font-size-h6, 1.25rem);
+    font-weight: 700;
+    color: var(--bnum-text-title-primary, #161616);
+    margin: var(--bnum-space-xl, 25px) 0 var(--bnum-space-s, 10px);
+  }
+
+  // Bootstrap déclare déjà .text-muted en !important
+  .text-muted,
+  .signature-titles-count {
+    color: var(--bnum-text-hint, #666) !important;
+    font-size: var(--bnum-font-size-s, 0.875rem);
+  }
+
+  .signature-titles-count {
+    margin-bottom: 0.5rem;
+  }
+
+  // ----- Liens « Nouveau libellé » et « Retour aux libellés » -----
+  .signature-titles-new {
+    .signature-titles-icon-before('add');
+    .signature-titles-link-button(
+      var(--bnum-color-primary, #000091),
+      var(--bnum-color-primary, #000091),
+      var(--bnum-text-on-primary, #f5f5fe),
+      var(--bnum-color-primary-hover, #1212ff)
+    );
+  }
+
+  .signature-titles-back {
+    .signature-titles-icon-before('chevron_left');
+    .signature-titles-link-button(
+      transparent,
+      var(--bnum-color-primary, #000091),
+      var(--bnum-text-on-secondary, #000091),
+      var(--bnum-color-secondary-hover, #f6f6f6)
+    );
+    margin-bottom: 1rem;
+  }
+
+  // ----- Recherche (composant bnum-input-search) -----
+  .signature-titles-search {
+    margin: 1rem 0 0.5rem;
+
+    bnum-input-search {
+      display: block;
+    }
+  }
+
+  // ----- Liste des libellés : une ligne = un lien, bleu avec un trait à gauche au survol ou au focus -----
+  .signature-titles-list,
+  .signature-titles-dns {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem;
+    border: 1px solid var(--bnum-color-border, #ddd);
+  }
+
+  .signature-titles-list {
+    li {
+      border-bottom: 1px solid var(--bnum-color-border, #ddd);
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+
+    a {
+      display: block;
+      padding: 0.625rem 0.75rem;
+      color: var(--bnum-text-primary, #161616);
+      text-decoration: none;
+
+      // Survol ou focus clavier : texte bleu France et trait bleu épais à gauche,
+      // comme la ligne active de la liste des mails (ombre intérieure : pas de décalage du texte)
+      &:hover,
+      &:focus-visible {
+        color: var(--bnum-color-primary, #000091);
+        box-shadow: inset 4px 0 0 var(--bnum-color-primary, #000091);
+      }
+
+      // La liste défile : un contour décalé vers l'extérieur serait rogné
+      &:focus-visible {
+        outline-offset: -3px;
+      }
+    }
+  }
+
+  // « Aucun résultat » : affiché dans un cadre, à la place de la liste
+  .signature-titles-no-result {
+    padding: 1rem 0.75rem;
+    margin: 0 0 var(--bnum-space-m, 15px);
+    border: 1px solid var(--bnum-color-border, #ddd);
+    color: var(--bnum-text-hint, #666);
+    font-style: italic;
+  }
+
+  // Badge « Défaut » (composant bnum-badge) : en capitales, comme sur la maquette
+  .signature-titles-badge {
+    text-transform: uppercase;
+    vertical-align: middle;
+  }
+
+  // ----- Champs natifs, à l'apparence de bnum-input (mêmes variables) -----
+  // Un bloc par champ (libellé, champ, aide), nettement séparé du suivant
+  .form-group {
+    margin-bottom: 2rem;
+  }
+
+  label {
+    color: var(--bnum-text-primary, #161616);
+    font-weight: 500;
+    margin-bottom: var(--bnum-space-xs, 5px);
+  }
+
+  .form-control {
+    background-color: var(--bnum-input-background-color, var(--bnum-color-input, #eee));
+    color: var(--bnum-text-on-input, #161616);
+    border: none;
+    border-radius: var(--bnum-radius-m, 5px) var(--bnum-radius-m, 5px) 0 0;
+    box-shadow: var(--bnum-input-box-shadow, inset 0 -2px 0 0 var(--bnum-input-line-color, var(--bnum-color-input-border, #3a3a3a)));
+
+    &:hover {
+      background-color: var(--bnum-color-input-hover, #d2d2d2);
+    }
+
+    // Champ actif (maquettes du 20/10/2026) : fond lavande et barre bleue à gauche
+    &:focus {
+      background-color: var(--bnum-color-list-active, #cbcbfa);
+      box-shadow: inset 4px 0 0 var(--bnum-color-primary, #000091);
+    }
+  }
+
+  textarea.form-control {
+    font-family: inherit;
+    min-height: 7rem;
+  }
+
+  // ----- Rangée de boutons -----
+  .signature-titles-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1rem 0 2rem;
+  }
+
+  .signature-titles-inline-form {
+    display: inline-block;
+    margin: 0;
+  }
+
+  // Explication sous « Enregistrer » sur la page du libellé par défaut
+  .signature-titles-default-note {
+    margin: -1.25rem 0 2rem;
+  }
+
+  // ----- DN : lignes grises séparées, corbeille à droite ; défile au-delà d'environ 4 DN -----
+  .signature-titles-dns {
+    max-height: 11rem;
+    overflow-y: auto;
+  }
+
+  .signature-titles-dn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background-color: var(--bnum-color-input, #eee);
+    border-bottom: 1px solid var(--bnum-color-border, #ddd);
+    color: var(--bnum-text-on-input, #161616);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  // Les DN sont longs et sans espace : retour à la ligne autorisé n'importe où
+  .signature-titles-dn-value {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .signature-titles-dn-delete {
+    color: var(--bnum-color-danger, #ce0500);
+  }
+
+  .signature-titles-dn-default {
+    color: var(--bnum-text-hint, #666);
+  }
+
+  .signature-titles-dn-form {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 0;
+
+    .form-control {
+      flex: 1;
+    }
+  }
+
+  // ----- Messages (tables absentes, liste vide) -----
+  .signature-titles-alert {
+    padding: var(--bnum-space-s, 10px) var(--bnum-space-m, 15px);
+    border-left: 4px solid var(--bnum-color-primary, #000091);
+    background-color: var(--bnum-color-surface, #f6f6f6);
+    color: var(--bnum-text-primary, #161616);
+  }
+
+  .signature-titles-alert-error {
+    border-left-color: var(--bnum-color-danger, #ce0500);
+  }
+
+  // ----- Focus clavier visible (RGAA) -----
+  // Pas de couleur de focus dans le design system : on reprend la couleur de survol principale
+  a:focus-visible,
+  .form-control:focus-visible {
+    outline: 2px solid var(--bnum-color-primary-hover, #1212ff);
+    outline-offset: 2px;
+  }
+}
+
+// ----- Mode sombre : textes d'aide -----
+// --bnum-text-hint vaut #1e1e1e en mode sombre (illisible sur fond sombre) :
+// on reprend la couleur du texte principal, atténuée.
+html.dark-mode,
+html.dark-mode-custom {
+  #layout-content .signature-titles {
+    .text-muted,
+    .signature-titles-count,
+    .signature-titles-no-result,
+    .signature-titles-dn-default,
+    .form-control::placeholder {
+      color: var(--bnum-text-primary, #ffffff) !important;
+      opacity: 0.75;
+    }
+  }
+}

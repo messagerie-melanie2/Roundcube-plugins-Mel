@@ -1,0 +1,15 @@
+<roundcube:include file="includes/layout.html" />
+<roundcube:include file="includes/navigations.html"/>
+<roundcube:include file="includes/settings-menu.html" />
+
+<div id="layout-content" role="main">
+  <div class="content signature-titles">
+    <!-- Retour, titre, nom affiché, texte de signature, boutons « Enregistrer », « Définir par défaut » et « Supprimer » -->
+    <roundcube:object name="signaturetitleform" />
+
+    <!-- DN associés : liste avec corbeille, puis ajout d'un DN -->
+    <roundcube:object name="signaturetitledns" />
+  </div>
+</div>
+
+<roundcube:include file="includes/footer.html" />

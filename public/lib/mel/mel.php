@@ -15,7 +15,7 @@ if (!defined('RCUBE_LOCALIZATION_DIR')) {
 }
 
 if (!defined('RCMAIL_VERSION')) {
-    define('RCMAIL_VERSION', '1.6.19');
+    define('RCMAIL_VERSION', '1.6.20');
 }
 
 define('RCUBE_INSTALL_PATH', INSTALL_PATH);

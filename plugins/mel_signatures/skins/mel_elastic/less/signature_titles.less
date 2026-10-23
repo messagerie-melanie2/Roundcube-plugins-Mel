@@ -176,8 +176,19 @@
     font-style: italic;
   }
 
-  // Badge « Défaut » (composant bnum-badge) : en capitales, comme sur la maquette
+  // Badge « Défaut » (composant bnum-badge, variation secondaire), comme sur la maquette :
+  // petit, en capitales, fond lavande, texte bleu, sans bordure, angles à peine arrondis.
+  // Les variables --bnum-badge-* sont prévues par le composant pour ce réglage ; la taille du texte
+  // est fixée ici, sinon le badge prendrait celle du titre (h1) où il est placé.
   .signature-titles-badge {
+    --bnum-badge-border-radius: var(--bnum-radius-m, 5px);
+    --bnum-badge-padding: 0 var(--bnum-space-s, 10px);
+    --bnum-badge-secondary-color: var(--bnum-color-list-hover, #dcdcfc);
+    --bnum-badge-secondary-text-color: var(--bnum-color-primary, #000091);
+    --bnum-badge-size: 0;
+    font-size: var(--bnum-font-size-xs, 0.75rem);
+    font-weight: 700;
+    line-height: 1.5rem;
     text-transform: uppercase;
     vertical-align: middle;
   }

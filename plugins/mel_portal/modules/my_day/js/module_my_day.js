@@ -126,13 +126,13 @@ class ModuleMyDay extends BaseModule {
           let locationDesc = null;
 
           if (location.has_visio()) {
-            icon = 'video_camera_front';
+            icon = location.visio.icon || 'video_camera_front';
             mainLocation = location.visio.side_action.bind(location.visio);
             locationDesc = location.visio._get_description(
               location.locations.length,
             );
           } else if (location.has_audio()) {
-            icon = 'phone_in_talk';
+            icon = location.audio.icon || 'phone_in_talk';
             mainLocation = location.audio.side_action.bind(location.audio);
             locationDesc = location.audio.desc;
           } else {

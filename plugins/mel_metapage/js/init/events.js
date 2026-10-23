@@ -1186,7 +1186,7 @@ if (rcmail && window.mel_metapage) {
        */
       const audioFunction = function (phone, pin, textKey, icon) {
         return `
-          <div id="location-mel-phone-calendar" class="row" style="${rowStyle}">
+          <div id="location-mel-phone-calendar-${phone}-${pin}" class="row" style="${rowStyle}">
             <div class="col-12" style="${colStyle}">
 
               <!-- Numéro de téléphone cliquable avec icône tél -->
@@ -1270,6 +1270,16 @@ if (rcmail && window.mel_metapage) {
         let element;
         for (let index = 0; index < tmp_location.length; ++index) {
           element = tmp_location[index];
+          const plugin = rcmail.triggerEvent('event.show.location', {
+            html: '',
+            location: element,
+            audioFunction,
+          });
+
+          if (plugin && plugin.html) {
+            html += plugin.html;
+            continue;
+          }
 
           if (
             element.includes('(') &&
@@ -1834,6 +1844,16 @@ if (rcmail && window.mel_metapage) {
             querry.click((e) => {
               e.preventDefault();
               e.stopPropagation();
+
+              if (!rcmail.env.plugin_list_visio) {
+                window.open(
+                  querry.attr('href'),
+                  '_blank',
+                  'noopener,noreferrer',
+                );
+                return;
+              }
+
               modal.close();
               const categoryExist =
                 event.categories !== undefined &&
@@ -2610,13 +2630,17 @@ $(document).ready(() => {
           reloop = false;
           switch (_switch === null ? null : _switch.value) {
             case plugins.webconf:
-              const key = url.replace(_switch.key, '').replaceAll('/', '');
+              if (rcmail.env.plugin_list_visio) {
+                const key = url.replace(_switch.key, '').replaceAll('/', '');
 
-              top.webconf_helper.go(key, null, '@home');
+                top.webconf_helper.go(key, null, '@home');
 
-              if (after !== null) after();
+                if (after !== null) after();
 
-              event.preventDefault();
+                event.preventDefault();
+              } else {
+                window.open(url, '_blank', 'noopener,noreferrer');
+              }
               break;
             case plugins.drive:
               const stockage_url =

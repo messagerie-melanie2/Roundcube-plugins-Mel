@@ -334,7 +334,7 @@ class mel_ldap_auth extends rcube_plugin {
    * @return bool `true` si le compte est applicatif ou individuel, `false` sinon
    */
   private function _is_valid_user_type(\LibMelanie\Api\Defaut\User $user): bool {
-    return $user->is_applicative || $user->is_individuelle;
+    return $user->is_applicative || $user->is_individuelle || $user->is_personne;
   }
 
   /**

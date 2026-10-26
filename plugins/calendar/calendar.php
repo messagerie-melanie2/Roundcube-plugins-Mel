@@ -111,7 +111,7 @@ class calendar extends rcube_plugin
      * 
      * mantis 0009355 
      */
-
+    #[\NoDiscard('Fonction sans effetes de bords, son appel est inutile si la valeur retourné n\'est pas utilisé.')]
     public static function is_valid_category_name($name){
         $name = trim((string) $name);
 

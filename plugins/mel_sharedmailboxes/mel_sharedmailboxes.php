@@ -1,4 +1,7 @@
 <?php
+
+use MelLogs\LogLevel;
+
 /**
  * Plugin Mél Shared Mailboxes
  *
@@ -473,8 +476,8 @@ class mel_sharedmailboxes extends rcube_plugin {
      */
     public function storage_connect($args) {
         if ($args['driver'] == 'imap') {
-            if (mel_logs::is(mel_logs::DEBUG))
-                mel_logs::gi()->l(mel_logs::DEBUG, "mel::storage_connect()");
+            if (mel_logs::is(LogLevel::Debug))
+                mel_logs::l(LogLevel::Debug, "mel::storage_connect()");
             /* PAMELA - Gestion des boites partagées */
             if (!empty($this->get_account)) {
                 $args['user'] = $this->mel->get_share_objet();
@@ -559,8 +562,8 @@ class mel_sharedmailboxes extends rcube_plugin {
         $host_as_changed = false;
         /* PAMELA - Gestion des boites partagées */
         if (!empty($this->get_account)) {
-            if (mel_logs::is(mel_logs::DEBUG))
-                mel_logs::gi()->l(mel_logs::DEBUG, "mel::managesieve_connect()");
+            if (mel_logs::is(LogLevel::Debug))
+                mel_logs::l(LogLevel::Debug, "mel::managesieve_connect()");
             $args['user'] = $this->mel->get_user_bal();
             // Ajouter également l'host pour les règles sieve
             $args['host'] = $this->mel->get_host();
@@ -598,8 +601,8 @@ class mel_sharedmailboxes extends rcube_plugin {
      * Lors de l'écriture d'un mail, l'identité liée à la boite mail est sélectionnée
      */
     public function identity_select($args) {
-        if (mel_logs::is(mel_logs::DEBUG))
-            mel_logs::gi()->l(mel_logs::DEBUG, "mel::identity_select()");
+        if (mel_logs::is(LogLevel::Debug))
+            mel_logs::l(LogLevel::Debug, "mel::identity_select()");
 
         // Gestion de l'identité par défaut en fonction de l'account
         if ($this->rc->task == 'mail') {
@@ -1331,8 +1334,8 @@ class mel_sharedmailboxes extends rcube_plugin {
      * Utilisé pour la connexion smtp
      */
     public function message_before_send($args) {
-        if (mel_logs::is(mel_logs::DEBUG))
-            mel_logs::gi()->l(mel_logs::DEBUG, "mel_sharedmailboxes::message_before_send()");
+        if (mel_logs::is(LogLevel::Debug))
+            mel_logs::l(LogLevel::Debug, "mel_sharedmailboxes::message_before_send()");
 
         $_SESSION['m2_from_identity'] = $args['from'];
         $_SESSION['m2_uid_identity'] = null;
@@ -1425,12 +1428,12 @@ class mel_sharedmailboxes extends rcube_plugin {
      * @return array
      */
     private function render_sharedmailboxlist($list, $mailbox, $delimiter, $is_balp = true) {
-        if (mel_logs::is(mel_logs::DEBUG)) {
-            mel_logs::gi()->l(mel_logs::DEBUG, "mel_sharedmailboxes_imap::render_sharedmailboxlist()");
+        if (mel_logs::is(LogLevel::Debug)) {
+            mel_logs::l(LogLevel::Debug, "mel_sharedmailboxes_imap::render_sharedmailboxlist()");
         }
-        if (mel_logs::is(mel_logs::TRACE)) {
-            mel_logs::gi()->l(mel_logs::TRACE, "mel_sharedmailboxes_imap::render_sharedmailboxlist($mailbox, $delimiter, $is_balp)");
-            mel_logs::gi()->l(mel_logs::TRACE, "mel_sharedmailboxes_imap::render_sharedmailboxlist(): list = " . var_export($list, 1));
+        if (mel_logs::is(LogLevel::Trace)) {
+            mel_logs::l(LogLevel::Trace, "mel_sharedmailboxes_imap::render_sharedmailboxlist($mailbox, $delimiter, $is_balp)");
+            mel_logs::l(LogLevel::Trace, "mel_sharedmailboxes_imap::render_sharedmailboxlist(): list = " . var_export($list, 1));
         }
         // On est sur une balp
         $driver_mel = driver_mel::gi();
@@ -1461,8 +1464,8 @@ class mel_sharedmailboxes extends rcube_plugin {
             $folders = $list;
         }
 
-        if (mel_logs::is(mel_logs::TRACE)) {
-            mel_logs::gi()->l(mel_logs::TRACE, "mel_sharedmailboxes_imap::render_sharedmailboxlist(): folders = " . var_export($folders, 1));
+        if (mel_logs::is(LogLevel::Trace)) {
+            mel_logs::l(LogLevel::Trace, "mel_sharedmailboxes_imap::render_sharedmailboxlist(): folders = " . var_export($folders, 1));
         }
 
         $_folders = [];
@@ -1530,8 +1533,8 @@ class mel_sharedmailboxes extends rcube_plugin {
             unset($folders[$folder]);
         }
 
-        if (mel_logs::is(mel_logs::TRACE)) {
-            mel_logs::gi()->l(mel_logs::TRACE, "mel_sharedmailboxes_imap::render_sharedmailboxlist(): _folders = " . var_export($_folders, 1));
+        if (mel_logs::is(LogLevel::Trace)) {
+            mel_logs::l(LogLevel::Trace, "mel_sharedmailboxes_imap::render_sharedmailboxlist(): _folders = " . var_export($_folders, 1));
         }
 
         $display = $this->rc->config->get('mailboxes_display', 'default');

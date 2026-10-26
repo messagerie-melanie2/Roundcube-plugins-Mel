@@ -18,6 +18,9 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+
+use MelLogs\LogLevel;
+
 // Chargement de la librairie ORM
 @include_once 'includes/libm2.php';
 require_once 'lib/drivers/driver_mel.php';
@@ -730,8 +733,8 @@ class mel extends rcube_plugin
    */
   public function message_before_send($args)
   {
-    if (mel_logs::is(mel_logs::DEBUG))
-      mel_logs::gi()->l(mel_logs::DEBUG, "mel::message_before_send()");
+    if (mel_logs::is(LogLevel::Debug))
+      mel_logs::l(LogLevel::Debug, "mel::message_before_send()");
 
     $headers = driver_mel::gi()->setHeadersMessageBeforeSend([]);
     if (count($headers)) {

@@ -40,7 +40,7 @@ class mel_logs extends rcube_plugin
 	const ACCESS = LogLevel::Access->value;
 
 	/** Hook appelé pour transmettre un log aux autres systèmes de logs */
-	const EXTRA_LOG_HOOK = 'log.call';
+	const EXTRA_LOG_HOOK = 'log_call';
 
 	/** Méthodes de mel_logs à sauter dans la pile pour trouver l'appelant réel */
 	private const LOG_ENTRY_POINTS = ['_resolve_extra_log', 'log', 'l'];
@@ -221,11 +221,11 @@ class mel_logs extends rcube_plugin
 	{
 		$method = isset($_SESSION['auth_type']) ? $_SESSION['auth_type'] : "password";
 		$eidas = $_SESSION['eidas'];
-	    $this->log(self::INFO, "[login] Connexion réussie de l'utilisateur <".rcmail::get_instance()->get_user_name()."> (".$method.") - $eidas");
+	    $this->log(LogLevel::Info, "[login] Connexion réussie de l'utilisateur <".rcmail::get_instance()->get_user_name()."> (".$method.") - $eidas");
 
 		// MANTIS 0007937: Logguer les connexions d'une BALP en directe
 		if (!driver_mel::gi()->getUser()->is_individuelle && !driver_mel::gi()->getUser()->is_applicative) {
-			$this->log(self::INFO, "[login] Connexion directe BALP <".rcmail::get_instance()->get_user_name()."> [" . driver_mel::gi()->getUser()->type . "]");
+			$this->log(LogLevel::Info, "[login] Connexion directe BALP <".rcmail::get_instance()->get_user_name()."> [" . driver_mel::gi()->getUser()->type . "]");
 		}
 
 		// Détail du contexte de connexion (réseau, niveau d'authentification, client, ...)
@@ -261,7 +261,7 @@ class mel_logs extends rcube_plugin
 		}
 		$message .= ' | ua="'.(isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '-').'"';
 
-		$this->log(self::INFO, $message);
+		$this->log(LogLevel::Info, $message);
 	}
 	/**
 	 * Login failed
@@ -273,7 +273,7 @@ class mel_logs extends rcube_plugin
 		if (isset(self::$login_errors[$args['code']])) {
 			$message = ' (' . self::$login_errors[$args['code']] . ')';
 		}
-		$this->log(self::INFO, "[login] Echec de connexion pour l'utilisateur <".$args['user']."> Code erreur : ".$args['code'].$message);
+		$this->log(LogLevel::Info, "[login] Echec de connexion pour l'utilisateur <".$args['user']."> Code erreur : ".$args['code'].$message);
 		return $args;
 	}
 	/**
@@ -308,7 +308,7 @@ class mel_logs extends rcube_plugin
 		// ailleurs c'est une fin de session subie (expiration, ré-authentification
 		// forcée par un plugin, ...) qui ne sera tracée que d'ici
 		if ($rc->task !== 'logout') {
-			$this->log(self::INFO, $this->_logout_message($rc->task, $rc->action));
+			$this->log(LogLevel::Info, $this->_logout_message($rc->task, $rc->action));
 		}
 
 		return $args;
@@ -318,7 +318,7 @@ class mel_logs extends rcube_plugin
 	 * Hook logout_after
 	 * Déconnexion explicite demandée par l'utilisateur
 	 */
-	public function logout_after($args)
+	public function logout_after(array $args): array
 	{
 		if (!empty($args['user'])) {
 			self::$session_context['user'] = $args['user'];
@@ -340,7 +340,7 @@ class mel_logs extends rcube_plugin
 	 *
 	 * @return string
 	 */
-	private function _logout_message($task = null, $action = null)
+	private function _logout_message(?string $task = null, ?string $action = null)
 	{
 		$ctx = self::$session_context;
 
@@ -368,14 +368,16 @@ class mel_logs extends rcube_plugin
 	 * Triggered when a message is finally sent
 	 * This hook doesn't have any return values but can be used for logging or notifications.
 	 */
-	public function message_sent($args)
+	public function message_sent(array $args): array
 	{
 		$from = $args['headers']['From'];
 		$mailto = $args['headers']['To'];
 		$mailcc = $args['headers']['Cc'];
 		$mailbcc = $args['headers']['Bcc'];
 		$msgid = $args['headers']['Message-ID'];
-		$this->log(self::INFO, "[message_sent] <$from> to '$mailto' cc '$mailcc' bcc '$mailbcc' msgid '$msgid'");
+		$this->log(LogLevel::Info, "[message_sent] <$from> to '$mailto' cc '$mailcc' bcc '$mailbcc' msgid '$msgid'");
+
+		return $args;
 	}
 
 	/**
@@ -390,7 +392,7 @@ class mel_logs extends rcube_plugin
 	 * @param string|LogLevel $logLevel Niveau de log
 	 * @param string $message Message à journaliser
 	 * @param array{'log.extra.only'?: bool, 'log.offset'?: int, context?: array, attributes?: array} $data
-	 *        Données transmises aux plugins écoutant `log.call`. `log.offset` permet de sauter
+	 *        Données transmises aux plugins écoutant `log_call`. `log.offset` permet de sauter
 	 *        des frames supplémentaires si l'appel est encapsulé dans un wrapper.
 	 */
 	public function log(string|LogLevel $logLevel, string $message, array $data = []): void
@@ -421,6 +423,29 @@ class mel_logs extends rcube_plugin
 				&& in_array($username, $rcmail->config->get('mel_logs_debug_users', []))) {
 			$this->write_log($username, $level->value, $message);
 		}
+	}
+
+	/**
+	 * Appel la methode de log de roundcube
+	 * Log dans un fichier mel
+	 *
+	 * Si au moins un plugin écoute le hook `log.call`, le log est aussi
+	 * transmis aux autres systèmes de logs. Avec `$onlyExtra = true`, rien n'est écrit
+	 * localement (fichier général et fichiers par utilisateur).
+	 *
+	 * @param $logLevel Niveau de log
+	 * @param $message Message à journaliser
+	 * @param $onlyExtra `false` par défaut et si `true`, rien n'est écrit localement.
+	 * @param array{'log.offset'?: int, context?: array, attributes?: array} $data
+	 *        Données transmises aux plugins écoutant `log_call`. `log.offset` permet de sauter
+	 *        des frames supplémentaires si l'appel est encapsulé dans un wrapper.
+	 */
+	public function log_extra(LogLevel $logLevel, string $message, bool $onlyExtra = false, array $data = []): void {
+		if ($data === null) $data = [];
+
+		$data['log.extra.only'] = $onlyExtra;
+
+		$this->log($logLevel, $message, $data);
 	}
 
 	/**
@@ -536,14 +561,14 @@ class mel_logs extends rcube_plugin
 	 * @param string $message
 	 * 
 	 */
-	public function l(string|LogLevel $level, string $message, array $data = []): void {
-		$this->log($level, $message, $data);
+	public static function l(string|LogLevel $level, string $message, array $data = []): void {
+		self::get_instance()->log($level, $message, $data);
 	}
 
 	public function captureError(\Throwable $th, $writeLogs = false): void {
 		$this->_execHook('log.capture_error', ['error' => $th]);
 
-		if ($writeLogs) $this->l(LogLevel::Error, $th->getMessage());
+		if ($writeLogs) $this->log(LogLevel::Error, $th->getMessage());
 	}
 
 	public static function capture(\Throwable $th, $writeLogs = false): void {

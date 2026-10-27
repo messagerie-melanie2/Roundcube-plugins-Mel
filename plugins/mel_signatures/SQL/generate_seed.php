@@ -20,8 +20,8 @@ declare(strict_types=1);
  * À remplir avec les choix de l'équipe avant de générer le script définitif.
  */
 const TITLE_CORRECTIONS = [
-    // "Ministère de la Transition écologique, de la Biodiversité, de la Forêt, de la Mer et de la Pêche" => '…',
-    // 'Ministère délégué chargé des Transports' => '…',
+    'Ministère de la Transition écologique, de la Biodiversité, de la Forêt, de la Mer et de la Pêche' => 'Ministère de la Transition écologique, de la Biodiversité et des Négociations internationales sur le climat et la nature',
+    'Ministère délégué chargé des Transports' => 'Ministère des Transports',
 ];
 
 const DEFAULT_DN = 'default';

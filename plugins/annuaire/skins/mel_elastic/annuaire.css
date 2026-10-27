@@ -33,7 +33,7 @@
 
 #annuaire-list li > .name {
   display: block;
-  font-size: 12px;
+  font-size: inherit;
   font-weight: normal;
   color: #000;
   color: var(--listbox-text-color);
@@ -90,7 +90,7 @@ html.touch #annuaire-list li > .gototree {
 
 #annuaire-list .folder > .description {
   display: block;
-  font-size: 12px;
+  font-size: inherit;
   font-weight: normal;
   color: #fff;
   line-height: 20px;

@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
 
 body {
-  font-family: 'Roboto', sans-serif;
+  font-family: Marianne, Arial, sans-serif;
   background-color: #fbfcfd;
 }
 
@@ -234,7 +234,7 @@ body {
   padding: 5px;
   font-weight: 400;
   line-height: 1.5;
-  font-family: Marianne, Roboto, sans-serif;
+  font-family: Marianne, Arial, sans-serif;
   direction: ltr;
   font-size: 1em;
   box-sizing: border-box;

@@ -1760,7 +1760,7 @@ $(document).ready(() => {
           !this.IS_EXTERNE
         ) {
           $(
-            '<li role="menuitem"><a class="icon-mel-close" href="#back" title="Revenir aux mails"><span style="font-family:Roboto,sans-serif" class="inner">Retour</span></a></li>',
+            '<li role="menuitem"><a class="icon-mel-close" href="#back" title="Revenir aux mails"><span style="font-family:Marianne,Arial,sans-serif" class="inner">Retour</span></a></li>',
           )
             .on('click', () => {
               window.location.href = this.url('mail');

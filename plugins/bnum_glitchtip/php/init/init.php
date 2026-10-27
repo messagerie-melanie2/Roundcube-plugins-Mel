@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+use bnum_glitchtip\types\scope;
+
 /**
  * Point d'entrée `init()` du plugin.
  *
@@ -9,10 +11,10 @@ declare(strict_types=1);
  * (`js/index.js`) et expose les variables nécessaires (`js_dsn`, `enable_logs`,
  * `env`) dans `rcmail.env` côté client.
  *
- * @param bnum_glitchtip $plugin Instance du plugin.
+ * @param scope $plugin Instance du plugin.
  * @return void
  */
-return static function (bnum_glitchtip $plugin): void {
+return static function (scope $plugin): void {
     $plugin->_ensureGlitchtipIsInitialized();
 
     if($_SERVER['REQUEST_METHOD'] === 'GET') {

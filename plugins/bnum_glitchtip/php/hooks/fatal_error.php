@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+use bnum_glitchtip\types\scope;
+
 /**
  * Hook "fatal_error" (projet, déclenché par le core juste avant l'exit() de
  * rcmail_fatal_error() dans program/include/iniset.php).
@@ -9,11 +11,11 @@ declare(strict_types=1);
  * perdue : le SDK Sentry enregistre son propre shutdown handler trop tard (pendant le
  * hook `startup`) pour s'exécuter avant l'exit() du core.
  *
- * @param bnum_glitchtip $plugin Instance du plugin, utilisée pour lire la configuration.
+ * @param scope $plugin Instance du plugin, utilisée pour lire la configuration.
  * @param array $args Arguments transmis par le hook ; contient `error` (résultat de error_get_last()).
  * @return array Les arguments inchangés, tels que reçus.
  */
-return static function (bnum_glitchtip $plugin, array $args): array {
+return static function (scope $plugin, array $args): array {
     $error = $args['error'] ?? null;
     if (!is_array($error)) return $args;
 

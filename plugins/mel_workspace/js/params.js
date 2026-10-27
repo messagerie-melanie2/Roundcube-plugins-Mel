@@ -298,7 +298,10 @@
           data = JSON.parse(data);
 
           if (data === 'denied')
-            rcmail.display_message('Accès interdit !', 'error');
+            rcmail.display_message(
+              rcmail.gettext('error_access_denied', 'mel_workspace'),
+              'error',
+            );
           else {
             rcmail.env.current_workspace_users = data;
           }
@@ -338,7 +341,10 @@
             );
           } else if (datas === 'denied') {
             this.busy(false);
-            rcmail.display_message('Accès interdit !', 'error');
+            rcmail.display_message(
+              rcmail.gettext('error_access_denied', 'mel_workspace'),
+              'error',
+            );
           } else {
             try {
               datas = JSON.parse(datas);
@@ -347,7 +353,10 @@
                 for (let index = 0; index < datas.length; ++index) {
                   const element = datas[index];
                   rcmail.display_message(
-                    `Impossible d'ajouter ${element} !`,
+                    rcmail.gettext(
+                      { name: 'error_add_user', vars: { user: element } },
+                      'mel_workspace',
+                    ),
                     'warning',
                   );
                 }
@@ -385,7 +394,7 @@
         (data) => {
           if (data === 'denied')
             rcmail.display_message(
-              "Vous n'avez pas les droits pour faire ça !",
+              rcmail.gettext('error_no_rights', 'mel_workspace'),
               'error',
             );
           else refresh_table = true;
@@ -461,7 +470,7 @@
               });
               rcmail.clear_messages();
               rcmail.display_message(
-                'Il doit y avoir au minimum un administrateur par espace !',
+                rcmail.gettext('error_min_one_admin', 'mel_workspace'),
                 'error',
               );
               return;
@@ -508,7 +517,7 @@
 
           if (datas === 'denied')
             rcmail.display_message(
-              'Vous devez être un administrateur pour faire ça !',
+              rcmail.gettext('error_not_admin_generic', 'mel_workspace'),
               'error',
             );
           else {
@@ -538,7 +547,10 @@
         type: '',
         input: $(),
         checks: 'empty;already-exist',
-        text_on_error: 'Impossible de changer le paramètre.',
+        text_on_error: rcmail.gettext(
+          'error_change_param_default',
+          'mel_workspace',
+        ),
         text_on_succes: 'Paramètre changer avec succès.',
         action: null,
       },
@@ -557,7 +569,7 @@
             case 'empty':
               if (val === empty) {
                 rcmail.display_message(
-                  'La valeur ne peut pas être vide.',
+                  rcmail.gettext('error_field_empty', 'mel_workspace'),
                   'error',
                 );
                 return this;
@@ -567,7 +579,7 @@
             case 'already-exist':
               if (val === config.input.attr('placeholder')) {
                 rcmail.display_message(
-                  'La valeur ne peut pas être la même que la précédente.',
+                  rcmail.gettext('error_field_same_as_previous', 'mel_workspace'),
                   'error',
                 );
                 return this;
@@ -592,7 +604,7 @@
           const denied = 'denied';
           if (datas === denied) {
             rcmail.display_message(
-              "Vous n'avez pas les droits pour effectuer cette action.",
+              rcmail.gettext('error_no_rights_action', 'mel_workspace'),
               'error',
             );
           } else {
@@ -663,7 +675,7 @@
           if (datas === 'denied') {
             this.busy(false);
             rcmail.display_message(
-              'Vous devez être administrateur pour pouvoir changer de logo.',
+              rcmail.gettext('error_not_admin_logo', 'mel_workspace'),
               'error',
             );
           } else {
@@ -710,7 +722,7 @@
           (datas) => {
             if (datas === 'denied') {
               rcmail.display_message(
-                'Vous devez être administrateur pour pouvoir supprimer la liste.',
+                rcmail.gettext('error_not_admin_delete_list', 'mel_workspace'),
                 'error',
               );
             } else refresh_table = true;
@@ -731,9 +743,9 @@
 
     async delete_user(user) {
       const workspaceUser = Object.values(
-        rcmail.env.current_workspace_users
-      ).find(u => u.email.split('@')[0] === user);
-      
+        rcmail.env.current_workspace_users,
+      ).find((u) => u.email.split('@')[0] === user);
+
       const loadJsModule =
         window.loadJsModule ?? parent.loadJsModule ?? top.loadJsModule;
       const { MelDialog } = await loadJsModule(
@@ -768,14 +780,17 @@
               case 'denied':
                 this.busy(false);
                 rcmail.display_message(
-                  'Vous devez être administrateur pour pouvoir faire cette action !',
+                  rcmail.gettext('error_not_admin_action', 'mel_workspace'),
                   'error',
                 );
                 break;
               case 'you are the alone':
                 this.busy(false);
                 rcmail.display_message(
-                  'Vous êtes le seul administrateur, nommez un autre administrateur ou supprimez l\'espace.',
+                  rcmail.gettext(
+                    'error_only_admin_delete_or_promote',
+                    'mel_workspace',
+                  ),
                   'error',
                 );
                 break;
@@ -822,13 +837,13 @@
                 break;
               case 'yourealone':
                 rcmail.display_message(
-                  'Vous êtes la seule personne de cet espace, si vous souhaitez le quitter, supprimer le.',
+                  rcmail.gettext('error_leave_alone', 'mel_workspace'),
                   'error',
                 );
                 break;
               case 'youretheone':
                 rcmail.display_message(
-                  'Vous êtes le seul administrateur, si vous souhaitez quittez, ajoutez un autre administrateur avant.',
+                  rcmail.gettext('error_leave_only_admin', 'mel_workspace'),
                   'error',
                 );
                 break;
@@ -863,7 +878,7 @@
           this.busy(false);
           if (datas === 'denied')
             rcmail.display_message(
-              "Vous n'avez pas les droits pour changer la visibilité de cet espace !",
+              rcmail.gettext('error_no_rights_visibility', 'mel_workspace'),
               'error',
             );
           else {
@@ -880,7 +895,10 @@
         (a, b, c) => {
           this.busy(false);
           console.error(a, b, c);
-          rcmail.display_message('Une erreur est survenue...', 'error');
+          rcmail.display_message(
+            rcmail.gettext('error_generic', 'mel_workspace'),
+            'error',
+          );
         },
       ).always(() => this.busy(false));
     }
@@ -896,7 +914,7 @@
         (d) => {
           if (d === 'error') {
             parent.rcmail.display_message(
-              'Impossible de créer le service pour le moment.',
+              rcmail.gettext('error_create_service', 'mel_workspace'),
               'error',
             );
           }
@@ -1032,7 +1050,7 @@
             this.busy(false);
             console.error(a, b, c);
             rcmail.display_message(
-              "Impossible de supprimer cet espace, regardez la console pour plus d'informations.",
+              rcmail.gettext('error_delete_workspace', 'mel_workspace'),
               'error',
             );
           },
@@ -1165,7 +1183,7 @@
                     let querry = $('#selectnewchannel');
                     querry.find('#addederrorsn').remove();
                     querry.append(
-                      '<div id="addederrorsn" style="color:red;">*Vous devez choisir un canal différent !</div>',
+                      `<div id="addederrorsn" style="color:red;">${rcmail.gettext('error_choose_other_channel', 'mel_workspace')}</div>`,
                     );
                     return;
                   }
@@ -1189,7 +1207,7 @@
                       );
                       this.busy(false);
                       rcmail.display_message(
-                        'impossible de mettre à jour le canal !',
+                        rcmail.gettext('error_update_channel', 'mel_workspace'),
                         'error',
                       );
                     },
@@ -1202,7 +1220,7 @@
                     let querry = $('#selectnewchannel');
                     querry.find('#addederrorsn').remove();
                     querry.append(
-                      '<div id="addederrorsn" style="color:red;">*Vous devez choisir un canal !</div>',
+                      `<div id="addederrorsn" style="color:red;">${rcmail.gettext('error_choose_channel', 'mel_workspace')}</div>`,
                     );
                   }
                 }
@@ -1284,10 +1302,14 @@
                 if (data) {
                   this.update_toolbar();
                   this.update_app_table();
-                  rcmail.env.current_workspace_services_actives["tchap-channel"].id = value;
+                  rcmail.env.current_workspace_services_actives[
+                    'tchap-channel'
+                  ].id = value;
                   $popup.dialog('close');
                 } else {
-                  alert(rcmail.gettext('tchap_id_doesnt_match', 'mel_workspace'));
+                  alert(
+                    rcmail.gettext('tchap_id_doesnt_match', 'mel_workspace'),
+                  );
                 }
               },
             );
@@ -1296,7 +1318,11 @@
       ];
 
       let $popup = rcmail.show_popup_dialog(
-        '<span> ' + rcmail.gettext('tchap_bot_needed', 'mel_workspace') + '</span> <br/> <input id = "selecttchapchannel" type = "text" title = ' + rcmail.gettext('enter_tchap_id', 'mel_workspace') + '/> ',
+        '<span> ' +
+          rcmail.gettext('tchap_bot_needed', 'mel_workspace') +
+          '</span> <br/> <input id = "selecttchapchannel" type = "text" title = ' +
+          rcmail.gettext('enter_tchap_id', 'mel_workspace') +
+          '/> ',
         rcmail.gettext('enter_tchap_id', 'mel_workspace'),
         buttons,
       );
@@ -1338,7 +1364,7 @@
                     let querry = $('#select-update-wekan').parent();
                     querry.find('#addederrorsn').remove();
                     querry.append(
-                      '<div id="addederrorsn" style="color:red;">*Vous devez choisir un canal différent !</div>',
+                      `<div id="addederrorsn" style="color:red;">${rcmail.gettext('error_choose_other_channel', 'mel_workspace')}</div>`,
                     );
                     return;
                   }
@@ -1362,7 +1388,7 @@
                       );
                       this.busy(false);
                       rcmail.display_message(
-                        'impossible de mettre à jour le tableau !',
+                        rcmail.gettext('error_update_board', 'mel_workspace'),
                         'error',
                       );
                     },
@@ -1480,7 +1506,7 @@
               } else {
                 this.busy(false);
                 rcmail.display_message(
-                  "Vous devez être l'administrateur ou le créateur du sondage pour pouvoir le modifier.",
+                  rcmail.gettext('error_survey_not_owner', 'mel_workspace'),
                   'error',
                 );
               }
@@ -1499,7 +1525,13 @@
         const base = rcmail.env.sondage_create_sondage_url.split('?_')[0];
         const val = $('#survey-input-link').val();
         if (!val.includes(base)) {
-          rcmail.display_message(`${val} n'est pas une url valide.`, 'error');
+          rcmail.display_message(
+            rcmail.gettext(
+              { name: 'error_survey_invalid_url', vars: { url: val } },
+              'mel_workspace',
+            ),
+            'error',
+          );
           $('#survey-input-link').val('');
         }
       });
@@ -1525,7 +1557,7 @@
             } else {
               this.busy(false);
               rcmail.display_message(
-                "Vous devez être l'administrateur ou le créateur du sondage pour pouvoir le modifier.",
+                rcmail.gettext('error_survey_not_owner', 'mel_workspace'),
                 'error',
               );
             }
@@ -1633,7 +1665,7 @@
             this.busy(false);
             console.error(a, b, c);
             rcmail.display_message(
-              "Impossible d'archiver cet espace, regardez la console pour plus d'informations.",
+              rcmail.gettext('error_archive_workspace', 'mel_workspace'),
               'error',
             );
           },
@@ -1900,7 +1932,7 @@
           return;
         }
         $title.val(title);
-        
+
         if (
           !confirm(rcmail.gettext('change_title_confirmation', 'mel_workspace'))
         )
@@ -1909,9 +1941,8 @@
           type: 'title',
           input: $title,
           checks: 'empty;already-exist',
-          text_on_error:
-            "Une erreur est survenue.\r\nImpossible de changer le titre de l'espace.",
-          text_on_succes: 'Le titre a été changer avec succès.',
+          text_on_error: rcmail.gettext('error_change_title', 'mel_workspace'),
+          text_on_succes: 'Le titre a été changé avec succès.',
         });
       },
       true,
@@ -1926,9 +1957,11 @@
           type: 'desc',
           input: $input,
           checks: 'already-exist',
-          text_on_error:
-            "Une erreur est survenue.\r\nImpossible de changer la description de l'espace.",
-          text_on_succes: 'la description a été changer avec succès.',
+          text_on_error: rcmail.gettext(
+            'error_change_description',
+            'mel_workspace',
+          ),
+          text_on_succes: 'la description a été changé avec succès.',
           action: (data, config, newValue, empty) => {
             $('#wsp-desc-desc').html(newValue);
             config.input.attr(
@@ -1957,9 +1990,8 @@
           type: 'hashtag',
           input: $input,
           checks: 'already-exist',
-          text_on_error:
-            "Une erreur est survenue.\r\nImpossible de changer la thématique de l'espace.",
-          text_on_succes: 'la thématique a été changer avec succès.',
+          text_on_error: rcmail.gettext('error_change_theme', 'mel_workspace'),
+          text_on_succes: 'la thématique a été changé avec succès.',
           action: (data, config, newValue, empty) => {
             let $querry = $('.wsp-head .col-10');
             let $span = $querry.children()[0];

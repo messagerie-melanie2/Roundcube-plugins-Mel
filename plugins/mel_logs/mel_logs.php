@@ -443,6 +443,10 @@ class mel_logs extends rcube_plugin
 	public function log_extra(LogLevel $logLevel, string $message, bool $onlyExtra = false, array $data = []): void {
 		if ($data === null) $data = [];
 
+		if ($data['log.offset'] && is_int($data['log.offset'])) $data['log.offset'] +=1;
+		else $data['log.offset'] = 1;
+
+
 		$data['log.extra.only'] = $onlyExtra;
 
 		$this->log($logLevel, $message, $data);
@@ -566,7 +570,7 @@ class mel_logs extends rcube_plugin
 	}
 
 	public function captureError(\Throwable $th, $writeLogs = false): void {
-		$this->_execHook('log.capture_error', ['error' => $th]);
+		$this->_execHook('log_capture_error', ['error' => $th]);
 
 		if ($writeLogs) $this->log(LogLevel::Error, $th->getMessage());
 	}

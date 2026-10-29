@@ -1,5 +1,5 @@
 import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
-import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';
+import { get_visio_base_url as _get_visio_base_url } from './common.js';
 
 /**
  * Séparateur entre l'url de la salle et ses données téléphoniques dans une
@@ -14,8 +14,8 @@ const PHONE_SEPARATOR = '(';
  *
  * @returns {?string} Url de base, ou `null`/`undefined` si non configurée
  */
-export function get_visio_base_url() {
-  return MelObject.Empty().get_env('visio_gouv_base_url');
+function get_visio_base_url() {
+  return _get_visio_base_url();
 }
 
 /**
@@ -79,8 +79,11 @@ export const VisioWebconfLink =
         constructor(url) {
           super(url);
 
-          const { url: room_url, roomName, phone } =
-            VisioWebconfLink.#_parse(url);
+          const {
+            url: room_url,
+            roomName,
+            phone,
+          } = VisioWebconfLink.#_parse(url);
 
           this.#_url = room_url;
           this.#_roomName = roomName;
@@ -130,12 +133,16 @@ export const VisioWebconfLink =
         static #_parse(text) {
           const [raw_url, phone_data] = text.split(PHONE_SEPARATOR);
           const room_url = raw_url.trim();
-          const roomName = room_url.replaceAll('//', EMPTY_STRING).split('/')[1];
+          const roomName = room_url
+            .replaceAll('//', EMPTY_STRING)
+            .split('/')[1];
 
           return {
             url: room_url,
             roomName,
-            phone: phone_data ? VisioWebconfLink.#_parsePhone(phone_data) : null,
+            phone: phone_data
+              ? VisioWebconfLink.#_parsePhone(phone_data)
+              : null,
           };
         }
 

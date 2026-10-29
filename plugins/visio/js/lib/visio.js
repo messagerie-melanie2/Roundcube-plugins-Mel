@@ -1,10 +1,16 @@
 import { HTMLBnumButton } from '../../../../skins/mel_elastic/design-system/ds-module-bnum.js';
 import { VisioManager } from '../../../mel_metapage/js/lib/calendar/event/parts/location_part.js';
+import { BnumLog } from '../../../mel_metapage/js/lib/classes/bnum_log.js';
 import {
   BnumMessage,
   eMessageType,
 } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
+import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
+import {
+  getVisioUrlFromText,
+  is_allowed_url as _is_allowed_url,
+} from './program/common.js';
 import { VisioRooms } from './program/visio_rooms.js';
 import { VisioByDinumLocation } from './program/VisioByDinumLocation.js';
 import { VisioDinumLocationAction } from './program/VisioDinumLocationAction.js';
@@ -15,9 +21,6 @@ const PLUGIN = 'visio';
 
 /** Attribut portant l'url de la salle sur le bouton « Rejoindre ». */
 const JOIN_URL_ATTRIBUTE = 'data-visio-url';
-
-/** Protocoles autorisés à l'ouverture d'une salle. */
-const ALLOWED_PROTOCOLS = ['http:', 'https:'];
 
 /** Styles inline du bloc « Rejoindre la visio » de la vue d'évènement. */
 const JOIN_STYLES = Object.freeze({
@@ -63,12 +66,7 @@ function escape_html(value) {
  * @returns {boolean}
  */
 function is_allowed_url(url) {
-  try {
-    return ALLOWED_PROTOCOLS.includes(new URL(url).protocol);
-  } catch {
-    // Url relative ou malformée : refusée.
-    return false;
-  }
+  return _is_allowed_url(url);
 }
 
 /**
@@ -158,6 +156,28 @@ export class VisioByDinum extends MelObject {
     if (!VisioWebconfLink || !is_visio_url(event_location)) return undefined;
 
     const link = new VisioWebconfLink(event_location);
+
+    // Gère le cas ou la visio a été collé
+    if (!is_allowed_url(link.url)) {
+      const url = this.#_getVisioUrlFromText(link.url || event_location);
+
+      if (url === null) {
+        BnumLog.warning('EventShow', 'Impossible de déduire ' + link.url);
+        return args;
+      }
+
+      args.html += `
+      <div  class="row" style="${JOIN_STYLES.row}">
+        <div class="col-12" style="${JOIN_STYLES.col}">
+          <span style="${JOIN_STYLES.icon}" class="icon-mel-pin-location mel-cal-icon"></span>
+          ${escape_html((link.url || event_location).replace(url, EMPTY_STRING))}
+        </div>
+      </div>`;
+
+      args.location = url;
+      return this.#_onEventShowLocation(args);
+    }
+
     args.html += this.#_renderJoinButton(link);
 
     if (link.havePhoneData()) {
@@ -205,6 +225,16 @@ export class VisioByDinum extends MelObject {
   }
 
   /**
+   * Récupère l'url d'une visio
+   * @param {string} text Récupère l'url de la visio avec sa room parmis un texte
+   * @returns {?string}
+   * @private
+   */
+  #_getVisioUrlFromText(text) {
+    return getVisioUrlFromText(text);
+  }
+
+  /**
    * Ajoute l'action « visio » aux localisations générées d'un évènement.
    *
    * L'appelant ne prend en compte `generated` que s'il s'agit d'un nouvel
@@ -218,6 +248,18 @@ export class VisioByDinum extends MelObject {
     const { generated, current } = data;
 
     if (!VisioDinumLocationAction.is_dinum_visio(current)) return undefined;
+
+    // Gère le cas où l'url a été collé à la main
+    if (!is_allowed_url(current)) {
+      const link = this.#_getVisioUrlFromText(current);
+
+      if (link === null) {
+        BnumLog.warning('Visio', `Impossible de trouver l'url ${current}`);
+        return data;
+      }
+
+      return this.#_onEventLocationGenerate({ ...data, current: link });
+    }
 
     return {
       ...data,

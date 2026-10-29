@@ -5,15 +5,12 @@ declare(strict_types=1);
 namespace MelSignatures;
 
 /**
- * DN rattaché à un libellé (table mel_signatures_title_dn, ticket 0009463).
- *
- * Les agents dont le DN contient cette valeur se voient proposer le libellé.
- * La valeur spéciale « default » désigne le libellé proposé quand aucun DN ne correspond.
+ * DN rattaché à un libellé : les agents de ce service se voient proposer ce libellé.
  */
 final readonly class SignatureTitleDn
 {
     /**
-     * Valeur de la colonne `dn` réservée à la ligne de repli.
+     * Valeur spéciale du libellé proposé quand aucun DN ne correspond.
      */
     public const string DEFAULT = 'default';
 
@@ -23,9 +20,9 @@ final readonly class SignatureTitleDn
     ) {}
 
     /**
-     * Construit un DN à partir d'une ligne de mel_signatures_title_dn.
+     * Crée l'objet à partir d'une ligne de la base.
      *
-     * @param array<string, mixed> $row Ligne lue par rcube_db::fetch_assoc()
+     * @param array<string, mixed> $row
      */
     #[\NoDiscard('Le DN construit est le seul résultat de cet appel')]
     public static function fromRow(array $row): self
@@ -34,7 +31,7 @@ final readonly class SignatureTitleDn
     }
 
     /**
-     * Indique s'il s'agit de la ligne de repli « default ».
+     * Vrai pour la ligne « default ».
      */
     public function isDefault(): bool
     {

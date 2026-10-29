@@ -1,15 +1,10 @@
 //compress:true
-// Administration des libellés de signature (ticket 0009463)
-//
-// Boutons, recherche et badge sont des composants du design system Bnum (bnum-*) :
-// ils portent leur propre style. Cette feuille ne gère que la mise en page, la liste,
-// les champs natifs et les deux liens. Toutes les couleurs passent par les variables
-// --bnum-* du design system (design-system/css/global.css), qui changent seules en mode sombre.
-// La valeur après la virgule n'est qu'un repli : celle du thème clair.
-//
-// Préfixe #layout-content : ces règles l'emportent sur celles d'Elastic, y compris en mode sombre.
+// Pages des libellés de signature.
+// Les boutons, la recherche et le badge viennent du design system Bnum et ont déjà leur style.
+// Les couleurs utilisent les variables --bnum-*, qui suivent le mode sombre.
+// #layout-content sert à passer devant les règles d'Elastic.
 
-// Icône Material Symbols placée avant le texte d'un lien
+// Icône avant le texte d'un lien
 .signature-titles-icon-before(@icon) {
   display: inline-flex;
   align-items: center;
@@ -24,7 +19,7 @@
   }
 }
 
-// Lien présenté comme un bouton du design system (mêmes variables que bnum-button)
+// Lien qui ressemble à un bouton du design system
 .signature-titles-link-button(@background, @border, @text, @background-hover) {
   padding: var(--bnum-button-padding, 0.5rem 1rem);
   border: 1px solid @border;
@@ -45,8 +40,7 @@
   padding: 1rem;
   overflow-y: auto;
 
-  // ----- Page « liste » : seule la liste défile -----
-  // Titre, aide, recherche et compteur gardent leur taille ; la liste prend la hauteur restante.
+  // Page liste : seule la liste défile
   &.signature-titles-listpage {
     display: flex;
     flex-direction: column;
@@ -63,7 +57,7 @@
     }
   }
 
-  // ----- Titres et textes -----
+  // Titres et textes
   .signature-titles-header {
     display: flex;
     align-items: center;
@@ -86,7 +80,7 @@
     margin: var(--bnum-space-xl, 25px) 0 var(--bnum-space-s, 10px);
   }
 
-  // Bootstrap déclare déjà .text-muted en !important
+  // Bootstrap met déjà !important sur .text-muted
   .text-muted,
   .signature-titles-count {
     color: var(--bnum-text-hint, #666) !important;
@@ -97,7 +91,7 @@
     margin-bottom: 0.5rem;
   }
 
-  // ----- Liens « Nouveau libellé » et « Retour aux libellés » -----
+  // Liens « Nouveau libellé » et « Retour »
   .signature-titles-new {
     .signature-titles-icon-before('add');
     .signature-titles-link-button(
@@ -119,7 +113,7 @@
     margin-bottom: 1rem;
   }
 
-  // ----- Recherche (composant bnum-input-search) -----
+  // Recherche
   .signature-titles-search {
     margin: 1rem 0 0.5rem;
 
@@ -128,7 +122,7 @@
     }
   }
 
-  // ----- Liste des libellés : une ligne = un lien, bleu avec un trait à gauche au survol ou au focus -----
+  // Liste des libellés : chaque ligne est un lien
   .signature-titles-list,
   .signature-titles-dns {
     list-style: none;
@@ -152,22 +146,21 @@
       color: var(--bnum-text-primary, #161616);
       text-decoration: none;
 
-      // Survol ou focus clavier : texte bleu France et trait bleu épais à gauche,
-      // comme la ligne active de la liste des mails (ombre intérieure : pas de décalage du texte)
+      // Au survol : texte bleu et trait bleu à gauche, comme dans la liste des mails
       &:hover,
       &:focus-visible {
         color: var(--bnum-color-primary, #000091);
         box-shadow: inset 4px 0 0 var(--bnum-color-primary, #000091);
       }
 
-      // La liste défile : un contour décalé vers l'extérieur serait rogné
+      // Contour à l'intérieur, sinon il est coupé par le défilement
       &:focus-visible {
         outline-offset: -3px;
       }
     }
   }
 
-  // « Aucun résultat » : affiché dans un cadre, à la place de la liste
+  // « Aucun résultat » à la place de la liste
   .signature-titles-no-result {
     padding: 1rem 0.75rem;
     margin: 0 0 var(--bnum-space-m, 15px);
@@ -176,10 +169,8 @@
     font-style: italic;
   }
 
-  // Badge « Défaut » (composant bnum-badge, variation secondaire), comme sur la maquette :
-  // petit, en capitales, fond lavande, texte bleu, sans bordure, angles à peine arrondis.
-  // Les variables --bnum-badge-* sont prévues par le composant pour ce réglage ; la taille du texte
-  // est fixée ici, sinon le badge prendrait celle du titre (h1) où il est placé.
+  // Badge « Défaut » comme sur la maquette.
+  // Taille du texte fixée, sinon il prend celle du titre.
   .signature-titles-badge {
     --bnum-badge-border-radius: var(--bnum-radius-m, 5px);
     --bnum-badge-padding: 0 var(--bnum-space-s, 10px);
@@ -193,8 +184,7 @@
     vertical-align: middle;
   }
 
-  // ----- Champs natifs, à l'apparence de bnum-input (mêmes variables) -----
-  // Un bloc par champ (libellé, champ, aide), nettement séparé du suivant
+  // Champs du formulaire, avec le style des champs Bnum
   .form-group {
     margin-bottom: 2rem;
   }
@@ -216,7 +206,7 @@
       background-color: var(--bnum-color-input-hover, #d2d2d2);
     }
 
-    // Champ actif (maquettes du 20/10/2026) : fond lavande et barre bleue à gauche
+    // Champ actif : fond lavande et barre bleue à gauche
     &:focus {
       background-color: var(--bnum-color-list-active, #cbcbfa);
       box-shadow: inset 4px 0 0 var(--bnum-color-primary, #000091);
@@ -228,7 +218,7 @@
     min-height: 7rem;
   }
 
-  // ----- Rangée de boutons -----
+  // Boutons
   .signature-titles-actions {
     display: flex;
     flex-wrap: wrap;
@@ -242,12 +232,12 @@
     margin: 0;
   }
 
-  // Explication sous « Enregistrer » sur la page du libellé par défaut
+  // Texte sous les boutons du libellé par défaut
   .signature-titles-default-note {
     margin: -1.25rem 0 2rem;
   }
 
-  // ----- DN : lignes grises séparées, corbeille à droite ; défile au-delà d'environ 4 DN -----
+  // DN : une ligne grise par DN, la liste défile après 4 DN environ
   .signature-titles-dns {
     max-height: 11rem;
     overflow-y: auto;
@@ -267,7 +257,7 @@
     }
   }
 
-  // Les DN sont longs et sans espace : retour à la ligne autorisé n'importe où
+  // Les DN sont longs : on peut les couper n'importe où
   .signature-titles-dn-value {
     flex: 1;
     min-width: 0;
@@ -293,7 +283,7 @@
     }
   }
 
-  // ----- Messages (tables absentes, liste vide) -----
+  // Messages d'information et d'erreur
   .signature-titles-alert {
     padding: var(--bnum-space-s, 10px) var(--bnum-space-m, 15px);
     border-left: 4px solid var(--bnum-color-primary, #000091);
@@ -305,8 +295,7 @@
     border-left-color: var(--bnum-color-danger, #ce0500);
   }
 
-  // ----- Focus clavier visible (RGAA) -----
-  // Pas de couleur de focus dans le design system : on reprend la couleur de survol principale
+  // Focus clavier bien visible (RGAA)
   a:focus-visible,
   .form-control:focus-visible {
     outline: 2px solid var(--bnum-color-primary-hover, #1212ff);
@@ -314,9 +303,7 @@
   }
 }
 
-// ----- Mode sombre : textes d'aide -----
-// --bnum-text-hint vaut #1e1e1e en mode sombre (illisible sur fond sombre) :
-// on reprend la couleur du texte principal, atténuée.
+// Mode sombre : la couleur d'aide du design system est illisible, on en met une autre
 html.dark-mode,
 html.dark-mode-custom {
   #layout-content .signature-titles {

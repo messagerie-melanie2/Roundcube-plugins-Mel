@@ -6,10 +6,9 @@ $rcmail_config['signature_links'] = [];
 // Liste des images utilisables
 $rcmail_config['signature_images'] = [];
 
-// Administration des libellés du bloc Marque État (ticket 0009463)
-// Lit les libellés dans les tables mel_signatures_titles et mel_signatures_title_dn.
-// À passer à true seulement une fois les tables créées et remplies.
+// Lire les libellés du bloc Marque État en base de données.
+// Ne passer à true qu'une fois les tables créées et remplies.
 $rcmail_config['signatures_db_enabled'] = false;
 
-// Identifiants (uid) des agents autorisés à administrer les libellés
+// Agents (uid) qui peuvent modifier les libellés
 $rcmail_config['signatures_admin_list'] = [];

@@ -5,15 +5,12 @@ declare(strict_types=1);
 namespace MelSignatures;
 
 /**
- * Conversions du texte de signature d'un libellé (ticket 0009463).
- *
- * En base, le texte est stocké brut : une ligne de signature par ligne, séparées par "\n".
+ * Texte de signature d'un libellé. En base, c'est du texte simple, une ligne par ligne de signature.
  */
 final class SignatureText
 {
     /**
-     * Normalise un texte de signature : retours à la ligne unifiés en "\n",
-     * espaces retirés en début et fin de ligne, lignes vides supprimées.
+     * Nettoie le texte : retire les espaces en trop et les lignes vides.
      */
     #[\NoDiscard('Le texte normalisé est renvoyé, le texte d\'origine est inchangé')]
     public static function normalize(string $text): string
@@ -25,11 +22,8 @@ final class SignatureText
     }
 
     /**
-     * Convertit le texte stocké en base en HTML pour la signature.
-     *
-     * Les caractères spéciaux (& < >) sont échappés, puis chaque retour à la ligne devient `<br>`.
-     * Les apostrophes et guillemets ne sont pas convertis : signature.js recopie cette valeur
-     * dans le champ « Personnalisé » en remplaçant seulement `<br>` par un retour à la ligne.
+     * Transforme le texte en HTML : chaque ligne est séparée par <br>.
+     * On ne convertit pas les apostrophes, car signature.js recopie ce texte tel quel.
      */
     #[\NoDiscard('Le HTML est renvoyé, le texte d\'origine est inchangé')]
     public static function toHtml(string $text): string

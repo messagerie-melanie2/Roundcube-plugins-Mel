@@ -5,12 +5,7 @@ declare(strict_types=1);
 namespace MelSignatures;
 
 /**
- * Libellé du bloc Marque État (table mel_signatures_titles, ticket 0009463).
- *
- * Objet de transfert immuable : il porte un libellé lu en base ou saisi par un administrateur.
- * Un libellé pas encore enregistré a l'identifiant 0. Les règles de saisie sont contrôlées
- * par SignatureTitleValidator : ce constructeur accepte aussi une saisie invalide,
- * pour pouvoir la réafficher dans le formulaire avec le message d'erreur.
+ * Libellé du bloc Marque État. Un nouveau libellé, pas encore enregistré, a l'identifiant 0.
  */
 final readonly class SignatureTitle
 {
@@ -21,9 +16,9 @@ final readonly class SignatureTitle
     ) {}
 
     /**
-     * Construit un libellé à partir d'une ligne de mel_signatures_titles.
+     * Crée l'objet à partir d'une ligne de la base.
      *
-     * @param array<string, mixed> $row Ligne lue par rcube_db::fetch_assoc()
+     * @param array<string, mixed> $row
      */
     #[\NoDiscard('Le libellé construit est le seul résultat de cet appel')]
     public static function fromRow(array $row): self

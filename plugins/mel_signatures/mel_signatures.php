@@ -40,8 +40,7 @@ class mel_signatures extends bnum_plugin
     private $rc;
 
     /**
-     * Messages affichés après une redirection : valeur de `_msg` => [clé du texte, type de message Roundcube].
-     * Seules ces clés sont acceptées, jamais un texte venant de l'URL.
+     * Messages affichés après une action : valeur de _msg => [texte, type de message].
      */
     private const array STATUS_MESSAGES = [
         'saved'          => ['title_msg_saved', 'confirmation'],
@@ -55,7 +54,7 @@ class mel_signatures extends bnum_plugin
     ];
 
     /**
-     * Actions d'écriture de l'administration : POST et jeton CSRF obligatoires.
+     * Actions qui modifient la base : elles demandent un POST avec le jeton CSRF.
      */
     private const array ADMIN_WRITE_ACTIONS = [
         'plugin.mel_signatures_save_title',
@@ -66,7 +65,7 @@ class mel_signatures extends bnum_plugin
     ];
 
     /**
-     * Accès aux tables des libellés, créé au premier besoin (voir titles()).
+     * Accès aux tables des libellés (voir titles()).
      */
     private ?SignatureTitleRepository $titles = null;
 
@@ -77,7 +76,7 @@ class mel_signatures extends bnum_plugin
     #[\Override]
     public function init(): void
     {
-        // Classes de lib/
+        // Classes du dossier lib/
         $this->register_class_autoloader();
 
         $this->rc = rcmail::get_instance();
@@ -102,14 +101,13 @@ class mel_signatures extends bnum_plugin
                 'save_signature'
             ));
 
-            // Administration des libellés du bloc Marque État
+            // Pages des libellés
             $this->register_admin_actions();
         }
     }
 
     /**
-     * Chargement automatique (PSR-4) des classes de l'espace de noms MelSignatures\,
-     * rangées dans lib/ : MelSignatures\SignatureTitle → lib/SignatureTitle.php.
+     * Charge automatiquement les classes MelSignatures\ du dossier lib/.
      */
     private function register_class_autoloader(): void
     {
@@ -129,10 +127,8 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * Enregistre les pages et les actions de l'administration des libellés.
-     *
-     * Les actions sont enregistrées pour tout le monde : chacune vérifie elle-même
-     * les droits (require_signatures_admin()), ce qui protège aussi les appels directs.
+     * Déclare les pages et les actions des libellés.
+     * Chaque action vérifie elle-même que l'utilisateur est administrateur.
      */
     private function register_admin_actions(): void
     {
@@ -150,14 +146,14 @@ class mel_signatures extends bnum_plugin
             $this->api->register_action($action, $this->ID, $callback);
         }
 
-        // Refuse toute écriture qui n'est pas un POST muni du jeton CSRF de Roundcube
+        // Les écritures doivent être des POST avec le jeton CSRF
         $this->protect_actions(self::ADMIN_WRITE_ACTIONS);
     }
 
     /**
      * Adds Signatures section in Settings
      *
-     * @param array<string, mixed> $args Paramètres du hook settings_actions
+     * @param array<string, mixed> $args
      *
      * @return array<string, mixed>
      */
@@ -171,7 +167,7 @@ class mel_signatures extends bnum_plugin
             'title'  => 'signaturestitle',
         );
 
-        // Entrée « Modifier les signatures », pour les seuls administrateurs
+        // Menu « Modifier les signatures », pour les administrateurs seulement
         if ($this->is_signatures_admin()) {
             $args['actions'][] = [
                 'action' => 'plugin.mel_signatures_list_titles',
@@ -367,12 +363,10 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * Handler pour le choix du logo (bloc Marque État)
+     * Liste de choix du bloc Marque État.
+     * Lit la base si signatures_db_enabled vaut true, sinon la config.
      *
-     * Lit les libellés en base si `signatures_db_enabled` vaut true et que la table
-     * contient au moins un libellé ; sinon, lit la config comme avant.
-     *
-     * @param array<string, string> $attrib Attributs de la balise <roundcube:object name="signaturelogo" />
+     * @param array<string, string> $attrib
      */
     public function logo(array $attrib): string
     {
@@ -388,9 +382,7 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * Options de la liste « Choix du bloc-marque état » construites depuis la base.
-     *
-     * @return string|null Les balises <option>, ou null si la table est absente ou vide
+     * Options de la liste, lues en base. Renvoie null si la base est vide ou inaccessible.
      */
     private function logo_options_from_db(): ?string
     {
@@ -399,7 +391,7 @@ class mel_signatures extends bnum_plugin
             $default_id = $this->titles()->findTitleIdForUserDn((string) driver_mel::gi()->getUser()->dn);
         }
         catch (SignatureStorageException) {
-            // Tables absentes ou base indisponible : l'erreur SQL est dans errors.log, on lit la config
+            // Base inaccessible : on utilisera la config
             return null;
         }
 
@@ -407,7 +399,7 @@ class mel_signatures extends bnum_plugin
             return null;
         }
 
-        // « Personnalisé » reste la première option : signature.js la reconnaît à sa valeur 'custom'
+        // « Personnalisé » reste en premier
         $content = html::tag('option', ['value' => 'custom'], rcube::Q($this->gettext('customtitle')));
 
         foreach ($titles as $title) {
@@ -424,10 +416,7 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * Options de la liste « Choix du bloc-marque état » construites depuis la config
-     * (comportement d'avant le ticket 0009463, conservé comme repli).
-     *
-     * @return string Les balises <option> et <optgroup>
+     * Options de la liste, lues dans la config (ancien fonctionnement).
      */
     private function logo_options_from_config(): string
     {
@@ -660,12 +649,10 @@ class mel_signatures extends bnum_plugin
        return $html;
     }
 
-    // -------------------------------------------------
-    // Administration des libellés du bloc Marque État
-    // -------------------------------------------------
+    // Pages des libellés du bloc Marque État
 
     /**
-     * Indique si l'utilisateur courant figure dans `signatures_admin_list`.
+     * Vrai si l'utilisateur est dans signatures_admin_list.
      */
     private function is_signatures_admin(): bool
     {
@@ -675,7 +662,7 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * Arrête la requête sur une page d'erreur si l'utilisateur n'est pas administrateur.
+     * Affiche une erreur et s'arrête si l'utilisateur n'est pas administrateur.
      */
     private function require_signatures_admin(): void
     {
@@ -686,7 +673,7 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * Indique si les libellés doivent être lus en base (`signatures_db_enabled`).
+     * Vrai si les libellés doivent être lus en base.
      */
     private function db_enabled(): bool
     {
@@ -694,7 +681,7 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * Accès aux tables des libellés (créé une seule fois par requête).
+     * Accès aux tables des libellés.
      */
     private function titles(): SignatureTitleRepository
     {
@@ -702,7 +689,7 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * Règles de saisie des libellés et des DN.
+     * Vérification de la saisie.
      */
     private function validator(): SignatureTitleValidator
     {
@@ -710,7 +697,7 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * Page « Libellés des signatures » : liste alphabétique (GET).
+     * Page de la liste des libellés.
      */
     public function list_titles(): never
     {
@@ -723,7 +710,7 @@ class mel_signatures extends bnum_plugin
             $default_id = $this->titles()->findDefaultTitleId();
         }
         catch (SignatureStorageException) {
-            // Le handler affiche « Les tables de signatures sont introuvables… »
+            // La page affichera un message d'erreur
             $titles     = null;
             $default_id = null;
         }
@@ -738,7 +725,7 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * Page de création (sans `_id`) ou de modification d'un libellé (GET).
+     * Page d'un libellé : création (sans _id) ou modification.
      */
     public function edit_title(): never
     {
@@ -765,10 +752,10 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * Affiche la page de modification d'un libellé (création si $title vaut null).
-     * Sert aussi à réafficher le formulaire, avec la saisie de l'admin, après une erreur.
+     * Affiche la page d'un libellé (création si $title vaut null).
+     * Sert aussi à réafficher la saisie après une erreur.
      *
-     * @param string $dn_draft DN saisi à remettre dans le formulaire d'ajout après une erreur
+     * @param string $dn_draft DN saisi, à réafficher après une erreur
      */
     private function render_title_page(?SignatureTitle $title, string $dn_draft = ''): never
     {
@@ -797,8 +784,7 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * Ajoute la feuille de style (compilée depuis less/signature_titles.less) et le script
-     * des pages d'administration. Boutons, recherche et badge viennent du design system Bnum.
+     * Ajoute le CSS et le JS des pages des libellés.
      */
     private function include_titles_assets(): void
     {
@@ -807,11 +793,10 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * Contenu de <roundcube:object name="signaturetitleslist" /> : titre, bouton « Nouveau libellé »,
-     * champ de recherche, compteur et liste alphabétique.
+     * Liste des libellés avec la recherche et le compteur.
      *
-     * @param array<string, string> $attrib     Attributs de la balise du template
-     * @param list<SignatureTitle>|null $titles Libellés, ou null si les tables sont inaccessibles
+     * @param array<string, string> $attrib
+     * @param list<SignatureTitle>|null $titles null si la base est inaccessible
      */
     private function titles_list_html(array $attrib, ?array $titles, ?int $default_id): string
     {
@@ -830,9 +815,7 @@ class mel_signatures extends bnum_plugin
             return $intro . html::p('signature-titles-alert signature-titles-alert-info', rcube::Q($this->gettext('title_no_item')));
         }
 
-        // Recherche : composant <bnum-input-search> du design system Bnum (champ, bouton de vidage, loupe).
-        // Le filtrage se fait pendant la saisie (signature_titles.js). Le texte du composant sert de libellé
-        // pour les lecteurs d'écran, comme dans la recherche des mails (mail.html du skin).
+        // Recherche : le texte caché sert aux lecteurs d'écran
         $filter = html::div(['class' => 'signature-titles-search', 'role' => 'search'],
             html::tag('bnum-input-search', [
                     'id'          => 'signature-titles-filter',
@@ -842,8 +825,7 @@ class mel_signatures extends bnum_plugin
             )
         );
 
-        // data-template : le même texte avec « $count » non remplacé ; signature_titles.js
-        // s'en sert pour mettre le compteur à jour pendant la recherche (« 120 libellé(s) »)
+        // data-template sert au JS pour mettre le compteur à jour pendant la recherche
         $count = html::p([
                 'id'            => 'signature-titles-count',
                 'class'         => 'signature-titles-count',
@@ -857,14 +839,13 @@ class mel_signatures extends bnum_plugin
         foreach ($titles as $title) {
             $badge = $title->id === $default_id ? ' ' . $this->default_badge_html() : '';
 
-            // Toute la ligne est le lien (badge compris) ; data-label : nom en minuscules,
-            // sur lequel signature_titles.js filtre la liste
+            // Toute la ligne est cliquable. data-label sert à la recherche.
             $entries .= html::tag('li', ['data-label' => mb_strtolower($title->label)],
                 html::a(['href' => $this->title_edit_url($title->id)], rcube::Q($title->label) . $badge)
             );
         }
 
-        // Message affiché par signature_titles.js quand la recherche ne trouve rien
+        // Affiché par le JS quand la recherche ne trouve rien
         $no_result = html::p([
                 'id'     => 'signature-titles-no-result',
                 'class'  => 'signature-titles-no-result',
@@ -880,11 +861,9 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * Contenu de <roundcube:object name="signaturetitleform" /> : retour, titre de la page,
-     * formulaire (nom + texte de signature), puis une rangée de boutons :
-     * « Enregistrer le libellé », « Définir comme libellé par défaut » et « Supprimer le libellé ».
+     * Formulaire d'un libellé et ses boutons.
      *
-     * @param SignatureTitle|null $title Libellé affiché, ou null sur la page de création
+     * @param SignatureTitle|null $title null pour un nouveau libellé
      */
     private function title_form_html(?SignatureTitle $title, bool $is_default, int $dn_count): string
     {
@@ -908,8 +887,7 @@ class mel_signatures extends bnum_plugin
             'required'  => 'required',
         ]))->show($title?->label ?? '');
 
-        // Texte de la signature : textarea, une ligne de signature par ligne saisie.
-        // html_textarea ignore « required » et « maxlength » : la balise est écrite directement.
+        // html_textarea ignore required et maxlength : on écrit la balise nous-mêmes
         $text_input = html::tag('textarea', [
                 'name'      => '_signature_text',
                 'id'        => 'signature-titles-signature-text',
@@ -939,9 +917,8 @@ class mel_signatures extends bnum_plugin
             )
         );
 
-        // « Enregistrer » est placé hors du formulaire, sur la même ligne que les autres boutons
-        // (un formulaire ne peut pas en contenir un autre) : data-form désigne le formulaire,
-        // que signature_titles.js soumet au clic (les boutons du design system ne le font pas seuls).
+        // « Enregistrer » est hors du formulaire pour être aligné avec les autres boutons.
+        // data-form indique au JS quel formulaire envoyer.
         $save = html::tag('bnum-primary-button', [
                 'data-icon'     => 'save',
                 'data-icon-pos' => 'left',
@@ -951,12 +928,12 @@ class mel_signatures extends bnum_plugin
             rcube::Q($this->gettext('title_save'))
         );
 
-        // Création : pas encore de bouton « Définir par défaut » ni « Supprimer »
+        // Nouveau libellé : seulement « Enregistrer »
         if ($title_id === 0) {
             return $back . $heading . $form . html::div('signature-titles-actions', $save);
         }
 
-        // Libellé par défaut : ni « Définir par défaut » ni « Supprimer », une explication à la place
+        // Libellé par défaut : on ne peut pas le supprimer
         if ($is_default) {
             return $back . $heading . $form
                 . html::div('signature-titles-actions', $save)
@@ -976,12 +953,11 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * Contenu de <roundcube:object name="signaturetitledns" /> : DN du libellé, en lecture seule
-     * avec une corbeille, puis formulaire d'ajout. Sur la page de création : un simple message.
-     * Pour corriger un DN, l'admin le supprime puis le rajoute (choix du 20/10/2026).
+     * DN du libellé et formulaire d'ajout.
+     * Pour corriger un DN, on le supprime puis on le rajoute.
      *
-     * @param list<SignatureTitleDn> $dns      DN du libellé, ligne « default » comprise
-     * @param string                 $dn_draft DN saisi à remettre dans le formulaire d'ajout
+     * @param list<SignatureTitleDn> $dns
+     * @param string                 $dn_draft DN saisi, à réafficher après une erreur
      */
     private function title_dns_html(int $title_id, array $dns, string $dn_draft): string
     {
@@ -993,7 +969,7 @@ class mel_signatures extends bnum_plugin
         $count = 0;
 
         foreach ($dns as $dn) {
-            // La ligne « default » s'affiche sans bouton : on la déplace depuis un autre libellé
+            // Pas de corbeille sur la ligne « default »
             if ($dn->isDefault()) {
                 $rows .= html::tag('li', 'signature-titles-dn signature-titles-dn-default',
                     $this->default_badge_html() . ' ' . rcube::Q($this->gettext('title_default_dn_help'))
@@ -1003,8 +979,7 @@ class mel_signatures extends bnum_plugin
 
             $count++;
 
-            // Corbeille seule : le texte du bouton (« Supprimer le DN ou=… ») n'est lu
-            // que par les lecteurs d'écran et affiché en infobulle
+            // Corbeille : le texte apparaît en infobulle
             $rows .= html::tag('li', 'signature-titles-dn',
                 html::span('signature-titles-dn-value', rcube::Q($dn->dn))
                 . $this->post_button_html(
@@ -1031,7 +1006,7 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * Formulaire d'ajout d'un DN : champ + bouton « Ajouter un DN ».
+     * Formulaire d'ajout d'un DN.
      */
     private function dn_add_form_html(int $title_id, string $dn_draft): string
     {
@@ -1059,15 +1034,12 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * Formulaire POST réduit à un bouton du design system Bnum (définir par défaut, supprimer…).
-     * Le bouton porte data-submit : signature_titles.js soumet le formulaire au clic.
+     * Petit formulaire avec un seul bouton Bnum (définir par défaut, supprimer…).
      *
-     * @param array<string, int> $fields    Champs cachés envoyés avec le bouton
-     * @param string             $tag       Composant : bnum-secondary-button, bnum-danger-button ou bnum-icon-button
-     * @param string             $icon      Icône Material Symbols (save, check, delete…)
-     * @param string|null        $confirm   Question posée par signature_titles.js avant l'envoi
-     * @param bool               $icon_only Bouton sans texte visible (bnum-icon-button) :
-     *                                      $label devient l'infobulle et le nom lu par les lecteurs d'écran
+     * @param array<string, int> $fields    Champs cachés
+     * @param string             $tag       bnum-secondary-button, bnum-danger-button ou bnum-icon-button
+     * @param string|null        $confirm   Question posée avant l'envoi
+     * @param bool               $icon_only Bouton avec l'icône seule
      */
     private function post_button_html(string $action, array $fields, string $label, string $tag, string $icon, ?string $confirm = null, bool $icon_only = false): string
     {
@@ -1088,7 +1060,7 @@ class mel_signatures extends bnum_plugin
     /**
      * Champs cachés d'un formulaire.
      *
-     * @param array<string, int> $fields Nom du champ => valeur
+     * @param array<string, int> $fields
      */
     private function hidden_fields_html(array $fields): string
     {
@@ -1102,7 +1074,7 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * Badge « Défaut » : composant <bnum-badge> du design system Bnum, variation secondaire.
+     * Badge « Défaut ».
      */
     private function default_badge_html(): string
     {
@@ -1114,7 +1086,7 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * Crée (`_id` = 0) ou modifie un libellé (POST).
+     * Enregistre un libellé, nouveau ou existant.
      */
     public function save_title(): never
     {
@@ -1149,7 +1121,7 @@ class mel_signatures extends bnum_plugin
         }
 
         if ($error !== null) {
-            // Réaffiche le formulaire avec la saisie de l'admin, sans rien enregistrer
+            // Erreur : on réaffiche la saisie
             $this->show_message_error($this->validation_error_text($error));
             $this->render_title_page($title);
         }
@@ -1159,7 +1131,7 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * Supprime un libellé et ses DN (POST). Refusé pour le libellé par défaut.
+     * Supprime un libellé et ses DN, sauf le libellé par défaut.
      */
     public function delete_title(): never
     {
@@ -1186,7 +1158,7 @@ class mel_signatures extends bnum_plugin
         }
 
         if ($is_default) {
-            // Sans lui, les agents dont le DN n'est pas reconnu n'auraient plus rien de proposé
+            // Sans libellé par défaut, certains agents n'auraient rien de proposé
             $this->show_message_error($this->gettext('title_error_default_not_deletable'));
             $this->render_title_page($title);
         }
@@ -1196,7 +1168,7 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * Rattache la ligne « default » à ce libellé, en la créant si besoin (POST).
+     * Fait de ce libellé le libellé par défaut.
      */
     public function set_default_title(): never
     {
@@ -1225,7 +1197,7 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * Ajoute un DN à un libellé (POST). Un DN ne se modifie pas : on le supprime puis on le rajoute.
+     * Ajoute un DN à un libellé.
      */
     public function add_title_dn(): never
     {
@@ -1253,7 +1225,7 @@ class mel_signatures extends bnum_plugin
         }
 
         if ($error !== null) {
-            // Réaffiche la page avec le DN saisi dans le formulaire d'ajout
+            // Erreur : on réaffiche le DN saisi
             $this->show_message_error($this->validation_error_text($error));
             $this->render_title_page($title, $dn);
         }
@@ -1263,7 +1235,7 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * Supprime un DN d'un libellé (POST). La ligne « default » n'est jamais supprimée.
+     * Supprime un DN d'un libellé.
      */
     public function delete_title_dn(): never
     {
@@ -1284,7 +1256,7 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * Affiche le message demandé par `_msg` après une redirection (liste blanche STATUS_MESSAGES).
+     * Affiche le message demandé par _msg, s'il est dans STATUS_MESSAGES.
      */
     private function show_status_message(): void
     {
@@ -1297,7 +1269,7 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * Texte d'une erreur de saisie, avec ses variables.
+     * Texte d'une erreur de saisie.
      */
     private function validation_error_text(SignatureValidationError $error): string
     {
@@ -1305,9 +1277,9 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * URL d'une page ou d'une action de l'administration.
+     * URL d'une page ou d'une action.
      *
-     * @param array<string, int|string> $params Paramètres ajoutés à l'URL
+     * @param array<string, int|string> $params
      */
     private function action_url(string $action, array $params = []): string
     {
@@ -1315,7 +1287,7 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * URL de la page de modification d'un libellé (création si $title_id = 0).
+     * URL de la page d'un libellé (0 pour un nouveau).
      */
     private function title_edit_url(int $title_id = 0): string
     {
@@ -1323,10 +1295,9 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * Redirige vers une page de l'administration et termine la requête.
-     * Après un POST, la redirection évite qu'un F5 renvoie le formulaire.
+     * Redirige vers une page. Après un POST, cela évite qu'un F5 renvoie le formulaire.
      *
-     * @param array<string, int|string> $params Paramètres ajoutés à l'URL
+     * @param array<string, int|string> $params
      */
     private function redirect_to_action(string $action, array $params = []): never
     {
@@ -1335,7 +1306,7 @@ class mel_signatures extends bnum_plugin
     }
 
     /**
-     * Trace une modification dans les journaux Bnum (qui a fait quoi).
+     * Note dans les journaux qui a modifié quoi.
      */
     private function log_change(string $message): void
     {

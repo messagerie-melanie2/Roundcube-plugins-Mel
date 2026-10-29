@@ -3,21 +3,17 @@
 declare(strict_types=1);
 
 /**
- * Génère le script SQL de reprise des libellés de signature (ticket 0009463, V1).
- *
- * Lit `signature_images` et `signature_default_image` dans un fichier de config,
- * et écrit sur la sortie standard les INSERT à exécuter dans la base Roundcube.
- * Le script ne se connecte à aucune base : le fichier produit se relit avant d'être exécuté.
+ * Crée le script SQL qui remplit les tables des libellés à partir de la config.
+ * Il ne touche pas à la base : on relit le fichier avant de l'exécuter.
  *
  * Usage :
  *   php generate_seed.php /chemin/vers/config.inc.php.template > seed.sql
  *
- * Code de sortie : 0 = aucune anomalie, 1 = erreur d'usage, 2 = anomalies (voir la sortie d'erreur).
+ * Code de sortie : 0 = tout va bien, 1 = mauvais usage, 2 = anomalies affichées.
  */
 
 /**
- * Corrections des libellés introuvables : ancien libellé => libellé existant.
- * À remplir avec les choix de l'équipe avant de générer le script définitif.
+ * Libellés qui n'existent plus : ancien libellé => libellé qui le remplace.
  */
 const TITLE_CORRECTIONS = [
     'Ministère de la Transition écologique, de la Biodiversité, de la Forêt, de la Mer et de la Pêche' => 'Ministère de la Transition écologique, de la Biodiversité et des Négociations internationales sur le climat et la nature',
@@ -27,8 +23,8 @@ const TITLE_CORRECTIONS = [
 
 
 /**
- * Corrections typographiques validées par l'équipe : libellé de la config => [nouveau libellé, nouveau texte].
- * Le texte s'écrit comme dans la config : lignes séparées par <br>.
+ * Corrections validées par l'équipe : libellé de la config => [nouveau libellé, nouveau texte].
+ * Dans le texte, <br> sépare les lignes.
  */
 const TITLE_RENAMES = [
     'Ministère de l\'Économie, des Finances et de la Souveraineté Industrielle, Énergétique et Numérique' => ['Ministère de l’Économie, des Finances et de la Souveraineté industrielle, énergétique et numérique', 'MINISTÈRE<br>DE L’ÉCONOMIE,<br>DES FINANCES<br>ET DE LA SOUVERAINETÉ<br>INDUSTRIELLE, ÉNERGÉTIQUE<br>ET NUMÉRIQUE'],
@@ -48,7 +44,7 @@ const TITLE_RENAMES = [
 ];
 
 /**
- * Libellé de la ligne « default », à la place de celui de la config.
+ * Libellé proposé par défaut.
  */
 const DEFAULT_TITLE = 'Ministères Transition écologique, Aménagement du territoire, Transports, Ville et Logement';
 
@@ -63,7 +59,7 @@ $rcmail_config = [];
 require $argv[1];
 
 /**
- * Écrit une chaîne sous forme de littéral SQL standard : 'texte', apostrophes doublées.
+ * Met une chaîne entre apostrophes pour le SQL.
  */
 function sql_string(string $value): string
 {
@@ -71,8 +67,7 @@ function sql_string(string $value): string
 }
 
 /**
- * Signale une anomalie sur la sortie d'erreur ; renvoie le nombre d'anomalies signalées.
- * Appelée sans message, elle renvoie seulement le compte.
+ * Affiche une anomalie et renvoie le nombre d'anomalies. Sans message, renvoie juste le nombre.
  */
 function anomaly(?string $message = null): int
 {
@@ -87,7 +82,7 @@ function anomaly(?string $message = null): int
 }
 
 /**
- * Convertit le HTML de la config (« MINISTÈRE<br>DES TRANSPORTS ») en texte brut multi-ligne.
+ * Transforme « MINISTÈRE<br>DES TRANSPORTS » en texte sur plusieurs lignes.
  */
 function html_to_text(string $html): string
 {
@@ -99,13 +94,13 @@ function html_to_text(string $html): string
 }
 
 /**
- * Rattache chaque DN à un libellé existant ; signale les autres.
+ * Associe chaque DN à son libellé et signale les DN dont le libellé est introuvable.
  *
- * @param array<string, string> $config_dns  DN => nom de l'élément (config)
- * @param array<string, string> $items       nom => valeur des éléments repris
- * @param array<string, string> $corrections ancien nom => nouveau nom
+ * @param array<string, string> $config_dns  DN => libellé
+ * @param array<string, string> $items       libellé => texte
+ * @param array<string, string> $corrections ancien libellé => nouveau libellé
  *
- * @return array<string, string> DN => nom de l'élément
+ * @return array<string, string> DN => libellé
  */
 function map_dns(array $config_dns, array $items, array $corrections, string $kind): array
 {
@@ -130,10 +125,10 @@ function map_dns(array $config_dns, array $items, array $corrections, string $ki
     return $dns;
 }
 
-// ----- Libellés -----
+// Libellés
 $titles = [];
 foreach ($rcmail_config['signature_images'] ?? [] as $entries) {
-    // « Personnalisé » => 'custom' n'est pas un libellé : l'option reste gérée par le code
+    // « Personnalisé » n'est pas un vrai libellé : on l'ignore
     if (!is_array($entries)) {
         continue;
     }
@@ -166,7 +161,7 @@ if (isset($titles[DEFAULT_TITLE])) {
     anomaly('libellé par défaut absent : « ' . DEFAULT_TITLE . ' »');
 }
 
-// ----- Script SQL -----
+// Script SQL
 echo "-- Reprise des libellés de signature (ticket 0009463, V1)\n";
 echo '-- Généré le ' . date('Y-m-d H:i') . ' depuis ' . basename($argv[1]) . "\n";
 printf("-- %d libellés, %d DN de libellés (ligne default comprise si présente)\n\n", count($titles), count($title_dns));

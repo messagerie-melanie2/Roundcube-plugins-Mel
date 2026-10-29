@@ -47,10 +47,10 @@ $labels['savingsignature'] = "Enregistrement de la signature en cours...";
 $labels['savesignaturesuccess'] = "La signature a bien été enregistrée";
 $labels['savesignatureerror'] = "Une erreur s'est produite lors de l'enregistrement de votre signature";
 
-// Administration des libellés de signature (ticket 0009463)
+// Libellés du bloc Marque État
 $labels['customtitle'] = 'Personnalisé';
 
-// Textes communs aux pages d'administration
+// Textes communs aux deux pages
 $labels['admin_access_denied'] = 'Accès refusé. Vous n\'avez pas les droits nécessaires.';
 $labels['title_db_unavailable'] = 'Les tables de signatures sont introuvables ou inaccessibles. Contactez l\'équipe Bnum.';
 $labels['title_default_badge'] = 'Défaut';
@@ -74,7 +74,7 @@ $labels['title_msg_dn_saved'] = 'Le DN a été enregistré.';
 $labels['title_msg_dn_deleted'] = 'Le DN a été supprimé.';
 $labels['title_msg_save_error'] = 'L\'enregistrement a échoué. Réessayez, puis contactez l\'équipe Bnum si le problème persiste.';
 
-// Libellés du bloc Marque État
+// Menu et liste des libellés
 $labels['title_menu'] = 'Modifier les signatures';
 $labels['title_menu_title'] = 'Utilisez ce menu pour gérer les libellés du bloc Marque État et leurs DN';
 $labels['title_list_title'] = 'Libellés des signatures';

@@ -5,15 +5,12 @@ declare(strict_types=1);
 namespace MelSignatures;
 
 /**
- * Erreur de saisie détectée par SignatureTitleValidator (ticket 0009463).
- *
- * Porte la clé du texte à afficher (localization/fr_FR.inc) et ses variables,
- * par exemple ['label' => 'Ministère des Transports'] pour « Ce DN est déjà rattaché au libellé « $label ». »
+ * Erreur de saisie : la clé du message à afficher et ses variables.
  */
 final readonly class SignatureValidationError
 {
     /**
-     * @param array<string, string> $vars Variables du texte
+     * @param array<string, string> $vars
      */
     public function __construct(
         public string $messageKey,

@@ -1,21 +1,12 @@
 /**
- * Administration des libellés de signature (ticket 0009463)
- *
- * - filtre la liste pendant la saisie dans <bnum-input-search> (design system Bnum) ;
- * - met à jour le compteur (« 120 libellé(s) ») avec le nombre de lignes visibles ;
- * - affiche « Aucun résultat » quand la recherche ne trouve rien ;
- * - Échap, ou le bouton de vidage du composant, réaffiche toute la liste ;
- * - soumet le formulaire des boutons du design system portant data-submit : ces composants
- *   ne sont pas liés aux formulaires HTML (ils ne sont pas « form-associated ») ;
- * - demande confirmation avant l'envoi des formulaires portant un attribut data-confirm.
+ * Pages des libellés de signature : recherche dans la liste, boutons et confirmations.
  */
 (() => {
   'use strict';
 
   /**
-   * Masque les libellés dont le nom ne contient pas le texte recherché, met le compteur à jour
-   * et affiche le message « Aucun résultat » si rien ne correspond.
-   * @param {HTMLElement & { value: string }} search Composant bnum-input-search
+   * Cache les libellés qui ne correspondent pas à la recherche et met le compteur à jour.
+   * @param {HTMLElement & { value: string }} search Champ de recherche
    */
   function filterList(search) {
     const value = (search.value || '').trim().toLowerCase();
@@ -32,12 +23,12 @@
       }
     });
 
-    // data-template contient « $count libellé(s) » : on y met le nombre de lignes visibles
+    // Remplace $count par le nombre de libellés affichés
     if (count && count.dataset.template) {
       count.textContent = count.dataset.template.replace('$count', String(visible));
     }
 
-    // Aucune ligne visible : le cadre vide de la liste est masqué, le message prend sa place
+    // Rien trouvé : on cache la liste et on affiche « Aucun résultat »
     if (list) {
       list.hidden = visible === 0;
     }
@@ -48,10 +39,8 @@
   }
 
   /**
-   * Soumet le formulaire d'un bouton du design system : celui que désigne data-form,
-   * sinon celui qui contient le bouton. requestSubmit() déclenche l'événement « submit »,
-   * donc la confirmation ci-dessous et les contrôles du navigateur (required, maxlength).
-   * @param {HTMLElement} button Bouton bnum-…-button portant data-submit
+   * Envoie le formulaire du bouton.
+   * @param {HTMLElement} button Bouton cliqué
    */
   function submitFromButton(button) {
     const form = button.dataset.form
@@ -77,7 +66,7 @@
         }
       });
 
-      // Le navigateur peut avoir conservé une saisie (retour arrière) : on applique le filtre tout de suite
+      // Le navigateur a pu garder une recherche (retour arrière) : on filtre tout de suite
       filterList(search);
     }
 
@@ -85,7 +74,7 @@
       button.addEventListener('click', () => submitFromButton(button));
     });
 
-    // Confirmation avant les suppressions (formulaires portant data-confirm)
+    // Demande confirmation avant de supprimer
     document.querySelectorAll('form[data-confirm]').forEach((form) => {
       form.addEventListener('submit', (event) => {
         if (!window.confirm(form.dataset.confirm)) {

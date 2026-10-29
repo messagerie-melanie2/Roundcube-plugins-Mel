@@ -1,13 +1,6 @@
--- mel_signatures : libellés du bloc Marque État et DN associés (ticket 0009463, V1)
--- Base : Roundcube (PostgreSQL).
--- Les liens pré-établis (V2) auront deux tables de même forme : mel_signatures_links et mel_signatures_link_dn.
---
--- Identifiants : GENERATED ALWAYS AS IDENTITY (auto-incrément de PostgreSQL).
--- Le plugin récupère l'identifiant créé par INSERT … RETURNING, sans dépendre du nom du compteur.
+-- Tables des libellés du bloc Marque État (base Roundcube, PostgreSQL)
 
--- ---------------------------------------------------------------------------
--- Libellés du bloc Marque État
--- ---------------------------------------------------------------------------
+-- Libellés
 
 CREATE TABLE mel_signatures_titles (
     title_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -22,9 +15,7 @@ COMMENT ON TABLE mel_signatures_titles IS 'Libellés du bloc Marque État propos
 COMMENT ON COLUMN mel_signatures_titles.title_label IS 'Nom affiché dans la liste, tri alphabétique';
 COMMENT ON COLUMN mel_signatures_titles.title_signature_text IS 'Texte imprimé dans la signature, une ligne par retour à la ligne, sans HTML';
 
--- ---------------------------------------------------------------------------
--- DN qui déterminent le libellé proposé à un agent
--- ---------------------------------------------------------------------------
+-- DN qui choisissent le libellé proposé à un agent
 
 CREATE TABLE mel_signatures_title_dn (
     title_dn_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,

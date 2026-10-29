@@ -8,10 +8,8 @@ use PDOStatement;
 use rcube_db;
 
 /**
- * Accès aux tables mel_signatures_titles et mel_signatures_title_dn (ticket 0009463).
- *
- * Les requêtes sont écrites en toutes lettres, comme dans mel_suspects_urls ; les valeurs
- * passent toujours par des paramètres « ? ». Toute requête en échec lève SignatureStorageException.
+ * Toutes les requêtes SQL sur les tables des libellés.
+ * Si une requête échoue, une SignatureStorageException est levée.
  */
 final class SignatureTitleRepository
 {
@@ -20,7 +18,7 @@ final class SignatureTitleRepository
     ) {}
 
     /**
-     * Tous les libellés, triés par ordre alphabétique du nom.
+     * Tous les libellés, par ordre alphabétique.
      *
      * @return list<SignatureTitle>
      */
@@ -54,7 +52,7 @@ final class SignatureTitleRepository
     }
 
     /**
-     * Les DN d'un libellé (ligne « default » comprise), triés par DN.
+     * Les DN d'un libellé.
      *
      * @return list<SignatureTitleDn>
      */
@@ -75,7 +73,7 @@ final class SignatureTitleRepository
     }
 
     /**
-     * Identifiant du libellé porté par la ligne « default », ou null.
+     * Identifiant du libellé par défaut, ou null s'il n'y en a pas.
      */
     #[\NoDiscard('L\'identifiant du libellé par défaut est le seul résultat de cet appel')]
     public function findDefaultTitleId(): ?int
@@ -89,8 +87,8 @@ final class SignatureTitleRepository
     }
 
     /**
-     * Libellé à proposer à un agent : celui du DN le plus long (donc le plus précis)
-     * contenu dans le DN de l'agent ; à défaut, celui de la ligne « default ».
+     * Libellé à proposer à un agent : celui du DN le plus précis qui correspond,
+     * sinon le libellé par défaut.
      */
     #[\NoDiscard('L\'identifiant du libellé à proposer est le seul résultat de cet appel')]
     public function findTitleIdForUserDn(string $userDn): ?int
@@ -117,7 +115,7 @@ final class SignatureTitleRepository
     }
 
     /**
-     * Nom du libellé auquel un DN est déjà rattaché, ou null s'il est libre.
+     * Nom du libellé qui a déjà ce DN, ou null si le DN est libre.
      */
     #[\NoDiscard('Le nom du libellé trouvé est le seul résultat de cet appel')]
     public function findDnOwnerLabel(string $dn): ?string
@@ -133,9 +131,9 @@ final class SignatureTitleRepository
     }
 
     /**
-     * Indique si un autre libellé porte déjà ce nom (sans tenir compte des majuscules).
+     * Vrai si un autre libellé a déjà ce nom, en ignorant les majuscules.
      *
-     * @param int $exceptTitleId Libellé à ignorer : celui qu'on est en train de modifier
+     * @param int $exceptTitleId Le libellé en cours de modification
      */
     #[\NoDiscard('La réponse est le seul résultat de cet appel')]
     public function labelExists(string $label, int $exceptTitleId = 0): bool
@@ -151,9 +149,7 @@ final class SignatureTitleRepository
 
     /**
      * Crée un libellé et renvoie son identifiant.
-     *
-     * RETURNING renvoie l'identifiant créé par la colonne IDENTITY : rcube_db::insert_id()
-     * chercherait un compteur nommé mel_signatures_titles_seq, qui n'existe pas.
+     * On utilise RETURNING car insert_id() de Roundcube ne marche pas avec ces tables.
      */
     public function create(SignatureTitle $title): int
     {
@@ -171,7 +167,7 @@ final class SignatureTitleRepository
     }
 
     /**
-     * Modifie le nom et le texte de signature d'un libellé existant.
+     * Modifie le nom et le texte d'un libellé.
      */
     public function update(SignatureTitle $title): void
     {
@@ -184,7 +180,7 @@ final class SignatureTitleRepository
     }
 
     /**
-     * Supprime un libellé ; ses DN sont supprimés par la base (ON DELETE CASCADE).
+     * Supprime un libellé. La base supprime aussi ses DN.
      */
     public function delete(int $titleId): void
     {
@@ -192,7 +188,7 @@ final class SignatureTitleRepository
     }
 
     /**
-     * Rattache la ligne « default » à ce libellé, en la créant si elle n'existe pas encore.
+     * Fait de ce libellé le libellé par défaut.
      */
     public function setDefault(int $titleId): void
     {
@@ -212,7 +208,7 @@ final class SignatureTitleRepository
     }
 
     /**
-     * Rattache un DN à un libellé.
+     * Ajoute un DN à un libellé.
      */
     public function addDn(int $titleId, string $dn): void
     {
@@ -220,8 +216,7 @@ final class SignatureTitleRepository
     }
 
     /**
-     * Supprime un DN d'un libellé. La condition sur title_id empêche de toucher au DN
-     * d'un autre libellé ; celle sur dn empêche de supprimer la ligne « default ».
+     * Supprime un DN d'un libellé, jamais la ligne « default ».
      */
     public function deleteDn(int $titleId, int $titleDnId): void
     {
@@ -234,9 +229,9 @@ final class SignatureTitleRepository
     }
 
     /**
-     * Exécute une requête préparée.
+     * Exécute une requête.
      *
-     * @throws SignatureStorageException Si rcube_db renvoie false (l'erreur SQL est déjà dans errors.log)
+     * @throws SignatureStorageException Si la requête échoue
      */
     private function query(string $sql, int|string ...$params): PDOStatement
     {

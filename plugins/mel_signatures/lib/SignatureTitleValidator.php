@@ -5,15 +5,13 @@ declare(strict_types=1);
 namespace MelSignatures;
 
 /**
- * Règles de saisie des libellés et de leurs DN (ticket 0009463).
- *
- * Chaque méthode renvoie la première erreur trouvée, ou null si la saisie peut être enregistrée.
- * Les clés renvoyées sont celles des textes de localization/fr_FR.inc.
+ * Vérifie la saisie d'un libellé ou d'un DN.
+ * Renvoie la première erreur trouvée, ou null si tout est bon.
  */
 final class SignatureTitleValidator
 {
     /**
-     * Longueurs maximales acceptées, en caractères (reprises dans les textes d'erreur).
+     * Longueurs maximales, en caractères.
      */
     public const int MAX_LABEL_LENGTH = 255;
     public const int MAX_SIGNATURE_TEXT_LENGTH = 1000;
@@ -24,9 +22,9 @@ final class SignatureTitleValidator
     ) {}
 
     /**
-     * Contrôle un libellé avant de le créer ou de le modifier.
+     * Vérifie un libellé avant de l'enregistrer.
      *
-     * @throws SignatureStorageException Si la recherche d'un doublon échoue
+     * @throws SignatureStorageException
      */
     #[\NoDiscard('Ignorer le résultat revient à ne pas contrôler le libellé')]
     public function validateTitle(SignatureTitle $title): ?SignatureValidationError
@@ -44,9 +42,9 @@ final class SignatureTitleValidator
     }
 
     /**
-     * Contrôle un DN avant de le rattacher à un libellé.
+     * Vérifie un DN avant de l'ajouter.
      *
-     * @throws SignatureStorageException Si la recherche du libellé qui porte déjà ce DN échoue
+     * @throws SignatureStorageException
      */
     #[\NoDiscard('Ignorer le résultat revient à ne pas contrôler le DN')]
     public function validateDn(string $dn): ?SignatureValidationError

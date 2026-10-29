@@ -109,7 +109,7 @@ class mel_signatures extends bnum_plugin
     /**
      * Charge automatiquement les classes MelSignatures\ du dossier lib/.
      */
-    private function register_class_autoloader(): void
+    protected function register_class_autoloader(): void
     {
         spl_autoload_register(static function (string $class): void {
             $prefix = 'MelSignatures\\';
@@ -130,7 +130,7 @@ class mel_signatures extends bnum_plugin
      * Déclare les pages et les actions des libellés.
      * Chaque action vérifie elle-même que l'utilisateur est administrateur.
      */
-    private function register_admin_actions(): void
+    protected function register_admin_actions(): void
     {
         $actions = [
             'plugin.mel_signatures_list_titles'      => $this->list_titles(...),
@@ -263,7 +263,7 @@ class mel_signatures extends bnum_plugin
      * 
      * @return string Nom complet de la direction
      */
-    private function get_direction_name(&$direction, &$subdirection, &$service, $dn = null) {
+    protected function get_direction_name(&$direction, &$subdirection, &$service, $dn = null) {
         // Gestion de la direction
         $pos = strpos($dn, "ou=$direction,");
         if ($pos !== false) {
@@ -290,7 +290,7 @@ class mel_signatures extends bnum_plugin
     /**
      * Retourne l'observation à partir d'un dn
      */
-    private function get_dn_label($dn) {
+    protected function get_dn_label($dn) {
         $ou = driver_mel::gi()->user();
         $ou->dn = $dn;
         if ($ou->load(['observation'])) {
@@ -306,7 +306,7 @@ class mel_signatures extends bnum_plugin
      * 
      * @return string image data
      */
-    private function image_data($uri) {
+    protected function image_data($uri) {
         // Format the image SRC:  data:{mime};base64,{data};
         $uriPath = (__DIR__.'/'.$uri);
         $encodedContent = ($uriPath |> file_get_contents(...) |> base64_encode(...));
@@ -319,7 +319,7 @@ class mel_signatures extends bnum_plugin
      * 
      * @return string default url
      */
-    private function get_default_url() {
+    protected function get_default_url() {
         $dn = driver_mel::gi()->getUser()->dn;
         $links = $this->rc->config->get('signature_default_link', []);
         foreach ($links as $serviceDN => $link) {
@@ -335,7 +335,7 @@ class mel_signatures extends bnum_plugin
      * 
      * @return string default logotype
      */
-    private function get_default_logotype() {
+    protected function get_default_logotype() {
         $dn = driver_mel::gi()->getUser()->dn;
         $logotype = $this->rc->config->get('signature_default_logotype', []);
         foreach ($logotype as $serviceDN => $link) {
@@ -351,7 +351,7 @@ class mel_signatures extends bnum_plugin
      * 
      * @return string default image
      */
-    private function get_default_image() {
+    protected function get_default_image() {
         $dn = driver_mel::gi()->getUser()->dn;
         $images = $this->rc->config->get('signature_default_image', []);
         foreach ($images as $serviceDN => $link) {
@@ -384,7 +384,7 @@ class mel_signatures extends bnum_plugin
     /**
      * Options de la liste, lues en base. Renvoie null si la base est vide ou inaccessible.
      */
-    private function logo_options_from_db(): ?string
+    protected function logo_options_from_db(): ?string
     {
         try {
             $titles     = $this->titles()->findAll();
@@ -418,7 +418,7 @@ class mel_signatures extends bnum_plugin
     /**
      * Options de la liste, lues dans la config (ancien fonctionnement).
      */
-    private function logo_options_from_config(): string
+    protected function logo_options_from_config(): string
     {
         $content = "";
         $default_image = $this->get_default_image();
@@ -616,7 +616,7 @@ class mel_signatures extends bnum_plugin
     /**
      * Sanity checks/cleanups on HTML body of signature
      */
-    private function rcmail_wash_html($html)
+    protected function rcmail_wash_html($html)
     {
        // Add header with charset spec., washtml cannot work without that
        $html = '<html><head>'
@@ -654,7 +654,7 @@ class mel_signatures extends bnum_plugin
     /**
      * Vrai si l'utilisateur est dans signatures_admin_list.
      */
-    private function is_signatures_admin(): bool
+    protected function is_signatures_admin(): bool
     {
         $uid = driver_mel::gi()->getUser()->uid;
 
@@ -664,7 +664,7 @@ class mel_signatures extends bnum_plugin
     /**
      * Affiche une erreur et s'arrête si l'utilisateur n'est pas administrateur.
      */
-    private function require_signatures_admin(): void
+    protected function require_signatures_admin(): void
     {
         if (!$this->is_signatures_admin()) {
             $this->show_message_error($this->gettext('admin_access_denied'));
@@ -675,7 +675,7 @@ class mel_signatures extends bnum_plugin
     /**
      * Vrai si les libellés doivent être lus en base.
      */
-    private function db_enabled(): bool
+    protected function db_enabled(): bool
     {
         return (bool) $this->rc->config->get('signatures_db_enabled', false);
     }
@@ -683,7 +683,7 @@ class mel_signatures extends bnum_plugin
     /**
      * Accès aux tables des libellés.
      */
-    private function titles(): SignatureTitleRepository
+    protected function titles(): SignatureTitleRepository
     {
         return $this->titles ??= new SignatureTitleRepository($this->db());
     }
@@ -691,7 +691,7 @@ class mel_signatures extends bnum_plugin
     /**
      * Vérification de la saisie.
      */
-    private function validator(): SignatureTitleValidator
+    protected function validator(): SignatureTitleValidator
     {
         return new SignatureTitleValidator($this->titles());
     }
@@ -757,7 +757,7 @@ class mel_signatures extends bnum_plugin
      *
      * @param string $dn_draft DN saisi, à réafficher après une erreur
      */
-    private function render_title_page(?SignatureTitle $title, string $dn_draft = ''): never
+    protected function render_title_page(?SignatureTitle $title, string $dn_draft = ''): never
     {
         $title_id   = $title?->id ?? 0;
         $is_default = false;
@@ -786,7 +786,7 @@ class mel_signatures extends bnum_plugin
     /**
      * Ajoute le CSS et le JS des pages des libellés.
      */
-    private function include_titles_assets(): void
+    protected function include_titles_assets(): void
     {
         $this->include_stylesheet($this->local_skin_path() . '/signature_titles.css');
         $this->include_script('signature_titles.js');
@@ -798,7 +798,7 @@ class mel_signatures extends bnum_plugin
      * @param array<string, string> $attrib
      * @param list<SignatureTitle>|null $titles null si la base est inaccessible
      */
-    private function titles_list_html(array $attrib, ?array $titles, ?int $default_id): string
+    protected function titles_list_html(array $attrib, ?array $titles, ?int $default_id): string
     {
         $header = html::div('signature-titles-header',
             html::tag('h1', 'signature-titles-heading', rcube::Q($this->gettext('title_list_title')))
@@ -865,7 +865,7 @@ class mel_signatures extends bnum_plugin
      *
      * @param SignatureTitle|null $title null pour un nouveau libellé
      */
-    private function title_form_html(?SignatureTitle $title, bool $is_default, int $dn_count): string
+    protected function title_form_html(?SignatureTitle $title, bool $is_default, int $dn_count): string
     {
         $title_id = $title?->id ?? 0;
 
@@ -959,7 +959,7 @@ class mel_signatures extends bnum_plugin
      * @param list<SignatureTitleDn> $dns
      * @param string                 $dn_draft DN saisi, à réafficher après une erreur
      */
-    private function title_dns_html(int $title_id, array $dns, string $dn_draft): string
+    protected function title_dns_html(int $title_id, array $dns, string $dn_draft): string
     {
         if ($title_id === 0) {
             return html::p('text-muted', rcube::Q($this->gettext('title_dns_after_create')));
@@ -1008,7 +1008,7 @@ class mel_signatures extends bnum_plugin
     /**
      * Formulaire d'ajout d'un DN.
      */
-    private function dn_add_form_html(int $title_id, string $dn_draft): string
+    protected function dn_add_form_html(int $title_id, string $dn_draft): string
     {
         $input = new html_inputfield([
             'name'        => '_dn',
@@ -1041,7 +1041,7 @@ class mel_signatures extends bnum_plugin
      * @param string|null        $confirm   Question posée avant l'envoi
      * @param bool               $icon_only Bouton avec l'icône seule
      */
-    private function post_button_html(string $action, array $fields, string $label, string $tag, string $icon, ?string $confirm = null, bool $icon_only = false): string
+    protected function post_button_html(string $action, array $fields, string $label, string $tag, string $icon, ?string $confirm = null, bool $icon_only = false): string
     {
         $button = $icon_only
             ? html::tag($tag, ['class' => 'signature-titles-dn-delete', 'title' => $label, 'aria-label' => $label, 'data-submit' => '1'], rcube::Q($icon))
@@ -1062,7 +1062,7 @@ class mel_signatures extends bnum_plugin
      *
      * @param array<string, int> $fields
      */
-    private function hidden_fields_html(array $fields): string
+    protected function hidden_fields_html(array $fields): string
     {
         $hidden = new html_hiddenfield();
 
@@ -1076,7 +1076,7 @@ class mel_signatures extends bnum_plugin
     /**
      * Badge « Défaut ».
      */
-    private function default_badge_html(): string
+    protected function default_badge_html(): string
     {
         return html::tag('bnum-badge', [
             'class'          => 'signature-titles-badge',
@@ -1258,7 +1258,7 @@ class mel_signatures extends bnum_plugin
     /**
      * Affiche le message demandé par _msg, s'il est dans STATUS_MESSAGES.
      */
-    private function show_status_message(): void
+    protected function show_status_message(): void
     {
         $key = (string) $this->get_input('_msg', rcube_utils::INPUT_GET);
 
@@ -1271,7 +1271,7 @@ class mel_signatures extends bnum_plugin
     /**
      * Texte d'une erreur de saisie.
      */
-    private function validation_error_text(SignatureValidationError $error): string
+    protected function validation_error_text(SignatureValidationError $error): string
     {
         return $this->gettext(['name' => $error->messageKey, 'vars' => $error->vars]);
     }
@@ -1281,7 +1281,7 @@ class mel_signatures extends bnum_plugin
      *
      * @param array<string, int|string> $params
      */
-    private function action_url(string $action, array $params = []): string
+    protected function action_url(string $action, array $params = []): string
     {
         return $this->rc->url(['_action' => $action] + $params);
     }
@@ -1289,7 +1289,7 @@ class mel_signatures extends bnum_plugin
     /**
      * URL de la page d'un libellé (0 pour un nouveau).
      */
-    private function title_edit_url(int $title_id = 0): string
+    protected function title_edit_url(int $title_id = 0): string
     {
         return $this->action_url('plugin.mel_signatures_edit_title', $title_id > 0 ? ['_id' => $title_id] : []);
     }
@@ -1299,7 +1299,7 @@ class mel_signatures extends bnum_plugin
      *
      * @param array<string, int|string> $params
      */
-    private function redirect_to_action(string $action, array $params = []): never
+    protected function redirect_to_action(string $action, array $params = []): never
     {
         $this->rc->output->redirect(['_action' => $action] + $params);
         exit;
@@ -1308,7 +1308,7 @@ class mel_signatures extends bnum_plugin
     /**
      * Note dans les journaux qui a modifié quoi.
      */
-    private function log_change(string $message): void
+    protected function log_change(string $message): void
     {
         $uid = driver_mel::gi()->getUser()->uid;
         mel_logs::get_instance()->log(mel_logs::INFO, "[mel_signatures] $uid : $message");

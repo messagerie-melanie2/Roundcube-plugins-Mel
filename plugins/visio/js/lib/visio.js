@@ -51,12 +51,15 @@ const APPOINTMENT = Object.freeze({
  * @returns {string} Valeur échappée
  */
 function escape_html(value) {
-  return String(value ?? '')
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;');
+  return (
+    String(value ?? '')
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      // eslint-disable-next-line quotes
+      .replaceAll("'", '&#39;')
+  );
 }
 
 /**

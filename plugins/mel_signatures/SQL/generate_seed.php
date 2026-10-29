@@ -35,6 +35,7 @@ const TITLE_RENAMES = [
     'République Française'                         => ['République française', 'RÉPUBLIQUE<br>FRANÇAISE'],
     'Ministère chargé de la mer et de la pêche'    => ['Ministère chargé de la Mer et de la Pêche', 'MINISTÈRE<br>CHARGÉ DE LA MER<br>ET DE LA PÊCHE'],
     'Ministère de l\'Action et des Comptes Publics' => ['Ministère de l’Action et des Comptes publics', 'MINISTÈRE<br>DE L’ACTION<br>ET DES COMPTES<br>PUBLICS'],
+    'Ministère délégué chargé de la Ruralité'      => ['Ministère délégué chargé de la Ruralité', 'MINISTÈRE<br>DÉLÉGUÉ CHARGÉ<br>DE LA RURALITÉ'],
     'Préfet de l\'Eure-et-Loir'                     => ['Préfet d’Eure-et-Loir', 'PRÉFET<br>D’EURE-ET-LOIR'],
     'Préfet du Loir-et-Cher'                       => ['Préfet de Loir-et-Cher', 'PRÉFET<br>DE LOIR-ET-CHER'],
     'Préfet de Haute-Loire'                        => ['Préfet de la Haute-Loire', 'PRÉFET<br>DE LA HAUTE-LOIRE'],

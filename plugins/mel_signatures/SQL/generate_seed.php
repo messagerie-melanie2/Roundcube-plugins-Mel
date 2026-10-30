@@ -12,42 +12,6 @@ declare(strict_types=1);
  * Code de sortie : 0 = tout va bien, 1 = mauvais usage, 2 = anomalies affichées.
  */
 
-/**
- * Libellés qui n'existent plus : ancien libellé => libellé qui le remplace.
- */
-const TITLE_CORRECTIONS = [
-    'Ministère de la Transition écologique, de la Biodiversité, de la Forêt, de la Mer et de la Pêche' => 'Ministère de la Transition écologique, de la Biodiversité et des Négociations internationales sur le climat et la nature',
-    'Ministère délégué chargé des Transports' => 'Ministère des Transports',
-];
-
-
-
-/**
- * Corrections validées par l'équipe : libellé de la config => [nouveau libellé, nouveau texte].
- * Dans le texte, <br> sépare les lignes.
- */
-const TITLE_RENAMES = [
-    'Ministère de l\'Économie, des Finances et de la Souveraineté Industrielle, Énergétique et Numérique' => ['Ministère de l’Économie, des Finances et de la Souveraineté industrielle, énergétique et numérique', 'MINISTÈRE<br>DE L’ÉCONOMIE,<br>DES FINANCES<br>ET DE LA SOUVERAINETÉ<br>INDUSTRIELLE, ÉNERGÉTIQUE<br>ET NUMÉRIQUE'],
-    'République Française'                         => ['République française', 'RÉPUBLIQUE<br>FRANÇAISE'],
-    'Ministère chargé de la mer et de la pêche'    => ['Ministère chargé de la Mer et de la Pêche', 'MINISTÈRE<br>CHARGÉ DE LA MER<br>ET DE LA PÊCHE'],
-    'Ministère de l\'Action et des Comptes Publics' => ['Ministère de l’Action et des Comptes publics', 'MINISTÈRE<br>DE L’ACTION<br>ET DES COMPTES<br>PUBLICS'],
-    'Ministère délégué chargé de la Ruralité'      => ['Ministère délégué chargé de la Ruralité', 'MINISTÈRE<br>DÉLÉGUÉ CHARGÉ<br>DE LA RURALITÉ'],
-    'Préfet de l\'Eure-et-Loir'                     => ['Préfet d’Eure-et-Loir', 'PRÉFET<br>D’EURE-ET-LOIR'],
-    'Préfet du Loir-et-Cher'                       => ['Préfet de Loir-et-Cher', 'PRÉFET<br>DE LOIR-ET-CHER'],
-    'Préfet de Haute-Loire'                        => ['Préfet de la Haute-Loire', 'PRÉFET<br>DE LA HAUTE-LOIRE'],
-    'Préfet de la Seine-et-Marne'                  => ['Préfet de Seine-et-Marne', 'PRÉFET<br>DE SEINE-ET-MARNE'],
-    'Préfet du Tarn-et-Garonne'                    => ['Préfet de Tarn-et-Garonne', 'PRÉFET<br>DE TARN-ET-GARONNE'],
-    'Préfet du Vaucluse'                           => ['Préfet de Vaucluse', 'PRÉFET<br>DE VAUCLUSE'],
-    'Préfète des Pyrénées-Orientales'              => ['Préfet des Pyrénées-Orientales', 'PRÉFET<br>DES PYRÉNÉES-<br>ORIENTALES'],
-    'Préfet de la Réunion'                         => ['Préfet de La Réunion', 'PRÉFET<br>DE LA<br>RÉUNION'],
-    'Préfet de Saint-Pierre et Miquelon'           => ['Préfet de Saint-Pierre-et-Miquelon', 'PRÉFET<br>DE SAINT-PIERRE-<br>ET-MIQUELON'],
-];
-
-/**
- * Libellé proposé par défaut.
- */
-const DEFAULT_TITLE = 'Ministères Transition écologique, Aménagement du territoire, Transports, Ville et Logement';
-
 const DEFAULT_DN = 'default';
 
 if ($argc !== 2 || !is_readable($argv[1])) {
@@ -96,19 +60,18 @@ function html_to_text(string $html): string
 /**
  * Associe chaque DN à son libellé et signale les DN dont le libellé est introuvable.
  *
- * @param array<string, string> $config_dns  DN => libellé
- * @param array<string, string> $items       libellé => texte
- * @param array<string, string> $corrections ancien libellé => nouveau libellé
+ * @param array<string, string> $config_dns DN => libellé
+ * @param array<string, string> $items      libellé => texte
  *
  * @return array<string, string> DN => libellé
  */
-function map_dns(array $config_dns, array $items, array $corrections, string $kind): array
+function map_dns(array $config_dns, array $items, string $kind): array
 {
     $dns = [];
 
     foreach ($config_dns as $dn => $name) {
         $dn   = trim((string) $dn);
-        $name = $corrections[(string) $name] ?? (string) $name;
+        $name = (string) $name;
 
         if (!isset($items[$name])) {
             anomaly("$kind : « $dn » pointe vers un élément absent : « $name »");
@@ -135,9 +98,7 @@ foreach ($rcmail_config['signature_images'] ?? [] as $entries) {
 
     foreach ($entries as $label => $html) {
         $label = trim((string) $label);
-
-        [$label, $html] = TITLE_RENAMES[$label] ?? [$label, $html];
-        $text           = html_to_text((string) $html);
+        $text  = html_to_text((string) $html);
 
         if (isset($titles[$label])) {
             anomaly("libellé en double ignoré : « $label »");
@@ -152,14 +113,7 @@ foreach ($rcmail_config['signature_images'] ?? [] as $entries) {
     }
 }
 
-$renamed_titles = array_map(static fn (array $rename): string => $rename[0], TITLE_RENAMES);
-$title_dns      = map_dns($rcmail_config['signature_default_image'] ?? [], $titles, TITLE_CORRECTIONS + $renamed_titles, 'libellés');
-
-if (isset($titles[DEFAULT_TITLE])) {
-    $title_dns[DEFAULT_DN] = DEFAULT_TITLE;
-} else {
-    anomaly('libellé par défaut absent : « ' . DEFAULT_TITLE . ' »');
-}
+$title_dns = map_dns($rcmail_config['signature_default_image'] ?? [], $titles, 'libellés');
 
 // Script SQL
 echo "-- Reprise des libellés de signature (ticket 0009463, V1)\n";

@@ -1246,10 +1246,8 @@ class mel extends rcube_plugin
   public static function is_auth_strong()
   {
     $eidas = $_SESSION['eidas'];
-    //$cookie_eidas = explode('###', $_COOKIE['eidas'])[1];
 
     return mel::is_internal() // Connexion intranet
-      || $eidas == "eidas2" // Cerbère 2FA (MelOTP, Yubikey, clé U2F)
       || $eidas == "eidas3"; // Cerbère Certif (logiciel RGS1, carte à puce RGS3)
   }
 

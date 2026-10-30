@@ -5,3 +5,10 @@ $rcmail_config['signature_links'] = [];
 
 // Liste des images utilisables
 $rcmail_config['signature_images'] = [];
+
+// Lire les libellés du bloc Marque État en base de données.
+// Ne passer à true qu'une fois les tables créées et remplies.
+$rcmail_config['signatures_db_enabled'] = false;
+
+// Agents (uid) qui peuvent modifier les libellés
+$rcmail_config['signatures_admin_list'] = [];

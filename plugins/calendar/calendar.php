@@ -165,6 +165,9 @@ class calendar extends rcube_plugin
             $this->register_action('import_events', [$this, 'import_events']);
             $this->register_action('upload', [$this, 'attachment_upload']);
             $this->register_action('get-attachment', [$this, 'attachment_get']);
+
+            // PAMELA -  0009544: enregistrer l'action copy-attachments
+            $this->register_action('copy-attachments', [$this, 'attachment_copy']);
             $this->register_action('freebusy-status', [$this, 'freebusy_status']);
             $this->register_action('freebusy-times', [$this, 'freebusy_times']);
             $this->register_action('randomdata', [$this, 'generate_randomdata']);
@@ -2625,6 +2628,69 @@ $("#rcmfd_new_category").keypress(function(event) {
     {
         $handler = new kolab_attachments_handler();
         $handler->attachment_upload(self::SESSION_KEY, 'cal-');
+    }
+
+    /**
+     * PAMELA - 0009544
+     * Handler for copying the attachments of an existing event into the session, so they are attached to the duplicated event on save
+     * 
+     * @return void
+     */
+    public function attachment_copy()
+    {
+        $source = [
+            'id'       => rcube_utils::get_input_string('_event', rcube_utils::INPUT_POST),
+            'calendar' => rcube_utils::get_input_string('_cal', rcube_utils::INPUT_POST),
+            'rev'      => rcube_utils::get_input_string('_rev', rcube_utils::INPUT_POST),
+        ];
+        $ids     = (array) rcube_utils::get_input_value('_ids', rcube_utils::INPUT_POST);
+        $eventid = 'cal-';
+        $result  = [];
+
+        if (empty($_SESSION[self::SESSION_KEY]) || $_SESSION[self::SESSION_KEY]['id'] != $eventid) {
+            $_SESSION[self::SESSION_KEY] = [
+                'id'          => $eventid,
+                'attachments' => [],
+            ];
+        }
+
+        foreach ($ids as $id) {
+            $attachment = $this->driver->get_attachment($id, $source);
+            $body       = $attachment ? $this->driver->get_attachment_body($id, $source) : false;
+
+            if ($body === false || $body === null) {
+                continue;
+            }
+
+            $attachment = $this->rc->plugins->exec_hook('attachment_save', [
+                'data'     => $body,
+                'size'     => strlen($body),
+                'name'     => $attachment['name'],
+                'mimetype' => $attachment['mimetype'],
+                'group'    => $eventid,
+            ]);
+
+            if (!empty($attachment['status']) && empty($attachment['abort'])) {
+                $id = $attachment['id'];
+                $attachment['classname'] = rcube_utils::file2class($attachment['mimetype'], $attachment['name']);
+
+                // store new attachment in session
+                unset($attachment['status'], $attachment['abort'], $attachment['data']);
+                $_SESSION[self::SESSION_KEY]['attachments'][$id] = $attachment;
+
+                // add prefix rcmfile
+                $attachment['id'] = 'rcmfile' . $attachment['id'];
+                unset($attachment['path']);
+                $result[] = $attachment;
+            }
+        }
+
+        if (count($result) < count($ids)) {
+            $this->rc->output->show_message('calendar.copyattachmentserror', 'error');
+        }
+
+        $this->rc->output->command('plugin.attachments_copied', $result);
+        $this->rc->output->send();
     }
 
     /**

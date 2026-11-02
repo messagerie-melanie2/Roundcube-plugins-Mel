@@ -3530,28 +3530,44 @@ class mel_metapage extends bnum_plugin
      * @param array $args Contient 'contacts'
      * @return array
      */
-    public function autocomplete_group_sources(array $args): array
+    public function contacts_autocomplete_group_sources(array $args): array
     {
-        $priority = function ($contact) {
-            $source = strtolower($contact['source'] ?? '');
+        $source_groups = [];
 
-            if (strpos($source, 'collected') !== false) return 1;
-            if (strpos($source, 'amande') !== false)    return 2;
-            return 0;
-        };
-
-        $decorated = [];
-        foreach ($args['contacts'] as $i => $c) {
-            $decorated[] = [$priority($c), $i, $c];
+        foreach ($this->rc->get_address_sources() as $source) {
+            $source_groups[(string) $source['id']] = $this->_autocomplete_group($this->_autocomplete_group_id($source));
         }
 
-        usort($decorated, function ($a, $b) {
-            return [$a[0], $a[1]] <=> [$b[0], $b[1]];
-        });
+        $args['contacts'] = array_values(array_map(function (array $contact) use ($source_groups) {
+            $contact['source_group'] = $source_groups[(string) ($contact['source'] ?? '')]
+                ?? $this->_autocomplete_group('other');
 
-        $args['contacts'] = array_column($decorated, 2);
+            return $contact;
+        }, $args['contacts']));
 
         return $args;
+    }
+
+    private function _autocomplete_group_id(array $source): string
+    {
+        $id = (string) $source['id'];
+
+        return match (true) {
+            (bool) preg_match('/collected/i', $id) => 'collected',
+            (bool) preg_match('/amande|ldap/i', $id) => 'amande',
+            (bool) preg_match('/^(sql|melanie|carnet)/i', $id),
+            str_contains($id, (string) $this->rc->get_user_name()) => 'contacts',
+            default => 'other',
+        };
+    }
+
+    private function _autocomplete_group(string $id): array
+    {
+        return [
+            'id' => $id,
+            'rank' => array_search($id, ['contacts', 'collected', 'amande', 'other'], true),
+            'label' => $this->gettext("autocomplete_group_$id"),
+        ];
     }
 
     /**

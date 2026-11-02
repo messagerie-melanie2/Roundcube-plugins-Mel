@@ -2599,14 +2599,6 @@ $(document).ready(() => {
     setup_autocomplete() {
       if (window.rcmail === undefined) return this;
 
-      const GROUPS = [
-        { id: 'contacts',  label: "Mes carnets d'adresses", match: (s) => /^(sql|melanie|carnet)/i.test(s) || s.includes(rcmail.env.username)},
-        { id: 'collected', label: 'Adresses collectées',    match: (s) => /collected/i.test(s) },
-        { id: 'amande',    label: 'Annuaire',               match: (s) => /amande|ldap/i.test(s) },
-        { id: 'other',     label: 'Autres',                 match: () => true },
-      ];
-
-      const group_of = (source) => GROUPS.find((g) => g.match(String(source ?? '')));
 
       // Regroupement des <li> après chaque réponse (compatible recherche parallèle multi-sources)
       const alias_results = rcmail.ksearch_query_results;
@@ -2618,18 +2610,17 @@ $(document).ready(() => {
         const ul = this.ksearch_pane.__ul;
         $(ul).children('li.ksearch-source-header').remove();
 
-        let buckets = new Map(GROUPS.map((g) => [g.id, []]));
+        const buckets = new Map();
 
         for (const li of $(ul).children('li').get()) {
-          const contact = this.env.contacts[li._rcm_id];
-          buckets.get(group_of(contact?.source).id).push(li);
+          const group = this.env.contacts[li._rcm_id]?.source_group;
+          if (!group) continue;
+
+          if (!buckets.has(group.id)) buckets.set(group.id, { ...group, nodes: [] });
+          buckets.get(group.id).nodes.push(li);
         }
 
-
-        for (const g of GROUPS) {
-          const nodes = buckets.get(g.id);
-          if (!nodes.length) continue;
-
+        for (const g of [...buckets.values()].sort((a, b) => a.rank - b.rank)) {
           ul.appendChild(
             $('<li>')
               .addClass('ksearch-source-header')
@@ -2637,7 +2628,7 @@ $(document).ready(() => {
               .text(g.label)[0],
           );
 
-          for (const li of nodes) ul.appendChild(li);
+          for (const li of g.nodes) ul.appendChild(li);
         }
       };
 

@@ -1,0 +1,24 @@
+/* Loader simple affiché quand la marque Matisse est active. */
+.loader-base {
+  box-sizing: border-box;
+  --loader-width: 36px;
+  --loader-height: 36px;
+  width: 36px !important;
+  height: 36px !important;
+  border: 3px solid rgba(29, 61, 145, 0.2);
+  border-top-color: #1d3d91;
+  border-radius: 50%;
+  animation: mel-matisse-loader-spin 0.8s linear infinite;
+  mask: none;
+  -webkit-mask: none;
+}
+
+.loader-base .loader-looping {
+  display: none;
+}
+
+@keyframes mel-matisse-loader-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

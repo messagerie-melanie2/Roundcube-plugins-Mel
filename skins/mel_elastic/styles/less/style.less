@@ -939,7 +939,7 @@ body.task-mail {
   &.action-compose {
     a.filename {
       .attachment-name {
-        color: var(--secondary-text-color);
+        color: var(--main-text-color);
       }
     }
     @media screen and (max-width: 997px) {
@@ -5033,7 +5033,7 @@ button {
 }
 
 .mel-news {
-  font-family: Marianne, Roboto, sans-serif;
+  font-family: Marianne, Arial, sans-serif;
 }
 
 .module_Workspaces {
@@ -5130,6 +5130,34 @@ button.melv2-sec-nav-correction {
   html.layout-phone &,
   html.layout-small & {
     top: 30px;
+  }
+}
+
+// Mantis 9476
+.ui-dialog:has(img[src*='_action=qrcode']) {
+  width: auto !important;
+  height: auto !important;
+
+  .ui-dialog-content {
+    width: auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+  }
+
+  img {
+    display: block;
+    width: 300px;
+    height: 300px;
+  }
+
+  @media screen and (max-width: 904px) {
+    img {
+      width: 100%;
+      max-width: 300px;
+      height: auto;
+      margin: 0 auto;
+    }
   }
 }
 
@@ -6470,35 +6498,6 @@ iframe {
       }
     }
   }
-  // .bnum-popover-arrow {
-  //   // background-color: var(--default-background);
-  //   // border: solid thin var(--mel-button-border-color);
-  //   width: 0;
-  //   height: 0;
-  //   border-left: 5px solid transparent;
-  //   border-right: 5px solid transparent;
-  //   border-bottom: 10px solid var(--mel-button-border-color);
-
-  //   &::before {
-  //     content: '';
-  //     .absolute-center();
-  //     -ms-transform: translateY(8%) translateX(-49%);
-  //     transform: translateY(8%) translateX(-49%);
-  //     border-left: 4.5px solid transparent;
-  //     border-right: 4.5px solid transparent;
-  //     border-bottom: 9px solid var(--default-background);
-  //   }
-
-  //   &.hide {
-  //     pointer-events: none;
-  //     border-color: transparent;
-
-  //     &::before {
-  //       border-color: transparent;
-  //       pointer-events: none;
-  //     }
-  //   }
-  // }
 }
 .menu {
   a {
@@ -6708,13 +6707,13 @@ bnum-helper {
 .attachmentslist {
   li {
     .attachment-size {
-      color: var(--secondary-text-color);
+      color: var(--main-text-color);
     }
   }
 }
 
 .task-mail.action-compose #layout-sidebar .scroller a.delete {
-  color: var(--button-pj-text-color, var(--secondary-text-color));
+  color: var(--button-pj-text-color, var(--main-text-color));
 }
 
 .task-mail.action-compose #layout-sidebar .scroller a.button.icon.dropdown {

@@ -75,6 +75,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup PHP 8.5
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          coverage: none
+          tools: none
+
       - name: Fetch base branch
         run: git fetch origin ${{ github.base_ref }}
 
@@ -100,6 +107,7 @@ jobs:
       - name: Run PHP lint
         if: steps.php_files.outputs.files != ''
         run: |
+          php -v
           echo "🔍 Checking PHP syntax on modified files:"
           for file in $(echo "${{ steps.php_files.outputs.files }}"); do
             if [ -f "$file" ]; then

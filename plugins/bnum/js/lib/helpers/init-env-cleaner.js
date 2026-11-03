@@ -1,4 +1,4 @@
-import ABaseMelObject from '../../../../mel_metapage/js/lib/base_mel_object';
+import ABaseMelObject from '../../../../mel_metapage/js/lib/base_mel_object.js';
 
 export class BnumModuleInitEventCleaner extends ABaseMelObject {
   constructor() {

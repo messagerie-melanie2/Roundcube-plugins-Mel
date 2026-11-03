@@ -210,7 +210,7 @@ class mtes_driver_mel extends mce_driver_mel
     $root_mapping = rcmail::get_instance()->config->get('root_mapping', []);
 
     if (isset($root_mapping[$hostname])) $hostname = $root_mapping[$hostname];
-    
+
     return $hostname;
   }
 
@@ -235,10 +235,28 @@ class mtes_driver_mel extends mce_driver_mel
    */
   public function setHeadersMessageBeforeSend($headers)
   {
-    // Positionner le HEADER pour indiquer l'origine du message (internet, intranet)
-    $headers['X-Depot'] = 'from butineur (par ' . $_SERVER["HTTP_X_MINEQPROVENANCE"] . ' [' . $_SERVER["HTTP_X_FORWARDED_FOR"] . ']) by ' . $_SERVER["HTTP_X_FORWARDED_SERVER"] . ' [' . $_SERVER["SERVER_ADDR"] . ']';
+    $http_mineq_provenance = $_SERVER['HTTP_X_MINEQPROVENANCE'] ?? '';
+    $http_fordwarded_server = $_SERVER['HTTP_X_FORWARDED_SERVER'] ?? '';
+    $serveur_addr = $_SERVER['SERVER_ADDR'] ?? '';
+
+    $headers['X-Depot'] = "from butineur (par $http_mineq_provenance [{$this->get_browser_ip()}]) by  $http_fordwarded_server [$serveur_addr]";
 
     return $headers;
+  }
+
+  /**
+   * Adresse IP du navigateur à l'origine de la requête
+   *
+   * Comme pour les logs (mel_logs) : depuis le passage en php-fpm, X-Forwarded-For
+   * n'est plus transmis et l'IP du navigateur se trouve dans REMOTE_ADDR
+   *
+   * @return string Adresse IP du navigateur
+   * 
+   */
+  #[\NoDiscard("get_browser_ip() n'a aucun effet de bord : l'adresse ip retournée doit être utilisé")]
+  protected function get_browser_ip() : string
+  {
+    return ($_SERVER["HTTP_X_FORWARDED_FOR"] ?? '') ?: ($_SERVER["REMOTE_ADDR"] ?? '');
   }
 
   /**
@@ -252,6 +270,9 @@ class mtes_driver_mel extends mce_driver_mel
     $filter_ldap = rcmail::get_instance()->config->get('roundcube_nextcloud_filter_ldap', array());
     $hasAccess = false;
     $user = driver_mel::gi()->getUser();
+
+    if (!isset($user)) return false;
+
     $user->load(array_keys($filter_ldap));
 
     if (isset($filter_ldap) && count($filter_ldap) > 0) {
@@ -391,7 +412,7 @@ class mtes_driver_mel extends mce_driver_mel
       // Ajout de toutes les adresses de messagerie
 
       if (isset($args['record']['type'])) {
-        $emails = isset($args['record']['email_list']) ? $args['record']['email_list'] : [];
+        $emails = (array) ($args['record']['email_list'] ?? []);
         $main_email = isset($args['record']['email']) ? $args['record']['email'] : '';
         $other_emails = array_filter($emails, function ($email) use ($main_email) {
           return $email !== $main_email;

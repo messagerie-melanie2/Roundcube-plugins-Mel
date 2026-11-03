@@ -360,12 +360,13 @@ class mel extends rcube_plugin
    */
   public static function get_account()
   {
-    if (isset($_POST['_account']) && !empty($_POST['_account'])) {
-      $_account = trim(rcube_utils::get_input_value('_account', rcube_utils::INPUT_POST));
-    } else {
-      $_account = trim(rcube_utils::get_input_value('_account', rcube_utils::INPUT_GET));
-    }
-    return $_account;
+    $INPUT_TYPE = isset($_POST['_account']) && !empty($_POST['_account']) ? rcube_utils::INPUT_POST : rcube_utils::INPUT_GET;
+
+    $_account = rcube_utils::get_input_value('_account', $INPUT_TYPE);
+
+    if ($_account !== null) $_account = trim((string) $_account);
+
+    return $_account ?? '';
   }
 
   /**
@@ -1245,10 +1246,8 @@ class mel extends rcube_plugin
   public static function is_auth_strong()
   {
     $eidas = $_SESSION['eidas'];
-    //$cookie_eidas = explode('###', $_COOKIE['eidas'])[1];
 
     return mel::is_internal() // Connexion intranet
-      || $eidas == "eidas2" // Cerbère 2FA (MelOTP, Yubikey, clé U2F)
       || $eidas == "eidas3"; // Cerbère Certif (logiciel RGS1, carte à puce RGS3)
   }
 

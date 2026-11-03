@@ -148,7 +148,7 @@ class mel_driver extends calendar_driver {
    * @private
    */
   private function _random_color() {
-    mt_srand(( double ) microtime() * 1000000);
+    mt_srand(( float ) microtime() * 1000000);
     $c = '';
     while (strlen($c) < 6) {
       $c .= sprintf("%02X", mt_rand(0, 255));
@@ -181,6 +181,12 @@ class mel_driver extends calendar_driver {
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::list_calendars(filter = $filter)");
 
     try {
+      if (!isset($this->user)) {
+        if (mel_logs::is(mel_logs::ERROR)) 
+          mel_logs::gi()->l(mel_logs::ERROR, '###[mel_driver::list_calendars] Impossible de récupérer les agenda pour un utilisateur vide !');
+        return [];
+      }
+
       // Chargement des calendriers si besoin
       if (!isset($this->calendars)) {
         $this->_read_calendars($calid);
@@ -429,7 +435,7 @@ class mel_driver extends calendar_driver {
       // Trier les calendriers
       uasort($calendars, function ($a, $b) {
         if ($a['order'] === $b['order'])
-          return strcmp(strtolower($a['listname']), strtolower($b['listname']));
+          return strcmp(strtolower($a['listname'] ?? ''), strtolower($b['listname'] ?? ''));
         else
           return strnatcmp($a['order'], $b['order']);
       });
@@ -439,7 +445,7 @@ class mel_driver extends calendar_driver {
         $sortTree = function ($a, $b) {
           global $calendars;
           if ($a->order === $b->order)
-            return strcmp(strtolower($calendars[$a->id]['listname']), strtolower($calendars[$b->id]['listname']));
+            return strcmp(strtolower($calendars[$a->id]['listname'] ?? ''), strtolower($calendars[$b->id]['listname'] ?? ''));
           else
             return strnatcmp($a->order, $b->order);
         };
@@ -1958,6 +1964,15 @@ class mel_driver extends calendar_driver {
       //   return $this->get_birthday_event($id);
       // }
 
+      if (is_string($event)) {
+        if (mel_logs::is(mel_logs::WARN))
+          mel_logs::get_instance()->log(mel_logs::WARN, "/!\\[calendar]event est un string ! : $event");
+        
+        $decoded = json_decode($event, associative:true);
+
+        if ($decoded === null || !is_array($decoded)) $event = ['uid' => $event];     
+      }
+
       // MANTIS 3915: L'envoi d'une invitation depuis une BALP ne fonctionne pas
       $_identity = $event['_identity'] ?  : null;
       // MANTIS 3846: Le champ 'commentaire' de l'onglet Participants n'est pas pris en compte
@@ -2481,18 +2496,36 @@ class mel_driver extends calendar_driver {
       // Recurrence
       if (!$isexception) {
         $recurrence = $event->recurrence->rrule;
-        // Problème de UNTIL avec les journées entières
-        if (isset($recurrence['UNTIL']) && $recurrence['UNTIL'] instanceof \DateTime && $_event['allday']) {
-          $recurrence['UNTIL']->setTime(23, 59);
+
+        $isValid = true;
+        if (is_string($recurrence)) {
+          try {
+            $recurrence = json_decode($recurrence, associative:true);
+
+            if (is_string($recurrence)) $isValid = false;
+
+          } catch (\Throwable $th) {
+            if (mel_logs::is(mel_logs::WARN)) {
+              mel_logs::gi()->log(mel_logs::WARN, '/!\\ [mel_driver::_read_postprocess]Impossible de lire ' . (string) $event->recurrence->rrule);
+              mel_logs::gi()->log(mel_logs::WARN, "### [mel_driver::_read_postprocess]{$th->getMessage()}");
+            }
+          }
         }
-        //0008897 - L'affichage BYDAY=-1LD fait crash le calendrier de prise de rendez-vous
-        if ($recurrence['FREQ'] == 'MONTHLY' && isset($recurrence['BYMONTHDAY'])) {
-          $recurrence['BYDAY'] = $recurrence['BYMONTHDAY'] . 'LD';
-          unset($recurrence['BYMONTHDAY']);
-        }
-        if (is_array($recurrence) && count($recurrence) > 0) {
-          // Récupération des exceptions dans la récurrence de l'évènement
-          $_event['recurrence'] = $this->_read_event_exceptions($event, $recurrence);
+
+        if ($isValid) {
+          // Problème de UNTIL avec les journées entières
+          if (isset($recurrence['UNTIL']) && $recurrence['UNTIL'] instanceof \DateTime && $_event['allday']) {
+            $recurrence['UNTIL']->setTime(23, 59);
+          }
+          //0008897 - L'affichage BYDAY=-1LD fait crash le calendrier de prise de rendez-vous
+          if ($recurrence['FREQ'] == 'MONTHLY' && isset($recurrence['BYMONTHDAY'])) {
+            $recurrence['BYDAY'] = $recurrence['BYMONTHDAY'] . 'LD';
+            unset($recurrence['BYMONTHDAY']);
+          }
+          if (is_array($recurrence) && count($recurrence) > 0) {
+            // Récupération des exceptions dans la récurrence de l'évènement
+            $_event['recurrence'] = $this->_read_event_exceptions($event, $recurrence);
+          }
         }
       }
 
@@ -2838,7 +2871,14 @@ class mel_driver extends calendar_driver {
       $_attachment->path = $event->realuid . '/' . $this->calendars[$event->calendar]->id;
       $_attachment->owner = $this->user->uid;
       $_attachment->isfolder = false;
-      $_attachment->data = $attachment['data'] ? $attachment['data'] : file_get_contents($attachment['path']);
+
+      if (empty($attachment['path'])) {
+        if (mel_logs::is(mel_logs::DEBUG))
+          mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar::add_attachment]Le chemin n'existe pas ! => " . json_encode($attachment));
+        return false;
+      }
+
+      $_attachment->data = ($attachment['data'] ?? false) ?: file_get_contents($attachment['path']);
       $ret = $_attachment->save();
 
       // Ajouter la pièce jointe dans l'évenement

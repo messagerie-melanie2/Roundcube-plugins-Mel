@@ -1,5 +1,5 @@
-import ABaseMelObject from '../../../../../mel_metapage/js/lib/base_mel_object';
-import { BnumLog } from '../../../../../mel_metapage/js/lib/classes/bnum_log';
+import ABaseMelObject from '../../../../../mel_metapage/js/lib/base_mel_object.js';
+import { BnumLog } from '../../../../../mel_metapage/js/lib/classes/bnum_log.js';
 
 //SETTINGS
 const CREATE_EVENT_BUTTON_ID = 'create-event-button';

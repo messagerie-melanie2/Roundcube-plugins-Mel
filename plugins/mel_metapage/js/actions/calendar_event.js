@@ -640,6 +640,8 @@ function toggle_fields(field) {
     'required',
     !$(`.ui-dialog #${field}_input`).prop('required'),
   );
+
+  rcmail.triggerEvent('calendar.appointment.toggle_fields', { field });
 }
 
 function show_phone_field(show) {

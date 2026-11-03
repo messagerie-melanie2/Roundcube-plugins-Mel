@@ -45,7 +45,7 @@ class all_addressbook extends rcube_addressbook
                 'zipcode'    => array('type' => 'text', 'size' => 8,  'maxlength' => 15, 'label' => $this->rc->gettext('zipcode'), 'category' => 'main'),
                 'region'     => array('type' => 'text', 'size' => 12, 'maxlength' => 50, 'label' => $this->rc->gettext('region'), 'category' => 'main'),
                 'country'    => array('type' => 'text', 'size' => 40, 'maxlength' => 50, 'label' => $this->rc->gettext('country'), 'category' => 'main'),), 'category' => 'main'),
-            'birthday'     => array('type' => 'date', 'size' => 12, 'maxlength' => 16, 'label' => $this->rc->gettext('birthday'), 'limit' => 1, 'render_func' => 'rcmail_format_date_col', 'category' => 'personal'),
+            'birthday'     => array('type' => 'date', 'size' => 12, 'maxlength' => 16, 'label' => $this->rc->gettext('birthday'), 'limit' => 1, 'render_func' => 'rcmail_action_contacts_index::format_date_col', 'category' => 'personal'),
             'website'      => array('type' => 'text', 'size' => 40, 'maxlength' => 50, 'label' => $this->rc->gettext('website'), 'subtypes' => array('homepage','freebusy'), 'category' => 'main'),
             'notes'        => array('type' => 'textarea', 'size' => 40, 'rows' => 15, 'maxlength' => 500, 'label' => $this->rc->gettext('notes'), 'limit' => 1),
             'photo'        => array('type' => 'image', 'limit' => 1, 'category' => 'main'),

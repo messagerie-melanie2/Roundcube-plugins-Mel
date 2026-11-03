@@ -11,7 +11,7 @@ import {
   HTMLBnumAvatarAction,
   HTMLBnumButtonIcon,
   HTMLBnumFolder,
-} from '../ds-module-bnum';
+} from '../ds-module-bnum.js';
 import ABridge from './ABridge.js';
 import BridgeCommands from './BridgeCommands.js';
 import BridgeEvents from './BridgeEvents.js';
@@ -174,6 +174,7 @@ export default class BridgeMail extends ABridge {
 
   static #ENVS = {
     TASK: 'task',
+    ACTION: 'action',
     CONTEXT_MENU: 'context_menu',
     MAILBOX: 'mailbox',
     MAILBOXES: 'mailboxes',
@@ -225,6 +226,10 @@ export default class BridgeMail extends ABridge {
   /** @returns {BridgeMail} */
   _p_onReady() {
     if (this.get_env(BridgeMail.#ENVS.TASK) !== 'mail') return this;
+    if (
+      ![EMPTY_STRING, 'index'].includes(this.get_env(BridgeMail.#ENVS.ACTION))
+    )
+      return this;
 
     return this.#initListeners().#registerCommands();
   }
@@ -669,8 +674,14 @@ export default class BridgeMail extends ABridge {
    * @returns {HTMLBnumAvatarAction}
    */
   #buildAvatarContainer(row) {
+    // data-email : le title peut contenir `"Nom" <email>` quand
+    // mel_messages_list_clear_headers n'est pas à "full".
+    const address = row.querySelector('.rcmContactAddress');
     const avatar = AvatarElement.Create({
-      email: row.querySelector('.rcmContactAddress')?.getAttribute('title'),
+      email:
+        address?.getAttribute('data-email') ?? address?.getAttribute('title'),
+      // Nom affiché (déjà nettoyé par hook_messages_list) → initiales prénom + nom
+      name: address?.textContent?.trim(),
     }).addClass('mail-avatar--avatar');
 
     /**

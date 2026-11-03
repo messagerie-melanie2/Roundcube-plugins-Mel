@@ -86,7 +86,7 @@ class Headlines extends Module
         exit;
     }
 
-    public function register_actions() {
+    public function register_actions(): ?array {
         $this->register_action('get_last_new', $this, 'action_get_last_news');
         return null;
     }

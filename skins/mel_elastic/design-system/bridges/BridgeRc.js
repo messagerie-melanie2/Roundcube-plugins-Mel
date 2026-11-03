@@ -1,6 +1,6 @@
 import { EMPTY_STRING } from '../../../../plugins/mel_metapage/js/lib/constants/constants.js';
 import { MelObject } from '../../../../plugins/mel_metapage/js/lib/mel_object.js';
-import { HTMLBnumFolder } from '../ds-module-bnum';
+import { HTMLBnumFolder } from '../ds-module-bnum.js';
 import BridgeEvents from './BridgeEvents.js';
 
 /**

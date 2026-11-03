@@ -718,7 +718,7 @@ abstract class driver_mel {
    * @return string Identifiant au format Roundcube
    */
   public function mceToRcId($mceId) {
-    return str_replace(['.', '@', '%'], ['_-P-_', '_-A-_', '_-C-_'], $mceId);
+    return str_replace(['.', '@', '%'], ['_-P-_', '_-A-_', '_-C-_'], $mceId ?? '');
   }
 
   /**

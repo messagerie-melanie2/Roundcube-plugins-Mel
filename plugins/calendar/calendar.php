@@ -34,6 +34,9 @@ class calendar extends rcube_plugin
     const FREEBUSY_TELEWORK  = 5;
     // MANTIS 0008012: Ajouter un statut "Congés"
     const FREEBUSY_VACATION  = 6;
+    // MANTIS 0009355: Création de catégories avec caractères spéciaux
+    const CATEGORY_NAME_MAXLEN = 64;
+    const CATEGORY_NAME_REGEX  = '/^[\p{L}\p{N} \'\-_]+$/u';
 
     const SESSION_KEY = 'calendar_temp';
 
@@ -104,6 +107,19 @@ class calendar extends rcube_plugin
     }
 
     /**
+     * Aucun nom de catégorie ne doit contenir de caractère spécial ,sauf ',-, _et les caractères avec accent.
+     * 
+     * mantis 0009355 
+     */
+
+    public static function is_valid_category_name(string $name): bool{
+        $name = trim( $name);
+
+        return $name !== '' && mb_strlen($name) <= self::CATEGORY_NAME_MAXLEN
+               && preg_match(self::CATEGORY_NAME_REGEX, $name) === 1;
+    }
+
+    /**
      * Setup basic plugin environment and UI
      */
     protected function setup()
@@ -165,6 +181,9 @@ class calendar extends rcube_plugin
             $this->register_action('import_events', [$this, 'import_events']);
             $this->register_action('upload', [$this, 'attachment_upload']);
             $this->register_action('get-attachment', [$this, 'attachment_get']);
+
+            // PAMELA -  0009544: enregistrer l'action copy-attachments
+            $this->register_action('copy-attachments', [$this, 'attachment_copy']);
             $this->register_action('freebusy-status', [$this, 'freebusy_status']);
             $this->register_action('freebusy-times', [$this, 'freebusy_times']);
             $this->register_action('randomdata', [$this, 'generate_randomdata']);
@@ -422,6 +441,35 @@ class calendar extends rcube_plugin
     }
 
     /**
+     * Remplace le rappel d'un événement reçu via une invitation (iTip)
+     * par le rappel par défaut de l'invité après acceptation de l'invitation, 
+     * au lieu de garder celui choisi par l'organisateur
+     *
+     * @param array $event
+     * 
+     * @return void
+     */
+    private function apply_default_alarm(&$event): void {
+        unset($event['alarms'], $event['valarms']);
+
+        $type = $this->rc->config->get('calendar_default_alarm_type', '');
+
+        if ($type === '') {
+            return;
+        }
+
+        $offset  = $this->rc->config->get('calendar_default_alarm_offset', '-15M');
+        $trigger = libcalendaring::parse_alarm_value($offset);
+
+        if ($trigger) {
+            $event['valarms'] = [[
+                'action'  => $type,
+                'trigger' => $trigger[3],
+            ]];
+        }
+    }
+
+    /**
      * Render the main calendar view from skin template
      */
     function calendar_view()
@@ -494,6 +542,20 @@ class calendar extends rcube_plugin
     {
         if ($p['section'] != 'calendar') {
             return $p;
+        }
+
+        // mel_metapage garde en cache l'iframe "calendar"
+        // on recharge l'iframe après la sauvegarde des préférences pour qu'elle reflète les nouvelles valeurs par défaut (ex: rappel par défaut) 
+        if (!empty($p['current']) && 'POST' === $_SERVER['REQUEST_METHOD']) {
+            // try/catch: pour ne pas empêcher l'exécution du reste de 'docready'
+            $this->rc->output->add_script(
+                "try {"
+                . " var fm = window.parent?.mel_modules?.['FrameManager']?.Instance;"
+                . " var win = fm?.get_window?.();"
+                . " if (win?.has_frame?.('calendar')) { win.get_frame('calendar')?.[0]?.contentWindow?.location?.reload(); }"
+                . "} catch (e) {}",
+                'docready'
+            );
         }
 
         $no_override = array_flip((array) $this->rc->config->get('dont_override'));
@@ -831,23 +893,31 @@ class calendar extends rcube_plugin
                 'content' => html::div('input-group', $new_category->show('') . $add_category),
             ];
 
-            $this->rc->output->add_label('delete', 'calendar.remove_category');
+            $this->rc->output->add_label('delete', 'calendar.remove_category', 'calendar.invalidcategoryname');
             $this->rc->output->add_script('
 function rcube_calendar_add_category() {
-    var name = $("#rcmfd_new_category").val();
-    if (name.length) {
-        var button_label = rcmail.gettext("calendar.remove_category");
-        var input = $("<input>").attr({type: "text", name: "_categories[]", size: 30, "class": "form-control"}).val(name);
-        var color = $("<input>").attr({type: "text", name: "_colors[]", size: 6, "class": "colors form-control"}).val("000000");
-        var button = $("<a>").attr({"class": "button icon delete input-group-text", title: button_label, href: "#rcmfd_new_category"})
-            .click(function() { $(this).parent().parent().remove(); })
-            .append($("<span>").addClass("inner").text(rcmail.gettext("delete")));
-
-        $("<div>").addClass("input-group").append(input).append(color).append($("<span class=\'input-group-append\'>").append(button))
-            .appendTo("#calendarcategories");
-        color.minicolors(rcmail.env.minicolors_config || {});
-        $("#rcmfd_new_category").val("");
+    var name = $.trim($("#rcmfd_new_category").val());
+    if (!name.length) {
+        return ;
     }
+    //mantis 0009355
+    if (name.length > 64 || !/^[\p{L}\p{N} \'\-_]+$/u.test(name)){
+        rcmail.display_message(rcmail.gettext("calendar.invalidcategoryname"), "warning");
+        return;
+    
+    }
+    var button_label = rcmail.gettext("calendar.remove_category");
+    var input = $("<input>").attr({type: "text", name: "_categories[]", size: 30, "class": "form-control"}).val(name);
+    var color = $("<input>").attr({type: "text", name: "_colors[]", size: 6, "class": "colors form-control"}).val("000000");
+    var button = $("<a>").attr({"class": "button icon delete input-group-text", title: button_label, href: "#rcmfd_new_category"})
+        .click(function() { $(this).parent().parent().remove(); })
+        .append($("<span>").addClass("inner").text(rcmail.gettext("delete")));
+
+    $("<div>").addClass("input-group").append(input).append(color).append($("<span class=\'input-group-append\'>").append(button))
+        .appendTo("#calendarcategories");
+    color.minicolors(rcmail.env.minicolors_config || {});
+    $("#rcmfd_new_category").val("");
+    
 }',
                 'foot'
             );
@@ -1004,16 +1074,39 @@ $("#rcmfd_new_category").keypress(function(event) {
                 $categories = (array) rcube_utils::get_input_value('_categories', rcube_utils::INPUT_POST);
                 $colors     = (array) rcube_utils::get_input_value('_colors', rcube_utils::INPUT_POST);
 
+                // MANTIS 0009355
+                $rejected = [];
+
                 foreach ($categories as $key => $name) {
                     if (!isset($colors[$key])) {
                         continue;
                     }
+                    // MANTIS 0009355: ignorer les entrées malformées _categories[x][]
+                    if (!is_string($name)) {
+                        continue;
+                    }
 
-                    $color = preg_replace('/^#/', '', strval($colors[$key]));
+                    $color   = preg_replace('/^#/', '', strval($colors[$key]));
+                    $name    = trim($name);
+                    $oldname = !empty($old_categories[$key]) ? $old_categories[$key] : null;
+
+                    // MANTIS 0009355: on ne bloque que création et renommage,
+                    // les catégories déjà enregistrées restent intactes
+                    if ($name !== $oldname && !self::is_valid_category_name($name)) {
+                        $rejected[] = $name;
+
+                        if ($oldname !== null) {
+                            // conserver l'ancien nom, ne mettre à jour que la couleur
+                            $this->driver->replace_category($oldname, $oldname, $color);
+                            $new_categories[$oldname] = $color;
+                            unset($old_categories[$key]);
+                        }
+
+                        continue;
+                    }
 
                     // rename categories in existing events -> driver's job
-                    if (!empty($old_categories[$key])) {
-                        $oldname = $old_categories[$key];
+                    if ($oldname !== null) {
                         $this->driver->replace_category($oldname, $name, $color);
                         unset($old_categories[$key]);
                     }
@@ -1030,6 +1123,12 @@ $("#rcmfd_new_category").keypress(function(event) {
                 }
 
                 $p['prefs']['calendar_categories'] = $new_categories;
+
+                // MANTIS 0009355
+                if (!empty($rejected)) {
+                    $this->rc->output->show_message('calendar.invalidcategoryname', 'warning',
+                        ['categories' => implode(', ', $rejected)]);
+                }
             }
         }
 
@@ -1503,7 +1602,7 @@ $("#rcmfd_new_category").keypress(function(event) {
                     'noreply'       => '1'
                 ];
                 //Changement du calendrier
-                $event['calendar'] = driver_mel::mceToRcId($user->uid);
+                $event['calendar'] = driver_mel::gi()->mceToRcId($user->uid);
 
                 $title = $event['title'];
                 $subject = "$user->name a rejoint votre évènement $title !";
@@ -1526,9 +1625,43 @@ $("#rcmfd_new_category").keypress(function(event) {
             $reply_comment = $event['comment'];
 
             if($action !== 'invite-self') $this->write_preprocess($event, 'edit');
+            // when replying to the whole series, load the master event
+            if (isset($event['_savemode']) && $event['_savemode'] == 'all') {
+                unset($event['_instance']);
+            }
             $ev = $this->driver->get_event($event);
+
+            // si c'est la 1ère réponse de l'utilisateur
+            // on remplace le rappel actuellement stocké (de l'organisateur) par le rappel par défaut de l'utilisateur
+            if (in_array($status, ['accepted', 'tentative'])) {
+                $rsvp_calendars = $this->driver->list_calendars(
+                    calendar_driver::FILTER_PERSONAL
+                    | calendar_driver::FILTER_SHARED
+                    | calendar_driver::FILTER_WRITEABLE
+                    | calendar_driver::FILTER_INVITATION
+                );
+                $rsvp_calendar = isset($rsvp_calendars[$event['calendar']]) ? $rsvp_calendars[$event['calendar']] : null;
+                $rsvp_emails   = $this->get_user_emails($rsvp_calendar);
+                $was_needs_action = true;
+
+                foreach ((array) $ev['attendees'] as $attendee) {
+                    if (!empty($attendee['email']) && in_array(strtolower($attendee['email']), $rsvp_emails)) {
+                        $was_needs_action = strtoupper($attendee['status'] ?? '') === 'NEEDS-ACTION';
+                        break;
+                    }
+                }
+
+                if ($was_needs_action) {
+                    $this->apply_default_alarm($ev);
+                }
+            }
+
             $ev['attendees'] = $event['attendees'];
             $ev['free_busy'] = $event['free_busy'];
+            // sync status (occupé/provisoire/libre) with free_busy
+            if (!empty($ev['free_busy']) && (!isset($ev['status']) || $ev['status'] != 'CANCELLED')) {
+                $ev['status'] = $ev['free_busy'] == 'free' ? 'FREE' : 'CONFIRMED';
+            }
             $ev['_savemode'] = $event['_savemode'];
             $ev['comment']   = $reply_comment;
 
@@ -2628,6 +2761,69 @@ $("#rcmfd_new_category").keypress(function(event) {
     }
 
     /**
+     * PAMELA - 0009544
+     * Handler for copying the attachments of an existing event into the session, so they are attached to the duplicated event on save
+     * 
+     * @return void
+     */
+    public function attachment_copy()
+    {
+        $source = [
+            'id'       => rcube_utils::get_input_string('_event', rcube_utils::INPUT_POST),
+            'calendar' => rcube_utils::get_input_string('_cal', rcube_utils::INPUT_POST),
+            'rev'      => rcube_utils::get_input_string('_rev', rcube_utils::INPUT_POST),
+        ];
+        $ids     = (array) rcube_utils::get_input_value('_ids', rcube_utils::INPUT_POST);
+        $eventid = 'cal-';
+        $result  = [];
+
+        if (empty($_SESSION[self::SESSION_KEY]) || $_SESSION[self::SESSION_KEY]['id'] != $eventid) {
+            $_SESSION[self::SESSION_KEY] = [
+                'id'          => $eventid,
+                'attachments' => [],
+            ];
+        }
+
+        foreach ($ids as $id) {
+            $attachment = $this->driver->get_attachment($id, $source);
+            $body       = $attachment ? $this->driver->get_attachment_body($id, $source) : false;
+
+            if ($body === false || $body === null) {
+                continue;
+            }
+
+            $attachment = $this->rc->plugins->exec_hook('attachment_save', [
+                'data'     => $body,
+                'size'     => strlen($body),
+                'name'     => $attachment['name'],
+                'mimetype' => $attachment['mimetype'],
+                'group'    => $eventid,
+            ]);
+
+            if (!empty($attachment['status']) && empty($attachment['abort'])) {
+                $id = $attachment['id'];
+                $attachment['classname'] = rcube_utils::file2class($attachment['mimetype'], $attachment['name']);
+
+                // store new attachment in session
+                unset($attachment['status'], $attachment['abort'], $attachment['data']);
+                $_SESSION[self::SESSION_KEY]['attachments'][$id] = $attachment;
+
+                // add prefix rcmfile
+                $attachment['id'] = 'rcmfile' . $attachment['id'];
+                unset($attachment['path']);
+                $result[] = $attachment;
+            }
+        }
+
+        if (count($result) < count($ids)) {
+            $this->rc->output->show_message('calendar.copyattachmentserror', 'error');
+        }
+
+        $this->rc->output->command('plugin.attachments_copied', $result);
+        $this->rc->output->send();
+    }
+
+    /**
      * Handler for attachments download/displaying
      */
     public function attachment_get()
@@ -3684,6 +3880,7 @@ $("#rcmfd_new_category").keypress(function(event) {
             $this->rc->output->show_message('calendar.successremoval', 'confirmation');
         }
         else {
+            $this->apply_default_alarm($invitation['event']);
             $this->rc->output->show_message('calendar.errorsaving', 'error');
         }
     }
@@ -4103,7 +4300,9 @@ $("#rcmfd_new_category").keypress(function(event) {
                     $metadata['attendee'] = $sender_identity['email'];
                     // PAMELA - Mode assistantes
                     $metadata['attendee_name']  = $sender_identity['name'];
-                    $metadata['attendee_email'] = strtolower($attendee['email']);
+                    // PAMELA 0008705 - List invitation : 
+                    // Use the address of the added participant not $attendee (the last element of the loop, e.g., the list)
+                    $metadata['attendee_email'] = strtolower($sender_identity['email']);
 
                     $default_identity   = $this->rc->user->get_identity();
                     $reply_sender       = $default_identity['email'];
@@ -4234,6 +4433,7 @@ $("#rcmfd_new_category").keypress(function(event) {
                         // PAMELA - Mode assistantes
                         $this->lib->merge_attendees($event, $existing, $status, $this->get_user_emails($calendar));
 
+                        $this->apply_default_alarm($master);
                         // set status=CANCELLED on CANCEL messages
                         if ($event['_method'] == 'CANCEL') {
                             $event['status'] = 'CANCELLED';
@@ -4247,6 +4447,7 @@ $("#rcmfd_new_category").keypress(function(event) {
                             unset($event['attachments']);
                         }
 
+                        $this->apply_default_alarm($event);
                         // show me as free when declined (#1670)
                         if ($status == 'declined'
                             || (!empty($event['status']) && $event['status'] == 'CANCELLED')

@@ -64,7 +64,7 @@ class mel_addressbook extends rcube_addressbook
                 'zipcode'    => array('type' => 'text', 'size' => 8,  'maxlength' => 15, 'label' => $this->rc->gettext('zipcode'), 'category' => 'main'),
                 'region'     => array('type' => 'text', 'size' => 12, 'maxlength' => 50, 'label' => $this->rc->gettext('region'), 'category' => 'main'),
                 'country'    => array('type' => 'text', 'size' => 40, 'maxlength' => 50, 'label' => $this->rc->gettext('country'), 'category' => 'main'),), 'category' => 'main'),
-            'birthday'     => array('type' => 'date', 'size' => 12, 'maxlength' => 16, 'label' => $this->rc->gettext('birthday'), 'limit' => 1, 'render_func' => 'rcmail_format_date_col', 'category' => 'personal'),
+            'birthday'     => array('type' => 'date', 'size' => 12, 'maxlength' => 16, 'label' => $this->rc->gettext('birthday'), 'limit' => 1, 'render_func' => 'rcmail_action_contacts_index::format_date_col', 'category' => 'personal'),
             'website'      => array('type' => 'text', 'size' => 40, 'maxlength' => 50, 'label' => $this->rc->gettext('website'), 'subtypes' => array('homepage','freebusy'), 'category' => 'main'),
             'notes'        => array('type' => 'textarea', 'size' => 40, 'rows' => 15, 'maxlength' => 500, 'label' => $this->rc->gettext('notes'), 'limit' => 1),
             'photo'        => array('type' => 'image', 'limit' => 1, 'category' => 'main'),
@@ -813,11 +813,13 @@ class mel_addressbook extends rcube_addressbook
             $_group = driver_mel::gi()->contact([$this->user, $this->addressbook]);
             $_group->type = Defaut\Contact::TYPE_LIST;
             $_group->id = $group_id;
+
             if (!is_array($ids)) $ids = [$ids];
+
             foreach($_group->getList() as $group) {
                 $members = unserialize($group->members, ['allowed_classes' => false]);
-                if (!is_array($members)) $members = array();
-                $members = $this->_clean_group_members(array_unique($members));
+                if (!is_array($members)) $members = [];
+                $members = $this->_clean_group_members(array_unique($members)) ?? [];
                 $count = 0;
                 foreach($ids as $id) {
                     if (!in_array($id, $members)) {
@@ -866,13 +868,15 @@ class mel_addressbook extends rcube_addressbook
     {
         if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, "mel_addressbook::remove_from_group($group_id, $ids)");
         try {
+            if (!is_array($ids)) $ids = [$ids];
+
             $_group = driver_mel::gi()->contact([$this->user, $this->addressbook]);
             $_group->type = Defaut\Contact::TYPE_LIST;
             $_group->id = $group_id;
             foreach($_group->getList() as $group) {
                 $members = unserialize($group->members, ['allowed_classes' => false]);
                 if (!is_array($members)) $members = array();
-                $members = $this->_clean_group_members(array_unique($members));
+                $members = $this->_clean_group_members(array_unique($members)) ?? [];
                 $count = 0;
                 foreach($members as $key => $memb_id) {
                     if (in_array($memb_id, $ids)) {
@@ -917,13 +921,14 @@ class mel_addressbook extends rcube_addressbook
      * @return array $members Liste nettoyée des membres
      */
     private function _clean_group_members($members) {
+        $_members = [];
+
         if (is_array($members) && !empty($members)) {
             // Récupère les contacts membres du groupe
             $_contact = driver_mel::gi()->contact([$this->user, $this->addressbook]);
             $_contact->type = Defaut\Contact::TYPE_CONTACT;
             $_contact->id = $members;
             $_contacts = $_contact->getList(['id']);
-            $_members = [];
 
             foreach ($_contacts as $contact) {
                 $_members[] = $contact->id;

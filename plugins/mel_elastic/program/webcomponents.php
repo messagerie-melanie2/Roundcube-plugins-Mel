@@ -153,7 +153,7 @@ class WebComponnents
     {
         if ($keys) {
             // Regex pour trouver les balises <script> avec des modules déjà inclus
-            $regex = '#<script\s+src=(["\'])[\w\d\/\.\?=]+\1\s+type=\1module\1\s*>#';
+            $regex = '#<script\s+src=(["\'])[\w\d\/\.\?=\-]+\1\s+type=\1module\1\s*>#';
 
             // Trouver toutes les correspondances dans le contenu HTML
             preg_match_all($regex, $html, $matches);

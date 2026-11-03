@@ -762,14 +762,23 @@ class mel_doubleauth extends bnum_plugin
     {
         $this->require_plugin('mel_helper');
         mel_helper::include_mail_body();
-        $otp = rand(100000, 999999) + '';
+        $otp = rand(100000, 999999) |> strval(...);
         $expire = $this->rc->config->get('code_expiration', 30 * 60);
         // $cid = 'bnumlogo';
         driver_mel::gi()->getUser()->token_otp = $otp;
         driver_mel::gi()->getUser()->token_otp_expire = time() + $expire;
 
-        if ($this->get_input_post('_from_login') + '' !== 'true')
+        $from_login_raw = $this->get_input_post('_from_login');
+
+        $from_login = match (true) {
+            is_bool($from_login_raw) => $from_login_raw ? 'true' : 'false',
+            $from_login_raw === null => 'null',
+            default     => (string) $from_login_raw,
+        };
+
+        if ($from_login !== 'true') {
             driver_mel::gi()->getUser()->double_authentification_adresse_valide = false;
+        }
 
         $mail = driver_mel::gi()->getUser()->double_authentification_adresse_recuperation;
 
@@ -789,10 +798,11 @@ class mel_doubleauth extends bnum_plugin
         exit;
     }
 
+
     public function verify_code($echo = true)
     {
         $return = 0;
-        $token = rcube_utils::get_input_value('_token', rcube_utils::INPUT_GP) + '';
+        $token = (string) rcube_utils::get_input_value('_token', rcube_utils::INPUT_GP);
 
         if (driver_mel::gi()->getUser()->token_otp_expire > time()) {
             if ($token === driver_mel::gi()->getUser()->token_otp) {
@@ -1031,10 +1041,10 @@ class mel_doubleauth extends bnum_plugin
      * 
      * @return boolean
      */
-    private function __isRecoveryCode($code)
+    private function __isRecoveryCode($code): bool
     {
-        $prefs = $this->__get2FAconfig() ?? [];
-        return in_array($code, $prefs['recovery_codes']);
+        $codes = $this->__get2FAconfig()['recovery_codes'] ?? null;
+        return is_array($codes) && in_array($code, $codes, true);
     }
 
     /**

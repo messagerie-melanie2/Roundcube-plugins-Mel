@@ -46,3 +46,58 @@ $labels['cancel'] = "Annuler";
 $labels['savingsignature'] = "Enregistrement de la signature en cours...";
 $labels['savesignaturesuccess'] = "La signature a bien été enregistrée";
 $labels['savesignatureerror'] = "Une erreur s'est produite lors de l'enregistrement de votre signature";
+
+// Libellés du bloc Marque État
+$labels['customtitle'] = 'Personnalisé';
+
+// Textes communs aux deux pages
+$labels['admin_access_denied'] = 'Accès refusé. Vous n\'avez pas les droits nécessaires.';
+$labels['title_db_unavailable'] = 'Les tables de signatures sont introuvables ou inaccessibles. Contactez l\'équipe Bnum.';
+$labels['title_default_badge'] = 'Défaut';
+$labels['title_no_result'] = 'Aucun résultat pour cette recherche.';
+$labels['title_delete_dn'] = 'Supprimer le DN $dn';
+$labels['title_dns_heading'] = 'DN associés ($count)';
+$labels['title_dns_after_create'] = 'Enregistrez d\'abord le libellé pour pouvoir ajouter un DN.';
+$labels['title_no_dn'] = 'Aucun DN n\'est rattaché à ce libellé.';
+$labels['title_dn_field'] = 'DN';
+$labels['title_dn_placeholder'] = 'Par exemple : ou=MT,ou=CM,ou=melanie,ou=organisation,dc=equipement,dc=gouv,dc=fr';
+$labels['title_add_dn'] = 'Ajouter un DN';
+$labels['title_confirm_delete_dn'] = 'Supprimer ce DN ?';
+$labels['title_error_label_required'] = 'Le nom affiché est obligatoire.';
+$labels['title_error_label_too_long'] = 'Le nom affiché est trop long (255 caractères au maximum).';
+$labels['title_error_dn_required'] = 'Le DN est obligatoire.';
+$labels['title_error_dn_too_long'] = 'Le DN est trop long (1000 caractères au maximum).';
+$labels['title_error_dn_reserved'] = '« default » est réservé : utilisez le bouton « Définir comme libellé par défaut ».';
+$labels['title_error_dn_invalid'] = 'Ce DN ne semble pas valide : il doit contenir au moins un « = », par exemple ou=MT.';
+$labels['title_error_dn_exists'] = 'Ce DN est déjà rattaché au libellé « $label ».';
+$labels['title_msg_dn_saved'] = 'Le DN a été enregistré.';
+$labels['title_msg_dn_deleted'] = 'Le DN a été supprimé.';
+$labels['title_msg_save_error'] = 'L\'enregistrement a échoué. Réessayez, puis contactez l\'équipe Bnum si le problème persiste.';
+
+// Menu et liste des libellés
+$labels['title_menu'] = 'Modifier les signatures';
+$labels['title_menu_title'] = 'Utilisez ce menu pour gérer les libellés du bloc Marque État et leurs DN';
+$labels['title_list_title'] = 'Libellés des signatures';
+$labels['title_list_help'] = 'Choisissez un libellé pour modifier son nom, son texte de signature et ses DN.';
+$labels['title_new'] = 'Nouveau libellé';
+$labels['title_filter'] = 'Rechercher un libellé';
+$labels['title_count'] = '$count libellé(s)';
+$labels['title_no_item'] = 'Aucun libellé n\'est enregistré.';
+$labels['title_back'] = 'Retour aux libellés';
+$labels['title_label_field'] = 'Nom affiché dans la liste';
+$labels['title_value_field'] = 'Texte de la signature';
+$labels['title_value_help'] = 'Bien respecter les sauts de ligne pour que le libellé corresponde exactement à l\'image attendue dans les signatures.';
+$labels['title_save'] = 'Enregistrer le libellé';
+$labels['title_set_default'] = 'Définir comme libellé par défaut';
+$labels['title_delete'] = 'Supprimer le libellé';
+$labels['title_default_not_deletable'] = 'Ce libellé est proposé par défaut : il ne peut pas être supprimé. Définissez d\'abord un autre libellé par défaut.';
+$labels['title_confirm_delete'] = 'Supprimer le libellé « $label » et ses $count DN ?';
+$labels['title_default_dn_help'] = 'Proposé aux agents dont le DN ne correspond à aucun libellé.';
+$labels['title_error_value_required'] = 'Le texte de la signature est obligatoire.';
+$labels['title_error_value_too_long'] = 'Le texte de la signature est trop long (1000 caractères au maximum).';
+$labels['title_error_label_exists'] = 'Un libellé porte déjà ce nom.';
+$labels['title_error_default_not_deletable'] = 'Ce libellé est proposé par défaut : définissez d\'abord un autre libellé par défaut.';
+$labels['title_msg_saved'] = 'Le libellé a été enregistré.';
+$labels['title_msg_deleted'] = 'Le libellé et ses DN ont été supprimés.';
+$labels['title_msg_default_set'] = 'Ce libellé est désormais proposé par défaut.';
+$labels['title_msg_not_found'] = 'Ce libellé n\'existe pas ou a été supprimé.';

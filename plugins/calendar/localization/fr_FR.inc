@@ -49,6 +49,8 @@ $labels['enableexternalcalendarcheckbox'] = 'Synchroniser ce calendrier avec une
 $labels['externalcalendarurl'] = 'Lien vers le calendrier externe';
 $labels['color'] = 'Couleur';
 $labels['day'] = 'Jour';
+//mantis 9355
+$labels['invalidcategoryname'] = "Nom de catégorie invalide (caractères spéciaux non autorisés) ";
 // PAMELA - Fullcalendar premium
 $labels['resources'] = 'Agendas';
 $labels['views-day'] = 'Vues à la journée';
@@ -392,5 +394,8 @@ $labels['share_start'] = 'Début : ';
 $labels['share_end'] = 'Fin : ';
 $labels['share_location'] = 'Lieu : ';
 $labels['share_description'] = 'Description : ';
+
+// PAMELA - 0009544: copier les PJ dans la duplication d'un event
+$labels['copyattachmentserror'] = 'Certaines pièces jointes n\'ont pas pu être copiées.';
 
 ?>

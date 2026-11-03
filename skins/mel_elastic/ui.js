@@ -16,6 +16,7 @@ $(document).ready(() => {
   //const CONST_FORMAT_THEME_TITLE = '%1?/( -?(%1?&&%2?||!%1?)? )/%2?';
   const CONST_TAB_THEME_ID = 'theme-pannel-tab-theme';
   const CONST_TAB_PICTURE_ID = 'theme-pannel-tab-pictures';
+  
   const CONST_TABS_LIST = [
     {
       display: 'Thèmes',
@@ -1616,7 +1617,8 @@ $(document).ready(() => {
      * @returns {Mel_Elastic} ChaÃ®nage
      */
     setup_nav() {
-      if (parent === window) {
+      // Pas de décalage si la barre de navigation est masquée (courrielleur, extwin)
+      if (parent === window && !this._hide_main_menu) {
         //La sidebar étant en position absolue, on décale certaines divs pour que l'affichage soit correct.
         const width = '60px';
 
@@ -1760,7 +1762,7 @@ $(document).ready(() => {
           !this.IS_EXTERNE
         ) {
           $(
-            '<li role="menuitem"><a class="icon-mel-close" href="#back" title="Revenir aux mails"><span style="font-family:Roboto,sans-serif" class="inner">Retour</span></a></li>',
+            '<li role="menuitem"><a class="icon-mel-close" href="#back" title="Revenir aux mails"><span style="font-family:Marianne,Arial,sans-serif" class="inner">Retour</span></a></li>',
           )
             .on('click', () => {
               window.location.href = this.url('mail');
@@ -2676,7 +2678,7 @@ $(document).ready(() => {
         $('#contacthead').append($tmp);
       }
 
-      return this;
+      return this; 
     }
 
     /**

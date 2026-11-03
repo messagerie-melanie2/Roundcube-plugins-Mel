@@ -1,5 +1,14 @@
 <?php
 require_once '../lib/mel/mel.php';
+
+if (!defined('__WEBCONF_ENABLED__')) define('__WEBCONF_ENABLED__', true);
+if (!defined('__WEBCONF_ONLY_DISCONNECT__')) define('__WEBCONF_ONLY_DISCONNECT__', true);
+
+enum RedirectWhere: string {
+    case CONNECTED = 'webconf_disabled_connected';
+    case DISCONNECTED = 'webconf_disabled';
+}
+
 class Webconf extends AMel{
     private $key;
     private $ariane;
@@ -8,25 +17,40 @@ class Webconf extends AMel{
     
     public function __construct() {
         parent::__construct();
-        $this->key = $this->get_input('_key');
-        $this->ariane = $this->get_input('_ariane');
-        $this->wsp = $this->get_input('_wsp');
-        $this->pass = $this->get_input('_pass');
+        if (__WEBCONF_ENABLED__) {
+            $this->key = $this->get_input('_key');
+            $this->ariane = $this->get_input('_ariane');
+            $this->wsp = $this->get_input('_wsp');
+            $this->pass = $this->get_input('_pass');
+        }
+    }
+
+    private function _redirectIfDisabled(RedirectWhere $where): void {
+        if (!__WEBCONF_ENABLED__) {
+            $protocole = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+            $url = $protocole . $_SERVER['HTTP_HOST'];
+            $this->redirect("$url/public/{$where->value}");
+            exit;
+        } 
     }
 
     public function run(...$args)
     {
-        if ($this->isConnected())
+        if (!__WEBCONF_ONLY_DISCONNECT__ && $this->isConnected())
         {
+            $this->_redirectIfDisabled(RedirectWhere::CONNECTED);
+
             $config = ['_key' => $this->key];
 
             if (!empty($this->ariane)) $config['_ariane'] = $this->ariane;
             if (!empty($this->wsp)) $config['_wsp'] = $this->wsp;
             if (!empty($this->pass)) $config['_pass'] = $this->pass;
 
-            $this->redirect_to_rc('webconf', '', $config);
+            $this->redirect_to_rc('webconf', args:$config);
         }
         else {
+            $this->_redirectIfDisabled(RedirectWhere::DISCONNECTED);
+
             // Contrairement à redirect_to_rc(), cette redirection concatène
             // _key directement à la suite de l'URL de conférence externe
             // (segment de chemin, pas paramètre) : un urlencode() casserait
@@ -34,7 +58,8 @@ class Webconf extends AMel{
             // le format pour refuser tout ce qui permettrait de sortir de ce
             // segment (retour à la ligne, "..", changement de schéma/hôte...).
             if (!$this->is_safe_webconf_key($this->key)) {
-                utils::log("Webconf - Invalid _key format");
+                // utils::log("Webconf - Invalid _key format");
+                $this->log("Webconf - Invalid _key '{$this->key}' format", new GlitchtipData('fatal', GlitchtipState::All));
                 header('HTTP/1.0 400 Bad Request');
                 exit;
             }

@@ -523,9 +523,9 @@ class roundcube_auth extends rcube_plugin
         $rcmail = rcmail::get_instance();
 
         // Prepare variables
-        $kerb_query = $_GET[$this->kerb_keyword];
+        $kerb_query = $_GET[$this->kerb_keyword ?? ''];
         //$kerb_param = $_SERVER['REMOTE_USER']; //TODO
-        $oidc_query = $_GET[$this->oidc_keyword];
+        $oidc_query = $_GET[$this->oidc_keyword ?? ''];
         $oidc_param = $_GET['code'];
 
         // User not logged in && GET request only (to avoid triggering on login POST and making a loop)

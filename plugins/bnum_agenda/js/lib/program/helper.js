@@ -1,4 +1,4 @@
-import { BnumConnector } from '../../../../mel_metapage/js/lib/helpers/bnum_connections/bnum_connections';
+import { BnumConnector } from '../../../../mel_metapage/js/lib/helpers/bnum_connections/bnum_connections.js';
 import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';
 import AGENDA_CONNECTORS from '../connectors.js';
 

@@ -216,6 +216,305 @@ class SearchFiltersInitializer {
 }
 
 //#endregion
+// ─── SearchModsMemory ─────────────────────────────────────────────────────────
+//#region SearchModsMemory
+/**
+ * @typedef SearchMemoryOptions
+ * @property {string} scope - Valeur du select `s_scope`.
+ * @property {string} filter - Valeur du select `searchfilter`.
+ * @property {string} interval - Valeur du select `s_interval`.
+ */
+
+/**
+ * Gère la case « Mémoriser ces options de recherche pour ce dossier » du panneau de filtres.
+ *
+ * L'état de la case et les champs cochés sont ajoutés aux paramètres de chaque
+ * recherche (`_bnum_remember`, `_bnum_mods`) ; le plugin `bnum_mail` enregistre
+ * ou supprime alors, pour le dossier courant, les champs et les selects
+ * (`_scope`, `_filter`, `_interval`, déjà envoyés par le core).
+ *
+ * Au chargement et à chaque changement de dossier, la case et les selects
+ * sont restaurés depuis `env.bnum_search_memory` ; les champs, eux, sont
+ * restaurés par le serveur via `env.search_mods`.
+ */
+class SearchModsMemory {
+  static #_SWITCH_ID = 's_mods_remember';
+  static #_RESET_ID = 's_reset_filters';
+  static #_ENV_KEY = 'bnum_search_memory';
+  static #_ENV_DEFAULTS_KEY = 'bnum_search_defaults';
+
+  /**
+   * Dossier pour lequel l'état de la case a été chargé.
+   * @type {?string}
+   */
+  #_switchMbox = null;
+
+  /**
+   * Dossier pour lequel les selects ont été restaurés.
+   * @type {?string}
+   */
+  #_restoredMbox = null;
+
+  /**
+   * @returns {?HTMLElement & { checked: boolean }}
+   */
+  get #_switch() {
+    return document.getElementById(SearchModsMemory.#_SWITCH_ID);
+  }
+
+  /**
+   * @returns {this}
+   */
+  init() {
+    if (!this.#_switch) return this;
+
+    this.sync();
+    this.#_patchSearchParams();
+
+    document
+      .getElementById(SearchModsMemory.#_RESET_ID)
+      ?.addEventListener('click', () => this.reset());
+
+    return this;
+  }
+
+  /**
+   * Remet les champs et les selects du panneau à leurs valeurs par défaut
+   * (configuration, sans la mémorisation) et met à jour la mémorisation du
+   * dossier tout de suite, sans lancer de recherche. Ne touche pas à la case
+   * « Mémoriser ».
+   * @returns {void}
+   */
+  reset() {
+    const defaults = rcmail.env[SearchModsMemory.#_ENV_DEFAULTS_KEY] ?? {};
+    const mbox = rcmail.env.mailbox;
+    const defaultMods = defaults.mods?.[mbox] ?? defaults.mods?.['*'];
+
+    if (defaultMods) {
+      rcmail.env.search_mods ??= {};
+      rcmail.env.search_mods[mbox] = { ...defaultMods };
+    }
+
+    this.#_applySelects({
+      scope: defaults.scope ?? 'base',
+      filter: 'ALL',
+      interval: '',
+    });
+
+    // Recoche les cases natives depuis env.search_mods / env.search_scope ;
+    // CheckboxSync répercute sur les interrupteurs.
+    const menu = document.getElementById('searchmenu');
+
+    if (menu && typeof window.UI?.searchmenu === 'function') window.UI.searchmenu(menu);
+
+    this.#_persistReset(mbox, defaults.scope ?? 'base');
+  }
+
+  /**
+   * Met à jour la mémorisation du dossier sans attendre une recherche : valeurs par défaut
+   * enregistrées si « Mémoriser » est coché, mémorisation supprimée sinon.
+   * @param {string} mbox
+   * @param {string} scope - Portée par défaut
+   * @returns {void}
+   */
+  #_persistReset(mbox, scope) {
+    // Case pas encore chargée pour ce dossier : son état ne le concerne pas
+    if (mbox !== this.#_switchMbox) return;
+
+    const remember = !!this.#_switch?.checked;
+
+    rcmail.http_post('plugin.bnum_mail.reset_search', {
+      _mbox: mbox,
+      _bnum_remember: remember ? '1' : '0',
+    });
+
+    this.#_updateMemory(
+      { _mbox: mbox, _scope: scope, _filter: 'ALL', _interval: '' },
+      remember,
+    );
+  }
+
+  /**
+   * Met la case et les selects à l'état mémorisé si le dossier courant a changé
+   * depuis la dernière synchronisation. Sans effet sinon, pour ne pas écraser
+   * ce que l'utilisateur a modifié dans la page.
+   * @returns {void}
+   */
+  sync() {
+    const mbox = rcmail.env.mailbox;
+
+    if (mbox !== this.#_switchMbox) this.#_syncSwitch(mbox);
+
+    if (mbox !== this.#_restoredMbox) {
+      this.#_restoredMbox = mbox;
+
+      // Une recherche est déjà active (ex. rechargement avec `_search`) : ne pas la contredire
+      if (!rcmail.env.search_request) this.#_restoreSelects(mbox);
+    }
+  }
+
+  /**
+   * @param {string} mbox
+   * @returns {void}
+   */
+  #_syncSwitch(mbox) {
+    const toggle = this.#_switch;
+
+    if (!toggle) return;
+
+    this.#_whenUpgraded(toggle, () => {
+      toggle.checked = !!this.#_memory()[mbox];
+      this.#_switchMbox = mbox;
+    });
+  }
+
+  /**
+   * Exécute `callback` une fois l'élément upgradé s'il s'agit d'un web component.
+   * Affecter une propriété (`checked`, `value`) avant l'upgrade créerait une propriété
+   * propre qui masquerait l'accesseur du composant.
+   * @param {HTMLElement} element
+   * @param {() => void} callback
+   * @returns {void}
+   */
+  #_whenUpgraded(element, callback) {
+    const name = element.localName;
+
+    if (!name.includes('-') || customElements.get(name)) callback();
+    else customElements.whenDefined(name).then(callback);
+  }
+
+  /**
+   * @param {string} mbox
+   * @returns {void}
+   */
+  #_restoreSelects(mbox) {
+    const options = this.#_memory()[mbox];
+
+    if (options) this.#_applySelects(options);
+  }
+
+  /**
+   * Applique des valeurs aux selects du panneau (natifs et web components).
+   * @param {SearchMemoryOptions} options
+   * @returns {void}
+   */
+  #_applySelects(options) {
+    const scope = document.getElementById('s_scope');
+
+    if (scope && options.scope) {
+      this.#_whenUpgraded(scope, () => {
+        scope.value = options.scope;
+      });
+      // Relu par UI.searchmenu() à chaque ouverture du panneau et par search_params()
+      rcmail.env.search_scope = options.scope;
+    }
+
+    /** @type {?HTMLSelectElement} */
+    const filter = rcmail.gui_objects.search_filter
+      ? $(rcmail.gui_objects.search_filter)[0]
+      : null;
+
+    if (filter && this.#_hasOption(filter, options.filter)) {
+      filter.value = options.filter;
+      // Synchronise le select web component (SearchFiltersInitializer)
+      filter.dispatchEvent(new Event('change'));
+    }
+
+    /** @type {?HTMLSelectElement} */
+    const interval = document.getElementById('s_interval');
+    const intervalDummy = document.getElementById('s-date-dummy');
+
+    if (interval && this.#_hasOption(interval, options.interval)) {
+      interval.value = options.interval;
+      // Différé comme pour le select de type (SearchFiltersInitializer) : le web component
+      // n'applique pas une valeur affectée juste après son initialisation
+      if (intervalDummy)
+        this.#_whenUpgraded(intervalDummy, () => {
+          requestAnimationFrame(() => {
+            setTimeout(() => {
+              intervalDummy.value = options.interval;
+            }, 0);
+          });
+        });
+    }
+  }
+
+  /**
+   * @param {HTMLSelectElement} select
+   * @param {string | undefined} value
+   * @returns {boolean}
+   */
+  #_hasOption(select, value) {
+    return (
+      typeof value === 'string' &&
+      Array.from(select.options).some((option) => option.value === value)
+    );
+  }
+
+  /**
+   * @returns {Record<string, SearchMemoryOptions>}
+   */
+  #_memory() {
+    const memory = rcmail.env[SearchModsMemory.#_ENV_KEY];
+
+    return memory && typeof memory === 'object' && !Array.isArray(memory)
+      ? memory
+      : {};
+  }
+
+  /**
+   * Ajoute l'état de la case et les champs cochés aux paramètres de recherche.
+   * Ajoutés même sans texte saisi : le core n'envoie `_headers` que si un texte est présent.
+   * @returns {void}
+   */
+  #_patchSearchParams() {
+    const original = rcmail.search_params;
+
+    rcmail.search_params = (...args) => {
+      // Changement de dossier sans réouverture du panneau : restaurer avant de lire les selects
+      if (rcmail.message_list) this.sync();
+
+      const url = original.apply(rcmail, args);
+
+      // Case pas encore chargée pour ce dossier : son état ne le concerne pas, on n'envoie rien.
+      if (!rcmail.message_list || url._mbox !== this.#_switchMbox) return url;
+
+      const remember = !!this.#_switch?.checked;
+      const mods = rcmail.env.search_mods ?? {};
+
+      url._bnum_remember = remember ? '1' : '0';
+      url._bnum_mods = Object.keys(
+        mods[rcmail.env.mailbox] ?? mods['*'] ?? {},
+      ).join(',');
+
+      this.#_updateMemory(url, remember);
+
+      return url;
+    };
+  }
+
+  /**
+   * Tient à jour `env.bnum_search_memory` sans rechargement.
+   * @param {Record<string, string>} url
+   * @param {boolean} remember
+   * @returns {void}
+   */
+  #_updateMemory(url, remember) {
+    const memory = { ...this.#_memory() };
+
+    if (remember)
+      memory[url._mbox] = {
+        scope: url._scope,
+        filter: url._filter,
+        interval: url._interval ?? '',
+      };
+    else delete memory[url._mbox];
+
+    rcmail.env[SearchModsMemory.#_ENV_KEY] = memory;
+  }
+}
+
+//#endregion
 // ─── Search ───────────────────────────────────────────────────────────────────
 //#region Search
 
@@ -236,6 +535,8 @@ export class Search extends ABaseSubModule {
   #_uiCache;
   /** @type {FilterUi | undefined} */
   #_filterUiCache;
+  /** @type {SearchModsMemory | undefined} */
+  #_searchModsMemory;
 
   /**
    * Retourne l'interface DOM du module, en initialisant une instance de {@link Ui} si nécessaire.
@@ -272,6 +573,7 @@ export class Search extends ABaseSubModule {
   _p_main() {
     FilterAction.Start(this.#_ui);
     new SearchFiltersInitializer(this.#_filterUi).init();
+    this.#_searchModsMemory = new SearchModsMemory().init();
 
     this.#_addOverrides().#_addListeners().#_addRcmailListeners();
   }
@@ -422,6 +724,9 @@ export class Search extends ABaseSubModule {
   }
 
   #_onButtonFilterClick() {
+    // Le dossier courant a pu changer depuis la dernière ouverture du panneau
+    this.#_searchModsMemory?.sync?.();
+
     const currentMbox = this.get_env('mailbox');
     let mboxUid = null;
 

@@ -112,6 +112,9 @@ class calendar_ui
         $this->cal->register_handler('plugin.object_changelog_table', ['libkolab', 'object_changelog_table']);
         $this->cal->register_handler('plugin.searchform', [$this->rc->output, 'search_form']);
 
+        // pamela - visio
+        $this->cal->register_handler('appointment-feature', [$this, 'handler_appointment_feature']);
+
         kolab_attachments_handler::ui();
     }
 
@@ -1054,5 +1057,11 @@ class calendar_ui
         }
 
         return $this->cal->itip->itip_rsvp_buttons($attrib, $actions);
+    }
+
+    public function handler_appointment_feature(): string {
+        $plugin = $this->rc->plugins->exec_hook('calendar_appointment_feature', ['html' => '']);
+
+        return $plugin['html'] ?? '';
     }
 }

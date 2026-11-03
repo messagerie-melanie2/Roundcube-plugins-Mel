@@ -12,7 +12,7 @@
  * Utilise l'ORM M2 pour la génération des freebusy
  */
 use Sabre\VObject;
-
+include_once __DIR__.'/../lib/mel/mel.php';
 // Inclusion des fichiers
 require_once '../lib/utils.php';
 require_once '../config.inc.php';

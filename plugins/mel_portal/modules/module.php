@@ -242,7 +242,7 @@ class Module implements iModule {
     public function load_actions()
     {
         $actions = $this->register_actions() ?? [];
-        $actions = array_merge($actions, $this->action ?? []);
+        $actions = array_merge($actions, $this->actions ?? []);
 
         if ($actions != null)
         {
@@ -275,10 +275,12 @@ class Module implements iModule {
     protected function set_js_vars(){} 
     protected function include_js(){}
     protected function include_css(){}
-    protected function register_actions(){}
+    protected function register_actions(): ?array{
+        return null;
+    }
 
     protected function register_action($action_name, $object, $func_name) {
-        $this->action[] = new Module_Action($action_name, $object, $func_name);
+        $this->actions[] = new Module_Action($action_name, $object, $func_name);
     }
 
     /**

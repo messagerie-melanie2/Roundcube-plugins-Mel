@@ -37,6 +37,15 @@ class WebconfLink {
   }
 
   static create(event) {
+    // La clé `event` est réservée par rcmail.triggerEvent (écrasée par le nom
+    // de l'évènement puis supprimée) : l'évènement d'agenda passe donc par
+    // `calendar_event`. Un écouteur renvoie le lien créé, ou `undefined`.
+    const created = rcmail.triggerEvent('webconflink.create', {
+      calendar_event: event,
+    });
+
+    if (created) return created;
+
     if (
       rcube_calendar.is_desc_frame_webconf &&
       rcube_calendar.is_desc_frame_webconf(event.location)

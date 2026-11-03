@@ -15,6 +15,27 @@
   }
 </style>
 
+<roundcube:if condition="env:mel_elastic_header_logo == 'matisse'" />
+<style>
+  /* Remplace le logo B du loader central par un anneau simple. */
+  .loader-base {
+    box-sizing: border-box;
+    width: 36px;
+    height: 36px;
+    border: 3px solid rgba(29, 61, 145, 0.2);
+    border-top-color: #1d3d91;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    mask: none;
+    -webkit-mask: none;
+  }
+
+  .loader-base .loader-looping {
+    display: none;
+  }
+</style>
+<roundcube:endif />
+
 <!-- Lien rapides uniquement accessibles au clavier -->
 <div>
   <p class="sr-only">Liens rapides</p>
@@ -37,7 +58,11 @@
 <bnum-header class="barup">
   <!-- Logo du bnum -->
   <bnum-hide breakdown="touch" slot="logo" class="slot-logo">
+    <roundcube:if condition="env:mel_elastic_header_logo == 'matisse'" />
+    <img slot="logo" class="logo-bnum" src="skins/mel_elastic/images/logo-matisse.png" alt="Logo Matisse" width="auto" height="45px"/>
+    <roundcube:else />
     <img slot="logo" class="logo-bnum" src="skins/mel_elastic/images/bnumloader.svg" alt="Logo du bnum" width="auto" height="45px"/>
+    <roundcube:endif />
   </bnum-hide>
   <!-- Titre de la page -->
   <bnum-hide breakdown="touch" slot="title">

@@ -1,5 +1,5 @@
 <?php
 
-// Logo affiché dans le header du skin mel_elastic : 'bnum' ou 'matisse'.
-// valeur par défaut : 'bnum'
-$config['mel_elastic_header_logo'] = '';
+// Identité visuelle du skin mel_elastic : 'bnum' ou 'matisse'.
+// Valeur par défaut : 'bnum'
+$config['mel_elastic_brand'] = '';

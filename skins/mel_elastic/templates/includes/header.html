@@ -15,7 +15,7 @@
   }
 </style>
 
-<roundcube:if condition="env:mel_elastic_header_logo == 'matisse'" />
+<roundcube:if condition="env:mel_elastic_brand == 'matisse'" />
 <style>
   /* Remplace le logo B du loader central par un anneau simple. */
   .loader-base {
@@ -58,7 +58,7 @@
 <bnum-header class="barup">
   <!-- Logo du bnum -->
   <bnum-hide breakdown="touch" slot="logo" class="slot-logo">
-    <roundcube:if condition="env:mel_elastic_header_logo == 'matisse'" />
+    <roundcube:if condition="env:mel_elastic_brand == 'matisse'" />
     <img slot="logo" class="logo-bnum" src="skins/mel_elastic/images/logo-matisse.png" alt="Logo Matisse" width="auto" height="45px"/>
     <roundcube:else />
     <img slot="logo" class="logo-bnum" src="skins/mel_elastic/images/bnumloader.svg" alt="Logo du bnum" width="auto" height="45px"/>

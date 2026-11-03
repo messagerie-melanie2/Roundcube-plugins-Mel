@@ -113,10 +113,10 @@ class mel_elastic extends bnum_plugin
         if ($this->rc->config->get('skin') == 'mel_elastic')
         {
             $this->load_config();
-            $header_logo = $this->rc->config->get('mel_elastic_header_logo', 'bnum');
+            $brand = $this->rc->config->get('mel_elastic_brand', 'bnum');
             $this->rc->output->set_env(
-                'mel_elastic_header_logo',
-                $header_logo === 'matisse' ? 'matisse' : 'bnum'
+                'mel_elastic_brand',
+                $brand === 'matisse' ? 'matisse' : 'bnum'
             );
             $this->add_hook('ready', array($this, 'set_theme'));
             $this->add_hook('send_page', array($this, 'hook_render_page'));

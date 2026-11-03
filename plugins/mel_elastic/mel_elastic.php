@@ -114,10 +114,7 @@ class mel_elastic extends bnum_plugin
         {
             $this->load_config();
             $brand = $this->rc->config->get('mel_elastic_brand', 'bnum');
-            $this->rc->output->set_env(
-                'mel_elastic_brand',
-                $brand === 'matisse' ? 'matisse' : 'bnum'
-            );
+            $brand = $brand === 'matisse' ? 'matisse' : 'bnum';
             $this->add_hook('ready', array($this, 'set_theme'));
             $this->add_hook('send_page', array($this, 'hook_render_page'));
             $this->register_action('update_theme', array($this, 'update_theme'));
@@ -125,6 +122,9 @@ class mel_elastic extends bnum_plugin
             $this->register_action('update_custom_picture', array($this, 'update_custom_picture'));
             $this->register_action('toggle_animations', array($this, 'toggleAnimations'));
             $this->load_css();
+            if ($brand === 'matisse') {
+                $this->include_stylesheet('/styles/parts/matisse-loader.css');
+            }
             $this->include_script('../../skins/mel_elastic/dependencies/linq.js');
             $this->include_script('../../skins/mel_elastic/dependencies/poppers.js');
             $this->include_script('../../skins/mel_elastic/ui.js');
@@ -146,6 +146,7 @@ class mel_elastic extends bnum_plugin
 
             // if ($this->get_current_task() === 'bnum')
             $this->add_handler('defaultpagetitle', [$this, 'handler_default_page_title']);
+            $this->add_handler('mel_elastic_header_logo', [$this, 'handler_header_logo']);
 
             if ($this->rc->task == 'mail' && $this->is_index_action() ) {
                 $this->add_handler('mailboxlist', [$this, 'my_folder_list_handler']);
@@ -552,6 +553,26 @@ class mel_elastic extends bnum_plugin
 
     public function handler_default_page_title() {
         return $this->rc()->gettext($this->get_input('_initial_task', rcube_utils::INPUT_GET), 'mel_metapage');
+    }
+
+    /**
+     * Retourne le logo du header correspondant à la configuration.
+     *
+     * @return string HTML de l'image du logo.
+     */
+    public function handler_header_logo() {
+        $brand = $this->rc->config->get('mel_elastic_brand', 'bnum');
+        $is_matisse = $brand === 'matisse';
+
+        return html::img([
+            'slot' => 'logo',
+            'class' => 'logo-bnum',
+            'src' => $is_matisse
+                ? 'skins/mel_elastic/images/logo-matisse.png'
+                : 'skins/mel_elastic/images/bnumloader.svg',
+            'alt' => $is_matisse ? 'Logo Matisse' : 'Logo du bnum',
+            'height' => '45px',
+        ]);
     }
 
     /**

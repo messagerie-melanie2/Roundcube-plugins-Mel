@@ -393,4 +393,7 @@ $labels['share_end'] = 'Fin : ';
 $labels['share_location'] = 'Lieu : ';
 $labels['share_description'] = 'Description : ';
 
+// PAMELA - 0009544: copier les PJ dans la duplication d'un event
+$labels['copyattachmentserror'] = 'Certaines pièces jointes n\'ont pas pu être copiées.';
+
 ?>

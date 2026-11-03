@@ -1238,7 +1238,7 @@ function rcube_calendar_ui(settings) {
     };
 
     // attachments
-    var load_attachments_tab = function () {
+    const load_attachments_tab = function () {
       rcmail.enable_command(
         'remove-attachment',
         'upload-file',
@@ -1268,7 +1268,7 @@ function rcube_calendar_ui(settings) {
         //PAMELLA 	0006976: Persistance Message jaune
         $('#edit-internallocalchanges-warning').hide();
         $('#edit-localchanges-warning')[
-          action != 'new' &&
+          action !== 'new' &&
           me.has_attendees(event) &&
           !(
             allow_invitations ||
@@ -3974,7 +3974,7 @@ function rcube_calendar_ui(settings) {
       }
 
       return event_attendees;
-    };
+  };
 
   //PAMELLA
   this.edit_clear_attendees = function edit_clear_attendees() {
@@ -4609,7 +4609,7 @@ function rcube_calendar_ui(settings) {
   // display the edit dialog, request 'new' action and pass the selected event
   this.event_copy = function (event) {
     if (event && event.id) {
-      var copy = $.extend(true, {}, event);
+      const copy = $.extend(true, {}, event);
       // PAMELA L'utilisateur qui duplique devient l'organisateur de la copie
       let hasUser = false;
 
@@ -4646,9 +4646,32 @@ function rcube_calendar_ui(settings) {
         });
       }
 
-      setTimeout(function () {
-        event_edit_dialog('new', copy);
-      }, 50);
+      const source_attachments = $.isArray(event.attachments)
+        ? event.attachments
+        : [];
+
+      // PAMELA - 0009544: les PJ sont copiées côté serveur avant l'ouverture du popup
+      if (source_attachments.length) {
+        const on_copied = function (attachments) {
+          copy.attachments = attachments;
+        };
+        rcmail.addEventListener('plugin.attachments_copied', on_copied);
+        rcmail.http_post('calendar/copy-attachments', {
+            _event: event.recurrence_id || event.id,
+            _cal: event.calendar,
+            _rev: event.rev || '',
+            _ids: source_attachments.map((att) => att.id),
+          },
+          rcmail.set_busy(true, 'loading'),
+        ).always(function () {
+            rcmail.removeEventListener('plugin.attachments_copied', on_copied);
+            event_edit_dialog('new', copy);
+          });
+      } else {
+        setTimeout(function () {
+          event_edit_dialog('new', copy);
+        }, 50);
+      }
     }
   };
 

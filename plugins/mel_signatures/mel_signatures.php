@@ -384,6 +384,7 @@ class mel_signatures extends bnum_plugin
     /**
      * Options de la liste, lues en base. Renvoie null si la base est vide ou inaccessible.
      */
+    #[\NoDiscard('Les options construites sont le seul résultat de cet appel')]
     protected function logo_options_from_db(): ?string
     {
         try {
@@ -418,6 +419,7 @@ class mel_signatures extends bnum_plugin
     /**
      * Options de la liste, lues dans la config (ancien fonctionnement).
      */
+    #[\NoDiscard('Les options construites sont le seul résultat de cet appel')]
     protected function logo_options_from_config(): string
     {
         $content = "";
@@ -654,6 +656,7 @@ class mel_signatures extends bnum_plugin
     /**
      * Vrai si l'utilisateur est dans signatures_admin_list.
      */
+    #[\NoDiscard('La réponse est le seul résultat de cet appel')]
     protected function is_signatures_admin(): bool
     {
         $uid = driver_mel::gi()->getUser()->uid;
@@ -675,6 +678,7 @@ class mel_signatures extends bnum_plugin
     /**
      * Vrai si les libellés doivent être lus en base.
      */
+    #[\NoDiscard('La réponse est le seul résultat de cet appel')]
     protected function db_enabled(): bool
     {
         return (bool) $this->rc->config->get('signatures_db_enabled', false);
@@ -683,6 +687,7 @@ class mel_signatures extends bnum_plugin
     /**
      * Accès aux tables des libellés.
      */
+    #[\NoDiscard('L\'objet renvoyé est le seul résultat de cet appel')]
     protected function titles(): SignatureTitleRepository
     {
         return $this->titles ??= new SignatureTitleRepository($this->db());
@@ -691,6 +696,7 @@ class mel_signatures extends bnum_plugin
     /**
      * Vérification de la saisie.
      */
+    #[\NoDiscard('L\'objet renvoyé est le seul résultat de cet appel')]
     protected function validator(): SignatureTitleValidator
     {
         return new SignatureTitleValidator($this->titles());
@@ -798,6 +804,7 @@ class mel_signatures extends bnum_plugin
      * @param array<string, string> $attrib
      * @param list<SignatureTitle>|null $titles null si la base est inaccessible
      */
+    #[\NoDiscard('Le HTML construit est le seul résultat de cet appel')]
     protected function titles_list_html(array $attrib, ?array $titles, ?int $default_id): string
     {
         $header = html::div('signature-titles-header',
@@ -865,6 +872,7 @@ class mel_signatures extends bnum_plugin
      *
      * @param SignatureTitle|null $title null pour un nouveau libellé
      */
+    #[\NoDiscard('Le HTML construit est le seul résultat de cet appel')]
     protected function title_form_html(?SignatureTitle $title, bool $is_default, int $dn_count): string
     {
         $title_id = $title?->id ?? 0;
@@ -959,6 +967,7 @@ class mel_signatures extends bnum_plugin
      * @param list<SignatureTitleDn> $dns
      * @param string                 $dn_draft DN saisi, à réafficher après une erreur
      */
+    #[\NoDiscard('Le HTML construit est le seul résultat de cet appel')]
     protected function title_dns_html(int $title_id, array $dns, string $dn_draft): string
     {
         if ($title_id === 0) {
@@ -1008,6 +1017,7 @@ class mel_signatures extends bnum_plugin
     /**
      * Formulaire d'ajout d'un DN.
      */
+    #[\NoDiscard('Le HTML construit est le seul résultat de cet appel')]
     protected function dn_add_form_html(int $title_id, string $dn_draft): string
     {
         $input = new html_inputfield([
@@ -1041,6 +1051,7 @@ class mel_signatures extends bnum_plugin
      * @param string|null        $confirm   Question posée avant l'envoi
      * @param bool               $icon_only Bouton avec l'icône seule
      */
+    #[\NoDiscard('Le HTML construit est le seul résultat de cet appel')]
     protected function post_button_html(string $action, array $fields, string $label, string $tag, string $icon, ?string $confirm = null, bool $icon_only = false): string
     {
         $button = $icon_only
@@ -1062,6 +1073,7 @@ class mel_signatures extends bnum_plugin
      *
      * @param array<string, int> $fields
      */
+    #[\NoDiscard('Le HTML construit est le seul résultat de cet appel')]
     protected function hidden_fields_html(array $fields): string
     {
         $hidden = new html_hiddenfield();
@@ -1076,6 +1088,7 @@ class mel_signatures extends bnum_plugin
     /**
      * Badge « Défaut ».
      */
+    #[\NoDiscard('Le HTML construit est le seul résultat de cet appel')]
     protected function default_badge_html(): string
     {
         return html::tag('bnum-badge', [
@@ -1271,6 +1284,7 @@ class mel_signatures extends bnum_plugin
     /**
      * Texte d'une erreur de saisie.
      */
+    #[\NoDiscard('Le texte construit est le seul résultat de cet appel')]
     protected function validation_error_text(SignatureValidationError $error): string
     {
         return $this->gettext(['name' => $error->messageKey, 'vars' => $error->vars]);
@@ -1281,6 +1295,7 @@ class mel_signatures extends bnum_plugin
      *
      * @param array<string, int|string> $params
      */
+    #[\NoDiscard('L\'URL construite est le seul résultat de cet appel')]
     protected function action_url(string $action, array $params = []): string
     {
         return $this->rc->url(['_action' => $action] + $params);
@@ -1289,6 +1304,7 @@ class mel_signatures extends bnum_plugin
     /**
      * URL de la page d'un libellé (0 pour un nouveau).
      */
+    #[\NoDiscard('L\'URL construite est le seul résultat de cet appel')]
     protected function title_edit_url(int $title_id = 0): string
     {
         return $this->action_url('plugin.mel_signatures_edit_title', $title_id > 0 ? ['_id' => $title_id] : []);

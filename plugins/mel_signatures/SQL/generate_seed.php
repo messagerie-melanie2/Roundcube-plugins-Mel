@@ -25,6 +25,7 @@ require $argv[1];
 /**
  * Met une chaîne entre apostrophes pour le SQL.
  */
+#[\NoDiscard('La valeur convertie est le seul résultat de cet appel')]
 function sql_string(string $value): string
 {
     return "'" . str_replace("'", "''", $value) . "'";
@@ -48,6 +49,7 @@ function anomaly(?string $message = null): int
 /**
  * Transforme « MINISTÈRE<br>DES TRANSPORTS » en texte sur plusieurs lignes.
  */
+#[\NoDiscard('La valeur convertie est le seul résultat de cet appel')]
 function html_to_text(string $html): string
 {
     $text  = (string) preg_replace('/<br\s*\/?>/i', "\n", $html);
@@ -65,6 +67,7 @@ function html_to_text(string $html): string
  *
  * @return array<string, string> DN => libellé
  */
+#[\NoDiscard('La valeur convertie est le seul résultat de cet appel')]
 function map_dns(array $config_dns, array $items, string $kind): array
 {
     $dns = [];

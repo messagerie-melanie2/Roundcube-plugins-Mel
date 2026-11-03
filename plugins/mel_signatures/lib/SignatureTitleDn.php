@@ -33,6 +33,7 @@ final readonly class SignatureTitleDn
     /**
      * Vrai pour la ligne « default ».
      */
+    #[\NoDiscard('La réponse est le seul résultat de cet appel')]
     public function isDefault(): bool
     {
         return $this->dn === self::DEFAULT;

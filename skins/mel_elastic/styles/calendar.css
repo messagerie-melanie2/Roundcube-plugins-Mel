@@ -941,6 +941,6 @@ body.quickview-active .fc .fc-scroller {
 #agendaoptions {
   background-color: transparent !important;
 }
-.mwsp #layout-sidebar {
+.mwsp .task-calendar #layout-sidebar {
   display: none;
 }

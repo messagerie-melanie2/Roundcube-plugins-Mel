@@ -82,7 +82,7 @@ class bnum_mail extends bnum_plugin {
 
       $this->add_hooks(
           [
-            'messages_list.links' => $this->hook_message_list(...),
+            'messages_list' => $this->hook_message_list(...),
             'config_get' => $this->hook_config_get(...),
             'preferences_update' => $this->hook_preferences_update(...)
           ]

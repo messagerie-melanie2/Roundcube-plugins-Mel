@@ -3814,7 +3814,6 @@ function rcube_calendar_ui(settings) {
         action == 'remove'
           ? 'removerecurringeventwarning'
           : 'changerecurringeventwarning';
-
       // MANTIS 0009140: masquer le mode "future" lorsque je suis simple participant.
       var future_hidden = action == 'remove' && !_is_organizer && _is_attendee;
 

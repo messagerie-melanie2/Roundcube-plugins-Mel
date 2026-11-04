@@ -3867,8 +3867,6 @@ function rcube_calendar_ui(settings) {
               data._decline = $dialog.find(
                 'input.confirm-attendees-decline:checked',
               ).length;
-              //Mantis 0009140 pasz de reply possible sur un rang THISANDFUTURE
-              data._decline = data.find('input.confirm-attendees-decline:checked').length;
               data._notify = 0;
             }
             update_event(action, data);

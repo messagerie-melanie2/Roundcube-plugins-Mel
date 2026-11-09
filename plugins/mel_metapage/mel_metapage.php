@@ -397,7 +397,6 @@ class mel_metapage extends bnum_plugin
         $this->rc->output->set_env("main_nav_can_deploy", $this->rc->config->get('main_nav_can_deploy', true));
         $this->rc->output->set_env("avatar_background_color", $this->rc->config->get('avatar_error_color', null));
 
-
         $this->rc->output->set_env('mel_metapage_const', [
             "key" => self::FROM_KEY,
             "value" => self::FROM_VALUE
@@ -623,7 +622,8 @@ class mel_metapage extends bnum_plugin
             $this->register_action('save_user_pref_domain', array($this, 'save_user_pref_domain'));
             $this->add_hook('refresh', array($this, 'refresh'));
             $this->add_hook("startup", array($this, "send_spied_urls"));
-            $this->add_hook('contacts_autocomplete_after', [$this, 'contacts_autocomplete_after']);//Mantis 0009521
+            $this->add_hook('contacts_autocomplete_after', [$this, 'contacts_autocomplete_group_sources']);
+            
             if ($this->rc->task === 'settings' && rcube_utils::get_input_value('_open_section', rcube_utils::INPUT_GET) !== null) $this->add_hook('ready', array($this, 'open_section'));
 
             $this->rc->output->set_env("webconf.base_url", $this->rc->config->get("web_conf"));
@@ -3537,6 +3537,52 @@ class mel_metapage extends bnum_plugin
         $args['contacts'] = array_values($contacts);
 
         return $args;
+    }
+    /**
+     * 0009207 - Réordonne les résultats d'autocomplétion par source
+     * (carnets > collectées > annuaire) en préservant le tri interne
+     *
+     * @param array $args Contient 'contacts'
+     * @return array
+     */
+    public function contacts_autocomplete_group_sources(array $args): array
+    {
+        $source_groups = [];
+
+        foreach ($this->rc->get_address_sources() as $source) {
+            $source_groups[(string) $source['id']] = $this->_autocomplete_group($this->_autocomplete_group_id($source));
+        }
+
+        $args['contacts'] = array_values(array_map(function (array $contact) use ($source_groups) {
+            $contact['source_group'] = $source_groups[(string) ($contact['source'] ?? '')]
+                ?? $this->_autocomplete_group('other');
+
+            return $contact;
+        }, $args['contacts']));
+
+        return $args;
+    }
+
+    private function _autocomplete_group_id(array $source): string
+    {
+        $id = (string) $source['id'];
+
+        return match (true) {
+            (bool) preg_match('/collected/i', $id) => 'collected',
+            (bool) preg_match('/amande|ldap/i', $id) => 'amande',
+            (bool) preg_match('/^(sql|melanie|carnet)/i', $id),
+            str_contains($id, (string) $this->rc->get_user_name()) => 'contacts',
+            default => 'other',
+        };
+    }
+
+    private function _autocomplete_group(string $id): array
+    {
+        return [
+            'id' => $id,
+            'rank' => array_search($id, ['contacts', 'collected', 'amande', 'other'], true),
+            'label' => $this->gettext("autocomplete_group_$id"),
+        ];
     }
 
     /**

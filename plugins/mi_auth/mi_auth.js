@@ -1,6 +1,18 @@
 class Mce{
   badUser = false;
   conf = null;
+  setFavIco(){
+    let link = document.querySelector('link[rel~="icon"]');
+    if(!link){
+      link = document.createElement('link');
+      link.rel = 'icon';
+      document.head.appendChild(link);
+    }
+    link.href = '/plugins/mi_auth/favicon.ico';
+  }
+  setTitle(){
+    document.title = 'MCE';
+  }
   async setCss(){
     if(this.conf == null)
       await this.getConf();
@@ -13,17 +25,16 @@ class Mce{
       document.head.appendChild(css);
     }
   }
-  setFavIco(){
-    let link = document.querySelector('link[rel~="icon"]');
-    if(!link){
-      link = document.createElement('link');
-      link.rel = 'icon';
-      document.head.appendChild(link);
-    }
-    link.href = '/plugins/mi_auth/favicon.ico';
-  }
-  setTitle(){
-    document.title = 'MCE';
+  hidePortailMenu(){
+    const removeMenu = () => {
+      document.getElementById('mce_portail_menu')?.remove();
+    };
+
+    removeMenu();
+    new MutationObserver(removeMenu).observe(document.documentElement, {
+      childList: true,
+      subtree: true
+    });
   }
   setPortailJs(){
     if(document.getElementById('scr_portail_js') == null){
@@ -86,7 +97,9 @@ if(window.rcmail){
     let url = window.location.href.split('?')[1];
     let is_courrielleur = rcmail.env.mi_auth_courrielleur;
     if((dom != null) && !is_courrielleur){
-      mce.setCss();
+      mce.hidePortailMenu();
+      if(rcmail.env.mi_auth_load_css)
+        mce.setCss();
       if(rcmail.env.mi_auth_verify !== null){
         mce.verifyUser();
         if(!mce.badUser)

@@ -1,3 +1,4 @@
+/* global rcmail, $ */
 class Mce{
   badUser = false;
   conf = null;
@@ -14,14 +15,14 @@ class Mce{
     document.title = 'MCE';
   }
   async setCss(){
-    if(this.conf == null)
+    if(this.conf === null)
       await this.getConf();
-    if(document.getElementById('css_mi_auth') == null){
+    if(document.getElementById('css_mi_auth') === null){
       let css = document.createElement('link');
-      css.type = "text/css";
-      css.href = "/plugins/mi_auth/mi_auth.css?v=" + this.conf.version;
-      css.id = "css_mi_auth";
-      css.setAttribute('rel', "stylesheet");
+      css.type = 'text/css';
+      css.href = '/plugins/mi_auth/mi_auth.css?v=' + this.conf.version;
+      css.id = 'css_mi_auth';
+      css.setAttribute('rel', 'stylesheet');
       document.head.appendChild(css);
     }
   }
@@ -37,9 +38,9 @@ class Mce{
     });
   }
   setPortailJs(){
-    if(document.getElementById('scr_portail_js') == null){
+    if(document.getElementById('scr_portail_js') === null){
       let scr = document.createElement('script');
-      scr.type="text/javascript";
+      scr.type = 'text/javascript';
       scr.async = false;
       scr.id = 'scr_portail_js';
       scr.src = rcmail.env.portail_uri + 'ressources/js/external.js';
@@ -47,7 +48,7 @@ class Mce{
     }
   }
   async getConf(){
-    if(window.mce.config == undefined){
+    if(window.mce.config === undefined){
       let json = await fetch(rcmail.env.portail_uri + 'config/config.json');
       window.mce.config =  await json.json();
     }
@@ -72,7 +73,7 @@ class Mce{
       return;
     }
     let json = await response.json();
-    if(json.email == undefined){
+    if(json.email === undefined){
       this.setBadUser();
       return;
     }
@@ -92,11 +93,10 @@ class Mce{
 if(window.rcmail){
   let mce = new Mce();
   mce.init();
-  $(window).on("load", async function(){
+  $(window).on('load', async function(){
     let dom = document.getElementsByTagName('head')[0];
-    let url = window.location.href.split('?')[1];
     let is_courrielleur = rcmail.env.mi_auth_courrielleur;
-    if((dom != null) && !is_courrielleur){
+    if((dom !== null) && !is_courrielleur){
       mce.hidePortailMenu();
       if(rcmail.env.mi_auth_load_css)
         mce.setCss();

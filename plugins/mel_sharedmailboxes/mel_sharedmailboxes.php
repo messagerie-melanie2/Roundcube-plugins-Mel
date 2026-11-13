@@ -68,6 +68,10 @@ class mel_sharedmailboxes extends rcube_plugin {
         $this->add_hook('message_before_send',      array($this, 'message_before_send'));
         $this->add_hook('check_recent',             array($this, 'check_recent'));
         $this->add_hook('messages_list',            array($this, 'messages_list'));
+        // PAMELA - 0009306 : tri alphabétique des dossiers
+        $this->add_hook('render_mailboxlist',       array($this, 'sort_mailboxlist'));
+        $this->add_hook('render_folder_selector',   array($this, 'sort_mailboxlist'));
+        $this->add_hook('folders_list',             array($this, 'sort_folders_list'));
         $this->add_hook('render_folder_selector',   array($this, 'render_folder_selector'));
 
         $this->add_hook('config_get',           array($this, 'config_get'));
@@ -1684,5 +1688,74 @@ class mel_sharedmailboxes extends rcube_plugin {
         if (isset($COMPOSE)) {
             $_SESSION['compose_data_'.$COMPOSE_ID]['param']['sent_mbox'] = $this->rc->config->get('sent_mbox');
         }
+    }
+
+    /**
+     * PAMELA - 0009306 : trieur de dossiers pour la langue de l'utilisateur, null si intl est indisponible.
+     */
+    #[\NoDiscard('La réponse est le seul résultat de cet appel')]
+    protected function get_folder_sorter(): ?FolderSorter
+    {
+        if (!class_exists(\Collator::class)) {
+            return null;
+        }
+
+        $collator = \Collator::create($this->rc->get_user_language() ?: 'fr_FR');
+
+        if ($collator === null) {
+            return null;
+        }
+
+        require_once __DIR__ . '/lib/FolderSorter.php';
+
+        $specials = array_merge(['INBOX'], array_values((array) $this->rc->get_storage()->get_special_folders()));
+
+        return new FolderSorter($collator, $specials);
+    }
+
+    /**
+     * PAMELA - 0009306 : hooks render_mailboxlist et render_folder_selector.
+     *
+     * @param array<string, mixed> $args
+     *
+     * @return array<string, mixed>
+     */
+    #[\NoDiscard('La réponse est le seul résultat de cet appel')]
+    public function sort_mailboxlist(array $args): array
+    {
+        if (empty($args['list']) || !is_array($args['list'])) {
+            return $args;
+        }
+
+        $sorter = $this->get_folder_sorter();
+
+        if ($sorter !== null) {
+            $args['list'] = $sorter->sort_tree($args['list']);
+        }
+
+        return $args;
+    }
+
+    /**
+     * PAMELA - 0009306 : hook folders_list (Paramètres > Dossiers).
+     *
+     * @param array<string, mixed> $args
+     *
+     * @return array<string, mixed>
+     */
+    #[\NoDiscard('La réponse est le seul résultat de cet appel')]
+    public function sort_folders_list(array $args): array
+    {
+        if (empty($args['list']) || !is_array($args['list'])) {
+            return $args;
+        }
+
+        $sorter = $this->get_folder_sorter();
+
+        if ($sorter !== null) {
+            $args['list'] = $sorter->sort_flat_list($args['list'], $this->rc->get_storage()->get_hierarchy_delimiter());
+        }
+
+        return $args;
     }
 }

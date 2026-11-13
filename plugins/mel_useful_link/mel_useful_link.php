@@ -290,7 +290,7 @@ class mel_useful_link extends bnum_plugin
 
     foreach ($items as $id => $item) {
       if (!$item['links']) {
-        $temp = new MelLink($id, $item['name'], $item['url'], null, $item['icon']);
+        $temp = new MelLink($id, $item['name'], $item['url'], $item['logo'] ?? null, $item['icon']);
       } else {
         $links = [];
         foreach ($item['links'] as $key => $value) {

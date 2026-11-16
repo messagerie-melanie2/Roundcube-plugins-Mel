@@ -6,3 +6,72 @@
     margin-bottom: var(--bnum-space-s, 10px);
   }
 }
+
+.login-or-vertical {
+  display: none;
+}
+
+// Les classes `login-fit-*` sont posées sur <html> par login_fit.js, selon la
+// place réellement disponible (voir le commentaire de ce script).
+
+// Pas de barre de scroll : seulement quand le script a pris la main.
+html.login-fit-active,
+html.login-fit-active body {
+  overflow: hidden;
+}
+
+// 3. La baseline est décorative : retirée seulement si l'espace manque.
+html.login-fit-no-baseline #mel-login-form .login-title {
+  margin-bottom: 15px;
+
+  h3 {
+    display: none;
+  }
+}
+
+// 2. Connexion Cerbère et identifiant côte à côte, « ou » vertical.
+html.login-fit-columns {
+  #mel-login-form {
+    max-width: 90%;
+  }
+
+  .login-columns {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    column-gap: var(--bnum-space-l, 20px);
+
+    bnum-divider {
+      display: none;
+    }
+  }
+
+  .login-or-vertical {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--bnum-space-s, 10px);
+    color: var(--bnum-color-primary, #000091);
+    font-size: var(--bnum-font-size-text-s, 0.875rem);
+
+    span {
+      flex: 1;
+      border-left: 1px solid var(--bnum-color-border, #ddd);
+    }
+  }
+}
+
+// Espacements dosés par login_fit.js (0 = valeurs d'origine du design system,
+// 1 = compactage maximal). Aucun texte n'est modifié.
+html.login-fit-active #mel-login-form {
+  --bnum-space-l: calc(20px - 14px * var(--login-fit-space, 0));
+  --bnum-space-m: calc(15px - 10px * var(--login-fit-space, 0));
+  --bnum-space-s: calc(10px - 7px * var(--login-fit-space, 0));
+  --bnum-space-xs: calc(5px - 3px * var(--login-fit-space, 0));
+}
+
+// Dernier recours : le formulaire est réduit depuis le haut, au centre.
+html.login-fit-active #mel-login-form {
+  transform-origin: top center;
+  // main est un conteneur flex : sans cela le formulaire est étiré en hauteur.
+  align-self: flex-start;
+}

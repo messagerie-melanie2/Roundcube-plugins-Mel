@@ -28,31 +28,34 @@
       data-title-text="Connexion"
       data-title-icon="password"
     >
-      <section>
-        <h3 style="padding-bottom: 0px;margin-bottom: 10px;">Se connecter avec Cerbère</h3>
-        <p>Utilisez votre compte Cerbère pour accéder directement à vos outils.</p>
-        <bnum-secondary-button id="login-alt-1" data-icon="login">Se connecter avec Cerbère</bnum-secondary-button>
-      </section>
-      <bnum-divider class="bds-space-s-top">ou</bnum-divider>
-      <section class="bds-space-s-top">
-        <h3 style="padding-bottom: 0px;margin-bottom: 10px;">Se connecter avec son identifiant</h3>
-        <roundcube:form name="form" method="post">
-          <roundcube:object
-            name="loginform"
-            form="form"
-            size="40"
-            submit="true"
-          />
-          <roundcube:object name="message" id="message" />
-        </roundcube:form>
-        <div class="footerbox">
-          <bnum-alert-info>
-            <roundcube:label name="mel.login_warning" />
-            <br />
-            <roundcube:object name="login_doc_message" id="doc_message" />
-          </bnum-alert-info>
-        </div>
-      </section>
+      <div class="login-columns">
+        <section>
+          <h3 style="padding-bottom: 0px;margin-bottom: 10px;">Se connecter avec Cerbère</h3>
+          <p>Utilisez votre compte Cerbère pour accéder directement à vos outils.</p>
+          <bnum-secondary-button id="login-alt-1" data-icon="login">Se connecter avec Cerbère</bnum-secondary-button>
+        </section>
+        <bnum-divider class="bds-space-s-top">ou</bnum-divider>
+        <div class="login-or-vertical" aria-hidden="true"><span></span>ou<span></span></div>
+        <section class="bds-space-s-top">
+          <h3 style="padding-bottom: 0px;margin-bottom: 10px;">Se connecter avec son identifiant</h3>
+          <roundcube:form name="form" method="post">
+            <roundcube:object
+              name="loginform"
+              form="form"
+              size="40"
+              submit="true"
+            />
+            <roundcube:object name="message" id="message" />
+          </roundcube:form>
+          <div class="footerbox">
+            <bnum-alert-info>
+              <roundcube:label name="mel.login_warning" />
+              <br />
+              <roundcube:object name="login_doc_message" id="doc_message" />
+            </bnum-alert-info>
+          </div>
+        </section>
+      </div>
     </bnum-card>
     <!-- <div
       class="card clear"

@@ -113,6 +113,7 @@ class mel_elastic extends bnum_plugin
         if ($this->rc->config->get('skin') == 'mel_elastic')
         {
             $this->load_config();
+            $brand = $this->get_brand();
             $this->add_hook('ready', array($this, 'set_theme'));
             $this->add_hook('send_page', array($this, 'hook_render_page'));
             $this->register_action('update_theme', array($this, 'update_theme'));
@@ -120,6 +121,10 @@ class mel_elastic extends bnum_plugin
             $this->register_action('update_custom_picture', array($this, 'update_custom_picture'));
             $this->register_action('toggle_animations', array($this, 'toggleAnimations'));
             $this->load_css();
+            $loader_stylesheet = '/styles/parts/' . $brand . '-loader.css';
+            if (is_file($this->skinPath . $loader_stylesheet)) {
+                $this->include_stylesheet($loader_stylesheet);
+            }
             $this->include_script('../../skins/mel_elastic/dependencies/linq.js');
             $this->include_script('../../skins/mel_elastic/dependencies/poppers.js');
             $this->include_script('../../skins/mel_elastic/ui.js');
@@ -141,6 +146,7 @@ class mel_elastic extends bnum_plugin
 
             // if ($this->get_current_task() === 'bnum')
             $this->add_handler('defaultpagetitle', [$this, 'handler_default_page_title']);
+            $this->add_handler('mel_elastic_header_logo', [$this, 'handler_header_logo']);
 
             if ($this->rc->task == 'mail' && $this->is_index_action() ) {
                 $this->add_handler('mailboxlist', [$this, 'my_folder_list_handler']);
@@ -547,6 +553,48 @@ class mel_elastic extends bnum_plugin
 
     public function handler_default_page_title() {
         return $this->rc()->gettext($this->get_input('_initial_task', rcube_utils::INPUT_GET), 'mel_metapage');
+    }
+
+    /**
+     * Retourne le logo du header correspondant à la configuration.
+     *
+     * @return string HTML de l'image du logo.
+     */
+    public function handler_header_logo() {
+        $brand = $this->get_brand();
+        $logo_filename = $this->rc->config->get('mel_elastic_logo', 'bnumloader.svg');
+        $valid_logo_name = is_string($logo_filename)
+            && $logo_filename !== ''
+            && basename($logo_filename) === $logo_filename
+            && strpos($logo_filename, '\\') === false;
+        $logo_path = $valid_logo_name
+            ? $this->skinPath . '/images/' . $logo_filename
+            : null;
+        $has_brand_logo = $logo_path !== null && is_file($logo_path);
+        $logo_src = $has_brand_logo
+            ? 'skins/mel_elastic/images/' . rawurlencode($logo_filename)
+            : 'skins/mel_elastic/images/bnumloader.svg';
+
+        return html::img([
+            'slot' => 'logo',
+            'class' => 'logo-bnum',
+            'src' => $logo_src,
+            'alt' => $has_brand_logo ? 'Logo ' . ucfirst($brand) : 'Logo du bnum',
+            'height' => '45px',
+        ]);
+    }
+
+    /**
+     * Retourne le nom normalisé de la marque configurée.
+     *
+     * @return string
+     */
+    private function get_brand() {
+        $brand = $this->rc->config->get('mel_elastic_brand', 'bnum');
+
+        return is_string($brand) && preg_match('/^[a-z0-9-]+$/', $brand)
+            ? $brand
+            : 'bnum';
     }
 
     /**

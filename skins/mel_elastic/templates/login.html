@@ -40,13 +40,6 @@
             />
             <roundcube:object name="message" id="message" />
           </roundcube:form>
-          <div class="footerbox">
-            <bnum-alert-info>
-              <roundcube:label name="mel.login_warning" />
-              <br />
-              <roundcube:object name="login_doc_message" id="doc_message" />
-            </bnum-alert-info>
-          </div>
         </section>
         <bnum-divider class="bds-space-s-top"><roundcube:label name="mel.login_or" /></bnum-divider>
         <div class="login-or-vertical" aria-hidden="true"><span></span><roundcube:label name="mel.login_or" /><span></span></div>
@@ -61,6 +54,13 @@
         </section>
 
       </div>
+                <div class="footerbox bds-space-s-top">
+            <bnum-alert-info>
+              <roundcube:label name="mel.login_warning" />
+              <br />
+              <roundcube:object name="login_doc_message" id="doc_message" />
+            </bnum-alert-info>
+          </div>
     </bnum-card>
     <!-- <div
       class="card clear"

@@ -30,13 +30,6 @@
     >
       <div class="login-columns">
         <section>
-          <h3 style="padding-bottom: 0px;margin-bottom: 10px;">Se connecter avec Cerbère</h3>
-          <p>Utilisez votre compte Cerbère pour accéder directement à vos outils.</p>
-          <bnum-secondary-button id="login-alt-1" data-icon="login">Se connecter avec Cerbère</bnum-secondary-button>
-        </section>
-        <bnum-divider class="bds-space-s-top">ou</bnum-divider>
-        <div class="login-or-vertical" aria-hidden="true"><span></span>ou<span></span></div>
-        <section class="bds-space-s-top">
           <h3 style="padding-bottom: 0px;margin-bottom: 10px;">Se connecter avec son identifiant</h3>
           <roundcube:form name="form" method="post">
             <roundcube:object
@@ -55,6 +48,18 @@
             </bnum-alert-info>
           </div>
         </section>
+        <bnum-divider class="bds-space-s-top">ou</bnum-divider>
+        <div class="login-or-vertical" aria-hidden="true"><span></span>ou<span></span></div>
+        <section class="bds-space-s-top">
+          <h3 style="padding-bottom: 0px;margin-bottom: 10px;">Se connecter avec Cerbère</h3>
+          <p>Utilisez votre compte Cerbère pour accéder directement à vos outils.</p>
+          <center><!-- TODO : remplacer l'URL provisoire de « Qu'est-ce que Cerbère ? » -->
+          <bnum-cerbere-button
+            id="login-alt-1"
+            data-info-url="https://authentification.din.developpement-durable.gouv.fr/authSAML/cgu.do"
+          ></bnum-cerbere-button></center>
+        </section>
+
       </div>
     </bnum-card>
     <!-- <div

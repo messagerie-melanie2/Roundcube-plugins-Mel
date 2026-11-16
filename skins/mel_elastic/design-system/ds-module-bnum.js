@@ -949,9 +949,9 @@ async function retry(fn, attempts, delay, signal) {
   }
 }
 
-var css_248z$x =
+var css_248z$y =
   ':host([block]){display:block;flex:1;width:100%}:host(.flex){display:flex}:host(.center){align-items:center;justify-content:center;text-align:center}';
-var style$u = css_248z$x;
+var style$v = css_248z$y;
 
 class BnumDOM {
   /**
@@ -1925,7 +1925,7 @@ class BnumElement extends HTMLElement {
 /**
  * Style commun à tous les BnumElement.
  */
-const BASE_STYLE = BnumElement.ConstructCSSStyleSheet(style$u);
+const BASE_STYLE = BnumElement.ConstructCSSStyleSheet(style$v);
 
 class RotomecaCookies {
   /**
@@ -3410,6 +3410,7 @@ const TAG_INPUT_PASSWORD = `${TAG_INPUT}-password`;
 const TAG_INPUT_SEARCH = `${TAG_INPUT}-search`;
 const TAG_INPUT_TEXT = `${TAG_INPUT}-text`;
 const TAG_INPUT_TIME = `${TAG_INPUT}-time`;
+const TAG_CERBERE_BUTTON = `${TAG_PREFIX}-cerbere-button`;
 const TAG_INPUT_USERNAME = `${TAG_INPUT}-username`;
 const TAG_FOLDER = `${TAG_PREFIX}-folder`;
 const TAG_HIDE = `${TAG_PREFIX}-hide`;
@@ -3802,13 +3803,13 @@ function OnIconChangeInitializer$1(event, self) {
   });
 }
 
-var css_248z$w =
+var css_248z$x =
   '@font-face{font-family:Material Symbols Outlined;font-style:normal;font-weight:200;src:url(fonts/material-symbol-v2.woff2) format("woff2")}.material-symbols-outlined{word-wrap:normal;-moz-font-feature-settings:"liga";-moz-osx-font-smoothing:grayscale;direction:ltr;display:inline-block;font-family:Material Symbols Outlined;font-size:24px;font-style:normal;font-weight:400;letter-spacing:normal;line-height:1;text-transform:none;white-space:nowrap}';
-var symbols = css_248z$w;
+var symbols = css_248z$x;
 
-var css_248z$v =
+var css_248z$w =
   '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{font-size:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem));font-variation-settings:"FILL" var(--bnum-icon-fill,0),"wght" var(--bnum-icon-weight,300),"GRAD" var(--bnum-icon-grad,0),"opsz" var(--bnum-icon-opsz,24);font-weight:var(--bnum-icon-font-weight,var(--bnum-font-weight-normal,normal));height:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem));line-height:var(--bnum-icon-line-height,1);width:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem))}:host(:state(loading)){opacity:0}';
-var style$t = css_248z$v;
+var style$u = css_248z$w;
 
 /**
  * Classe CSS utilisée pour les icônes Material Symbols.
@@ -3829,7 +3830,7 @@ const SYMBOLS = BnumElement.ConstructCSSStyleSheet(
     .replaceAll(`.${ICON_CLASS}`, ':host')
     .replaceAll('fonts/material-symbol-v2.woff2', FONT_SRC),
 );
-const STYLE = BnumElement.ConstructCSSStyleSheet(style$t);
+const STYLE = BnumElement.ConstructCSSStyleSheet(style$u);
 /** Nom de famille de la police Material Symbols. */
 const FONT_FAMILY = 'Material Symbols Outlined';
 /** Spécification utilisée pour interroger `document.fonts`. */
@@ -4189,9 +4190,9 @@ let HTMLBnumIcon = (() => {
  */
 const REG_XSS_SAFE = /^[-.\w\s%()]+$/;
 
-var css_248z$u =
+var css_248z$v =
   '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{--bnum-icon-font-size:var(--bnum-font-size-xl);border-radius:var(--bnum-button-border-radius,0);cursor:var(--bnum-button-cursor,pointer);display:var(--bnum-button-display,inline-block);font-weight:var(--bnum-button-font-weight,600);height:var(--bnum-button-height,-moz-fit-content);height:var(--bnum-button-height,fit-content);line-height:1.5rem;padding:var(--bnum-button-padding,.5rem 1rem);transition:background-color .2s ease,color .2s ease;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}:host(:state(rounded)){border-radius:var(--bnum-button-rounded-border-radius,5px)}:host(:state(without-icon)){padding-bottom:var(--bnum-button-without-icon-padding-bottom,7.5px);padding-top:var(--bnum-button-without-icon-padding-top,7.5px)}:host(:disabled),:host(:state(disabled)){cursor:not-allowed;opacity:var(--bnum-button-disabled-opacity,.6);pointer-events:var(--bnum-button-disabled-pointer-events,none)}:host(:state(loading)){cursor:progress}:host(:state(icon)){--bnum-button-icon-gap:var(--custom-bnum-button-icon-margin,var(--bnum-space-s,10px))}:host(:state(icon))>.wrapper{align-items:center;display:flex;flex-direction:row;gap:var(--bnum-button-icon-gap);justify-content:var(--bnum-button-justify-content,center)}:host(:state(icon-pos-left)) .wrapper{flex-direction:row-reverse}:host(:focus-visible){outline:2px solid #0969da;outline-offset:2px}:host>.wrapper{align-items:var(--bnum-button-wrapper-align-items,center);display:var(--bnum-button-wrapper-display,flex)}:host bnum-icon.icon{display:var(--bnum-button-icon-display,flex)}:host bnum-icon.icon.hidden{display:none}:host bnum-icon.loader{display:var(--bnum-button-loader-display,flex)}:host(:is(:state(loading):state(without-icon-loading))) slot{display:none}@keyframes spin{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host .loader,:host .spin,:host(:state(loading)) .icon{animation:spin var(--bnum-button-spin-duration,.75s) var(--bnum-button-spin-timing,linear) var(--bnum-button-spin-iteration,infinite)}:host(:state(hide-text-on-small)) .slot,:host(:state(hide-text-on-touch)) .slot{display:var(--size-display-state,inline-block)}:host(:state(hide-text-on-small)) .icon,:host(:state(hide-text-on-touch)) .icon{margin-left:var(--size-margin-left-state,var(--custom-button-icon-margin-left))!important;margin-right:var(--size-margin-right-state,var(--custom-button-icon-margin-right))!important}:host .hidden,:host [hidden]{display:none!important}:host(:state(primary)){background-color:var(--bnum-button-primary-background-color,var(--bnum-color-primary));border:var(--bnum-button-primary-border,solid thin var(--bnum-button-primary-border-color,var(--bnum-color-primary)));color:var(--bnum-button-primary-text-color,var(--bnum-text-on-primary))}:host(:state(primary):hover){background-color:var(--bnum-button-primary-hover-background-color,var(--bnum-color-primary-hover));border:var(--bnum-button-primary-hover-border,solid thin var(--bnum-button-primary-hover-border-color,var(--bnum-color-primary-hover)));color:var(--bnum-button-primary-hover-text-color,var(--bnum-text-on-primary-hover))}:host(:state(primary):active){background-color:var(--bnum-button-primary-active-background-color,var(--bnum-color-primary-active));border:var(--bnum-button-primary-active-border,solid thin var(--bnum-button-primary-active-border-color,var(--bnum-color-primary-active)));color:var(--bnum-button-primary-active-text-color,var(--bnum-text-on-primary-active))}:host(:state(secondary)){background-color:var(--bnum-button-secondary-background-color,var(--bnum-color-secondary));border:var(--bnum-button-secondary-border,solid thin var(--bnum-button-secondary-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-text-color,var(--bnum-text-on-secondary))}:host(:state(secondary):hover){background-color:var(--bnum-button-secondary-hover-background-color,var(--bnum-color-secondary-hover));border:var(--bnum-button-secondary-hover-border,solid thin var(--bnum-button-secondary-hover-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-hover-text-color,var(--bnum-text-on-secondary-hover))}:host(:state(secondary):active){background-color:var(--bnum-button-secondary-active-background-color,var(--bnum-color-secondary-active));border:var(--bnum-button-secondary-active-border,solid thin var(--bnum-button-secondary-active-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-active-text-color,var(--bnum-text-on-secondary-active))}:host(:state(tertiary)){background-color:var(--bnum-button-tertiary-background-color,var(--bnum-color-tertiary));border:var(--bnum-button-tertiary-border,solid thin var(--bnum-button-tertiary-border-color,transparent));color:var(--bnum-button-tertiary-text-color,var(--bnum-text-on-tertiary))}:host(:state(tertiary):hover){background-color:var(--bnum-button-tertiary-hover-background-color,var(--bnum-color-secondary-hover));border:var(--bnum-button-tertiary-hover-border,solid thin var(--bnum-button-tertiary-hover-border-color,transparent));color:var(--bnum-button-tertiary-hover-text-color,var(--bnum-text-on-tertiary-hover))}:host(:state(tertiary):active){background-color:var(--bnum-button-tertiary-active-background-color,var(--bnum-color-secondary-active));border:var(--bnum-button-tertiary-active-border,solid thin var(--bnum-button-tertiary-active-border-color,transparent));color:var(--bnum-button-tertiary-active-text-color,var(--bnum-text-on-tertiary-active))}:host(:state(danger)){background-color:var(--bnum-button-danger-background-color,var(--bnum-color-danger));border:var(--bnum-button-danger-border,solid thin var(--bnum-button-danger-border-color,var(--bnum-color-danger)));color:var(--bnum-button-danger-text-color,var(--bnum-text-on-danger))}:host(:state(danger):hover){background-color:var(--bnum-button-danger-hover-background-color,var(--bnum-color-danger-hover));border:var(--bnum-button-danger-hover-border,solid thin var(--bnum-button-danger-hover-border-color,var(--bnum-color-danger-hover)));color:var(--bnum-button-danger-hover-text-color,var(--bnum-text-on-danger-hover))}:host(:state(danger):active){background-color:var(--bnum-button-danger-active-background-color,var(--bnum-color-danger-active));border:var(--bnum-button-danger-active-border,solid thin var(--bnum-button-danger-active-border-color,var(--bnum-color-danger-active)));color:var(--bnum-button-danger-active-text-color,var(--bnum-text-on-danger-active))}:host(:state(tertiary)){--bnum-button-justify-content:start;--bnum-button-font-weight:600;transition:none}';
-var style$s = css_248z$u;
+var style$t = css_248z$v;
 
 function OnIconChangeInitializer(event, instance) {
   event.push((newValue, oldValue) => {
@@ -4297,7 +4298,7 @@ const HideTextOnLayoutSize = {
 const ICON_LOADER = 'progress_activity';
 //#endregion External Constants
 //#region Template
-const TEMPLATE$i = h('div', {
+const TEMPLATE$j = h('div', {
   class: CLASS_WRAPPER,
   part: 'container',
   children: [
@@ -4425,8 +4426,8 @@ let HTMLBnumButton = (() => {
   let _classDecorators = [
     Define({
       tag: TAG_BUTTON,
-      template: TEMPLATE$i,
-      styles: style$s,
+      template: TEMPLATE$j,
+      styles: style$t,
     }),
   ];
   let _classDescriptor;
@@ -5180,14 +5181,14 @@ function OnLinkedClickEventInitializer(event, instance) {
   });
 }
 
-var css_248z$t =
+var css_248z$u =
   '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{cursor:pointer;font-variation-settings:"wght" 400;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}:host(:hover){--bnum-icon-fill:1}:host(:active){--bnum-icon-fill:1;--bnum-icon-weight:700;--bnum-icon-grad:200;--bnum-icon-opsz:20}:host(:disabled),:host([disabled]){cursor:not-allowed;opacity:var(--bnum-button-disabled-opacity,.6);pointer-events:var(--bnum-button-disabled-pointer-events,none)}';
-var style$r = css_248z$t;
+var style$s = css_248z$u;
 
 //#region Global Constants
 const ID_ICON$2 = 'icon';
 //#endregion Global Constants
-const TEMPLATE$h = h(HTMLBnumIcon, { id: ID_ICON$2, children: h('slot', {}) });
+const TEMPLATE$i = h(HTMLBnumIcon, { id: ID_ICON$2, children: h('slot', {}) });
 /**
  * Button contenant une icône.
  *
@@ -5206,7 +5207,7 @@ const TEMPLATE$h = h(HTMLBnumIcon, { id: ID_ICON$2, children: h('slot', {}) });
  */
 let HTMLBnumButtonIcon = (() => {
   let _classDecorators = [
-    Define({ styles: style$r, tag: TAG_ICON_BUTTON, template: TEMPLATE$h }),
+    Define({ styles: style$s, tag: TAG_ICON_BUTTON, template: TEMPLATE$i }),
     Observe('click'),
   ];
   let _classDescriptor;
@@ -5441,9 +5442,9 @@ let HTMLBnumButtonIcon = (() => {
   return (HTMLBnumButtonIcon = _classThis);
 })();
 
-var css_248z$s =
+var css_248z$t =
   '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host(:state(variation-info)){--_alert-color:var(--bnum-alert-info-color,#0063cb)}:host(:state(variation-success)){--_alert-color:var(--bnum-alert-success-color,#18753c)}:host(:state(variation-warning)){--_alert-color:var(--bnum-alert-warning-color,#d64d00)}:host(:state(variation-error)){--_alert-color:var(--bnum-alert-error-color,var(--bnum-color-danger,#ce0500))}:host(:state(variation-custom)){--_alert-color:var(--bnum-alert-custom-color,var(--bnum-color-primary,#000091))}:host{--_alert-color:var(--bnum-alert-info-color,#0063cb);display:block}.alert{align-items:stretch;background:var(--bnum-alert-background,var(--bnum-color-background,#fff));border:1px solid var(--_alert-color);display:flex}.alert__icon{align-items:center;background:var(--_alert-color);box-sizing:border-box;color:var(--bnum-alert-icon-color,#fff);display:flex;flex:none;justify-content:center;width:var(--bnum-alert-icon-size,2.5rem)}.alert__icon bnum-icon{--bnum-icon-font-size:1.5rem}.alert__content{flex:1;padding:var(--bnum-space-m,15px)}.alert__title{display:none;font-size:var(--bnum-font-size-text-m,1rem);font-weight:700;margin:0 0 var(--bnum-space-xs,5px)}:host(:has([slot=title])) .alert__title{display:block}.alert__description{font-size:var(--bnum-font-size-text-s,.875rem)}.alert__close{align-self:flex-start;display:none;flex:none;margin:var(--bnum-space-xs,5px)}:host([closable]) .alert__close{display:block}';
-var style$q = css_248z$s;
+var style$r = css_248z$t;
 
 const ATTR_VARIATION$1 = 'data-variation';
 const ATTR_ICON$1 = 'data-icon';
@@ -5469,7 +5470,7 @@ const VARIATION_ICONS = {
 const ASSERTIVE_VARIATIONS = ['warning', 'error'];
 
 //#region Template
-const TEMPLATE$g = h('div', {
+const TEMPLATE$h = h('div', {
   class: CLASS_ALERT,
   part: CLASS_ALERT,
   children: [
@@ -5556,7 +5557,7 @@ const TEMPLATE$g = h('div', {
  */
 let HTMLBnumAlert = (() => {
   let _classDecorators = [
-    Define({ tag: TAG_ALERT, styles: style$q, template: TEMPLATE$g }),
+    Define({ tag: TAG_ALERT, styles: style$r, template: TEMPLATE$h }),
     UpdateAll(),
     Observe([ATTR_VARIATION$1, ATTR_ICON$1]),
   ];
@@ -5994,9 +5995,9 @@ let HTMLBnumAlertCustom = (() => {
   return _classThis;
 })();
 
-var css_248z$r =
+var css_248z$s =
   '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{border-radius:var(--bnum-badge-border-radius,100px);display:var(--bnum-badge-display,inline-block);padding:var(--bnum-badge-padding,var(--bnum-space-xs,5px))}:host(:state(is-circle)){aspect-ratio:1;border-radius:var(--bnum-badge-circle-border-radius,100%)}:host(:state(is-circle)) span{align-items:center;display:flex;height:100%;justify-content:center}:host(:state(variation-primary)){background-color:var(--bnum-badge-primary-color,var(--bnum-color-primary,#000091));color:var(--bnum-badge-primary-text-color,var(--bnum-text-on-primary,#f5f5fe))}:host(:state(variation-secondary)){background-color:var(--bnum-badge-secondary-color,var(--bnum-color-secondary,#3a3a3a));color:var(--bnum-badge-secondary-text-color,var(--bnum-text-on-secondary,#fff))}:host(:state(variation-secondary)){border:var(--bnum-badge-type,solid) var(--bnum-badge-size,thin) var(--bnum-badge-secondary-text-color,var(--bnum-text-on-secondary,#fff))}:host(:state(variation-danger)){background-color:var(--bnum-badge-danger-color,var(--bnum-color-danger,#ce0500));color:var(--bnum-badge-danger-text-color,var(--bnum-text-on-danger,#f5f5fe))}';
-var style$p = css_248z$r;
+var style$q = css_248z$s;
 
 //#endregion Types
 //#region Global constants
@@ -6060,7 +6061,7 @@ const STATE_VARIATION_PREFIX = 'variation-';
 let HTMLBnumBadge = (() => {
   let _classDecorators = [
     Define({
-      styles: style$p,
+      styles: style$q,
       tag: TAG_BADGE,
     }),
     UpdateAll(),
@@ -6224,6 +6225,239 @@ let HTMLBnumBadge = (() => {
     static Write(value, attrs = {}) {
       const attributes = this._p_WriteAttributes(attrs);
       return `<${this.TAG} ${ATTR_VALUE}="${value}" ${attributes}></${this.TAG}>`;
+    }
+  });
+  return _classThis;
+})();
+
+var css_248z$r =
+  '@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{display:inline-block}.Cerbere{align-items:flex-start;display:flex;flex-direction:column;gap:var(--bnum-cerbere-button-gap,12px)}.Button{align-items:center;background-color:var(--bnum-cerbere-button-background-color,var(--bnum-color-primary,#000091));box-sizing:border-box;color:var(--bnum-cerbere-button-color,var(--bnum-text-on-primary,#f5f5fe));display:flex;font-family:Inter,var(--bnum-font-family-primary,Arial,sans-serif);gap:12px;justify-content:center;min-height:56px;min-width:204px;padding:4px 12px;text-decoration:none}.Button:hover{background-color:var(--bnum-cerbere-button-hover-background-color,#1212ff)}.Button:active{background-color:var(--bnum-cerbere-button-active-background-color,#2e2eff)}.Button .Link:focus-visible,.Button:focus-visible{outline:2px solid var(--bnum-cerbere-button-link-color,var(--bnum-color-primary,#000091));outline-offset:2px}.Logo{flex:none;height:48px;width:40px}.Label{align-items:center;display:flex;flex-direction:column;text-align:center}.Prefix{font-size:17px;font-weight:400;line-height:17px}.Name{font-size:18px;font-weight:700;line-height:18px}.Link{align-items:center;border-bottom:.875px solid var(--bnum-cerbere-button-link-color,var(--bnum-color-primary,#000091));color:var(--bnum-cerbere-button-link-color,var(--bnum-color-primary,#000091));display:inline-flex;font-family:"Open Sans",var(--bnum-font-family-primary,Arial,sans-serif);font-size:14px;gap:8px;line-height:24px;padding-bottom:0;text-decoration:none}.LinkIcon{font-size:16px;height:16px;width:16px}';
+var style$p = css_248z$r;
+
+const ID_BUTTON = 'cerbere-button';
+const ID_LINK = 'cerbere-link';
+const SLOT_LABEL = 'label';
+const SLOT_LINK = 'link';
+const TEXT_PREFIX = 'S’identifier avec';
+const TEXT_NAME = 'Cerbère';
+const TEXT_LINK = 'Qu’est-ce que Cerbère ?';
+const TEXT_LINK_TITLE = ' - nouvelle fenêtre';
+const ICON_EXTERNAL = 'open_in_new';
+const ATTR_HREF = 'data-href';
+const ATTR_INFO_URL = 'data-info-url';
+const DEFAULT_HREF = '#';
+const DEFAULT_INFO_URL = '#';
+const EVENT_CLICK$2 = 'bnum-cerbere-button:click';
+/** Cerbère logo (technical base component: do not alter). */
+const LOGO_DATA_URI =
+  "data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 48'%3E%3Cpath fill='%232a2f82' d='M34.965 15.1 19.971 6.423 4.977 15.184a.606.606 0 0 0-.306.524v16.948a.666.666 0 0 0 .306.524l14.992 8.6 14.994-8.706a.665.665 0 0 0 .306-.524V15.628a.605.605 0 0 0-.304-.528Z'/%3E%3Cpath fill='%23df1f26' d='m14.614 15.6-5.029 8.628-4.557-9.175 5.39-3.113 4.489 3.16ZM35.27 32.58V15.622a.6.6 0 0 0-.306-.523L19.971 6.423'/%3E%3Cpath fill='%232e65b0' d='m4.673 32.58 15.3-26.157v35.362L4.977 33.18a.666.666 0 0 1-.306-.524V15.708Zm24.669-20.735L34.8 15l-4.489 9.15-5.387-9.236Z'/%3E%3Cpath fill='%23fff' d='m39.606 12.305-19.19-11.02a.933.933 0 0 0-.832 0L.394 12.305A.886.886 0 0 0 0 13v22a.886.886 0 0 0 .394.7l19.189 11.02a.933.933 0 0 0 .832 0L39.606 35.7A.886.886 0 0 0 40 35V13a.886.886 0 0 0-.394-.695ZM10.762 30.061h.079c-.042 0-.079.007-.079.05 0 .1.151 0 .2.1a.912.912 0 0 0-.629.276c0 .051.1.051.151.051-.075.1-.226.05-.277.151a.177.177 0 0 0 .1.05c-.05 0-.1 0-.1.051v.151c-.126 0-.176.1-.277.151.2.151.327 0 .528 0-.528.2-.956.478-1.484.629-.1 0 0 .151-.1.151.151.1.227-.05.377-.05-.654.377-1.333.7-2.037 1.132a.351.351 0 0 0-.1.2h-.2c-.1.05-.05.176-.151.277.226.151.5-.2.654 0 .05 0-.1.05-.2.05-.05 0-.05.1-.1.1h-.154c-.1.075-.2.126-.2.276a.219.219 0 0 0-.226.1 9.034 9.034 0 0 0 3.144-.578 7.685 7.685 0 0 0 2.088-1.559.176.176 0 0 1 .05.1 2.168 2.168 0 0 1-.806 1.08c-.277.151-.478.377-.7.478a4.045 4.045 0 0 0-.428.276 10.761 10.761 0 0 1-1.939.412l-.305.044c-.225.033-.449.069-.671.108L4.977 33.18a.648.648 0 0 1-.288-.411.574.574 0 0 0 .094-.063.265.265 0 0 0-.113-.071v-.65a12.786 12.786 0 0 0 3.038-.942A8.746 8.746 0 0 0 4.671 29.7v-1.515a11.662 11.662 0 0 1 1.639.392 6.415 6.415 0 0 1 1.182.578 3.113 3.113 0 0 0 .478.377.91.91 0 0 0 .8.05h.33a3.961 3.961 0 0 0 1.937-.905c0 .05.05.05.1.05a3.63 3.63 0 0 1-.428 1.132c.003.051-.048.152.053.202Zm2.817 3.571c.251-.1.4-.277.629-.377-.05.05-.05.151-.1.2a3.691 3.691 0 0 0-.528.4 15.96 15.96 0 0 0-1.585 1.61c-.252.3-.528.578-.8.855a2.385 2.385 0 0 1-.31.245l-2.527-1.45a4.047 4.047 0 0 0 1.076-.053 4.984 4.984 0 0 0 .855-.327v.1c.7-.277 1.232-.906 1.937-1.132.025 0 .126.1.226.05a1.883 1.883 0 0 1 1.509-.7c0 .05 0 .1.05.1h.025c-.151.126-.327.251-.5.377-.057.052-.007.102.043.102Zm-8.908-6.164v-.186a5.814 5.814 0 0 1 1.588-.188 1.52 1.52 0 0 1 .478 0 5.861 5.861 0 0 0-2.066.374Zm30.6 5.088a.665.665 0 0 1-.306.524l-10.079 5.851a32.3 32.3 0 0 1-3.408-1.185 2.826 2.826 0 0 1-.05-2.245 3.794 3.794 0 0 1 .352-.883c.025-.025.05-.05.05-.076a.025.025 0 0 0 .025-.025 4.316 4.316 0 0 1 .377-.555l.015-.015.02-.021.015-.015c0-.025.025-.05.05-.076.025-.051.075-.076.1-.126a3.771 3.771 0 0 1 .579-.5 4.07 4.07 0 0 1 .654-.177 19.817 19.817 0 0 1 2.415.328.751.751 0 0 1 .277.1 1.849 1.849 0 0 0 .905-.05 1.137 1.137 0 0 0 .855-.706 1.212 1.212 0 0 0 .05-1.059c-.178-.276-.013-.437.181-.59l.068-.055a1.17 1.17 0 0 0 .231-.216c.126-.252-.1-.4-.151-.63-.05-.1-.226-.05-.327-.2.352-.151.855-.429.629-.857-.151-.227-.377-.63-.1-.857.352-.2.855-.151 1.006-.479a1.138 1.138 0 0 0-.292-1.085l-.075-.108a4.754 4.754 0 0 1-.211-.32 6.914 6.914 0 0 0-.528-.757 4.3 4.3 0 0 1-.528-1.009c-.151-.378.05-.706.05-1.084a6.347 6.347 0 0 0-.327-2.144c-.126-.353-.176-.731-.327-1.059a1.12 1.12 0 0 0-.226-.58.375.375 0 0 1 0-.328 4.874 4.874 0 0 0 .579-.479.567.567 0 0 0-.2-.706c-.327-.151-.3.328-.528.429h-.151c-.05-.126.05-.177.151-.277 0-.05 0-.151-.05-.151-.2 0-.377-.051-.428-.151a3.957 3.957 0 0 0-1.861-1.286 2.319 2.319 0 0 0 .579.1 1.67 1.67 0 0 0 1.006-.1c.227-.076.277-.479.377-.706a.8.8 0 0 0-.151-.631 2.189 2.189 0 0 0-.906-.756 9.13 9.13 0 0 1-.679-.353.952.952 0 0 0-.251-.126c-2.965-1.485-9.069-.2-9.534 0h-.009a8.244 8.244 0 0 0-1.249.475 3.922 3.922 0 0 0-2.365 2.465 3.829 3.829 0 0 0-1.333 1.509c-.428.8-1.056 1.509-.956 2.414.1.78.277 1.484.428 2.289a4.668 4.668 0 0 0 .2.8c.1.276 0 .629.151.855.075.151.025.327.227.428v.2c.05.05.05.1.151.1v.2a6.446 6.446 0 0 1 1.107 1.434c.1.276-.478.151-.7.05a5.979 5.979 0 0 1-1.132-.956.175.175 0 0 0-.051.1c.2.352.906.78.528 1.006-.2.1-.428-.151-.629.051-.05.075 0 .176 0 .276-.277-.2-.578-.1-.855-.2-.2-.05-.252-.427-.478-.427a15.162 15.162 0 0 0-1.811-.327 15.137 15.137 0 0 0-1.739-.159V15.708a.606.606 0 0 1 .306-.524l14.987-8.761L34.965 15.1a.605.605 0 0 1 .306.524Zm-7.954-8.261a.325.325 0 0 1-.282.149 2.843 2.843 0 0 0-.282.273c.1 0 0 .149.1.149-.205.223.077.694-.205.793a2.176 2.176 0 0 1-1.127 0 .722.722 0 0 1 .167-.016h.085a.382.382 0 0 0 .337-.132v-.2c0-.05-.051-.05-.1-.05a.161.161 0 0 1-.1.05.223.223 0 0 0-.154-.2.807.807 0 0 1-.718-.273.67.67 0 0 1 .436-.05c.128 0 .077-.223.231-.322h.154c.307-.372.871-.471.974-.843 0-.1-.282-.1-.487-.149a2.259 2.259 0 0 0-.82.05 4.65 4.65 0 0 0-1.051.273 3.225 3.225 0 0 1 .923-.471 3.886 3.886 0 0 1 .718-.2l.132-.026.133-.027a.971.971 0 0 1 .556 0c.231.1.615.1.666.248.1.273-.154.545-.435.744-.057.081.148.135.148.23Z'/%3E%3C/svg%3E";
+
+//#region Template
+const TEMPLATE$g = h('div', {
+  class: 'Cerbere',
+  part: 'container',
+  children: [
+    h('a', {
+      id: ID_BUTTON,
+      class: 'Button',
+      part: 'button',
+      href: DEFAULT_HREF,
+      children: [
+        h('img', { class: 'Logo', part: 'logo', src: LOGO_DATA_URI, alt: '' }),
+        h('span', {
+          class: 'Label',
+          part: 'label',
+          children: h('slot', {
+            name: SLOT_LABEL,
+            children: [
+              h('span', { class: 'Prefix', children: TEXT_PREFIX }),
+              h('span', { class: 'Name', children: TEXT_NAME }),
+            ],
+          }),
+        }),
+      ],
+    }),
+    h('a', {
+      id: ID_LINK,
+      class: 'Link',
+      part: 'link',
+      href: DEFAULT_INFO_URL,
+      target: '_blank',
+      rel: 'noopener noreferrer',
+      title: `${TEXT_LINK}${TEXT_LINK_TITLE}`,
+      children: [
+        h('span', {
+          class: 'LinkLabel',
+          children: h('slot', { name: SLOT_LINK, children: TEXT_LINK }),
+        }),
+        h(HTMLBnumIcon, {
+          class: 'LinkIcon',
+          'aria-hidden': 'true',
+          children: ICON_EXTERNAL,
+        }),
+      ],
+    }),
+  ],
+});
+//#endregion Template
+/**
+ * Bouton « S'identifier avec Cerbère », indissociable de son lien « Qu'est-ce que Cerbère ? ».
+ *
+ * @category Authentification
+ *
+ * @structure Basique
+ * <bnum-cerbere-button data-href="/auth/cerbere" data-info-url="https://example.org/cerbere"></bnum-cerbere-button>
+ *
+ * @structure Textes personnalisés
+ * <bnum-cerbere-button data-href="/auth/cerbere">
+ *   <span slot="label">Se connecter</span>
+ *   <span slot="link">En savoir plus</span>
+ * </bnum-cerbere-button>
+ *
+ * @slot label - Contenu du bouton (remplace « S'identifier avec Cerbère »).
+ * @slot link - Texte du lien d'information (remplace « Qu'est-ce que Cerbère ? »).
+ *
+ * @event {CustomEvent<{ caller: HTMLBnumCerbereButton; event: MouseEvent }>} bnum-cerbere-button:click - Clic sur le bouton. Si `data-href` est absent, la navigation est annulée.
+ *
+ * @attr {string} (optional) data-href - URL d'authentification Cerbère.
+ * @attr {string} (optional) data-info-url - URL de la page « Qu'est-ce que Cerbère ? » (ouverte dans un nouvel onglet).
+ *
+ * @cssvar {#000091} --bnum-cerbere-button-background-color - Couleur de fond du bouton.
+ * @cssvar {#f5f5fe} --bnum-cerbere-button-color - Couleur du texte du bouton.
+ * @cssvar {#1212ff} --bnum-cerbere-button-hover-background-color - Couleur de fond au survol.
+ * @cssvar {#2e2eff} --bnum-cerbere-button-active-background-color - Couleur de fond à l'appui.
+ * @cssvar {#000091} --bnum-cerbere-button-link-color - Couleur du lien d'information.
+ * @cssvar {12px} --bnum-cerbere-button-gap - Espacement entre le bouton et le lien.
+ */
+let HTMLBnumCerbereButton = (() => {
+  let _classDecorators = [
+    Define({ tag: TAG_CERBERE_BUTTON, styles: style$p, template: TEMPLATE$g }),
+  ];
+  let _classDescriptor;
+  let _classExtraInitializers = [];
+  let _classThis;
+  let _classSuper = BnumElement;
+  let _private__ui_decorators;
+  let _private__ui_initializers = [];
+  let _private__ui_extraInitializers = [];
+  let _private__ui_descriptor;
+  (class extends _classSuper {
+    static {
+      _classThis = this;
+    }
+    static {
+      const _metadata =
+        typeof Symbol === 'function' && Symbol.metadata
+          ? Object.create(_classSuper[Symbol.metadata] ?? null)
+          : void 0;
+      _private__ui_decorators = [
+        UI({
+          button: `#${ID_BUTTON}`,
+          link: `#${ID_LINK}`,
+        }),
+      ];
+      __esDecorate(
+        this,
+        (_private__ui_descriptor = {
+          get: __setFunctionName(
+            function () {
+              return this.#_ui_accessor_storage;
+            },
+            '#_ui',
+            'get',
+          ),
+          set: __setFunctionName(
+            function (value) {
+              this.#_ui_accessor_storage = value;
+            },
+            '#_ui',
+            'set',
+          ),
+        }),
+        _private__ui_decorators,
+        {
+          kind: 'accessor',
+          name: '#_ui',
+          static: false,
+          private: true,
+          access: {
+            has: (obj) => #_ui in obj,
+            get: (obj) => obj.#_ui,
+            set: (obj, value) => {
+              obj.#_ui = value;
+            },
+          },
+          metadata: _metadata,
+        },
+        _private__ui_initializers,
+        _private__ui_extraInitializers,
+      );
+      __esDecorate(
+        null,
+        (_classDescriptor = { value: _classThis }),
+        _classDecorators,
+        { kind: 'class', name: _classThis.name, metadata: _metadata },
+        null,
+        _classExtraInitializers,
+      );
+      _classThis = _classDescriptor.value;
+      if (_metadata)
+        Object.defineProperty(_classThis, Symbol.metadata, {
+          enumerable: true,
+          configurable: true,
+          writable: true,
+          value: _metadata,
+        });
+      __runInitializers(_classThis, _classExtraInitializers);
+    }
+    #_ui_accessor_storage = __runInitializers(
+      this,
+      _private__ui_initializers,
+      void 0,
+    );
+    //#region Private fields
+    get #_ui() {
+      return _private__ui_descriptor.get.call(this);
+    }
+    set #_ui(value) {
+      return _private__ui_descriptor.set.call(this, value);
+    }
+    //#endregion Private fields
+    //#region Lifecycle
+    constructor() {
+      super();
+      __runInitializers(this, _private__ui_extraInitializers);
+    }
+    _p_buildDOM() {
+      this.#_ui.button.addEventListener('click', (e) =>
+        this.#_onButtonClick(e),
+      );
+      this.#_syncUrls();
+    }
+    //#endregion Lifecycle
+    //#region Private Methods
+    #_onButtonClick(event) {
+      // Without URL the button only emits an event: avoid jumping to '#'.
+      if (!this.getAttribute(ATTR_HREF)) event.preventDefault();
+      this.trigger(EVENT_CLICK$2, { caller: this, event });
+    }
+    #_syncUrls() {
+      const href = this.getAttribute(ATTR_HREF);
+      const infoUrl = this.getAttribute(ATTR_INFO_URL);
+      if (href) this.#_ui.button.href = href;
+      if (infoUrl) this.#_ui.link.href = infoUrl;
+    }
+    //#endregion Private Methods
+    //#region Static Methods
+    /**
+     * Crée un bouton Cerbère.
+     * @param options URL d'authentification et URL d'information.
+     */
+    static Create({ href, infoUrl } = {}) {
+      const element = document.createElement(this.TAG);
+      return element
+        .condAttr(href !== undefined, ATTR_HREF, href)
+        .condAttr(infoUrl !== undefined, ATTR_INFO_URL, infoUrl);
     }
   });
   return _classThis;
@@ -24840,7 +25074,7 @@ let HTMLBnumColumn = (() => {
     /**
      * Indique si le corps de la colonne doit être conservé lors de certaines opérations.
      *
-     * Rappel: data- ne sert qu'à stocker des informations avant la création du composant.
+     * Rappel: da<ta- ne sert qu'à stocker des informations avant la création du composant.
      */
     get #_keepBody() {
       return this.data(ATTRIBUTES.DATA.KEEP_BODY) === 'true';
@@ -25021,6 +25255,7 @@ export {
   HTMLBnumCardItemMail,
   HTMLBnumCardList,
   HTMLBnumCardTitle,
+  HTMLBnumCerbereButton,
   HTMLBnumColumn,
   HTMLBnumDangerButton,
   HTMLBnumDate,

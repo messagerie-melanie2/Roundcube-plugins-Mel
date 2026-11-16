@@ -8,16 +8,13 @@
  *   1. espacements réduits (aucun texte touché) ;
  *   2. titre réduit ;
  *   3. baseline décorative retirée ;
- *   4. Cerbère et identifiant côte à côte (conservé seulement si utile),
- *      puis étapes 1 et 2 de nouveau ;
- *   5. dernier recours : réduction proportionnelle (`transform: scale`).
+ *   4. dernier recours : réduction proportionnelle (`transform: scale`).
  * Sans JavaScript, la page garde son comportement normal (scroll possible).
  */
 (() => {
   const FORM_ID = 'mel-login-form';
   const ACTIVE_CLASS = 'login-fit-active';
   const NO_BASELINE_CLASS = 'login-fit-no-baseline';
-  const COLUMNS_CLASS = 'login-fit-columns';
   const SPACE_VAR = '--login-fit-space';
   const TITLE_MAX_SHRINK = 0.45;
   const MIN_SCALE = 0.5;
@@ -116,19 +113,6 @@
   };
 
   /**
-   * Garde l'étape colonnes seulement si elle réduit la hauteur sans déborder.
-   *
-   * @param {HTMLElement} form - Conteneur du formulaire
-   * @param {number} height_before - Hauteur avant l'étape
-   * @returns {boolean} Vrai si l'étape est conservée
-   */
-  const keep_columns = (form, height_before) => {
-    const rect = form.getBoundingClientRect();
-
-    return rect.right <= window.innerWidth && content_box(form).height < height_before;
-  };
-
-  /**
    * Réduit proportionnellement le formulaire (dernier recours).
    *
    * @param {HTMLElement} form - Conteneur du formulaire (sans transformation)
@@ -150,7 +134,7 @@
 
   const reset = (form, title) => {
     root.classList.add(ACTIVE_CLASS);
-    root.classList.remove(NO_BASELINE_CLASS, COLUMNS_CLASS);
+    root.classList.remove(NO_BASELINE_CLASS);
     root.style.removeProperty(SPACE_VAR);
     form.style.transform = '';
     title.style.fontSize = '';
@@ -170,14 +154,6 @@
 
     root.classList.add(NO_BASELINE_CLASS);
     if (compact(form, shrink_title)) return;
-
-    const height_before = content_box(form).height;
-    root.classList.add(COLUMNS_CLASS);
-    if (!keep_columns(form, height_before)) {
-      root.classList.remove(COLUMNS_CLASS);
-    } else if (compact(form, shrink_title)) {
-      return;
-    }
 
     apply_scale(form);
   };

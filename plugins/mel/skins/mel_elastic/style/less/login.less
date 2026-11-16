@@ -6,6 +6,13 @@
     margin-bottom: var(--bnum-space-s, 10px);
   }
 
+  // Titre principal : interligne et marges maîtrisés, sinon les deux lignes
+  // (séparées par un <br />) s'espacent selon les styles hérités du thème.
+  .login-title h1 {
+    margin: 0;
+    line-height: 1.25;
+  }
+
   // Titres des deux cartes (le titre principal et la baseline restent normaux).
   .login-columns h3 {
     font-weight: bold;
@@ -77,6 +84,13 @@ html.layout-phone,
 html.layout-small {
   #mel-login-form {
     max-width: 100%;
+  }
+
+  // Espacement interne de la carte (variable exposée par le design system).
+  // Horizontal fixe : login_fit.js compacte --bnum-space-* quand la page ne
+  // tient pas, ce qui collerait le contenu aux bords. Seul le vertical se compacte.
+  #mel-login-form bnum-card {
+    --bnum-card-padding: var(--bnum-space-l, 20px) 20px;
   }
 
   .login-columns {

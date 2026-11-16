@@ -106,7 +106,8 @@ $labels['error_block'] = 'Echec de connexion, votre compte est bloqué';
 $labels['computer_private'] = 'Faire confiance à cet ordinateur';
 $labels['device_private'] = 'Faire confiance à cet ordinateur';
 $labels['computer_private_title'] = 'Le nom d\'utilisateur ainsi que les codes de double authentification ne vous seront plus demandés lors de vos prochaines connexions depuis cet ordinateur, \nNe cochez pas cette case s\'il s\'agit d\'un ordinateur public.';
-$labels['change_user'] = 'Changer d\'utilisateur';
+$labels['login_username_hint'] = 'Rentrez votre nom d\'utilisateur ou votre adresse email si vous êtes un externe';
+$labels['change_user'] ='Changer d\'utilisateur';
 
 $labels['login from'] = "Connexion depuis : ";
 $labels['login_productioninformation'] = "Plateforme de communication réservée aux agents des ministères";

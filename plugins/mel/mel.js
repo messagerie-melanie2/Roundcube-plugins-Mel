@@ -22,6 +22,12 @@ $(document).on(
   '#rcmchangeuserbutton',
 ); //pass the element as an argument to .on
 
+// Skin mel_elastic : le bouton du design system déclenche le bouton submit natif (masqué),
+// car les boutons DS ne gèrent pas type=submit.
+$(document).on('click', '#rcmloginsubmit_ds', function () {
+  $('#rcmloginsubmit').trigger('click');
+});
+
 if (window.rcmail) {
   rcmail.addEventListener('init', function (evt) {
     // Initialisation de la liste des pages chargées

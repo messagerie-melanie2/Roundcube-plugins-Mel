@@ -167,6 +167,12 @@ class mel extends rcube_plugin
       $this->rc->output->include_script('treelist.js');
     }
 
+    {
+      $isLogPage = $this->rc->task === 'login' || $this->rc->task === 'logout';
+      $isLogActionIndex = $this->rc->action === '' || $this->rc->action === 'index'; 
+      if ($isLogPage && $isLogActionIndex) $this->include_stylesheet($this->local_skin_path() . '/style/login.css');
+    }
+
     // Définition du host
     $http_host = $this->rc->config->get('http_host');
     if (isset($http_host)) {
@@ -765,6 +771,12 @@ class mel extends rcube_plugin
     } else {
       if (mel_logs::is(mel_logs::DEBUG))
         mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::login_form()");
+
+      // mel_elastic : le rendu vient du template login_form.html
+      if ($this->rc->config->get('skin') === 'mel_elastic') {
+        return $this->login_form_dwp($args);
+      }
+
       if (isset($_POST['_user']))
         $username = trim(rcube_utils::get_input_value('_user', rcube_utils::INPUT_POST));
       else
@@ -935,6 +947,69 @@ class mel extends rcube_plugin
         }
       }
     }
+
+    return $args;
+  }
+
+  /**
+   * Génère le formulaire de login de la skin mel_elastic à partir du template `mel.login_form`.
+   *
+   * Les valeurs dynamiques sont transmises au template via `rcmail.env` (noms en underscores).
+   * Si le template est introuvable, le contenu existant est conservé.
+   *
+   * @param array<string, mixed> $args Arguments du hook `template_object_loginform`
+   *
+   * @return array<string, mixed> Arguments avec `content` rempli
+   */
+  private function login_form_dwp(array $args): array
+  {
+    $hide_keep_login = (bool) $this->rc->config->get('hide_keep_login_button', false);
+
+    $username = trim((string) rcube_utils::get_input_value('_user', rcube_utils::INPUT_POST));
+    $keep_login = false;
+    $hide_login_inputs = false;
+
+    // Si le cookie est présent on modifie l'interface
+    if (!$hide_keep_login) {
+      if (isset($_COOKIE['roundcube_login'])) {
+        $login = explode('###', $_COOKIE['roundcube_login']);
+        if ($username === '') {
+          $username = $login[0];
+        }
+        $keep_login = true;
+        $hide_login_inputs = true;
+      } else if (isset($_POST['_keeplogin'])) {
+        $keep_login = true;
+      }
+    }
+
+    // URL d'origine à restaurer après connexion
+    $url = rcube_utils::get_input_value('_url', rcube_utils::INPUT_POST);
+    if (empty($url) && !preg_match('/_(task|action)=logout/', $_SERVER['QUERY_STRING'] ?? '')) {
+      $url = $_SERVER['QUERY_STRING'] ?? '';
+    }
+
+    $external_users = (bool) $this->rc->config->get('enable_external_users', false);
+
+    $this->rc->output->set_env('login_user', $username);
+    $this->rc->output->set_env('login_url', (string) $url);
+    $this->rc->output->set_env('login_show_keep', !$hide_keep_login);
+    $this->rc->output->set_env('login_keep_checked', $keep_login);
+    $this->rc->output->set_env('login_hide_inputs', $hide_login_inputs);
+    $this->rc->output->set_env('login_external', $external_users);
+    $this->rc->output->set_env('login_show_no_bal', !$external_users
+      && $this->rc->config->get('show_no_bal_message', true)
+      && mel::is_internal());
+
+    // just_parse() plutôt que parse() : ce dernier modifie template_name/skin_path/base_path
+    // de la page de login en cours de rendu.
+    $template = file_get_contents(__DIR__ . '/skins/mel_elastic/templates/login_form.html');
+    if ($template === false) {
+      mel_logs::gi()->l(mel_logs::ERROR, '[login] Template login_form.html introuvable');
+      return $args;
+    }
+
+    $args['content'] = $this->rc->output->just_parse($template);
 
     return $args;
   }

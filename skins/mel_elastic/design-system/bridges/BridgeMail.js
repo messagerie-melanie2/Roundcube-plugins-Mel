@@ -3,7 +3,6 @@ import { BnumLog } from '../../../../plugins/mel_metapage/js/lib/classes/bnum_lo
 import { MelEnumerable } from '../../../../plugins/mel_metapage/js/lib/classes/enum.js';
 import { EMPTY_STRING } from '../../../../plugins/mel_metapage/js/lib/constants/constants.js';
 import { AvatarElement } from '../../../../plugins/mel_metapage/js/lib/html/JsHtml/CustomAttributes/avatar.js';
-import { MelObject } from '../../../../plugins/mel_metapage/js/lib/mel_object.js';
 import {
   DsCssProperty,
   DsCssRule,
@@ -113,26 +112,24 @@ const ROW_ACTIONS = [
       e.stopPropagation();
       e.preventDefault();
 
-      const helper = ABaseMelObject.Empty();
-      const selectedCount = helper.rcmail().message_list.get_selection().length;
+      const rcmail = ABaseMelObject.Empty().rcmail();
+      const list = rcmail.message_list;
       const isSelected = this.classList.contains('selected');
-      const wouldDeleteOthers =
-        selectedCount >= 1 && !(isSelected && selectedCount === 1);
 
-      if (
-        wouldDeleteOthers &&
-        !confirm(
-          'Vous allez supprimer plusieurs autres messages avec celui-ci, êtes-vous sûr ?',
-        )
-      ) {
-        return;
+      if (isSelected) {
+        // la ligne est sélectionnée : on supprime toute la sélection
+        // pop-up de confirmation si d'autres messages sont sélectionnés
+        if (list.get_selection().length > 1 && !confirm('Vous allez supprimer plusieurs autres messages avec celui-ci, êtes-vous sûr ?')) return;
+      } else {
+        // La ligne n'est pas sélectionnée : on ne supprime qu'elle
+        // remplace la sélection par cette ligne
+        rcmail.dummy_select = true;
+        list.select(this.uid ?? list.get_row_uid(this));
+        rcmail.dummy_select = null;
+        clearTimeout(rcmail.preview_timer);
       }
 
-      if (!isSelected) {
-        ignoreCapture(document.querySelector(`#action-of-${this.id}`))?.click();
-      }
-
-      helper.rcmail().delete_messages(e);
+      rcmail.delete_messages(e);
     },
   },
 ];

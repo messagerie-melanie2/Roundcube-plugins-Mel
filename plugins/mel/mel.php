@@ -169,7 +169,7 @@ class mel extends rcube_plugin
 
     {
       $isLogPage = $this->rc->task === 'login' || $this->rc->task === 'logout';
-      $isLogActionIndex = $this->rc->action === '' || $this->rc->action === 'index'; 
+      $isLogActionIndex = $this->rc->action === '' || $this->rc->action === 'index' || $this->rc->action === 'login'; 
       if ($isLogPage && $isLogActionIndex) {
         $this->include_stylesheet($this->local_skin_path() . '/style/login.css');
         $this->include_script('login_fit.js');

@@ -1754,6 +1754,51 @@ export declare class HTMLBnumButton extends BnumElementInternal {
 		loading?: boolean;
 	}): HTMLBnumButton;
 }
+export type BnumCerbereButtonCreateOptions = {
+	/** URL d'authentification Cerbère. */
+	href?: string;
+	/** URL de la page « Qu'est-ce que Cerbère ? ». */
+	infoUrl?: string;
+};
+/**
+ * Bouton « S'identifier avec Cerbère », indissociable de son lien « Qu'est-ce que Cerbère ? ».
+ *
+ * @category Authentification
+ *
+ * @structure Basique
+ * <bnum-cerbere-button data-href="/auth/cerbere" data-info-url="https://example.org/cerbere"></bnum-cerbere-button>
+ *
+ * @structure Textes personnalisés
+ * <bnum-cerbere-button data-href="/auth/cerbere">
+ *   <span slot="label">Se connecter</span>
+ *   <span slot="link">En savoir plus</span>
+ * </bnum-cerbere-button>
+ *
+ * @slot label - Contenu du bouton (remplace « S'identifier avec Cerbère »).
+ * @slot link - Texte du lien d'information (remplace « Qu'est-ce que Cerbère ? »).
+ *
+ * @event {CustomEvent<{ caller: HTMLBnumCerbereButton; event: MouseEvent }>} bnum-cerbere-button:click - Clic sur le bouton. Si `data-href` est absent, la navigation est annulée.
+ *
+ * @attr {string} (optional) data-href - URL d'authentification Cerbère.
+ * @attr {string} (optional) data-info-url - URL de la page « Qu'est-ce que Cerbère ? » (ouverte dans un nouvel onglet).
+ *
+ * @cssvar {#000091} --bnum-cerbere-button-background-color - Couleur de fond du bouton.
+ * @cssvar {#f5f5fe} --bnum-cerbere-button-color - Couleur du texte du bouton.
+ * @cssvar {#1212ff} --bnum-cerbere-button-hover-background-color - Couleur de fond au survol.
+ * @cssvar {#2e2eff} --bnum-cerbere-button-active-background-color - Couleur de fond à l'appui.
+ * @cssvar {#000091} --bnum-cerbere-button-link-color - Couleur du lien d'information.
+ * @cssvar {12px} --bnum-cerbere-button-gap - Espacement entre le bouton et le lien.
+ */
+export declare class HTMLBnumCerbereButton extends BnumElement {
+	#private;
+	constructor();
+	protected _p_buildDOM(): void;
+	/**
+	 * Crée un bouton Cerbère.
+	 * @param options URL d'authentification et URL d'information.
+	 */
+	static Create({ href, infoUrl, }?: BnumCerbereButtonCreateOptions): HTMLBnumCerbereButton;
+}
 /**
  * Bouton Bnum de type "Danger".
  *
@@ -2123,6 +2168,11 @@ export declare const INPUT_STYLE_STATES: CSSStyleSheet;
  */
 export declare class HTMLBnumInput extends BnumElementInternal {
 	#private;
+	/**
+	 * Permet au composant de participer à la soumission et à la validation
+	 * des formulaires HTML. Sans cela, `setFormValue` échoue silencieusement.
+	 */
+	static readonly formAssociated = true;
 	static readonly SYNCED_ATTRIBUTES: readonly [
 		"pattern",
 		"minlength",
@@ -2832,6 +2882,65 @@ export declare class HTMLBnumInputTime extends HTMLBnumInput {
 	 * @returns {HTMLBnumInputTime} Instance du composant.
 	 */
 	static Create(label: string, options?: BnumInputNumericCreateOptions): HTMLBnumInputNumber;
+}
+/**
+ * Input de nom d'utilisateur.
+ *
+ * Contrairement à `bnum-input`, le vrai `<input>` est créé dans le light DOM
+ * (slotté dans le shadow DOM) : les navigateurs ne proposent pas les noms
+ * d'utilisateur enregistrés pour un champ situé dans un shadow root. Il
+ * participe ainsi nativement au `<form>` parent (`name`, validation, reset).
+ *
+ * @category Input
+ *
+ * @structure Basique
+ * <bnum-input-username>Identifiant</bnum-input-username>
+ *
+ * @structure Avec un indice
+ * <bnum-input-username>
+ * Identifiant
+ * <span slot="hint">Votre adresse mail professionnelle</span>
+ * </bnum-input-username>
+ *
+ * @structure Formulaire de connexion
+ * <form>
+ *   <bnum-input-username>Identifiant</bnum-input-username>
+ *   <bnum-input-password>Mot de passe</bnum-input-password>
+ * </form>
+ *
+ * @slot default - Libellé du champ.
+ * @slot hint - Indice d'utilisation.
+ *
+ * @attr {string} (default: 'username') name - Nom du champ.
+ * @attr {string} (default: 'username') autocomplete - Valeur d'autocomplétion (`username`, `email`...).
+ * @attr {string} data-value - Valeur initiale.
+ * @attr {string} placeholder - Texte indicatif.
+ * @attr {boolean} disabled - Désactive le champ.
+ * @attr {boolean} readonly - Lecture seule.
+ * @attr {boolean} required - Champ requis.
+ * @attr {string} pattern - Expression régulière de validation.
+ * @attr {number} minlength - Longueur minimale.
+ * @attr {number} maxlength - Longueur maximale.
+ * @attr {string} inputmode - Mode de saisie (mobile).
+ * @attr {string} data-pair-password - Sélecteur CSS d'un `bnum-input-password` voisin. Ajoute un champ mot de passe caché dans le même arbre DOM que l'identifiant : Firefox ne rattache pas un champ light DOM à un mot de passe situé dans un shadow root, et ne propose alors aucun identifiant. La valeur remplie par le navigateur est reportée sur le composant cible.
+ *
+ * @fires {InputEvent} input - Émis à la saisie (remonte depuis l'input natif).
+ * @fires {Event} change - Émis au changement de valeur.
+ */
+export declare class HTMLBnumInputUsername extends BnumElement {
+	#private;
+	/**
+	 * Valeur courante du champ.
+	 */
+	get value(): string;
+	set value(val: string);
+	/**
+	 * Input natif (light DOM), `null` tant que le composant n'est pas construit.
+	 */
+	get field(): HTMLInputElement | null;
+	protected _p_getStylesheets(): CSSStyleSheet[];
+	protected _p_buildDOM(): void;
+	protected _p_update(): void;
 }
 /**
  * Composant de substitution transparent qui se comporte comme un `<span>` vide

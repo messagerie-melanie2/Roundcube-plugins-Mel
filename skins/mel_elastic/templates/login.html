@@ -25,12 +25,12 @@
       </center>
     </div>
     <bnum-card
-      data-title-text="Connexion"
+      data-title-text="<roundcube:label name="mel.login_card_title" />"
       data-title-icon="password"
     >
       <div class="login-columns">
         <section>
-          <h3 style="padding-bottom: 0px;margin-bottom: 10px;">Se connecter avec son identifiant</h3>
+          <h3 style="padding-bottom: 0px;margin-bottom: 10px;"><roundcube:label name="mel.login_with_credentials" /></h3>
           <roundcube:form name="form" method="post">
             <roundcube:object
               name="loginform"
@@ -48,11 +48,11 @@
             </bnum-alert-info>
           </div>
         </section>
-        <bnum-divider class="bds-space-s-top">ou</bnum-divider>
-        <div class="login-or-vertical" aria-hidden="true"><span></span>ou<span></span></div>
+        <bnum-divider class="bds-space-s-top"><roundcube:label name="mel.login_or" /></bnum-divider>
+        <div class="login-or-vertical" aria-hidden="true"><span></span><roundcube:label name="mel.login_or" /><span></span></div>
         <section class="bds-space-s-top">
-          <h3 style="padding-bottom: 0px;margin-bottom: 10px;">Se connecter avec Cerbère</h3>
-          <p>Utilisez votre compte Cerbère pour accéder directement à vos outils.</p>
+          <h3 style="padding-bottom: 0px;margin-bottom: 10px;"><roundcube:label name="mel.login_with_cerbere" /></h3>
+          <p><roundcube:label name="mel.login_with_cerbere_description" /></p>
           <center><!-- TODO : remplacer l'URL provisoire de « Qu'est-ce que Cerbère ? » -->
           <bnum-cerbere-button
             id="login-alt-1"

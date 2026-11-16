@@ -107,7 +107,13 @@ $labels['computer_private'] = 'Faire confiance à cet ordinateur';
 $labels['device_private'] = 'Faire confiance à cet ordinateur';
 $labels['computer_private_title'] = 'Le nom d\'utilisateur ainsi que les codes de double authentification ne vous seront plus demandés lors de vos prochaines connexions depuis cet ordinateur, \nNe cochez pas cette case s\'il s\'agit d\'un ordinateur public.';
 $labels['login_username_hint'] = 'Rentrez votre nom d\'utilisateur ou votre adresse email si vous êtes un externe';
-$labels['change_user'] ='Changer d\'utilisateur';
+$labels['login_keep_hint'] = 'Déconseillé sur un poste partagé';
+$labels['login_card_title'] = 'Connexion';
+$labels['login_with_credentials'] = 'Se connecter avec son identifiant';
+$labels['login_with_cerbere'] = 'Se connecter avec Cerbère';
+$labels['login_with_cerbere_description'] = 'Utilisez votre compte Cerbère pour accéder directement à vos outils.';
+$labels['login_or'] = 'ou';
+$labels['change_user'] = 'Changer d\'utilisateur';
 
 $labels['login from'] = "Connexion depuis : ";
 $labels['login_productioninformation'] = "Plateforme de communication réservée aux agents des ministères";

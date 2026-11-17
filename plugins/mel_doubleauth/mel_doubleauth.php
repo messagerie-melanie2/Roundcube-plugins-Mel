@@ -200,7 +200,8 @@ class mel_doubleauth extends bnum_plugin
 
         $this->add_texts('localization', true);
         $this->setup_module();
-        $this->include_script('mel_doubleauth_form.js');
+        //$this->include_script('mel_doubleauth_form.js');
+        $this->include_module('mel_doubleauth_form_v2.js', 'js');
 
 
         $this->rc->output->set_env('double_authentification_adresse_recuperation', driver_mel::gi()->getUser()->double_authentification_adresse_recuperation);

@@ -538,8 +538,8 @@
         type: '',
         input: $(),
         checks: 'empty;already-exist',
-        text_on_error: 'Impossible de changer le paramètre.',
-        text_on_success: 'Paramètre changé avec succès.',
+        text_on_error: 'param_update_error',
+        text_on_success: 'param_update_success',
         action: null,
       },
     ) {
@@ -632,12 +632,18 @@
 
             this.update_home();
 
-            rcmail.display_message(config.text_on_success, 'confirmation');
+            rcmail.display_message(
+              rcmail.gettext(config.text_on_success, 'mel_workspace'),
+              'confirmation',
+            );
           }
         },
         (xhr, ajaxOptions, error) => {
           this.busy(false);
-          rcmail.display_message(config.text_on_error, 'error');
+          rcmail.display_message(
+            rcmail.gettext(config.text_on_error, 'mel_workspace'),
+            'error',
+          );
           console.error(
             '###[update_primary_parameters]',
             error,
@@ -1909,9 +1915,8 @@
           type: 'title',
           input: $title,
           checks: 'empty;already-exist',
-          text_on_error:
-            "Une erreur est survenue.\r\nImpossible de changer le titre de l'espace.",
-          text_on_success: 'Le titre a été changé avec succès.',
+          text_on_error: 'title_update_error',
+          text_on_success: 'title_update_success',
         });
       },
       true,
@@ -1926,9 +1931,8 @@
           type: 'desc',
           input: $input,
           checks: 'already-exist',
-          text_on_error:
-            "Une erreur est survenue.\r\nImpossible de changer la description de l'espace.",
-          text_on_success: 'La description a été changée avec succès.',
+          text_on_error: 'desc_update_error',
+          text_on_success: 'desc_update_success',
           action: (data, config, newValue, empty) => {
             $('#wsp-desc-desc').html(newValue);
             config.input.attr(
@@ -1957,9 +1961,8 @@
           type: 'hashtag',
           input: $input,
           checks: 'already-exist',
-          text_on_error:
-            "Une erreur est survenue.\r\nImpossible de changer la thématique de l'espace.",
-          text_on_success: 'La thématique a été changée avec succès.',
+          text_on_error: 'hashtag_update_error',
+          text_on_success: 'hashtag_update_success',
           action: (data, config, newValue, empty) => {
             let $querry = $('.wsp-head .col-10');
             let $span = $querry.children()[0];

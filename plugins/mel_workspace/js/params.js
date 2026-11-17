@@ -539,7 +539,7 @@
         input: $(),
         checks: 'empty;already-exist',
         text_on_error: 'Impossible de changer le paramètre.',
-        text_on_succes: 'Paramètre changer avec succès.',
+        text_on_success: 'Paramètre changé avec succès.',
         action: null,
       },
     ) {
@@ -632,7 +632,7 @@
 
             this.update_home();
 
-            rcmail.display_message(config.text_on_succes, 'confirmation');
+            rcmail.display_message(config.text_on_success, 'confirmation');
           }
         },
         (xhr, ajaxOptions, error) => {
@@ -1911,7 +1911,7 @@
           checks: 'empty;already-exist',
           text_on_error:
             "Une erreur est survenue.\r\nImpossible de changer le titre de l'espace.",
-          text_on_succes: 'Le titre a été changer avec succès.',
+          text_on_success: 'Le titre a été changé avec succès.',
         });
       },
       true,
@@ -1928,12 +1928,12 @@
           checks: 'already-exist',
           text_on_error:
             "Une erreur est survenue.\r\nImpossible de changer la description de l'espace.",
-          text_on_succes: 'la description a été changer avec succès.',
+          text_on_success: 'La description a été changée avec succès.',
           action: (data, config, newValue, empty) => {
             $('#wsp-desc-desc').html(newValue);
             config.input.attr(
               'placeholder',
-              newValue === empty ? 'Nouvelle description....' : newValue,
+              newValue === empty ? 'Nouvelle description…' : newValue,
             );
             rcmail.env.WSP_Param.paramUpdated($('#wsp-param-btn-desc'), empty);
           },
@@ -1959,7 +1959,7 @@
           checks: 'already-exist',
           text_on_error:
             "Une erreur est survenue.\r\nImpossible de changer la thématique de l'espace.",
-          text_on_succes: 'la thématique a été changer avec succès.',
+          text_on_success: 'La thématique a été changée avec succès.',
           action: (data, config, newValue, empty) => {
             let $querry = $('.wsp-head .col-10');
             let $span = $querry.children()[0];

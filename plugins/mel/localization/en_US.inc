@@ -104,6 +104,13 @@ $labels['error_block'] = 'Failed to login, your account is blocked';
 $labels['computer_private'] = 'Save my credentials on this computer';
 $labels['device_private'] = 'Save my credentials on this device';
 $labels['computer_private_title'] = 'The username and two-factor authentication codes will not be required on future logins from this computer. Do not check this box on a public computer.';
+$labels['login_username_hint'] = 'Enter your username, or your email address';
+$labels['login_keep_hint'] = 'Not recommended on a shared computer';
+$labels['login_card_title'] = 'Login';
+$labels['login_with_credentials'] = 'Log in with your username';
+$labels['login_with_cerbere'] = 'Log in with Cerbère';
+$labels['login_with_cerbere_description'] = 'Use your Cerbère account to access your tools directly.';
+$labels['login_or'] = 'or';
 $labels['change_user'] = 'Switch User';
 
 $labels['login from'] = "Login from: ";

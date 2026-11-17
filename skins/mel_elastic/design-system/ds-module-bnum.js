@@ -868,8 +868,8 @@ async function retry(fn, attempts, delay, signal) {
     }
 }
 
-var css_248z$t = ":host([block]){display:block;flex:1;width:100%}:host(.flex){display:flex}:host(.center){align-items:center;justify-content:center;text-align:center}";
-var style$q = css_248z$t;
+var css_248z$y = ":host([block]){display:block;flex:1;width:100%}:host(.flex){display:flex}:host(.center){align-items:center;justify-content:center;text-align:center}";
+var style$v = css_248z$y;
 
 class BnumDOM {
     /**
@@ -1837,7 +1837,7 @@ class BnumElement extends HTMLElement {
 /**
  * Style commun à tous les BnumElement.
  */
-const BASE_STYLE = BnumElement.ConstructCSSStyleSheet(style$q);
+const BASE_STYLE = BnumElement.ConstructCSSStyleSheet(style$v);
 
 class RotomecaCookies {
     /**
@@ -2667,6 +2667,74 @@ class RotomecaCssProperty {
     }
 }
 
+// core/jsx/index.ts
+const VOID_TAGS = new Set([
+    'area',
+    'base',
+    'br',
+    'col',
+    'embed',
+    'hr',
+    'img',
+    'input',
+    'link',
+    'meta',
+    'param',
+    'source',
+    'track',
+    'wbr',
+]);
+function h(tag, props, ...argsChildren) {
+    if (typeof tag === 'function' && 'TAG' in tag) {
+        tag = tag.TAG;
+    }
+    if (typeof tag === 'function') {
+        const children = argsChildren.length ? argsChildren : props?.children || [];
+        return tag({ ...props, children });
+    }
+    let attrs = EMPTY_STRING;
+    if (props) {
+        for (const key in props) {
+            const value = props[key];
+            if (key === 'children' || value == null || value === false)
+                continue;
+            const name = key === 'className' ? 'class' : key;
+            if (key === 'style' && typeof value === 'object') {
+                let styleStr = EMPTY_STRING;
+                for (const sKey in value) {
+                    styleStr += `${sKey}:${value[sKey]};`;
+                }
+                attrs += ` ${name}="${styleStr}"`;
+            }
+            else if (value === true) {
+                attrs += ` ${name}`;
+            }
+            else {
+                attrs += ` ${name}="${value}"`;
+            }
+        }
+    }
+    const open = `<${tag}${attrs}>`;
+    if (VOID_TAGS.has(tag))
+        return open;
+    const rawChildren = argsChildren.length > 0 ? argsChildren : props?.children;
+    const content = renderChildren(rawChildren);
+    return `${open}${content}</${tag}>`;
+}
+// Helper récursif ultra-rapide pour les enfants
+function renderChildren(child) {
+    if (child == null || child === false || child === true)
+        return EMPTY_STRING;
+    if (Array.isArray(child)) {
+        let str = EMPTY_STRING;
+        for (let i = 0; i < child.length; i++) {
+            str += renderChildren(child[i]);
+        }
+        return str;
+    }
+    return String(child);
+}
+
 /**
  * Classe interne étendant BnumElement pour gérer les états personnalisés via ElementInternals.
  */
@@ -2756,223 +2824,6 @@ class BnumElementInternal extends BnumElement {
         return this._p_states.has(state);
     }
 }
-
-/**
- * Classe de gestion de planification d'exécution de callback.
- * Permet de regrouper plusieurs appels en une seule exécution lors du prochain frame.
- */
-class Scheduler {
-    /**
-     * Indique si une exécution est déjà planifiée.
-     * @private
-     */
-    #_started = false;
-    /**
-     * Dernière valeur planifiée pour l'exécution.
-     * @private
-     */
-    #_lastValue = null;
-    /**
-     * Identifiant du frame planifié.
-     * @private
-     */
-    #_frameId = null;
-    /**
-     * Callback à exécuter lors de la planification.
-     * @private
-     */
-    #_callback;
-    /**
-     * Constructeur de la classe Scheduler.
-     * @param callback Sera appelée avec la dernière valeur planifiée lors du prochain frame.
-     */
-    constructor(callback) {
-        this.#_callback = callback;
-    }
-    /**
-     * Libère les ressources du scheduler.
-     */
-    dispose() {
-        if (this.#_frameId !== null) {
-            cancelAnimationFrame(this.#_frameId);
-            this.#_frameId = null;
-        }
-        this.#_callback = null;
-        this.#_lastValue = null;
-        this.#_started = false;
-    }
-    /**
-     * Demande la planification de l'exécution de la callback avec la valeur donnée.
-     * Si une exécution est déjà planifiée, seule la dernière valeur sera utilisée.
-     * @param value Valeur la plus récente planifiée pour l'exécution.
-     */
-    schedule(value) {
-        this.#_lastValue = value;
-        if (!this.#_started) {
-            this.#_started = true;
-            this.#_frameId = requestAnimationFrame(() => {
-                this.#_frameId = null;
-                this.#_callback?.(this.#_lastValue);
-                this.#_started = false;
-                this.#_lastValue = null;
-            });
-        }
-    }
-    /**
-     * Accesseur protégé pour obtenir la dernière valeur planifiée.
-     */
-    get _p_value() {
-        return this.#_lastValue;
-    }
-    /**
-     * Accesseur protégé pour définir la dernière valeur planifiée.
-     */
-    set _p_value(value) {
-        this.#_lastValue = value;
-    }
-    /**
-     * Appelle immédiatement la callback avec la valeur donnée, sans planification.
-     * @param value Valeur à transmettre au callback
-     */
-    call(value) {
-        this.#_callback?.(value);
-    }
-}
-/**
- * Variante de Scheduler pour gérer des tableaux ou des symboles de réinitialisation.
- *
- * Permet de regrouper plusieurs appels en une seule exécution lors du prochain frame.
- *
- * Si jamais une réinitialisation est demandée, le tableau sera vidé avant d'ajouter de nouveaux éléments.
- */
-class SchedulerArray {
-    /**
-     * Indique si une exécution est déjà planifiée.
-     * @private
-     */
-    #_started = false;
-    /**
-     * Symbole utilisé pour réinitialiser le tableau.
-     * @private
-     */
-    #_resetSymbol;
-    /**
-     * Pile des éléments planifiés.
-     * @private
-     */
-    #_stack = [];
-    /**
-     * Identifiant du frame planifié.
-     * @private
-     */
-    #_frameId = null;
-    /**
-     * Callback à exécuter lors de la planification.
-     * @private
-     */
-    #_callback;
-    /**
-     * Constructeur de la classe SchedulerArray.
-     * @param callback Fonction appelée lors de la planification.
-     * @param resetSymbol Symbole utilisé pour réinitialiser le tableau.
-     */
-    constructor(callback, resetSymbol) {
-        this.#_callback = callback;
-        this.#_resetSymbol = resetSymbol;
-    }
-    /**
-     * Libère les ressources du scheduler.
-     */
-    dispose() {
-        if (this.#_frameId !== null) {
-            cancelAnimationFrame(this.#_frameId);
-            this.#_frameId = null;
-        }
-        this.#_callback = null;
-        this.#_stack.length = 0;
-        this.#_started = false;
-    }
-    schedule(value) {
-        this.#_add(value);
-        if (!this.#_started) {
-            this.#_started = true;
-            this.#_frameId = requestAnimationFrame(() => {
-                this.#_frameId = null;
-                if (this.#_callback) {
-                    for (const element of this.#_getStackItems()) {
-                        this.#_callback(element);
-                    }
-                }
-                this.#_started = false;
-                this.#_stack.length = 0;
-            });
-        }
-    }
-    /**
-     * Appelle immédiatement la callback avec la valeur donnée, sans planification.
-     *
-     * La stack en mémoire est utilisé si aucune valeur n'est fournie. Sinon, elle sera vidée avant d'ajouter la nouvelle valeur.
-     * @param value Valeur à transmettre au callback
-     */
-    call(value) {
-        if (value !== null) {
-            this.#_stack.length = 0;
-            this.#_add(value);
-        }
-        if (this.#_callback) {
-            for (const element of this.#_getStackItems()) {
-                this.#_callback(element);
-            }
-        }
-        this.#_stack.length = 0;
-    }
-    /**
-     * Ajoute une valeur ou un tableau de valeurs à la pile, ou gère le symbole de réinitialisation.
-     * @param value Valeur, tableau de valeurs ou symbole de réinitialisation à ajouter.
-     * @returns void
-     */
-    #_add(value) {
-        // Gestion du symbole de réinitialisation
-        if (value === this.#_resetSymbol) {
-            this.#_stack.length = 0;
-            this.#_stack.push(value);
-            this.#_stack.push([]);
-            return;
-        }
-        // Initialisation de la pile si vide
-        if (this.#_stack.length === 0)
-            this.#_stack.push([]);
-        // Ajout de l'élément ou des éléments au dernier tableau de la pile
-        if (Array.isArray(value)) {
-            this.#_stack[this.#_stack.length - 1].push(...value);
-        }
-        else if (value !== this.#_resetSymbol) {
-            this.#_stack[this.#_stack.length - 1].push(value);
-        }
-    }
-    /**
-     * Générateur pour obtenir les éléments de la pile un par un.
-     *
-     * Gère les tableaux et le symbole de réinitialisation.
-     * @returns Générateur d'éléments de type T[] ou symbol.
-     */
-    *#_getStackItems() {
-        for (const element of this.#_stack) {
-            if (element === this.#_resetSymbol) {
-                yield element;
-            }
-            else if (Array.isArray(element)) {
-                yield element;
-            }
-            else {
-                yield [element];
-            }
-        }
-    }
-}
-
-var css_248z$s = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{border-radius:var(--bnum-badge-border-radius,100px);display:var(--bnum-badge-display,inline-block);padding:var(--bnum-badge-padding,var(--bnum-space-xs,5px))}:host(:state(is-circle)){aspect-ratio:1;border-radius:var(--bnum-badge-circle-border-radius,100%)}:host(:state(is-circle)) span{align-items:center;display:flex;height:100%;justify-content:center}:host(:state(variation-primary)){background-color:var(--bnum-badge-primary-color,var(--bnum-color-primary,#000091));color:var(--bnum-badge-primary-text-color,var(--bnum-text-on-primary,#f5f5fe))}:host(:state(variation-secondary)){background-color:var(--bnum-badge-secondary-color,var(--bnum-color-secondary,#3a3a3a));color:var(--bnum-badge-secondary-text-color,var(--bnum-text-on-secondary,#fff))}:host(:state(variation-secondary)){border:var(--bnum-badge-type,solid) var(--bnum-badge-size,thin) var(--bnum-badge-secondary-text-color,var(--bnum-text-on-secondary,#fff))}:host(:state(variation-danger)){background-color:var(--bnum-badge-danger-color,var(--bnum-color-danger,#ce0500));color:var(--bnum-badge-danger-text-color,var(--bnum-text-on-danger,#f5f5fe))}";
-var style$p = css_248z$s;
 
 /**
  * Décorateur de classe pour définir un Web Component.
@@ -3352,6 +3203,20 @@ function Light() {
     };
 }
 
+function Observe(attribsToObserve1, ...attribsToObserve) {
+    return function (target, context) {
+        if (context.kind !== 'class') {
+            throw new Error('@Observe ne peut être utilisé que sur une classe.');
+        }
+        context.addInitializer(function () {
+            const attributesToObserve = Array.isArray(attribsToObserve1)
+                ? attribsToObserve1
+                : [attribsToObserve1, ...attribsToObserve];
+            this.__CONFIG_ATTRIBS_TO_OBSERVE_ = attributesToObserve;
+        });
+    };
+}
+
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 /**
  * Décorateur de classe.
@@ -3378,6 +3243,56 @@ function UpdateAll() {
     };
 }
 
+// core/decorators/ui.ts
+function UI(selectorMap, options) {
+    const { shadowRoot = true } = options || {};
+    return function (target, context) {
+        const name = String(context.name);
+        // Symbole pour stocker l'objet UI une fois créé
+        const uiCacheKey = Symbol(name);
+        return {
+            get() {
+                const cachedValue = this[uiCacheKey];
+                if (cachedValue)
+                    return cachedValue;
+                const root = shadowRoot ? this.shadowRoot || this : this;
+                // 2. On crée un objet vide
+                const uiObject = {};
+                // 3. On utilise un Map interne pour stocker les résultats des querySelector
+                //    pour ne pas les refaire à chaque accès (Cache granulaire)
+                const domCache = new Map();
+                // 4. On définit dynamiquement des getters pour chaque clé
+                for (const [key, selector] of Object.entries(selectorMap)) {
+                    Object.defineProperty(uiObject, key, {
+                        configurable: true,
+                        enumerable: true,
+                        get: () => {
+                            // A. Si on a déjà cherché cet élément précis, on le rend
+                            if (domCache.has(key)) {
+                                const value = domCache.get(key);
+                                if (isDefined(value))
+                                    return value;
+                            }
+                            // B. Sinon, on fait le querySelector (LAZY)
+                            const element = root.querySelector(selector);
+                            // C. On le met en cache
+                            domCache.set(key, element);
+                            return element;
+                        },
+                        // Permet d'écraser manuellement si besoin : this.#_ui.icon = ...
+                        set: (value) => {
+                            domCache.set(key, value);
+                        },
+                    });
+                }
+                // 5. On stocke l'objet configuré sur l'instance et on le retourne
+                this[uiCacheKey] = uiObject;
+                return uiObject;
+            },
+        };
+    };
+}
+
 const TAG_PREFIX = BnumConfig.Get('tag_prefix');
 const TAG_ICON = `${TAG_PREFIX}-icon`;
 const TAG_BUTTON = `${TAG_PREFIX}-button`;
@@ -3400,9 +3315,12 @@ const TAG_COLUMN = `${TAG_PREFIX}-column`;
 const TAG_INPUT = `${TAG_PREFIX}-input`;
 const TAG_INPUT_DATE = `${TAG_INPUT}-date`;
 const TAG_INPUT_NUMBER = `${TAG_INPUT}-number`;
+const TAG_INPUT_PASSWORD = `${TAG_INPUT}-password`;
 const TAG_INPUT_SEARCH = `${TAG_INPUT}-search`;
 const TAG_INPUT_TEXT = `${TAG_INPUT}-text`;
 const TAG_INPUT_TIME = `${TAG_INPUT}-time`;
+const TAG_CERBERE_BUTTON = `${TAG_PREFIX}-cerbere-button`;
+const TAG_INPUT_USERNAME = `${TAG_INPUT}-username`;
 const TAG_FOLDER = `${TAG_PREFIX}-folder`;
 const TAG_HIDE = `${TAG_PREFIX}-hide`;
 const TAG_FOLDER_LIST = `${TAG_PREFIX}-folder-list`;
@@ -3410,431 +3328,232 @@ const TAG_HEADER = `${TAG_PREFIX}-header`;
 const TAG_SEGMENTED_ITEM$1 = `${TAG_PREFIX}-segmented-item`;
 const TAG_SEGMENTED_CONTROL = `${TAG_PREFIX}-segmented-control`;
 const TAG_SELECT = `${TAG_PREFIX}-select`;
+const TAG_ALERT = `${TAG_PREFIX}-alert`;
+const TAG_ALERT_INFO = `${TAG_ALERT}-info`;
+const TAG_ALERT_SUCCESS = `${TAG_ALERT}-success`;
+const TAG_ALERT_WARNING = `${TAG_ALERT}-warning`;
+const TAG_ALERT_ERROR = `${TAG_ALERT}-error`;
+const TAG_ALERT_CUSTOM = `${TAG_ALERT}-custom`;
 const TAG_BADGE = `${TAG_PREFIX}-badge`;
+const TAG_DIVIDER = `${TAG_PREFIX}-divider`;
 const TAG_FRAGMENT = `${TAG_PREFIX}-fragment`;
 const TAG_RADIO = `${TAG_PREFIX}-radio`;
 const TAG_RADIO_GROUP = `${TAG_PREFIX}-radio-group`;
 const TAG_TREE = `${TAG_PREFIX}-tree`;
 
-//#endregion Types
-//#region Global constants
-const DATA_VALUE = 'value';
-const DATA_VARIATION = 'variation';
-const ATTR_VALUE = 'data-value';
-const ATTR_VARIATION$1 = 'data-variation';
-const ATTR_CIRCLE = 'circle';
-const VARIATION_PRIMARY = 'primary';
-// Not used currently
-// const VARIATION_SECONDARY = 'secondary';
-// const VARIATION_DANGER = 'danger';
-const STATE_HAS_VALUE = 'has-value';
-const STATE_NO_VALUE = 'no-value';
-const STATE_IS_CIRCLE = 'is-circle';
-const STATE_VARIATION_PREFIX = 'variation-';
-//#endregion Global constants
 /**
- * Badge d'information.
- *
- * @structure Badge classique
- * <bnum-badge data-value="Je suis un badge !"></bnum-badge>
- *
- * @structure Badge avec un nombre
- * <bnum-badge data-value="9999"></bnum-badge>
- *
- * @structure Arrondi forcé
- * <bnum-badge data-value="9999" circle></bnum-badge>
- *
- * @structure Secondary
- * <bnum-badge data-value="42" data-variation="secondary" circle></bnum-badge>
- *
- * @structure Danger
- * <bnum-badge data-value="42" data-variation="danger" circle></bnum-badge>
- *
- * @state has-value - Le badge a une valeur.
- * @state no-value - Le badge n'a pas de valeur.
- * @state is-circle - Le badge est en mode cercle.
- * @state variation-primary - Le badge utilise la variation primaire.
- * @state variation-secondary - Le badge utilise la variation secondaire.
- * @state variation-danger - Le badge utilise la variation danger.
- *
- * @attr {string} data-value - Valeur affichée dans le badge.
- * @attr {'primary' | 'secondary' | 'danger'} (optional) (default:'primary') data-variation - Variation du badge.
- * @attr {any} (optional) circle - Indique si le badge doit être affiché en cercle.
- *
- * @cssvar {inline-block} --bnum-badge-display - Permet de surcharger la propriété CSS display du badge.
- * @cssvar {100px} --bnum-badge-border-radius - Permet de surcharger le rayon de bordure du badge.
- * @cssvar {10px} --bnum-badge-padding - Permet de surcharger le padding du badge.
- * @cssvar {100%} --bnum-badge-circle-border-radius - Permet de surcharger le rayon de bordure du badge en mode "cercle".
- * @cssvar {#000091} --bnum-badge-primary-color - Définit la couleur de fond du badge en variation "primary".
- * @cssvar {#f5f5fe} --bnum-badge-primary-text-color - Définit la couleur du texte du badge en variation "primary".
- * @cssvar {#ffffff} --bnum-badge-secondary-color - Définit la couleur de fond du badge en variation "secondary".
- * @cssvar {#000091} --bnum-badge-secondary-text-color - Définit la couleur du texte du badge en variation "secondary".
- * @cssvar {solid} --bnum-badge-type - Permet de surcharger le type de bordure (ex: solid, dashed) pour la variation "secondary".
- * @cssvar {thin} --bnum-badge-size - Permet de surcharger l’épaisseur de la bordure pour la variation "secondary".
- * @cssvar {#ce0500} --bnum-badge-danger-color - Définit la couleur de fond du badge en variation "danger".
- * @cssvar {#f5f5fe} --bnum-badge-danger-text-color - Définit la couleur du texte du badge en variation "danger".
- *
+ * Classe de gestion de planification d'exécution de callback.
+ * Permet de regrouper plusieurs appels en une seule exécution lors du prochain frame.
  */
-let HTMLBnumBadge = (() => {
-    let _classDecorators = [Define({
-            styles: style$p,
-            tag: TAG_BADGE,
-        }), UpdateAll()];
-    let _classDescriptor;
-    let _classExtraInitializers = [];
-    let _classThis;
-    let _classSuper = BnumElementInternal;
-    (class extends _classSuper {
-        static { _classThis = this; }
-        static {
-            const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
-            __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
-            _classThis = _classDescriptor.value;
-            if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-            __runInitializers(_classThis, _classExtraInitializers);
-        }
-        //#region Private Fields
-        /**
-         * Valeur affichée dans le badge.
-         */
-        #_value = EMPTY_STRING;
-        /**
-         * Planificateur de mise à jour asynchrone.
-         */
-        #_updateSchduler = null;
-        /**
-         * Élément span contenant la valeur du badge.
-         */
-        #_spanElement = null;
-        //#endregion Private Fields
-        //#region Getters/Setters
-        /**
-         * Récupère la valeur depuis l'attribut data-value.
-         */
-        get #_dataValue() {
-            return this.data(DATA_VALUE) || EMPTY_STRING;
-        }
-        /**
-         * Récupère la variation depuis l'attribut data-variation.
-         */
-        get #_dataVariation() {
-            return this.data(DATA_VARIATION) || VARIATION_PRIMARY;
-        }
-        /**
-         * Valeur affichée dans le badge.
-         */
-        get value() {
-            if (!this.alreadyLoaded)
-                this.#_value = this.#_dataValue;
-            return this.#_value;
-        }
-        set value(value) {
-            if (!this.alreadyLoaded)
-                this.removeAttribute(ATTR_VALUE);
-            this.#_value = value;
-            this.#_requestUpdate();
-        }
-        /**
-         * Variation de style du badge.
-         */
-        get variation() {
-            return this.#_dataVariation;
-        }
-        set variation(value) {
-            this.data(DATA_VARIATION, value);
-            this.#_requestUpdate();
-        }
-        //#endregion Getters/Setters
-        //#region Lifecycle
-        constructor() {
-            super();
-        }
-        /**
-         * Construit le DOM interne du composant.
-         */
-        _p_buildDOM(container) {
-            super._p_buildDOM(container);
-            this.#_spanElement = this._p_createSpan();
-            container.appendChild(this.#_spanElement);
-            const force = true;
-            this.#_update(force);
-        }
-        /**
-         * Met à jour le composant lors d'un changement d'attribut.
-         */
-        _p_update() {
-            return this.#_update();
-        }
-        //#endregion Lifecycle
-        //#region Private Methods
-        /**
-         * Demande une mise à jour asynchrone du composant.
-         */
-        #_requestUpdate() {
-            if (!this.#_updateSchduler) {
-                this.#_updateSchduler = new Scheduler(() => this.#_update());
-                this._p_registerDisposable(this.#_updateSchduler);
-            }
-            this.#_updateSchduler.schedule(0);
-            return this;
-        }
-        /**
-         * Met à jour l'affichage du badge selon ses propriétés et attributs.
-         */
-        #_update(force = false) {
-            if (!this.alreadyLoaded && !force)
-                return;
-            this._p_clearStates();
-            const value = this.value;
-            this.#_spanElement.textContent = value;
-            if (value !== EMPTY_STRING)
-                this._p_addState(STATE_HAS_VALUE);
-            else
-                this._p_addState(STATE_NO_VALUE);
-            if (this.hasAttribute(ATTR_CIRCLE))
-                this._p_addState(STATE_IS_CIRCLE);
-            this._p_addState(`${STATE_VARIATION_PREFIX}${this.variation}`);
-        }
-        //#endregion Private Methods
-        forceValue(value) {
-            this.#_value = value;
-            this.#_update(true);
-        }
-        //#region Static Methods
-        /**
-         * Attributs observés pour ce composant.
-         */
-        static _p_observedAttributes() {
-            return [ATTR_CIRCLE];
-        }
-        /**
-         * Crée un badge via JavaScript.
-         * @param value Valeur à afficher
-         * @param options Options de création (cercle, variation)
-         */
-        static Create(value, { circle = false, variation = undefined, } = {}) {
-            const badge = document.createElement(this.TAG);
-            return badge
-                .attr(ATTR_VALUE, value)
-                .condAttr(circle, ATTR_CIRCLE, true)
-                .condAttr(variation !== undefined, ATTR_VARIATION$1, variation);
-        }
-        /**
-         * Génère le HTML d'un badge.
-         * @param value Valeur à afficher
-         * @param attrs Attributs additionnels
-         */
-        static Write(value, attrs = {}) {
-            const attributes = this._p_WriteAttributes(attrs);
-            return `<${this.TAG} ${ATTR_VALUE}="${value}" ${attributes}></${this.TAG}>`;
-        }
-    });
-    return _classThis;
-})();
-
-/**
- * Événement personnalisé signalant le changement d'un élément.
- *
- * @template T Type du nouvel élément.
- * @template Y Type de l'ancien élément.
- * @template TCaller Type de l'élément ayant déclenché l'événement (doit hériter de HTMLElement).
- */
-class ElementChangedEvent extends CustomEvent {
-    #_new;
-    #_old;
-    #_caller;
+class Scheduler {
     /**
-     * Crée une nouvelle instance d'ElementChangedEvent.
-     *
-     * @param type Le type de changement.
-     * @param newElement Le nouvel élément.
-     * @param oldElement L'ancien élément.
-     * @param caller L'élément ayant déclenché l'événement.
-     * @param initDict Options d'initialisation de l'événement.
+     * Indique si une exécution est déjà planifiée.
+     * @private
      */
-    constructor(type, newElement, oldElement, caller, initDict = {}) {
-        super(`custom:element-changed.${type}`, initDict);
-        this.#_new = newElement;
-        this.#_old = oldElement;
-        this.#_caller = caller;
+    #_started = false;
+    /**
+     * Dernière valeur planifiée pour l'exécution.
+     * @private
+     */
+    #_lastValue = null;
+    /**
+     * Identifiant du frame planifié.
+     * @private
+     */
+    #_frameId = null;
+    /**
+     * Callback à exécuter lors de la planification.
+     * @private
+     */
+    #_callback;
+    /**
+     * Constructeur de la classe Scheduler.
+     * @param callback Sera appelée avec la dernière valeur planifiée lors du prochain frame.
+     */
+    constructor(callback) {
+        this.#_callback = callback;
     }
-    /** Retourne le nouvel élément. */
-    get newElement() {
-        return this.#_new;
+    /**
+     * Libère les ressources du scheduler.
+     */
+    dispose() {
+        if (this.#_frameId !== null) {
+            cancelAnimationFrame(this.#_frameId);
+            this.#_frameId = null;
+        }
+        this.#_callback = null;
+        this.#_lastValue = null;
+        this.#_started = false;
     }
-    /** Retourne l'ancien élément. */
-    get oldElement() {
-        return this.#_old;
+    /**
+     * Demande la planification de l'exécution de la callback avec la valeur donnée.
+     * Si une exécution est déjà planifiée, seule la dernière valeur sera utilisée.
+     * @param value Valeur la plus récente planifiée pour l'exécution.
+     */
+    schedule(value) {
+        this.#_lastValue = value;
+        if (!this.#_started) {
+            this.#_started = true;
+            this.#_frameId = requestAnimationFrame(() => {
+                this.#_frameId = null;
+                this.#_callback?.(this.#_lastValue);
+                this.#_started = false;
+                this.#_lastValue = null;
+            });
+        }
     }
-    /** Retourne l'élément qui a déclenché l'événement. */
-    get caller() {
-        return this.#_caller;
+    /**
+     * Accesseur protégé pour obtenir la dernière valeur planifiée.
+     */
+    get _p_value() {
+        return this.#_lastValue;
+    }
+    /**
+     * Accesseur protégé pour définir la dernière valeur planifiée.
+     */
+    set _p_value(value) {
+        this.#_lastValue = value;
+    }
+    /**
+     * Appelle immédiatement la callback avec la valeur donnée, sans planification.
+     * @param value Valeur à transmettre au callback
+     */
+    call(value) {
+        this.#_callback?.(value);
     }
 }
-
-function OnIconChangeInitializer$1(event, instance) {
-    event.push((newValue, oldValue) => {
-        instance.dispatchEvent(new ElementChangedEvent(EVENT_ICON, newValue, oldValue, instance));
-    });
-}
-function OnLoadingStateChangeInitializer(event, instance) {
-    event.push(instance._p_onLoadingChange);
-}
-function OnIconPropChangeInitializer(event, instance) {
-    event.push((type, newValue) => {
-        instance.dispatchEvent(new CustomEvent(EVENT_ICON_PROP_CHANGED, {
-            detail: { type, newValue },
-        }));
-    });
-}
-function OnVariationChangeInitializer(event, instance) {
-    event.push((newValue, oldValue) => {
-        instance.dispatchEvent(new ElementChangedEvent(EVENT_VARIATION, newValue, oldValue, instance));
-    });
-}
-function OnClickInitializer(event, instance) {
-    instance.addEventListener('click', () => {
-        event.call();
-    });
-}
-
-// --- Component Identity ---
-// --- CSS Classes ---
-const CLASS_WRAPPER = 'wrapper';
-const CLASS_SLOT = 'slot';
-const CLASS_ICON = 'icon';
-// --- Attributes ---
-const ATTR_ROUNDED = 'rounded';
-const ATTR_LOADING = 'loading';
-const ATTR_DISABLED$1 = 'disabled';
-const ATTR_VARIATION = 'variation'; // or 'data-variation'
-const ATTR_ICON$1 = 'icon';
-const ATTR_ICON_POS = 'icon-pos';
-const ATTR_ICON_MARGIN = 'icon-margin';
-const ATTR_HIDE = 'hide';
-// --- States (Internal/CSS) ---
-const STATE_ICON$1 = 'icon';
-const STATE_WITHOUT_ICON = 'without-icon';
-const STATE_ROUNDED = 'rounded';
-const STATE_LOADING$1 = 'loading';
-const STATE_DISABLED$2 = 'disabled';
-// --- Events ---
-const EVENT_ICON = 'icon'; // Suffix
-const EVENT_VARIATION = 'variation'; // Suffix
-const EVENT_ICON_PROP_CHANGED = 'custom:icon.prop.changed';
-const EVENT_LOADING_STATE_CHANGED = 'custom:loading';
-// --- Defaults & CSS Vars ---
-const DEFAULT_CSS_VAR_ICON_MARGIN = 'var(--custom-bnum-button-icon-margin, 10px)';
-const ICON_PROP_POS = 'pos';
-const CSS_PROPERTY_ICON_MARGIN = '--bnum-button-icon-gap';
-// --- Logic Helpers ---
-// Definition for attribute mapping in Factory
-const BUTTON_ATTRIBUTE_MAP = [
-    { prop: 'rounded', attr: ATTR_ROUNDED, isBool: true },
-    { prop: 'loading', attr: ATTR_LOADING, isBool: true },
-    { prop: 'icon', attr: `data-${ATTR_ICON$1}` },
-    { prop: 'iconPos', attr: `data-${ATTR_ICON_POS}` },
-    { prop: 'variation', attr: `data-${ATTR_VARIATION}` },
-    { prop: 'hideOn', attr: `data-${ATTR_HIDE}` },
-    { prop: 'iconMargin', attr: `data-${ATTR_ICON_MARGIN}` },
-];
-// Default Options for Factory
-const DEFAULT_BUTTON_OPTIONS = {
-    text: '',
-    iconPos: 'right', // Assumes 'right' is default in enum
-    rounded: false,
-    loading: false,
-};
-
-const ButtonVariation = {
-    PRIMARY: 'primary',
-    SECONDARY: 'secondary',
-    TERTIARY: 'tertiary',
-    DANGER: 'danger',
-};
-const IconPosition = {
-    LEFT: 'left',
-    RIGHT: 'right',
-};
-const HideTextOnLayoutSize = {
-    SMALL: 'small',
-    TOUCH: 'touch',
-};
-
-// core/jsx/index.ts
-const VOID_TAGS = new Set([
-    'area',
-    'base',
-    'br',
-    'col',
-    'embed',
-    'hr',
-    'img',
-    'input',
-    'link',
-    'meta',
-    'param',
-    'source',
-    'track',
-    'wbr',
-]);
-function h(tag, props, ...argsChildren) {
-    if (typeof tag === 'function' && 'TAG' in tag) {
-        tag = tag.TAG;
+/**
+ * Variante de Scheduler pour gérer des tableaux ou des symboles de réinitialisation.
+ *
+ * Permet de regrouper plusieurs appels en une seule exécution lors du prochain frame.
+ *
+ * Si jamais une réinitialisation est demandée, le tableau sera vidé avant d'ajouter de nouveaux éléments.
+ */
+class SchedulerArray {
+    /**
+     * Indique si une exécution est déjà planifiée.
+     * @private
+     */
+    #_started = false;
+    /**
+     * Symbole utilisé pour réinitialiser le tableau.
+     * @private
+     */
+    #_resetSymbol;
+    /**
+     * Pile des éléments planifiés.
+     * @private
+     */
+    #_stack = [];
+    /**
+     * Identifiant du frame planifié.
+     * @private
+     */
+    #_frameId = null;
+    /**
+     * Callback à exécuter lors de la planification.
+     * @private
+     */
+    #_callback;
+    /**
+     * Constructeur de la classe SchedulerArray.
+     * @param callback Fonction appelée lors de la planification.
+     * @param resetSymbol Symbole utilisé pour réinitialiser le tableau.
+     */
+    constructor(callback, resetSymbol) {
+        this.#_callback = callback;
+        this.#_resetSymbol = resetSymbol;
     }
-    if (typeof tag === 'function') {
-        const children = argsChildren.length ? argsChildren : props?.children || [];
-        return tag({ ...props, children });
+    /**
+     * Libère les ressources du scheduler.
+     */
+    dispose() {
+        if (this.#_frameId !== null) {
+            cancelAnimationFrame(this.#_frameId);
+            this.#_frameId = null;
+        }
+        this.#_callback = null;
+        this.#_stack.length = 0;
+        this.#_started = false;
     }
-    let attrs = EMPTY_STRING;
-    if (props) {
-        for (const key in props) {
-            const value = props[key];
-            if (key === 'children' || value == null || value === false)
-                continue;
-            const name = key === 'className' ? 'class' : key;
-            if (key === 'style' && typeof value === 'object') {
-                let styleStr = EMPTY_STRING;
-                for (const sKey in value) {
-                    styleStr += `${sKey}:${value[sKey]};`;
+    schedule(value) {
+        this.#_add(value);
+        if (!this.#_started) {
+            this.#_started = true;
+            this.#_frameId = requestAnimationFrame(() => {
+                this.#_frameId = null;
+                if (this.#_callback) {
+                    for (const element of this.#_getStackItems()) {
+                        this.#_callback(element);
+                    }
                 }
-                attrs += ` ${name}="${styleStr}"`;
+                this.#_started = false;
+                this.#_stack.length = 0;
+            });
+        }
+    }
+    /**
+     * Appelle immédiatement la callback avec la valeur donnée, sans planification.
+     *
+     * La stack en mémoire est utilisé si aucune valeur n'est fournie. Sinon, elle sera vidée avant d'ajouter la nouvelle valeur.
+     * @param value Valeur à transmettre au callback
+     */
+    call(value) {
+        if (value !== null) {
+            this.#_stack.length = 0;
+            this.#_add(value);
+        }
+        if (this.#_callback) {
+            for (const element of this.#_getStackItems()) {
+                this.#_callback(element);
             }
-            else if (value === true) {
-                attrs += ` ${name}`;
+        }
+        this.#_stack.length = 0;
+    }
+    /**
+     * Ajoute une valeur ou un tableau de valeurs à la pile, ou gère le symbole de réinitialisation.
+     * @param value Valeur, tableau de valeurs ou symbole de réinitialisation à ajouter.
+     * @returns void
+     */
+    #_add(value) {
+        // Gestion du symbole de réinitialisation
+        if (value === this.#_resetSymbol) {
+            this.#_stack.length = 0;
+            this.#_stack.push(value);
+            this.#_stack.push([]);
+            return;
+        }
+        // Initialisation de la pile si vide
+        if (this.#_stack.length === 0)
+            this.#_stack.push([]);
+        // Ajout de l'élément ou des éléments au dernier tableau de la pile
+        if (Array.isArray(value)) {
+            this.#_stack[this.#_stack.length - 1].push(...value);
+        }
+        else if (value !== this.#_resetSymbol) {
+            this.#_stack[this.#_stack.length - 1].push(value);
+        }
+    }
+    /**
+     * Générateur pour obtenir les éléments de la pile un par un.
+     *
+     * Gère les tableaux et le symbole de réinitialisation.
+     * @returns Générateur d'éléments de type T[] ou symbol.
+     */
+    *#_getStackItems() {
+        for (const element of this.#_stack) {
+            if (element === this.#_resetSymbol) {
+                yield element;
+            }
+            else if (Array.isArray(element)) {
+                yield element;
             }
             else {
-                attrs += ` ${name}="${value}"`;
+                yield [element];
             }
         }
     }
-    const open = `<${tag}${attrs}>`;
-    if (VOID_TAGS.has(tag))
-        return open;
-    const rawChildren = argsChildren.length > 0 ? argsChildren : props?.children;
-    const content = renderChildren(rawChildren);
-    return `${open}${content}</${tag}>`;
 }
-// Helper récursif ultra-rapide pour les enfants
-function renderChildren(child) {
-    if (child == null || child === false || child === true)
-        return EMPTY_STRING;
-    if (Array.isArray(child)) {
-        let str = EMPTY_STRING;
-        for (let i = 0; i < child.length; i++) {
-            str += renderChildren(child[i]);
-        }
-        return str;
-    }
-    return String(child);
-}
-
-/**
- * RegEx qui permet de vérifier si un texte possède uniquement des charactères alphanumériques.
- * @constant
- * @default /^[0-9a-zA-Z]+$/
- */
-const REG_XSS_SAFE = /^[-.\w\s%()]+$/;
 
 /**
  * Clé Symbol utilisée pour stocker la Map de cache des listeners sur l'instance cible.
@@ -3942,20 +3661,60 @@ function _get(options) {
  */
 function NoInitListener() { }
 
+/**
+ * Événement personnalisé signalant le changement d'un élément.
+ *
+ * @template T Type du nouvel élément.
+ * @template Y Type de l'ancien élément.
+ * @template TCaller Type de l'élément ayant déclenché l'événement (doit hériter de HTMLElement).
+ */
+class ElementChangedEvent extends CustomEvent {
+    #_new;
+    #_old;
+    #_caller;
+    /**
+     * Crée une nouvelle instance d'ElementChangedEvent.
+     *
+     * @param type Le type de changement.
+     * @param newElement Le nouvel élément.
+     * @param oldElement L'ancien élément.
+     * @param caller L'élément ayant déclenché l'événement.
+     * @param initDict Options d'initialisation de l'événement.
+     */
+    constructor(type, newElement, oldElement, caller, initDict = {}) {
+        super(`custom:element-changed.${type}`, initDict);
+        this.#_new = newElement;
+        this.#_old = oldElement;
+        this.#_caller = caller;
+    }
+    /** Retourne le nouvel élément. */
+    get newElement() {
+        return this.#_new;
+    }
+    /** Retourne l'ancien élément. */
+    get oldElement() {
+        return this.#_old;
+    }
+    /** Retourne l'élément qui a déclenché l'événement. */
+    get caller() {
+        return this.#_caller;
+    }
+}
+
 const EVENT_ICON_CHANGED = 'icon';
 const DATA_ICON = 'icon';
 
-function OnIconChangeInitializer(event, self) {
+function OnIconChangeInitializer$1(event, self) {
     event.add('default', (newIcon, oldIcon) => {
         self.dispatchEvent(new ElementChangedEvent(EVENT_ICON_CHANGED, newIcon, oldIcon, self));
     });
 }
 
-var css_248z$r = "@font-face{font-family:Material Symbols Outlined;font-style:normal;font-weight:200;src:url(fonts/material-symbol-v2.woff2) format(\"woff2\")}.material-symbols-outlined{word-wrap:normal;-moz-font-feature-settings:\"liga\";-moz-osx-font-smoothing:grayscale;direction:ltr;display:inline-block;font-family:Material Symbols Outlined;font-size:24px;font-style:normal;font-weight:400;letter-spacing:normal;line-height:1;text-transform:none;white-space:nowrap}";
-var symbols = css_248z$r;
+var css_248z$x = "@font-face{font-family:Material Symbols Outlined;font-style:normal;font-weight:200;src:url(fonts/material-symbol-v2.woff2) format(\"woff2\")}.material-symbols-outlined{word-wrap:normal;-moz-font-feature-settings:\"liga\";-moz-osx-font-smoothing:grayscale;direction:ltr;display:inline-block;font-family:Material Symbols Outlined;font-size:24px;font-style:normal;font-weight:400;letter-spacing:normal;line-height:1;text-transform:none;white-space:nowrap}";
+var symbols = css_248z$x;
 
-var css_248z$q = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{font-size:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem));font-variation-settings:\"FILL\" var(--bnum-icon-fill,0),\"wght\" var(--bnum-icon-weight,300),\"GRAD\" var(--bnum-icon-grad,0),\"opsz\" var(--bnum-icon-opsz,24);font-weight:var(--bnum-icon-font-weight,var(--bnum-font-weight-normal,normal));height:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem));line-height:var(--bnum-icon-line-height,1);width:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem))}:host(:state(loading)){opacity:0}";
-var style$o = css_248z$q;
+var css_248z$w = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{font-size:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem));font-variation-settings:\"FILL\" var(--bnum-icon-fill,0),\"wght\" var(--bnum-icon-weight,300),\"GRAD\" var(--bnum-icon-grad,0),\"opsz\" var(--bnum-icon-opsz,24);font-weight:var(--bnum-icon-font-weight,var(--bnum-font-weight-normal,normal));height:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem));line-height:var(--bnum-icon-line-height,1);width:var(--bnum-icon-font-size,var(--bnum-font-size-xxl,1.5rem))}:host(:state(loading)){opacity:0}";
+var style$u = css_248z$w;
 
 /**
  * Classe CSS utilisée pour les icônes Material Symbols.
@@ -3973,7 +3732,7 @@ const FONT_SRC = symbols.match(/url\(([^)]+)\)/)?.[1] ??
 const SYMBOLS = BnumElement.ConstructCSSStyleSheet(symbols
     .replaceAll(`.${ICON_CLASS}`, ':host')
     .replaceAll('fonts/material-symbol-v2.woff2', FONT_SRC));
-const STYLE = BnumElement.ConstructCSSStyleSheet(style$o);
+const STYLE = BnumElement.ConstructCSSStyleSheet(style$u);
 /** Nom de famille de la police Material Symbols. */
 const FONT_FAMILY = 'Material Symbols Outlined';
 /** Spécification utilisée pour interroger `document.fonts`. */
@@ -4027,7 +3786,7 @@ let HTMLBnumIcon = (() => {
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             ___decorators = [Self];
-            _oniconchanged_decorators = [Listener(OnIconChangeInitializer, { lazy: false })];
+            _oniconchanged_decorators = [Listener(OnIconChangeInitializer$1, { lazy: false })];
             __esDecorate(this, null, _oniconchanged_decorators, { kind: "accessor", name: "oniconchanged", static: false, private: false, access: { has: obj => "oniconchanged" in obj, get: obj => obj.oniconchanged, set: (obj, value) => { obj.oniconchanged = value; } }, metadata: _metadata }, _oniconchanged_initializers, _oniconchanged_extraInitializers);
             __esDecorate(null, null, ___decorators, { kind: "field", name: "_", static: false, private: false, access: { has: obj => "_" in obj, get: obj => obj._, set: (obj, value) => { obj._ = value; } }, metadata: _metadata }, ___initializers, ___extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
@@ -4229,57 +3988,104 @@ let HTMLBnumIcon = (() => {
     return HTMLBnumIcon = _classThis;
 })();
 
-var css_248z$p = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{--bnum-icon-font-size:var(--bnum-font-size-xl);border-radius:var(--bnum-button-border-radius,0);cursor:var(--bnum-button-cursor,pointer);display:var(--bnum-button-display,inline-block);font-weight:var(--bnum-button-font-weight,600);height:var(--bnum-button-height,-moz-fit-content);height:var(--bnum-button-height,fit-content);line-height:1.5rem;padding:var(--bnum-button-padding,.5rem 1rem);transition:background-color .2s ease,color .2s ease;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}:host(:state(rounded)){border-radius:var(--bnum-button-rounded-border-radius,5px)}:host(:state(without-icon)){padding-bottom:var(--bnum-button-without-icon-padding-bottom,7.5px);padding-top:var(--bnum-button-without-icon-padding-top,7.5px)}:host(:disabled),:host(:state(disabled)){cursor:not-allowed;opacity:var(--bnum-button-disabled-opacity,.6);pointer-events:var(--bnum-button-disabled-pointer-events,none)}:host(:state(loading)){cursor:progress}:host(:state(icon)){--bnum-button-icon-gap:var(--custom-bnum-button-icon-margin,var(--bnum-space-s,10px))}:host(:state(icon))>.wrapper{align-items:center;display:flex;flex-direction:row;gap:var(--bnum-button-icon-gap);justify-content:var(--bnum-button-justify-content,center)}:host(:state(icon-pos-left)) .wrapper{flex-direction:row-reverse}:host(:focus-visible){outline:2px solid #0969da;outline-offset:2px}:host>.wrapper{align-items:var(--bnum-button-wrapper-align-items,center);display:var(--bnum-button-wrapper-display,flex)}:host bnum-icon.icon{display:var(--bnum-button-icon-display,flex)}:host bnum-icon.icon.hidden{display:none}:host bnum-icon.loader{display:var(--bnum-button-loader-display,flex)}:host(:is(:state(loading):state(without-icon-loading))) slot{display:none}@keyframes spin{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host .loader,:host .spin,:host(:state(loading)) .icon{animation:spin var(--bnum-button-spin-duration,.75s) var(--bnum-button-spin-timing,linear) var(--bnum-button-spin-iteration,infinite)}:host(:state(hide-text-on-small)) .slot,:host(:state(hide-text-on-touch)) .slot{display:var(--size-display-state,inline-block)}:host(:state(hide-text-on-small)) .icon,:host(:state(hide-text-on-touch)) .icon{margin-left:var(--size-margin-left-state,var(--custom-button-icon-margin-left))!important;margin-right:var(--size-margin-right-state,var(--custom-button-icon-margin-right))!important}:host .hidden,:host [hidden]{display:none!important}:host(:state(primary)){background-color:var(--bnum-button-primary-background-color,var(--bnum-color-primary));border:var(--bnum-button-primary-border,solid thin var(--bnum-button-primary-border-color,var(--bnum-color-primary)));color:var(--bnum-button-primary-text-color,var(--bnum-text-on-primary))}:host(:state(primary):hover){background-color:var(--bnum-button-primary-hover-background-color,var(--bnum-color-primary-hover));border:var(--bnum-button-primary-hover-border,solid thin var(--bnum-button-primary-hover-border-color,var(--bnum-color-primary-hover)));color:var(--bnum-button-primary-hover-text-color,var(--bnum-text-on-primary-hover))}:host(:state(primary):active){background-color:var(--bnum-button-primary-active-background-color,var(--bnum-color-primary-active));border:var(--bnum-button-primary-active-border,solid thin var(--bnum-button-primary-active-border-color,var(--bnum-color-primary-active)));color:var(--bnum-button-primary-active-text-color,var(--bnum-text-on-primary-active))}:host(:state(secondary)){background-color:var(--bnum-button-secondary-background-color,var(--bnum-color-secondary));border:var(--bnum-button-secondary-border,solid thin var(--bnum-button-secondary-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-text-color,var(--bnum-text-on-secondary))}:host(:state(secondary):hover){background-color:var(--bnum-button-secondary-hover-background-color,var(--bnum-color-secondary-hover));border:var(--bnum-button-secondary-hover-border,solid thin var(--bnum-button-secondary-hover-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-hover-text-color,var(--bnum-text-on-secondary-hover))}:host(:state(secondary):active){background-color:var(--bnum-button-secondary-active-background-color,var(--bnum-color-secondary-active));border:var(--bnum-button-secondary-active-border,solid thin var(--bnum-button-secondary-active-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-active-text-color,var(--bnum-text-on-secondary-active))}:host(:state(tertiary)){background-color:var(--bnum-button-tertiary-background-color,var(--bnum-color-tertiary));border:var(--bnum-button-tertiary-border,solid thin var(--bnum-button-tertiary-border-color,transparent));color:var(--bnum-button-tertiary-text-color,var(--bnum-text-on-tertiary))}:host(:state(tertiary):hover){background-color:var(--bnum-button-tertiary-hover-background-color,var(--bnum-color-secondary-hover));border:var(--bnum-button-tertiary-hover-border,solid thin var(--bnum-button-tertiary-hover-border-color,transparent));color:var(--bnum-button-tertiary-hover-text-color,var(--bnum-text-on-tertiary-hover))}:host(:state(tertiary):active){background-color:var(--bnum-button-tertiary-active-background-color,var(--bnum-color-secondary-active));border:var(--bnum-button-tertiary-active-border,solid thin var(--bnum-button-tertiary-active-border-color,transparent));color:var(--bnum-button-tertiary-active-text-color,var(--bnum-text-on-tertiary-active))}:host(:state(danger)){background-color:var(--bnum-button-danger-background-color,var(--bnum-color-danger));border:var(--bnum-button-danger-border,solid thin var(--bnum-button-danger-border-color,var(--bnum-color-danger)));color:var(--bnum-button-danger-text-color,var(--bnum-text-on-danger))}:host(:state(danger):hover){background-color:var(--bnum-button-danger-hover-background-color,var(--bnum-color-danger-hover));border:var(--bnum-button-danger-hover-border,solid thin var(--bnum-button-danger-hover-border-color,var(--bnum-color-danger-hover)));color:var(--bnum-button-danger-hover-text-color,var(--bnum-text-on-danger-hover))}:host(:state(danger):active){background-color:var(--bnum-button-danger-active-background-color,var(--bnum-color-danger-active));border:var(--bnum-button-danger-active-border,solid thin var(--bnum-button-danger-active-border-color,var(--bnum-color-danger-active)));color:var(--bnum-button-danger-active-text-color,var(--bnum-text-on-danger-active))}:host(:state(tertiary)){--bnum-button-justify-content:start;--bnum-button-font-weight:600;transition:none}";
-var style$n = css_248z$p;
+/**
+ * RegEx qui permet de vérifier si un texte possède uniquement des charactères alphanumériques.
+ * @constant
+ * @default /^[0-9a-zA-Z]+$/
+ */
+const REG_XSS_SAFE = /^[-.\w\s%()]+$/;
 
-// core/decorators/ui.ts
-function UI(selectorMap, options) {
-    const { shadowRoot = true } = options || {};
-    return function (target, context) {
-        const name = String(context.name);
-        // Symbole pour stocker l'objet UI une fois créé
-        const uiCacheKey = Symbol(name);
-        return {
-            get() {
-                // 1. Si l'objet UI existe déjà, on le retourne
-                if (this[uiCacheKey]) {
-                    return this[uiCacheKey];
-                }
-                const root = shadowRoot ? this.shadowRoot || this : this;
-                // 2. On crée un objet vide
-                const uiObject = {};
-                // 3. On utilise un Map interne pour stocker les résultats des querySelector
-                //    pour ne pas les refaire à chaque accès (Cache granulaire)
-                const domCache = new Map();
-                // 4. On définit dynamiquement des getters pour chaque clé
-                for (const [key, selector] of Object.entries(selectorMap)) {
-                    Object.defineProperty(uiObject, key, {
-                        configurable: true,
-                        enumerable: true,
-                        get: () => {
-                            // A. Si on a déjà cherché cet élément précis, on le rend
-                            if (domCache.has(key)) {
-                                return domCache.get(key);
-                            }
-                            // B. Sinon, on fait le querySelector (LAZY)
-                            const element = root.querySelector(selector);
-                            // C. On le met en cache
-                            domCache.set(key, element);
-                            return element;
-                        },
-                        // Permet d'écraser manuellement si besoin : this.#_ui.icon = ...
-                        set: (value) => {
-                            domCache.set(key, value);
-                        },
-                    });
-                }
-                // 5. On stocke l'objet configuré sur l'instance et on le retourne
-                this[uiCacheKey] = uiObject;
-                return uiObject;
-            },
-        };
-    };
+var css_248z$v = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{--bnum-icon-font-size:var(--bnum-font-size-xl);border-radius:var(--bnum-button-border-radius,0);cursor:var(--bnum-button-cursor,pointer);display:var(--bnum-button-display,inline-block);font-weight:var(--bnum-button-font-weight,600);height:var(--bnum-button-height,-moz-fit-content);height:var(--bnum-button-height,fit-content);line-height:1.5rem;padding:var(--bnum-button-padding,.5rem 1rem);transition:background-color .2s ease,color .2s ease;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}:host(:state(rounded)){border-radius:var(--bnum-button-rounded-border-radius,5px)}:host(:state(without-icon)){padding-bottom:var(--bnum-button-without-icon-padding-bottom,7.5px);padding-top:var(--bnum-button-without-icon-padding-top,7.5px)}:host(:disabled),:host(:state(disabled)){cursor:not-allowed;opacity:var(--bnum-button-disabled-opacity,.6);pointer-events:var(--bnum-button-disabled-pointer-events,none)}:host(:state(loading)){cursor:progress}:host(:state(icon)){--bnum-button-icon-gap:var(--custom-bnum-button-icon-margin,var(--bnum-space-s,10px))}:host(:state(icon))>.wrapper{align-items:center;display:flex;flex-direction:row;gap:var(--bnum-button-icon-gap);justify-content:var(--bnum-button-justify-content,center)}:host(:state(icon-pos-left)) .wrapper{flex-direction:row-reverse}:host(:focus-visible){outline:2px solid #0969da;outline-offset:2px}:host>.wrapper{align-items:var(--bnum-button-wrapper-align-items,center);display:var(--bnum-button-wrapper-display,flex)}:host bnum-icon.icon{display:var(--bnum-button-icon-display,flex)}:host bnum-icon.icon.hidden{display:none}:host bnum-icon.loader{display:var(--bnum-button-loader-display,flex)}:host(:is(:state(loading):state(without-icon-loading))) slot{display:none}@keyframes spin{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host .loader,:host .spin,:host(:state(loading)) .icon{animation:spin var(--bnum-button-spin-duration,.75s) var(--bnum-button-spin-timing,linear) var(--bnum-button-spin-iteration,infinite)}:host(:state(hide-text-on-small)) .slot,:host(:state(hide-text-on-touch)) .slot{display:var(--size-display-state,inline-block)}:host(:state(hide-text-on-small)) .icon,:host(:state(hide-text-on-touch)) .icon{margin-left:var(--size-margin-left-state,var(--custom-button-icon-margin-left))!important;margin-right:var(--size-margin-right-state,var(--custom-button-icon-margin-right))!important}:host .hidden,:host [hidden]{display:none!important}:host(:state(primary)){background-color:var(--bnum-button-primary-background-color,var(--bnum-color-primary));border:var(--bnum-button-primary-border,solid thin var(--bnum-button-primary-border-color,var(--bnum-color-primary)));color:var(--bnum-button-primary-text-color,var(--bnum-text-on-primary))}:host(:state(primary):hover){background-color:var(--bnum-button-primary-hover-background-color,var(--bnum-color-primary-hover));border:var(--bnum-button-primary-hover-border,solid thin var(--bnum-button-primary-hover-border-color,var(--bnum-color-primary-hover)));color:var(--bnum-button-primary-hover-text-color,var(--bnum-text-on-primary-hover))}:host(:state(primary):active){background-color:var(--bnum-button-primary-active-background-color,var(--bnum-color-primary-active));border:var(--bnum-button-primary-active-border,solid thin var(--bnum-button-primary-active-border-color,var(--bnum-color-primary-active)));color:var(--bnum-button-primary-active-text-color,var(--bnum-text-on-primary-active))}:host(:state(secondary)){background-color:var(--bnum-button-secondary-background-color,var(--bnum-color-secondary));border:var(--bnum-button-secondary-border,solid thin var(--bnum-button-secondary-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-text-color,var(--bnum-text-on-secondary))}:host(:state(secondary):hover){background-color:var(--bnum-button-secondary-hover-background-color,var(--bnum-color-secondary-hover));border:var(--bnum-button-secondary-hover-border,solid thin var(--bnum-button-secondary-hover-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-hover-text-color,var(--bnum-text-on-secondary-hover))}:host(:state(secondary):active){background-color:var(--bnum-button-secondary-active-background-color,var(--bnum-color-secondary-active));border:var(--bnum-button-secondary-active-border,solid thin var(--bnum-button-secondary-active-border-color,var(--bnum-color-primary)));color:var(--bnum-button-secondary-active-text-color,var(--bnum-text-on-secondary-active))}:host(:state(tertiary)){background-color:var(--bnum-button-tertiary-background-color,var(--bnum-color-tertiary));border:var(--bnum-button-tertiary-border,solid thin var(--bnum-button-tertiary-border-color,transparent));color:var(--bnum-button-tertiary-text-color,var(--bnum-text-on-tertiary))}:host(:state(tertiary):hover){background-color:var(--bnum-button-tertiary-hover-background-color,var(--bnum-color-secondary-hover));border:var(--bnum-button-tertiary-hover-border,solid thin var(--bnum-button-tertiary-hover-border-color,transparent));color:var(--bnum-button-tertiary-hover-text-color,var(--bnum-text-on-tertiary-hover))}:host(:state(tertiary):active){background-color:var(--bnum-button-tertiary-active-background-color,var(--bnum-color-secondary-active));border:var(--bnum-button-tertiary-active-border,solid thin var(--bnum-button-tertiary-active-border-color,transparent));color:var(--bnum-button-tertiary-active-text-color,var(--bnum-text-on-tertiary-active))}:host(:state(danger)){background-color:var(--bnum-button-danger-background-color,var(--bnum-color-danger));border:var(--bnum-button-danger-border,solid thin var(--bnum-button-danger-border-color,var(--bnum-color-danger)));color:var(--bnum-button-danger-text-color,var(--bnum-text-on-danger))}:host(:state(danger):hover){background-color:var(--bnum-button-danger-hover-background-color,var(--bnum-color-danger-hover));border:var(--bnum-button-danger-hover-border,solid thin var(--bnum-button-danger-hover-border-color,var(--bnum-color-danger-hover)));color:var(--bnum-button-danger-hover-text-color,var(--bnum-text-on-danger-hover))}:host(:state(danger):active){background-color:var(--bnum-button-danger-active-background-color,var(--bnum-color-danger-active));border:var(--bnum-button-danger-active-border,solid thin var(--bnum-button-danger-active-border-color,var(--bnum-color-danger-active)));color:var(--bnum-button-danger-active-text-color,var(--bnum-text-on-danger-active))}:host(:state(tertiary)){--bnum-button-justify-content:start;--bnum-button-font-weight:600;transition:none}";
+var style$t = css_248z$v;
+
+function OnIconChangeInitializer(event, instance) {
+    event.push((newValue, oldValue) => {
+        instance.dispatchEvent(new ElementChangedEvent(EVENT_ICON, newValue, oldValue, instance));
+    });
 }
+function OnLoadingStateChangeInitializer(event, instance) {
+    event.push(instance._p_onLoadingChange);
+}
+function OnIconPropChangeInitializer(event, instance) {
+    event.push((type, newValue) => {
+        instance.dispatchEvent(new CustomEvent(EVENT_ICON_PROP_CHANGED, {
+            detail: { type, newValue },
+        }));
+    });
+}
+function OnVariationChangeInitializer(event, instance) {
+    event.push((newValue, oldValue) => {
+        instance.dispatchEvent(new ElementChangedEvent(EVENT_VARIATION, newValue, oldValue, instance));
+    });
+}
+function OnClickInitializer(event, instance) {
+    instance.addEventListener('click', () => {
+        event.call();
+    });
+}
+
+// --- Component Identity ---
+// --- CSS Classes ---
+const CLASS_WRAPPER = 'wrapper';
+const CLASS_SLOT = 'slot';
+const CLASS_ICON$1 = 'icon';
+// --- Attributes ---
+const ATTR_ROUNDED = 'rounded';
+const ATTR_LOADING = 'loading';
+const ATTR_DISABLED$1 = 'disabled';
+const ATTR_VARIATION$2 = 'variation'; // or 'data-variation'
+const ATTR_ICON$2 = 'icon';
+const ATTR_ICON_POS = 'icon-pos';
+const ATTR_ICON_MARGIN = 'icon-margin';
+const ATTR_HIDE = 'hide';
+// --- States (Internal/CSS) ---
+const STATE_ICON$2 = 'icon';
+const STATE_WITHOUT_ICON = 'without-icon';
+const STATE_ROUNDED = 'rounded';
+const STATE_LOADING$1 = 'loading';
+const STATE_DISABLED$3 = 'disabled';
+// --- Events ---
+const EVENT_ICON = 'icon'; // Suffix
+const EVENT_VARIATION = 'variation'; // Suffix
+const EVENT_ICON_PROP_CHANGED = 'custom:icon.prop.changed';
+const EVENT_LOADING_STATE_CHANGED = 'custom:loading';
+// --- Defaults & CSS Vars ---
+const DEFAULT_CSS_VAR_ICON_MARGIN = 'var(--custom-bnum-button-icon-margin, 10px)';
+const ICON_PROP_POS = 'pos';
+const CSS_PROPERTY_ICON_MARGIN = '--bnum-button-icon-gap';
+// --- Logic Helpers ---
+// Definition for attribute mapping in Factory
+const BUTTON_ATTRIBUTE_MAP = [
+    { prop: 'rounded', attr: ATTR_ROUNDED, isBool: true },
+    { prop: 'loading', attr: ATTR_LOADING, isBool: true },
+    { prop: 'icon', attr: `data-${ATTR_ICON$2}` },
+    { prop: 'iconPos', attr: `data-${ATTR_ICON_POS}` },
+    { prop: 'variation', attr: `data-${ATTR_VARIATION$2}` },
+    { prop: 'hideOn', attr: `data-${ATTR_HIDE}` },
+    { prop: 'iconMargin', attr: `data-${ATTR_ICON_MARGIN}` },
+];
+// Default Options for Factory
+const DEFAULT_BUTTON_OPTIONS = {
+    text: '',
+    iconPos: 'right', // Assumes 'right' is default in enum
+    rounded: false,
+    loading: false,
+};
+
+const ButtonVariation = {
+    PRIMARY: 'primary',
+    SECONDARY: 'secondary',
+    TERTIARY: 'tertiary',
+    DANGER: 'danger',
+};
+const IconPosition = {
+    LEFT: 'left',
+    RIGHT: 'right',
+};
+const HideTextOnLayoutSize = {
+    SMALL: 'small',
+    TOUCH: 'touch',
+};
 
 //#region External Constants
 // Constantes pour les tags des différents types de boutons
@@ -4289,7 +4095,7 @@ function UI(selectorMap, options) {
 const ICON_LOADER = 'progress_activity';
 //#endregion External Constants
 //#region Template
-const TEMPLATE$g = (h("div", { class: CLASS_WRAPPER, part: "container", children: [h("span", { class: CLASS_SLOT, children: h("slot", {}) }), h(HTMLBnumIcon, { hidden: "true", class: CLASS_ICON })] }));
+const TEMPLATE$j = (h("div", { class: CLASS_WRAPPER, part: "container", children: [h("span", { class: CLASS_SLOT, children: h("slot", {}) }), h(HTMLBnumIcon, { hidden: "true", class: CLASS_ICON$1 })] }));
 //#endregion Template
 //#region Documentation
 /**
@@ -4409,8 +4215,8 @@ const TEMPLATE$g = (h("div", { class: CLASS_WRAPPER, part: "container", children
 let HTMLBnumButton = (() => {
     let _classDecorators = [Define({
             tag: TAG_BUTTON,
-            template: TEMPLATE$g,
-            styles: style$n,
+            template: TEMPLATE$j,
+            styles: style$t,
         })];
     let _classDescriptor;
     let _classExtraInitializers = [];
@@ -4448,10 +4254,10 @@ let HTMLBnumButton = (() => {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _private__ui_decorators = [UI({
                     wrapper: `.${CLASS_WRAPPER}`,
-                    icon: `.${CLASS_ICON}`,
+                    icon: `.${CLASS_ICON$1}`,
                 })];
             _onloadingstatechange_decorators = [Listener(OnLoadingStateChangeInitializer, { lazy: false })];
-            _oniconchange_decorators = [Listener(OnIconChangeInitializer$1, { lazy: false })];
+            _oniconchange_decorators = [Listener(OnIconChangeInitializer, { lazy: false })];
             _oniconpropchange_decorators = [Listener(OnIconPropChangeInitializer, { lazy: false })];
             _onvariationchange_decorators = [Listener(OnVariationChangeInitializer, { lazy: false })];
             _linkedClickEvent_decorators = [Listener(OnClickInitializer)];
@@ -4535,12 +4341,12 @@ let HTMLBnumButton = (() => {
          * Variation du bouton (primary, secondary, etc.).
          */
         get variation() {
-            return (this.data(ATTR_VARIATION) || ButtonVariation.PRIMARY);
+            return (this.data(ATTR_VARIATION$2) || ButtonVariation.PRIMARY);
         }
         set variation(value) {
             if (Object.values(ButtonVariation).includes(value)) {
                 const fromAttribute = false;
-                this.data(ATTR_VARIATION, value, fromAttribute);
+                this.data(ATTR_VARIATION$2, value, fromAttribute);
                 if (this.alreadyLoaded) {
                     this.onvariationchange.call(value, this.variation);
                     this.#_requestUpdateDOM();
@@ -4551,17 +4357,17 @@ let HTMLBnumButton = (() => {
          * Icône affichée dans le bouton.
          */
         get icon() {
-            return this.data(ATTR_ICON$1) || null;
+            return this.data(ATTR_ICON$2) || null;
         }
         set icon(value) {
             if (this.alreadyLoaded)
                 this.oniconchange.call(value || EMPTY_STRING, this.icon || EMPTY_STRING);
             if (typeof value === 'string' && /^[\w-]+$/.test(value)) {
                 const fromAttribute = false;
-                this.data(ATTR_ICON$1, value, fromAttribute);
+                this.data(ATTR_ICON$2, value, fromAttribute);
             }
             else {
-                this.data(ATTR_ICON$1, null);
+                this.data(ATTR_ICON$2, null);
             }
             if (this.alreadyLoaded)
                 this.#_requestUpdateDOM();
@@ -4663,11 +4469,11 @@ let HTMLBnumButton = (() => {
             if (isLoading)
                 this._p_addState(STATE_LOADING$1);
             if (isDisabled || isLoading)
-                this._p_addState(STATE_DISABLED$2);
+                this._p_addState(STATE_DISABLED$3);
             // Gestion de l'icône
             const effectiveIcon = isLoading ? ICON_LOADER : this.icon;
             if (effectiveIcon) {
-                this._p_addState(STATE_ICON$1);
+                this._p_addState(STATE_ICON$2);
                 // L'état CSS "icon-pos-left" déclenchera le "flex-direction: row-reverse"
                 this._p_addState(`icon-pos-${this.iconPos}`);
                 if (this.hideTextOnLayoutSize) {
@@ -4867,6 +4673,888 @@ let HTMLBnumButton = (() => {
     return HTMLBnumButton = _classThis;
 })();
 
+function OnLinkedClickEventInitializer(event, instance) {
+    instance.addEventListener('click', () => {
+        event.call();
+    });
+}
+
+var css_248z$u = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{cursor:pointer;font-variation-settings:\"wght\" 400;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}:host(:hover){--bnum-icon-fill:1}:host(:active){--bnum-icon-fill:1;--bnum-icon-weight:700;--bnum-icon-grad:200;--bnum-icon-opsz:20}:host(:disabled),:host([disabled]){cursor:not-allowed;opacity:var(--bnum-button-disabled-opacity,.6);pointer-events:var(--bnum-button-disabled-pointer-events,none)}";
+var style$s = css_248z$u;
+
+//#region Global Constants
+const ID_ICON$2 = 'icon';
+//#endregion Global Constants
+const TEMPLATE$i = (h(HTMLBnumIcon, { id: ID_ICON$2, children: h("slot", {}) }));
+/**
+ * Button contenant une icône.
+ *
+ * @category Buttons
+ *
+ * @structure Button Icon
+ * <bnum-icon-button>home</bnum-icon-button>
+ *
+ * @structure Button Disabled
+ * <bnum-icon-button disabled>home</bnum-icon-button>
+ *
+ * @cssvar {0.6} --bnum-button-disabled-opacity - Opacité du bouton désactivé
+ * @cssvar {none} --bnum-button-disabled-pointer-events - Gestion des événements souris pour le bouton désactivé
+ *
+ * @slot (default) - Contenu de l'icône (nom de l'icône à afficher)
+ */
+let HTMLBnumButtonIcon = (() => {
+    let _classDecorators = [Define({ styles: style$s, tag: TAG_ICON_BUTTON, template: TEMPLATE$i }), Observe('click')];
+    let _classDescriptor;
+    let _classExtraInitializers = [];
+    let _classThis;
+    let _classSuper = BnumElement;
+    let ___decorators;
+    let ___initializers = [];
+    let ___extraInitializers = [];
+    let _private__linkedClickEvent_decorators;
+    let _private__linkedClickEvent_initializers = [];
+    let _private__linkedClickEvent_extraInitializers = [];
+    let _private__linkedClickEvent_descriptor;
+    var HTMLBnumButtonIcon = class extends _classSuper {
+        static { _classThis = this; }
+        static {
+            const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
+            ___decorators = [Self];
+            _private__linkedClickEvent_decorators = [Listener(OnLinkedClickEventInitializer, { lazy: false })];
+            __esDecorate(this, _private__linkedClickEvent_descriptor = { get: __setFunctionName(function () { return this.#_linkedClickEvent_accessor_storage; }, "#_linkedClickEvent", "get"), set: __setFunctionName(function (value) { this.#_linkedClickEvent_accessor_storage = value; }, "#_linkedClickEvent", "set") }, _private__linkedClickEvent_decorators, { kind: "accessor", name: "#_linkedClickEvent", static: false, private: true, access: { has: obj => #_linkedClickEvent in obj, get: obj => obj.#_linkedClickEvent, set: (obj, value) => { obj.#_linkedClickEvent = value; } }, metadata: _metadata }, _private__linkedClickEvent_initializers, _private__linkedClickEvent_extraInitializers);
+            __esDecorate(null, null, ___decorators, { kind: "field", name: "_", static: false, private: false, access: { has: obj => "_" in obj, get: obj => obj._, set: (obj, value) => { obj._ = value; } }, metadata: _metadata }, ___initializers, ___extraInitializers);
+            __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+            HTMLBnumButtonIcon = _classThis = _classDescriptor.value;
+            if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+            __runInitializers(_classThis, _classExtraInitializers);
+        }
+        //#region Private fields
+        /**
+         * Référence vers l'élément icône à l'intérieur du bouton
+         */
+        #_icon = null;
+        #_lastClick = null;
+        //#endregion Private fields
+        //#region Getters/Setters
+        /** Référence à la classe HTMLBnumButtonIcon */
+        _ = __runInitializers(this, ___initializers, void 0);
+        #_linkedClickEvent_accessor_storage = (__runInitializers(this, ___extraInitializers), __runInitializers(this, _private__linkedClickEvent_initializers, void 0));
+        get #_linkedClickEvent() { return _private__linkedClickEvent_descriptor.get.call(this); }
+        set #_linkedClickEvent(value) { return _private__linkedClickEvent_descriptor.set.call(this, value); }
+        /**
+         * Référence vers l'élément icône à l'intérieur du bouton.
+         *
+         * Si l'icône n'a pas été mise en mémoire, elle sera cherché puis mise en mémoire.
+         */
+        get #_iconElement() {
+            if (!this.#_icon) {
+                const icon = this.querySelector(HTMLBnumIcon.TAG) ??
+                    this.shadowRoot?.getElementById(ID_ICON$2);
+                if (!icon)
+                    this.#_throw('Icon element not found inside icon button');
+                this.#_icon = icon;
+            }
+            return this.#_icon;
+        }
+        /**
+         * Icône affichée dans le bouton
+         */
+        get icon() {
+            return ((this.#_iconElement.icon || this.#_throw('Icon is not defined')) ??
+                EMPTY_STRING);
+        }
+        set icon(value) {
+            this.#_iconElement.icon = value;
+        }
+        //#endregion Getters/Setters
+        //#region Lifecycle
+        constructor() {
+            super();
+            __runInitializers(this, _private__linkedClickEvent_extraInitializers);
+        }
+        /**
+         * @inheritdoc
+         */
+        _p_buildDOM() {
+            HTMLBnumButton.ToButton(this);
+            if (this.title === EMPTY_STRING)
+                Log.warn(this._.TAG, 'Icon button should have a title for accessibility purposes');
+            if (this.hasAttribute('click')) {
+                const click = this.getAttribute('click');
+                this.#_updateAttributeClick(click ?? EMPTY_STRING);
+            }
+        }
+        _p_update(name, oldVal, newVal) {
+            if (oldVal === newVal)
+                return;
+            if (name === 'click') {
+                this.#_updateAttributeClick(newVal ?? EMPTY_STRING);
+            }
+        }
+        //#endregion Lifecycle
+        //#region Private methods
+        #_updateAttributeClick(val) {
+            if (val !== this.#_lastClick) {
+                this.#_lastClick = val;
+                if (this.#_linkedClickEvent.has('click'))
+                    this.#_linkedClickEvent.remove('click');
+                if (val && REG_XSS_SAFE.test(val)) {
+                    this.#_linkedClickEvent.add('click', (click) => {
+                        // Si c'est un id unique
+                        const elementToClick = document.getElementById(click);
+                        if (elementToClick)
+                            elementToClick.click();
+                        else {
+                            // Sinon on part du principe que c'est un sélecteur CSS
+                            const elements = document.querySelector(click);
+                            if (elements)
+                                elements.click();
+                            else
+                                throw new Error(`[${this._.TAG}] L'attribut 'click' ne référence aucun élément.`);
+                        }
+                    }, val);
+                }
+            }
+        }
+        /**
+         * Permet de lancer une erreur avec un message spécifique dans une expression inline.
+         * @param msg Message à envoyer dans l'erreur.
+         */
+        #_throw(msg) {
+            throw new Error(msg);
+        }
+        //#endregion Private methods
+        //#region Static methods
+        /**
+         * Génère un bouton icône avec l'icône spécifiée.
+         * @param icon Icône à afficher dans le bouton.
+         * @returns Node créée.
+         */
+        static Create(icon) {
+            const node = document.createElement(this.TAG);
+            node.appendChild(document.createTextNode(icon));
+            return node;
+        }
+        /**
+         * Génère le code HTML d'un bouton icône avec l'icône spécifiée.
+         * @param icon Icône à afficher dans le bouton.
+         * @returns Code HTML créée.
+         */
+        static Write(icon, attrs = {}) {
+            return h(HTMLBnumButtonIcon, { ...attrs, children: icon });
+        }
+    };
+    return HTMLBnumButtonIcon = _classThis;
+})();
+
+var css_248z$t = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host(:state(variation-info)){--_alert-color:var(--bnum-alert-info-color,#0063cb)}:host(:state(variation-success)){--_alert-color:var(--bnum-alert-success-color,#18753c)}:host(:state(variation-warning)){--_alert-color:var(--bnum-alert-warning-color,#d64d00)}:host(:state(variation-error)){--_alert-color:var(--bnum-alert-error-color,var(--bnum-color-danger,#ce0500))}:host(:state(variation-custom)){--_alert-color:var(--bnum-alert-custom-color,var(--bnum-color-primary,#000091))}:host{--_alert-color:var(--bnum-alert-info-color,#0063cb);display:block}.alert{align-items:stretch;background:var(--bnum-alert-background,var(--bnum-color-background,#fff));border:1px solid var(--_alert-color);display:flex}.alert__icon{align-items:center;background:var(--_alert-color);box-sizing:border-box;color:var(--bnum-alert-icon-color,#fff);display:flex;flex:none;justify-content:center;width:var(--bnum-alert-icon-size,2.5rem)}.alert__icon bnum-icon{--bnum-icon-font-size:1.5rem}.alert__content{flex:1;padding:var(--bnum-space-m,15px)}.alert__title{display:none;font-size:var(--bnum-font-size-text-m,1rem);font-weight:700;margin:0 0 var(--bnum-space-xs,5px)}:host(:has([slot=title])) .alert__title{display:block}.alert__description{font-size:var(--bnum-font-size-text-s,.875rem)}.alert__close{align-self:flex-start;display:none;flex:none;margin:var(--bnum-space-xs,5px)}:host([closable]) .alert__close{display:block}";
+var style$r = css_248z$t;
+
+const ATTR_VARIATION$1 = 'data-variation';
+const ATTR_ICON$1 = 'data-icon';
+const ATTR_CLOSABLE = 'closable';
+const SLOT_TITLE$2 = 'title';
+const CLASS_ALERT = 'alert';
+const CLASS_ICON = 'alert__icon';
+const CLASS_CLOSE = 'alert__close';
+const ID_ICON$1 = 'alert-icon';
+const STATE_VARIATION_PREFIX$1 = 'variation-';
+const EVENT_CLOSE = 'bnum-alert:close';
+const DEFAULT_VARIATION = 'info';
+const DEFAULT_CUSTOM_ICON = 'info';
+const VARIATIONS = [
+    'info',
+    'success',
+    'warning',
+    'error',
+    'custom',
+];
+/** Icône (Material Symbols) associée à chaque variation, hors `custom`. */
+const VARIATION_ICONS = {
+    info: 'info',
+    success: 'check_circle',
+    warning: 'warning',
+    error: 'error',
+};
+/** Rôles ARIA : les variations urgentes sont annoncées immédiatement. */
+const ASSERTIVE_VARIATIONS = [
+    'warning',
+    'error',
+];
+
+//#region Template
+const TEMPLATE$h = (h("div", { class: CLASS_ALERT, part: CLASS_ALERT, children: [h("div", { class: CLASS_ICON, part: "icon", children: h(HTMLBnumIcon, { id: ID_ICON$1 }) }), h("div", { class: "alert__content", part: "content", children: [h("p", { class: "alert__title", part: "title", children: h("slot", { name: SLOT_TITLE$2 }) }), h("div", { class: "alert__description", part: "description", children: h("slot", {}) })] }), h(HTMLBnumButtonIcon, { class: CLASS_CLOSE, part: "close", children: "close" })] }));
+//#endregion Template
+/**
+ * Alerte : message contextuel d'information, de succès, d'avertissement ou d'erreur.
+ *
+ * La variation se choisit via `data-variation` ou via les balises dédiées
+ * (`bnum-alert-info`, `bnum-alert-success`, `bnum-alert-warning`, `bnum-alert-error`, `bnum-alert-custom`).
+ *
+ * @category Alert
+ *
+ * @structure Information
+ * <bnum-alert data-variation="info">
+ *   <span slot="title">Information</span>
+ *   Un message d'information.
+ * </bnum-alert>
+ *
+ * @structure Succès
+ * <bnum-alert-success><span slot="title">Succès</span>L'action a réussi.</bnum-alert-success>
+ *
+ * @structure Avertissement
+ * <bnum-alert-warning><span slot="title">Attention</span>Vérifiez vos informations.</bnum-alert-warning>
+ *
+ * @structure Erreur
+ * <bnum-alert-error><span slot="title">Erreur</span>Une erreur est survenue.</bnum-alert-error>
+ *
+ * @structure Personnalisée
+ * <bnum-alert data-variation="custom" data-icon="rocket_launch">Alerte avec une icône au choix.</bnum-alert>
+ *
+ * @structure Fermable, sans titre
+ * <bnum-alert-info closable>Cette alerte peut être fermée.</bnum-alert-info>
+ *
+ * @slot (default) - Description de l'alerte.
+ * @slot title - Titre de l'alerte (optionnel).
+ *
+ * @state variation-info - Variation info.
+ * @state variation-success - Variation succès.
+ * @state variation-warning - Variation avertissement.
+ * @state variation-error - Variation erreur.
+ * @state variation-custom - Variation personnalisée.
+ *
+ * @attr {'info' | 'success' | 'warning' | 'error' | 'custom'} (optional) (default:'info') data-variation - Variation de l'alerte.
+ * @attr {string} (optional) data-icon - Icône (Material Symbols) de la variation `custom`.
+ * @attr {any} (optional) closable - Affiche le bouton de fermeture.
+ *
+ * @event {CustomEvent<{ caller: HTMLBnumAlert }>} bnum-alert:close - Clic sur le bouton de fermeture (annulable : sans `preventDefault`, l'alerte est retirée du DOM).
+ *
+ * @cssvar {#0063cb} --bnum-alert-info-color - Couleur de la variation "info".
+ * @cssvar {#18753c} --bnum-alert-success-color - Couleur de la variation "success".
+ * @cssvar {#d64d00} --bnum-alert-warning-color - Couleur de la variation "warning".
+ * @cssvar {#ce0500} --bnum-alert-error-color - Couleur de la variation "error".
+ * @cssvar {#000091} --bnum-alert-custom-color - Couleur de la variation "custom".
+ * @cssvar {#fff} --bnum-alert-icon-color - Couleur de l'icône.
+ * @cssvar {2.5rem} --bnum-alert-icon-size - Largeur de la bande d'icône.
+ */
+let HTMLBnumAlert = (() => {
+    let _classDecorators = [Define({ tag: TAG_ALERT, styles: style$r, template: TEMPLATE$h }), UpdateAll(), Observe([ATTR_VARIATION$1, ATTR_ICON$1])];
+    let _classDescriptor;
+    let _classExtraInitializers = [];
+    let _classThis;
+    let _classSuper = BnumElementInternal;
+    let _private__ui_decorators;
+    let _private__ui_initializers = [];
+    let _private__ui_extraInitializers = [];
+    let _private__ui_descriptor;
+    (class extends _classSuper {
+        static { _classThis = this; }
+        static {
+            const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
+            _private__ui_decorators = [UI({
+                    container: `.${CLASS_ALERT}`,
+                    icon: `#${ID_ICON$1}`,
+                    close: `.${CLASS_CLOSE}`,
+                })];
+            __esDecorate(this, _private__ui_descriptor = { get: __setFunctionName(function () { return this.#_ui_accessor_storage; }, "#_ui", "get"), set: __setFunctionName(function (value) { this.#_ui_accessor_storage = value; }, "#_ui", "set") }, _private__ui_decorators, { kind: "accessor", name: "#_ui", static: false, private: true, access: { has: obj => #_ui in obj, get: obj => obj.#_ui, set: (obj, value) => { obj.#_ui = value; } }, metadata: _metadata }, _private__ui_initializers, _private__ui_extraInitializers);
+            __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+            _classThis = _classDescriptor.value;
+            if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+            __runInitializers(_classThis, _classExtraInitializers);
+        }
+        #_ui_accessor_storage = __runInitializers(this, _private__ui_initializers, void 0);
+        //#region Private fields
+        get #_ui() { return _private__ui_descriptor.get.call(this); }
+        set #_ui(value) { return _private__ui_descriptor.set.call(this, value); }
+        //#endregion Private fields
+        //#region Getters/Setters
+        /**
+         * Variation imposée par la balise (sous-classes). `null` : on lit `data-variation`.
+         */
+        get _p_forcedVariation() {
+            return null;
+        }
+        /**
+         * Variation effective de l'alerte (`info` si la valeur est absente ou invalide).
+         */
+        get variation() {
+            const value = this._p_forcedVariation ?? this.getAttribute(ATTR_VARIATION$1);
+            return VARIATIONS.includes(value)
+                ? value
+                : DEFAULT_VARIATION;
+        }
+        set variation(value) {
+            this.setAttribute(ATTR_VARIATION$1, value);
+        }
+        //#endregion Getters/Setters
+        //#region Lifecycle
+        constructor() {
+            super();
+            __runInitializers(this, _private__ui_extraInitializers);
+        }
+        _p_buildDOM() {
+            this.#_ui.close.addEventListener('click', () => this.#_onCloseClick());
+            this.#_update();
+        }
+        _p_update() {
+            if (this.alreadyLoaded)
+                this.#_update();
+        }
+        //#endregion Lifecycle
+        //#region Private Methods
+        #_update() {
+            const variation = this.variation;
+            this._p_clearStates()._p_addState(`${STATE_VARIATION_PREFIX$1}${variation}`);
+            this.#_ui.icon.icon = this.#_iconFor(variation);
+            this.#_ui.container.setAttribute('role', ASSERTIVE_VARIATIONS.includes(variation) ? 'alert' : 'status');
+        }
+        #_iconFor(variation) {
+            if (variation !== 'custom')
+                return VARIATION_ICONS[variation];
+            return this.getAttribute(ATTR_ICON$1) || DEFAULT_CUSTOM_ICON;
+        }
+        #_onCloseClick() {
+            const notCancelled = this.dispatchEvent(new CustomEvent(EVENT_CLOSE, {
+                detail: { caller: this },
+                bubbles: true,
+                cancelable: true,
+            }));
+            if (notCancelled)
+                this.remove();
+        }
+        //#endregion Private Methods
+        //#region Static Methods
+        /**
+         * Crée une alerte via JavaScript.
+         * @param description Texte de description.
+         * @param options Variation, titre, icône (variation `custom`) et fermeture.
+         */
+        static Create(description, { variation, title, icon, closable = false, } = {}) {
+            const alert = document.createElement(this.TAG);
+            if (title) {
+                const titleNode = document.createElement('span');
+                titleNode.slot = SLOT_TITLE$2;
+                titleNode.textContent = title;
+                alert.appendChild(titleNode);
+            }
+            alert.appendChild(document.createTextNode(description));
+            return alert
+                .condAttr(variation !== undefined, ATTR_VARIATION$1, variation)
+                .condAttr(icon !== undefined, ATTR_ICON$1, icon)
+                .condAttr(closable, ATTR_CLOSABLE, true);
+        }
+    });
+    return _classThis;
+})();
+
+/**
+ * Alerte de variation « info ».
+ *
+ * @category Alert
+ *
+ * @structure Cas standard
+ * <bnum-alert-info><span slot="title">Titre</span>Description de l'alerte.</bnum-alert-info>
+ */
+let HTMLBnumAlertInfo = (() => {
+    let _classDecorators = [Define({ tag: TAG_ALERT_INFO })];
+    let _classDescriptor;
+    let _classExtraInitializers = [];
+    let _classThis;
+    let _classSuper = HTMLBnumAlert;
+    (class extends _classSuper {
+        static { _classThis = this; }
+        static {
+            const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
+            __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+            _classThis = _classDescriptor.value;
+            if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+            __runInitializers(_classThis, _classExtraInitializers);
+        }
+        constructor() {
+            super();
+        }
+        get _p_forcedVariation() {
+            return 'info';
+        }
+    });
+    return _classThis;
+})();
+
+/**
+ * Alerte de variation « success ».
+ *
+ * @category Alert
+ *
+ * @structure Cas standard
+ * <bnum-alert-success><span slot="title">Titre</span>Description de l'alerte.</bnum-alert-success>
+ */
+let HTMLBnumAlertSuccess = (() => {
+    let _classDecorators = [Define({ tag: TAG_ALERT_SUCCESS })];
+    let _classDescriptor;
+    let _classExtraInitializers = [];
+    let _classThis;
+    let _classSuper = HTMLBnumAlert;
+    (class extends _classSuper {
+        static { _classThis = this; }
+        static {
+            const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
+            __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+            _classThis = _classDescriptor.value;
+            if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+            __runInitializers(_classThis, _classExtraInitializers);
+        }
+        constructor() {
+            super();
+        }
+        get _p_forcedVariation() {
+            return 'success';
+        }
+    });
+    return _classThis;
+})();
+
+/**
+ * Alerte de variation « warning ».
+ *
+ * @category Alert
+ *
+ * @structure Cas standard
+ * <bnum-alert-warning><span slot="title">Titre</span>Description de l'alerte.</bnum-alert-warning>
+ */
+let HTMLBnumAlertWarning = (() => {
+    let _classDecorators = [Define({ tag: TAG_ALERT_WARNING })];
+    let _classDescriptor;
+    let _classExtraInitializers = [];
+    let _classThis;
+    let _classSuper = HTMLBnumAlert;
+    (class extends _classSuper {
+        static { _classThis = this; }
+        static {
+            const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
+            __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+            _classThis = _classDescriptor.value;
+            if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+            __runInitializers(_classThis, _classExtraInitializers);
+        }
+        constructor() {
+            super();
+        }
+        get _p_forcedVariation() {
+            return 'warning';
+        }
+    });
+    return _classThis;
+})();
+
+/**
+ * Alerte de variation « error ».
+ *
+ * @category Alert
+ *
+ * @structure Cas standard
+ * <bnum-alert-error><span slot="title">Titre</span>Description de l'alerte.</bnum-alert-error>
+ */
+let HTMLBnumAlertError = (() => {
+    let _classDecorators = [Define({ tag: TAG_ALERT_ERROR })];
+    let _classDescriptor;
+    let _classExtraInitializers = [];
+    let _classThis;
+    let _classSuper = HTMLBnumAlert;
+    (class extends _classSuper {
+        static { _classThis = this; }
+        static {
+            const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
+            __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+            _classThis = _classDescriptor.value;
+            if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+            __runInitializers(_classThis, _classExtraInitializers);
+        }
+        constructor() {
+            super();
+        }
+        get _p_forcedVariation() {
+            return 'error';
+        }
+    });
+    return _classThis;
+})();
+
+/**
+ * Alerte de variation « custom ».
+ *
+ * @category Alert
+ *
+ * @structure Cas standard
+ * <bnum-alert-custom data-icon="rocket_launch"><span slot="title">Titre</span>Description de l'alerte.</bnum-alert-custom>
+ *
+ * @attr {string} (optional) data-icon - Icône (Material Symbols) affichée dans l'alerte.
+ */
+let HTMLBnumAlertCustom = (() => {
+    let _classDecorators = [Define({ tag: TAG_ALERT_CUSTOM })];
+    let _classDescriptor;
+    let _classExtraInitializers = [];
+    let _classThis;
+    let _classSuper = HTMLBnumAlert;
+    (class extends _classSuper {
+        static { _classThis = this; }
+        static {
+            const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
+            __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+            _classThis = _classDescriptor.value;
+            if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+            __runInitializers(_classThis, _classExtraInitializers);
+        }
+        constructor() {
+            super();
+        }
+        get _p_forcedVariation() {
+            return 'custom';
+        }
+    });
+    return _classThis;
+})();
+
+var css_248z$s = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{border-radius:var(--bnum-badge-border-radius,100px);display:var(--bnum-badge-display,inline-block);padding:var(--bnum-badge-padding,var(--bnum-space-xs,5px))}:host(:state(is-circle)){aspect-ratio:1;border-radius:var(--bnum-badge-circle-border-radius,100%)}:host(:state(is-circle)) span{align-items:center;display:flex;height:100%;justify-content:center}:host(:state(variation-primary)){background-color:var(--bnum-badge-primary-color,var(--bnum-color-primary,#000091));color:var(--bnum-badge-primary-text-color,var(--bnum-text-on-primary,#f5f5fe))}:host(:state(variation-secondary)){background-color:var(--bnum-badge-secondary-color,var(--bnum-color-secondary,#3a3a3a));color:var(--bnum-badge-secondary-text-color,var(--bnum-text-on-secondary,#fff))}:host(:state(variation-secondary)){border:var(--bnum-badge-type,solid) var(--bnum-badge-size,thin) var(--bnum-badge-secondary-text-color,var(--bnum-text-on-secondary,#fff))}:host(:state(variation-danger)){background-color:var(--bnum-badge-danger-color,var(--bnum-color-danger,#ce0500));color:var(--bnum-badge-danger-text-color,var(--bnum-text-on-danger,#f5f5fe))}";
+var style$q = css_248z$s;
+
+//#endregion Types
+//#region Global constants
+const DATA_VALUE = 'value';
+const DATA_VARIATION = 'variation';
+const ATTR_VALUE = 'data-value';
+const ATTR_VARIATION = 'data-variation';
+const ATTR_CIRCLE = 'circle';
+const VARIATION_PRIMARY = 'primary';
+// Not used currently
+// const VARIATION_SECONDARY = 'secondary';
+// const VARIATION_DANGER = 'danger';
+const STATE_HAS_VALUE = 'has-value';
+const STATE_NO_VALUE = 'no-value';
+const STATE_IS_CIRCLE = 'is-circle';
+const STATE_VARIATION_PREFIX = 'variation-';
+//#endregion Global constants
+/**
+ * Badge d'information.
+ *
+ * @structure Badge classique
+ * <bnum-badge data-value="Je suis un badge !"></bnum-badge>
+ *
+ * @structure Badge avec un nombre
+ * <bnum-badge data-value="9999"></bnum-badge>
+ *
+ * @structure Arrondi forcé
+ * <bnum-badge data-value="9999" circle></bnum-badge>
+ *
+ * @structure Secondary
+ * <bnum-badge data-value="42" data-variation="secondary" circle></bnum-badge>
+ *
+ * @structure Danger
+ * <bnum-badge data-value="42" data-variation="danger" circle></bnum-badge>
+ *
+ * @state has-value - Le badge a une valeur.
+ * @state no-value - Le badge n'a pas de valeur.
+ * @state is-circle - Le badge est en mode cercle.
+ * @state variation-primary - Le badge utilise la variation primaire.
+ * @state variation-secondary - Le badge utilise la variation secondaire.
+ * @state variation-danger - Le badge utilise la variation danger.
+ *
+ * @attr {string} data-value - Valeur affichée dans le badge.
+ * @attr {'primary' | 'secondary' | 'danger'} (optional) (default:'primary') data-variation - Variation du badge.
+ * @attr {any} (optional) circle - Indique si le badge doit être affiché en cercle.
+ *
+ * @cssvar {inline-block} --bnum-badge-display - Permet de surcharger la propriété CSS display du badge.
+ * @cssvar {100px} --bnum-badge-border-radius - Permet de surcharger le rayon de bordure du badge.
+ * @cssvar {10px} --bnum-badge-padding - Permet de surcharger le padding du badge.
+ * @cssvar {100%} --bnum-badge-circle-border-radius - Permet de surcharger le rayon de bordure du badge en mode "cercle".
+ * @cssvar {#000091} --bnum-badge-primary-color - Définit la couleur de fond du badge en variation "primary".
+ * @cssvar {#f5f5fe} --bnum-badge-primary-text-color - Définit la couleur du texte du badge en variation "primary".
+ * @cssvar {#ffffff} --bnum-badge-secondary-color - Définit la couleur de fond du badge en variation "secondary".
+ * @cssvar {#000091} --bnum-badge-secondary-text-color - Définit la couleur du texte du badge en variation "secondary".
+ * @cssvar {solid} --bnum-badge-type - Permet de surcharger le type de bordure (ex: solid, dashed) pour la variation "secondary".
+ * @cssvar {thin} --bnum-badge-size - Permet de surcharger l’épaisseur de la bordure pour la variation "secondary".
+ * @cssvar {#ce0500} --bnum-badge-danger-color - Définit la couleur de fond du badge en variation "danger".
+ * @cssvar {#f5f5fe} --bnum-badge-danger-text-color - Définit la couleur du texte du badge en variation "danger".
+ *
+ */
+let HTMLBnumBadge = (() => {
+    let _classDecorators = [Define({
+            styles: style$q,
+            tag: TAG_BADGE,
+        }), UpdateAll()];
+    let _classDescriptor;
+    let _classExtraInitializers = [];
+    let _classThis;
+    let _classSuper = BnumElementInternal;
+    (class extends _classSuper {
+        static { _classThis = this; }
+        static {
+            const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
+            __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+            _classThis = _classDescriptor.value;
+            if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+            __runInitializers(_classThis, _classExtraInitializers);
+        }
+        //#region Private Fields
+        /**
+         * Valeur affichée dans le badge.
+         */
+        #_value = EMPTY_STRING;
+        /**
+         * Planificateur de mise à jour asynchrone.
+         */
+        #_updateSchduler = null;
+        /**
+         * Élément span contenant la valeur du badge.
+         */
+        #_spanElement = null;
+        //#endregion Private Fields
+        //#region Getters/Setters
+        /**
+         * Récupère la valeur depuis l'attribut data-value.
+         */
+        get #_dataValue() {
+            return this.data(DATA_VALUE) || EMPTY_STRING;
+        }
+        /**
+         * Récupère la variation depuis l'attribut data-variation.
+         */
+        get #_dataVariation() {
+            return this.data(DATA_VARIATION) || VARIATION_PRIMARY;
+        }
+        /**
+         * Valeur affichée dans le badge.
+         */
+        get value() {
+            if (!this.alreadyLoaded)
+                this.#_value = this.#_dataValue;
+            return this.#_value;
+        }
+        set value(value) {
+            if (!this.alreadyLoaded)
+                this.removeAttribute(ATTR_VALUE);
+            this.#_value = value;
+            this.#_requestUpdate();
+        }
+        /**
+         * Variation de style du badge.
+         */
+        get variation() {
+            return this.#_dataVariation;
+        }
+        set variation(value) {
+            this.data(DATA_VARIATION, value);
+            this.#_requestUpdate();
+        }
+        //#endregion Getters/Setters
+        //#region Lifecycle
+        constructor() {
+            super();
+        }
+        /**
+         * Construit le DOM interne du composant.
+         */
+        _p_buildDOM(container) {
+            super._p_buildDOM(container);
+            this.#_spanElement = this._p_createSpan();
+            container.appendChild(this.#_spanElement);
+            const force = true;
+            this.#_update(force);
+        }
+        /**
+         * Met à jour le composant lors d'un changement d'attribut.
+         */
+        _p_update() {
+            return this.#_update();
+        }
+        //#endregion Lifecycle
+        //#region Private Methods
+        /**
+         * Demande une mise à jour asynchrone du composant.
+         */
+        #_requestUpdate() {
+            if (!this.#_updateSchduler) {
+                this.#_updateSchduler = new Scheduler(() => this.#_update());
+                this._p_registerDisposable(this.#_updateSchduler);
+            }
+            this.#_updateSchduler.schedule(0);
+            return this;
+        }
+        /**
+         * Met à jour l'affichage du badge selon ses propriétés et attributs.
+         */
+        #_update(force = false) {
+            if (!this.alreadyLoaded && !force)
+                return;
+            this._p_clearStates();
+            const value = this.value;
+            this.#_spanElement.textContent = value;
+            if (value !== EMPTY_STRING)
+                this._p_addState(STATE_HAS_VALUE);
+            else
+                this._p_addState(STATE_NO_VALUE);
+            if (this.hasAttribute(ATTR_CIRCLE))
+                this._p_addState(STATE_IS_CIRCLE);
+            this._p_addState(`${STATE_VARIATION_PREFIX}${this.variation}`);
+        }
+        //#endregion Private Methods
+        forceValue(value) {
+            this.#_value = value;
+            this.#_update(true);
+        }
+        //#region Static Methods
+        /**
+         * Attributs observés pour ce composant.
+         */
+        static _p_observedAttributes() {
+            return [ATTR_CIRCLE];
+        }
+        /**
+         * Crée un badge via JavaScript.
+         * @param value Valeur à afficher
+         * @param options Options de création (cercle, variation)
+         */
+        static Create(value, { circle = false, variation = undefined, } = {}) {
+            const badge = document.createElement(this.TAG);
+            return badge
+                .attr(ATTR_VALUE, value)
+                .condAttr(circle, ATTR_CIRCLE, true)
+                .condAttr(variation !== undefined, ATTR_VARIATION, variation);
+        }
+        /**
+         * Génère le HTML d'un badge.
+         * @param value Valeur à afficher
+         * @param attrs Attributs additionnels
+         */
+        static Write(value, attrs = {}) {
+            const attributes = this._p_WriteAttributes(attrs);
+            return `<${this.TAG} ${ATTR_VALUE}="${value}" ${attributes}></${this.TAG}>`;
+        }
+    });
+    return _classThis;
+})();
+
+var css_248z$r = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{display:inline-block}.Cerbere{align-items:flex-start;display:flex;flex-direction:column;gap:var(--bnum-cerbere-button-gap,12px)}.Button{align-items:center;background-color:var(--bnum-cerbere-button-background-color,var(--bnum-color-primary,#000091));box-sizing:border-box;color:var(--bnum-cerbere-button-color,var(--bnum-text-on-primary,#f5f5fe));display:flex;font-family:Inter,var(--bnum-font-family-primary,Arial,sans-serif);gap:12px;justify-content:center;min-height:56px;min-width:204px;padding:4px 12px;text-decoration:none}.Button:hover{background-color:var(--bnum-cerbere-button-hover-background-color,#1212ff)}.Button:active{background-color:var(--bnum-cerbere-button-active-background-color,#2e2eff)}.Button .Link:focus-visible,.Button:focus-visible{outline:2px solid var(--bnum-cerbere-button-link-color,var(--bnum-color-primary,#000091));outline-offset:2px}.Logo{flex:none;height:48px;width:40px}.Label{align-items:center;display:flex;flex-direction:column;text-align:center}.Prefix{font-size:17px;font-weight:400;line-height:17px}.Name{font-size:18px;font-weight:700;line-height:18px}.Link{align-items:center;border-bottom:.875px solid var(--bnum-cerbere-button-link-color,var(--bnum-color-primary,#000091));color:var(--bnum-cerbere-button-link-color,var(--bnum-color-primary,#000091));display:inline-flex;font-family:\"Open Sans\",var(--bnum-font-family-primary,Arial,sans-serif);font-size:14px;gap:8px;line-height:24px;padding-bottom:0;text-decoration:none}.LinkIcon{font-size:16px;height:16px;width:16px}";
+var style$p = css_248z$r;
+
+const ID_BUTTON = 'cerbere-button';
+const ID_LINK = 'cerbere-link';
+const SLOT_LABEL = 'label';
+const SLOT_LINK = 'link';
+const TEXT_PREFIX = "S’identifier avec";
+const TEXT_NAME = 'Cerbère';
+const TEXT_LINK = 'Qu’est-ce que Cerbère ?';
+const TEXT_LINK_TITLE = ' - nouvelle fenêtre';
+const ICON_EXTERNAL = 'open_in_new';
+const ATTR_HREF = 'data-href';
+const ATTR_INFO_URL = 'data-info-url';
+const DEFAULT_HREF = '#';
+const DEFAULT_INFO_URL = '#';
+const EVENT_CLICK$2 = 'bnum-cerbere-button:click';
+/** Cerbère logo (technical base component: do not alter). */
+const LOGO_DATA_URI = "data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 48'%3E%3Cpath fill='%232a2f82' d='M34.965 15.1 19.971 6.423 4.977 15.184a.606.606 0 0 0-.306.524v16.948a.666.666 0 0 0 .306.524l14.992 8.6 14.994-8.706a.665.665 0 0 0 .306-.524V15.628a.605.605 0 0 0-.304-.528Z'/%3E%3Cpath fill='%23df1f26' d='m14.614 15.6-5.029 8.628-4.557-9.175 5.39-3.113 4.489 3.16ZM35.27 32.58V15.622a.6.6 0 0 0-.306-.523L19.971 6.423'/%3E%3Cpath fill='%232e65b0' d='m4.673 32.58 15.3-26.157v35.362L4.977 33.18a.666.666 0 0 1-.306-.524V15.708Zm24.669-20.735L34.8 15l-4.489 9.15-5.387-9.236Z'/%3E%3Cpath fill='%23fff' d='m39.606 12.305-19.19-11.02a.933.933 0 0 0-.832 0L.394 12.305A.886.886 0 0 0 0 13v22a.886.886 0 0 0 .394.7l19.189 11.02a.933.933 0 0 0 .832 0L39.606 35.7A.886.886 0 0 0 40 35V13a.886.886 0 0 0-.394-.695ZM10.762 30.061h.079c-.042 0-.079.007-.079.05 0 .1.151 0 .2.1a.912.912 0 0 0-.629.276c0 .051.1.051.151.051-.075.1-.226.05-.277.151a.177.177 0 0 0 .1.05c-.05 0-.1 0-.1.051v.151c-.126 0-.176.1-.277.151.2.151.327 0 .528 0-.528.2-.956.478-1.484.629-.1 0 0 .151-.1.151.151.1.227-.05.377-.05-.654.377-1.333.7-2.037 1.132a.351.351 0 0 0-.1.2h-.2c-.1.05-.05.176-.151.277.226.151.5-.2.654 0 .05 0-.1.05-.2.05-.05 0-.05.1-.1.1h-.154c-.1.075-.2.126-.2.276a.219.219 0 0 0-.226.1 9.034 9.034 0 0 0 3.144-.578 7.685 7.685 0 0 0 2.088-1.559.176.176 0 0 1 .05.1 2.168 2.168 0 0 1-.806 1.08c-.277.151-.478.377-.7.478a4.045 4.045 0 0 0-.428.276 10.761 10.761 0 0 1-1.939.412l-.305.044c-.225.033-.449.069-.671.108L4.977 33.18a.648.648 0 0 1-.288-.411.574.574 0 0 0 .094-.063.265.265 0 0 0-.113-.071v-.65a12.786 12.786 0 0 0 3.038-.942A8.746 8.746 0 0 0 4.671 29.7v-1.515a11.662 11.662 0 0 1 1.639.392 6.415 6.415 0 0 1 1.182.578 3.113 3.113 0 0 0 .478.377.91.91 0 0 0 .8.05h.33a3.961 3.961 0 0 0 1.937-.905c0 .05.05.05.1.05a3.63 3.63 0 0 1-.428 1.132c.003.051-.048.152.053.202Zm2.817 3.571c.251-.1.4-.277.629-.377-.05.05-.05.151-.1.2a3.691 3.691 0 0 0-.528.4 15.96 15.96 0 0 0-1.585 1.61c-.252.3-.528.578-.8.855a2.385 2.385 0 0 1-.31.245l-2.527-1.45a4.047 4.047 0 0 0 1.076-.053 4.984 4.984 0 0 0 .855-.327v.1c.7-.277 1.232-.906 1.937-1.132.025 0 .126.1.226.05a1.883 1.883 0 0 1 1.509-.7c0 .05 0 .1.05.1h.025c-.151.126-.327.251-.5.377-.057.052-.007.102.043.102Zm-8.908-6.164v-.186a5.814 5.814 0 0 1 1.588-.188 1.52 1.52 0 0 1 .478 0 5.861 5.861 0 0 0-2.066.374Zm30.6 5.088a.665.665 0 0 1-.306.524l-10.079 5.851a32.3 32.3 0 0 1-3.408-1.185 2.826 2.826 0 0 1-.05-2.245 3.794 3.794 0 0 1 .352-.883c.025-.025.05-.05.05-.076a.025.025 0 0 0 .025-.025 4.316 4.316 0 0 1 .377-.555l.015-.015.02-.021.015-.015c0-.025.025-.05.05-.076.025-.051.075-.076.1-.126a3.771 3.771 0 0 1 .579-.5 4.07 4.07 0 0 1 .654-.177 19.817 19.817 0 0 1 2.415.328.751.751 0 0 1 .277.1 1.849 1.849 0 0 0 .905-.05 1.137 1.137 0 0 0 .855-.706 1.212 1.212 0 0 0 .05-1.059c-.178-.276-.013-.437.181-.59l.068-.055a1.17 1.17 0 0 0 .231-.216c.126-.252-.1-.4-.151-.63-.05-.1-.226-.05-.327-.2.352-.151.855-.429.629-.857-.151-.227-.377-.63-.1-.857.352-.2.855-.151 1.006-.479a1.138 1.138 0 0 0-.292-1.085l-.075-.108a4.754 4.754 0 0 1-.211-.32 6.914 6.914 0 0 0-.528-.757 4.3 4.3 0 0 1-.528-1.009c-.151-.378.05-.706.05-1.084a6.347 6.347 0 0 0-.327-2.144c-.126-.353-.176-.731-.327-1.059a1.12 1.12 0 0 0-.226-.58.375.375 0 0 1 0-.328 4.874 4.874 0 0 0 .579-.479.567.567 0 0 0-.2-.706c-.327-.151-.3.328-.528.429h-.151c-.05-.126.05-.177.151-.277 0-.05 0-.151-.05-.151-.2 0-.377-.051-.428-.151a3.957 3.957 0 0 0-1.861-1.286 2.319 2.319 0 0 0 .579.1 1.67 1.67 0 0 0 1.006-.1c.227-.076.277-.479.377-.706a.8.8 0 0 0-.151-.631 2.189 2.189 0 0 0-.906-.756 9.13 9.13 0 0 1-.679-.353.952.952 0 0 0-.251-.126c-2.965-1.485-9.069-.2-9.534 0h-.009a8.244 8.244 0 0 0-1.249.475 3.922 3.922 0 0 0-2.365 2.465 3.829 3.829 0 0 0-1.333 1.509c-.428.8-1.056 1.509-.956 2.414.1.78.277 1.484.428 2.289a4.668 4.668 0 0 0 .2.8c.1.276 0 .629.151.855.075.151.025.327.227.428v.2c.05.05.05.1.151.1v.2a6.446 6.446 0 0 1 1.107 1.434c.1.276-.478.151-.7.05a5.979 5.979 0 0 1-1.132-.956.175.175 0 0 0-.051.1c.2.352.906.78.528 1.006-.2.1-.428-.151-.629.051-.05.075 0 .176 0 .276-.277-.2-.578-.1-.855-.2-.2-.05-.252-.427-.478-.427a15.162 15.162 0 0 0-1.811-.327 15.137 15.137 0 0 0-1.739-.159V15.708a.606.606 0 0 1 .306-.524l14.987-8.761L34.965 15.1a.605.605 0 0 1 .306.524Zm-7.954-8.261a.325.325 0 0 1-.282.149 2.843 2.843 0 0 0-.282.273c.1 0 0 .149.1.149-.205.223.077.694-.205.793a2.176 2.176 0 0 1-1.127 0 .722.722 0 0 1 .167-.016h.085a.382.382 0 0 0 .337-.132v-.2c0-.05-.051-.05-.1-.05a.161.161 0 0 1-.1.05.223.223 0 0 0-.154-.2.807.807 0 0 1-.718-.273.67.67 0 0 1 .436-.05c.128 0 .077-.223.231-.322h.154c.307-.372.871-.471.974-.843 0-.1-.282-.1-.487-.149a2.259 2.259 0 0 0-.82.05 4.65 4.65 0 0 0-1.051.273 3.225 3.225 0 0 1 .923-.471 3.886 3.886 0 0 1 .718-.2l.132-.026.133-.027a.971.971 0 0 1 .556 0c.231.1.615.1.666.248.1.273-.154.545-.435.744-.057.081.148.135.148.23Z'/%3E%3C/svg%3E";
+
+//#region Template
+const TEMPLATE$g = (h("div", { class: "Cerbere", part: "container", children: [h("a", { id: ID_BUTTON, class: "Button", part: "button", href: DEFAULT_HREF, children: [h("img", { class: "Logo", part: "logo", src: LOGO_DATA_URI, alt: "" }), h("span", { class: "Label", part: "label", children: h("slot", { name: SLOT_LABEL, children: [h("span", { class: "Prefix", children: TEXT_PREFIX }), h("span", { class: "Name", children: TEXT_NAME })] }) })] }), h("a", { id: ID_LINK, class: "Link", part: "link", href: DEFAULT_INFO_URL, target: "_blank", rel: "noopener noreferrer", title: `${TEXT_LINK}${TEXT_LINK_TITLE}`, children: [h("span", { class: "LinkLabel", children: h("slot", { name: SLOT_LINK, children: TEXT_LINK }) }), h(HTMLBnumIcon, { class: "LinkIcon", "aria-hidden": "true", children: ICON_EXTERNAL })] })] }));
+//#endregion Template
+/**
+ * Bouton « S'identifier avec Cerbère », indissociable de son lien « Qu'est-ce que Cerbère ? ».
+ *
+ * @category Authentification
+ *
+ * @structure Basique
+ * <bnum-cerbere-button data-href="/auth/cerbere" data-info-url="https://example.org/cerbere"></bnum-cerbere-button>
+ *
+ * @structure Textes personnalisés
+ * <bnum-cerbere-button data-href="/auth/cerbere">
+ *   <span slot="label">Se connecter</span>
+ *   <span slot="link">En savoir plus</span>
+ * </bnum-cerbere-button>
+ *
+ * @slot label - Contenu du bouton (remplace « S'identifier avec Cerbère »).
+ * @slot link - Texte du lien d'information (remplace « Qu'est-ce que Cerbère ? »).
+ *
+ * @event {CustomEvent<{ caller: HTMLBnumCerbereButton; event: MouseEvent }>} bnum-cerbere-button:click - Clic sur le bouton. Si `data-href` est absent, la navigation est annulée.
+ *
+ * @attr {string} (optional) data-href - URL d'authentification Cerbère.
+ * @attr {string} (optional) data-info-url - URL de la page « Qu'est-ce que Cerbère ? » (ouverte dans un nouvel onglet).
+ *
+ * @cssvar {#000091} --bnum-cerbere-button-background-color - Couleur de fond du bouton.
+ * @cssvar {#f5f5fe} --bnum-cerbere-button-color - Couleur du texte du bouton.
+ * @cssvar {#1212ff} --bnum-cerbere-button-hover-background-color - Couleur de fond au survol.
+ * @cssvar {#2e2eff} --bnum-cerbere-button-active-background-color - Couleur de fond à l'appui.
+ * @cssvar {#000091} --bnum-cerbere-button-link-color - Couleur du lien d'information.
+ * @cssvar {12px} --bnum-cerbere-button-gap - Espacement entre le bouton et le lien.
+ */
+let HTMLBnumCerbereButton = (() => {
+    let _classDecorators = [Define({ tag: TAG_CERBERE_BUTTON, styles: style$p, template: TEMPLATE$g })];
+    let _classDescriptor;
+    let _classExtraInitializers = [];
+    let _classThis;
+    let _classSuper = BnumElement;
+    let _private__ui_decorators;
+    let _private__ui_initializers = [];
+    let _private__ui_extraInitializers = [];
+    let _private__ui_descriptor;
+    (class extends _classSuper {
+        static { _classThis = this; }
+        static {
+            const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
+            _private__ui_decorators = [UI({
+                    button: `#${ID_BUTTON}`,
+                    link: `#${ID_LINK}`,
+                })];
+            __esDecorate(this, _private__ui_descriptor = { get: __setFunctionName(function () { return this.#_ui_accessor_storage; }, "#_ui", "get"), set: __setFunctionName(function (value) { this.#_ui_accessor_storage = value; }, "#_ui", "set") }, _private__ui_decorators, { kind: "accessor", name: "#_ui", static: false, private: true, access: { has: obj => #_ui in obj, get: obj => obj.#_ui, set: (obj, value) => { obj.#_ui = value; } }, metadata: _metadata }, _private__ui_initializers, _private__ui_extraInitializers);
+            __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+            _classThis = _classDescriptor.value;
+            if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+            __runInitializers(_classThis, _classExtraInitializers);
+        }
+        #_ui_accessor_storage = __runInitializers(this, _private__ui_initializers, void 0);
+        //#region Private fields
+        get #_ui() { return _private__ui_descriptor.get.call(this); }
+        set #_ui(value) { return _private__ui_descriptor.set.call(this, value); }
+        //#endregion Private fields
+        //#region Lifecycle
+        constructor() {
+            super();
+            __runInitializers(this, _private__ui_extraInitializers);
+        }
+        _p_buildDOM() {
+            this.#_ui.button.addEventListener('click', e => this.#_onButtonClick(e));
+            this.#_syncUrls();
+        }
+        //#endregion Lifecycle
+        //#region Private Methods
+        #_onButtonClick(event) {
+            // Without URL the button only emits an event: avoid jumping to '#'.
+            if (!this.getAttribute(ATTR_HREF))
+                event.preventDefault();
+            this.trigger(EVENT_CLICK$2, { caller: this, event });
+        }
+        #_syncUrls() {
+            const href = this.getAttribute(ATTR_HREF);
+            const infoUrl = this.getAttribute(ATTR_INFO_URL);
+            if (href)
+                this.#_ui.button.href = href;
+            if (infoUrl)
+                this.#_ui.link.href = infoUrl;
+        }
+        //#endregion Private Methods
+        //#region Static Methods
+        /**
+         * Crée un bouton Cerbère.
+         * @param options URL d'authentification et URL d'information.
+         */
+        static Create({ href, infoUrl, } = {}) {
+            const element = document.createElement(this.TAG);
+            return element
+                .condAttr(href !== undefined, ATTR_HREF, href)
+                .condAttr(infoUrl !== undefined, ATTR_INFO_URL, infoUrl);
+        }
+    });
+    return _classThis;
+})();
+
 /**
  * Décorateur de classe permettant de définir une variation par défaut pour un composant bouton.
  * Ce décorateur étend le constructeur de la classe cible (Pattern Proxy/Mixin) pour injecter
@@ -4897,7 +5585,7 @@ function Variation(variation) {
                 super(...args);
                 if (this instanceof HTMLBnumButton) {
                     const fromAttribute = false;
-                    this.data(ATTR_VARIATION, variation, fromAttribute);
+                    this.data(ATTR_VARIATION$2, variation, fromAttribute);
                 }
             }
         }
@@ -5181,20 +5869,6 @@ const DEFAULT_FORMAT = 'dd/MM/yyyy HH:mm';
 const DEFAULT_LOCALE = 'fr';
 const STATE_INVALID = 'invalid';
 const STATE_NOT_READY = 'not-ready';
-
-function Observe(attribsToObserve1, ...attribsToObserve) {
-    return function (target, context) {
-        if (context.kind !== 'class') {
-            throw new Error('@Observe ne peut être utilisé que sur une classe.');
-        }
-        context.addInitializer(function () {
-            const attributesToObserve = Array.isArray(attribsToObserve1)
-                ? attribsToObserve1
-                : [attribsToObserve1, ...attribsToObserve];
-            this.__CONFIG_ATTRIBS_TO_OBSERVE_ = attributesToObserve;
-        });
-    };
-}
 
 /**
  * Affiche une date formatée qui peut être mise à jour dynamiquement.
@@ -5560,6 +6234,80 @@ let HTMLBnumDate = (() => {
     return _classThis;
 })();
 
+var css_248z$q = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{display:block}.container{align-items:center;display:flex;gap:var(--bnum-divider-gap,var(--bnum-space-m,15px))}.line{border-top:var(--bnum-divider-line-size,1px) solid var(--bnum-divider-line-color,var(--bnum-color-border,#ddd));flex:1;height:0}.label{color:var(--bnum-divider-text-color,var(--bnum-color-primary,#000091));font-size:var(--bnum-divider-font-size,var(--bnum-font-size-text-s,.875rem));white-space:nowrap}:host(:empty) .label,:host(:empty) .line:last-child{display:none}";
+var style$o = css_248z$q;
+
+//#region Global Constants
+const ROLE_SEPARATOR = 'separator';
+const CLASS_CONTAINER$1 = 'container';
+const CLASS_LINE = 'line';
+const CLASS_LABEL = 'label';
+//#endregion Global Constants
+//#region Template
+const TEMPLATE$f = (h("div", { class: CLASS_CONTAINER$1, children: [h("span", { class: CLASS_LINE }), h("span", { class: CLASS_LABEL, children: h("slot", {}) }), h("span", { class: CLASS_LINE })] }));
+//#endregion Template
+/**
+ * Séparateur horizontal avec libellé centré optionnel (ex. « ou »).
+ *
+ * Sans contenu, le composant affiche une simple ligne.
+ *
+ * @structure Avec libellé
+ * <bnum-divider>ou</bnum-divider>
+ *
+ * @structure Sans libellé
+ * <bnum-divider></bnum-divider>
+ *
+ * @slot (default) - Libellé affiché au centre du séparateur.
+ *
+ * @cssvar {var(--bnum-space-m, 15px)} --bnum-divider-gap - Espacement entre les traits et le libellé.
+ * @cssvar {#ddd} --bnum-divider-line-color - Couleur des traits.
+ * @cssvar {1px} --bnum-divider-line-size - Épaisseur des traits.
+ * @cssvar {#000091} --bnum-divider-text-color - Couleur du libellé.
+ * @cssvar {var(--bnum-font-size-text-s)} --bnum-divider-font-size - Taille du libellé.
+ */
+let HTMLBnumDivider = (() => {
+    let _classDecorators = [Define({ tag: TAG_DIVIDER, styles: style$o, template: TEMPLATE$f })];
+    let _classDescriptor;
+    let _classExtraInitializers = [];
+    let _classThis;
+    let _classSuper = BnumElement;
+    (class extends _classSuper {
+        static { _classThis = this; }
+        static {
+            const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
+            __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+            _classThis = _classDescriptor.value;
+            if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+            __runInitializers(_classThis, _classExtraInitializers);
+        }
+        //#region Lifecycle
+        constructor() {
+            super();
+        }
+        /**
+         * Expose le composant comme séparateur aux technologies d'assistance.
+         */
+        _p_preload() {
+            super._p_preload();
+            if (!this.hasAttribute('role'))
+                this.setAttribute('role', ROLE_SEPARATOR);
+        }
+        //#endregion Lifecycle
+        //#region Static Methods
+        /**
+         * Crée un séparateur via JavaScript.
+         * @param label Libellé affiché au centre (aucun par défaut)
+         */
+        static Create(label) {
+            const divider = document.createElement(this.TAG);
+            if (label)
+                divider.textContent = label;
+            return divider;
+        }
+    });
+    return _classThis;
+})();
+
 /**
  * Composant Web Component utilitaire "Fragment".
  * * Ce composant agit comme un conteneur logique pour regrouper des éléments du DOM
@@ -5640,182 +6388,8 @@ function RenderFrame() {
     };
 }
 
-function OnLinkedClickEventInitializer(event, instance) {
-    instance.addEventListener('click', () => {
-        event.call();
-    });
-}
-
-var css_248z$o = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{cursor:pointer;font-variation-settings:\"wght\" 400;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}:host(:hover){--bnum-icon-fill:1}:host(:active){--bnum-icon-fill:1;--bnum-icon-weight:700;--bnum-icon-grad:200;--bnum-icon-opsz:20}:host(:disabled),:host([disabled]){cursor:not-allowed;opacity:var(--bnum-button-disabled-opacity,.6);pointer-events:var(--bnum-button-disabled-pointer-events,none)}";
-var style$m = css_248z$o;
-
-//#region Global Constants
-const ID_ICON$1 = 'icon';
-//#endregion Global Constants
-const TEMPLATE$f = (h(HTMLBnumIcon, { id: ID_ICON$1, children: h("slot", {}) }));
-/**
- * Button contenant une icône.
- *
- * @category Buttons
- *
- * @structure Button Icon
- * <bnum-icon-button>home</bnum-icon-button>
- *
- * @structure Button Disabled
- * <bnum-icon-button disabled>home</bnum-icon-button>
- *
- * @cssvar {0.6} --bnum-button-disabled-opacity - Opacité du bouton désactivé
- * @cssvar {none} --bnum-button-disabled-pointer-events - Gestion des événements souris pour le bouton désactivé
- *
- * @slot (default) - Contenu de l'icône (nom de l'icône à afficher)
- */
-let HTMLBnumButtonIcon = (() => {
-    let _classDecorators = [Define({ styles: style$m, tag: TAG_ICON_BUTTON, template: TEMPLATE$f }), Observe('click')];
-    let _classDescriptor;
-    let _classExtraInitializers = [];
-    let _classThis;
-    let _classSuper = BnumElement;
-    let ___decorators;
-    let ___initializers = [];
-    let ___extraInitializers = [];
-    let _private__linkedClickEvent_decorators;
-    let _private__linkedClickEvent_initializers = [];
-    let _private__linkedClickEvent_extraInitializers = [];
-    let _private__linkedClickEvent_descriptor;
-    var HTMLBnumButtonIcon = class extends _classSuper {
-        static { _classThis = this; }
-        static {
-            const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
-            ___decorators = [Self];
-            _private__linkedClickEvent_decorators = [Listener(OnLinkedClickEventInitializer, { lazy: false })];
-            __esDecorate(this, _private__linkedClickEvent_descriptor = { get: __setFunctionName(function () { return this.#_linkedClickEvent_accessor_storage; }, "#_linkedClickEvent", "get"), set: __setFunctionName(function (value) { this.#_linkedClickEvent_accessor_storage = value; }, "#_linkedClickEvent", "set") }, _private__linkedClickEvent_decorators, { kind: "accessor", name: "#_linkedClickEvent", static: false, private: true, access: { has: obj => #_linkedClickEvent in obj, get: obj => obj.#_linkedClickEvent, set: (obj, value) => { obj.#_linkedClickEvent = value; } }, metadata: _metadata }, _private__linkedClickEvent_initializers, _private__linkedClickEvent_extraInitializers);
-            __esDecorate(null, null, ___decorators, { kind: "field", name: "_", static: false, private: false, access: { has: obj => "_" in obj, get: obj => obj._, set: (obj, value) => { obj._ = value; } }, metadata: _metadata }, ___initializers, ___extraInitializers);
-            __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
-            HTMLBnumButtonIcon = _classThis = _classDescriptor.value;
-            if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-            __runInitializers(_classThis, _classExtraInitializers);
-        }
-        //#region Private fields
-        /**
-         * Référence vers l'élément icône à l'intérieur du bouton
-         */
-        #_icon = null;
-        #_lastClick = null;
-        //#endregion Private fields
-        //#region Getters/Setters
-        /** Référence à la classe HTMLBnumButtonIcon */
-        _ = __runInitializers(this, ___initializers, void 0);
-        #_linkedClickEvent_accessor_storage = (__runInitializers(this, ___extraInitializers), __runInitializers(this, _private__linkedClickEvent_initializers, void 0));
-        get #_linkedClickEvent() { return _private__linkedClickEvent_descriptor.get.call(this); }
-        set #_linkedClickEvent(value) { return _private__linkedClickEvent_descriptor.set.call(this, value); }
-        /**
-         * Référence vers l'élément icône à l'intérieur du bouton.
-         *
-         * Si l'icône n'a pas été mise en mémoire, elle sera cherché puis mise en mémoire.
-         */
-        get #_iconElement() {
-            if (!this.#_icon) {
-                const icon = this.querySelector(HTMLBnumIcon.TAG) ??
-                    this.shadowRoot?.getElementById(ID_ICON$1);
-                if (!icon)
-                    this.#_throw('Icon element not found inside icon button');
-                this.#_icon = icon;
-            }
-            return this.#_icon;
-        }
-        /**
-         * Icône affichée dans le bouton
-         */
-        get icon() {
-            return ((this.#_iconElement.icon || this.#_throw('Icon is not defined')) ??
-                EMPTY_STRING);
-        }
-        set icon(value) {
-            this.#_iconElement.icon = value;
-        }
-        //#endregion Getters/Setters
-        //#region Lifecycle
-        constructor() {
-            super();
-            __runInitializers(this, _private__linkedClickEvent_extraInitializers);
-        }
-        /**
-         * @inheritdoc
-         */
-        _p_buildDOM() {
-            HTMLBnumButton.ToButton(this);
-            if (this.title === EMPTY_STRING)
-                Log.warn(this._.TAG, 'Icon button should have a title for accessibility purposes');
-            if (this.hasAttribute('click')) {
-                const click = this.getAttribute('click');
-                this.#_updateAttributeClick(click ?? EMPTY_STRING);
-            }
-        }
-        _p_update(name, oldVal, newVal) {
-            if (oldVal === newVal)
-                return;
-            if (name === 'click') {
-                this.#_updateAttributeClick(newVal ?? EMPTY_STRING);
-            }
-        }
-        //#endregion Lifecycle
-        //#region Private methods
-        #_updateAttributeClick(val) {
-            if (val !== this.#_lastClick) {
-                this.#_lastClick = val;
-                if (this.#_linkedClickEvent.has('click'))
-                    this.#_linkedClickEvent.remove('click');
-                if (val && REG_XSS_SAFE.test(val)) {
-                    this.#_linkedClickEvent.add('click', (click) => {
-                        // Si c'est un id unique
-                        const elementToClick = document.getElementById(click);
-                        if (elementToClick)
-                            elementToClick.click();
-                        else {
-                            // Sinon on part du principe que c'est un sélecteur CSS
-                            const elements = document.querySelector(click);
-                            if (elements)
-                                elements.click();
-                            else
-                                throw new Error(`[${this._.TAG}] L'attribut 'click' ne référence aucun élément.`);
-                        }
-                    }, val);
-                }
-            }
-        }
-        /**
-         * Permet de lancer une erreur avec un message spécifique dans une expression inline.
-         * @param msg Message à envoyer dans l'erreur.
-         */
-        #_throw(msg) {
-            throw new Error(msg);
-        }
-        //#endregion Private methods
-        //#region Static methods
-        /**
-         * Génère un bouton icône avec l'icône spécifiée.
-         * @param icon Icône à afficher dans le bouton.
-         * @returns Node créée.
-         */
-        static Create(icon) {
-            const node = document.createElement(this.TAG);
-            node.appendChild(document.createTextNode(icon));
-            return node;
-        }
-        /**
-         * Génère le code HTML d'un bouton icône avec l'icône spécifiée.
-         * @param icon Icône à afficher dans le bouton.
-         * @returns Code HTML créée.
-         */
-        static Write(icon, attrs = {}) {
-            return h(HTMLBnumButtonIcon, { ...attrs, children: icon });
-        }
-    };
-    return HTMLBnumButtonIcon = _classThis;
-})();
-
-var css_248z$n = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host .addons__inner{position:relative;width:100%}:host #input__button,:host #input__icon,:host .state{display:none}:host(:disabled),:host(:state(disabled)){cursor:not-allowed;opacity:.6;pointer-events:none}:host(:state(button)) .addons{display:flex;gap:0}:host(:state(button)) .addons .addon__inner{flex:1}:host(:state(button)) input{border-top-right-radius:0}:host(:state(button)) #input__button,:host(:state(button)) input{--bnum-input-line-color:var(--bnum-color-primary,#000091)}:host(:state(button)) #input__button{border-bottom-left-radius:0;border-bottom-right-radius:0;border-top-left-radius:0;display:block;height:auto}:host(:state(button):state(obi)) #input__button{--bnum-button-icon-gap:0;display:flex}:host(:state(icon)) #input__icon{display:block;position:absolute;right:var(--bnum-input-icon-right,10px);top:var(--bnum-input-icon-top,10px)}:host(:state(state):state(success)) #input__button,:host(:state(state):state(success)) input{--bnum-input-line-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(state):state(error)) #input__button,:host(:state(state):state(error)) input{--bnum-input-line-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}";
-var style$l = css_248z$n;
+var css_248z$p = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host .addon__inner{display:flex;position:relative}:host #input__button,:host #input__icon,:host .state{display:none}:host input{flex:1}:host(:disabled),:host(:state(disabled)){cursor:not-allowed;opacity:.6;pointer-events:none}:host(:state(button)) .addons,:host(:state(have-button)) .addons{display:flex;gap:0}:host(:state(button)) .addons .addon__inner,:host(:state(have-button)) .addons .addon__inner{flex:1}:host(:state(button)) input,:host(:state(have-button)) input{border-top-right-radius:0}:host(:state(button)) #input__button,:host(:state(button)) input,:host(:state(have-button)) #input__button,:host(:state(have-button)) input{--bnum-input-line-color:var(--bnum-color-primary,#000091)}:host(:state(button)) #input__button,:host(:state(have-button)) #input__button{border-bottom-left-radius:0;border-bottom-right-radius:0;border-top-left-radius:0;display:block;height:auto}:host(:state(button):state(obi)) #input__button,:host(:state(have-button):state(obi)) #input__button{--bnum-button-icon-gap:0;display:flex}:host(:state(have-icon)) .container,:host(:state(icon)) .container{position:relative}:host(:state(have-icon)) #input__icon,:host(:state(icon)) #input__icon{display:block;position:absolute;right:var(--bnum-input-icon-right,10px);top:var(--bnum-input-icon-top,10px)}:host(:state(current-state):state(success)) #input__button,:host(:state(current-state):state(success)) input,:host(:state(state):state(success)) #input__button,:host(:state(state):state(success)) input{--bnum-input-line-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(current-state):state(error)) #input__button,:host(:state(current-state):state(error)) input,:host(:state(state):state(error)) #input__button,:host(:state(state):state(error)) input{--bnum-input-line-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}";
+var style$n = css_248z$p;
 
 const ID_INPUT$1 = 'bnum-input';
 const ID_HINT_TEXT = 'hint-text';
@@ -5858,8 +6432,11 @@ const ATTRIBUTE_AUTOCOMPLETE = 'autocomplete';
 const ATTRIBUTE_INPUTMODE = 'inputmode';
 const ATTRIBUTE_SPELLCHECK = 'spellcheck';
 const ATTRIBUTE_IGNOREVALUE = 'ignorevalue';
+const ATTRIBUTE_NAME = 'name';
 const STATE_SUCCESS = 'success';
 const STATE_ERROR$1 = 'error';
+const STATE_DISABLED$2 = 'disabled';
+const STATE_ICON$1 = 'have-icon';
 const STATE_BUTTON = 'button';
 /**
  * obi = Only Button Icon
@@ -5869,8 +6446,13 @@ const STATE_STATE$1 = 'state';
 const ICON_SUCCESS = 'check_circle';
 const ICON_ERROR = 'cancel';
 
-function Render(addonInner = EMPTY_STRING) {
-    return (h(HTMLBnumFragment, { children: [h("label", { id: ID_HINT_TEXT, for: ID_INPUT$1, class: "label-container", children: [h("span", { id: ID_HINT_TEXT_LABEL, class: "label-container--label", children: h("slot", {}) }), h("span", { id: ID_HINT_TEXT_HINT, class: "label-container--hint hint-label", children: h("slot", { name: SLOT_HINT }) })] }), h("div", { class: "container", children: [h("div", { class: "addons", children: [h("div", { class: "addon__inner", children: [addonInner, h(HTMLBnumIcon, { id: ID_INPUT_ICON }), h("input", { class: "input-like", id: ID_INPUT$1, type: DEFAULT_INPUT_TYPE })] }), h(HTMLBnumButton, { id: ID_INPUT_BUTTON, rounded: true, "data-variation": DEFAULT_BUTTON_VARIATION, children: h("slot", { name: SLOT_BUTTON }) })] }), h("span", { id: ID_STATE, class: "state", part: "state-container", children: [h(HTMLBnumIcon, { id: ID_STATE_ICON }), h("span", { id: ID_SUCCESS_TEXT, class: CLASS_STATE_TEXT_SUCCESS, children: h("slot", { name: SLOT_SUCCESS, children: TEXT_VALID_INPUT }) }), h("span", { id: ID_ERROR_TEXT, class: CLASS_STATE_TEXT_ERROR, children: h("slot", { name: SLOT_ERROR, children: TEXT_INVALID_INPUT }) })] })] })] }));
+/**
+ * Génère le template de base des inputs.
+ * @param addonInner HTML injecté dans `.addon__inner`, avant l'input.
+ * @param footerInner HTML injecté sous le champ (ex. liens, options), avant le texte d'état.
+ */
+function Render(addonInner = EMPTY_STRING, footerInner = EMPTY_STRING) {
+    return (h(HTMLBnumFragment, { children: [h("label", { id: ID_HINT_TEXT, for: ID_INPUT$1, class: "label-container", children: [h("span", { id: ID_HINT_TEXT_LABEL, class: "label-container--label", children: h("slot", {}) }), h("span", { id: ID_HINT_TEXT_HINT, class: "label-container--hint hint-label", children: h("slot", { name: SLOT_HINT }) })] }), h("div", { class: "container", children: [h("div", { class: "addons", children: [h("div", { class: "addon__inner", children: [addonInner, h(HTMLBnumIcon, { id: ID_INPUT_ICON }), h("input", { class: "input-like", id: ID_INPUT$1, type: DEFAULT_INPUT_TYPE })] }), h(HTMLBnumButton, { id: ID_INPUT_BUTTON, rounded: true, "data-variation": DEFAULT_BUTTON_VARIATION, children: h("slot", { name: SLOT_BUTTON }) })] }), footerInner, h("span", { id: ID_STATE, class: "state", part: "state-container", children: [h(HTMLBnumIcon, { id: ID_STATE_ICON }), h("span", { id: ID_SUCCESS_TEXT, class: CLASS_STATE_TEXT_SUCCESS, children: h("slot", { name: SLOT_SUCCESS, children: TEXT_VALID_INPUT }) }), h("span", { id: ID_ERROR_TEXT, class: CLASS_STATE_TEXT_ERROR, children: h("slot", { name: SLOT_ERROR, children: TEXT_INVALID_INPUT }) })] })] })] }));
 }
 
 const EVENT_DEFAULT = 'default';
@@ -5883,15 +6465,15 @@ function OnButtonClickedInitializer(event, instance) {
     });
 }
 
-var css_248z$m = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}.label-container{--internal-gap:var(--bnum-input-gap,0.5rem);display:flex;flex-direction:column;gap:var(--internal-gap,.5rem);margin-bottom:var(--bnum-input-container-margin-bottom,var(--internal-gap,.5rem))}.label-container--label{font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-label-size,var(--bnum-font-size-m));line-height:var(--bnum-font-label-line-height,var(--bnum-font-height-text-m))}.label-container--hint{color:var(--bnum-input-hint-text-color,var(--bnum-text-hint,#666));font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-hint-size,var(--bnum-font-size-xs));line-height:var(--bnum-font-hint-line-height,var(--bnum-font-height-text-xs))}.input-like{background-color:var(--bnum-input-background-color,var(--bnum-color-input,#eee));border:none;border-radius:.25rem .25rem 0 0;box-shadow:var(--bnum-input-box-shadow,inset 0 -2px 0 0 var(--bnum-input-line-color,var(--bnum-color-input-border,#3a3a3a)));color:var(--bnum-input-color,var(--bnum-text-on-input,#666));display:block;font-size:1rem;line-height:1.5rem;padding:.5rem 1rem;width:100%}";
-var base = css_248z$m;
+var css_248z$o = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}.label-container{--internal-gap:var(--bnum-input-gap,0.5rem);display:flex;flex-direction:column;gap:var(--internal-gap,.5rem);margin-bottom:var(--bnum-input-container-margin-bottom,var(--internal-gap,.5rem))}.label-container--label{font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-label-size,var(--bnum-font-size-m));line-height:var(--bnum-font-label-line-height,var(--bnum-font-height-text-m))}.label-container--hint{color:var(--bnum-input-hint-text-color,var(--bnum-text-hint,#666));font-family:var(--bnum-font-family-primary);font-size:var(--bnum-font-hint-size,var(--bnum-font-size-xs));line-height:var(--bnum-font-hint-line-height,var(--bnum-font-height-text-xs))}.input-like{background-color:var(--bnum-input-background-color,var(--bnum-color-input,#eee));border:none;border-radius:.25rem .25rem 0 0;box-shadow:var(--bnum-input-box-shadow,inset 0 -2px 0 0 var(--bnum-input-line-color,var(--bnum-color-input-border,#3a3a3a)));color:var(--bnum-input-color,var(--bnum-text-on-input,#666));display:block;font-size:1rem;line-height:1.5rem;padding:.5rem 1rem}";
+var base = css_248z$o;
 
-var css_248z$l = ":host(:state(state)){border-left:2px solid var(--internal-border-color);display:block;padding-left:10px}:host(:state(state)) .state{align-items:center;color:var(--internal-color);display:flex;font-size:.75rem;margin-top:1rem}:host(:state(state)) .state bnum-icon{--bnum-icon-font-size:1rem;margin-right:5px}:host(:state(state)) .hint-label{color:var(--internal-color)}:host(:state(state)) .error,:host(:state(state)) .success{display:none;margin-bottom:-4px}:host(:state(state):state(success)){--internal-border-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(state):state(success)) .hint-label,:host(:state(state):state(success)) .state{--internal-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(state):state(success)) .success{display:block}:host(:state(state):state(error)){--internal-border-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}:host(:state(state):state(error)) .hint-label,:host(:state(state):state(error)) .state{--internal-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}:host(:state(state):state(error)) .error{display:block}";
-var styleStates = css_248z$l;
+var css_248z$n = ":host(:state(current-state)),:host(:state(state)){border-left:2px solid var(--internal-border-color);display:block;padding-left:10px}:host(:state(current-state)) .state,:host(:state(state)) .state{align-items:center;color:var(--internal-color);display:flex;font-size:.75rem;margin-top:1rem}:host(:state(current-state)) .state bnum-icon,:host(:state(state)) .state bnum-icon{--bnum-icon-font-size:1rem;margin-right:5px}:host(:state(current-state)) .hint-label,:host(:state(state)) .hint-label{color:var(--internal-color)}:host(:state(current-state)) .error,:host(:state(current-state)) .success,:host(:state(state)) .error,:host(:state(state)) .success{display:none;margin-bottom:-4px}:host(:state(current-state):state(success)),:host(:state(state):state(success)){--internal-border-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(current-state):state(success)) .hint-label,:host(:state(current-state):state(success)) .state,:host(:state(state):state(success)) .hint-label,:host(:state(state):state(success)) .state{--internal-color:var(--bnum-input-state-success-color,var(--bnum-semantic-success,#36b37e))}:host(:state(current-state):state(success)) .success,:host(:state(state):state(success)) .success{display:block}:host(:state(current-state):state(error)),:host(:state(state):state(error)){--internal-border-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}:host(:state(current-state):state(error)) .hint-label,:host(:state(current-state):state(error)) .state,:host(:state(state):state(error)) .hint-label,:host(:state(state):state(error)) .state{--internal-color:var(--bnum-input-state-error-color,var(--bnum-semantic-danger,#de350b))}:host(:state(current-state):state(error)) .error,:host(:state(state):state(error)) .error{display:block}";
+var styleStates = css_248z$n;
 
 const INPUT_BASE_STYLE = BnumElementInternal.ConstructCSSStyleSheet(base);
 const INPUT_STYLE_STATES = BnumElementInternal.ConstructCSSStyleSheet(styleStates);
-const OBSERVED_ATTRIBUTES = [
+const OBSERVED_ATTRIBUTES$1 = [
     ATTRIBUTE_DATA_VALUE,
     ATTRIBUTE_PLACEHOLDER,
     ATTRIBUTE_TYPE,
@@ -5916,111 +6498,65 @@ const OBSERVED_ATTRIBUTES = [
  * Composant Input du design system Bnum.
  * Permet de gérer un champ de saisie enrichi avec gestion d'états, d'icônes, de bouton et d'accessibilité.
  *
- * @category Input
+ * Rangé dans la catégorie Storybook « Input », illustré par plusieurs
+ * structures : sans rien, avec une légende, avec une légende et un indice,
+ * avec un bouton, en erreur, avec un état de succès, avec une icône, avec un
+ * bouton icône seule, en nombre, désactivé, et complet (toutes les
+ * fonctionnalités combinées).
  *
- * @structure Sans rien
- * <bnum-input></bnum-input>
+ * @summary Champ de saisie enrichi avec gestion d'états, icônes, bouton interne et accessibilité.
  *
- * @structure Avec une légende
- * <bnum-input>Label du champ</bnum-input>
- *
- * @structure Avec une légende et un indice
- * <bnum-input>
- * Label du champ
- * <span slot="hint">Indice d'utilisation</span>
- * </bnum-input>
- *
- * @structure Avec un bouton
- * <bnum-input button="true" button-icon="add">Label du champ
- *   <span slot="button">Ajouter</span>
- * </bnum-input>
- *
- * @structure En erreur
- * <bnum-input pattern="^[a-zA-Z0-9]+$" data-value="@@@@@">Label du champ
- * </bnum-input>
- *
- * @structure Avec un état de succès
- * <bnum-input state="success">Label du champ
- *   <span slot="success">Le champ est valide !</span>
- * </bnum-input>
- *
- * @structure Avec une icône
- * <bnum-input icon="search">Label du champ</bnum-input>
- *
- * @structure Avec un bouton avec icône seulement
- * <bnum-input placeholder="LA LA !" button-icon="add">Label du champ
- * </bnum-input>
- *
- * @structure Nombre
- * <bnum-input type="number" data-value="42">Label du champ</bnum-input>
- *
- * @structure Désactivé
- * <bnum-input disabled>
- *   Label du champ
- * </bnum-input>
- *
- * @structure Complet
- * <bnum-input
- *   data-value="Valeur initiale"
- *   placeholder="Texte indicatif"
- *   type="text"
- *   state="error"
- *   icon="search"
- *   button="primary"
- *   button-icon="send"
- * >
- *   Label du champ
- *   <span slot="hint">Indice d'utilisation</span>
- *   <span slot="success">Le champ est valide !</span>
- *   <span slot="error">Le champ est invalide !</span>
- *   <span slot="button">Envoyer</span>
- * </bnum-input>
- *
- * @slot (defaut) - Contenu du label principal du champ.
+ * @slot default - Contenu du label principal du champ.
  * @slot hint - Contenu de l'indice d'utilisation (hint) du champ.
  * @slot success - Contenu du message de succès du champ.
  * @slot error - Contenu du message d'erreur du champ.
- * @slot button - Contenu du bouton interne (si présent).
+ * @slot inner-button - Contenu du bouton interne (si présent).
  *
- * @state success - État de succès.
- * @state error - État d'erreur.
- * @state disabled - État désactivé.
- * @state icon - Présence d'une icône.
- * @state button - Présence d'un bouton.
- * @state obi - Bouton avec icône seulement (sans texte).
- * @state state - Présence d'un état (success / error).
+ * @csspart state-container - Conteneur de l'état de validation (icône et message de succès/erreur).
  *
- * @event {MouseEvent} bnum-input:button.click - Événement déclenché au clic sur le bouton interne.
- * @event {InputEvent} input - Événement déclenché à la saisie dans le champ.
- * @event {Event} change - Événement déclenché au changement de valeur du champ.
+ * @cssstate value - Le champ contient une valeur non vide.
+ * @cssstate success - État de succès.
+ * @cssstate error - État d'erreur.
+ * @cssstate disabled - État désactivé.
+ * @cssstate have-icon - Présence d'une icône.
+ * @cssstate have-button - Présence d'un bouton.
+ * @cssstate obi - Bouton avec icône seulement (sans texte).
+ * @cssstate current-state - Présence d'un état (success / error).
  *
- * @attr {string} (optional) (default: undefined) data-value - Valeur initiale du champ.
- * @attr {string} (optional) (default: undefined) placeholder - Texte indicatif du champ.
- * @attr {string} (optional) (default: 'text') type - Type de l'input (text, password, email, etc.)
- * @attr {string} (optional) (default: undefined) disabled - Désactive le champ.
- * @attr {string} (optional) (default: undefined) state - État du champ (success, error, etc.).
- * @attr {string} (optional) (default: undefined) button - Présence d'un bouton interne (primary, secondary, danger, ...).
- * @attr {string} (optional) (default: undefined) button-icon - Icône du bouton interne.
- * @attr {string} (optional) (default: undefined) icon - Icône à afficher dans le champ.
- * @attr {string} (optional) (default: undefined) required - Champ requis.
- * @attr {string} (optional) (default: undefined) readonly - Champ en lecture seule.
- * @attr {string} (optional) (default: undefined) pattern - Expression régulière de validation.
- * @attr {string} (optional) (default: undefined) minlength - Longueur minimale du champ.
- * @attr {string} (optional) (default: undefined) maxlength - Longueur maximale du champ.
- * @attr {string} (optional) (default: undefined) autocomplete - Attribut autocomplete HTML.
- * @attr {string} (optional) (default: undefined) inputmode - Mode de saisie (mobile).
- * @attr {string} (optional) (default: undefined) spellcheck - Correction orthographique.
- * @attr {string} (optional) (default: undefined) ignorevalue - Attribut interne pour ignorer la synchronisation de valeur. Ne pas utiliser.
- * @attr {string} (optional) (default: undefined) name - Nom du champ (attribut HTML name).
+ * @fires {CustomEvent<{innerEvent: MouseEvent}>} bnum-input:button.click - Émis au clic sur le bouton interne.
+ * @fires {InputEvent} input - Émis à la saisie dans le champ.
+ * @fires {Event} change - Émis au changement de valeur du champ.
  *
- * @cssvar {#666} --bnum-input-hint-text-color - Couleur du texte du hint.
- * @cssvar {#eee} --bnum-input-background-color - Couleur de fond de l'input.
- * @cssvar {#666} --bnum-input-color - Couleur du texte de l'input.
- * @cssvar {#3a3a3a} --bnum-input-line-color - Couleur de la ligne/bordure de l'input.
- * @cssvar {#36b37e} --bnum-input-state-success-color - Couleur de l'état de succès.
- * @cssvar {#de350b} --bnum-input-state-error-color - Couleur de l'état d'erreur.
- * @cssvar {inset 0 -2px 0 0 #3a3a3a} --bnum-input-box-shadow - Ombre portée de l'input.
+ * @attr {string} data-value - Valeur initiale du champ (utilisée notamment pour la réinitialisation du formulaire). Ne reflète pas la valeur courante, voir la propriété `value`.
+ * @attr {string} placeholder - Texte indicatif du champ.
+ * @attr {string} [type=text] - Type natif de l'input (text, password, email, number, etc.).
+ * @attr {boolean} disabled - Désactive le champ.
+ * @attr {string} state - Applique un état visuel de validation au champ.
+ * @attr {string} button - Active un bouton interne avec la variation donnée. Une valeur vide active le mode icône seule (état `obi`).
+ * @attr {string} button-icon - Icône du bouton interne.
+ * @attr {string} icon - Icône à afficher dans le champ.
+ * @attr {boolean} required - Champ requis.
+ * @attr {boolean} readonly - Champ en lecture seule.
+ * @attr {string} pattern - Expression régulière de validation.
+ * @attr {number} minlength - Longueur minimale du champ.
+ * @attr {number} maxlength - Longueur maximale du champ.
+ * @attr {string} autocomplete - Attribut autocomplete HTML.
+ * @attr {string} inputmode - Mode de saisie (mobile).
+ * @attr {true|false} spellcheck - Correction orthographique.
+ * @attr {string} ignorevalue - Attribut interne pour ignorer la synchronisation de valeur. Ne pas utiliser.
+ * @attr {string} name - Nom du champ (attribut HTML name).
  *
+ * @cssprop [--bnum-input-gap=0.5rem] - Espacement interne entre le label et le champ.
+ * @cssprop [--bnum-input-container-margin-bottom=0.5rem] - Marge basse du conteneur du champ.
+ * @cssprop [--bnum-input-hint-text-color=#666] - Couleur du texte du hint.
+ * @cssprop [--bnum-input-background-color=#eee] - Couleur de fond de l'input.
+ * @cssprop [--bnum-input-color=#666] - Couleur du texte de l'input.
+ * @cssprop [--bnum-input-line-color=#3a3a3a] - Couleur de la ligne/bordure de l'input.
+ * @cssprop [--bnum-input-icon-top=10px] - Position verticale de l'icône dans le champ.
+ * @cssprop [--bnum-input-icon-right=10px] - Position horizontale de l'icône dans le champ.
+ * @cssprop [--bnum-input-state-success-color=#36b37e] - Couleur de l'état de succès.
+ * @cssprop [--bnum-input-state-error-color=#de350b] - Couleur de l'état d'erreur.
+ * @cssprop [--bnum-input-box-shadow=inset 0 -2px 0 0 #3a3a3a] - Ombre portée de l'input.
  */
 let HTMLBnumInput = (() => {
     var _HTMLBnumInput__CreateSlotElement;
@@ -6028,8 +6564,8 @@ let HTMLBnumInput = (() => {
             tag: TAG_INPUT,
             // eslint-disable-next-line no-restricted-syntax
             template: Render(),
-            styles: [INPUT_BASE_STYLE, INPUT_STYLE_STATES, style$l],
-        }), Observe(OBSERVED_ATTRIBUTES)];
+            styles: [INPUT_BASE_STYLE, INPUT_STYLE_STATES, style$n],
+        }), Observe(OBSERVED_ATTRIBUTES$1)];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
@@ -6108,6 +6644,11 @@ let HTMLBnumInput = (() => {
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
         }
         //#region Constants
+        /**
+         * Permet au composant de participer à la soumission et à la validation
+         * des formulaires HTML. Sans cela, `setFormValue` échoue silencieusement.
+         */
+        static formAssociated = true;
         static SYNCED_ATTRIBUTES = [
             ATTRIBUTE_PATTERN,
             ATTRIBUTE_MINLENGTH,
@@ -6189,6 +6730,7 @@ let HTMLBnumInput = (() => {
                 this.#_inputValueChangedCallback(e);
             });
             this.#_initialiseButton().#_update().#_removeValueAttribute();
+            this.#_setFormValue(this.value);
         }
         /**
          * Met à jour le composant lors d'un changement d'attribut.
@@ -6365,7 +6907,7 @@ let HTMLBnumInput = (() => {
         }
         /**
          * Met à jour l'état visuel et fonctionnel du composant selon ses attributs.
-         * @private
+         * @internal
          * @returns {this} L'instance courante pour chaînage.
          */
         #_update() {
@@ -6407,7 +6949,7 @@ let HTMLBnumInput = (() => {
         /**
          * Synchronise les propriétés et attributs de l'input interne.
          * Met à jour les propriétés HTML de l'input selon les attributs du composant.
-         * @private
+         * @internal
          * @returns {this} L'instance courante pour chaînage.
          */
         #_sync() {
@@ -6433,7 +6975,7 @@ let HTMLBnumInput = (() => {
         /**
          * Met à jour l'accessibilité (a11y) de l'input selon l'état.
          * Met à jour les attributs ARIA et la validité de l'input.
-         * @private
+         * @internal
          * @returns {this} L'instance courante pour chaînage.
          */
         #_updateA11y() {
@@ -6443,7 +6985,7 @@ let HTMLBnumInput = (() => {
         }
         /**
          * Met à jour l'état visuel selon l'état passé en paramètre.
-         * @private
+         * @internal
          * @param state L'état à appliquer (success, error, etc.)
          * @returns {this} L'instance courante pour chaînage.
          */
@@ -6464,7 +7006,7 @@ let HTMLBnumInput = (() => {
         }
         /**
          * Définit l'état (succès ou erreur) et le message associé.
-         * @private
+         * @internal
          * @param state Type d'état (success ou error).
          * @param message Message à afficher.
          * @returns {this} L'instance courante pour chaînage.
@@ -6484,7 +7026,7 @@ let HTMLBnumInput = (() => {
         /**
          * Met à jour la validité de l'input et les messages d'erreur/succès.
          * Gère également les attributs ARIA liés à la validation.
-         * @private
+         * @internal
          * @returns {this} L'instance courante pour chaînage.
          */
         #_setValidity() {
@@ -6548,7 +7090,7 @@ let HTMLBnumInput = (() => {
         /**
          * Initialise le bouton interne et son écouteur de clic.
          * Ajoute un écouteur d'événement sur le bouton si nécessaire.
-         * @private
+         * @internal
          * @returns {this} L'instance courante pour chaînage.
          */
         #_initialiseButton() {
@@ -6561,7 +7103,7 @@ let HTMLBnumInput = (() => {
         }
         /**
          * Callback appelé lors d'un changement de valeur de l'input.
-         * @private
+         * @internal
          * @param e Evénement de changement de valeur.
          */
         #_inputValueChangedCallback(e) {
@@ -6582,7 +7124,7 @@ let HTMLBnumInput = (() => {
         }
         /**
          * Transfère un attribut du composant vers l'input interne si présent.
-         * @private
+         * @internal
          * @param attrName Nom de l'attribut à synchroniser.
          */
         #_setFieldAttr(attrName) {
@@ -6674,10 +7216,10 @@ let HTMLBnumInput = (() => {
     return _classThis;
 })();
 
-var css_248z$k = ":host(:state(icon)) #input__icon{--bnum-input-icon-right:var(--bnum-input-number-icon-right,40px)}";
-var style$k = css_248z$k;
+var css_248z$m = ":host(:state(icon)) #input__icon{--bnum-input-icon-right:var(--bnum-input-number-icon-right,40px)}";
+var style$m = css_248z$m;
 
-const SHEET$3 = HTMLBnumInput.ConstructCSSStyleSheet(style$k);
+const SHEET$5 = HTMLBnumInput.ConstructCSSStyleSheet(style$m);
 const TYPE$2 = 'number';
 /**
  * Input nombre.
@@ -6762,7 +7304,7 @@ let HTMLBnumInputNumber = (() => {
             super();
         }
         _p_getStylesheets() {
-            return [...super._p_getStylesheets(), SHEET$3];
+            return [...super._p_getStylesheets(), SHEET$5];
         }
         _p_preload() {
             this.setAttribute(ATTRIBUTE_TYPE, TYPE$2);
@@ -6793,7 +7335,7 @@ let HTMLBnumInputNumber = (() => {
             return super.Create(label, finalOptions);
         }
         static get AdditionnalStylesheet() {
-            return SHEET$3;
+            return SHEET$5;
         }
     });
     return _classThis;
@@ -6923,8 +7465,170 @@ let HTMLBnumInputDate = (() => {
     return _classThis;
 })();
 
-var css_248z$j = ":host .container{position:relative}:host #input-search-actions-container{display:flex;position:absolute;right:50px;top:5px}:host #input-search-actions-container #input-clear-button{display:none}:host(:state(value)) #input-search-actions-container #input-clear-button{display:inline-block}:host(.corrected) #input-search-actions-container{right:56px;top:7px}";
-var style$j = css_248z$j;
+var css_248z$l = ":host .footer{align-items:center;display:flex;font-size:var(--bnum-input-password-font-size,var(--bnum-font-size-text-s,.75rem));gap:var(--bnum-space-s,10px);justify-content:space-between;margin-top:var(--bnum-input-password-footer-gap,var(--bnum-space-s,10px))}:host .forgot{color:var(--bnum-input-password-link-color,var(--bnum-color-primary,#000091));text-decoration:underline}:host .show{align-items:center;cursor:pointer;display:inline-flex;gap:var(--bnum-space-xs,5px);margin-left:auto}:host([data-forgot-password=false]) .forgot{display:none}";
+var style$l = css_248z$l;
+
+const ID_FOOTER = 'password-footer';
+const ID_FORGOT_LINK = 'password-forgot-link';
+const ID_SHOW_TOGGLE = 'password-show-toggle';
+const ID_SHOW_LABEL = 'password-show-label';
+const SLOT_FORGOT = 'forgot';
+const SLOT_SHOW = 'show';
+const TEXT_FORGOT = 'Mot de passe oublié ?';
+const TEXT_SHOW = 'Afficher';
+const ATTR_FORGOT_PASSWORD = 'data-forgot-password';
+const ATTR_FORGOT_URL = 'data-forgot-url';
+const VALUE_DISABLED = 'false';
+const DEFAULT_FORGOT_URL = '#';
+const TYPE_PASSWORD = 'password';
+const TYPE_TEXT$1 = 'text';
+const EVENT_FORGOT_CLICK = 'bnum-input-password:forgot.click';
+const EVENT_VISIBILITY_CHANGE = 'bnum-input-password:visibility.change';
+
+/** Feuille de style spécifique au composant `bnum-input-password`. */
+const SHEET$4 = HTMLBnumInput.ConstructCSSStyleSheet(style$l);
+//#region Template
+const FOOTER = (h("div", { id: ID_FOOTER, class: "footer", part: ID_FOOTER, children: [h("a", { id: ID_FORGOT_LINK, class: "forgot", part: "forgot", href: DEFAULT_FORGOT_URL, children: h("slot", { name: SLOT_FORGOT, children: TEXT_FORGOT }) }), h("label", { id: ID_SHOW_LABEL, class: "show", part: "show", for: ID_SHOW_TOGGLE, children: [h("input", { id: ID_SHOW_TOGGLE, type: "checkbox" }), h("slot", { name: SLOT_SHOW, children: TEXT_SHOW })] })] }));
+//#endregion Template
+/**
+ * Input de mot de passe, avec lien « Mot de passe oublié ? » et case « Afficher ».
+ *
+ * @category Input
+ *
+ * @structure Basique
+ * <bnum-input-password data-forgot-url="/mot-de-passe-oublie">Mot de passe</bnum-input-password>
+ *
+ * @structure Sans lien « Mot de passe oublié »
+ * <bnum-input-password data-forgot-password="false">Mot de passe</bnum-input-password>
+ *
+ * @structure Textes personnalisés
+ * <bnum-input-password>
+ *   Mot de passe
+ *   <span slot="forgot">Oublié ?</span>
+ *   <span slot="show">Voir</span>
+ * </bnum-input-password>
+ *
+ * @slot forgot - Texte du lien « Mot de passe oublié ? ».
+ * @slot show - Texte de la case à cocher « Afficher ».
+ *
+ * @event {CustomEvent<{ caller: HTMLBnumInputPassword; event: MouseEvent }>} bnum-input-password:forgot.click - Clic sur le lien « Mot de passe oublié ». Si `data-forgot-url` est absent, la navigation est annulée.
+ * @event {CustomEvent<{ caller: HTMLBnumInputPassword; visible: boolean }>} bnum-input-password:visibility.change - Le mot de passe est affiché ou masqué.
+ *
+ * @attr {string} (optional) data-forgot-url - URL du lien « Mot de passe oublié ».
+ * @attr {'false'} (optional) data-forgot-password - Avec la valeur `false`, le lien « Mot de passe oublié » est masqué.
+ * @attr {string} (default: 'password') type - Ne pas modifier, toujours 'password' pour ce composant (bascule en 'text' dans le shadow DOM lorsque « Afficher » est coché).
+ *
+ * @cssvar {var(--bnum-space-s, 10px)} --bnum-input-password-footer-gap - Espacement entre le champ et la ligne d'options.
+ * @cssvar {#000091} --bnum-input-password-link-color - Couleur du lien « Mot de passe oublié ».
+ * @cssvar {var(--bnum-font-size-text-s)} --bnum-input-password-font-size - Taille de la police de la ligne d'options.
+ */
+// eslint-disable-next-line no-restricted-syntax
+let HTMLBnumInputPassword = (() => {
+    let _classDecorators = [Define({ template: Render('', FOOTER), tag: TAG_INPUT_PASSWORD })];
+    let _classDescriptor;
+    let _classExtraInitializers = [];
+    let _classThis;
+    let _classSuper = HTMLBnumInput;
+    let _private__ui_decorators;
+    let _private__ui_initializers = [];
+    let _private__ui_extraInitializers = [];
+    let _private__ui_descriptor;
+    (class extends _classSuper {
+        static { _classThis = this; }
+        static {
+            const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
+            _private__ui_decorators = [UI({
+                    field: `#${ID_INPUT$1}`,
+                    toggle: `#${ID_SHOW_TOGGLE}`,
+                    forgot: `#${ID_FORGOT_LINK}`,
+                })];
+            __esDecorate(this, _private__ui_descriptor = { get: __setFunctionName(function () { return this.#_ui_accessor_storage; }, "#_ui", "get"), set: __setFunctionName(function (value) { this.#_ui_accessor_storage = value; }, "#_ui", "set") }, _private__ui_decorators, { kind: "accessor", name: "#_ui", static: false, private: true, access: { has: obj => #_ui in obj, get: obj => obj.#_ui, set: (obj, value) => { obj.#_ui = value; } }, metadata: _metadata }, _private__ui_initializers, _private__ui_extraInitializers);
+            __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+            _classThis = _classDescriptor.value;
+            if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+            __runInitializers(_classThis, _classExtraInitializers);
+        }
+        #_ui_accessor_storage = __runInitializers(this, _private__ui_initializers, void 0);
+        //#region Private fields
+        get #_ui() { return _private__ui_descriptor.get.call(this); }
+        set #_ui(value) { return _private__ui_descriptor.set.call(this, value); }
+        //#endregion Private fields
+        //#region Lifecycle
+        constructor() {
+            super();
+            __runInitializers(this, _private__ui_extraInitializers);
+        }
+        _p_getStylesheets() {
+            return [...super._p_getStylesheets(), SHEET$4];
+        }
+        _p_preload() {
+            super._p_preload();
+            this.setAttribute(ATTRIBUTE_TYPE, TYPE_PASSWORD);
+        }
+        _p_buildDOM() {
+            super._p_buildDOM();
+            this.#_ui.toggle.addEventListener('change', () => this.#_onToggleChange());
+            this.#_ui.forgot.addEventListener('click', e => this.#_onForgotClick(e));
+            this.#_syncForgotUrl();
+        }
+        /**
+         * Le type est figé : on le retire des attributs observés.
+         */
+        static _p_observedAttributes() {
+            return super._p_observedAttributes().filter(x => x !== ATTRIBUTE_TYPE);
+        }
+        //#endregion Lifecycle
+        //#region Public Methods
+        /**
+         * Affiche ou masque le mot de passe.
+         * @param visible `true` pour afficher le mot de passe en clair.
+         */
+        setPasswordVisible(visible) {
+            this.#_ui.toggle.checked = visible;
+            this.#_applyVisibility(visible);
+            return this;
+        }
+        //#endregion Public Methods
+        //#region Private Methods
+        #_onToggleChange() {
+            this.#_applyVisibility(this.#_ui.toggle.checked);
+        }
+        #_applyVisibility(visible) {
+            this.#_ui.field.type = visible ? TYPE_TEXT$1 : TYPE_PASSWORD;
+            this.trigger(EVENT_VISIBILITY_CHANGE, { caller: this, visible });
+        }
+        #_onForgotClick(event) {
+            // Sans URL, le lien ne sert que d'événement : on évite le saut vers '#'.
+            if (!this.getAttribute(ATTR_FORGOT_URL))
+                event.preventDefault();
+            this.trigger(EVENT_FORGOT_CLICK, { caller: this, event });
+        }
+        #_syncForgotUrl() {
+            const url = this.getAttribute(ATTR_FORGOT_URL);
+            if (url)
+                this.#_ui.forgot.href = url;
+        }
+        //#endregion Private Methods
+        //#region Static Methods
+        /**
+         * Crée un input de mot de passe.
+         * @param label Texte du label principal.
+         * @param options Options d'initialisation (attributs et slots).
+         */
+        static Create(label, { forgotPassword = true, forgotUrl, ...options } = {}) {
+            const element = super.Create(label, options);
+            if (!forgotPassword)
+                element.setAttribute(ATTR_FORGOT_PASSWORD, VALUE_DISABLED);
+            if (forgotUrl)
+                element.setAttribute(ATTR_FORGOT_URL, forgotUrl);
+            return element;
+        }
+    });
+    return _classThis;
+})();
+
+var css_248z$k = ":host .container{position:relative}:host #input-search-actions-container{display:flex;position:absolute;right:50px;top:5px}:host #input-search-actions-container #input-clear-button{display:none}:host(:state(value)) #input-search-actions-container #input-clear-button{display:inline-block}:host(.corrected) #input-search-actions-container{right:56px;top:7px}";
+var style$k = css_248z$k;
 
 const ID_ACTIONS_CONTAINER = 'input-search-actions-container';
 const ID_CLEAR_BUTTON = 'input-clear-button';
@@ -6989,7 +7693,7 @@ function Listen(eventName, { selector = null } = {}) {
 }
 
 /** Feuille de style CSS compilée spécifique au composant `bnum-input-search`. */
-const SHEET$2 = HTMLBnumInput.ConstructCSSStyleSheet(style$j);
+const SHEET$3 = HTMLBnumInput.ConstructCSSStyleSheet(style$k);
 //#region Template
 /**
  * Fragment HTML du conteneur d'actions injecté dans le slot du composant parent.
@@ -7164,7 +7868,7 @@ let HTMLBnumInputSearch = (() => {
          * @internal
          */
         _p_getStylesheets() {
-            return [...super._p_getStylesheets(), SHEET$2];
+            return [...super._p_getStylesheets(), SHEET$3];
         }
         /**
          * Précharge les attributs spécifiques à l'input de recherche.
@@ -7632,6 +8336,214 @@ let HTMLBnumInputTime = (() => {
                 ...options,
             };
             return super.Create(label, finalOptions);
+        }
+    });
+    return _classThis;
+})();
+
+var css_248z$j = "@keyframes rotate360{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}:host{display:block;position:relative}::slotted(input){background-color:var(--bnum-input-background-color,var(--bnum-color-input,#eee));border:none;border-radius:.25rem .25rem 0 0;box-shadow:var(--bnum-input-box-shadow,inset 0 -2px 0 0 var(--bnum-input-line-color,var(--bnum-color-input-border,#3a3a3a)));box-sizing:border-box;color:var(--bnum-input-color,var(--bnum-text-on-input,#666));font-size:1rem;line-height:1.5rem;padding:.5rem 1rem;width:100%}::slotted(input[slot=pair]){height:1px;opacity:0;pointer-events:none;position:absolute;width:1px}::slotted(input:disabled){cursor:not-allowed;opacity:.6}";
+var style$j = css_248z$j;
+
+const SLOT_FIELD = 'field';
+const SLOT_PAIR = 'pair';
+const ATTR_PAIR_PASSWORD = 'data-pair-password';
+const DEFAULT_NAME = 'username';
+const DEFAULT_AUTOCOMPLETE = 'username';
+const VALUE_ATTRIBUTES = [
+    ATTRIBUTE_NAME,
+    ATTRIBUTE_AUTOCOMPLETE,
+    ATTRIBUTE_PLACEHOLDER,
+    ATTRIBUTE_PATTERN,
+    ATTRIBUTE_MINLENGTH,
+    ATTRIBUTE_MAXLENGTH,
+    ATTRIBUTE_INPUTMODE,
+];
+const BOOLEAN_ATTRIBUTES = [
+    ATTRIBUTE_DISABLED$1,
+    ATTRIBUTE_READONLY,
+    ATTRIBUTE_REQUIRED,
+];
+const OBSERVED_ATTRIBUTES = [
+    ...VALUE_ATTRIBUTES,
+    ...BOOLEAN_ATTRIBUTES,
+    ATTRIBUTE_DATA_VALUE,
+];
+const SHEET$2 = BnumElement.ConstructCSSStyleSheet(style$j);
+const VIEW = (h(HTMLBnumFragment, { children: [h("label", { id: ID_HINT_TEXT, class: "label-container", children: [h("span", { id: ID_HINT_TEXT_LABEL, class: "label-container--label", children: h("slot", {}) }), h("span", { id: ID_HINT_TEXT_HINT, class: "label-container--hint hint-label", children: h("slot", { name: SLOT_HINT }) })] }), h("slot", { name: SLOT_FIELD }), h("slot", { name: SLOT_PAIR })] }));
+/**
+ * Input de nom d'utilisateur.
+ *
+ * Contrairement à `bnum-input`, le vrai `<input>` est créé dans le light DOM
+ * (slotté dans le shadow DOM) : les navigateurs ne proposent pas les noms
+ * d'utilisateur enregistrés pour un champ situé dans un shadow root. Il
+ * participe ainsi nativement au `<form>` parent (`name`, validation, reset).
+ *
+ * @category Input
+ *
+ * @structure Basique
+ * <bnum-input-username>Identifiant</bnum-input-username>
+ *
+ * @structure Avec un indice
+ * <bnum-input-username>
+ * Identifiant
+ * <span slot="hint">Votre adresse mail professionnelle</span>
+ * </bnum-input-username>
+ *
+ * @structure Formulaire de connexion
+ * <form>
+ *   <bnum-input-username>Identifiant</bnum-input-username>
+ *   <bnum-input-password>Mot de passe</bnum-input-password>
+ * </form>
+ *
+ * @slot default - Libellé du champ.
+ * @slot hint - Indice d'utilisation.
+ *
+ * @attr {string} (default: 'username') name - Nom du champ.
+ * @attr {string} (default: 'username') autocomplete - Valeur d'autocomplétion (`username`, `email`...).
+ * @attr {string} data-value - Valeur initiale.
+ * @attr {string} placeholder - Texte indicatif.
+ * @attr {boolean} disabled - Désactive le champ.
+ * @attr {boolean} readonly - Lecture seule.
+ * @attr {boolean} required - Champ requis.
+ * @attr {string} pattern - Expression régulière de validation.
+ * @attr {number} minlength - Longueur minimale.
+ * @attr {number} maxlength - Longueur maximale.
+ * @attr {string} inputmode - Mode de saisie (mobile).
+ * @attr {string} data-pair-password - Sélecteur CSS d'un `bnum-input-password` voisin. Ajoute un champ mot de passe caché dans le même arbre DOM que l'identifiant : Firefox ne rattache pas un champ light DOM à un mot de passe situé dans un shadow root, et ne propose alors aucun identifiant. La valeur remplie par le navigateur est reportée sur le composant cible.
+ *
+ * @fires {InputEvent} input - Émis à la saisie (remonte depuis l'input natif).
+ * @fires {Event} change - Émis au changement de valeur.
+ */
+let HTMLBnumInputUsername = (() => {
+    let _classDecorators = [Define({ tag: TAG_INPUT_USERNAME, template: VIEW }), Observe(OBSERVED_ATTRIBUTES)];
+    let _classDescriptor;
+    let _classExtraInitializers = [];
+    let _classThis;
+    let _classSuper = BnumElement;
+    (class extends _classSuper {
+        static { _classThis = this; }
+        static {
+            const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
+            __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+            _classThis = _classDescriptor.value;
+            if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+            __runInitializers(_classThis, _classExtraInitializers);
+        }
+        //#region Private fields
+        #_field = null;
+        //#endregion Private fields
+        //#region Getters/Setters
+        /**
+         * Valeur courante du champ.
+         */
+        get value() {
+            return this.#_field?.value ?? this.getAttribute(ATTRIBUTE_DATA_VALUE) ?? '';
+        }
+        set value(val) {
+            if (this.#_field)
+                this.#_field.value = val;
+            else
+                this.setAttribute(ATTRIBUTE_DATA_VALUE, val);
+        }
+        /**
+         * Input natif (light DOM), `null` tant que le composant n'est pas construit.
+         */
+        get field() {
+            return this.#_field;
+        }
+        //#endregion Getters/Setters
+        //#region Lifecycle
+        _p_getStylesheets() {
+            return [...super._p_getStylesheets(), INPUT_BASE_STYLE, SHEET$2];
+        }
+        _p_buildDOM() {
+            this.#_field = this.#_createField();
+            this.appendChild(this.#_field);
+            this.shadowRoot.querySelector(`#${ID_HINT_TEXT}`).addEventListener('click', () => this.#_field?.focus());
+            this.shadowRoot.querySelector(`#${ID_HINT_TEXT_LABEL} slot`).addEventListener('slotchange', () => this.#_syncAccessibleName());
+            this.#_createPairField();
+            this.#_syncField().#_syncAccessibleName();
+        }
+        _p_update() {
+            this.#_syncField();
+        }
+        //#endregion Lifecycle
+        //#region Private methods
+        #_createField() {
+            const field = document.createElement('input');
+            field.type = 'text';
+            field.slot = SLOT_FIELD;
+            field.value = this.getAttribute(ATTRIBUTE_DATA_VALUE) ?? '';
+            field.setAttribute('autocapitalize', 'off');
+            field.setAttribute(ATTRIBUTE_SPELLCHECK, 'false');
+            return field;
+        }
+        /**
+         * Crée, si `data-pair-password` est présent, un champ mot de passe caché
+         * dans le light DOM. Il donne au navigateur un formulaire de connexion
+         * complet (identifiant + mot de passe dans le même arbre) et reporte la
+         * valeur remplie sur le `bnum-input-password` ciblé.
+         */
+        #_createPairField() {
+            const targetSelector = this.getAttribute(ATTR_PAIR_PASSWORD);
+            if (!targetSelector)
+                return;
+            const pair = document.createElement('input');
+            pair.type = 'password';
+            pair.slot = SLOT_PAIR;
+            pair.tabIndex = -1;
+            pair.setAttribute('autocomplete', 'current-password');
+            pair.setAttribute('aria-hidden', 'true');
+            const forward = () => {
+                const target = document.querySelector(targetSelector);
+                if (target && pair.value)
+                    target.value = pair.value;
+            };
+            pair.addEventListener('input', forward);
+            pair.addEventListener('change', forward);
+            this.appendChild(pair);
+        }
+        /**
+         * Reporte les attributs de l'hôte sur l'input natif.
+         * @returns {this} Chaînage.
+         */
+        #_syncField() {
+            const field = this.#_field;
+            if (!field)
+                return this;
+            for (const attr of VALUE_ATTRIBUTES) {
+                const val = this.getAttribute(attr);
+                if (val !== null)
+                    field.setAttribute(attr, val);
+                else
+                    field.removeAttribute(attr);
+            }
+            if (!field.hasAttribute(ATTRIBUTE_NAME))
+                field.setAttribute(ATTRIBUTE_NAME, DEFAULT_NAME);
+            if (!field.hasAttribute(ATTRIBUTE_AUTOCOMPLETE))
+                field.setAttribute(ATTRIBUTE_AUTOCOMPLETE, DEFAULT_AUTOCOMPLETE);
+            for (const attr of BOOLEAN_ATTRIBUTES) {
+                field.toggleAttribute(attr, this.hasAttribute(attr));
+            }
+            return this;
+        }
+        /**
+         * Le libellé est dans le shadow DOM : un `for` ne peut pas l'atteindre,
+         * on le reporte donc en `aria-label` sur l'input.
+         * @returns {this} Chaînage.
+         */
+        #_syncAccessibleName() {
+            const label = Array.from(this.childNodes)
+                .filter(node => node.nodeType === Node.TEXT_NODE ||
+                (node instanceof Element && !node.hasAttribute('slot')))
+                .map(node => node.textContent ?? '')
+                .join(' ')
+                .trim();
+            if (label)
+                this.#_field?.setAttribute('aria-label', label);
+            else
+                this.#_field?.removeAttribute('aria-label');
+            return this;
         }
     });
     return _classThis;
@@ -9683,6 +10595,7 @@ let HTMLBnumSwitch = (() => {
                 }, "#_reportValidity") }, _private__reportValidity_decorators, { kind: "method", name: "#_reportValidity", static: false, private: true, access: { has: obj => #_reportValidity in obj, get: obj => obj.#_reportValidity }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, _private__change_descriptor = { value: __setFunctionName(function (event) {
                     this.checked = this.#_ui.input.checked;
+                    this.#_syncFormValue();
                     return { inner: event, caller: this };
                 }, "#_change") }, _private__change_decorators, { kind: "method", name: "#_change", static: false, private: true, access: { has: obj => #_change in obj, get: obj => obj.#_change }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, _private__setText_descriptor = { value: __setFunctionName(function () {
@@ -9930,6 +10843,7 @@ let HTMLBnumSwitch = (() => {
                         this.#_ui.input.removeAttribute(name);
                     break;
             }
+            this.#_syncFormValue();
         }
         /**
          * Effectue les opérations post-flush du composant.
@@ -10225,6 +11139,18 @@ let HTMLBnumSwitch = (() => {
                 }
             }
             this.#_syncAria();
+            return this.#_syncFormValue();
+        }
+        /**
+         * Transmet l'état au formulaire parent, comme une checkbox native :
+         * la valeur n'est envoyée que lorsque le switch est coché.
+         *
+         * @returns L'instance courante pour chaînage
+         *
+         * @private
+         */
+        #_syncFormValue() {
+            this._p_internal.setFormValue(this.checked ? this.value : null);
             return this;
         }
         /**
@@ -17297,5 +18223,5 @@ if (typeof window !== 'undefined' && window.DsBnumConfig) {
     });
 }
 
-export { BREAKPOINTS, BnumElement, BnumRadioCheckedChangeEvent, ButtonVariation, ColumnSlot, BnumConfig as Config, RotomecaCssProperty as DsCssProperty, RotomecaCssRule as DsCssRule, RotomecaDocument as DsDocument, HTMLBnumAvatarAction, HTMLBnumBadge, HTMLBnumButton, HTMLBnumButtonIcon, HTMLBnumCardAgenda, HTMLBnumCardElement, HTMLBnumCardEmail, HTMLBnumCardItem, HTMLBnumCardItemAgenda, HTMLBnumCardItemMail, HTMLBnumCardList, HTMLBnumCardTitle, HTMLBnumColumn, HTMLBnumDangerButton, HTMLBnumDate, HTMLBnumFolder, HTMLBnumFolderList, HTMLBnumFragment, HTMLBnumHeader, HTMLBnumHide, HTMLBnumIcon, HTMLBnumInput, HTMLBnumInputDate, HTMLBnumInputNumber, HTMLBnumInputSearch, HTMLBnumInputText, HTMLBnumInputTime, HTMLBnumPlaceholder, HTMLBnumPrimaryButton, HTMLBnumRadio, HTMLBnumRadioGroup, HTMLBnumSecondaryButton, HTMLBnumSegmentedControl, HTMLBnumSegmentedItem, HTMLBnumSelect, HTMLBnumSwitch, HTMLBnumTertiaryButton, HTMLBnumToggleButton, HTMLBnumTree, HideTextOnLayoutSize, INPUT_BASE_STYLE, INPUT_STYLE_STATES, IconPosition, MODES };
+export { BREAKPOINTS, BnumElement, BnumRadioCheckedChangeEvent, ButtonVariation, ColumnSlot, BnumConfig as Config, RotomecaCssProperty as DsCssProperty, RotomecaCssRule as DsCssRule, RotomecaDocument as DsDocument, HTMLBnumAlert, HTMLBnumAlertCustom, HTMLBnumAlertError, HTMLBnumAlertInfo, HTMLBnumAlertSuccess, HTMLBnumAlertWarning, HTMLBnumAvatarAction, HTMLBnumBadge, HTMLBnumButton, HTMLBnumButtonIcon, HTMLBnumCardAgenda, HTMLBnumCardElement, HTMLBnumCardEmail, HTMLBnumCardItem, HTMLBnumCardItemAgenda, HTMLBnumCardItemMail, HTMLBnumCardList, HTMLBnumCardTitle, HTMLBnumCerbereButton, HTMLBnumColumn, HTMLBnumDangerButton, HTMLBnumDate, HTMLBnumDivider, HTMLBnumFolder, HTMLBnumFolderList, HTMLBnumFragment, HTMLBnumHeader, HTMLBnumHide, HTMLBnumIcon, HTMLBnumInput, HTMLBnumInputDate, HTMLBnumInputNumber, HTMLBnumInputPassword, HTMLBnumInputSearch, HTMLBnumInputText, HTMLBnumInputTime, HTMLBnumInputUsername, HTMLBnumPlaceholder, HTMLBnumPrimaryButton, HTMLBnumRadio, HTMLBnumRadioGroup, HTMLBnumSecondaryButton, HTMLBnumSegmentedControl, HTMLBnumSegmentedItem, HTMLBnumSelect, HTMLBnumSwitch, HTMLBnumTertiaryButton, HTMLBnumToggleButton, HTMLBnumTree, HideTextOnLayoutSize, INPUT_BASE_STYLE, INPUT_STYLE_STATES, IconPosition, MODES };
 //# sourceMappingURL=ds-module-bnum.js.map

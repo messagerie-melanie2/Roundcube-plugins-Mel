@@ -1,0 +1,62 @@
+<input type="hidden" name="_task" value="login" />
+<input type="hidden" name="_action" value="login" />
+<input type="hidden" name="_timezone" id="rcmlogintz" value="_default_" />
+<input type="hidden" name="_url" id="rcmloginurl" value="<roundcube:var name="env:login_url" />" />
+<div id="formlogintable">
+    <div class="bds-space-l-bottom  <roundcube:if condition="env:login_hide_inputs" /> hidden_login_input<roundcube:endif /> ">
+        <bnum-input-username
+            id="rcmloginuser"
+            name="_user"
+            size="40"
+            autocapitalize="off"
+            autocomplete="on"
+            data-pair-password="#rcmloginpwd"
+            data-value="<roundcube:var name="env:login_user" />"
+        >
+            <roundcube:label name="username" />
+            <span slot="hint"><roundcube:label name="mel.login_username_hint" /></span>
+        </bnum-input-text>
+    </div>
+    <roundcube:if condition="env:login_external" />
+    <bnum-input-password
+        id="rcmloginpwd"
+        name="_pass"
+        size="40"
+        autocapitalize="off"
+        autocomplete="off"
+        data-forgot-url="./public/forgotten/"
+    ><roundcube:label name="password" /></bnum-input-password>
+    <roundcube:else />
+    <bnum-input-password
+        id="rcmloginpwd"
+        name="_pass"
+        size="40"
+        autocapitalize="off"
+        autocomplete="off"
+        data-forgot-password="false"
+    ><roundcube:label name="password" /></bnum-input-password>
+    <roundcube:endif />
+    <roundcube:if condition="env:login_show_keep" />
+    <div class="bds-space-l-top   <roundcube:if condition="env:login_hide_inputs" />hidden_login_input<roundcube:endif />">
+        <bnum-switch
+            id="rcmloginkeep"
+            name="_keeplogin"
+            value="keeplogin"
+            helper
+            title="<roundcube:label name="mel.computer_private_title" />"
+            <roundcube:if condition="env:login_keep_checked" />checked<roundcube:endif />
+        ><roundcube:label name="mel.computer_private" /><span slot="hint"><roundcube:label name="mel.login_keep_hint" /></span></bnum-switch>
+    </div>
+    <roundcube:endif />
+</div>
+<p class="oldformbuttons">
+    <center>
+    <bnum-primary-button data-icon="login" id="rcmloginsubmit_ds"><roundcube:label name="login" /></bnum-primary-button>
+    <button id="rcmloginsubmit" type="submit" hidden value="<roundcube:label name="login" />"><roundcube:label name="login" /></button>
+</center>
+</p>
+<roundcube:if condition="env:login_show_no_bal" />
+<div id="bali-reset-password">
+    <a href="./changepassword/index.php"><roundcube:label name="mel.no bal" /></a>
+</div>
+<roundcube:endif />

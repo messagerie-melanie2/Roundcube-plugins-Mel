@@ -46,7 +46,8 @@ $(document).ready(() => {
     $(`#${login_id}`).css('display', '');
   }
 
-  $(`#${login_id}`).click(() => {
+  // Évènement du composant <bnum-cerbere-button> : n'est pas déclenché par son lien d'information.
+  document.getElementById(login_id)?.addEventListener('bnum-cerbere-button:click', () => {
     window.location.href = mel_metapage.Functions.url('login', '', {
       oidc: 1,
       _timezone: $('input[name="_timezone"]').val(),

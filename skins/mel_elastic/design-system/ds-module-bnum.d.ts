@@ -949,7 +949,7 @@ declare class JsCircularEvent<TCallback extends Function> extends JsEvent<TCallb
 	 *
 	 * @param param Paramètre à envoyer aux callbacks
 	 */
-	call<TItem>(param: Record<string, TItem>): Record<string, TItem>;
+	call<TItem>(param: Object<string, TItem>): Object<string, TItem>;
 }
 /**
  * Représente une propriété CSS (nom, valeur, important).
@@ -1153,6 +1153,150 @@ declare abstract class BnumElementInternal extends BnumElement {
 	 * @protected
 	 */
 	protected _p_hasState(state: string): boolean;
+}
+export type AlertVariation = "info" | "success" | "warning" | "error" | "custom";
+export type BnumAlertCreateOptions = {
+	variation?: AlertVariation;
+	/** Titre de l'alerte (slot `title`). */
+	title?: string;
+	/** Icône (Material Symbols), utilisée par la variation `custom`. */
+	icon?: string;
+	closable?: boolean;
+};
+/**
+ * Alerte : message contextuel d'information, de succès, d'avertissement ou d'erreur.
+ *
+ * La variation se choisit via `data-variation` ou via les balises dédiées
+ * (`bnum-alert-info`, `bnum-alert-success`, `bnum-alert-warning`, `bnum-alert-error`, `bnum-alert-custom`).
+ *
+ * @category Alert
+ *
+ * @structure Information
+ * <bnum-alert data-variation="info">
+ *   <span slot="title">Information</span>
+ *   Un message d'information.
+ * </bnum-alert>
+ *
+ * @structure Succès
+ * <bnum-alert-success><span slot="title">Succès</span>L'action a réussi.</bnum-alert-success>
+ *
+ * @structure Avertissement
+ * <bnum-alert-warning><span slot="title">Attention</span>Vérifiez vos informations.</bnum-alert-warning>
+ *
+ * @structure Erreur
+ * <bnum-alert-error><span slot="title">Erreur</span>Une erreur est survenue.</bnum-alert-error>
+ *
+ * @structure Personnalisée
+ * <bnum-alert data-variation="custom" data-icon="rocket_launch">Alerte avec une icône au choix.</bnum-alert>
+ *
+ * @structure Fermable, sans titre
+ * <bnum-alert-info closable>Cette alerte peut être fermée.</bnum-alert-info>
+ *
+ * @slot (default) - Description de l'alerte.
+ * @slot title - Titre de l'alerte (optionnel).
+ *
+ * @state variation-info - Variation info.
+ * @state variation-success - Variation succès.
+ * @state variation-warning - Variation avertissement.
+ * @state variation-error - Variation erreur.
+ * @state variation-custom - Variation personnalisée.
+ *
+ * @attr {'info' | 'success' | 'warning' | 'error' | 'custom'} (optional) (default:'info') data-variation - Variation de l'alerte.
+ * @attr {string} (optional) data-icon - Icône (Material Symbols) de la variation `custom`.
+ * @attr {any} (optional) closable - Affiche le bouton de fermeture.
+ *
+ * @event {CustomEvent<{ caller: HTMLBnumAlert }>} bnum-alert:close - Clic sur le bouton de fermeture (annulable : sans `preventDefault`, l'alerte est retirée du DOM).
+ *
+ * @cssvar {#0063cb} --bnum-alert-info-color - Couleur de la variation "info".
+ * @cssvar {#18753c} --bnum-alert-success-color - Couleur de la variation "success".
+ * @cssvar {#d64d00} --bnum-alert-warning-color - Couleur de la variation "warning".
+ * @cssvar {#ce0500} --bnum-alert-error-color - Couleur de la variation "error".
+ * @cssvar {#000091} --bnum-alert-custom-color - Couleur de la variation "custom".
+ * @cssvar {#fff} --bnum-alert-icon-color - Couleur de l'icône.
+ * @cssvar {2.5rem} --bnum-alert-icon-size - Largeur de la bande d'icône.
+ */
+export declare class HTMLBnumAlert extends BnumElementInternal {
+	#private;
+	/**
+	 * Variation imposée par la balise (sous-classes). `null` : on lit `data-variation`.
+	 */
+	protected get _p_forcedVariation(): Nullable<AlertVariation>;
+	/**
+	 * Variation effective de l'alerte (`info` si la valeur est absente ou invalide).
+	 */
+	get variation(): AlertVariation;
+	set variation(value: AlertVariation);
+	constructor();
+	protected _p_buildDOM(): void;
+	protected _p_update(): void;
+	/**
+	 * Crée une alerte via JavaScript.
+	 * @param description Texte de description.
+	 * @param options Variation, titre, icône (variation `custom`) et fermeture.
+	 */
+	static Create(description: string, { variation, title, icon, closable, }?: BnumAlertCreateOptions): HTMLBnumAlert;
+}
+/**
+ * Alerte de variation « info ».
+ *
+ * @category Alert
+ *
+ * @structure Cas standard
+ * <bnum-alert-info><span slot="title">Titre</span>Description de l'alerte.</bnum-alert-info>
+ */
+export declare class HTMLBnumAlertInfo extends HTMLBnumAlert {
+	constructor();
+	protected get _p_forcedVariation(): AlertVariation;
+}
+/**
+ * Alerte de variation « success ».
+ *
+ * @category Alert
+ *
+ * @structure Cas standard
+ * <bnum-alert-success><span slot="title">Titre</span>Description de l'alerte.</bnum-alert-success>
+ */
+export declare class HTMLBnumAlertSuccess extends HTMLBnumAlert {
+	constructor();
+	protected get _p_forcedVariation(): AlertVariation;
+}
+/**
+ * Alerte de variation « warning ».
+ *
+ * @category Alert
+ *
+ * @structure Cas standard
+ * <bnum-alert-warning><span slot="title">Titre</span>Description de l'alerte.</bnum-alert-warning>
+ */
+export declare class HTMLBnumAlertWarning extends HTMLBnumAlert {
+	constructor();
+	protected get _p_forcedVariation(): AlertVariation;
+}
+/**
+ * Alerte de variation « error ».
+ *
+ * @category Alert
+ *
+ * @structure Cas standard
+ * <bnum-alert-error><span slot="title">Titre</span>Description de l'alerte.</bnum-alert-error>
+ */
+export declare class HTMLBnumAlertError extends HTMLBnumAlert {
+	constructor();
+	protected get _p_forcedVariation(): AlertVariation;
+}
+/**
+ * Alerte de variation « custom ».
+ *
+ * @category Alert
+ *
+ * @structure Cas standard
+ * <bnum-alert-custom data-icon="rocket_launch"><span slot="title">Titre</span>Description de l'alerte.</bnum-alert-custom>
+ *
+ * @attr {string} (optional) data-icon - Icône (Material Symbols) affichée dans l'alerte.
+ */
+export declare class HTMLBnumAlertCustom extends HTMLBnumAlert {
+	constructor();
+	protected get _p_forcedVariation(): AlertVariation;
 }
 export type BnumBadgeVariation = "primary" | "secondary" | "danger";
 /**
@@ -1610,6 +1754,51 @@ export declare class HTMLBnumButton extends BnumElementInternal {
 		loading?: boolean;
 	}): HTMLBnumButton;
 }
+export type BnumCerbereButtonCreateOptions = {
+	/** URL d'authentification Cerbère. */
+	href?: string;
+	/** URL de la page « Qu'est-ce que Cerbère ? ». */
+	infoUrl?: string;
+};
+/**
+ * Bouton « S'identifier avec Cerbère », indissociable de son lien « Qu'est-ce que Cerbère ? ».
+ *
+ * @category Authentification
+ *
+ * @structure Basique
+ * <bnum-cerbere-button data-href="/auth/cerbere" data-info-url="https://example.org/cerbere"></bnum-cerbere-button>
+ *
+ * @structure Textes personnalisés
+ * <bnum-cerbere-button data-href="/auth/cerbere">
+ *   <span slot="label">Se connecter</span>
+ *   <span slot="link">En savoir plus</span>
+ * </bnum-cerbere-button>
+ *
+ * @slot label - Contenu du bouton (remplace « S'identifier avec Cerbère »).
+ * @slot link - Texte du lien d'information (remplace « Qu'est-ce que Cerbère ? »).
+ *
+ * @event {CustomEvent<{ caller: HTMLBnumCerbereButton; event: MouseEvent }>} bnum-cerbere-button:click - Clic sur le bouton. Si `data-href` est absent, la navigation est annulée.
+ *
+ * @attr {string} (optional) data-href - URL d'authentification Cerbère.
+ * @attr {string} (optional) data-info-url - URL de la page « Qu'est-ce que Cerbère ? » (ouverte dans un nouvel onglet).
+ *
+ * @cssvar {#000091} --bnum-cerbere-button-background-color - Couleur de fond du bouton.
+ * @cssvar {#f5f5fe} --bnum-cerbere-button-color - Couleur du texte du bouton.
+ * @cssvar {#1212ff} --bnum-cerbere-button-hover-background-color - Couleur de fond au survol.
+ * @cssvar {#2e2eff} --bnum-cerbere-button-active-background-color - Couleur de fond à l'appui.
+ * @cssvar {#000091} --bnum-cerbere-button-link-color - Couleur du lien d'information.
+ * @cssvar {12px} --bnum-cerbere-button-gap - Espacement entre le bouton et le lien.
+ */
+export declare class HTMLBnumCerbereButton extends BnumElement {
+	#private;
+	constructor();
+	protected _p_buildDOM(): void;
+	/**
+	 * Crée un bouton Cerbère.
+	 * @param options URL d'authentification et URL d'information.
+	 */
+	static Create({ href, infoUrl, }?: BnumCerbereButtonCreateOptions): HTMLBnumCerbereButton;
+}
 /**
  * Bouton Bnum de type "Danger".
  *
@@ -1784,6 +1973,37 @@ export declare class HTMLBnumDate extends BnumElementInternal {
 	static Create(dateInput?: string | Date, options?: BnumDateCreateOptions): HTMLBnumDate;
 }
 /**
+ * Séparateur horizontal avec libellé centré optionnel (ex. « ou »).
+ *
+ * Sans contenu, le composant affiche une simple ligne.
+ *
+ * @structure Avec libellé
+ * <bnum-divider>ou</bnum-divider>
+ *
+ * @structure Sans libellé
+ * <bnum-divider></bnum-divider>
+ *
+ * @slot (default) - Libellé affiché au centre du séparateur.
+ *
+ * @cssvar {var(--bnum-space-m, 15px)} --bnum-divider-gap - Espacement entre les traits et le libellé.
+ * @cssvar {#ddd} --bnum-divider-line-color - Couleur des traits.
+ * @cssvar {1px} --bnum-divider-line-size - Épaisseur des traits.
+ * @cssvar {#000091} --bnum-divider-text-color - Couleur du libellé.
+ * @cssvar {var(--bnum-font-size-text-s)} --bnum-divider-font-size - Taille du libellé.
+ */
+export declare class HTMLBnumDivider extends BnumElement {
+	constructor();
+	/**
+	 * Expose le composant comme séparateur aux technologies d'assistance.
+	 */
+	protected _p_preload(): void;
+	/**
+	 * Crée un séparateur via JavaScript.
+	 * @param label Libellé affiché au centre (aucun par défaut)
+	 */
+	static Create(label?: string): HTMLBnumDivider;
+}
+/**
  * Composant Web Component utilitaire "Fragment".
  * * Ce composant agit comme un conteneur logique pour regrouper des éléments du DOM
  * sans introduire de boîte de rendu visuelle supplémentaire (via `display: contents` généralement défini dans le style).
@@ -1886,114 +2106,73 @@ export declare const INPUT_STYLE_STATES: CSSStyleSheet;
  * Composant Input du design system Bnum.
  * Permet de gérer un champ de saisie enrichi avec gestion d'états, d'icônes, de bouton et d'accessibilité.
  *
- * @category Input
+ * Rangé dans la catégorie Storybook « Input », illustré par plusieurs
+ * structures : sans rien, avec une légende, avec une légende et un indice,
+ * avec un bouton, en erreur, avec un état de succès, avec une icône, avec un
+ * bouton icône seule, en nombre, désactivé, et complet (toutes les
+ * fonctionnalités combinées).
  *
- * @structure Sans rien
- * <bnum-input></bnum-input>
+ * @summary Champ de saisie enrichi avec gestion d'états, icônes, bouton interne et accessibilité.
  *
- * @structure Avec une légende
- * <bnum-input>Label du champ</bnum-input>
- *
- * @structure Avec une légende et un indice
- * <bnum-input>
- * Label du champ
- * <span slot="hint">Indice d'utilisation</span>
- * </bnum-input>
- *
- * @structure Avec un bouton
- * <bnum-input button="true" button-icon="add">Label du champ
- *   <span slot="button">Ajouter</span>
- * </bnum-input>
- *
- * @structure En erreur
- * <bnum-input pattern="^[a-zA-Z0-9]+$" data-value="@@@@@">Label du champ
- * </bnum-input>
- *
- * @structure Avec un état de succès
- * <bnum-input state="success">Label du champ
- *   <span slot="success">Le champ est valide !</span>
- * </bnum-input>
- *
- * @structure Avec une icône
- * <bnum-input icon="search">Label du champ</bnum-input>
- *
- * @structure Avec un bouton avec icône seulement
- * <bnum-input placeholder="LA LA !" button-icon="add">Label du champ
- * </bnum-input>
- *
- * @structure Nombre
- * <bnum-input type="number" data-value="42">Label du champ</bnum-input>
- *
- * @structure Désactivé
- * <bnum-input disabled>
- *   Label du champ
- * </bnum-input>
- *
- * @structure Complet
- * <bnum-input
- *   data-value="Valeur initiale"
- *   placeholder="Texte indicatif"
- *   type="text"
- *   state="error"
- *   icon="search"
- *   button="primary"
- *   button-icon="send"
- * >
- *   Label du champ
- *   <span slot="hint">Indice d'utilisation</span>
- *   <span slot="success">Le champ est valide !</span>
- *   <span slot="error">Le champ est invalide !</span>
- *   <span slot="button">Envoyer</span>
- * </bnum-input>
- *
- * @slot (defaut) - Contenu du label principal du champ.
+ * @slot default - Contenu du label principal du champ.
  * @slot hint - Contenu de l'indice d'utilisation (hint) du champ.
  * @slot success - Contenu du message de succès du champ.
  * @slot error - Contenu du message d'erreur du champ.
- * @slot button - Contenu du bouton interne (si présent).
+ * @slot inner-button - Contenu du bouton interne (si présent).
  *
- * @state success - État de succès.
- * @state error - État d'erreur.
- * @state disabled - État désactivé.
- * @state icon - Présence d'une icône.
- * @state button - Présence d'un bouton.
- * @state obi - Bouton avec icône seulement (sans texte).
- * @state state - Présence d'un état (success / error).
+ * @csspart state-container - Conteneur de l'état de validation (icône et message de succès/erreur).
  *
- * @event {MouseEvent} bnum-input:button.click - Événement déclenché au clic sur le bouton interne.
- * @event {InputEvent} input - Événement déclenché à la saisie dans le champ.
- * @event {Event} change - Événement déclenché au changement de valeur du champ.
+ * @cssstate value - Le champ contient une valeur non vide.
+ * @cssstate success - État de succès.
+ * @cssstate error - État d'erreur.
+ * @cssstate disabled - État désactivé.
+ * @cssstate have-icon - Présence d'une icône.
+ * @cssstate have-button - Présence d'un bouton.
+ * @cssstate obi - Bouton avec icône seulement (sans texte).
+ * @cssstate current-state - Présence d'un état (success / error).
  *
- * @attr {string} (optional) (default: undefined) data-value - Valeur initiale du champ.
- * @attr {string} (optional) (default: undefined) placeholder - Texte indicatif du champ.
- * @attr {string} (optional) (default: 'text') type - Type de l'input (text, password, email, etc.)
- * @attr {string} (optional) (default: undefined) disabled - Désactive le champ.
- * @attr {string} (optional) (default: undefined) state - État du champ (success, error, etc.).
- * @attr {string} (optional) (default: undefined) button - Présence d'un bouton interne (primary, secondary, danger, ...).
- * @attr {string} (optional) (default: undefined) button-icon - Icône du bouton interne.
- * @attr {string} (optional) (default: undefined) icon - Icône à afficher dans le champ.
- * @attr {string} (optional) (default: undefined) required - Champ requis.
- * @attr {string} (optional) (default: undefined) readonly - Champ en lecture seule.
- * @attr {string} (optional) (default: undefined) pattern - Expression régulière de validation.
- * @attr {string} (optional) (default: undefined) minlength - Longueur minimale du champ.
- * @attr {string} (optional) (default: undefined) maxlength - Longueur maximale du champ.
- * @attr {string} (optional) (default: undefined) autocomplete - Attribut autocomplete HTML.
- * @attr {string} (optional) (default: undefined) inputmode - Mode de saisie (mobile).
- * @attr {string} (optional) (default: undefined) spellcheck - Correction orthographique.
- * @attr {string} (optional) (default: undefined) ignorevalue - Attribut interne pour ignorer la synchronisation de valeur. Ne pas utiliser.
- * @attr {string} (optional) (default: undefined) name - Nom du champ (attribut HTML name).
+ * @fires {CustomEvent<{innerEvent: MouseEvent}>} bnum-input:button.click - Émis au clic sur le bouton interne.
+ * @fires {InputEvent} input - Émis à la saisie dans le champ.
+ * @fires {Event} change - Émis au changement de valeur du champ.
  *
- * @cssvar {#666} --bnum-input-hint-text-color - Couleur du texte du hint.
- * @cssvar {#eee} --bnum-input-background-color - Couleur de fond de l'input.
- * @cssvar {#666} --bnum-input-color - Couleur du texte de l'input.
- * @cssvar {#3a3a3a} --bnum-input-line-color - Couleur de la ligne/bordure de l'input.
- * @cssvar {#36b37e} --bnum-input-state-success-color - Couleur de l'état de succès.
- * @cssvar {#de350b} --bnum-input-state-error-color - Couleur de l'état d'erreur.
- * @cssvar {inset 0 -2px 0 0 #3a3a3a} --bnum-input-box-shadow - Ombre portée de l'input.
+ * @attr {string} data-value - Valeur initiale du champ (utilisée notamment pour la réinitialisation du formulaire). Ne reflète pas la valeur courante, voir la propriété `value`.
+ * @attr {string} placeholder - Texte indicatif du champ.
+ * @attr {string} [type=text] - Type natif de l'input (text, password, email, number, etc.).
+ * @attr {boolean} disabled - Désactive le champ.
+ * @attr {string} state - Applique un état visuel de validation au champ.
+ * @attr {string} button - Active un bouton interne avec la variation donnée. Une valeur vide active le mode icône seule (état `obi`).
+ * @attr {string} button-icon - Icône du bouton interne.
+ * @attr {string} icon - Icône à afficher dans le champ.
+ * @attr {boolean} required - Champ requis.
+ * @attr {boolean} readonly - Champ en lecture seule.
+ * @attr {string} pattern - Expression régulière de validation.
+ * @attr {number} minlength - Longueur minimale du champ.
+ * @attr {number} maxlength - Longueur maximale du champ.
+ * @attr {string} autocomplete - Attribut autocomplete HTML.
+ * @attr {string} inputmode - Mode de saisie (mobile).
+ * @attr {true|false} spellcheck - Correction orthographique.
+ * @attr {string} ignorevalue - Attribut interne pour ignorer la synchronisation de valeur. Ne pas utiliser.
+ * @attr {string} name - Nom du champ (attribut HTML name).
  *
+ * @cssprop [--bnum-input-gap=0.5rem] - Espacement interne entre le label et le champ.
+ * @cssprop [--bnum-input-container-margin-bottom=0.5rem] - Marge basse du conteneur du champ.
+ * @cssprop [--bnum-input-hint-text-color=#666] - Couleur du texte du hint.
+ * @cssprop [--bnum-input-background-color=#eee] - Couleur de fond de l'input.
+ * @cssprop [--bnum-input-color=#666] - Couleur du texte de l'input.
+ * @cssprop [--bnum-input-line-color=#3a3a3a] - Couleur de la ligne/bordure de l'input.
+ * @cssprop [--bnum-input-icon-top=10px] - Position verticale de l'icône dans le champ.
+ * @cssprop [--bnum-input-icon-right=10px] - Position horizontale de l'icône dans le champ.
+ * @cssprop [--bnum-input-state-success-color=#36b37e] - Couleur de l'état de succès.
+ * @cssprop [--bnum-input-state-error-color=#de350b] - Couleur de l'état d'erreur.
+ * @cssprop [--bnum-input-box-shadow=inset 0 -2px 0 0 #3a3a3a] - Ombre portée de l'input.
  */
 export declare class HTMLBnumInput extends BnumElementInternal {
 	#private;
+	/**
+	 * Permet au composant de participer à la soumission et à la validation
+	 * des formulaires HTML. Sans cela, `setFormValue` échoue silencieusement.
+	 */
+	static readonly formAssociated = true;
 	static readonly SYNCED_ATTRIBUTES: readonly [
 		"pattern",
 		"minlength",
@@ -2295,6 +2474,66 @@ export declare class HTMLBnumInputNumber extends HTMLBnumInput {
 	 */
 	static Create(label: string, options?: BnumInputNumericCreateOptions): HTMLBnumInputNumber;
 	static get AdditionnalStylesheet(): CSSStyleSheet;
+}
+export type BnumInputPasswordCreateOptions = Omit<BnumInputCreateOptions, "type" | "button" | "button-icon" | "icon"> & {
+	/** `false` masque le lien « Mot de passe oublié ». */
+	forgotPassword?: boolean;
+	/** URL du lien « Mot de passe oublié ». */
+	forgotUrl?: string;
+};
+/**
+ * Input de mot de passe, avec lien « Mot de passe oublié ? » et case « Afficher ».
+ *
+ * @category Input
+ *
+ * @structure Basique
+ * <bnum-input-password data-forgot-url="/mot-de-passe-oublie">Mot de passe</bnum-input-password>
+ *
+ * @structure Sans lien « Mot de passe oublié »
+ * <bnum-input-password data-forgot-password="false">Mot de passe</bnum-input-password>
+ *
+ * @structure Textes personnalisés
+ * <bnum-input-password>
+ *   Mot de passe
+ *   <span slot="forgot">Oublié ?</span>
+ *   <span slot="show">Voir</span>
+ * </bnum-input-password>
+ *
+ * @slot forgot - Texte du lien « Mot de passe oublié ? ».
+ * @slot show - Texte de la case à cocher « Afficher ».
+ *
+ * @event {CustomEvent<{ caller: HTMLBnumInputPassword; event: MouseEvent }>} bnum-input-password:forgot.click - Clic sur le lien « Mot de passe oublié ». Si `data-forgot-url` est absent, la navigation est annulée.
+ * @event {CustomEvent<{ caller: HTMLBnumInputPassword; visible: boolean }>} bnum-input-password:visibility.change - Le mot de passe est affiché ou masqué.
+ *
+ * @attr {string} (optional) data-forgot-url - URL du lien « Mot de passe oublié ».
+ * @attr {'false'} (optional) data-forgot-password - Avec la valeur `false`, le lien « Mot de passe oublié » est masqué.
+ * @attr {string} (default: 'password') type - Ne pas modifier, toujours 'password' pour ce composant (bascule en 'text' dans le shadow DOM lorsque « Afficher » est coché).
+ *
+ * @cssvar {var(--bnum-space-s, 10px)} --bnum-input-password-footer-gap - Espacement entre le champ et la ligne d'options.
+ * @cssvar {#000091} --bnum-input-password-link-color - Couleur du lien « Mot de passe oublié ».
+ * @cssvar {var(--bnum-font-size-text-s)} --bnum-input-password-font-size - Taille de la police de la ligne d'options.
+ */
+export declare class HTMLBnumInputPassword extends HTMLBnumInput {
+	#private;
+	constructor();
+	protected _p_getStylesheets(): CSSStyleSheet[];
+	protected _p_preload(): void;
+	protected _p_buildDOM(): void;
+	/**
+	 * Le type est figé : on le retire des attributs observés.
+	 */
+	static _p_observedAttributes(): string[];
+	/**
+	 * Affiche ou masque le mot de passe.
+	 * @param visible `true` pour afficher le mot de passe en clair.
+	 */
+	setPasswordVisible(visible: boolean): this;
+	/**
+	 * Crée un input de mot de passe.
+	 * @param label Texte du label principal.
+	 * @param options Options d'initialisation (attributs et slots).
+	 */
+	static Create(label: string, { forgotPassword, forgotUrl, ...options }?: BnumInputPasswordCreateOptions): HTMLBnumInputPassword;
 }
 export type BnumInputSearchCreateOptions = Omit<BnumInputNumericCreateOptions, "button" | "button-icon" | "step" | "min" | "max">;
 /**
@@ -2643,6 +2882,65 @@ export declare class HTMLBnumInputTime extends HTMLBnumInput {
 	 * @returns {HTMLBnumInputTime} Instance du composant.
 	 */
 	static Create(label: string, options?: BnumInputNumericCreateOptions): HTMLBnumInputNumber;
+}
+/**
+ * Input de nom d'utilisateur.
+ *
+ * Contrairement à `bnum-input`, le vrai `<input>` est créé dans le light DOM
+ * (slotté dans le shadow DOM) : les navigateurs ne proposent pas les noms
+ * d'utilisateur enregistrés pour un champ situé dans un shadow root. Il
+ * participe ainsi nativement au `<form>` parent (`name`, validation, reset).
+ *
+ * @category Input
+ *
+ * @structure Basique
+ * <bnum-input-username>Identifiant</bnum-input-username>
+ *
+ * @structure Avec un indice
+ * <bnum-input-username>
+ * Identifiant
+ * <span slot="hint">Votre adresse mail professionnelle</span>
+ * </bnum-input-username>
+ *
+ * @structure Formulaire de connexion
+ * <form>
+ *   <bnum-input-username>Identifiant</bnum-input-username>
+ *   <bnum-input-password>Mot de passe</bnum-input-password>
+ * </form>
+ *
+ * @slot default - Libellé du champ.
+ * @slot hint - Indice d'utilisation.
+ *
+ * @attr {string} (default: 'username') name - Nom du champ.
+ * @attr {string} (default: 'username') autocomplete - Valeur d'autocomplétion (`username`, `email`...).
+ * @attr {string} data-value - Valeur initiale.
+ * @attr {string} placeholder - Texte indicatif.
+ * @attr {boolean} disabled - Désactive le champ.
+ * @attr {boolean} readonly - Lecture seule.
+ * @attr {boolean} required - Champ requis.
+ * @attr {string} pattern - Expression régulière de validation.
+ * @attr {number} minlength - Longueur minimale.
+ * @attr {number} maxlength - Longueur maximale.
+ * @attr {string} inputmode - Mode de saisie (mobile).
+ * @attr {string} data-pair-password - Sélecteur CSS d'un `bnum-input-password` voisin. Ajoute un champ mot de passe caché dans le même arbre DOM que l'identifiant : Firefox ne rattache pas un champ light DOM à un mot de passe situé dans un shadow root, et ne propose alors aucun identifiant. La valeur remplie par le navigateur est reportée sur le composant cible.
+ *
+ * @fires {InputEvent} input - Émis à la saisie (remonte depuis l'input natif).
+ * @fires {Event} change - Émis au changement de valeur.
+ */
+export declare class HTMLBnumInputUsername extends BnumElement {
+	#private;
+	/**
+	 * Valeur courante du champ.
+	 */
+	get value(): string;
+	set value(val: string);
+	/**
+	 * Input natif (light DOM), `null` tant que le composant n'est pas construit.
+	 */
+	get field(): HTMLInputElement | null;
+	protected _p_getStylesheets(): CSSStyleSheet[];
+	protected _p_buildDOM(): void;
+	protected _p_update(): void;
 }
 /**
  * Composant de substitution transparent qui se comporte comme un `<span>` vide

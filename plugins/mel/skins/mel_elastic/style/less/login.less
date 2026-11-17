@@ -1,0 +1,123 @@
+#mel-login-form {
+  top: var(--bnum-space-s, 10px) !important;
+
+  h3 {
+    padding-bottom: 0;
+    margin-bottom: var(--bnum-space-s, 10px);
+  }
+
+  // Titre principal : interligne et marges maîtrisés, sinon les deux lignes
+  // (séparées par un <br />) s'espacent selon les styles hérités du thème.
+  .login-title h1 {
+    margin: 0;
+    line-height: 1.25;
+  }
+
+  // Titres des deux cartes (le titre principal et la baseline restent normaux).
+  .login-columns h3 {
+    font-weight: bold;
+  }
+}
+
+// Les classes `login-fit-*` sont posées sur <html> par login_fit.js, selon la
+// place réellement disponible (voir le commentaire de ce script).
+
+// Pas de barre de scroll : seulement quand le script a pris la main.
+html.login-fit-active,
+html.login-fit-active body {
+  overflow: hidden;
+}
+
+// 3. La baseline est décorative : retirée seulement si l'espace manque.
+html.login-fit-no-baseline #mel-login-form .login-title {
+  margin-bottom: 15px;
+
+  h3 {
+    display: none;
+  }
+}
+
+// Mise en page : Cerbère et identifiant côte à côte, « ou » vertical.
+// Sur mobile (classes posées par le thème elastic), on empile les deux blocs
+// avec le « ou » horizontal du design system.
+#mel-login-form {
+  max-width: 90%;
+}
+
+.login-columns {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  column-gap: var(--bnum-space-l, 20px);
+
+  bnum-divider {
+    display: none;
+  }
+}
+
+.login-or-vertical {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--bnum-space-s, 10px);
+  color: var(--bnum-color-primary, #000091);
+  font-size: var(--bnum-font-size-text-s, 0.875rem);
+
+  span {
+    flex: 1;
+    border-left: 1px solid var(--bnum-color-border, #ddd);
+  }
+}
+
+// Côte à côte : les deux titres démarrent en haut des cartes, sans marge ni
+// padding supérieur (en empilé, l'espacement du design system est conservé).
+html:not(.layout-phone):not(.layout-small) .login-columns > section {
+  margin-top: 0;
+  padding-top: 0;
+
+  h3 {
+    margin-top: 0;
+    padding-top: 0;
+  }
+}
+
+html.layout-phone,
+html.layout-small {
+  #mel-login-form {
+    max-width: 100%;
+  }
+
+  // Espacement interne de la carte (variable exposée par le design system).
+  // Horizontal fixe : login_fit.js compacte --bnum-space-* quand la page ne
+  // tient pas, ce qui collerait le contenu aux bords. Seul le vertical se compacte.
+  #mel-login-form bnum-card {
+    --bnum-card-padding: var(--bnum-space-l, 20px) 20px;
+  }
+
+  .login-columns {
+    display: block;
+
+    bnum-divider {
+      display: block;
+    }
+  }
+
+  .login-or-vertical {
+    display: none;
+  }
+}
+
+// Espacements dosés par login_fit.js (0 = valeurs d'origine du design system,
+// 1 = compactage maximal). Aucun texte n'est modifié.
+html.login-fit-active #mel-login-form {
+  --bnum-space-l: calc(20px - 14px * var(--login-fit-space, 0));
+  --bnum-space-m: calc(15px - 10px * var(--login-fit-space, 0));
+  --bnum-space-s: calc(10px - 7px * var(--login-fit-space, 0));
+  --bnum-space-xs: calc(5px - 3px * var(--login-fit-space, 0));
+}
+
+// Dernier recours : le formulaire est réduit depuis le haut, au centre.
+html.login-fit-active #mel-login-form {
+  transform-origin: top center;
+  // main est un conteneur flex : sans cela le formulaire est étiré en hauteur.
+  align-self: flex-start;
+}

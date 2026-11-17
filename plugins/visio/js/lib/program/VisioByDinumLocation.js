@@ -10,7 +10,11 @@ import {
 } from '../../../../mel_metapage/js/lib/classes/bnum_message.js';
 import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
 import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';
-import { getVisioUrlFromText, is_allowed_url } from './common.js';
+import {
+  get_location_without_visio,
+  getVisioUrlFromText,
+  is_clean_visio_url,
+} from './common.js';
 import { VisioRooms } from './visio_rooms.js';
 import {
   format_visio_location,
@@ -26,7 +30,8 @@ import {
 const ENABLE_SECURE = true;
 
 /**
- * Attend que les actions se terminent avant d'ajouter les localisations qui parasitent la visio
+ * Attend que les actions se terminent avant d'ajouter en présentiel ce qui parasite la visio
+ * (texte et liens de visio supplémentaires)
  * @param {string} url url de la visio + room
  * @param {string} buffer Emplacement en entier
  */
@@ -34,10 +39,11 @@ function launchUpdate(url, buffer) {
   queueMicrotask(() => {
     requestAnimationFrame(() => {
       setTimeout(() => {
-        const tmp = EventView.INSTANCE.parts.location.add(
-          Location,
-          buffer.replace(url, EMPTY_STRING),
-        );
+        const rest = get_location_without_visio(buffer, url);
+
+        if (!rest) return;
+
+        const tmp = EventView.INSTANCE.parts.location.add(Location, rest);
         requestAnimationFrame(() => {
           setTimeout(() => {
             tmp.item.trigger('change');
@@ -84,7 +90,7 @@ export class VisioByDinumLocation extends AVisio {
       const l = new VisioWebconfLink(event_location);
 
       // Gère le cas où la visio a été collé à la main
-      if (!is_allowed_url(l.url)) {
+      if (!is_clean_visio_url(l.url)) {
         const url = getVisioUrlFromText(event_location);
 
         if (url !== null) {

@@ -21,16 +21,39 @@ export function get_visio_base_url() {
 export function getVisioUrlFromText(text) {
   const base_url = get_visio_base_url();
 
-  if (base_url === null) return null;
+  if (!base_url) return null;
 
-  const link = text
-    .replace(base_url, EMPTY_STRING)
-    ?.split?.('/')?.[1]
-    ?.split?.(' ')?.[0];
+  const start = text.indexOf(base_url);
 
-  if (link === null) return null;
+  if (start === -1) return null;
 
-  return `${base_url}/${link}`;
+  // Seule la première url est conservée, les suivantes sont ignorées.
+  const [url] = text.slice(start).split(/\s/);
+
+  return url.length > base_url.length + 1 ? url : null;
+}
+
+/**
+ * Indique si un texte est une url de visio « propre » : une url http(s)
+ * valide, sans texte ni autre lien collé à côté.
+ *
+ * @param {?string} url - Url à vérifier
+ * @returns {boolean}
+ */
+export function is_clean_visio_url(url) {
+  return is_allowed_url(url) && !/\s/.test(url.trim());
+}
+
+/**
+ * Retire de la localisation la première url de visio ; le reste (texte,
+ * autres liens) est destiné à une localisation de type présentiel.
+ *
+ * @param {string} location - Localisation collée
+ * @param {string} url - Url de visio retenue
+ * @returns {string} Reste de la localisation, sans espaces superflus
+ */
+export function get_location_without_visio(location, url) {
+  return location.replace(url, EMPTY_STRING).trim();
 }
 
 /** Protocoles autorisés à l'ouverture d'une salle. */

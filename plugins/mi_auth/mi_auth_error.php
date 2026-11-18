@@ -6,7 +6,9 @@
 <html lang="fr" dir="ltr">
 <head>
   <title>MCE webmail : erreur</title>
+  <?php if (($config['mi_auth']['load_error_css'] ?? true) === true): ?>
   <link rel="stylesheet" type="text/css" media="screen" as="style" href="mi_auth_error.css">
+  <?php endif; ?>
   <meta charset="utf8">
   <link rel="icon" href="/plugins/mi_auth/favicon.ico">
   <script type="application/ld+json" id="app_conf">

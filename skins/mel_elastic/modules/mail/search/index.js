@@ -409,15 +409,21 @@ class SearchModsMemory {
       rcmail.env.search_scope = options.scope;
     }
 
+    // Pas rcmail.gui_objects.search_filter : avant rcmail.init() (restauration au chargement),
+    // il contient encore l'id et non l'élément
     /** @type {?HTMLSelectElement} */
-    const filter = rcmail.gui_objects.search_filter
-      ? $(rcmail.gui_objects.search_filter)[0]
-      : null;
+    const filter = document.getElementById('searchfilter');
+
+    const filterDummy = document.getElementById('search-filter-dummy');
 
     if (filter && this.#_hasOption(filter, options.filter)) {
+      // Affecté tout de suite : rcmail.init() lit ce select pour filtrer la liste au chargement
       filter.value = options.filter;
-      // Synchronise le select web component (SearchFiltersInitializer)
-      filter.dispatchEvent(new Event('change'));
+      // Synchronise le select web component (SearchFiltersInitializer), qui doit être upgradé
+      const syncDummy = () => filter.dispatchEvent(new Event('change'));
+
+      if (filterDummy) this.#_whenUpgraded(filterDummy, syncDummy);
+      else syncDummy();
     }
 
     /** @type {?HTMLSelectElement} */

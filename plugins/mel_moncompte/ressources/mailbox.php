@@ -466,7 +466,8 @@ class M2mailbox
   {
     $date = trim(rcube_utils::get_input_value('date', rcube_utils::INPUT_POST));
     $seconds = time() - strtotime($date);
-    $hours = intdiv($seconds, 3600);
+    $hours = (int) ceil($seconds / 3600);
+
     $folder = trim(rcube_utils::get_input_value('folder', rcube_utils::INPUT_POST));
     $ret = false;
 

@@ -4,17 +4,35 @@ import {
   eMessageType,
 } from '../../mel_metapage/js/lib/classes/bnum_message.js';
 import { MelObject } from '../../mel_metapage/js/lib/mel_object.js';
+import { DaRecoveryFlow } from './lib/recovery_flow.js';
 
 const ID_LOGIN_USER = 'rcmloginuser';
 const ID_LOGIN_PASSWORD = 'rcmloginpwd';
 const ID_ALT_CONNEXION_DIV = 'login__alt-connexion';
 const ID_KEEP_LOGIN = 'rcmloginkeep';
+const ID_SUBMIT_DS = 'rcmloginsubmit_ds';
+const ID_VALIDATE = 'da__validate';
+const ID_CANCEL = 'da__cancel';
+const ID_CODE_INPUT = '2FA_code';
+const FORM_TARGET_ACTION = './';
+const TASK_AFTER_LOGIN = 'mail';
 const DIVIDERS_SELECTORS = '#login__divider, .login__separator-vertical';
 const CARD_SELECTOR = '#mel-login-form bnum-card';
 const CARD_TITLE_ID = '#bnum-card-title';
+const COLUMNS_SELECTOR = 'div .login__columns';
+const COLUMNS_CLASS = 'login__columns';
+const FOOTER_ALERT_SELECTOR = '.login__footer bnum-alert-info';
 const ID_ADDONS = 'login__addons';
 const ID_MAIN_TITLE = 'login__credentials-title';
+const TITLE_CARD = 'Double authentification';
+const TITLE_CREDENTIALS = 'Rentrez votre code OTP';
 
+/**
+ * Transforme la page de connexion en page de saisie du code de double authentification.
+ *
+ * Le bouton "Valider le code" du template `da.html` déclenche le bouton de
+ * connexion du design system (`#rcmloginsubmit_ds`), masqué sur cette page.
+ */
 class MelDoubleAuthForm extends MelObject {
   static #_initialized = false;
 
@@ -52,6 +70,10 @@ class MelDoubleAuthForm extends MelObject {
     return document.getElementById(CARD_TITLE_ID);
   }
 
+  get credentials_title() {
+    return document.getElementById(ID_MAIN_TITLE);
+  }
+
   constructor() {
     super();
 
@@ -69,59 +91,210 @@ class MelDoubleAuthForm extends MelObject {
     const inputs = this.#_getLoginInputs();
 
     if (!inputs) {
-      BnumLog.fatal('Impossible de trouver les inputs de connexion !');
-      BnumMessage.DisplayMessage(
+      this.#_showFatalError(
+        'Impossible de trouver les inputs de connexion !',
         // eslint-disable-next-line quotes
         "Impossible d'afficher la page de double authentification !",
-        eMessageType.Error,
       );
       return;
     }
 
-    {
-      const rSection = this.#_getRSection() ?? [];
+    this.#_removeLoginFields(inputs);
 
-      for (const element of rSection) {
-        element.remove();
-      }
-    }
-
-    inputs.password.remove();
-    inputs.username.remove();
-
-    const keeplogin = this.#_getKeepLogin();
-
-    if (keeplogin) keeplogin.remove();
-
-    const title = 'Double authentification';
-
-    if (this.card_title) this.card_title.textContent = title;
-    else if (this.card?.updateTitle) {
-      const card_title = `
-        <bnum-card-title 
-          data-icon="key">
-            ${title}
-        </bnum-card-title>
-      `;
-
-      const element = document.createElement('bnum-fragment');
-      element.innerHTML = card_title;
-
-      this.card.updateTitle(element);
-    } else {
-      BnumLog.fatal('Impossible de changer le titre !');
-      BnumMessage.DisplayMessage(
+    if (!this.#_updateCardTitle()) {
+      this.#_showFatalError(
+        'Impossible de changer le titre !',
         // eslint-disable-next-line quotes
         "Impossible d'afficher correctement la page de double authentification !",
-        eMessageType.Error,
       );
       return;
     }
 
-    const da = this.get_env('_da_page');
-    const addon = document.getElementById(ID_ADDONS);
-    addon.innerHTML = da;
+    this.#_injectDaPage();
+    this.#_updateCredentialsTitle();
+    this.#_hideLoginLeftovers();
+    this.#_redirectFormToTask();
+    this.#_forwardReturnUrl();
+    this.#_bindValidateButton();
+    this.#_bindCancelButton();
+    new DaRecoveryFlow();
+    this.#_focusCodeInput();
+  }
+
+  /**
+   * Le code est vérifié par le hook `check_2FAlogin` : le formulaire doit donc
+   * viser la tâche finale et non plus l'action de login.
+   *
+   * @returns {void}
+   */
+  #_redirectFormToTask() {
+    document.querySelector('form')?.setAttribute('action', FORM_TARGET_ACTION);
+
+    this.#_setHiddenInput('_task', TASK_AFTER_LOGIN);
+    this.#_setHiddenInput('_action', '');
+  }
+
+  /**
+   * @returns {void}
+   */
+  #_forwardReturnUrl() {
+    const url = this.get_env('_url');
+
+    if (url) this.#_setHiddenInput('_url', url);
+  }
+
+  /**
+   * @param {string} name Nom de l'input caché
+   * @param {string} value Valeur à affecter
+   * @returns {void}
+   */
+  #_setHiddenInput(name, value) {
+    const input = document.querySelector(`input[name="${name}"]`);
+
+    if (!input) {
+      BnumLog.error(`Impossible de trouver l'input caché "${name}" !`);
+      return;
+    }
+
+    input.setAttribute('value', value);
+    input.value = value;
+  }
+
+  /**
+   * Retour à l'identification : recharge la page de connexion.
+   *
+   * @returns {void}
+   */
+  #_bindCancelButton() {
+    document
+      .getElementById(ID_CANCEL)
+      ?.addEventListener('click', () => {
+        window.location.href = this.url('login');
+      });
+  }
+
+  #_focusCodeInput() {
+    document.getElementById(ID_CODE_INPUT)?.focus();
+  }
+
+  /**
+   * Retire de la page les champs et sections propres à la connexion classique.
+   *
+   * @param {{username: HTMLElement, password: HTMLElement}} inputs Champs de connexion
+   * @returns {void}
+   */
+  #_removeLoginFields({ username, password }) {
+    for (const element of this.#_getRSection() ?? []) element.remove();
+
+    password.remove();
+    username.remove();
+    this.#_getKeepLogin()?.remove();
+  }
+
+  /**
+   * Change le titre de la carte de connexion.
+   *
+   * @returns {boolean} `false` si aucun moyen de changer le titre n'a été trouvé
+   */
+  #_updateCardTitle() {
+    if (this.card_title) {
+      this.card_title.textContent = TITLE_CARD;
+      return true;
+    }
+
+    if (!this.card?.updateTitle) return false;
+
+    const element = document.createElement('bnum-fragment');
+    element.innerHTML = `
+      <bnum-card-title data-icon="key">
+        ${TITLE_CARD}
+      </bnum-card-title>
+    `;
+
+    this.card.updateTitle(element);
+    return true;
+  }
+
+  /**
+   * Injecte le template de saisie du code (`da.html`) transmis par le serveur.
+   *
+   * @returns {void}
+   */
+  #_injectDaPage() {
+    document.getElementById(ID_ADDONS).innerHTML =
+      this.get_env('_da_page') + this.get_env('_da_recovery_page');
     this.rcmail().env._da_page = null;
+    this.rcmail().env._da_recovery_page = null;
+  }
+
+  #_updateCredentialsTitle() {
+    const title = this.credentials_title;
+
+    if (title) title.textContent = TITLE_CREDENTIALS;
+  }
+
+  /**
+   * Masque ce qui n'a plus de sens sur la page de double authentification.
+   *
+   * @returns {void}
+   */
+  #_hideLoginLeftovers() {
+    document
+      .querySelector(COLUMNS_SELECTOR)
+      ?.classList?.remove(COLUMNS_CLASS);
+
+    this.#_hide(document.getElementById(ID_SUBMIT_DS));
+    this.#_hide(document.querySelector(FOOTER_ALERT_SELECTOR));
+  }
+
+  /**
+   * @param {?HTMLElement} element Élément à masquer
+   * @returns {void}
+   */
+  #_hide(element) {
+    if (element) element.style.display = 'none';
+  }
+
+  /**
+   * Relie le bouton "Valider le code" à la soumission du formulaire.
+   *
+   * @returns {void}
+   */
+  #_bindValidateButton() {
+    const validate = document.getElementById(ID_VALIDATE);
+
+    if (!validate) {
+      BnumLog.error('Impossible de trouver le bouton de validation !');
+      return;
+    }
+
+    validate.addEventListener('click', () => this.#_submit());
+  }
+
+  /**
+   * Déclenche le bouton de connexion du design system (masqué).
+   *
+   * @returns {void}
+   */
+  #_submit() {
+    const submit = document.getElementById(ID_SUBMIT_DS);
+
+    if (!submit) {
+      BnumLog.error('Impossible de trouver le bouton de connexion !');
+      return;
+    }
+
+    submit.click();
+  }
+
+  /**
+   * @param {string} log Message technique journalisé
+   * @param {string} message Message affiché à l'utilisateur
+   * @returns {void}
+   */
+  #_showFatalError(log, message) {
+    BnumLog.fatal(log);
+    BnumMessage.DisplayMessage(message, eMessageType.Error);
   }
 
   #_getLoginInputs() {
@@ -163,9 +336,7 @@ class MelDoubleAuthForm extends MelObject {
       return null;
     }
 
-    const dividers = this.dividers;
-
-    return [alt_login, ...dividers];
+    return [alt_login, ...this.dividers];
   }
 
   static Start() {

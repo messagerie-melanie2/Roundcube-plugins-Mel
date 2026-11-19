@@ -15,3 +15,61 @@ div.table div.row input {
 
 
 
+
+/* Page de saisie du code de double authentification (templates/da.html) */
+.da__code,
+.da__help {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.da__code p,
+.da__help h3,
+.da__help p {
+	margin: 0;
+}
+
+.da__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+	margin-top: 0.5rem;
+}
+
+.da__divider {
+	display: block;
+	margin: 1.5rem 0;
+}
+
+/* Parcours « code perdu » (templates/da_recovery.html) */
+.da__recovery,
+.da__recovery-step {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.da__recovery p {
+	margin: 0;
+}
+
+/* Les règles display ci-dessus et plus haut ne doivent pas annuler l'attribut hidden */
+.da__code[hidden],
+.da__help[hidden],
+.da__divider[hidden],
+.da__recovery[hidden],
+.da__recovery-step[hidden] {
+	display: none;
+}
+
+/* Bouton d'aide présenté comme un lien */
+.da__link {
+	padding: 0;
+	border: 0;
+	background: none;
+	color: inherit;
+	font: inherit;
+	text-decoration: underline;
+	cursor: pointer;
+}

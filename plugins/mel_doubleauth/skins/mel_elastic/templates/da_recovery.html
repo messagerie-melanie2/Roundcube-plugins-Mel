@@ -1,0 +1,27 @@
+<bnum-fragment>
+    <section class="da__recovery" id="da__recovery" hidden>
+        <div class="da__recovery-step" id="da__recovery-guard">
+            <p>
+                <roundcube:label name="mel_doubleauth.recovery_guard_text" />
+                (<span id="da__recovery-address"></span>)
+            </p>
+            <div class="da__actions">
+                <bnum-secondary-button id="da__recovery-back" data-icon="undo"><roundcube:label name="mel_doubleauth.recovery_back" /></bnum-secondary-button>
+                <bnum-primary-button id="da__recovery-send" data-icon="send"><roundcube:label name="mel_doubleauth.recovery_send" /></bnum-primary-button>
+            </div>
+        </div>
+        <div class="da__recovery-step" id="da__recovery-code" hidden>
+            <bnum-input-text
+                id="da__recovery-token"
+                size="10"
+                pattern="[0-9]+">
+                <roundcube:label name="mel_doubleauth.recovery_code_label" />
+                <span slot="hint"><roundcube:label name="mel_doubleauth.recovery_code_hint" /></span>
+            </bnum-input-text>
+            <div class="da__actions">
+                <bnum-secondary-button id="da__recovery-resend" data-icon="send"><roundcube:label name="mel_doubleauth.recovery_resend" /></bnum-secondary-button>
+                <bnum-primary-button id="da__recovery-connect" data-icon="login"><roundcube:label name="mel_doubleauth.recovery_connect" /></bnum-primary-button>
+            </div>
+        </div>
+    </section>
+</bnum-fragment>

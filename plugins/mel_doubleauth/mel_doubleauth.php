@@ -202,6 +202,7 @@ class mel_doubleauth extends bnum_plugin
         $this->setup_module();
         //$this->include_script('mel_doubleauth_form.js');
         $this->rc->output->set_env("_da_page", $this->rc->output->parse('mel_doubleauth.da', false, false));
+        $this->rc->output->set_env("_da_recovery_page", $this->rc->output->parse('mel_doubleauth.da_recovery', false, false));
         $this->include_module('mel_doubleauth_form_v2.js', 'js');
 
 

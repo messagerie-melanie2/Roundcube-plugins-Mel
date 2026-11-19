@@ -5,8 +5,12 @@ import { EMPTY_STRING } from '../../../../../mel_metapage/js/lib/constants/const
 import { Top } from '../../../../../mel_metapage/js/lib/top.js';
 import { NavBarManager } from '../navbar.generator.js';
 import { WorkspaceObject } from '../WorkspaceObject.js';
+import { WorkspaceFullscreen } from '../workspace.fullscreen.js';
 
 export class WorkspacePage extends WorkspaceObject {
+  /** @type {WorkspaceFullscreen} Partagé avec `OnQuit` (statique) */
+  static #_fullscreen = new WorkspaceFullscreen();
+
   get firstRow() {
     return this.#_get_row(1);
   }
@@ -33,6 +37,9 @@ export class WorkspacePage extends WorkspaceObject {
 
   main() {
     super.main();
+
+    this._enable_fullscreen();
+
     if (!FramesManager.Instance.has_frame('stockage')) {
       console.info(
         '(!)[Workspace/Index] Chargement des documents en arrière plan...',
@@ -62,6 +69,9 @@ export class WorkspacePage extends WorkspaceObject {
     );
 
     NavBarManager.currentNavBar.onquitbuttonclick.push(WorkspacePage.OnQuit);
+    NavBarManager.currentNavBar.onquitbuttonclick.push(() =>
+      WorkspacePage.#_fullscreen.disable(),
+    );
 
     //Tâche
     NavBarManager.AddEventListener().OnBeforeSwitch((args) => {
@@ -170,11 +180,12 @@ export class WorkspacePage extends WorkspaceObject {
         NavBarManager.Hide().nav.$('#layout-frames').css('margin-left', '60px');
 
         NavBarManager.nav.$('html').removeClass('mwsp');
+        WorkspacePage.#_fullscreen.disable();
       }
     });
 
     top.rcmail.add_event_listener_ex('switch_frame', 'workspace', (args) => {
-      const { actions, task } = args;
+      const { actions, task, changepage } = args;
       if (!actions.includes('workspace')) {
         if (task !== 'workspace') {
           NavBarManager.Hide()
@@ -183,11 +194,15 @@ export class WorkspacePage extends WorkspaceObject {
           NavBarManager.nav.$('html').removeClass('mwsp');
 
           WorkspacePage.OnQuit();
+
+          // Un chargement en arrière-plan (ex : stockage) ne quitte pas l'espace.
+          if (changepage !== false) WorkspacePage.#_fullscreen.disable();
         } else {
           NavBarManager.Show()
             .nav.$('#layout-frames')
             .css('margin-left', '5px');
           NavBarManager.nav.$('html').addClass('mwsp');
+          this._enable_fullscreen();
         }
       }
     });
@@ -347,6 +362,23 @@ export class WorkspacePage extends WorkspaceObject {
     return this.select(`#${number}-row`);
   }
 
+  /**
+   * Active le plein écran de l'espace (sans effet s'il est déjà actif).
+   * @private
+   * @returns {void}
+   */
+  _enable_fullscreen() {
+    WorkspacePage.#_fullscreen.enable((condition) =>
+      this.wait_something(condition),
+    );
+  }
+
+  /**
+   * Restaure l'interface (barre du haut, menu, frames) et nettoie les frames à la sortie de l'espace.
+   * La restauration est faite en premier et de façon synchrone : l'iframe peut être détruite juste après.
+   * @static
+   * @returns {void}
+   */
   static OnQuit() {
     let $html;
     for (const frame of FramesManager.Instance.get_window()) {

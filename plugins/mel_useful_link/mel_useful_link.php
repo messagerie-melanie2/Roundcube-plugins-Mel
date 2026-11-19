@@ -39,9 +39,13 @@ class mel_useful_link extends bnum_plugin
 
         $this->rc->output->set_env("mul_old_items", $this->rc->config->get('portail_personal_items', []));
         $items = $this->use_portail_items_only()
-          ? $this->get_default_link(true)
+          ? array_merge($this->get_default_link(true), $this->get_user_link_items())
           : $this->rc->config->get('new_personal_useful_links', []);
         $this->rc->output->set_env("mul_items", $items);
+        $this->rc->output->set_env(
+          "mul_managed_items",
+          array_keys($this->get_default_link($this->use_portail_items_only()))
+        );
         $this->rc->output->set_env("external_icon_url", $this->rc->config->get('external_icon_url', null));
         $this->rc->output->set_env("default_links", $this->get_store_link());
 
@@ -56,9 +60,13 @@ class mel_useful_link extends bnum_plugin
 
       if ($this->get_current_action() !== 'refresh') {
         $items = $this->use_portail_items_only()
-          ? $this->get_default_link(true)
+          ? array_merge($this->get_default_link(true), $this->get_user_link_items())
           : $this->rc->config->get('new_personal_useful_links', []);
         $this->rc->output->set_env("mul_items", $items);
+        $this->rc->output->set_env(
+          "mul_managed_items",
+          array_keys($this->get_default_link($this->use_portail_items_only()))
+        );
         $this->rc->output->set_env("external_icon_url", $this->rc->config->get('external_icon_url', null));
         $this->rc->output->set_env("default_links", $this->get_store_link());
         $this->rc->output->set_env("mel_portal_ulink", true);
@@ -132,6 +140,22 @@ class mel_useful_link extends bnum_plugin
       (array) $this->rc->config->get('dont_override', []),
       true
     );
+  }
+
+  /**
+   * En mode portail_items_list, les liens créés par l'utilisateur sont isolés
+   * des anciennes préférences qui peuvent contenir les liens auparavant masqués.
+   */
+  private function get_user_link_items(): array
+  {
+    return (array) $this->rc->config->get('mel_useful_link_custom_items', []);
+  }
+
+  private function get_user_link_items_pref_key(): string
+  {
+    return $this->use_portail_items_only()
+      ? 'mel_useful_link_custom_items'
+      : 'new_personal_useful_links';
   }
 
   /**
@@ -369,7 +393,7 @@ class mel_useful_link extends bnum_plugin
     }
 
     if (!$this->rc->plugins->exec_hook('save_external_ulinks', ['key' => $key, 'links' => $newList])['done']) {
-      $this->rc->user->save_prefs(array('new_personal_useful_links' => $newList));
+      $this->rc->user->save_prefs(array($this->get_user_link_items_pref_key() => $newList));
       echo true;
       exit;
     }
@@ -536,7 +560,7 @@ class mel_useful_link extends bnum_plugin
 
     $external_links = $this->_get_external_links(['key' => $key]);
 
-    $config = $key ? $external_links : $this->rc->config->get('new_personal_useful_links', []);
+    $config = $key ? $external_links : $this->rc->config->get($this->get_user_link_items_pref_key(), []);
 
     if ($id === null) {
       $id = uniqid();
@@ -576,7 +600,7 @@ class mel_useful_link extends bnum_plugin
 
 
     if (!$this->rc->plugins->exec_hook('save_external_ulinks', ['key' => $key, 'links' => $config])['done']) {
-      $this->rc->user->save_prefs(array('new_personal_useful_links' => $config));
+      $this->rc->user->save_prefs(array($this->get_user_link_items_pref_key() => $config));
     }
 
     echo $id;
@@ -600,12 +624,12 @@ class mel_useful_link extends bnum_plugin
 
     $external_links = $this->_get_external_links(['key' => $key]);
 
-    $links = $key ? $external_links : $this->rc->config->get('new_personal_useful_links', []);
+    $links = $key ? $external_links : $this->rc->config->get($this->get_user_link_items_pref_key(), []);
 
     unset($links[$id]);
 
     if (!$this->rc->plugins->exec_hook('save_external_ulinks', ['key' => $key, 'links' => $links])['done']) {
-      $this->rc->user->save_prefs(array('new_personal_useful_links' => $links));
+      $this->rc->user->save_prefs(array($this->get_user_link_items_pref_key() => $links));
     }
 
     echo true;

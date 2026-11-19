@@ -36,7 +36,7 @@
 
 		<main role="main">
 			<div id="mel-login-form">
-				<div class="login-title">
+				<div class="login__title">
 					<center>
 						<h1>
 							Mot de passe Bnum oublié

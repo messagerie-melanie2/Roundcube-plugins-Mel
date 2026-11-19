@@ -142,7 +142,7 @@
 
   const fit = () => {
     const form = document.getElementById(FORM_ID);
-    const title = form?.querySelector('.login-title h1');
+    const title = form?.querySelector('.login__title h1');
     if (!form || !title) return;
 
     reset(form, title);

@@ -1,0 +1,31 @@
+<bnum-fragment>
+    <p id="da__feedback" class="da__visually-hidden" role="alert"></p>
+    <section class="da__code" aria-labelledby="da__code-title">
+        <h3 id="da__code-title" class="da__visually-hidden"><roundcube:label name="mel_doubleauth.da_code_section_title" /></h3>
+        <p><roundcube:label name="mel_doubleauth.da_code_intro" /></p>
+        <bnum-input-text
+            name="_code_2FA"
+            id="2FA_code"
+            size="10"
+            maxlength="10"
+            autocomplete="one-time-code"
+            required>
+            <roundcube:label name="mel_doubleauth.da_code_label" />
+            <span slot="hint"><roundcube:label name="mel_doubleauth.da_code_hint" /></span>
+        </bnum-input-text>
+        <div class="da__actions">
+            <bnum-primary-button id="da__validate" data-icon="login"><roundcube:label name="mel_doubleauth.da_validate" /></bnum-primary-button>
+            <bnum-secondary-button id="da__cancel" data-icon="undo"><roundcube:label name="mel_doubleauth.da_cancel" /></bnum-secondary-button>
+        </div>
+    </section>
+    <bnum-divider class="da__divider"></bnum-divider>
+    <section class="da__help" aria-labelledby="da__help-title">
+        <h3 id="da__help-title"><roundcube:label name="mel_doubleauth.da_help_title" /></h3>
+        <p><button type="button" id="da__lost-code" class="da__link"><roundcube:label name="mel_doubleauth.da_lost_code" /></button></p>
+        <bnum-alert-info>
+            <roundcube:label name="mel_doubleauth.da_internet_warning_1" />
+            <br/>
+            <roundcube:label name="mel_doubleauth.da_internet_warning_2" />
+        </bnum-alert-info>
+    </section>
+</bnum-fragment>

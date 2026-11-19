@@ -22,7 +22,8 @@ const ID_BACK = 'da__recovery-back';
 const ID_SEND = 'da__recovery-send';
 const ID_RESEND = 'da__recovery-resend';
 const ID_CONNECT = 'da__recovery-connect';
-const MAIN_VIEW_SELECTOR = '.da__code, .da__divider, .da__help';
+const ID_CREDENTIALS_TITLE = 'login__credentials-title';
+const MAIN_VIEW_SELECTOR ='.da__code, .da__divider, .da__help';
 const CHAR_AT = '@';
 const CHAR_MASK = '*';
 const MAX_VISIBLE_CHARS = 3;
@@ -187,6 +188,11 @@ export class DaRecoveryFlow extends MelObject {
     for (const element of document.querySelectorAll(MAIN_VIEW_SELECTOR)) {
       element.hidden = show;
     }
+
+    // Le titre de la vue de récupération remplace celui de la saisie du code (pas de doublon).
+    const credentials_title = document.getElementById(ID_CREDENTIALS_TITLE);
+
+    if (credentials_title) credentials_title.hidden = show;
 
     document.getElementById(ID_RECOVERY).hidden = !show;
   }

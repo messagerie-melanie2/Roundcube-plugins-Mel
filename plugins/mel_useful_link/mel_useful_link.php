@@ -21,6 +21,11 @@ class mel_useful_link extends bnum_plugin
   {
     $this->require_plugin('mel_helper');
     $this->setup();
+    $this->register_handler('plugin.app_store_button', [$this, 'app_store_button']);
+    $this->rc->output->set_env(
+      'mul_app_store_enabled',
+      $this->is_app_store_button_enabled()
+    );
 
     if ($this->rc->task === "useful_links") {
       // bloquer les refresh
@@ -79,6 +84,26 @@ class mel_useful_link extends bnum_plugin
 
   private function _pageEnabled() {
     return $this->get_config('enable_page', true);
+  }
+
+  private function is_app_store_button_enabled(): bool
+  {
+    return (bool) $this->get_config('show_app_store_button', true);
+  }
+
+  /** Rendu conditionnel du bouton de bibliothèque sur la page Liens utiles. */
+  public function app_store_button($attrib = [])
+  {
+    if (!$this->is_app_store_button_enabled()) {
+      return '';
+    }
+
+    return html::tag(
+      'button',
+      ['id' => 'app_store', 'class' => 'mel-button mel-button-icon'],
+      html::tag('span', [], "Bibliothèque d'applications")
+        . html::tag('span', ['class' => 'material-symbols-outlined'], 'widgets')
+    );
   }
 
   /** 

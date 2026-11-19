@@ -5,6 +5,12 @@ import {
 } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
 import { BnumConnector } from '../../../mel_metapage/js/lib/helpers/bnum_connections/bnum_connections.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
+import {
+  announce,
+  clear_field_state,
+  on_enter,
+  reject_field,
+} from './accessibility.js';
 
 const ID_LOST_CODE = 'da__lost-code';
 const ID_RECOVERY = 'da__recovery';
@@ -24,6 +30,8 @@ const MSG_INVALID_ADDRESS =
   // eslint-disable-next-line quotes
   "Votre adresse de récupération n'est pas valide ! Connectez-vous en intranet pour vous connecter et changer votre adresse de récupération.";
 const MSG_SENT = 'Message envoyé !';
+const MSG_EMPTY_TOKEN = 'Saisissez le code reçu par mail.';
+const KEY_ESCAPE = 'Escape';
 // eslint-disable-next-line quotes
 const MSG_SEND_ERROR = "Impossible d'envoyer le code de validation !";
 
@@ -69,6 +77,26 @@ export class DaRecoveryFlow extends MelObject {
     this.#_onClick(ID_SEND, () => this.#_sendCode());
     this.#_onClick(ID_RESEND, () => this.#_sendCode());
     this.#_onClick(ID_CONNECT, () => this.#_connect());
+    this.#_bindKeyboard();
+  }
+
+  /**
+   * Entrée dans le champ du code reçu valide la saisie, Échap revient à la saisie du code.
+   *
+   * @returns {void}
+   */
+  #_bindKeyboard() {
+    const token = document.getElementById(ID_TOKEN);
+    const recovery = document.getElementById(ID_RECOVERY);
+
+    if (token) {
+      on_enter(token, () => this.#_connect());
+      token.addEventListener('input', () => clear_field_state(token));
+    }
+
+    recovery?.addEventListener('keydown', (e) => {
+      if (e.key === KEY_ESCAPE) this.#_close();
+    });
   }
 
   /**
@@ -95,7 +123,7 @@ export class DaRecoveryFlow extends MelObject {
     if (result === null) return;
 
     if (!result.datas) {
-      BnumMessage.DisplayMessage(MSG_INVALID_ADDRESS, eMessageType.Error);
+      this.#_notify(MSG_INVALID_ADDRESS, eMessageType.Error);
       return;
     }
 
@@ -104,11 +132,12 @@ export class DaRecoveryFlow extends MelObject {
     );
 
     this.#_showRecovery(true);
-    this.#_showStep(ID_GUARD_STEP);
+    this.#_showStep(ID_GUARD_STEP, ID_SEND);
   }
 
   #_close() {
     this.#_showRecovery(false);
+    document.getElementById(ID_LOST_CODE)?.focus();
   }
 
   async #_sendCode() {
@@ -122,16 +151,24 @@ export class DaRecoveryFlow extends MelObject {
     if (result === null) return;
 
     if (result.has_error || result.datas === -1) {
-      BnumMessage.DisplayMessage(MSG_SEND_ERROR, eMessageType.Error);
+      this.#_notify(MSG_SEND_ERROR, eMessageType.Error);
       return;
     }
 
-    BnumMessage.DisplayMessage(MSG_SENT, eMessageType.Confirmation);
-    this.#_showStep(ID_CODE_STEP);
+    this.#_notify(MSG_SENT, eMessageType.Confirmation);
+    this.#_showStep(ID_CODE_STEP, ID_TOKEN);
   }
 
   #_connect() {
-    const token = document.getElementById(ID_TOKEN)?.value ?? '';
+    if (this.#_busy) return;
+
+    const field = document.getElementById(ID_TOKEN);
+    const token = field?.value.trim() ?? '';
+
+    if (!token) {
+      reject_field(field, MSG_EMPTY_TOKEN);
+      return;
+    }
 
     this.#_setBusy(true);
 
@@ -156,12 +193,27 @@ export class DaRecoveryFlow extends MelObject {
 
   /**
    * @param {string} id_step Identifiant de l'étape à afficher
+   * @param {string} id_focus Identifiant de l'élément qui reçoit le focus (navigation clavier)
    * @returns {void}
    */
-  #_showStep(id_step) {
+  #_showStep(id_step, id_focus) {
     for (const id of [ID_GUARD_STEP, ID_CODE_STEP]) {
       document.getElementById(id).hidden = id !== id_step;
     }
+
+    document.getElementById(id_focus)?.focus();
+  }
+
+  /**
+   * Affiche un message à l'écran et l'annonce aux technologies d'assistance.
+   *
+   * @param {string} message Message à afficher
+   * @param {string} type Type de message (eMessageType)
+   * @returns {void}
+   */
+  #_notify(message, type) {
+    BnumMessage.DisplayMessage(message, type);
+    announce(message);
   }
 
   /**

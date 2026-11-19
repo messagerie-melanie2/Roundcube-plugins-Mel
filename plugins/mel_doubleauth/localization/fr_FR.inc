@@ -75,6 +75,7 @@ $labels['logout_2fa_needed_unknown'] = "Utilisateur incconnu !";
 $labels['logout_2fa_code_error'] = "Le code saisi est erroné.";
 
 $labels['recovery_guard_text'] = 'Pour recevoir un code de validation sur votre adresse de récupération, cliquez sur le bouton ci-dessous.';
+$labels['recovery_title'] = 'Récupération par adresse mail';
 $labels['recovery_back'] = 'Retour';
 $labels['recovery_send'] = 'Envoyer le code';
 $labels['recovery_resend'] = 'Renvoyer un code';

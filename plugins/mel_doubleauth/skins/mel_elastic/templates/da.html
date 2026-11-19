@@ -1,13 +1,17 @@
 <bnum-fragment>
-    <section class="da__code">
+    <p id="da__feedback" class="da__visually-hidden" role="alert"></p>
+    <section class="da__code" aria-labelledby="da__code-title">
+        <h3 id="da__code-title" class="da__visually-hidden">Saisie du code de vérification</h3>
         <p>Ouvrez votre application d’authentification et saisissez le code à 6 chiffres affiché pour votre compte. Le code change toutes les 30 secondes.</p>
-        <bnum-input-text 
+        <bnum-input-text
             name="_code_2FA"
             id="2FA_code"
             size="10"
-            pattern="[0-9]+">
+            maxlength="10"
+            autocomplete="one-time-code"
+            required>
             Code de vérification
-            <span slot="hint">Format attendu : 6 chiffres, par exemple 123456</span>
+            <span slot="hint">Code à 6 chiffres, par exemple 123456, ou code de secours</span>
         </bnum-input-text>
         <div class="da__actions">
             <bnum-primary-button id="da__validate" data-icon="login">Valider le code</bnum-primary-button>
@@ -15,8 +19,8 @@
         </div>
     </section>
     <bnum-divider class="da__divider"></bnum-divider>
-    <section class="da__help">
-        <h3>Vous ne recevez pas le code ?</h3>
+    <section class="da__help" aria-labelledby="da__help-title">
+        <h3 id="da__help-title">Vous ne recevez pas le code ?</h3>
         <p><button type="button" id="da__lost-code" class="da__link">J’ai perdu l’accès à mon moyen d’authentification</button></p>
         <bnum-alert-info>
             Si vous êtes sur internet et n'avez pas activé l'authentification à double facteur vous ne pouvez pas vous connecter.

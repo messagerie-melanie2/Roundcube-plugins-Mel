@@ -4,6 +4,11 @@ import {
   eMessageType,
 } from '../../mel_metapage/js/lib/classes/bnum_message.js';
 import { MelObject } from '../../mel_metapage/js/lib/mel_object.js';
+import {
+  clear_field_state,
+  on_enter,
+  reject_field,
+} from './lib/accessibility.js';
 import { DaRecoveryFlow } from './lib/recovery_flow.js';
 
 const ID_LOGIN_USER = 'rcmloginuser';
@@ -11,6 +16,7 @@ const ID_LOGIN_PASSWORD = 'rcmloginpwd';
 const ID_ALT_CONNEXION_DIV = 'login__alt-connexion';
 const ID_KEEP_LOGIN = 'rcmloginkeep';
 const ID_SUBMIT_DS = 'rcmloginsubmit_ds';
+const ID_SUBMIT_NATIVE = 'rcmloginsubmit';
 const ID_VALIDATE = 'da__validate';
 const ID_CANCEL = 'da__cancel';
 const ID_CODE_INPUT = '2FA_code';
@@ -26,6 +32,7 @@ const ID_ADDONS = 'login__addons';
 const ID_MAIN_TITLE = 'login__credentials-title';
 const TITLE_CARD = 'Double authentification';
 const TITLE_CREDENTIALS = 'Rentrez votre code OTP';
+const MSG_EMPTY_CODE = 'Saisissez le code de vérification.';
 
 /**
  * Transforme la page de connexion en page de saisie du code de double authentification.
@@ -35,6 +42,12 @@ const TITLE_CREDENTIALS = 'Rentrez votre code OTP';
  */
 class MelDoubleAuthForm extends MelObject {
   static #_initialized = false;
+
+  #_submitting = false;
+
+  get code_input() {
+    return document.getElementById(ID_CODE_INPUT);
+  }
 
   get input_user() {
     return document.getElementById(ID_LOGIN_USER);
@@ -110,15 +123,48 @@ class MelDoubleAuthForm extends MelObject {
       return;
     }
 
+    if (!this.#_moveAddonsIntoForm()) {
+      this.#_showFatalError(
+        'Impossible de rattacher la saisie du code au formulaire !',
+        // eslint-disable-next-line quotes
+        "Impossible d'afficher la page de double authentification !",
+      );
+      return;
+    }
+
     this.#_injectDaPage();
     this.#_updateCredentialsTitle();
     this.#_hideLoginLeftovers();
     this.#_redirectFormToTask();
     this.#_forwardReturnUrl();
+    this.#_bindCodeInput();
     this.#_bindValidateButton();
     this.#_bindCancelButton();
     new DaRecoveryFlow();
     this.#_focusCodeInput();
+  }
+
+  /**
+   * Dans le template de login, `#login__addons` est situé avant le `<form>` :
+   * sans ce déplacement, le champ du code ne serait pas envoyé avec le formulaire.
+   *
+   * @returns {boolean} `false` si le formulaire ou le conteneur est introuvable
+   */
+  #_moveAddonsIntoForm() {
+    const form = this.#_getForm();
+    const addons = document.getElementById(ID_ADDONS);
+
+    if (!form || !addons) return false;
+
+    form.prepend(addons);
+    return true;
+  }
+
+  /**
+   * @returns {?HTMLFormElement} Formulaire de connexion (retrouvé via son bouton de soumission natif)
+   */
+  #_getForm() {
+    return document.getElementById(ID_SUBMIT_NATIVE)?.form ?? null;
   }
 
   /**
@@ -128,7 +174,7 @@ class MelDoubleAuthForm extends MelObject {
    * @returns {void}
    */
   #_redirectFormToTask() {
-    document.querySelector('form')?.setAttribute('action', FORM_TARGET_ACTION);
+    this.#_getForm()?.setAttribute('action', FORM_TARGET_ACTION);
 
     this.#_setHiddenInput('_task', TASK_AFTER_LOGIN);
     this.#_setHiddenInput('_action', '');
@@ -174,7 +220,7 @@ class MelDoubleAuthForm extends MelObject {
   }
 
   #_focusCodeInput() {
-    document.getElementById(ID_CODE_INPUT)?.focus();
+    this.code_input?.focus();
   }
 
   /**
@@ -268,23 +314,59 @@ class MelDoubleAuthForm extends MelObject {
       return;
     }
 
-    validate.addEventListener('click', () => this.#_submit());
+    validate.addEventListener('click', () => this.#_validateAndSubmit());
+  }
+
+  /**
+   * Comportement d'un formulaire classique : Entrée dans le champ soumet,
+   * et l'erreur disparaît dès que l'utilisateur corrige sa saisie.
+   *
+   * @returns {void}
+   */
+  #_bindCodeInput() {
+    const input = this.code_input;
+
+    if (!input) {
+      BnumLog.error('Impossible de trouver le champ du code !');
+      return;
+    }
+
+    on_enter(input, () => this.#_validateAndSubmit());
+    input.addEventListener('input', () => clear_field_state(input));
+  }
+
+  /**
+   * Refuse un code vide (champ en erreur, annoncé, focus conservé) puis soumet le formulaire.
+   * Le verrou évite les soumissions multiples (Entrée répétée, double clic).
+   *
+   * @returns {void}
+   */
+  #_validateAndSubmit() {
+    if (this.#_submitting) return;
+
+    if (!this.code_input.value.trim()) {
+      reject_field(this.code_input, MSG_EMPTY_CODE);
+      return;
+    }
+
+    this.#_submitting = this.#_submit();
   }
 
   /**
    * Déclenche le bouton de connexion du design system (masqué).
    *
-   * @returns {void}
+   * @returns {boolean} `false` si le bouton est introuvable
    */
   #_submit() {
     const submit = document.getElementById(ID_SUBMIT_DS);
 
     if (!submit) {
       BnumLog.error('Impossible de trouver le bouton de connexion !');
-      return;
+      return false;
     }
 
     submit.click();
+    return true;
   }
 
   /**

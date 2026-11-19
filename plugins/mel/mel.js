@@ -28,6 +28,20 @@ $(document).on('click', '#rcmloginsubmit_ds', function () {
   $('#rcmloginsubmit').trigger('click');
 });
 
+// Les champs du design system sont à Shadow DOM : le navigateur n'applique pas la
+// soumission implicite (Entrée) à leur input interne, on la rétablit ici.
+// Seul un vrai <input> déclenche la soumission (pas le bouton « afficher le mot de passe »).
+$(document).on('keydown', '#rcmloginuser, #rcmloginpwd', function (e) {
+  const has_modifier = e.ctrlKey || e.altKey || e.metaKey || e.shiftKey;
+  const origin = e.originalEvent?.composedPath?.()[0];
+
+  if (e.key !== 'Enter' || e.originalEvent?.isComposing || has_modifier) return;
+  if (origin?.tagName !== 'INPUT') return;
+
+  e.preventDefault();
+  $('#rcmloginsubmit_ds').trigger('click');
+});
+
 if (window.rcmail) {
   rcmail.addEventListener('init', function (evt) {
     // Initialisation de la liste des pages chargées

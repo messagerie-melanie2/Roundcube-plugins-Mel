@@ -73,3 +73,22 @@ div.table div.row input {
 	text-decoration: underline;
 	cursor: pointer;
 }
+
+/* Masqué visuellement mais lu par les technologies d'assistance (annonces, titres) */
+.da__visually-hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+/* Focus visible au clavier (RGAA 10.7) */
+.da__link:focus-visible {
+	outline: 2px solid currentColor;
+	outline-offset: 2px;
+}

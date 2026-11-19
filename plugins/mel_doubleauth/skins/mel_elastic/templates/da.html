@@ -1,5 +1,5 @@
 <bnum-fragment>
-    <section>
+    <section class="da__code">
         <p>Ouvrez votre application d’authentification et saisissez le code à 6 chiffres affiché pour votre compte. Le code change toutes les 30 secondes.</p>
         <bnum-input-text 
             name="_code_2FA"
@@ -9,13 +9,13 @@
             Code de vérification
             <span slot="hint">Format attendu : 6 chiffres, par exemple 123456</span>
         </bnum-input-text>
-        <div>
-            <bnum-button-primary id="fake-login" data-icon="login">Valider le code</bnum-button-primary>
-            <bnum-button-secondary id="disconnect" data-icon="undo">Revenir à l'identification</bnum-button-secondary>
+        <div class="da__actions">
+            <bnum-button-primary id="da__validate" data-icon="login">Valider le code</bnum-button-primary>
+            <bnum-button-secondary id="da__cancel" data-icon="undo">Revenir à l'identification</bnum-button-secondary>
         </div>
     </section>
     <bnum-divider></bnum-divider>
-    <section>
+    <section class="da__help">
         <h3>Vous ne recevez pas le code ?</h3>
         <p><a href="#">J’ai perdu l’accès à mon moyen d’authentification</a></p>
         <bnum-alert-info>

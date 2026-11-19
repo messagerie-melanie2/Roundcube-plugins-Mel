@@ -7,12 +7,13 @@ import { MelObject } from '../../mel_metapage/js/lib/mel_object.js';
 
 const ID_LOGIN_USER = 'rcmloginuser';
 const ID_LOGIN_PASSWORD = 'rcmloginpwd';
-const ID_ALT_CONNEXION_DIV = 'bnum-alt-connexion-container';
+const ID_ALT_CONNEXION_DIV = 'login__alt-connexion';
 const ID_KEEP_LOGIN = 'rcmloginkeep';
-const DIVIDERS_SELECTORS = '#login-divider, .login-or-vertical';
+const DIVIDERS_SELECTORS = '#login__divider, .login__separator-vertical';
 const CARD_SELECTOR = '#mel-login-form bnum-card';
 const CARD_TITLE_ID = '#bnum-card-title';
-const ID_MAIN_TITLE = 'login-title-h3';
+const ID_ADDONS = 'login__addons';
+const ID_MAIN_TITLE = 'login__credentials-title';
 
 class MelDoubleAuthForm extends MelObject {
   static #_initialized = false;
@@ -118,7 +119,7 @@ class MelDoubleAuthForm extends MelObject {
     }
 
     const da = this.get_env('_da_page');
-    const addon = document.getElementById('login-addons');
+    const addon = document.getElementById(ID_ADDONS);
     addon.innerHTML = da;
     this.rcmail().env._da_page = null;
   }

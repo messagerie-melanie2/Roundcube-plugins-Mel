@@ -75,7 +75,8 @@
 }
 
 .password-field {
-  padding-right: 40px; /* Espace pour l'icône */
+  /* Espace pour l'icône */
+  padding-right: 40px;
 }
 
 .toggle-password {
@@ -87,7 +88,9 @@
   padding: 0;
   display: flex;
   align-items: center;
-  &:focus { outline: none; }
+  &:focus {
+    outline: none;
+  }
 }
 
 #toggle_password_view {
@@ -96,12 +99,14 @@
   }
 
   &:focus-visible {
-    outline: 1px solid var(--main-text-color);;
+    outline: 1px solid var(--main-text-color);
   }
   &::before {
     content: '\e8f5';
     font-family: 'Material Symbols Outlined' !important;
-    font-variation-settings: 'wght' 300, 'opsz' 40;
+    font-variation-settings:
+      'wght' 300,
+      'opsz' 40;
     font-weight: normal !important;
     font-size: 24px;
     color: var(--main-text-color);
@@ -151,7 +156,7 @@
   }
 }
 
-.ministere-logo,
+.login__logo--ministere,
 .mel-logo {
   position: absolute;
   margin: 30px;
@@ -166,7 +171,7 @@
   }
 }
 
-.login-title {
+.login__title {
   margin-bottom: 30px;
 }
 
@@ -176,27 +181,25 @@
   max-height: 57%;
 }
 
-.login-logo {
-  &-footer {
-    &-right {
-      ._login-logo();
-      left: 61px;
+.login__logo {
+  &--footer-right {
+    ._login-logo();
+    left: 61px;
 
-      @media screen and (max-width: @screen-width[W2]) {
-        & {
-          display: none;
-        }
+    @media screen and (max-width: @screen-width[W2]) {
+      & {
+        display: none;
       }
     }
+  }
 
-    &-left {
-      ._login-logo();
-      right: 61px;
+  &--footer-left {
+    ._login-logo();
+    right: 61px;
 
-      @media screen and (max-width: @screen-width[W2]) {
-        & {
-          display: none;
-        }
+    @media screen and (max-width: @screen-width[W2]) {
+      & {
+        display: none;
       }
     }
   }

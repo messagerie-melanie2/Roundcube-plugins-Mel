@@ -5,7 +5,7 @@
     <roundcube:object name="productname" /> <roundcube:label name="login" />
   </h1>
   <bnum-img
-    class="ministere-logo customMode"
+    class="login__logo--ministere customMode"
     src="skins/mel_elastic/images/logo-light.png"
     data-src-small="0"
     id=""
@@ -15,7 +15,7 @@
 
 <main role="main">
   <div id="mel-login-form">
-    <div class="login-title">
+    <div class="login__title">
       <center>
         <h1>
           <roundcube:label name="mel.welcome" /><br />
@@ -28,10 +28,10 @@
       data-title-text="<roundcube:label name="mel.login_card_title" />"
       data-title-icon="login"
     >
-      <div class="login-columns">
+      <div class="login__columns">
         <section>
-          <h3 id="login-title-h3" style="padding-bottom: 0px;margin-bottom: 10px;"><roundcube:label name="mel.login_with_credentials" /></h3>
-          <div id="login-addons"></div>
+          <h3 id="login__credentials-title" style="padding-bottom: 0px;margin-bottom: 10px;"><roundcube:label name="mel.login_with_credentials" /></h3>
+          <div id="login__addons"></div>
           <roundcube:form name="form" method="post">
             <roundcube:object
               name="loginform"
@@ -42,9 +42,9 @@
             <roundcube:object name="message" id="message" />
           </roundcube:form>
         </section>
-        <bnum-divider id="login-divider" class="bds-space-s-top"><roundcube:label name="mel.login_or" /></bnum-divider>
-        <div class="login-or-vertical" aria-hidden="true"><span></span><roundcube:label name="mel.login_or" /><span></span></div>
-        <section id="bnum-alt-connexion-container" class="bds-space-s-top">
+        <bnum-divider id="login__divider" class="bds-space-s-top"><roundcube:label name="mel.login_or" /></bnum-divider>
+        <div class="login__separator-vertical" aria-hidden="true"><span></span><roundcube:label name="mel.login_or" /><span></span></div>
+        <section id="login__alt-connexion" class="bds-space-s-top">
           <h3 style="padding-bottom: 0px;margin-bottom: 10px;"><roundcube:label name="mel.login_with_cerbere" /></h3>
           <p><roundcube:label name="mel.login_with_cerbere_description" /></p>
           <center><!-- TODO : remplacer l'URL provisoire de « Qu'est-ce que Cerbère ? » -->
@@ -55,7 +55,7 @@
         </section>
 
       </div>
-                <div class="footerbox bds-space-s-top">
+                <div class="login__footer bds-space-s-top">
             <bnum-alert-info>
               <roundcube:label name="mel.login_warning" />
               <br />
@@ -91,7 +91,7 @@
           />
           <roundcube:object name="message" id="message" />
         </roundcube:form>
-        <div class="footerbox">
+        <div class="login__footer">
           <roundcube:label name="mel.login_warning" />
           <br />
           <roundcube:object name="login_doc_message" id="doc_message" />
@@ -101,7 +101,7 @@
   </div>
 
   <img
-    class="login-logo-footer-right"
+    class="login__logo--footer-right"
     name="logo"
     src="skins/mel_elastic/images/meuf.svg"
     data-src-small="0"
@@ -109,7 +109,7 @@
     alt=""
   />
   <img
-    class="login-logo-footer-left"
+    class="login__logo--footer-left"
     name="logo"
     src="skins/mel_elastic/images/gars.svg"
     data-src-small="0"

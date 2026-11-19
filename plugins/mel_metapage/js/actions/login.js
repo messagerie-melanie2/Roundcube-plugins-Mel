@@ -70,23 +70,23 @@ $(document).ready(() => {
       isNotTouch
     ) {
       $('#mel-login-form').css('top', '0');
-      $('.login-title h1').css('font-size', '30px');
+      $('.login__title h1').css('font-size', '30px');
 
       if (!$('#layout').hasClass('overflowed'))
         $('#layout').addClass('overflowed');
     } else if (window.innerHeight < 561 && isNotTouch) {
       $('#mel-login-form').css('top', '0');
-      $('.login-title h1').css('font-size', '30px');
+      $('.login__title h1').css('font-size', '30px');
       $('#layout').removeClass('overflowed');
     } else if (window.innerHeight < 666 && isNotTouch) {
       $('#mel-login-form').css('top', '5vh');
-      $('.login-title h1').css('font-size', '30px');
+      $('.login__title h1').css('font-size', '30px');
       $('#layout').removeClass('overflowed');
     } else if (window.innerHeight < 693 && isNotTouch) {
-      $('.login-title h1').css('font-size', '30px');
+      $('.login__title h1').css('font-size', '30px');
       $('#layout').removeClass('overflowed');
     } else {
-      $('.login-title h1').css('font-size', '');
+      $('.login__title h1').css('font-size', '');
       $('#mel-login-form').css('top', '');
       $('#layout').removeClass('overflowed');
     }

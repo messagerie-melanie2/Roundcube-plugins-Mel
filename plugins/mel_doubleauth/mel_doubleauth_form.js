@@ -60,7 +60,7 @@ if (window.rcmail) {
 				let $button = page.button_code_forgotten().generate();
 
 				if ($bali_r_p.length > 0) $bali_r_p.html($button);
-				else $('.footerbox').before($('<div>').attr('id', 'bali-reset-password').html($button));
+				else $('.login__footer').before($('<div>').attr('id', 'bali-reset-password').html($button));
 
 				$bali_r_p = null;
 				$button = null;

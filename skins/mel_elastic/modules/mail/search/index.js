@@ -23,6 +23,31 @@ import { FilterUi, Ui } from './ui.js';
  */
 
 //#endregion
+// ─── Utilitaires ──────────────────────────────────────────────────────────────
+//#region Utilitaires
+
+/**
+ * Retourne l'option de `select` jumelle de `reference` : même valeur et, en priorité, mêmes classes.
+ * Plusieurs options du select de type peuvent partager une valeur : avec plusieurs boîtes, mel_labels_sync
+ * ajoute les étiquettes de chacune (`KEYWORD $LABEL1`…), que seule la classe de la boîte distingue.
+ * Affecter `value` sélectionnerait toujours la première, quelle que soit la boîte.
+ * @param {HTMLSelectElement} select
+ * @param {HTMLOptionElement} reference
+ * @returns {?HTMLOptionElement}
+ */
+function findTwinOption(select, reference) {
+  const sameValue = Array.from(select.options).filter(
+    (option) => option.value === reference.value,
+  );
+
+  return (
+    sameValue.find((option) => option.className === reference.className) ??
+    sameValue[0] ??
+    null
+  );
+}
+
+//#endregion
 // ─── SearchFiltersInitializer ─────────────────────────────────────────────────
 //#region SearchFiltersInitializer
 /**
@@ -71,7 +96,11 @@ class SearchFiltersInitializer {
       const original = this.#_filterUi.searchFilter;
       const dummy = this.#_filterUi.searchFilterDummy;
 
+      const selected = dummy.select.selectedOptions[0];
+      const twin = selected ? findTwinOption(original, selected) : null;
+
       original.value = dummy.value;
+      if (twin) twin.selected = true;
       original.dispatchEvent(new Event('change', { bubbles: true }));
     });
 
@@ -95,7 +124,11 @@ class SearchFiltersInitializer {
 
       requestAnimationFrame(() => {
         setTimeout(() => {
+          const selected = original.selectedOptions[0];
+          const twin = selected ? findTwinOption(dummy.select, selected) : null;
+
           dummy.value = original.value;
+          if (twin) twin.selected = true;
         }, 0);
       });
     });
@@ -415,10 +448,13 @@ class SearchModsMemory {
     const filter = document.getElementById('searchfilter');
 
     const filterDummy = document.getElementById('search-filter-dummy');
+    const filterOption = filter
+      ? this.#_findFilterOption(filter, options.filter)
+      : null;
 
-    if (filter && this.#_hasOption(filter, options.filter)) {
+    if (filterOption) {
       // Affecté tout de suite : rcmail.init() lit ce select pour filtrer la liste au chargement
-      filter.value = options.filter;
+      filterOption.selected = true;
       // Synchronise le select web component (SearchFiltersInitializer), qui doit être upgradé
       const syncDummy = () => filter.dispatchEvent(new Event('change'));
 
@@ -443,6 +479,43 @@ class SearchModsMemory {
           });
         });
     }
+  }
+
+  /**
+   * Retourne l'option du select de type à restaurer. Avec plusieurs boîtes, une étiquette
+   * existe une fois par boîte avec la même valeur : on prend celle de la boîte du dossier
+   * courant (même calcul que mel_label.js), seule conservée par mel_label.js après le
+   * premier chargement de la liste.
+   * @param {HTMLSelectElement} select
+   * @param {string | undefined} value
+   * @returns {?HTMLOptionElement}
+   */
+  #_findFilterOption(select, value) {
+    if (typeof value !== 'string') return null;
+
+    const sameValue = Array.from(select.options).filter(
+      (option) => option.value === value,
+    );
+
+    if (sameValue.length <= 1) return sameValue[0] ?? null;
+
+    const { balp_label, delimiter, mailbox = '', username = '' } = rcmail.env;
+    const owner =
+      balp_label && mailbox.indexOf(balp_label) === 0
+        ? (mailbox.split(delimiter)[1] ?? '')
+        : username;
+    const ownerClass =
+      typeof window.rcmail_tb_labels_key_to_css === 'function'
+        ? window.rcmail_tb_labels_key_to_css(owner)
+        : owner;
+
+    return (
+      sameValue.find(
+        (option) =>
+          option.classList.contains('labels') &&
+          option.classList.contains(ownerClass),
+      ) ?? sameValue[0]
+    );
   }
 
   /**

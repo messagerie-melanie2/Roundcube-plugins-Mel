@@ -30,7 +30,8 @@
     >
       <div class="login-columns">
         <section>
-          <h3 style="padding-bottom: 0px;margin-bottom: 10px;"><roundcube:label name="mel.login_with_credentials" /></h3>
+          <h3 id="login-title-h3" style="padding-bottom: 0px;margin-bottom: 10px;"><roundcube:label name="mel.login_with_credentials" /></h3>
+          <div id="login-addons"></div>
           <roundcube:form name="form" method="post">
             <roundcube:object
               name="loginform"
@@ -41,7 +42,7 @@
             <roundcube:object name="message" id="message" />
           </roundcube:form>
         </section>
-        <bnum-divider class="bds-space-s-top"><roundcube:label name="mel.login_or" /></bnum-divider>
+        <bnum-divider id="login-divider" class="bds-space-s-top"><roundcube:label name="mel.login_or" /></bnum-divider>
         <div class="login-or-vertical" aria-hidden="true"><span></span><roundcube:label name="mel.login_or" /><span></span></div>
         <section id="bnum-alt-connexion-container" class="bds-space-s-top">
           <h3 style="padding-bottom: 0px;margin-bottom: 10px;"><roundcube:label name="mel.login_with_cerbere" /></h3>

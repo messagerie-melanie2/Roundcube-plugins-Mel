@@ -9,10 +9,10 @@ const ID_LOGIN_USER = 'rcmloginuser';
 const ID_LOGIN_PASSWORD = 'rcmloginpwd';
 const ID_ALT_CONNEXION_DIV = 'bnum-alt-connexion-container';
 const ID_KEEP_LOGIN = 'rcmloginkeep';
-const DIVIDERS_SELECTORS = 'bnum-divider, .login-or-vertical';
+const DIVIDERS_SELECTORS = '#login-divider, .login-or-vertical';
 const CARD_SELECTOR = '#mel-login-form bnum-card';
 const CARD_TITLE_ID = '#bnum-card-title';
-const ID_MAIN_TITLE = '';
+const ID_MAIN_TITLE = 'login-title-h3';
 
 class MelDoubleAuthForm extends MelObject {
   static #_initialized = false;
@@ -116,6 +116,11 @@ class MelDoubleAuthForm extends MelObject {
       );
       return;
     }
+
+    const da = this.get_env('_da_page');
+    const addon = document.getElementById('login-addons');
+    addon.innerHTML = da;
+    this.rcmail().env._da_page = null;
   }
 
   #_getLoginInputs() {

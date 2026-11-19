@@ -83,6 +83,29 @@ $labels['recovery_connect'] = 'Connexion';
 $labels['recovery_code_label'] = 'Saisissez le code reçu par mail';
 $labels['recovery_code_hint'] = 'Code à 6 chiffres reçu sur votre adresse de récupération';
 
+// Page de saisie du code (templates/da.html et js/mel_doubleauth_form_v2.js)
+$labels['da_card_title'] = 'Double authentification';
+$labels['da_credentials_title'] = 'Rentrez votre code OTP';
+$labels['da_code_section_title'] = 'Saisie du code de vérification';
+$labels['da_code_intro'] = 'Ouvrez votre application d’authentification et saisissez le code à 6 chiffres affiché pour votre compte. Le code change toutes les 30 secondes.';
+$labels['da_code_label'] = 'Code de vérification';
+$labels['da_code_hint'] = 'Code à 6 chiffres, par exemple 123456, ou code de secours';
+$labels['da_validate'] = 'Valider le code';
+$labels['da_cancel'] = "Revenir à l'identification";
+$labels['da_help_title'] = 'Vous ne recevez pas le code ?';
+$labels['da_lost_code'] = 'J’ai perdu l’accès à mon moyen d’authentification';
+$labels['da_internet_warning_1'] = "Si vous êtes sur internet et n'avez pas activé l'authentification à double facteur vous ne pouvez pas vous connecter.";
+$labels['da_internet_warning_2'] = "Vous devez passer par le VPN pour vous connecter et ainsi activer l'authentification à deux facteurs.";
+$labels['da_empty_code'] = 'Saisissez le code de vérification.';
+$labels['da_page_unavailable'] = "Impossible d'afficher la page de double authentification !";
+$labels['da_page_degraded'] = "Impossible d'afficher correctement la page de double authentification !";
+
+// Parcours « code perdu » (js/lib/recovery_flow.js)
+$labels['recovery_empty_token'] = 'Saisissez le code reçu par mail.';
+$labels['recovery_sent'] = 'Message envoyé !';
+$labels['recovery_send_error'] = "Impossible d'envoyer le code de validation !";
+$labels['recovery_invalid_address'] = "Votre adresse de récupération n'est pas valide ! Connectez-vous en intranet pour vous connecter et changer votre adresse de récupération.";
+
 // Messages used for the different portions of the plugin
 $messages = array();
 $messages['successfully_saved'] = 'Configuration sauvegardée';

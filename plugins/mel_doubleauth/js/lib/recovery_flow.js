@@ -23,18 +23,12 @@ const ID_SEND = 'da__recovery-send';
 const ID_RESEND = 'da__recovery-resend';
 const ID_CONNECT = 'da__recovery-connect';
 const ID_CREDENTIALS_TITLE = 'login__credentials-title';
-const MAIN_VIEW_SELECTOR ='.da__code, .da__divider, .da__help';
+const MAIN_VIEW_SELECTOR = '.da__code, .da__divider, .da__help';
 const CHAR_AT = '@';
 const CHAR_MASK = '*';
 const MAX_VISIBLE_CHARS = 3;
-const MSG_INVALID_ADDRESS =
-  // eslint-disable-next-line quotes
-  "Votre adresse de récupération n'est pas valide ! Connectez-vous en intranet pour vous connecter et changer votre adresse de récupération.";
-const MSG_SENT = 'Message envoyé !';
-const MSG_EMPTY_TOKEN = 'Saisissez le code reçu par mail.';
 const KEY_ESCAPE = 'Escape';
-// eslint-disable-next-line quotes
-const MSG_SEND_ERROR = "Impossible d'envoyer le code de validation !";
+const PLUGIN_NAME = 'mel_doubleauth';
 
 /**
  * Masque la partie locale d'une adresse mail (ex : `jean.dupont@mail.fr` => `jea*******@mail.fr`).
@@ -124,7 +118,10 @@ export class DaRecoveryFlow extends MelObject {
     if (result === null) return;
 
     if (!result.datas) {
-      this.#_notify(MSG_INVALID_ADDRESS, eMessageType.Error);
+      this.#_notify(
+        this.#_text('recovery_invalid_address'),
+        eMessageType.Error,
+      );
       return;
     }
 
@@ -152,11 +149,14 @@ export class DaRecoveryFlow extends MelObject {
     if (result === null) return;
 
     if (result.has_error || result.datas === -1) {
-      this.#_notify(MSG_SEND_ERROR, eMessageType.Error);
+      this.#_notify(this.#_text('recovery_send_error'), eMessageType.Error);
       return;
     }
 
-    this.#_notify(MSG_SENT, eMessageType.Confirmation);
+    this.#_notify(
+      this.#_text('recovery_sent'),
+      eMessageType.Confirmation,
+    );
     this.#_showStep(ID_CODE_STEP, ID_TOKEN);
   }
 
@@ -167,7 +167,7 @@ export class DaRecoveryFlow extends MelObject {
     const token = field?.value.trim() ?? '';
 
     if (!token) {
-      reject_field(field, MSG_EMPTY_TOKEN);
+      reject_field(field, this.#_text('recovery_empty_token'));
       return;
     }
 
@@ -208,6 +208,14 @@ export class DaRecoveryFlow extends MelObject {
     }
 
     document.getElementById(id_focus)?.focus();
+  }
+
+  /**
+   * @param {string} key Clé du libellé dans `localization/fr_FR.inc`
+   * @returns {string} Texte localisé
+   */
+  #_text(key) {
+    return this.getLocalization(key, { plugin: PLUGIN_NAME });
   }
 
   /**

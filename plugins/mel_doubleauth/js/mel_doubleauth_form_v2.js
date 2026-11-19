@@ -30,9 +30,7 @@ const COLUMNS_CLASS = 'login__columns';
 const FOOTER_ALERT_SELECTOR = '.login__footer bnum-alert-info';
 const ID_ADDONS = 'login__addons';
 const ID_MAIN_TITLE = 'login__credentials-title';
-const TITLE_CARD = 'Double authentification';
-const TITLE_CREDENTIALS = 'Rentrez votre code OTP';
-const MSG_EMPTY_CODE = 'Saisissez le code de vérification.';
+const PLUGIN_NAME = 'mel_doubleauth';
 
 /**
  * Transforme la page de connexion en page de saisie du code de double authentification.
@@ -106,8 +104,7 @@ class MelDoubleAuthForm extends MelObject {
     if (!inputs) {
       this.#_showFatalError(
         'Impossible de trouver les inputs de connexion !',
-        // eslint-disable-next-line quotes
-        "Impossible d'afficher la page de double authentification !",
+        this.#_text('da_page_unavailable'),
       );
       return;
     }
@@ -117,8 +114,7 @@ class MelDoubleAuthForm extends MelObject {
     if (!this.#_updateCardTitle()) {
       this.#_showFatalError(
         'Impossible de changer le titre !',
-        // eslint-disable-next-line quotes
-        "Impossible d'afficher correctement la page de double authentification !",
+        this.#_text('da_page_degraded'),
       );
       return;
     }
@@ -126,8 +122,7 @@ class MelDoubleAuthForm extends MelObject {
     if (!this.#_moveAddonsIntoForm()) {
       this.#_showFatalError(
         'Impossible de rattacher la saisie du code au formulaire !',
-        // eslint-disable-next-line quotes
-        "Impossible d'afficher la page de double authentification !",
+        this.#_text('da_page_unavailable'),
       );
       return;
     }
@@ -243,7 +238,7 @@ class MelDoubleAuthForm extends MelObject {
    */
   #_updateCardTitle() {
     if (this.card_title) {
-      this.card_title.textContent = TITLE_CARD;
+      this.card_title.textContent = this.#_text('da_card_title');
       return true;
     }
 
@@ -252,7 +247,7 @@ class MelDoubleAuthForm extends MelObject {
     const element = document.createElement('bnum-fragment');
     element.innerHTML = `
       <bnum-card-title data-icon="key">
-        ${TITLE_CARD}
+        ${this.#_text('da_card_title')}
       </bnum-card-title>
     `;
 
@@ -275,7 +270,7 @@ class MelDoubleAuthForm extends MelObject {
   #_updateCredentialsTitle() {
     const title = this.credentials_title;
 
-    if (title) title.textContent = TITLE_CREDENTIALS;
+    if (title) title.textContent = this.#_text('da_credentials_title');
   }
 
   /**
@@ -342,7 +337,7 @@ class MelDoubleAuthForm extends MelObject {
     if (this.#_submitting) return;
 
     if (!this.code_input.value.trim()) {
-      reject_field(this.code_input, MSG_EMPTY_CODE);
+      reject_field(this.code_input, this.#_text('da_empty_code'));
       return;
     }
 
@@ -364,6 +359,14 @@ class MelDoubleAuthForm extends MelObject {
 
     submit.click();
     return true;
+  }
+
+  /**
+   * @param {string} key Clé du libellé dans `localization/fr_FR.inc`
+   * @returns {string} Texte localisé
+   */
+  #_text(key) {
+    return this.getLocalization(key, { plugin: PLUGIN_NAME });
   }
 
   /**

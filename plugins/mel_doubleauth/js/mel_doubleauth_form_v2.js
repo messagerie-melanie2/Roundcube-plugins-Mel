@@ -212,11 +212,10 @@ class MelDoubleAuthForm extends MelObject {
    * @returns {void}
    */
   #_bindCancelButton() {
-    document
-      .getElementById(ID_CANCEL)
-      ?.addEventListener('click', () => {
-        window.location.href = this.url('login');
-      });
+    document.getElementById(ID_CANCEL)?.addEventListener('click', () => {
+      const url = this.url('login', {});
+      window.location.href = url;
+    });
   }
 
   #_focusCodeInput() {
@@ -285,9 +284,7 @@ class MelDoubleAuthForm extends MelObject {
    * @returns {void}
    */
   #_hideLoginLeftovers() {
-    document
-      .querySelector(COLUMNS_SELECTOR)
-      ?.classList?.remove(COLUMNS_CLASS);
+    document.querySelector(COLUMNS_SELECTOR)?.classList?.remove(COLUMNS_CLASS);
 
     this.#_hide(document.getElementById(ID_SUBMIT_DS));
     this.#_hide(document.querySelector(FOOTER_ALERT_SELECTOR));

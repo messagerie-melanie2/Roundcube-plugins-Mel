@@ -101,3 +101,13 @@ $labels['title_msg_saved'] = 'Le libellé a été enregistré.';
 $labels['title_msg_deleted'] = 'Le libellé et ses DN ont été supprimés.';
 $labels['title_msg_default_set'] = 'Ce libellé est désormais proposé par défaut.';
 $labels['title_msg_not_found'] = 'Ce libellé n\'existe pas ou a été supprimé.';
+
+// 0009485 : édition de la signature
+$labels['insertimage'] = "Insérer une image";
+$labels['insertimagetitle'] = "Ajoutez une image PNG, JPEG ou GIF. Les images de plus de 200 Ko ne sont pas acceptées. Une image trop grande sera automatiquement réduite pour être affichée correctement. Si un logo est déjà présent en fin de signature, la nouvelle image s'insérera à droite de celui-ci. Sinon, elle sera ajoutée en fin de signature, sous la devise « Liberté, Égalité, Fraternité ».";
+$labels['regeneratesignature'] = "Régénérer depuis le formulaire";
+$labels['regeneratesignaturetitle'] = "Retirer les images ajoutées et revenir à la signature générée à partir du formulaire";
+$labels['regeneratesignature_confirm'] = "Retirer toutes les images ajoutées ? La signature sera régénérée à partir du formulaire.";
+$labels['imagetoobig'] = "L'image dépasse 200 Ko : elle n'a pas été insérée.";
+$labels['imageinvalid'] = "Ce fichier n'est pas une image PNG, JPEG ou GIF.";
+$labels['removeimage_confirm'] = "Retirer cette image de la signature ?";

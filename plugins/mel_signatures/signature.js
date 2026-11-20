@@ -1,6 +1,22 @@
 var inputTimeout = null;
+// 0009485 : images ajoutées par l'utilisateur ({src, alt, width, height}),
+// remises à la fin de la signature générée, sur la ligne du logo national
+var addedImages = [];
 
 window.onload = function() {
+    // 0009485 : retrouver les images ajoutées dans la signature enregistrée
+    addedImages = getSavedAddedImages();
+
+    // 0009485 : clic sur une image ajoutée = proposer de la retirer
+    getSignatureElement().addEventListener('click', function(evt) {
+        var img = evt.target.closest('img.signature-added-image');
+        if (img && window.confirm(rcmail.get_label('mel_signatures.removeimage_confirm'))) {
+            var images = getSignatureElement().querySelectorAll('img.signature-added-image');
+            addedImages.splice(Array.prototype.indexOf.call(images, img), 1);
+            refreshSignature();
+        }
+    });
+
     onInputChange();
 
     var onclickFunc = function(evt) {
@@ -33,11 +49,136 @@ function onInputChange() {
     if (inputTimeout) {
         clearTimeout(window.inputTimeout);
     }
-    window.inputTimeout = setTimeout(() => {
-        let html = getSignatureHTML();
-        document.querySelector("#settings-right .usersignature .sign").innerHTML = html;
-        document.getElementById("signature_html").value = html;
-    }, 300);
+    window.inputTimeout = setTimeout(refreshSignature, 300);
+}
+
+/**
+ * 0009485 : zone d'affichage de la signature
+ */
+function getSignatureElement() {
+    return document.querySelector("#settings-right .usersignature .sign");
+}
+
+/**
+ * 0009485 : génère la signature à partir du formulaire, ajoute les images
+ * de l'utilisateur à la fin, et met à jour le champ caché lu par « Utiliser la signature »
+ */
+function refreshSignature() {
+    var sign = getSignatureElement();
+    sign.innerHTML = getSignatureHTML();
+
+    if (addedImages.length) {
+        // Bloc principal de la signature : sa dernière ligne contient le logo national s'il existe
+        var root = sign.firstElementChild || sign;
+        var nationalLogo = root.querySelector('img.other');
+        if (nationalLogo) {
+            nationalLogo.style.verticalAlign = 'middle';
+        }
+        addedImages.forEach(function(data) {
+            var img = createAddedImage(data);
+            // Espace de 15 px seulement s'il y a une image juste avant sur la ligne
+            var previous = root.lastElementChild;
+            img.style.marginLeft = (previous && previous.tagName === 'IMG') ? '15px' : '0';
+            root.appendChild(img);
+        });
+    }
+
+    document.getElementById("signature_html").value = sign.innerHTML.trim();
+}
+
+/**
+ * 0009485 : construit une image ajoutée à partir de ses données
+ */
+function createAddedImage(data) {
+    var img = document.createElement('img');
+    img.className = 'signature-added-image';
+    img.src = data.src;
+    img.alt = data.alt;
+    if (data.width) {
+        img.setAttribute('width', data.width);
+    }
+    if (data.height) {
+        img.setAttribute('height', data.height);
+    }
+    img.style.verticalAlign = 'middle';
+    return img;
+}
+
+/**
+ * 0009485 : images ajoutées présentes dans la signature enregistrée de l'identité
+ */
+function getSavedAddedImages() {
+    if (!rcmail.env.saved_signature) {
+        return [];
+    }
+    // DOMParser n'exécute aucun script : lecture sans risque du HTML enregistré
+    var doc = new DOMParser().parseFromString(rcmail.env.saved_signature, 'text/html');
+    return Array.prototype.slice.call(doc.querySelectorAll('img.signature-added-image'))
+        .filter(function(img) {
+            // Uniquement des images intégrées en base64
+            return /^data:image\/(png|jpeg|gif);base64,/.test(img.getAttribute('src') || '');
+        })
+        .map(function(img) {
+            return {
+                src: img.getAttribute('src'),
+                alt: img.getAttribute('alt') || '',
+                width: img.getAttribute('width'),
+                height: img.getAttribute('height'),
+            };
+        });
+}
+
+/**
+ * 0009485 : retire toutes les images ajoutées
+ */
+function regenerate_signature() {
+    if (!window.confirm(rcmail.get_label('mel_signatures.regeneratesignature_confirm'))) {
+        return;
+    }
+    addedImages = [];
+    refreshSignature();
+}
+
+/**
+ * 0009485 : ajoute l'image choisie à la fin de la signature, en base64
+ */
+function insert_image(input) {
+    var file = input.files && input.files[0];
+    // Vide le champ pour pouvoir choisir à nouveau le même fichier
+    input.value = '';
+    if (!file) {
+        return;
+    }
+    if (['image/png', 'image/jpeg', 'image/gif'].indexOf(file.type) === -1) {
+        rcmail.display_message(rcmail.get_label('mel_signatures.imageinvalid'), 'error');
+        return;
+    }
+    if (file.size > 200 * 1024) {
+        rcmail.display_message(rcmail.get_label('mel_signatures.imagetoobig'), 'error');
+        return;
+    }
+
+    var reader = new FileReader();
+    reader.onload = function() {
+        var img = new Image();
+        img.onload = function() {
+            // Taille limitée à 250 x 100 px, proportions conservées
+            var scale = Math.min(1, 250 / img.naturalWidth, 100 / img.naturalHeight);
+            addedImages.push({
+                src: reader.result,
+                // Texte alternatif : nom du fichier sans extension
+                alt: file.name.replace(/\.[^.]+$/, ''),
+                width: Math.round(img.naturalWidth * scale),
+                height: Math.round(img.naturalHeight * scale),
+            });
+            refreshSignature();
+        };
+        img.onerror = function() {
+            rcmail.display_message(rcmail.get_label('mel_signatures.imageinvalid'), 'error');
+        };
+        img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
 }
 
 /**
@@ -175,7 +316,9 @@ function download_signature_thunderbird() {
     html += '<META content="text/html; charset=utf-8" http-equiv="Content-Type">';
     html += '</HEAD>';
     html += '<BODY>';
-    html += getSignatureHTML();
+    // 0009485 : signature générée + images ajoutées
+    refreshSignature();
+    html += getSignatureElement().innerHTML.trim();
     html += '</BODY>';
     html += '</HTML>';
     download('signature.html', html);

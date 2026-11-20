@@ -1,7 +1,7 @@
 var inputTimeout = null;
 // 0009485 : images ajoutées par l'utilisateur ({src, alt, width, height}),
 // remises à la fin de la signature générée, sur la ligne du logo national
-var addedImages = [];
+let addedImages = [];
 
 window.onload = function() {
     // 0009485 : retrouver les images ajoutées dans la signature enregistrée
@@ -9,9 +9,9 @@ window.onload = function() {
 
     // 0009485 : clic sur une image ajoutée = proposer de la retirer
     getSignatureElement().addEventListener('click', function(evt) {
-        var img = evt.target.closest('img.signature-added-image');
+        const img = evt.target.closest('img.signature-added-image');
         if (img && window.confirm(rcmail.get_label('mel_signatures.removeimage_confirm'))) {
-            var images = getSignatureElement().querySelectorAll('img.signature-added-image');
+            const images = getSignatureElement().querySelectorAll('img.signature-added-image');
             addedImages.splice(Array.prototype.indexOf.call(images, img), 1);
             refreshSignature();
         }
@@ -56,7 +56,7 @@ function onInputChange() {
  * 0009485 : zone d'affichage de la signature
  */
 function getSignatureElement() {
-    return document.querySelector("#settings-right .usersignature .sign");
+    return document.querySelector('#settings-right .usersignature .sign');
 }
 
 /**
@@ -64,33 +64,33 @@ function getSignatureElement() {
  * de l'utilisateur à la fin, et met à jour le champ caché lu par « Utiliser la signature »
  */
 function refreshSignature() {
-    var sign = getSignatureElement();
+    const sign = getSignatureElement();
     sign.innerHTML = getSignatureHTML();
 
     if (addedImages.length) {
         // Bloc principal de la signature : sa dernière ligne contient le logo national s'il existe
-        var root = sign.firstElementChild || sign;
-        var nationalLogo = root.querySelector('img.other');
+        const root = sign.firstElementChild || sign;
+        const nationalLogo = root.querySelector('img.other');
         if (nationalLogo) {
             nationalLogo.style.verticalAlign = 'middle';
         }
         addedImages.forEach(function(data) {
-            var img = createAddedImage(data);
+            const img = createAddedImage(data);
             // Espace de 15 px seulement s'il y a une image juste avant sur la ligne
-            var previous = root.lastElementChild;
+            const previous = root.lastElementChild;
             img.style.marginLeft = (previous && previous.tagName === 'IMG') ? '15px' : '0';
             root.appendChild(img);
         });
     }
 
-    document.getElementById("signature_html").value = sign.innerHTML.trim();
+    document.getElementById('signature_html').value = sign.innerHTML.trim();
 }
 
 /**
  * 0009485 : construit une image ajoutée à partir de ses données
  */
 function createAddedImage(data) {
-    var img = document.createElement('img');
+    const img = document.createElement('img');
     img.className = 'signature-added-image';
     img.src = data.src;
     img.alt = data.alt;
@@ -112,7 +112,7 @@ function getSavedAddedImages() {
         return [];
     }
     // DOMParser n'exécute aucun script : lecture sans risque du HTML enregistré
-    var doc = new DOMParser().parseFromString(rcmail.env.saved_signature, 'text/html');
+    const doc = new DOMParser().parseFromString(rcmail.env.saved_signature, 'text/html');
     return Array.prototype.slice.call(doc.querySelectorAll('img.signature-added-image'))
         .filter(function(img) {
             // Uniquement des images intégrées en base64
@@ -143,7 +143,7 @@ function regenerate_signature() {
  * 0009485 : ajoute l'image choisie à la fin de la signature, en base64
  */
 function insert_image(input) {
-    var file = input.files && input.files[0];
+    const file = input.files && input.files[0];
     // Vide le champ pour pouvoir choisir à nouveau le même fichier
     input.value = '';
     if (!file) {
@@ -158,12 +158,12 @@ function insert_image(input) {
         return;
     }
 
-    var reader = new FileReader();
+    const reader = new FileReader();
     reader.onload = function() {
-        var img = new Image();
+        const img = new Image();
         img.onload = function() {
             // Taille limitée à 250 x 100 px, proportions conservées
-            var scale = Math.min(1, 250 / img.naturalWidth, 100 / img.naturalHeight);
+            const scale = Math.min(1, 250 / img.naturalWidth, 100 / img.naturalHeight);
             addedImages.push({
                 src: reader.result,
                 // Texte alternatif : nom du fichier sans extension

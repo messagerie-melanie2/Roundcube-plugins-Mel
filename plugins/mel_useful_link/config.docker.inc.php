@@ -38,6 +38,11 @@ $rcmail_config['portail_items_list'] = $_ENV['RC_MEL_USEFUL_LINK_PORTAIL_ITEMS_L
 
 $rcmail_config['personal_useful_links'] = $_ENV['RC_MEL_USEFUL_LINK_PERSONAL_USEFUL_LINKS'];
 
+$rcmail_config['show_app_store_button'] = filter_var(
+       $_ENV['RC_MEL_USEFUL_LINK_SHOW_APP_STORE_BUTTON'] ?? true,
+       FILTER_VALIDATE_BOOLEAN
+);
+
 $rcmail_config['modify_options'] = [
        //Modifier
        [

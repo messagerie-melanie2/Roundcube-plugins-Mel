@@ -38,6 +38,9 @@ $rcmail_config['portail_items_list'] = [];
 
 $rcmail_config['personal_useful_links'] = [];
 
+/** Afficher le bouton « Bibliothèque d'applications » */
+$rcmail_config['show_app_store_button'] = true;
+
 $rcmail_config['modify_options'] = [
        //Modifier
        [

@@ -554,7 +554,10 @@ export class LinkManager extends MelObject {
         'data-hide': 'small',
       });
 
-    let appStoreButton = HTMLBnumButton.StartCreate.setSecondaryVariation()
+    let buttons = [addButton];
+
+    if (rcmail.env.mul_app_store_enabled) {
+      const appStoreButton = HTMLBnumButton.StartCreate.setSecondaryVariation()
       .setIcon('widgets')
       .setContent(
         //prettier-ignore
@@ -568,17 +571,21 @@ export class LinkManager extends MelObject {
         title: 'Bibliothèque d\'applications',
         'data-hide': 'small',
       });
+
+      buttons.push(appStoreButton);
+    }
+
     let container = document.createElement('div');
 
     container.classList.add('mul_right_buttons');
 
-    container.append(addButton, appStoreButton);
+    container.append(...buttons);
 
     selector.append(container);
 
     //free
     addButton = null;
-    appStoreButton = null;
+    buttons = null;
     container = null;
   }
 

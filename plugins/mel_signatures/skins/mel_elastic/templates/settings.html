@@ -8,18 +8,18 @@
   <div class="container">
   <div class="usersignature">
     <span id="signature-label"><roundcube:label name="mel_signatures.signaturelabel" /></span>
-    <div class="sign"></div>
+    <div class="sign" contenteditable="false" role="textbox" aria-multiline="true" aria-readonly="true" aria-labelledby="signature-label" spellcheck="false"></div>
     <textarea id="signature_html" readonly="readonly" type="text"></textarea>
-    <div class="sign-tools">
-            <input type="file" id="insert-image-file" class="custom-file-input" accept="image/png,image/jpeg,image/gif" hidden onchange="insert_image(this);">
-      <bnum-secondary-button data-icon="add_photo_alternate" data-icon-pos="left" id="insert-image" title="<roundcube:label name="mel_signatures.insertimagetitle" />" onclick="document.getElementById('insert-image-file').click();"><roundcube:label name="mel_signatures.insertimage" /></bnum-secondary-button>
-      <bnum-secondary-button data-icon="refresh" data-icon-pos="left" id="regenerate-signature" title="<roundcube:label name="mel_signatures.regeneratesignaturetitle" />" onclick="regenerate_signature();"><roundcube:label name="mel_signatures.regeneratesignature" /></bnum-secondary-button>
-    </div>
     <div class="action">
       <bnum-primary-button data-icon="edit" data-icon-pos="left" id="modify-signature" title="<roundcube:label name="mel_signatures.modifytitle" />" onclick="modify_signature();"><roundcube:label name="mel_signatures.modify" /></bnum-primary-button>
       <bnum-primary-button data-icon="check" data-icon-pos="left" class="nocourrielleur" id="use-signature" title="<roundcube:label name="mel_signatures.usesignaturetitle" />" onclick="use_signature();"><roundcube:label name="mel_signatures.usesignature" /></bnum-primary-button>
       <bnum-primary-button data-icon="download" data-icon-pos="left" class="nocourrielleur" id="download-signature-thunderbird" title="<roundcube:label name="mel_signatures.downloadsignaturethunderbirdtitle" />" onclick="download_signature_thunderbird();"><roundcube:label name="mel_signatures.downloadsignaturethunderbird" /></bnum-primary-button>
       <input type="button" class="action-button courrielleur" id="copy-to-clipboard" title="<roundcube:label name="mel_signatures.clictocopytitle" />" value="<roundcube:label name="mel_signatures.clictocopy" />" onclick="copy_signature();">    </div>
+    <div class="sign-tools">
+            <input type="file" id="insert-image-file" class="custom-file-input" accept="image/png,image/jpeg,image/gif" hidden onchange="insert_image(this);">
+      <bnum-secondary-button data-icon="add_photo_alternate" data-icon-pos="left" id="insert-image" title="<roundcube:label name="mel_signatures.insertimagetitle" />" onclick="document.getElementById('insert-image-file').click();"><roundcube:label name="mel_signatures.insertimage" /></bnum-secondary-button>
+      <bnum-secondary-button data-icon="refresh" data-icon-pos="left" id="regenerate-signature" title="<roundcube:label name="mel_signatures.regeneratesignaturetitle" />" onclick="regenerate_signature();"><roundcube:label name="mel_signatures.regeneratesignature" /></bnum-secondary-button>
+    </div>
   </div>
   <div class="userinfos">
     <span><roundcube:label name="mel_signatures.informationslabel" /></span>

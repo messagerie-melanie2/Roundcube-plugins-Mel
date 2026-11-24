@@ -102,12 +102,12 @@ $labels['title_msg_deleted'] = 'Le libellé et ses DN ont été supprimés.';
 $labels['title_msg_default_set'] = 'Ce libellé est désormais proposé par défaut.';
 $labels['title_msg_not_found'] = 'Ce libellé n\'existe pas ou a été supprimé.';
 
-// 0009485 : édition de la signature
+// Édition de la signature
+$labels['signatureeditabletitle'] = "Cliquez dans la signature pour la modifier, ou pour placer le curseur à l'endroit où insérer une image.";
 $labels['insertimage'] = "Insérer une image";
-$labels['insertimagetitle'] = "Ajoutez une image PNG, JPEG ou GIF. Les images de plus de 200 Ko ne sont pas acceptées. Une image trop grande sera automatiquement réduite pour être affichée correctement. Si un logo est déjà présent en fin de signature, la nouvelle image s'insérera à droite de celui-ci. Sinon, elle sera ajoutée en fin de signature, sous la devise « Liberté, Égalité, Fraternité ».";
+$labels['insertimagetitle'] = "Ajoutez une image PNG, JPEG ou GIF à l'endroit où se trouve le curseur dans la signature, ou sur une nouvelle ligne à la fin de la signature si le curseur n'y est pas. Les images de plus de 200 Ko ne sont pas acceptées. Une image trop grande sera automatiquement réduite pour être affichée correctement. Pour retirer une image, cliquez juste après elle et appuyez sur la touche Retour arrière.";
 $labels['regeneratesignature'] = "Régénérer depuis le formulaire";
-$labels['regeneratesignaturetitle'] = "Retirer les images ajoutées et revenir à la signature générée à partir du formulaire";
-$labels['regeneratesignature_confirm'] = "Retirer toutes les images ajoutées ? La signature sera régénérée à partir du formulaire.";
+$labels['regeneratesignaturetitle'] = "Annuler les modifications faites directement dans la signature et revenir à la signature générée à partir du formulaire";
+$labels['regeneratesignature_confirm'] = "Les images ajoutées et les modifications faites directement dans la signature seront perdues. La signature sera régénérée à partir du formulaire. Continuer ?";
 $labels['imagetoobig'] = "L'image dépasse 200 Ko : elle n'a pas été insérée.";
 $labels['imageinvalid'] = "Ce fichier n'est pas une image PNG, JPEG ou GIF.";
-$labels['removeimage_confirm'] = "Retirer cette image de la signature ?";

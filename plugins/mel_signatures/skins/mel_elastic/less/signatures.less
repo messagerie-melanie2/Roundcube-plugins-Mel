@@ -90,6 +90,9 @@ select {
 .usersignature {
     margin-right: 20px;
     margin-bottom: 20px;
+    &:not(.editing) .sign-tools {
+        display: none;
+    }
     .sign-tools,
     .action {
         display: flex;
@@ -165,8 +168,12 @@ select {
     margin-top: 20px;
 }
 
-.sign .signature-added-image {
-    cursor: pointer;
+.sign[contenteditable="true"] {
+    cursor: text;
+    &:focus {
+        outline: 2px solid var(--bnum-color-primary, #000091);
+        outline-offset: 2px;
+    }
 }
 
 .dropdown-check-list {

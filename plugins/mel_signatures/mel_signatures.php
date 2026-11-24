@@ -88,7 +88,7 @@ class mel_signatures extends bnum_plugin
             $this->add_texts('localization/', [
                 'mobilephone', 'phonephone', 'signaturecopied', 'clictocopy', 'signaturecopiedmessage', 'usesignature_confirm',
                 'savesignaturesuccess', 'savesignatureerror', 'savingsignature', 'identitiesdialogtitle', 'save', 'cancel',
-                'regeneratesignature_confirm', 'imagetoobig', 'imageinvalid', 'removeimage_confirm',
+                'regeneratesignature_confirm', 'imagetoobig', 'imageinvalid', 'signatureeditabletitle',
 
             ]);
             
@@ -252,11 +252,11 @@ class mel_signatures extends bnum_plugin
             $this->rc->output->set_env('logo_title_other', $this->rc->config->get('signature_other_logo_title', 'Autre logo'));
         }
 
-        // 0009485 : première signature HTML contenant des images ajoutées,
-        // l'identité par défaut en priorité (list_identities la renvoie en premier)
+        // Reprend la première signature modifiée dans la page (texte retouché ou images ajoutées),
+        // l'identité par défaut en priorité
         foreach ($this->rc->user->list_identities() as $identity) {
             if (!empty($identity['html_signature'])
-                && str_contains((string) ($identity['signature'] ?? ''), 'signature-added-image')) {
+                && preg_match('/signature-(edited|added-image)/', (string) ($identity['signature'] ?? ''))) {
                 $this->rc->output->set_env('saved_signature', $identity['signature']);
                 break;
             }

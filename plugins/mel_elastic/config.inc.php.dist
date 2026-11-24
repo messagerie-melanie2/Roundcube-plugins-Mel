@@ -1,0 +1,8 @@
+<?php
+
+// Marque du skin mel_elastic : charge styles/parts/<marque>-loader.css si présent.
+$config['mel_elastic_brand'] = 'bnum';
+
+// Nom complet du logo placé dans skins/mel_elastic/images/ (extension incluse).
+// Valeur par défaut : 'bnumloader.svg'
+$config['mel_elastic_logo'] = '';

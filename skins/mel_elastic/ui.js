@@ -2344,6 +2344,49 @@ $(document).ready(() => {
         }
       });
 
+      /**
+       * refresh toutes les listes de mails ouvertes sur le dossier "Brouillons"
+       * les accès cross-origin sont protégés par des try/catch 
+       */
+      const refresh_drafts_lists = () => {
+        const roots = [top];
+        try {
+          if (top.opener && !top.opener.closed) roots.push(top.opener.top);
+        } catch (e) {
+          //ignore opener d'une autre origine
+        }
+
+        const contexts = [];
+        const collect = (win) => {
+          if (!win || contexts.includes(win)) return;
+          contexts.push(win);
+          try {
+            for (const iframe of win.document.querySelectorAll('iframe'))
+              collect(iframe.contentWindow);
+          } catch (e) {
+            //ignore iframes d'une autre origine
+          }
+        };
+        roots.forEach(collect);
+
+        for (const win of contexts) {
+          let rc;
+          try {
+            rc = win.rcmail;
+          } catch (e) {
+            continue; //ignore iframes d'une autre origine
+          }
+
+          if (
+            rc?.env?.task === 'mail' &&
+            rc.message_list &&
+            rc.env.mailbox === rc.env.drafts_mailbox
+          ) {
+            rc.refresh_list();
+          }
+        }
+      };
+
       const alias_mel_rcmail_open_compose_step = rcmail.open_compose_step;
       rcmail.open_compose_step = function (p) {
         if (parent !== window) return parent.rcmail.open_compose_step(p);
@@ -2375,7 +2418,10 @@ $(document).ready(() => {
             title: 'Rédaction',
             content: `${MEL_ELASTIC_UI.create_loader('rotomecamelloader', true)[0].outerHTML}<iframe class="sr-only" title="Rédaction d'un mail" src="${url + '&_is_from=iframe'}" style="width:100%;height:calc(100%);"/>`,
             onclose(popup) {
-              if (popup.box.close.data('force') == '1') return;
+              //on refresh la liste des brouillons juste après la fermeture de la popup
+              setTimeout(refresh_drafts_lists, 500);
+
+              if (popup.box.close.data('force') === '1') return;
               if (
                 popup.waiting_save !== true &&
                 confirm('Voulez-vous sauvegarder le message comme brouillon ?')
@@ -2572,6 +2618,13 @@ $(document).ready(() => {
           draft,
           saveonly,
         });
+      };
+
+      const alias_mel_rcmail_set_draft_id = rcmail.set_draft_id;
+      rcmail.set_draft_id = function (id) {
+        alias_mel_rcmail_set_draft_id.call(this, id);
+
+        if (id) refresh_drafts_lists();
       };
 
       const alias_mel_rcmail_sent_successfully = rcmail.sent_successfully;

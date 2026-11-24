@@ -16,6 +16,7 @@ class mi_auth extends rcube_plugin
     $this->authConf = $this->rc->config->get('mi_auth', []);
     $this->rc->output->set_env('portail_uri', $this->authConf['portail_uri']);
     $this->rc->output->set_env('mi_auth_api_uri', $this->authConf['api_uri']);
+    $this->rc->output->set_env('mi_auth_load_css', $this->authConf['load_css'] ?? true);
     $this->rc->output->set_env('mi_auth_courrielleur', false);
     $this->rc->output->set_env('mi_auth_verify', $this->authConf['api_uri_ext'] . 'token/verify');
   }

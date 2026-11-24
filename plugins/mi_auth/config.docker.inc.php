@@ -6,6 +6,8 @@ $config['mi_auth'] = [
   'portail_uri' => "https://localhost/portail", //uri du portail utilisateur (gestion des mdp)
   'api_uri_ext' => "https://domaine.api/v1/", //uri publique de l'API (depuis un navigateur
   'api_uri' => "https://localhost/api/v1/", //uri de l'API de gestion des mdp avec la version
+  'load_css' => false, //charge mi_auth.css dans le webmail
+  'load_error_css' => false, //charge mi_auth_error.css sur la page d'erreur
   /* définition des endpoints de l'API nécessaires */
   'auth_endpoint' => "auth/client",
   'auth_user_endpoint' => "auth/user",

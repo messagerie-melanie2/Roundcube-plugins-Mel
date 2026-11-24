@@ -13,6 +13,7 @@ class MelBaseLink {
   _init() {
     this.id = '';
     this.title = '';
+    this.config_managed = false;
 
     this.on_prop_changed = new BnumEvent();
 
@@ -312,10 +313,10 @@ class MelFolderLink extends MelBaseLink {
    * Affichage d'un dossier
    */
   displayFolder() {
-    return MelHtml.start
+    let html = MelHtml.start
       .div({
         class: 'link-block-container',
-        draggable: true,
+        draggable: !this.config_managed,
         ondragstart: this._dragStart.bind(this),
       })
       .li({ class: 'link-space-between' })
@@ -373,6 +374,12 @@ class MelFolderLink extends MelBaseLink {
       .end()
       .end()
       .generate();
+
+    if (this.config_managed) {
+      html.find('.modify-folder, .delete-folder').remove();
+    }
+
+    return html;
   }
 }
 
@@ -411,7 +418,8 @@ function extractDomain(input) {
 }
 
 class MelLinkVisualizer extends MelLink {
-  constructor(id, title, link, image, inFolder = false, icon = null) {
+  constructor(id, title, link, image, inFolder = false, icon = null, configManaged = false,
+  ) {
     if (icon && icon.includes('https://')) {
       link = icon;
       icon = null;
@@ -427,6 +435,7 @@ class MelLinkVisualizer extends MelLink {
     if (image && !image.includes('plugins/mel_useful_link')) image = link;
 
     super(id, title, link, inFolder);
+    this.config_managed = configManaged;
     this._setup_image(image);
     this._setup_icon(icon);
   }
@@ -596,7 +605,7 @@ class MelLinkVisualizer extends MelLink {
     let html = MelHtml.start
       .div({
         class: 'link-block-container',
-        draggable: true,
+        draggable: !this.config_managed,
         ondragstart: this._dragStart.bind(this, 'link'),
       })
       .li({ class: 'link-space-between' })
@@ -685,6 +694,11 @@ class MelLinkVisualizer extends MelLink {
 
     html = html.generate();
 
+    if (this.config_managed) {
+      html.find('.modify-link, .delete-link').remove();
+      html.find('.link-context-menu').css('width', 'auto');
+    }
+
     if (window.linksPicturesLoaded) {
       let $tmp = html.find('[data-src]');
       $tmp.attr('src', $tmp.attr('data-src'));
@@ -700,13 +714,13 @@ class MelLinkVisualizer extends MelLink {
    * @param {boolean} isOpen
    */
   displaySubLink(isOpen = false) {
-    return MelHtml.start
+    let html = MelHtml.start
       .li({
         id: 'link-block-' + this.id,
         title: this.title,
         class: `link-block ${isOpen ? '' : 'sublink'}`,
         'data-id': this.id,
-        draggable: true,
+        draggable: !this.config_managed,
         ondragstart: this._dragStart.bind(this, 'sublink'),
       })
       .div({ id: 'context-menu-' + this.id, class: 'link-context-menu' })
@@ -783,6 +797,13 @@ class MelLinkVisualizer extends MelLink {
       .end()
       .end()
       .generate();
+
+    if (this.config_managed) {
+      html.find('.modify-link, .delete-link').remove();
+      html.find('.link-context-menu').css('width', 'auto');
+    }
+
+    return html;
   }
 }
 
@@ -796,7 +817,7 @@ class MelStoreLink extends MelLinkVisualizer {
     inLinks = false,
     image = null,
   ) {
-    super(id, title, link, null, null, icon, image);
+    super(id, title, link, null, null, icon, false);
     this._setup_vars(description, link, inLinks, image);
   }
 

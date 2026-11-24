@@ -459,13 +459,18 @@ export class LinkManager extends MelObject {
   displayLinks() {
     let links_array = [];
     this.linksIdList = [];
+    const managedIds = (rcmail.env.mul_managed_items || []).map(String);
+
     for (const links in rcmail.env.mul_items) {
       let link = rcmail.env.mul_items[links];
       link = JSON.parse(link);
       let linkVisualizer;
+      const isManaged =
+        link.config_managed || managedIds.includes(String(link.id));
 
       if (link.links) {
         linkVisualizer = new MelFolderLink(link.id, link.title, link.links);
+        linkVisualizer.config_managed = isManaged;
         linkVisualizer.displayFolder().appendTo('.links-items');
         for (const key in linkVisualizer.links) {
           let subLink = linkVisualizer.links[key];
@@ -489,6 +494,9 @@ export class LinkManager extends MelObject {
             subLink.image,
             true,
             subLink.icon,
+            isManaged ||
+              subLink.config_managed ||
+              managedIds.includes(String(subLink.id)),
           );
           linkVisualizer.links[key]
             .displaySubLink()
@@ -517,6 +525,7 @@ export class LinkManager extends MelObject {
           link.image,
           false,
           link.icon,
+          isManaged,
         );
         linkVisualizer.displayLink().appendTo('.links-items');
 

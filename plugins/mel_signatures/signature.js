@@ -8,6 +8,7 @@ let lastRange = null;
 
 window.onload = function() {
     initSignatureEditor();
+    fitFormFields();
 
     if (rcmail.env.saved_signature) {
         showSavedSignature();
@@ -54,11 +55,34 @@ function onInputChange() {
 }
 
 /**
+ * Champs du design system : largeur de la colonne et texte trop long coupé par « … »
+ */
+function fitFormFields() {
+    const styles = {
+        // La flèche est posée sur le select : elle laisse passer le clic
+        'bnum-select': 'select{width:100%;padding-right:2.5rem;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-weight:normal}'
+            + '.icon-arrow-down{pointer-events:none}',
+        'bnum-input-text': 'input{width:100%;text-overflow:ellipsis;font-weight:normal}',
+    };
+    Object.keys(styles).forEach(function(tag) {
+        customElements.whenDefined(tag).then(function() {
+            document.querySelectorAll('.userinfos ' + tag).forEach(function(field) {
+                if (field.shadowRoot) {
+                    const style = document.createElement('style');
+                    style.textContent = styles[tag];
+                    field.shadowRoot.append(style);
+                }
+            });
+        });
+    });
+}
+
+/**
  * Valeurs actuelles du formulaire, pour savoir s'il a vraiment changé
  */
 function getFormState() {
     return Array.prototype.map.call(
-        document.querySelectorAll('.userinfos input, .userinfos textarea, .userinfos select'),
+        document.querySelectorAll('.userinfos input, .userinfos textarea, .userinfos bnum-input-text, .userinfos bnum-select'),
         function(field) {
             return field.type === 'checkbox' ? String(field.checked) : field.value;
         }
@@ -736,7 +760,7 @@ function getSignatureHTML(embeddedImage = true, images_url = "", isOutlook = fal
 
     // Logo type
     let select_logotype = document.getElementById("select-logo-type");
-    signature_html = createLogoType(select_logotype.options[select_logotype.selectedIndex].value, signature_html, isOutlook);
+    signature_html = createLogoType(select_logotype.value, signature_html, isOutlook);
 
     // Gestion des liens
     let checkboxes = document.querySelectorAll("#input-links input");
@@ -771,7 +795,7 @@ function getSignatureHTML(embeddedImage = true, images_url = "", isOutlook = fal
 
     // Logo de la signature
     let select = document.getElementById("input-logo");
-    signature_html = signature_html.replace('%%TEMPLATE_LOGO%%', createLogo(select.options[select.selectedIndex].value));
+    signature_html = signature_html.replace('%%TEMPLATE_LOGO%%', createLogo(select.value));
 
     // Logo Marianne
     let logo_marianne = rcmail.env.logo_url_marianne;

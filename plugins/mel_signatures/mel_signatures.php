@@ -390,7 +390,7 @@ class mel_signatures extends bnum_plugin
         $content ??= $this->logo_options_from_config();
 
         $this->rc->output->set_env('logo_sources', []);
-        return html::tag('select', $attrib, $content);
+        return html::tag('bnum-select', $attrib + ['data-legend' => $this->gettext('logo')], $content);
     }
 
     /**
@@ -500,7 +500,7 @@ class mel_signatures extends bnum_plugin
             }
         }
         $this->rc->output->set_env('logotype_sources', $sources);
-        return html::tag('select', $attrib, $content);
+        return html::tag('bnum-select', $attrib + ['data-legend' => $this->gettext('logotype')], $content);
     }
 
     /**

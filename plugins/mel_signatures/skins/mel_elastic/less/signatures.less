@@ -39,32 +39,66 @@ select {
     flex-wrap: wrap;
 }
 
-.form {
-    input{
-        padding: 5px 10px;
-        min-width: 270px;
-        font-size: 1em;
-        &[type=checkbox] {
-            min-width: 15px;
-        }
-        &:disabled {
-            opacity: 0.7;
+// Champs HTML gardés (Fonction, zones multilignes, liens) : même rendu que les champs du design system
+.signature-input-like() {
+    width: 100%;
+    border: none;
+    border-radius: 0.25rem 0.25rem 0 0;
+    background-color: var(--bnum-input-background-color, var(--bnum-color-input, #eee));
+    box-shadow: var(--bnum-input-box-shadow, inset 0 -2px 0 0 var(--bnum-input-line-color, var(--bnum-color-input-border, #3a3a3a)));
+    color: var(--bnum-text-on-input, #161616);
+    font-size: 1rem;
+    line-height: 1.5rem;
+    padding: 0.5rem 1rem;
+}
+
+.userinfos {
+    // Intitulés en gras pour les distinguer du texte saisi
+    label,
+    .form-label {
+        display: block;
+        margin: 0 0 0.5rem;
+        color: var(--bnum-text-primary, #161616);
+        font-weight: 700;
+    }
+
+    .input-like {
+        .signature-input-like();
+        text-overflow: ellipsis;
+
+        &:focus,
+        &:focus-visible {
+            outline: 2px solid var(--bnum-color-primary-hover, #1212ff);
+            outline-offset: 2px;
         }
     }
-}
-.userinfos {
-    label {
-        display: block !important;
-        margin: 0;
-        margin-top: 1em;
+
+    textarea.input-like {
+        height: auto;
+        min-height: 5rem;
+        resize: vertical;
+    }
+
+    // Le gras passe au libellé interne des composants, pas au texte du champ
+    bnum-input-text,
+    bnum-select {
+        display: block;
+        width: 100%;
+        font-weight: 700;
+        --bnum-input-container-margin-bottom: 0;
     }
 }
 
 #input-links {
     .items {
         label {
-            display: inline-block !important;
-            padding: 0 0 0 2px; 
+            display: inline-block;
+            margin: 0;
+            font-weight: normal;
+            padding: 0 0 0 var(--bnum-space-xs, 5px);
+        }
+        input[type=checkbox] {
+            accent-color: var(--bnum-color-primary, #000091);
         }
     }
 }
@@ -90,6 +124,16 @@ select {
 .usersignature {
     margin-right: 20px;
     margin-bottom: 20px;
+    &:not(.editing) .sign-tools {
+        display: none;
+    }
+    .sign-tools,
+    .action {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 15px;
+    }
     .action {
         .message {
             display: none;
@@ -123,22 +167,40 @@ select {
     white-space: normal;
 }
 
+// Deux colonnes dont les lignes restent alignées (Nom / Adresse, Fonction / Bureau…)
 .grid-form {
-    display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-flow: row dense;
+    align-items: start;
+    gap: var(--bnum-space-m, 15px) var(--bnum-space-xl, 25px);
+    .left-form > .form-section {
+        grid-column: 1;
+    }
+    .right-form > .form-section {
+        grid-column: 2;
+    }
+    .form-section {
+        min-width: 0;
+    }
+    @media (max-width: 700px) {
+        grid-template-columns: minmax(0, 1fr);
+        .right-form > .form-section {
+            grid-column: 1;
+        }
+    }
     .custom-logo,
     .custom-link {
         display: none;
     }
 }
-  
+
 .form {
-    overflow: hidden;
-    padding: 15px 25px;
-    background-color: #2a4d69;
-    color: #fff;
-    margin-top: 20px;
+    padding: var(--bnum-space-m, 15px) var(--bnum-space-xl, 25px) var(--bnum-space-xl, 25px);
+    background-color: var(--bnum-color-surface, #f6f6f6);
+    border: 1px solid var(--bnum-color-border, #ddd);
+    color: var(--bnum-text-primary, #161616);
+    margin-top: var(--bnum-space-s, 10px);
 }
 
 .grid-form .custom-logo,
@@ -148,7 +210,7 @@ select {
 
 .left-form,
 .right-form {
-  padding: 0 10px;
+    display: contents;
 }
 
 .sign {
@@ -158,24 +220,30 @@ select {
     margin-top: 20px;
 }
 
+.sign[contenteditable="true"] {
+    cursor: text;
+    &:focus {
+        outline: 2px solid var(--bnum-color-primary, #000091);
+        outline-offset: 2px;
+    }
+}
+
 .dropdown-check-list {
-    display: inline-block;
-    min-width: 292px;
+    display: block;
     .anchor {
         position: relative;
         cursor: pointer;
         display: inline-block;
-        padding: 5px 50px 5px 10px;
-        border: solid 1px #d5d5d5;
-        background-color: #fff;
-        color: #000;
-        border-radius: 4px;
-        width: 270px;
+        .signature-input-like();
+        padding: 0.5rem 3rem 0.5rem 1rem;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
         &:after {
             position: absolute;
             content: "";
-            border-left: 1px solid black;
-            border-top: 1px solid black;
+            border-left: 2px solid currentColor;
+            border-top: 2px solid currentColor;
             padding: 3px;
             right: 10px;
             top: 30%;
@@ -195,8 +263,8 @@ select {
             &:after {
                 border-left: none;
                 border-top: none;
-                border-right: 1px solid black;
-                border-bottom: 1px solid black;
+                border-right: 2px solid currentColor;
+                border-bottom: 2px solid currentColor;
                 top: 40%;
             }
         }
@@ -206,18 +274,18 @@ select {
             padding: 2px;
             display: none;
             margin: 0;
-            border: solid 1px #d5d5d5;
-            background-color: #fff;
-            color: #000;
+            border: 1px solid var(--bnum-color-border, #ddd);
+            background-color: var(--bnum-color-background, #fff);
+            color: var(--bnum-text-primary, #161616);
             border-top: none;
             max-height: 150px;
-            width: 270px;
+            width: 100%;
             overflow-y: auto;
             overflow-x: hidden;
             li {
                 list-style: none;
                 padding: 2px 0;
-                width: 270px;
+                width: 100%;
                 overflow: hidden;
                 white-space: nowrap; 
             }  

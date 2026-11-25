@@ -88,6 +88,8 @@ class mel_signatures extends bnum_plugin
             $this->add_texts('localization/', [
                 'mobilephone', 'phonephone', 'signaturecopied', 'clictocopy', 'signaturecopiedmessage', 'usesignature_confirm',
                 'savesignaturesuccess', 'savesignatureerror', 'savingsignature', 'identitiesdialogtitle', 'save', 'cancel',
+                'regeneratesignature_confirm', 'imagetoobig', 'imageinvalid', 'signatureeditabletitle',
+
             ]);
             
             $this->add_hook('settings_actions', array($this, 'settings_actions'));
@@ -249,6 +251,16 @@ class mel_signatures extends bnum_plugin
             $this->rc->output->set_env('logo_url_other_outlook', isset($other_logo_outlook) ? $other_logo_outlook : $other_logo);
             $this->rc->output->set_env('logo_title_other', $this->rc->config->get('signature_other_logo_title', 'Autre logo'));
         }
+
+        // Reprend la première signature modifiée dans la page (texte retouché ou images ajoutées),
+        // l'identité par défaut en priorité
+        foreach ($this->rc->user->list_identities() as $identity) {
+            if (!empty($identity['html_signature'])
+                && preg_match('/signature-(edited|added-image)/', (string) ($identity['signature'] ?? ''))) {
+                $this->rc->output->set_env('saved_signature', $identity['signature']);
+                break;
+            }
+        }
         
         // Chargement du template d'affichage
         $this->rc->output->set_pagetitle($this->gettext('title'));
@@ -378,7 +390,7 @@ class mel_signatures extends bnum_plugin
         $content ??= $this->logo_options_from_config();
 
         $this->rc->output->set_env('logo_sources', []);
-        return html::tag('select', $attrib, $content);
+        return html::tag('bnum-select', $attrib + ['data-legend' => $this->gettext('logo')], $content);
     }
 
     /**
@@ -488,7 +500,7 @@ class mel_signatures extends bnum_plugin
             }
         }
         $this->rc->output->set_env('logotype_sources', $sources);
-        return html::tag('select', $attrib, $content);
+        return html::tag('bnum-select', $attrib + ['data-legend' => $this->gettext('logotype')], $content);
     }
 
     /**

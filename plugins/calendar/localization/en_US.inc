@@ -317,4 +317,7 @@ $labels['arialabelresourcesearchform'] = 'Resources search form';
 $labels['arialabelresourceselection'] = 'Available resources';
 $labels['arialabeleventform'] = 'Event editing form';
 
+// PAMELA - 0009544: copy the PJ into the duplicate of an event
+$labels['copyattachmentserror'] = 'Some attachments could not be copied.';
+
 ?>

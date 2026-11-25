@@ -428,7 +428,6 @@ $labels['show_me'] = 'Configurer maintenant';
 $labels['later'] = 'Plus tard';
 $labels['close_double_auth'] = 'Fermer';
 $labels['double_authentication_validation'] = 'L\'authentification à deux facteurs a correctement été configurée !';
-$labels['no_internet_access'] = 'L\'accès à Internet n\'est pas activé sur votre compte. Pour activer la double authentification, rendez-vous dans Mon compte > Accès Internet et activez l\'accès à Internet.';
 $labels['send_code'] = 'Envoyer le code';
 $labels['email_format_error'] = 'Le format de l\'adresse mail n\'est pas valide';
 $labels['code_expired'] = 'Le code à expiré';
@@ -543,3 +542,8 @@ $labels['share_ics_not_joined'] = 'Seules les informations de l\'évènement ser
 
 $labels['event_title']= 'Rejoindre l\'audioconférence par téléphone';
 $labels['favorites'] = 'Mes favoris';
+
+$labels['autocomplete_group_contacts'] = "Mes carnets d'adresses";
+$labels['autocomplete_group_collected'] = 'Adresses collectées';
+$labels['autocomplete_group_amande'] = 'Annuaire';
+$labels['autocomplete_group_other'] = 'Autres';

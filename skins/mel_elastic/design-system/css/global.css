@@ -109,7 +109,7 @@
   /* =================================
      2. Typographie
      ================================= */
-  --bnum-font-family-primary: -apple-system, system-ui, BlinkMacSystemFont, Arial, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --bnum-font-family-primary: Marianne, Arial, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
   --bnum-font-family-secondary: Georgia;
   --bnum-icon-font-family: 'Material Symbols Outlined';
   /* Tailles */

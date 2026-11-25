@@ -129,10 +129,19 @@ $(document).ready(() => {
     );
   });
 
+  function SearchResultCalendar_after_loading(event) {
+    return SearchResultCalendar.after_loading(event);
+  }
+
   rcmail.addEventListener('init', () => {
+    const action =
+      typeof SearchResultCalendar === 'undefined'
+        ? SearchResultCalendar_after_loading
+        : SearchResultCalendar.after_loading;
+
     window?.m_mp_action_from_storage?.(
       'calendar_redirect',
-      SearchResultCalendar.after_loading,
+      action,
       true,
       '¤avoid',
     );
@@ -449,7 +458,7 @@ $(document).ready(() => {
           $('#mel-have-something-minified-main-create').length === 0 &&
           $('#globallist').length === 0
         ) {
-                  const $badge = $(`
+          const $badge = $(`
           <bnum-badge id="mel-have-something-minified-main-create"  data-value="•" circle
           style="position: absolute;
                 top: -5px;

@@ -461,6 +461,7 @@ class Gestionnaireabsence extends Moncompteobject
     $user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.gestionnaireabsence');
     // Authentification
     if ($user->authentification(Moncompte::get_current_user_password(), true)) {
+      $isConnectedUser = driver_mel::gi()->getUser()->uid === $user->uid;
       // Chargement des informations supplémenaires nécessaires
       $user->load(['outofoffices']);
       // Res
@@ -605,21 +606,23 @@ class Gestionnaireabsence extends Moncompteobject
               }, $days)[0];
 
             $otherday = $hour_start === $hour_end && !$all_day ? $day. ' + 1 day' : $day;
-
-            self::_set_event(
-  (new \DateTime('next ' . $day, new \DateTimeZone($timezone)))->setTime((int)substr($hour_start, 0, 2), (int)substr($hour_start, 3, 2)),
-  (new \DateTime('next ' . $otherday, new \DateTimeZone($timezone)))->setTime((int)substr($hour_end, 0, 2), (int)substr($hour_end, 3, 2)),
-              $outofoffice->message,
-              $key,
-              $all_day ? 1 : 0,
-              $rec
-            );
+            if ($isConnectedUser){
+              self::_set_event(
+                (new \DateTime('next ' . $day, new \DateTimeZone($timezone)))->setTime((int)substr($hour_start, 0, 2), (int)substr($hour_start, 3, 2)),
+                (new \DateTime('next ' . $otherday, new \DateTimeZone($timezone)))->setTime((int)substr($hour_end, 0, 2), (int)substr($hour_end, 3, 2)),
+                $outofoffice->message,
+                $key,
+                $all_day ? 1 : 0,
+                $rec
+              );
+            }
           }
         }
-        $i++;
+        ++$i;
       }
       $user->outofoffices = $outofoffices;
 
+      if ($isConnectedUser)
       {
         $nbooo = $nb;
 
@@ -644,18 +647,20 @@ class Gestionnaireabsence extends Moncompteobject
           rcmail::get_instance()->output->show_message('mel_moncompte.absence_ok','confirmation');
         }
 
-        $event_uid = self::_get_ponct_event_uid();
-        if ($status_interne == '1' || $status_externe == '1')
-          self::_set_event(
-            \DateTime::createFromFormat('d/m/Y', $date_debut),
-            \DateTime::createFromFormat('d/m/Y', $date_fin),
-            isset($message_externe) && !empty($message_externe)
-              ? (isset($radio_externe) && $radio_externe == 'abs_texte_nodiff' ? $message_interne : $message_externe)
-              : $message_interne, 
-            $event_uid
-          );
-        else self::_remove_event($event_uid);
+        if ($isConnectedUser) {
+          $event_uid = self::_get_ponct_event_uid();
 
+          if ($status_interne == '1' || $status_externe == '1')
+            self::_set_event(
+              \DateTime::createFromFormat('d/m/Y', $date_debut),
+              \DateTime::createFromFormat('d/m/Y', $date_fin),
+              isset($message_externe) && !empty($message_externe)
+                ? (isset($radio_externe) && $radio_externe == 'abs_texte_nodiff' ? $message_interne : $message_externe)
+                : $message_interne, 
+              $event_uid
+            );
+          else self::_remove_event($event_uid);
+        }
 
         return true;
       } else {

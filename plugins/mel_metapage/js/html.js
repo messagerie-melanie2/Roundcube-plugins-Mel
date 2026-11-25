@@ -441,6 +441,8 @@ html_helper.Calendars.create = function (
 html_helper.Calendars.generate_link = function (event) {
   let link = '';
 
+  if (typeof SearchResultCalendar === 'undefined') return link;
+
   if (SearchResultCalendar && SearchResultCalendar.CreateOrOpen)
     link = `SearchResultCalendar.CreateOrOpen('${JSON.stringify(event).replaceAll('"', '£¤£').replaceAll("'", 'µ¤¤µ')}')`;
 

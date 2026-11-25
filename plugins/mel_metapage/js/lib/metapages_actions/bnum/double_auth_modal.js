@@ -176,15 +176,6 @@ class double_auth_modal extends module_bnum {
    * via `_resolveIntroDeadline`.
    */
   intro_modal() {
-    rcmail.env.internet_access_enable = true;
-
-    if (!rcmail.env.internet_access_enable) {
-      $('.2fa_error_message').text(
-        rcmail.gettext('mel_metapage.no_internet_access'),
-      );
-      return;
-    }
-
     const { width, height, text } = this._resolveIntroDeadline();
 
     const html = MelHtml.start

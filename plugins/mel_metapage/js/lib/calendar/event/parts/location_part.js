@@ -1675,7 +1675,10 @@ export class LocationPartManager extends IDestroyable {
       .on('change', this._on_select_changed.bind(this))
       .val(Part.OptionValue());
 
-    $generated = null;
+    return {
+      location: this.locations[id],
+      item: $generated.find('select').first(),
+    };
   }
 
   /**

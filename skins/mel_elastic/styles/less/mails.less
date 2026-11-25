@@ -81,6 +81,12 @@
         }
       }
     }
+
+    // BNUM - 0009316 : zone PJ absente/tronquée en réponse 
+    // min-width: auto  empêche #layout-content  de se compresser, ce qui posser la colonne PJ hors du viewport
+    #layout-content {
+      min-width: 0; 
+    }
   }
 
   &.action-preview {

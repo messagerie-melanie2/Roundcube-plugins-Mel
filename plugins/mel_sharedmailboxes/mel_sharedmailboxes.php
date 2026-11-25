@@ -1289,6 +1289,15 @@ class mel_sharedmailboxes extends rcube_plugin {
             return $args;
         }
 
+        // Recherche multi-dossiers (portée « Sous-dossiers » ou « Tous les dossiers ») : rcube_imap::search()
+        // transmet un tableau de dossiers. On convertit les corbeilles individuelles une à une ; la
+        // reconnexion de boîte partagée ci-dessous ne concerne qu'un dossier unique.
+        if (is_array($args['folder'])) {
+            $args['folder'] = array_map(function ($folder) {
+                return $this->is_individual_trash($folder) ? $this->get_trash_folder_name($folder) : $folder;
+            }, $args['folder']);
+        }
+
         if ($this->is_individual_trash($args['folder'])) {
             $args['folder'] = $this->get_trash_folder_name($args['folder']);
         }

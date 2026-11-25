@@ -1,12 +1,20 @@
 import { HTMLBnumButton } from '../../../../../skins/mel_elastic/design-system/ds-module-bnum.js';
 import { EventView } from '../../../../mel_metapage/js/lib/calendar/event/event_view.js';
-import { AVisio } from '../../../../mel_metapage/js/lib/calendar/event/parts/location_part.js';
+import {
+  AVisio,
+  Location,
+} from '../../../../mel_metapage/js/lib/calendar/event/parts/location_part.js';
 import {
   BnumMessage,
   eMessageType,
 } from '../../../../mel_metapage/js/lib/classes/bnum_message.js';
 import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
 import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';
+import {
+  get_location_without_visio,
+  getVisioUrlFromText,
+  is_clean_visio_url,
+} from './common.js';
 import { VisioRooms } from './visio_rooms.js';
 import {
   format_visio_location,
@@ -20,6 +28,31 @@ import {
  * @type {boolean}
  */
 const ENABLE_SECURE = true;
+
+/**
+ * Attend que les actions se terminent avant d'ajouter en présentiel ce qui parasite la visio
+ * (texte et liens de visio supplémentaires)
+ * @param {string} url url de la visio + room
+ * @param {string} buffer Emplacement en entier
+ */
+function launchUpdate(url, buffer) {
+  queueMicrotask(() => {
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        const rest = get_location_without_visio(buffer, url);
+
+        if (!rest) return;
+
+        const tmp = EventView.INSTANCE.parts.location.add(Location, rest);
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            tmp.item.trigger('change');
+          }, 100);
+        });
+      }, 100);
+    });
+  });
+}
 
 /**
  * Partie de localisation d'un évènement représentant une visioconférence
@@ -53,8 +86,18 @@ export class VisioByDinumLocation extends AVisio {
    */
   constructor(event_location, index) {
     super(event_location, index);
-
     if (event_location) {
+      const l = new VisioWebconfLink(event_location);
+
+      // Gère le cas où la visio a été collé à la main
+      if (!is_clean_visio_url(l.url)) {
+        const url = getVisioUrlFromText(event_location);
+
+        if (url !== null) {
+          launchUpdate(url, event_location);
+          event_location = url;
+        }
+      }
       VisioByDinumLocation.#_remember({
         name: new VisioWebconfLink(event_location).roomName,
         location: event_location,

@@ -1238,7 +1238,7 @@ function rcube_calendar_ui(settings) {
     };
 
     // attachments
-    var load_attachments_tab = function () {
+    const load_attachments_tab = function () {
       rcmail.enable_command(
         'remove-attachment',
         'upload-file',
@@ -1268,7 +1268,7 @@ function rcube_calendar_ui(settings) {
         //PAMELLA 	0006976: Persistance Message jaune
         $('#edit-internallocalchanges-warning').hide();
         $('#edit-localchanges-warning')[
-          action != 'new' &&
+          action !== 'new' &&
           me.has_attendees(event) &&
           !(
             allow_invitations ||
@@ -3502,6 +3502,10 @@ function rcube_calendar_ui(settings) {
 
     // show menu to select rsvp reply mode (current or all)
     if (me.selected_event && me.selected_event.recurrence && !replymode) {
+      // occurrence modified by the organizer (exception) replay mode (just current) 
+      if (me.selected_event.isexception) {
+        return event_rsvp(response, delegate, 'current', event);
+      }
       rcube_libcalendaring.itip_rsvp_recurring(
         btn,
         function (resp, mode) {
@@ -3804,19 +3808,14 @@ function rcube_calendar_ui(settings) {
       }
     }
 
-    // recurring event: user needs to select the savemode
+        // recurring event: user needs to select the savemode
     if (event.recurrence) {
-      var future_disabled = '',
-        message_label =
-          action == 'remove'
-            ? 'removerecurringeventwarning'
-            : 'changerecurringeventwarning';
-
-      // disable the 'future' savemode if I'm an attendee
-      // reason: no calendaring system supports the thisandfuture range parameter in iTip REPLY
-      if (action == 'remove' && !_is_organizer && _is_attendee) {
-        future_disabled = ' disabled';
-      }
+      var message_label =
+        action == 'remove'
+          ? 'removerecurringeventwarning'
+          : 'changerecurringeventwarning';
+      // MANTIS 0009140: masquer le mode "future" lorsque je suis simple participant.
+      var future_hidden = action == 'remove' && !_is_organizer && _is_attendee;
 
       html +=
         '<div class="message dialog-message ui alert boxwarning">' +
@@ -3826,11 +3825,11 @@ function rcube_calendar_ui(settings) {
         '<a href="#current" class="button btn btn-secondary">' +
         rcmail.gettext('currentevent', 'calendar') +
         '</a>' +
-        '<a href="#future" class="button btn btn-secondary' +
-        future_disabled +
-        '">' +
-        rcmail.gettext('futurevents', 'calendar') +
-        '</a>' +
+        (future_hidden
+          ? ''
+          : '<a href="#future" class="button btn btn-secondary">' +
+            rcmail.gettext('futurevents', 'calendar') +
+            '</a>') +
         '<a href="#all" class="button btn btn-secondary">' +
         rcmail.gettext('allevents', 'calendar') +
         '</a>' +
@@ -3972,7 +3971,7 @@ function rcube_calendar_ui(settings) {
       }
 
       return event_attendees;
-    };
+  };
 
   //PAMELLA
   this.edit_clear_attendees = function edit_clear_attendees() {
@@ -4607,7 +4606,7 @@ function rcube_calendar_ui(settings) {
   // display the edit dialog, request 'new' action and pass the selected event
   this.event_copy = function (event) {
     if (event && event.id) {
-      var copy = $.extend(true, {}, event);
+      const copy = $.extend(true, {}, event);
       // PAMELA L'utilisateur qui duplique devient l'organisateur de la copie
       let hasUser = false;
 
@@ -4644,9 +4643,32 @@ function rcube_calendar_ui(settings) {
         });
       }
 
-      setTimeout(function () {
-        event_edit_dialog('new', copy);
-      }, 50);
+      const source_attachments = $.isArray(event.attachments)
+        ? event.attachments
+        : [];
+
+      // PAMELA - 0009544: les PJ sont copiées côté serveur avant l'ouverture du popup
+      if (source_attachments.length) {
+        const on_copied = function (attachments) {
+          copy.attachments = attachments;
+        };
+        rcmail.addEventListener('plugin.attachments_copied', on_copied);
+        rcmail.http_post('calendar/copy-attachments', {
+            _event: event.recurrence_id || event.id,
+            _cal: event.calendar,
+            _rev: event.rev || '',
+            _ids: source_attachments.map((att) => att.id),
+          },
+          rcmail.set_busy(true, 'loading'),
+        ).always(function () {
+            rcmail.removeEventListener('plugin.attachments_copied', on_copied);
+            event_edit_dialog('new', copy);
+          });
+      } else {
+        setTimeout(function () {
+          event_edit_dialog('new', copy);
+        }, 50);
+      }
     }
   };
 

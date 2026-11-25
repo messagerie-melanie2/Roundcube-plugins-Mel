@@ -1,4 +1,4 @@
-import { BnumPromise } from '../BnumPromise';
+import { BnumPromise } from '../BnumPromise.js';
 
 /**
  * @template T

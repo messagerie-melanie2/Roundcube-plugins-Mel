@@ -1485,7 +1485,7 @@ if (rcmail && window.mel_metapage) {
             moment(event.changed).format('DD MMMM YYYY'),
           ),
         );
-        html += `<div class=row><div class=col-12><span style="opacity:0" class="icon-mel-pencil mel-cal-icon"></span><span style=vertical-align:text-top><b>Dernière modification le : </b>${created}</span></div></div>`;
+        html += `<div class=row><div class=col-12><span style="opacity:0" class="icon-mel-pencil mel-cal-icon"></span><span style=vertical-align:text-top><b>Dernière modification le : </b>${edited}</span></div></div>`;
       }
       //fin table
       html += '</div></div>';
@@ -2305,7 +2305,6 @@ if (rcmail && window.mel_metapage) {
 
       // make sure this new shortcut is always active
       menu.addEventListener('activate', function (p) {
-        console.log('p', p);
         switch (p.command) {
           case 'move':
             $(p.el).attr('aria-disabled', 'false').parent().css('display', '');

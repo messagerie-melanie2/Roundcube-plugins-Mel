@@ -341,6 +341,9 @@ export class AlarmPart extends FakePart {
     }
     $option = null;
 
+    // Synchro les champs réels (type/valeur/unité) avec le champ select
+    this.onUpdate(val);
+
     // En mode création : écoute le basculement allDay pour mettre à jour
     // le texte de l'option "Par défaut" entre "(aucun)" et "(15 min)".
 

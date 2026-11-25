@@ -30,6 +30,99 @@ rcube_webmail.prototype.is_templates_folder = function(folder)
 
 $(document).ready(function() {
     if (window.rcmail) {
+        // PAMELA - ouverture au survol des sous-menus "Télécharger" / "Déplacer" / "Copier vers" (folder-selector)
+        rcmail.contextmenu.skin_funcs.popup_hover = function(ref, a) {
+            var popups = {
+                    'download': {
+                        menu: 'zipdownload-menu',
+                        open: function(el, evt) {
+                            if (typeof rcmail_zipdownload_menu === 'function')
+                                rcmail_zipdownload_menu(evt);
+                        }
+                    },
+                    'move': {
+                        menu: 'folder-selector',
+                        open: function(el, evt) { rcmail.command('move', '', el, evt, true); }
+                    },
+                    'copy': {
+                        menu: 'folder-selector',
+                        open: function(el, evt) { rcmail.command('copy', '', el, evt, true); }
+                    }
+                },
+                state = rcmail.contextmenu.vars.popup_hover || (rcmail.contextmenu.vars.popup_hover = { el: null, menu: null }),
+                // L'élément avec une classe rcm_elem_ : le menu contextuel reste ouvert à la fermeture du popup
+                make_event = function(el) { return $.Event('mouseover', { target: el, currentTarget: el }); },
+                is_open = function(menu) { return !!menu && $.inArray(menu, rcmail.contextmenu.vars.popup_menus) >= 0; },
+                is_open_for = function(el) { return state.el === el && is_open(state.menu); },
+                is_active = function(el) { return $(el).is('.' + rcmail.contextmenu.settings.classes.button_active.replace(/ /g, ', .')); },
+                close = function(el) {
+                    if (is_open(state.menu)) {
+                        rcmail.hide_menu(state.menu, make_event(el));
+                    }
+                    state.el = state.menu = null;
+                },
+                popup = popups[a.data('command')],
+                events;
+
+            if (popup) {
+                a.on('mouseover', function() {
+                    var el;
+
+                    if (ref.mouseover_timeout < 0)
+                        return;
+
+                    el = this;
+                    clearTimeout(ref.timers['popup_hover']);
+                    ref.timers['popup_hover'] = window.setTimeout(function() {
+                        if (!is_active(el) || !$(el).is(':visible') || is_open_for(el))
+                            return;
+
+                        close(el);
+                        state.el = el;
+                        state.menu = popup.menu;
+                        popup.open(el, make_event(el));
+                    }, ref.mouseover_timeout);
+                })
+                .on('mouseout', function() {
+                    clearTimeout(ref.timers['popup_hover']);
+                })
+                .on('click', function(e) {
+                    clearTimeout(ref.timers['popup_hover']);
+
+                    // popup déjà ouvert par le survol : ne pas le fermer/réouvrir au clic
+                    if (is_open_for(this)) {
+                        e.stopImmediatePropagation();
+                        return false;
+                    }
+
+                    state.el = this;
+                    state.menu = popup.menu;
+                });
+
+                // le gestionnaire de clic doit passer avant celui du plugin contextmenu
+                events = $._data(a[0], 'events');
+                if (events && events.click && events.click.length > 1) {
+                    events.click.unshift(events.click.pop());
+                }
+            }
+            else if (ref.is_submenu) {
+                // survol d'un autre élément du même sous-menu : fermer le popup ouvert
+                a.on('mouseover', function() {
+                    var el;
+
+                    if (ref.mouseover_timeout < 0)
+                        return;
+
+                    el = this;
+                    clearTimeout(ref.timers['popup_hover']);
+                    ref.timers['popup_hover'] = window.setTimeout(function() { close(el); }, ref.mouseover_timeout);
+                })
+                .on('mouseout', function() {
+                    clearTimeout(ref.timers['popup_hover']);
+                });
+            }
+        };
+
         $.extend(true, rcmail.contextmenu.settings, {
             popup_attrib: 'data-popup',
             popup_func: "rcm_popup_wrapper('$2');",
@@ -46,12 +139,14 @@ $(document).ready(function() {
             },
             global_events: {
                 'init': function(p) {
-                    if (!p.ref.is_submenu) {
-                        var label = 'close',
-                            title = rcmail.gettext(label),
-                            class_name = 'button icon cancel';
+                    var label, title, class_name, header;
 
-                        var header = $('<h3>').addClass('popover-header')
+                    if (!p.ref.is_submenu) {
+                        label = 'close';
+                        title = window.rcmail.gettext(label);
+                        class_name = 'button icon cancel';
+
+                        header = $('<h3>').addClass('popover-header')
                             .append($('<a>').attr('class', class_name).text(title))
                             .on('click', function(e) {
                                 rcmail.contextmenu.hide_all(e, $('div.contextmenu').filter(':visible').length >= 1);
@@ -70,6 +165,11 @@ $(document).ready(function() {
                         a.data('level', (p.ref.parents + 2));
                         a.attr('aria-haspopup', true);
                     }
+
+                    // PAMELA - sous-menus Télécharger / Déplacer vers / Copier vers, ouverture au survol
+                    if (rcmail.env.task === 'mail' && p.ref.list_object ==='message_list') {
+                        rcmail.contextmenu.skin_funcs.popup_hover(p.ref, a);
+                    }
                 },
                 'beforeactivate': function(p) {
                     // force toolbar display on small screens while the contextmenu renders
@@ -83,9 +183,9 @@ $(document).ready(function() {
                     $('#layout-content').removeClass('contextmenu_content');
                 },
                 'submenu_toggle': function(p) {
-                    var matches;
+                    var matches, source_id;
                     if ($(p.id).length > 0 && (matches = p.id.match(/^(#[^\s]+(\s>\s\.[a-z]+\s>)?(\sdiv)?)/)) && p.id.indexOf('#taskmenu') == -1) {
-                        var source_id = matches[1];
+                        source_id = matches[1];
 
                         // make sure its a real submenu and not the toolbar on a small screen
                         if ($(source_id).is('div') && !$(source_id).hasClass('footer')) {
@@ -97,10 +197,12 @@ $(document).ready(function() {
                 'hide_menu': function(p) {
                     // Hide Bootstrap popover styled sub menus
                     $.each(p.ref.submenus, function() {
+                        var container, popup, button;
+
                         if (this.container.parents('.popover.show').length == 1) {
-                            var container = this.container.parents('.popover.show'),
-                                popup = $('.popover-body', container),
-                                button = popup.children().first().data('button');
+                            container = this.container.parents('.popover.show');
+                            popup = $('.popover-body', container);
+                            button = popup.children().first().data('button');
 
                             if (button && p.originalEvent.target != button && !$(button).find(p.originalEvent.target).length && typeof button !== 'string') {
                                 $(button).popover('hide');

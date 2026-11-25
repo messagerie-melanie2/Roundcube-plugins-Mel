@@ -38,7 +38,10 @@ class mel_useful_link extends bnum_plugin
         $this->init_links();
 
         $this->rc->output->set_env("mul_old_items", $this->rc->config->get('portail_personal_items', []));
-        $this->rc->output->set_env("mul_items", $this->rc->config->get('new_personal_useful_links', []));
+        $items = $this->use_portail_items_only()
+          ? $this->get_default_link(true)
+          : $this->rc->config->get('new_personal_useful_links', []);
+        $this->rc->output->set_env("mul_items", $items);
         $this->rc->output->set_env("external_icon_url", $this->rc->config->get('external_icon_url', null));
         $this->rc->output->set_env("default_links", $this->get_store_link());
 
@@ -52,7 +55,10 @@ class mel_useful_link extends bnum_plugin
       $this->add_hook('mel.portal.links.html', array($this, 'mel_portal_link'));
 
       if ($this->get_current_action() !== 'refresh') {
-        $this->rc->output->set_env("mul_items", $this->rc->config->get('new_personal_useful_links', []));
+        $items = $this->use_portail_items_only()
+          ? $this->get_default_link(true)
+          : $this->rc->config->get('new_personal_useful_links', []);
+        $this->rc->output->set_env("mul_items", $items);
         $this->rc->output->set_env("external_icon_url", $this->rc->config->get('external_icon_url', null));
         $this->rc->output->set_env("default_links", $this->get_store_link());
         $this->rc->output->set_env("mel_portal_ulink", true);
@@ -96,6 +102,11 @@ class mel_useful_link extends bnum_plugin
     $this->include_uLinks();
     include_once "lib/link.php";
 
+    // En mode portail_items_list, ne pas migrer ni compléter les préférences utilisateur.
+    if ($this->use_portail_items_only()) {
+      return;
+    }
+
     $personal_useful_links = $this->rc->config->get('personal_useful_links', []);
     $new_personal_useful_links = $this->rc->config->get('new_personal_useful_links', []);
 
@@ -111,6 +122,16 @@ class mel_useful_link extends bnum_plugin
     }
 
     $this->check_pinned_link();
+  }
+
+  /** Indique si portail_items_list est forcé dans la configuration Roundcube. */
+  private function use_portail_items_only(): bool
+  {
+    return in_array(
+      'portail_items_list',
+      (array) $this->rc->config->get('dont_override', []),
+      true
+    );
   }
 
   /**
@@ -257,9 +278,13 @@ class mel_useful_link extends bnum_plugin
    * 
    * @return []
    */
-  public function get_default_link()
+  public function get_default_link($portail_items_only = false)
   {
-    $items = $this->getCardsConfiguration(driver_mel::gi()->getUser()->dn);
+    include_once __DIR__ . "/lib/link.php";
+
+    $items = $portail_items_only
+      ? []
+      : $this->getCardsConfiguration(driver_mel::gi()->getUser()->dn);
     $items = array_merge($items, $this->rc->config->get('portail_items_list', []));
     $newMelLinks = [];
 

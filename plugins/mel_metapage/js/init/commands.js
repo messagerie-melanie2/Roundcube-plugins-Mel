@@ -554,7 +554,16 @@ if (rcmail) {
             contents: [new mel_html('span', {}, 'Plus de configuration')],
           });
 
-          see_more_link.onclick.push(reset);
+          see_more_link.onclick.push((e) => {//Mantis 0009313
+            e?.preventDefault?.();
+            reset();
+            PageManager.SwitchFrame('settings', {
+              args: {
+                _action: 'plugin.mel_moncompte',
+                _open_section: 'gestionnaireabsence',
+              },
+            });
+          });
 
           let message = new mel_html('p', {
             style: 'margin:0',

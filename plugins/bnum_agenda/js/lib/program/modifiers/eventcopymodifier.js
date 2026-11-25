@@ -1,5 +1,5 @@
 import { AAgendaModifier } from '../../amodifier.js';
-import { AgendaCommands } from '../commands';
+import { AgendaCommands } from '../commands.js';
 import { AgendaHelper } from '../helper.js';
 
 const COMMAND_SELF_COPY = 'event-self-copy';

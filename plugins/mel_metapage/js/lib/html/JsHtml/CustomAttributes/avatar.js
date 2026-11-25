@@ -99,7 +99,7 @@ const STYLE_ERROR = `
     left: 50%;
     -ms-transform: translateY(-50%) translateX(-50%);
     transform: translateY(-50%) translateX(-50%);
-    font-size: xx-large;
+    font-size: var(--bnum-avatar-initials-font-size, xx-large);
     color: var(--mel-button-text-color);
     }
 
@@ -346,32 +346,54 @@ class AvatarRequestQueue {
   }
 
   /**
+   * Build the avatar URL, used as the cache/dedup key.
+   * @param {string} email
+   * @param {?string} initials Initiales dessinées par le serveur quand il n'y a pas de photo
+   * @returns {string}
+   * @private
+   */
+  static #buildUrl(email, initials) {
+    let url = AVATAR_URL.replace('%0', email).replaceAll(
+      '_is_from=iframe',
+      EMPTY_STRING,
+    );
+
+    if (initials) url += `&_initials=${encodeURIComponent(initials)}`;
+
+    return url;
+  }
+
+  /**
    * Request the avatar URL for a given email.
    * Returns a promise that resolves with the object URL or rejects on 404/error.
-   * Multiple calls for the same email return the same promise (deduplication).
+   * Multiple calls for the same email/initials return the same promise (deduplication).
    * @param {string} email
+   * @param {?string} [initials=null] Initiales à dessiner si pas de photo
    * @returns {Promise<string>}
    */
-  request(email) {
+  request(email, initials = null) {
+    // L'URL sert de clé : un même email peut être demandé avec des initiales différentes
+    const key = AvatarRequestQueue.#buildUrl(email, initials);
+
     // Serve from cache if already resolved
-    if (this.#cache.has(email)) {
-      return this.#cache.get(email);
+    if (this.#cache.has(key)) {
+      return this.#cache.get(key);
     }
 
     // Deduplicate: if already pending, attach to existing promise
-    if (!this.#pending.has(email)) {
-      this.#pending.set(email, []);
+    if (!this.#pending.has(key)) {
+      this.#pending.set(key, []);
     }
 
     const promise = new Promise((resolve, reject) => {
-      this.#pending.get(email).push({ resolve, reject });
+      this.#pending.get(key).push({ resolve, reject });
     });
 
     // Store in cache immediately so concurrent calls dedup correctly
     // We store the promise (not the resolved value) as the cache entry.
     // On error we evict it so a retry is possible after navigation.
-    if (!this.#cache.has(email)) {
-      this.#cache.set(email, promise);
+    if (!this.#cache.has(key)) {
+      this.#cache.set(key, promise);
     }
 
     this.#scheduleFlushing();
@@ -434,16 +456,11 @@ class AvatarRequestQueue {
   /**
    * Perform the actual fetch and resolve/reject all waiting callbacks.
    * Uses fetch() + blob URL to avoid leaking same-origin credentials via <img src>.
-   * @param {string} email
+   * @param {string} url Clé de la file, c'est-à-dire l'URL construite par `#buildUrl`
    * @param {Array<{resolve: Function, reject: Function}>} callbacks
    * @private
    */
-  async #fetchAvatar(email, callbacks) {
-    const url = AVATAR_URL.replace('%0', email).replaceAll(
-      '_is_from=iframe',
-      EMPTY_STRING,
-    );
-
+  async #fetchAvatar(url, callbacks) {
     try {
       const response = await fetch(url, {
         credentials: 'same-origin',
@@ -467,12 +484,12 @@ class AvatarRequestQueue {
       for (const { resolve } of callbacks) resolve(objectUrl);
     } catch (err) {
       // Evict failed promise from cache so a page reload can retry
-      this.#cache.delete(email);
-      this.#inflight.delete(email);
+      this.#cache.delete(url);
+      this.#inflight.delete(url);
 
       for (const { reject } of callbacks) reject(err);
     } finally {
-      this.#inflight.delete(email);
+      this.#inflight.delete(url);
     }
   }
 
@@ -480,9 +497,11 @@ class AvatarRequestQueue {
    * Manually evict a resolved entry (e.g. after logout).
    * Object URLs are revoked to free memory.
    * @param {string} email
+   * @param {?string} [initials=null]
    */
-  evict(email) {
-    const cached = this.#cache.get(email);
+  evict(email, initials = null) {
+    const key = AvatarRequestQueue.#buildUrl(email, initials);
+    const cached = this.#cache.get(key);
     if (cached) {
       // Revoke only if it resolved to a blob URL
       cached
@@ -490,7 +509,7 @@ class AvatarRequestQueue {
           if (url?.startsWith('blob:')) URL.revokeObjectURL(url);
         })
         .catch(() => {});
-      this.#cache.delete(email);
+      this.#cache.delete(key);
     }
   }
 
@@ -588,6 +607,8 @@ class AvatarElement extends HtmlCustomTag {
    *
    * data-email => email de l'utilisateur dont on souhaite l'avatar. Si indéfini, se sera l'utilisateur en cours. (Optionnel)
    *
+   * data-name => nom affiché de l'utilisateur. Si défini, les initiales (prénom + nom) remplacent la première lettre de l'email quand il n'y a pas de photo. (Optionnel)
+   *
    * data-force-size => taille de l'objet, en pourcentage. (Optionnel)
    *
    * data-f100 => Equivalent de `data-force-size=100`
@@ -604,6 +625,12 @@ class AvatarElement extends HtmlCustomTag {
      * @type {string}
      */
     this._email = null;
+    /**
+     * Nom affiché, utilisé pour les initiales lorsqu'il n'y a pas de photo
+     * @package
+     * @type {string | null}
+     */
+    this._name = null;
     this._id = null;
     this._errorBackgroundColor = null;
     /**
@@ -661,6 +688,10 @@ class AvatarElement extends HtmlCustomTag {
         this.dataset.email || rcmail?.env?.mel_metapage_user_emails?.[0] || '?',
     });
 
+    Object.defineProperty(this, '_name', {
+      value: this.dataset.name || null,
+    });
+
     Object.defineProperty(this, '_errorBackgroundColor', {
       value: this.data('error-background-color') ?? null,
       writable: false,
@@ -669,6 +700,7 @@ class AvatarElement extends HtmlCustomTag {
 
     this.removeAttribute('data-error-background-color');
     this.removeAttribute('data-email');
+    this.removeAttribute('data-name');
     this.removeAttribute('data-id');
 
     if (this.dataset.f100) {
@@ -746,7 +778,12 @@ class AvatarElement extends HtmlCustomTag {
     this.setAttribute('data-state', 'loading');
 
     AvatarRequestQueue.getInstance()
-      .request(this._email)
+      .request(
+        this._email,
+        this._name !== null
+          ? AvatarElement.GetInitials(this._name, this._email)
+          : null,
+      )
       .then((objectUrl) => {
         const img = this.navigator.querySelector('img');
         if (!img) return; // element was removed from DOM during fetch
@@ -909,7 +946,10 @@ class AvatarElement extends HtmlCustomTag {
       }
     } else if (error_data && error_data.stop === true) return this;
 
-    const txt = this._email;
+    const txt =
+      this._name !== null
+        ? AvatarElement.GetInitials(this._name, this._email)
+        : this._email.substring(0, 1).toUpperCase();
     this.navigator.querySelector('img').remove();
 
     if (this.shadowEnabled()) this.shadowRoot.querySelector('style').remove();
@@ -919,7 +959,7 @@ class AvatarElement extends HtmlCustomTag {
 
     let span = document.createElement('span');
     span.appendChild(
-      document.createTextNode(txt.substring(0, 1).toUpperCase()),
+      document.createTextNode(txt),
     );
     span.classList.add('absolute-center');
 
@@ -954,6 +994,76 @@ class AvatarElement extends HtmlCustomTag {
   }
 
   /**
+   * Calcule les initiales (prénom + nom) à partir d'un nom affiché.
+   *
+   * Suit la convention Mélanie `NOM Prénom` (mots en majuscules = nom de famille)
+   * et nettoie les ajouts de l'annuaire (` - service`, `(description)`,
+   * ` emis par …`, préfixe externe `> `).
+   * Si le nom est inexploitable, la partie locale de l'email est utilisée.
+   *
+   * @example
+   * GetInitials('DUPONT Jean - DDT'); // 'JD'
+   * GetInitials('DE LA TOUR Marie');  // 'MT'
+   * GetInitials('LE GALL Yann');      // 'YL'
+   * GetInitials('', 'jean.dupont@x.fr'); // 'JD'
+   * @param {string | null} name Nom affiché
+   * @param {string | null} [email=null] Email, utilisé en repli
+   * @returns {string} Une ou deux lettres en majuscules, `?` à défaut
+   */
+  static GetInitials(name, email = null) {
+    let clean = (name || EMPTY_STRING)
+      .replace(/^>\s*/, EMPTY_STRING)
+      .split(' emis par ')[0]
+      .split(' - ')[0]
+      .split('(')[0]
+      .trim();
+
+    // Nom absent ou remplacé par l'email (anti-phishing de Roundcube)
+    if (!clean || clean.includes('@'))
+      clean = (email || EMPTY_STRING).split('@')[0].replace(/[._-]+/g, ' ');
+
+    const words = clean.split(/\s+/).filter((w) => /\p{L}/u.test(w));
+    const firstLetter = (w) => w.match(/\p{L}/u)[0].toUpperCase();
+
+    if (!words.length) return (email || '?').substring(0, 1).toUpperCase();
+    if (words.length === 1) return firstLetter(words[0]);
+
+    const isUpper = (w) => w === w.toUpperCase() && w !== w.toLowerCase();
+    const lastNameWords = words.filter(isUpper);
+
+    // Pas de nom en majuscules (externe) : premier mot + dernier mot
+    if (!lastNameWords.length || lastNameWords.length === words.length)
+      return firstLetter(words[0]) + firstLetter(words[words.length - 1]);
+
+    const firstName = words.find((w) => !isUpper(w));
+
+    return firstLetter(firstName) + firstLetter(AvatarElement.#stripParticles(lastNameWords));
+  }
+
+  /**
+   * Retourne le mot significatif d'un nom de famille à particule.
+   *
+   * `DE`, `DU`, `DES`, `D'`, `VAN`, `VON`… sont ignorés, ainsi que `LA`, `LE`, `L'`
+   * lorsqu'ils suivent une particule (`DE LA TOUR` → `TOUR`).
+   * Un `LE`/`LA` en tête fait partie du nom (`LE GALL` → `LE`).
+   * @param {string[]} words Mots du nom de famille
+   * @returns {string}
+   */
+  static #stripParticles(words) {
+    const particles = ['DE', 'DU', 'DES', "D'", 'D’', 'VAN', 'VON', 'DER', 'DEN', 'DI', 'DA', 'DEL', 'DOS'];
+    const skippable = [...particles, 'LA', 'LE', 'LES', "L'", 'L’'];
+    let i = 0;
+
+    if (particles.includes(words[0])) {
+      i = 1;
+      while (i < words.length - 1 && skippable.includes(words[i])) ++i;
+    }
+
+    // D'ALEMBERT → ALEMBERT
+    return words[Math.min(i, words.length - 1)].replace(/^D['’](?=\p{L})/u, EMPTY_STRING);
+  }
+
+  /**
    *
    * @param {*} param0
    * @returns {AvatarElement}
@@ -961,12 +1071,15 @@ class AvatarElement extends HtmlCustomTag {
   static Create({
     id = null,
     email = null,
+    name = null,
     force = null,
     error_background_color = null,
   } = {}) {
     let node = document.createElement('bnum-avatar');
 
     if (email) node.setAttribute('data-email', email);
+
+    if (name) node.setAttribute('data-name', name);
 
     if (id) node.setAttribute('data-id', id);
 

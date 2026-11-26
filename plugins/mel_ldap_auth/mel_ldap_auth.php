@@ -33,6 +33,27 @@ class mel_ldap_auth extends rcube_plugin {
    */
   private static $expire_cookie = 51840000;
 
+  /** Délai minimal (secondes) entre deux contrôles du mot de passe de session. */
+  private const int RECHECK_INTERVAL = 600;
+
+  /** Délai (secondes) avant de retenter un contrôle resté indéterminé (panne LDAP ou IMAP). */
+  private const int RETRY_INTERVAL = 300;
+
+  /** Nombre de tentatives par contrôle en cas d'erreur technique. */
+  private const int MAX_ATTEMPTS = 2;
+
+  /** Pause (microsecondes) entre deux tentatives. */
+  private const int RETRY_DELAY = 300000;
+
+  /** Clé de session contenant l'horodatage du prochain contrôle annuaire. */
+  private const string SESSION_LDAP_NEXT_CHECK = 'mel_ldap_auth_ldap_next_check';
+
+  /** Clé de session contenant l'horodatage du prochain contrôle IMAP. */
+  private const string SESSION_IMAP_NEXT_CHECK = 'mel_ldap_auth_imap_next_check';
+
+  /** Variation aléatoire maximale (secondes) ajoutée à chaque planification de contrôle. */
+  private const int CHECK_JITTER = 120;
+
   /**
    * Initialisation du plugin
    *
@@ -47,8 +68,228 @@ class mel_ldap_auth extends rcube_plugin {
         'authenticate'
     ));
 
+    $this->add_hook('startup', $this->check_connect(...));
+
     // Charge la configuration
     $this->load_config();
+  }
+
+  /**
+   * Hook startup : vérifie que le mot de passe stocké en session est toujours
+   * valide dans l'annuaire (il a pu être changé via un autre outil).
+   *
+   * Le contrôle est espacé (voir {@see mel_ldap_auth::is_password_check_due()})
+   * et n'a aucun effet de bord sur le compteur de tentatives en échec.
+   * Seul un refus explicite de l'annuaire ferme la session : une erreur
+   * technique (LDAP injoignable, timeout...) ne déconnecte jamais l'utilisateur,
+   * le contrôle est simplement reporté.
+   *
+   * @param array<string, mixed> $args Arguments du hook startup
+   *
+   * @return array<string, mixed> Arguments du hook, inchangés
+   */
+  protected function check_connect(array $args): array {
+    if (in_array($this->rc->task, ['login', 'logout'], true)) return $args;
+    if (empty($this->rc->user) || empty($this->rc->user->ID)) return $args;
+
+    if (!$this->check_ldap_password()) return $args;
+
+    $this->check_imap_password();
+
+    return $args;
+  }
+
+  /**
+   * Contrôle le mot de passe de session auprès de l'annuaire, si le contrôle est dû.
+   *
+   * @return bool `false` si la session vient d'être fermée, `true` sinon
+   */
+  private function check_ldap_password(): bool {
+    if ($this->is_keep_alive_request() || !$this->is_password_check_due()) return true;
+
+    $is_valid = $this->get_session_password_verdict();
+
+    if ($is_valid === null) {
+      // Impossible de joindre le ldap
+      $this->schedule_check(self::SESSION_LDAP_NEXT_CHECK, self::RETRY_INTERVAL);
+      return true;
+    }
+
+    if ($is_valid) {
+      $this->schedule_check(self::SESSION_LDAP_NEXT_CHECK, self::RECHECK_INTERVAL);
+      return true;
+    }
+
+    $this->close_session_for_refused_password('l\'annuaire');
+
+    return false;
+  }
+
+  /**
+   * Contrôle le mot de passe de session auprès du serveur IMAP, si le contrôle est dû.
+   *
+   * Le prochain contrôle est planifié avec une variation aléatoire pour ne pas
+   * synchroniser les sessions entre elles (voir {@see mel_ldap_auth::schedule_check()}).
+   */
+  private function check_imap_password(): void {
+    if (!$this->is_imap_check_due()) return;
+
+    $is_valid = $this->get_session_imap_verdict();
+
+    if ($is_valid === false) {
+      $this->close_session_for_refused_password('le serveur IMAP');
+      return;
+    }
+
+    $this->schedule_check(self::SESSION_IMAP_NEXT_CHECK, $is_valid === null ? self::RETRY_INTERVAL : self::RECHECK_INTERVAL);
+  }
+
+  /**
+   * Indique si le contrôle IMAP est dû pour la requête en cours.
+   *
+   * Le contrôle n'est fait que sur une requête du courrier qui utilise de toute
+   * façon l'IMAP : la connexion est alors réutilisée, sans connexion
+   * supplémentaire. Le keep-alive n'y touche jamais, ni les autres tâches.
+   *
+   * @return bool `true` si la requête est éligible et l'échéance dépassée
+   */
+  private function is_imap_check_due(): bool {
+    if ($this->rc->task !== 'mail' || $this->is_keep_alive_request()) return false;
+
+    if (!isset($_SESSION[self::SESSION_IMAP_NEXT_CHECK])) {
+      // Le mot de passe vient d'être validé par le login.
+      $this->schedule_check(self::SESSION_IMAP_NEXT_CHECK, self::RECHECK_INTERVAL);
+      return false;
+    }
+
+    return time() >= $_SESSION[self::SESSION_IMAP_NEXT_CHECK];
+  }
+
+  /**
+   * Indique si la requête en cours est un keep-alive : elle ne déclenche aucun
+   * contrôle, sinon une page ouverte en arrière-plan sollicite l'annuaire pour rien.
+   *
+   * @return bool `true` pour une requête keep-alive
+   */
+  private function is_keep_alive_request(): bool {
+    return $this->rc->action === 'keep-alive';
+  }
+
+  /**
+   * Planifie le prochain contrôle, avec une variation aléatoire pour éviter que
+   * toutes les sessions contrôlent l'annuaire ou l'IMAP au même moment.
+   *
+   * @param string $session_key Clé de session de l'échéance (annuaire ou IMAP)
+   * @param int    $delay       Délai de base en secondes
+   */
+  private function schedule_check(string $session_key, int $delay): void {
+    $_SESSION[$session_key] = time() + $delay + random_int(0, self::CHECK_JITTER);
+  }
+
+  /**
+   * Ferme la session dont le mot de passe vient d'être refusé.
+   *
+   * La redirection vers le login est assurée par le core : une requête AJAX
+   * reçoit la commande `session_error` (voir index.php), et en composition le
+   * brouillon est conservé localement par le client.
+   *
+   * @param string $source Origine du refus, pour la trace (ex. : « l'annuaire »)
+   */
+  private function close_session_for_refused_password(string $source): void {
+    mel_logs::get_instance()->log(mel_logs::INFO, "[mel_ldap_auth] Mot de passe de la session refusé par $source pour <" . $this->rc->user->get_username() . "> : fermeture de la session");
+    $this->rc->kill_session();
+  }
+
+  /**
+   * Vérifie le mot de passe de la session auprès du serveur IMAP.
+   *
+   * Seul un refus explicite des identifiants (réponse `NO` à l'authentification,
+   * soit `rcube_imap_generic::ERROR_NO`) donne `false`. Une panne réseau, TLS ou
+   * serveur (`ERROR_BAD`, `ERROR_BYE`...) reste indéterminée pour ne jamais
+   * déconnecter l'utilisateur lors d'une indisponibilité.
+   *
+   * En cas de succès la connexion reste ouverte et est réutilisée par la requête
+   * en cours (les propriétés du storage sont déjà posées par `storage_init()`).
+   *
+   * @return bool|null `true` si valide, `false` si refusé, `null` si indéterminé
+   */
+  private function get_session_imap_verdict(): ?bool {
+    if (empty($_SESSION['storage_host']) || empty($_SESSION['username']) || empty($_SESSION['password'])) return null;
+
+    try {
+      $storage = $this->rc->get_storage();
+
+      if ($storage->is_connected()) return true;
+
+      $is_connected = $storage->connect(
+        $_SESSION['storage_host'],
+        $_SESSION['username'],
+        $this->rc->decrypt($_SESSION['password']),
+        $_SESSION['storage_port'],
+        $_SESSION['storage_ssl']
+      );
+
+      if ($is_connected) return true;
+
+      if ($storage->get_error_code() === rcube_imap_generic::ERROR_NO) return false;
+
+      mel_logs::get_instance()->log(mel_logs::WARN, "[mel_ldap_auth] Contrôle IMAP du mot de passe de session indéterminé : " . $storage->get_error_str());
+    } catch (\Throwable $th) {
+      mel_logs::get_instance()->log(mel_logs::ERROR, "[mel_ldap_auth] Erreur inattendue lors du contrôle IMAP du mot de passe de session : " . $th->getMessage());
+    }
+
+    return null;
+  }
+
+  /**
+   * Indique si le prochain contrôle du mot de passe de session est dû.
+   *
+   * La première requête d'une session planifie simplement le premier contrôle :
+   * le mot de passe vient d'être validé par le login.
+   *
+   * @return bool `true` si l'échéance du contrôle est dépassée
+   */
+  private function is_password_check_due(): bool {
+    if (!isset($_SESSION[self::SESSION_LDAP_NEXT_CHECK])) {
+      $this->schedule_check(self::SESSION_LDAP_NEXT_CHECK, self::RECHECK_INTERVAL);
+      return false;
+    }
+
+    return time() >= $_SESSION[self::SESSION_LDAP_NEXT_CHECK];
+  }
+
+  /**
+   * Vérifie le mot de passe de la session auprès de l'annuaire, avec une
+   * nouvelle tentative uniquement si l'annuaire est injoignable
+   * (`Melanie2LdapException`) : un refus explicite est définitif, le retenter
+   * n'a pas de sens.
+   *
+   * @return bool|null `true` si valide, `false` si refusé par l'annuaire,
+   *                   `null` si le résultat est indéterminé (erreur technique)
+   */
+  private function get_session_password_verdict(): ?bool {
+    for ($i = 0; $i < self::MAX_ATTEMPTS; ++$i) {
+      if ($i > 0) usleep(self::RETRY_DELAY);
+
+      try {
+        [$username, $password] = driver_mel::gi()->getBasicAuth();
+        if (strlen((string) $username) === 0 || strlen((string) $password) === 0) return null;
+
+        $user = driver_mel::gi()->getUser($username);
+        if (!isset($user)) continue;
+
+        return (bool) $user->authentification($password);
+      } catch (\LibMelanie\Exceptions\Melanie2LdapException $e) {
+        // Annuaire injoignable : erreur transitoire possible, on retente.
+        mel_logs::get_instance()->log(mel_logs::WARN, "[mel_ldap_auth] Annuaire injoignable pour le contrôle du mot de passe de session (tentative " . ($i + 1) . "/" . self::MAX_ATTEMPTS . ") : " . $e->getMessage());
+      } catch (\Throwable $th) {
+        // Erreur inattendue (bug) : inutile de retenter, mais ne jamais bloquer la requête.
+        mel_logs::get_instance()->log(mel_logs::ERROR, "[mel_ldap_auth] Erreur inattendue lors du contrôle du mot de passe de session : " . $th->getMessage());
+        return null;
+      }
+    }
+
+    return null;
   }
 
   /**

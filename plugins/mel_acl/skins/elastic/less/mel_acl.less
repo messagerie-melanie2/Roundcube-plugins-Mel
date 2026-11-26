@@ -57,7 +57,10 @@
             background-position: center;
             background-repeat: no-repeat; 
         }
-        &.enabled{
+        &.enabled,
+        &.aclfull.enabled ~ td,
+        &.aclsend.enabled ~ td,
+        &.aclwrite.enabled ~ td{
             background-image: url(images/enabled.png?v=9d9a.674);
             background-position: center;
             background-repeat: no-repeat; 

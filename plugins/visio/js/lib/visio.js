@@ -5,11 +5,12 @@ import {
   BnumMessage,
   eMessageType,
 } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
-import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import {
+  get_location_without_visio,
   getVisioUrlFromText,
   is_allowed_url as _is_allowed_url,
+  is_clean_visio_url,
 } from './program/common.js';
 import { VisioRooms } from './program/visio_rooms.js';
 import { VisioByDinumLocation } from './program/VisioByDinumLocation.js';
@@ -161,7 +162,7 @@ export class VisioByDinum extends MelObject {
     const link = new VisioWebconfLink(event_location);
 
     // Gère le cas ou la visio a été collé
-    if (!is_allowed_url(link.url)) {
+    if (!is_clean_visio_url(link.url)) {
       const url = this.#_getVisioUrlFromText(link.url || event_location);
 
       if (url === null) {
@@ -173,7 +174,7 @@ export class VisioByDinum extends MelObject {
       <div  class="row" style="${JOIN_STYLES.row}">
         <div class="col-12" style="${JOIN_STYLES.col}">
           <span style="${JOIN_STYLES.icon}" class="icon-mel-pin-location mel-cal-icon"></span>
-          ${escape_html((link.url || event_location).replace(url, EMPTY_STRING))}
+          ${escape_html(get_location_without_visio(link.url || event_location, url))}
         </div>
       </div>`;
 
@@ -253,7 +254,8 @@ export class VisioByDinum extends MelObject {
     if (!VisioDinumLocationAction.is_dinum_visio(current)) return undefined;
 
     // Gère le cas où l'url a été collé à la main
-    if (!is_allowed_url(current)) {
+    // Seule la partie url est testée : `current` peut porter l'accès téléphonique.
+    if (VisioWebconfLink && !is_clean_visio_url(new VisioWebconfLink(current).url)) {
       const link = this.#_getVisioUrlFromText(current);
 
       if (link === null) {

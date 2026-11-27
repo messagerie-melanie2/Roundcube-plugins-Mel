@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+use bnum_glitchtip\types\scope;
+
 /**
  * Hook Roundcube "startup".
  *
@@ -8,11 +10,11 @@ declare(strict_types=1);
  * de la configuration du plugin (DSN, environnement, activation des logs,
  * taux d'échantillonnage des traces, niveau de log).
  *
- * @param bnum_glitchtip $plugin Instance du plugin, utilisée pour lire la configuration.
+ * @param scope $plugin Instance du plugin, utilisée pour lire la configuration.
  * @param array $args Arguments transmis par Roundcube pour ce hook.
  * @return array Les arguments inchangés, tels que reçus.
  */
-return static function (bnum_glitchtip $plugin, array $args): array {
+return static function (scope $plugin, array $args): array {
    $plugin->_ensureGlitchtipIsInitialized();
 
     return $args;

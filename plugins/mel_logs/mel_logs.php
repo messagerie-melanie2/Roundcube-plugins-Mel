@@ -1,4 +1,10 @@
 <?php
+
+require_once __DIR__.'/php/log_levels.php';
+require_once __DIR__.'/php/attributes.php';
+
+use MelLogs\LogLevel;
+
 /**
  * Plugin Mel_logs
  *
@@ -19,12 +25,31 @@
  */
 class mel_logs extends rcube_plugin
 {
-	const DEBUG = 'DEBUG';
-	const INFO = 'INFO';
-	const ERROR = 'ERROR';
-	const WARN = 'WARN';
-	const TRACE = 'TRACE';
-	const ACCESS = 'ACCESS';
+
+	#[\Deprecated('Utilisez LogLevel::Debug à la place')]
+	const DEBUG = LogLevel::Debug->value;
+	#[\Deprecated('Utilisez LogLevel::Info à la place')]
+	const INFO = LogLevel::Info->value;
+	#[\Deprecated('Utilisez LogLevel::Error à la place')]
+	const ERROR = LogLevel::Error->value;
+	#[\Deprecated('Utilisez LogLevel::Warn à la place')]
+	const WARN = LogLevel::Warn->value;
+	#[\Deprecated('Utilisez LogLevel::Trace à la place')]
+	const TRACE = LogLevel::Trace->value;
+	#[\Deprecated('Utilisez LogLevel::Access à la place')]
+	const ACCESS = LogLevel::Access->value;
+
+	/** Hook appelé pour transmettre un log aux autres systèmes de logs */
+	const EXTRA_LOG_HOOK = 'log_call';
+
+	/** Méthodes de mel_logs à sauter dans la pile pour trouver l'appelant réel */
+	private const LOG_ENTRY_POINTS = ['_resolve_extra_log', 'log', 'l'];
+
+	/**
+	 * Cache de l'attribut ExtraLog par "Classe::methode" (null = attribut absent)
+	 * @var array<string, ?bool>
+	 */
+	private static array $extra_log_cache = [];
 
 	/**
 	 * Fichier de log
@@ -34,9 +59,9 @@ class mel_logs extends rcube_plugin
 
 	/**
 	 * Tableau contenant les différents niveaux de logs acceptés
-	 * @var array
+	 * @var LogLevel[]
 	 */
-	private $log_level;
+	private array $log_level;
 
 	/**
 	 * Instance courante de la classe
@@ -60,7 +85,7 @@ class mel_logs extends rcube_plugin
 	/**
 	 * Liste des erreurs possibles dans la page de login
 	 */
-	private static $login_errors = [
+	private static array $login_errors = [
 		rcmail::ERROR_STORAGE          => 'Erreur de connexion au serveur de stockage.',
 		rcmail::ERROR_COOKIES_DISABLED => 'Votre navigateur n\'accepte pas les fichiers témoins.',
 		rcmail::ERROR_INVALID_REQUEST  => 'Requête invalide ! Aucune donnée n\'a été enregistrée.',
@@ -82,7 +107,41 @@ class mel_logs extends rcube_plugin
 	    // Chargement de la conf
 	    $this->load_config();
 	    $this->log_file = rcmail::get_instance()->config->get('log_file');
-	    $this->log_level = explode('|', rcmail::get_instance()->config->get('mel_logs_level'));
+	    $this->log_level = explode('|', rcmail::get_instance()->config->get('mel_logs_level')) |> $this->to_log_levels(...);
+	}
+
+	/**
+	 * Convertit les niveaux lus en configuration en LogLevel.
+	 *
+	 * Les valeurs vides ou inconnues sont ignorées : une erreur de saisie dans
+	 * `mel_logs_level` ne doit pas empêcher le webmail de démarrer.
+	 *
+	 * @param string[] $logs Niveaux issus de `mel_logs_level`
+	 *
+	 * @return LogLevel[]
+	 */
+	private function to_log_levels(array $logs): array {
+		return array_values(array_filter(array_map(
+			fn(string $v): ?LogLevel => LogLevel::tryFrom(strtoupper(trim($v))),
+			$logs
+		)));
+	}
+
+	/**
+	 * Convertit un niveau de log textuel en LogLevel.
+	 *
+	 * @param string $level Niveau (insensible à la casse)
+	 *
+	 * @return LogLevel
+	 *
+	 * @throws Exception Si le niveau n'existe pas
+	 */
+	private function map_log_level(string $level): LogLevel {
+		$new = $level |> strtoupper(...) |> LogLevel::tryFrom(...);
+
+		if (!$new) throw new Exception("Le niveau de log '$level' n'existe pas !");
+
+		return $new;
 	}
 
 	/**
@@ -106,6 +165,7 @@ class mel_logs extends rcube_plugin
 	 * Récupération de l'instance
 	 * @return mel_logs
 	 */
+	#[\NoDiscard("Ne pas utiliser le résultat est un non-sens")]
 	public static function get_instance() {
 	    if (!isset(self::$instance))
 	        self::$instance = new self(rcmail::get_instance()->plugins);
@@ -118,35 +178,35 @@ class mel_logs extends rcube_plugin
 	 *
 	 * @return mel_logs
 	 */
+	#[\NoDiscard("Ne pas utiliser le résultat est un non-sens")]
 	public static function gi() {
 		return self::get_instance();
 	}
 
 	/**
 	 * Test si l'instance de mel_log permet de logger a ce niveau
-	 * @param string $level voir mel_log::
-	 * @return boolean
 	 */
-	public static function is($level) {
+	#[\NoDiscard("lecture sans effet de bord : sans utiliser le résultat, l'appel est inutile")]
+	public static function is(string|LogLevel $level): bool {
       return self::get_instance()->is_level($level);
 	}
 
-  /**
-   * Test si le niveau de log est le bon
-   * @param string $level
-   * @return boolean
-   */
-	public function is_level($level) {
+	/**
+	 * Test si le niveau de log est le bon
+	 */
+    #[\NoDiscard("lecture sans effet de bord : sans utiliser le résultat, l'appel est inutile")]
+	public function is_level(string|LogLevel $logLevel): bool {
+		$level = is_string($logLevel) ? $this->map_log_level($logLevel) : $logLevel;
 		$rcmail = rcmail::get_instance();
 
 		// Est-ce qu'on est sur un utilisateur en debug ?
-		if (in_array($level, [self::DEBUG, self::ERROR, self::INFO])
+		if (in_array($level, [LogLevel::Debug, LogLevel::Error, LogLevel::Info])
 				&& in_array($rcmail->get_user_name(), $rcmail->config->get('mel_logs_debug_users', []))) {
 			return true;
 		}
 
 		// Est-ce qu'on est sur un utilisateur en trace ?
-		if (in_array($level, [self::TRACE, self::DEBUG, self::ERROR, self::INFO])
+		if (in_array($level, [LogLevel::Trace, LogLevel::Debug, LogLevel::Error, LogLevel::Info])
 				&& in_array($rcmail->get_user_name(), $rcmail->config->get('mel_logs_trace_users', []))) {
 			return true;
 		}
@@ -161,11 +221,11 @@ class mel_logs extends rcube_plugin
 	{
 		$method = isset($_SESSION['auth_type']) ? $_SESSION['auth_type'] : "password";
 		$eidas = $_SESSION['eidas'];
-	    $this->log(self::INFO, "[login] Connexion réussie de l'utilisateur <".rcmail::get_instance()->get_user_name()."> (".$method.") - $eidas");
+	    $this->log(LogLevel::Info, "[login] Connexion réussie de l'utilisateur <".rcmail::get_instance()->get_user_name()."> (".$method.") - $eidas");
 
 		// MANTIS 0007937: Logguer les connexions d'une BALP en directe
 		if (!driver_mel::gi()->getUser()->is_individuelle && !driver_mel::gi()->getUser()->is_applicative) {
-			$this->log(self::INFO, "[login] Connexion directe BALP <".rcmail::get_instance()->get_user_name()."> [" . driver_mel::gi()->getUser()->type . "]");
+			$this->log(LogLevel::Info, "[login] Connexion directe BALP <".rcmail::get_instance()->get_user_name()."> [" . driver_mel::gi()->getUser()->type . "]");
 		}
 
 		// Détail du contexte de connexion (réseau, niveau d'authentification, client, ...)
@@ -201,7 +261,7 @@ class mel_logs extends rcube_plugin
 		}
 		$message .= ' | ua="'.(isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '-').'"';
 
-		$this->log(self::INFO, $message);
+		$this->log(LogLevel::Info, $message);
 	}
 	/**
 	 * Login failed
@@ -213,7 +273,7 @@ class mel_logs extends rcube_plugin
 		if (isset(self::$login_errors[$args['code']])) {
 			$message = ' (' . self::$login_errors[$args['code']] . ')';
 		}
-		$this->log(self::INFO, "[login] Echec de connexion pour l'utilisateur <".$args['user']."> Code erreur : ".$args['code'].$message);
+		$this->log(LogLevel::Info, "[login] Echec de connexion pour l'utilisateur <".$args['user']."> Code erreur : ".$args['code'].$message);
 		return $args;
 	}
 	/**
@@ -248,7 +308,7 @@ class mel_logs extends rcube_plugin
 		// ailleurs c'est une fin de session subie (expiration, ré-authentification
 		// forcée par un plugin, ...) qui ne sera tracée que d'ici
 		if ($rc->task !== 'logout') {
-			$this->log(self::INFO, $this->_logout_message($rc->task, $rc->action));
+			$this->log(LogLevel::Info, $this->_logout_message($rc->task, $rc->action));
 		}
 
 		return $args;
@@ -258,7 +318,7 @@ class mel_logs extends rcube_plugin
 	 * Hook logout_after
 	 * Déconnexion explicite demandée par l'utilisateur
 	 */
-	public function logout_after($args)
+	public function logout_after(array $args): array
 	{
 		if (!empty($args['user'])) {
 			self::$session_context['user'] = $args['user'];
@@ -280,7 +340,7 @@ class mel_logs extends rcube_plugin
 	 *
 	 * @return string
 	 */
-	private function _logout_message($task = null, $action = null)
+	private function _logout_message(?string $task = null, ?string $action = null)
 	{
 		$ctx = self::$session_context;
 
@@ -308,41 +368,174 @@ class mel_logs extends rcube_plugin
 	 * Triggered when a message is finally sent
 	 * This hook doesn't have any return values but can be used for logging or notifications.
 	 */
-	public function message_sent($args)
+	public function message_sent(array $args): array
 	{
 		$from = $args['headers']['From'];
 		$mailto = $args['headers']['To'];
 		$mailcc = $args['headers']['Cc'];
 		$mailbcc = $args['headers']['Bcc'];
 		$msgid = $args['headers']['Message-ID'];
-		$this->log(self::INFO, "[message_sent] <$from> to '$mailto' cc '$mailcc' bcc '$mailbcc' msgid '$msgid'");
+		$this->log(LogLevel::Info, "[message_sent] <$from> to '$mailto' cc '$mailcc' bcc '$mailbcc' msgid '$msgid'");
+
+		return $args;
 	}
 
 	/**
 	 * Appel la methode de log de roundcube
 	 * Log dans un fichier mel
-	 * 
-	 * @param string $level voir mel_log::
-	 * @param string $message
+	 *
+	 * Si l'appelant porte l'attribut {@see \MelLogs\ExtraLog} (ou si `$data['log.extra.only']`
+	 * est fourni) et qu'au moins un plugin écoute le hook `log.call`, le log est aussi
+	 * transmis aux autres systèmes de logs. Avec `onlyExtraLog = true`, rien n'est écrit
+	 * localement (fichier général et fichiers par utilisateur).
+	 *
+	 * @param string|LogLevel $logLevel Niveau de log
+	 * @param string $message Message à journaliser
+	 * @param array{'log.extra.only'?: bool, 'log.offset'?: int, context?: array, attributes?: array} $data
+	 *        Données transmises aux plugins écoutant `log_call`. `log.offset` permet de sauter
+	 *        des frames supplémentaires si l'appel est encapsulé dans un wrapper.
 	 */
-	public function log($level, $message)
+	public function log(string|LogLevel $logLevel, string $message, array $data = []): void
 	{
+		$level = is_string($logLevel) ? $this->map_log_level($logLevel) : $logLevel;
 		// Fichier de log général
-	    if (in_array($level, $this->log_level)) {
-			$this->write_log($this->log_file, $level, $message);
-	    }
+		if (in_array($level, $this->log_level, true)) {
+			$extra = $this->_resolve_extra_log($data);
+
+			if ($extra !== null) {
+				$this->_execHook(self::EXTRA_LOG_HOOK, ['level' => $level, 'message' => $message, 'data' => $data, 'caller' => $extra['caller']]);
+
+				// On ne veut que les logs des autres plugins
+				if ($extra['only']) return;
+			}
+
+			$this->write_log($this->log_file, $level->value, $message);
+		}
 
 		// Fichier de log spécifique
 		$rcmail = rcmail::get_instance();
 		$username = $this->_current_username();
-		if (in_array($level, [self::TRACE, self::DEBUG, self::ERROR, self::INFO])
+		if (in_array($level, [LogLevel::Trace, LogLevel::Debug, LogLevel::Error, LogLevel::Info], true)
 				&& in_array($username, $rcmail->config->get('mel_logs_trace_users', []))) {
-			$this->write_log($username, $level, $message);
+			$this->write_log($username, $level->value, $message);
 		}
-		else if (in_array($level, [self::DEBUG, self::ERROR, self::INFO])
+		else if (in_array($level, [LogLevel::Debug, LogLevel::Error, LogLevel::Info], true)
 				&& in_array($username, $rcmail->config->get('mel_logs_debug_users', []))) {
-			$this->write_log($username, $level, $message);
+			$this->write_log($username, $level->value, $message);
 		}
+	}
+
+	/**
+	 * Appel la methode de log de roundcube
+	 * Log dans un fichier mel
+	 *
+	 * Si au moins un plugin écoute le hook `log.call`, le log est aussi
+	 * transmis aux autres systèmes de logs. Avec `$onlyExtra = true`, rien n'est écrit
+	 * localement (fichier général et fichiers par utilisateur).
+	 *
+	 * @param $logLevel Niveau de log
+	 * @param $message Message à journaliser
+	 * @param $onlyExtra `false` par défaut et si `true`, rien n'est écrit localement.
+	 * @param array{'log.offset'?: int, context?: array, attributes?: array} $data
+	 *        Données transmises aux plugins écoutant `log_call`. `log.offset` permet de sauter
+	 *        des frames supplémentaires si l'appel est encapsulé dans un wrapper.
+	 */
+	public function log_extra(LogLevel $logLevel, string $message, bool $onlyExtra = false, array $data = []): void {
+		if ($data === null) $data = [];
+
+		if ($data['log.offset'] && is_int($data['log.offset'])) $data['log.offset'] +=1;
+		else $data['log.offset'] = 1;
+
+
+		$data['log.extra.only'] = $onlyExtra;
+
+		$this->log($logLevel, $message, $data);
+	}
+
+	/**
+	 * Exécute un hook Roundcube.
+	 *
+	 * @param string $key Nom du hook
+	 * @param array<string, mixed> $args Arguments du hook
+	 *
+	 * @return array<string, mixed> Arguments retournés par les handlers
+	 */
+	private function _execHook(string $key, array $args): array {
+		return rcmail::get_instance()->plugins->exec_hook($key, $args);
+	}
+
+	/**
+	 * Détermine si le log courant doit être transmis aux autres systèmes de logs.
+	 *
+	 * Ordre volontaire, du moins coûteux au plus coûteux :
+	 * 1. aucun plugin n'écoute `log.call` : on sort sans backtrace ni réflexion ;
+	 * 2. un seul `debug_backtrace()` sert à la fois au nom de l'appelant et à la lecture de l'attribut ;
+	 * 3. la lecture de l'attribut par réflexion est mise en cache par méthode pour la requête.
+	 *
+	 * Les frames des points d'entrée de mel_logs (`log`, `l`) sont sautées, ce qui rend
+	 * le résultat identique que l'on passe par `log()` ou par `l()`.
+	 * Limite : l'attribut ne peut pas être lu sur une closure.
+	 *
+	 * @param array<string, mixed> $data Données passées à {@see log()}
+	 *
+	 * @return array{only: bool, caller: string}|null `null` si le log ne doit pas être transmis
+	 */
+	#[\NoDiscard("résolution sans effet de bord : sans utiliser le résultat, l'appel est inutile et coûte un debug_backtrace()")]
+	private function _resolve_extra_log(array $data): ?array
+	{
+		if (empty(rcmail::get_instance()->plugins->handlers[self::EXTRA_LOG_HOOK])) return null;
+
+		$offset = max(0, (int)($data['log.offset'] ?? 0));
+		$trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 5 + $offset);
+
+		// On saute _resolve_extra_log puis les points d'entrée de mel_logs (log, l)
+		$index = 0;
+		while (isset($trace[$index])
+				&& ($trace[$index]['class'] ?? null) === self::class
+				&& in_array($trace[$index]['function'], self::LOG_ENTRY_POINTS, true)) {
+			++$index;
+		}
+		$index += $offset;
+
+		$class = $trace[$index]['class'] ?? null;
+		$function = $trace[$index]['function'] ?? null;
+
+		$only = isset($data['log.extra.only']) ? (bool)$data['log.extra.only'] : self::_get_extra_log_attribute($class, $function);
+		if ($only === null) return null;
+
+		$caller = $function === null ? 'main' : ($class === null ? $function : "$class::$function");
+
+		return ['only' => $only, 'caller' => $caller];
+	}
+
+	/**
+	 * Lit l'attribut {@see \MelLogs\ExtraLog} d'une méthode ou d'une fonction, avec cache.
+	 *
+	 * Les attributs ne changent pas pendant l'exécution : la réflexion n'est faite
+	 * qu'une fois par méthode et par requête.
+	 *
+	 * @param ?string $class Classe de l'appelant (`null` pour une fonction)
+	 * @param ?string $function Méthode ou fonction de l'appelant
+	 *
+	 * @return ?bool Valeur de `onlyExtraLog`, ou `null` si l'attribut est absent
+	 */
+	#[\NoDiscard("lecture sans effet de bord : sans utiliser le résultat, l'appel est inutile")]
+	private static function _get_extra_log_attribute(?string $class, ?string $function): ?bool
+	{
+		if ($function === null) return null;
+
+		$key = $class === null ? $function : "$class::$function";
+		if (array_key_exists($key, self::$extra_log_cache)) return self::$extra_log_cache[$key];
+
+		$reflection = match (true) {
+			$class !== null && method_exists($class, $function) => new \ReflectionMethod($class, $function),
+			$class === null && function_exists($function) => new \ReflectionFunction($function),
+			default => null,
+		};
+
+		$attributes = $reflection?->getAttributes(\MelLogs\ExtraLog::class) ?? [];
+
+		return self::$extra_log_cache[$key] = empty($attributes) ? null : $attributes[0]->newInstance()->onlyExtraLog;
 	}
 
 	/**
@@ -372,8 +565,18 @@ class mel_logs extends rcube_plugin
 	 * @param string $message
 	 * 
 	 */
-	public function l($level, $message) {
-		return $this->log($level, $message);
+	public static function l(string|LogLevel $level, string $message, array $data = []): void {
+		self::get_instance()->log($level, $message, $data);
+	}
+
+	public function captureError(\Throwable $th, $writeLogs = false): void {
+		$this->_execHook('log_capture_error', ['error' => $th]);
+
+		if ($writeLogs) $this->log(LogLevel::Error, $th->getMessage());
+	}
+
+	public static function capture(\Throwable $th, $writeLogs = false): void {
+		self::gi()->captureError($th, $writeLogs);
 	}
 
 	/******** PRIVATE **********/
@@ -570,5 +773,14 @@ class mel_logs extends rcube_plugin
 				$_SESSION['bnum_opened_today'] = $today;
 			}
 		}
+	}
+
+	/**
+	 * Retourne le nom de l'énumération des niveaux de log.
+	 *
+	 * @return class-string<LogLevel>
+	 */
+	public static function LogLevel(): string {
+		return LogLevel::class;
 	}
 }

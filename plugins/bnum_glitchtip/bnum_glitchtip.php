@@ -1,12 +1,15 @@
 <?php
 declare(strict_types=1);
 
-$beforePluginFactory = include __DIR__ . '/php/loader.php';
+static $beforePluginFactory;
+$beforePluginFactory ??= require __DIR__ . '/php/loader.php';
 $beforePluginFactory();
+
+require_once __DIR__ . '/php/generated/scope.php';
 
 require_once __DIR__ . '/php/functions/logs.php';
 
-class bnum_glitchtip extends bnum_plugin {
+final class bnum_glitchtip extends bnum_plugin implements \bnum_glitchtip\types\scope {
     use BGT_LogsTrait {
         BGT_LogsTrait::logTrace as private __rcpclBody_BGT_LogsTrait_logTrace;
         BGT_LogsTrait::logDebug as private __rcpclBody_BGT_LogsTrait_logDebug;
@@ -20,15 +23,16 @@ class bnum_glitchtip extends bnum_plugin {
     public $task = '.*';
 
     /**
-     * Hook Roundcube "startup".
-     *
-     * Initialise le singleton {@see Glitchtip} à partir de la configuration du plugin
-     * (via `_ensureGlitchtipIsInitialized()`), une seule fois par requête.
-     *
-     * @see php/hooks/startup.php Implémentation du hook.
-     **/
-    public function hook_startup(array $args): array {
-        $factory = include __DIR__ . '/php/hooks/startup.php';
+         * Hook Roundcube "startup".
+         *
+         * Initialise le singleton {@see Glitchtip} à partir de la configuration du plugin
+         * (via `_ensureGlitchtipIsInitialized()`), une seule fois par requête.
+         *
+         * @see php/hooks/startup.php Implémentation du hook.
+         **/
+    private function hook_startup(array $args): array {
+        static $factory;
+        $factory ??= require __DIR__ . '/php/hooks/startup.php';
         return (Closure::bind($factory, null, self::class))($this, $args);
     }
 
@@ -49,8 +53,9 @@ class bnum_glitchtip extends bnum_plugin {
          *
          * @see php/hooks/fatal_error.php Implémentation du hook.
          **/
-    public function hook_fatal_error(array $args): array {
-        $factory = include __DIR__ . '/php/hooks/fatal_error.php';
+    private function hook_fatal_error(array $args): array {
+        static $factory;
+        $factory ??= require __DIR__ . '/php/hooks/fatal_error.php';
         return (Closure::bind($factory, null, self::class))($this, $args);
     }
 
@@ -63,8 +68,9 @@ class bnum_glitchtip extends bnum_plugin {
          *
          * @see php/hooks/write_log.php Implémentation du hook.
          **/
-    public function hook_write_log(array $args): array {
-        $factory = include __DIR__ . '/php/hooks/write_log.php';
+    private function hook_write_log(array $args): array {
+        static $factory;
+        $factory ??= require __DIR__ . '/php/hooks/write_log.php';
         return (Closure::bind($factory, null, self::class))($this, $args);
     }
 
@@ -81,8 +87,9 @@ class bnum_glitchtip extends bnum_plugin {
         * @param array{level: \MelLogs\LogLevel, message: string, data: array, caller: string} $args
         * @return array Les arguments inchangés, tels que reçus.
         **/
-    public function hook_log_call(array $args): array {
-        $factory = include __DIR__ . '/php/hooks/log_call.php';
+    private function hook_log_call(array $args): array {
+        static $factory;
+        $factory ??= require __DIR__ . '/php/hooks/log_call.php';
         return (Closure::bind($factory, null, self::class))($this, $args);
     }
 
@@ -97,8 +104,9 @@ class bnum_glitchtip extends bnum_plugin {
          * @return array Les arguments inchangés, tels que reçus.
          * @see php/hooks/log_capture_error.php Implémentation du hook.
          **/
-    public function hook_log_capture_error(array $args): array {
-        $factory = include __DIR__ . '/php/hooks/log_capture_error.php';
+    private function hook_log_capture_error(array $args): array {
+        static $factory;
+        $factory ??= require __DIR__ . '/php/hooks/log_capture_error.php';
         return (Closure::bind($factory, null, self::class))($this, $args);
     }
 
@@ -116,7 +124,8 @@ class bnum_glitchtip extends bnum_plugin {
          * @return void
          **/
     private function _ensureGlitchtipIsInitialized(): void {
-        $factory = include __DIR__ . '/php/functions/ensure_glitchtip_initialized.php';
+        static $factory;
+        $factory ??= require __DIR__ . '/php/functions/ensure_glitchtip_initialized.php';
         (Closure::bind($factory, null, self::class))($this);
     }
 
@@ -215,7 +224,8 @@ class bnum_glitchtip extends bnum_plugin {
         * @return string|null Identifiant de l'événement, ou `null` s'il n'a pas été envoyé.
         **/
     public static function captureException(\Throwable $throwable, array $extra = [ ], array $tags = [ ]): ?string {
-        $factory = include __DIR__ . '/php/functions/captureException.php';
+        static $factory;
+        $factory ??= require __DIR__ . '/php/functions/capture_exception.php';
         return (Closure::bind($factory, null, self::class))($throwable, $extra, $tags);
     }
 
@@ -233,17 +243,16 @@ class bnum_glitchtip extends bnum_plugin {
     }
 
     public function init(): void {
-
         $this->load_config();
 
+        $this->add_hook('startup', $this->hook_startup(...));
+        $this->add_hook('fatal_error', $this->hook_fatal_error(...));
+        $this->add_hook('write_log', $this->hook_write_log(...));
+        $this->add_hook('log_call', $this->hook_log_call(...));
+        $this->add_hook('log_capture_error', $this->hook_log_capture_error(...));
 
-        $this->add_hook('startup', [$this, 'hook_startup']);
-        $this->add_hook('fatal_error', [$this, 'hook_fatal_error']);
-        $this->add_hook('write_log', [$this, 'hook_write_log']);
-        $this->add_hook('log_call', [$this, 'hook_log_call']);
-        $this->add_hook('log_capture_error', [$this, 'hook_log_capture_error']);
-
-        $initFactory = include __DIR__ . '/php/init/init.php';
+        static $initFactory;
+        $initFactory ??= require __DIR__ . '/php/init/init.php';
         (Closure::bind($initFactory, null, self::class))($this);
     }
 }

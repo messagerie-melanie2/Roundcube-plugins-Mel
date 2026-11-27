@@ -31,6 +31,9 @@ final class Glitchtip
     /** Rang de chaque niveau de log, du plus verbeux au plus critique, comparé au seuil {@see $logLevel}. */
     private const LEVELS = ['trace' => 0, 'debug' => 1, 'info' => 2, 'warn' => 3, 'error' => 4, 'fatal' => 5];
 
+    /** Durée (secondes) pendant laquelle une même exception n'est remontée qu'une fois ({@see isThrottled()}). */
+    private const THROTTLE_WINDOW = 60;
+
     /** `true` une fois le SDK Sentry initialisé par {@see init()}. */
     private bool $initialized = false;
     /** Option `enable_logs` : active l'envoi des logs via `\Sentry\logger()`. */
@@ -156,6 +159,7 @@ final class Glitchtip
      */
     public function captureException(\Throwable $throwable, array $extra = [], array $tags = []): ?string {
         if (!$this->initialized) return null;
+        if ($this->isThrottled($throwable)) return null;
 
         $event_id = \Sentry\withScope(function (\Sentry\State\Scope $scope) use ($throwable, $extra, $tags) {
             $scope->setExtras($extra);
@@ -165,6 +169,26 @@ final class Glitchtip
         });
 
         return $event_id === null ? null : (string) $event_id;
+    }
+
+    /**
+     * Indique si une exception identique a déjà été remontée dans la fenêtre {@see THROTTLE_WINDOW}.
+     *
+     * Protège GlitchTip (et la latence des requêtes, l'envoi étant synchrone) d'un déluge
+     * d'événements lors d'une panne d'une dépendance (ex : annuaire LDAP). L'empreinte repose
+     * sur la classe et l'emplacement (fichier:ligne), pas sur le message qui peut contenir des
+     * données variables (identifiant, etc.). `apcu_add()` étant atomique, le compteur est
+     * partagé sans course entre processus. Sans APCu, aucun filtrage n'est appliqué.
+     *
+     * @param \Throwable $throwable Exception à tester.
+     * @return bool `true` si l'exception doit être ignorée.
+     */
+    private function isThrottled(\Throwable $throwable): bool {
+        if (!function_exists('apcu_add') || !filter_var(ini_get('apc.enabled'), FILTER_VALIDATE_BOOLEAN)) return false;
+
+        $key = 'bnum_glitchtip_throttle_' . sha1($this->env . '|' . get_class($throwable) . '|' . $throwable->getFile() . ':' . $throwable->getLine());
+
+        return !apcu_add($key, 1, self::THROTTLE_WINDOW);
     }
 
     /**

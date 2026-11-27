@@ -13,6 +13,10 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+
+use MelLogs\ExtraLog;
+use MelLogs\LogLevel;
+
 // Chargement de la librairie ORM
 @include_once 'includes/libm2.php';
 class mel_ldap_auth extends rcube_plugin {
@@ -34,7 +38,7 @@ class mel_ldap_auth extends rcube_plugin {
   private static $expire_cookie = 51840000;
 
   /** Délai minimal (secondes) entre deux contrôles du mot de passe de session. */
-  private const int RECHECK_INTERVAL = 600;
+  private const int RECHECK_INTERVAL = 1;
 
   /** Délai (secondes) avant de retenter un contrôle resté indéterminé (panne LDAP ou IMAP). */
   private const int RETRY_INTERVAL = 300;
@@ -195,8 +199,9 @@ class mel_ldap_auth extends rcube_plugin {
    *
    * @param string $source Origine du refus, pour la trace (ex. : « l'annuaire »)
    */
+  #[ExtraLog]
   private function close_session_for_refused_password(string $source): void {
-    mel_logs::get_instance()->log(mel_logs::INFO, "[mel_ldap_auth] Mot de passe de la session refusé par $source pour <" . $this->rc->user->get_username() . "> : fermeture de la session");
+    mel_logs::get_instance()->log(LogLevel::Warn, "[mel_ldap_auth] Mot de passe de la session refusé par $source pour <" . $this->rc->user->get_username() . "> : fermeture de la session");
     $this->rc->kill_session();
   }
 
@@ -213,6 +218,7 @@ class mel_ldap_auth extends rcube_plugin {
    *
    * @return bool|null `true` si valide, `false` si refusé, `null` si indéterminé
    */
+  #[ExtraLog]
   private function get_session_imap_verdict(): ?bool {
     if (empty($_SESSION['storage_host']) || empty($_SESSION['username']) || empty($_SESSION['password'])) return null;
 
@@ -233,9 +239,10 @@ class mel_ldap_auth extends rcube_plugin {
 
       if ($storage->get_error_code() === rcube_imap_generic::ERROR_NO) return false;
 
-      mel_logs::get_instance()->log(mel_logs::WARN, "[mel_ldap_auth] Contrôle IMAP du mot de passe de session indéterminé : " . $storage->get_error_str());
+      mel_logs::get_instance()->log(LogLevel::Warn, "[mel_ldap_auth] Contrôle IMAP du mot de passe de session indéterminé : " . $storage->get_error_str());
     } catch (\Throwable $th) {
-      mel_logs::get_instance()->log(mel_logs::ERROR, "[mel_ldap_auth] Erreur inattendue lors du contrôle IMAP du mot de passe de session : " . $th->getMessage());
+      mel_logs::capture($th);
+      mel_logs::get_instance()->log(LogLevel::Error, "[mel_ldap_auth] Erreur inattendue lors du contrôle IMAP du mot de passe de session : " . $th->getMessage());
     }
 
     return null;
@@ -267,6 +274,7 @@ class mel_ldap_auth extends rcube_plugin {
    * @return bool|null `true` si valide, `false` si refusé par l'annuaire,
    *                   `null` si le résultat est indéterminé (erreur technique)
    */
+  #[ExtraLog]
   private function get_session_password_verdict(): ?bool {
     for ($i = 0; $i < self::MAX_ATTEMPTS; ++$i) {
       if ($i > 0) usleep(self::RETRY_DELAY);
@@ -281,10 +289,12 @@ class mel_ldap_auth extends rcube_plugin {
         return (bool) $user->authentification($password);
       } catch (\LibMelanie\Exceptions\Melanie2LdapException $e) {
         // Annuaire injoignable : erreur transitoire possible, on retente.
-        mel_logs::get_instance()->log(mel_logs::WARN, "[mel_ldap_auth] Annuaire injoignable pour le contrôle du mot de passe de session (tentative " . ($i + 1) . "/" . self::MAX_ATTEMPTS . ") : " . $e->getMessage());
+        mel_logs::capture($e);
+        mel_logs::get_instance()->log(LogLevel::Warn, "[mel_ldap_auth] Annuaire injoignable pour le contrôle du mot de passe de session (tentative " . ($i + 1) . "/" . self::MAX_ATTEMPTS . ") : " . $e->getMessage());
       } catch (\Throwable $th) {
         // Erreur inattendue (bug) : inutile de retenter, mais ne jamais bloquer la requête.
-        mel_logs::get_instance()->log(mel_logs::ERROR, "[mel_ldap_auth] Erreur inattendue lors du contrôle du mot de passe de session : " . $th->getMessage());
+        mel_logs::capture($th);
+        mel_logs::get_instance()->log(LogLevel::Error, "[mel_ldap_auth] Erreur inattendue lors du contrôle du mot de passe de session : " . $th->getMessage());
         return null;
       }
     }

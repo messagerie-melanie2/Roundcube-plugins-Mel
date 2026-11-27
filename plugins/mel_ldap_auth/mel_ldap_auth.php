@@ -289,7 +289,8 @@ class mel_ldap_auth extends rcube_plugin {
         return (bool) $user->authentification($password);
       } catch (\LibMelanie\Exceptions\Melanie2LdapException $e) {
         // Annuaire injoignable : erreur transitoire possible, on retente.
-        mel_logs::capture($e);
+        // Seul l'échec de la dernière tentative est remonté à GlitchTip (une panne réelle).
+        if ($i === self::MAX_ATTEMPTS - 1) mel_logs::capture($e);
         mel_logs::get_instance()->log(LogLevel::Warn, "[mel_ldap_auth] Annuaire injoignable pour le contrôle du mot de passe de session (tentative " . ($i + 1) . "/" . self::MAX_ATTEMPTS . ") : " . $e->getMessage());
       } catch (\Throwable $th) {
         // Erreur inattendue (bug) : inutile de retenter, mais ne jamais bloquer la requête.

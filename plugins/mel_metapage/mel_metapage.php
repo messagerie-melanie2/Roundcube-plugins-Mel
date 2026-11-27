@@ -3550,29 +3550,47 @@ class mel_metapage extends bnum_plugin
         $source_groups = [];
 
         foreach ($this->rc->get_address_sources() as $source) {
-            $source_groups[(string) $source['id']] = $this->_autocomplete_group($this->_autocomplete_group_id($source));
+            $source_groups[driver_mel::gi()->mceToRcId((string) $source['id'])] =$this->_autocomplete_group($this->_autocomplete_group_id($source));
         }
 
+        // Le 'source' des contacts est l'id MCE brut (ex. prenom.nom) alors que
+        // get_address_sources() expose l'id Roundcube encodé (mceToRcId) : on normalise
         $args['contacts'] = array_values(array_map(function (array $contact) use ($source_groups) {
-            $contact['source_group'] = $source_groups[(string) ($contact['source'] ?? '')]
+            $source_id = driver_mel::gi()->mceToRcId((string) ($contact['source'] ?? ''));
+            $contact['source_group'] = $source_groups[$source_id]
                 ?? $this->_autocomplete_group('other');
 
             return $contact;
         }, $args['contacts']));
 
-        return $args;
+        return $this->contacts_autocomplete_after($args);
     }
 
+    /**
+     * Détermine le groupe d'autocomplétion d'une source de carnet d'adresses.
+     *
+     * Les adresses collectées ont des ids numériques du core (1 et 2), l'annuaire
+     * correspond aux clés de `ldap_public`, tout autre carnet connu est un carnet
+     * personnel ou partagé de l'utilisateur.
+     *
+     * @param array<string, mixed> $source Source issue de `get_address_sources()`
+     *
+     * @return string 'collected', 'amande' ou 'contacts'
+     */
     private function _autocomplete_group_id(array $source): string
     {
         $id = (string) $source['id'];
 
+        $collected_ids = [
+            (string) rcube_addressbook::TYPE_RECIPIENT,
+            (string) rcube_addressbook::TYPE_TRUSTED_SENDER,
+        ];
+        $directory_ids = array_map('strval', array_keys((array) $this->rc->config->get('ldap_public', [])));
+
         return match (true) {
-            (bool) preg_match('/collected/i', $id) => 'collected',
-            (bool) preg_match('/amande|ldap/i', $id) => 'amande',
-            (bool) preg_match('/^(sql|melanie|carnet)/i', $id),
-            str_contains($id, (string) $this->rc->get_user_name()) => 'contacts',
-            default => 'other',
+            in_array($id, $collected_ids, true) => 'collected',
+            in_array($id, $directory_ids, true) => 'amande',
+            default => 'contacts',
         };
     }
 

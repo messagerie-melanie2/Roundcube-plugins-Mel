@@ -419,42 +419,68 @@ class mtes_driver_annuaire extends default_driver_annuaire {
    * @param string $uid
    *            Uid de l'utilisateur
    * 
-   * @return array Liste des services
+   * @return array<int, string> Liste des DN de services
    */
   private function get_user_services($uid)
   {
     // Récupération du DN en fonction de l'UID
     $user_infos = LibMelanie\Ldap\Ldap::GetUserInfos($uid, null, ['dn', 'seeAlso']);
-    if (isset($user_infos['seealso'])) {
-      $dns = array_merge([$user_infos['dn']], $user_infos['seealso']);
+    if (empty($user_infos['dn'])) {
+      return [];
     }
-    else {
-      $dns = [$user_infos['dn']];
+
+    $dns = array_merge([$user_infos['dn']], (array) ($user_infos['seealso'] ?? []));
+
+    // Récupération de l'instance depuis l'ORM
+    $ldap = LibMelanie\Ldap\Ldap::GetInstance(LibMelanie\Config\Ldap::$SEARCH_LDAP);
+    if (!$ldap->bind4lookup()) {
+      return [];
     }
+
     $services = [];
     // Parcourir tous les dn pour trouver tous les services associés
-    foreach ($dns as $base_dn) {
-      $base_dn = substr($base_dn, strpos($base_dn, ',') + 1);
-      // Initialisation du filtre LDAP
-      $base_filter = "(mineqTypeEntree=NSER)";
-      // Récupération de l'instance depuis l'ORM
-      $ldap = LibMelanie\Ldap\Ldap::GetInstance(LibMelanie\Config\Ldap::$SEARCH_LDAP);
-      if ($ldap->bind4lookup()) {
-        do {
-          $tmp = explode(',', $base_dn, 2);
-          $filter = "(&(" . $tmp[0] . ")$base_filter)";
-          $base_dn = $tmp[1];
-          // Search LDAP
-          $result = $ldap->ldap_list($base_dn, $filter, [
-              'cn'
-          ]);
-        } while ((!isset($result) || $ldap->count_entries($result) === 0) && strpos($base_dn, 'ou=') === 0);
-        if (isset($result) && $ldap->count_entries($result) == 1) {
-          $infos = $ldap->get_entries($result);
-          $services[] = $infos[0]['dn'];
-        }
+    foreach ($dns as $dn) {
+      $service_dn = $this->find_service_dn($ldap, substr($dn, strpos($dn, ',') + 1));
+
+      if (isset($service_dn)) {
+        $services[] = $service_dn;
       }
     }
     return $services;
+  }
+
+  /**
+   * Remonte l'arborescence à partir d'un DN pour trouver l'unique service (NSER) qui le contient.
+   *
+   * Un `ldap_list` en échec (base inexistante, accès refusé) retourne `false` : ce niveau
+   * est ignoré et la remontée continue, afin de ne jamais passer `false` à `count_entries`.
+   *
+   * @param object $ldap Instance LDAP de l'ORM, déjà liée (bind4lookup)
+   * @param string $base_dn DN de départ de la remontée
+   *
+   * @return string|null DN du service, ou null si aucun (ou plusieurs) service trouvé
+   */
+  private function find_service_dn($ldap, string $base_dn): ?string
+  {
+    $base_filter = '(mineqTypeEntree=NSER)';
+
+    while (str_contains($base_dn, ',')) {
+      [$rdn, $parent_dn] = explode(',', $base_dn, 2);
+      $result = $ldap->ldap_list($parent_dn, "(&($rdn)$base_filter)", ['cn']);
+      $base_dn = $parent_dn;
+
+      if ($result === false) {
+        mel_logs::gi()->l(mel_logs::DEBUG, "[annuaire] ldap_list en échec pour le DN $parent_dn");
+      }
+      elseif ($ldap->count_entries($result) === 1) {
+        return $ldap->get_entries($result)[0]['dn'];
+      }
+
+      if (strpos($base_dn, 'ou=') !== 0) {
+        break;
+      }
+    }
+
+    return null;
   }
 }

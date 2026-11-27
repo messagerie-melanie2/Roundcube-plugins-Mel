@@ -1350,7 +1350,9 @@ class roundrive_files_engine
                 break;
         }
         
-        if ($this->filesystem->has("$path/$name.$ext"))
+        $encoded_name = rawurlencode($name);
+
+        if ($this->filesystem->has("$path/$encoded_name.$ext"))
         {
             $return["success"] = false;
             $return["error"] = "Le document existe déjà.";
@@ -1360,13 +1362,11 @@ class roundrive_files_engine
         {
             $return["file"] = "$name.$ext";
 
-            $name = rawurlencode($name);
-
             $func = $handler[1];
             if ($handler[1] === "put")
-                $return["success"] = $handler[0]->$func("$path/$name.$ext", "");
+                $return["success"] = $handler[0]->$func("$path/$encoded_name.$ext", "");
             else
-                $return["success"] = $handler[0]->$func($path, $name, $model);
+                $return["success"] = $handler[0]->$func($path, $encoded_name, $model);
 
         }
 
